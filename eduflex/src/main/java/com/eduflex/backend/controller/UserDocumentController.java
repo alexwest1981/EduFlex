@@ -27,7 +27,12 @@ public class UserDocumentController {
         return documentService.getDocumentsForUser(userId);
     }
 
-    // NYTT: Tar emot fil och textdata via FormData
+    // NY ENDPOINT: Hämta alla dokument (Admin)
+    @GetMapping("/all")
+    public List<UserDocument> getAllDocuments() {
+        return documentService.getAllDocuments();
+    }
+
     @PostMapping(value = "/user/{userId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<UserDocument> uploadDocument(
             @PathVariable Long userId,

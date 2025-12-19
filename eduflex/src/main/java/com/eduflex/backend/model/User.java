@@ -1,13 +1,17 @@
 package com.eduflex.backend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
-@Table(name = "app_users") // 'user' är ofta ett reserverat ord i SQL, så vi heter tabellen app_users
-@Data // Lombok genererar Getters, Setters, toString, etc. automatiskt
+@Table(name = "app_users")
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
@@ -17,20 +21,52 @@ public class User {
     private Long id;
 
     @Column(nullable = false, unique = true)
-    private String username; // T.ex. email eller användarnamn
+    private String username;
 
     @Column(nullable = false)
-    private String password; // Detta kommer sparas krypterat (BCrypt) senare
+    private String password;
+
+    // --- NYA FÄLT ---
+    @Column(nullable = false)
+    private String firstName;
 
     @Column(nullable = false)
+    private String lastName;
+
+    // Vi behåller fullName för enkelhetens skull, men den kan sättas automatiskt
     private String fullName;
+
+    @Column(nullable = false, unique = true)
+    private String ssn; // Personnummer (YYYYMMDD-XXXX)
+
+    private String address;
+    private String phone;
+
+    @Column(nullable = false) // Unik email är ofta bra praxis
+    private String email;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Role role; // STUDENT, TEACHER eller ADMIN
+    private Role role;
 
-    // Relationer
-    // En lärare kan ha skapat många kurser, en elev kan gå många kurser
-    // Vi hanterar detta i Course-klassen för att undvika cirkulära beroenden i JSON just nu,
-    // men vi kan lägga till @OneToMany här senare om vi behöver hämta "alla kurser en elev går".
+    // --- RELATIONER (Cascade för städning) ---
+
+    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<Submission> submissions = new ArrayList<>();
+
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<UserDocument> documents = new ArrayList<>();
+
+    @OneToMany(mappedBy = "teacher", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<Course> coursesCreated = new ArrayList<>();
+
+    // Hjälpmetod för att sätta fullständigt namn innan vi sparar
+    @PrePersist
+    @PreUpdate
+    public void updateFullName() {
+        this.fullName = this.firstName + " " + this.lastName;
+    }
 }

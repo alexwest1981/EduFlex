@@ -23,8 +23,6 @@ public class UserDocumentService {
 
     private final UserDocumentRepository documentRepository;
     private final UserRepository userRepository;
-
-    // Mapp där filer sparas
     private final Path fileStorageLocation;
 
     @Autowired
@@ -32,12 +30,11 @@ public class UserDocumentService {
         this.documentRepository = documentRepository;
         this.userRepository = userRepository;
 
-        // Skapa uppladdningsmappen om den inte finns
         this.fileStorageLocation = Paths.get("uploads").toAbsolutePath().normalize();
         try {
             Files.createDirectories(this.fileStorageLocation);
         } catch (Exception ex) {
-            throw new RuntimeException("Kunde inte skapa mappen för uppladdade filer.", ex);
+            throw new RuntimeException("Kunde inte skapa uppladdningsmappen.", ex);
         }
     }
 
@@ -45,44 +42,48 @@ public class UserDocumentService {
         return documentRepository.findByOwnerId(userId);
     }
 
-    // NY METOD: Tar emot en fil + metadata
+    // NY METOD: Hämta ALLA dokument (för Admin)
+    public List<UserDocument> getAllDocuments() {
+        return documentRepository.findAll();
+    }
+
     public UserDocument saveDocument(Long userId, MultipartFile file, String title, String type, String description) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("Användare hittades inte"));
-
-        // Rensa filnamnet
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("Användare hittades inte"));
         String originalFileName = StringUtils.cleanPath(file.getOriginalFilename());
-
-        // Skapa ett unikt filnamn för att undvika krockar (t.ex. "uuid-mittcv.pdf")
         String fileName = UUID.randomUUID().toString() + "_" + originalFileName;
 
         try {
-            // Spara filen på disken
             Path targetLocation = this.fileStorageLocation.resolve(fileName);
             Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 
-            // Skapa databasobjektet
             UserDocument doc = new UserDocument();
             doc.setTitle(title);
             doc.setType(type);
             doc.setDescription(description);
             doc.setUploadDate(LocalDate.now());
             doc.setOwner(user);
-
-            // Spara filinfo
             doc.setFileName(originalFileName);
             doc.setContentType(file.getContentType());
-            doc.setFileUrl("/uploads/" + fileName); // Sökväg som frontend kan använda senare (kräver konfig)
+            doc.setFileUrl("/uploads/" + fileName);
 
             return documentRepository.save(doc);
-
         } catch (IOException ex) {
-            throw new RuntimeException("Kunde inte spara filen " + fileName + ". Försök igen!", ex);
+            throw new RuntimeException("Kunde inte spara filen " + fileName, ex);
         }
     }
 
     public void deleteDocument(Long docId) {
-        // Här kan man också lägga till logik för att ta bort filen från disken om man vill
-        documentRepository.deleteById(docId);
+        UserDocument doc = documentRepository.findById(docId).orElse(null);
+        if (doc != null) {
+            // Försök ta bort filen från disken
+            try {
+                String internalFileName = doc.getFileUrl().replace("/uploads/", "");
+                Path filePath = this.fileStorageLocation.resolve(internalFileName);
+                Files.deleteIfExists(filePath);
+            } catch (IOException e) {
+                System.err.println("Kunde inte radera fil från disk: " + e.getMessage());
+            }
+            documentRepository.delete(doc);
+        }
     }
 }

@@ -1,5 +1,6 @@
 package com.eduflex.backend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -34,8 +35,7 @@ public class Course {
 
     @ManyToOne
     @JoinColumn(name = "teacher_id", nullable = false)
-    // VIKTIGT: Förhindrar oändlig loop vid JSON-serialisering
-    @JsonIgnoreProperties({"courses", "password", "hibernateLazyInitializer", "handler"})
+    @JsonIgnoreProperties({"coursesCreated", "password", "submissions", "documents"})
     private User teacher;
 
     @ManyToMany
@@ -44,7 +44,18 @@ public class Course {
             joinColumns = @JoinColumn(name = "course_id"),
             inverseJoinColumns = @JoinColumn(name = "student_id")
     )
-    // VIKTIGT: Förhindrar oändlig loop här också
-    @JsonIgnoreProperties({"courses", "password", "hibernateLazyInitializer", "handler"})
+    @JsonIgnoreProperties({"coursesCreated", "password", "submissions", "documents"})
     private List<User> students = new ArrayList<>();
+
+    // --- NYTT: Cascade-regler ---
+
+    // Om kurs raderas -> Ta bort alla uppgifter (Assignments)
+    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<Assignment> assignments = new ArrayList<>();
+
+    // Om kurs raderas -> Ta bort allt material
+    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<CourseMaterial> materials = new ArrayList<>();
 }

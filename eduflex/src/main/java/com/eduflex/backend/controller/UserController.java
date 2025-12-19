@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/users")
@@ -30,12 +31,26 @@ public class UserController {
         }
     }
 
+    // --- NY ENDPOINT ---
+    @PostMapping("/generate-usernames")
+    public ResponseEntity<List<String>> generateUsernames(@RequestBody Map<String, String> payload) {
+        String firstName = payload.get("firstName");
+        String lastName = payload.get("lastName");
+        String ssn = payload.get("ssn");
+
+        if (firstName == null || lastName == null || ssn == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        List<String> suggestions = userService.generateUsernameSuggestions(firstName, lastName, ssn);
+        return ResponseEntity.ok(suggestions);
+    }
+
     @GetMapping
     public List<User> getAllUsers() {
         return userService.getAllUsers();
     }
 
-    // NY ENDPOINT: Ta bort användare
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         try {
