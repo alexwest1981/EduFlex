@@ -31,11 +31,11 @@ public class CourseService {
 
     private final CourseRepository courseRepository;
     private final UserRepository userRepository;
-    private final CourseMaterialRepository materialRepository; // Behövs för materialhantering
-    private final Path fileStorageLocation; // För filuppladdning
+    private final CourseMaterialRepository materialRepository;
+    private final Path fileStorageLocation;
 
     @PersistenceContext
-    private EntityManager entityManager; // För att kunna tvångsradera korrupt data via SQL
+    private EntityManager entityManager;
 
     @Autowired
     public CourseService(CourseRepository courseRepository, UserRepository userRepository, CourseMaterialRepository materialRepository) {
@@ -103,7 +103,16 @@ public class CourseService {
         }
     }
 
-    // --- MATERIALHANTERING (Det som saknades) ---
+    public List<CourseDTO> getAvailableCoursesForStudent(Long studentId) {
+        List<Course> allCourses = courseRepository.findAll();
+        return allCourses.stream()
+                .filter(course -> course.getStudents().stream()
+                        .noneMatch(student -> student.getId().equals(studentId)))
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
+    }
+
+    // --- MATERIALHANTERING (Här är metoden som saknades) ---
 
     public CourseMaterial addMaterial(Long courseId, String title, String content, String link, String type, MultipartFile file) {
         Course course = getCourseById(courseId);
@@ -135,55 +144,37 @@ public class CourseService {
     }
 
     public void deleteMaterial(Long id) {
-        // Vi tar bort materialet från databasen.
-        // Filen på disken ligger kvar (om vi inte lägger till logik för det), men det är okej för nu.
         materialRepository.deleteById(id);
     }
 
     // --- SLUT PÅ MATERIALHANTERING ---
 
-    // ROBUST DELETE: Hanterar både "friska" kurser och kurser där läraren saknas
     @Transactional
     public void deleteCourse(Long id) {
         try {
-            // Försök radera via JPA (standardvägen)
             Course course = getCourseById(id);
-            // Töm studentlistan först för att snygga till join-tabellen
             course.getStudents().clear();
             courseRepository.save(course);
-
-            // Nu raderas kursen, och databasen tar automatiskt bort Assignment, Material, etc. via Cascade
             courseRepository.deleteById(id);
         } catch (Exception e) {
-            // FALLBACK: Om kursen är "trasig" (t.ex. läraren saknas i databasen),
-            // kan JPA inte ladda den. Då måste vi tvångsradera via SQL.
             System.err.println("Kunde inte radera kurs via JPA (" + e.getMessage() + "). Försöker tvinga bort den via SQL...");
             forceDeleteCourse(id);
         }
     }
 
     private void forceDeleteCourse(Long courseId) {
-        // 1. Rensa kopplingar till studenter
         entityManager.createNativeQuery("DELETE FROM course_students WHERE course_id = :id")
                 .setParameter("id", courseId)
                 .executeUpdate();
-
-        // 2. Rensa material
         entityManager.createNativeQuery("DELETE FROM course_materials WHERE course_id = :id")
                 .setParameter("id", courseId)
                 .executeUpdate();
-
-        // 3. Rensa inlämningar (kopplade till uppgifter på kursen)
         entityManager.createNativeQuery("DELETE FROM submissions WHERE assignment_id IN (SELECT id FROM assignments WHERE course_id = :id)")
                 .setParameter("id", courseId)
                 .executeUpdate();
-
-        // 4. Rensa uppgifter
         entityManager.createNativeQuery("DELETE FROM assignments WHERE course_id = :id")
                 .setParameter("id", courseId)
                 .executeUpdate();
-
-        // 5. Rensa själva kursen
         entityManager.createNativeQuery("DELETE FROM courses WHERE id = :id")
                 .setParameter("id", courseId)
                 .executeUpdate();

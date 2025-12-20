@@ -1,6 +1,7 @@
 import React from 'react';
 import { Plus, Trash2, File } from 'lucide-react';
-import { RegistrationForm } from '../components/Auth.jsx'; // Återanvänd formuläret
+// ÄNDRING: Importera direkt från filen RegistrationForm, inte från Auth
+import RegistrationForm from '../components/RegistrationForm';
 
 const AdminPanel = ({
                         adminTab, setAdminTab, users, currentUser, handleAttemptDeleteUser,
@@ -122,7 +123,7 @@ const AdminPanel = ({
                                     <td className="px-6 py-4 text-gray-500">{doc.uploadDate}</td>
                                     <td className="px-6 py-4 text-right">
                                         <div className="flex justify-end gap-3">
-                                            <a href={`http://127.0.0.1:8080${doc.fileUrl}`} target="_blank" className="text-indigo-600 hover:text-indigo-800 font-medium">Ladda ner</a>
+                                            <a href={`http://127.0.0.1:8080${doc.fileUrl}`} target="_blank" className="text-indigo-600 hover:text-indigo-800 font-medium" rel="noreferrer">Ladda ner</a>
                                             <button onClick={() => handleDeleteDoc(doc.id, true)} className="text-red-500 hover:text-red-700 font-medium">Ta bort</button>
                                         </div>
                                     </td>

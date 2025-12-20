@@ -1,12 +1,23 @@
 import React from 'react';
-import { LayoutDashboard, BookOpen, Briefcase, Settings, LogOut } from 'lucide-react';
+import { LayoutDashboard, BookOpen, Briefcase, Settings, LogOut, Compass, User, Calendar } from 'lucide-react';
 
 const Sidebar = ({ view, navigateTo, currentUser, logout }) => {
     const menuItems = [
         { id: 'dashboard', icon: LayoutDashboard, label: 'Översikt' },
-        { id: 'courses', icon: BookOpen, label: 'Kurser' },
-        { id: 'documents', icon: Briefcase, label: 'Dokument' },
+        // LÄGG TILL KALENDER HÄR
+        { id: 'calendar', icon: Calendar, label: 'Kalender' },
+        { id: 'courses', icon: BookOpen, label: 'Mina Kurser' },
     ];
+
+    // Visa kurskatalog endast för studenter
+    if (currentUser.role === 'STUDENT') {
+        menuItems.push({ id: 'catalog', icon: Compass, label: 'Hitta Kurser' });
+    }
+
+    menuItems.push({ id: 'documents', icon: Briefcase, label: 'Dokument' });
+
+    // Profil länk för alla
+    menuItems.push({ id: 'profile', icon: User, label: 'Min Profil' });
 
     if (currentUser.role === 'ADMIN' || currentUser.role === 'TEACHER') {
         menuItems.push({ id: 'admin', icon: Settings, label: 'Admin' });
@@ -33,9 +44,19 @@ const Sidebar = ({ view, navigateTo, currentUser, logout }) => {
             </nav>
 
             <div className="p-4 border-t border-gray-100">
-                <div className="bg-gray-50 rounded-xl p-4 mb-2">
-                    <div className="font-semibold text-sm truncate">{currentUser.fullName}</div>
-                    <div className="text-xs text-gray-500">{currentUser.role}</div>
+                <div className="bg-gray-50 rounded-xl p-4 mb-2 flex items-center gap-3 cursor-pointer hover:bg-gray-100 transition-colors" onClick={() => navigateTo('profile')}>
+                    {/* Visa avatar om den finns, annars initial */}
+                    {currentUser.profilePictureUrl ? (
+                        <img src={`http://127.0.0.1:8080${currentUser.profilePictureUrl}`} alt="Profile" className="w-10 h-10 rounded-full object-cover border border-indigo-100" />
+                    ) : (
+                        <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold border border-indigo-200 flex-shrink-0">
+                            {currentUser.fullName?.charAt(0)}
+                        </div>
+                    )}
+                    <div className="overflow-hidden">
+                        <div className="font-semibold text-sm truncate">{currentUser.fullName}</div>
+                        <div className="text-xs text-gray-500">{currentUser.role}</div>
+                    </div>
                 </div>
                 <button onClick={logout} className="w-full flex items-center justify-center gap-2 text-red-500 hover:bg-red-50 p-2 rounded-lg text-sm transition-colors">
                     <LogOut size={16}/> Logga Ut

@@ -3,8 +3,10 @@ package com.eduflex.backend.controller;
 import com.eduflex.backend.model.User;
 import com.eduflex.backend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
@@ -31,7 +33,7 @@ public class UserController {
         }
     }
 
-    // --- NY ENDPOINT ---
+    // Generera användarnamn (öppen endpoint)
     @PostMapping("/generate-usernames")
     public ResponseEntity<List<String>> generateUsernames(@RequestBody Map<String, String> payload) {
         String firstName = payload.get("firstName");
@@ -41,14 +43,42 @@ public class UserController {
         if (firstName == null || lastName == null || ssn == null) {
             return ResponseEntity.badRequest().build();
         }
-
-        List<String> suggestions = userService.generateUsernameSuggestions(firstName, lastName, ssn);
-        return ResponseEntity.ok(suggestions);
+        return ResponseEntity.ok(userService.generateUsernameSuggestions(firstName, lastName, ssn));
     }
 
     @GetMapping
     public List<User> getAllUsers() {
         return userService.getAllUsers();
+    }
+
+    // NYTT: Hämta en specifik användare (för att visa profil)
+    @GetMapping("/{id}")
+    public ResponseEntity<User> getUser(@PathVariable Long id) {
+        try {
+            return ResponseEntity.ok(userService.getUserById(id));
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    // NYTT: Uppdatera användare (PUT)
+    @PutMapping("/{id}")
+    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User user) {
+        try {
+            return ResponseEntity.ok(userService.updateUser(id, user));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    // NYTT: Ladda upp profilbild
+    @PostMapping(value = "/{id}/avatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<User> uploadAvatar(@PathVariable Long id, @RequestParam("file") MultipartFile file) {
+        try {
+            return ResponseEntity.ok(userService.uploadProfilePicture(id, file));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @DeleteMapping("/{id}")

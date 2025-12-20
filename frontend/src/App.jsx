@@ -1,9 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Bell, AlertTriangle, CheckCircle, WifiOff, File, X, Video, Link as LinkIcon, FileText } from 'lucide-react';
+import { Search, Bell, AlertTriangle, CheckCircle, Video, Link as LinkIcon, FileText, X, File } from 'lucide-react';
+
+// Importerar från komponent-mappen
 import Sidebar from './components/Sidebar';
 import Auth from './components/Auth';
+import EvaluationModal from './components/EvaluationModal'; // NY!
+
+// Importerar från sid-mappen
 import AdminPanel from './pages/AdminPanel';
 import CourseDetail from './pages/CourseDetail';
+import Dashboard from './pages/Dashboard';
+import CourseCatalog from './pages/CourseCatalog';
+import DocumentManager from './pages/DocumentManager';
+import UserProfile from './pages/UserProfile';
+import CalendarView from './pages/CalendarView';
 
 function App() {
     // --- AUTH STATE ---
@@ -16,6 +26,15 @@ function App() {
     const [selectedCourseId, setSelectedCourseId] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
     const [isOffline, setIsOffline] = useState(false);
+
+    // Dashboard & Kalender Data
+    const [calendarEvents, setCalendarEvents] = useState([]);
+    const [upcomingAssignments, setUpcomingAssignments] = useState([]);
+    const [ungradedSubmissions, setUngradedSubmissions] = useState([]);
+
+    // Utvärderings-state (NYTT)
+    const [pendingEvaluations, setPendingEvaluations] = useState([]);
+    const [evaluationModalCourse, setEvaluationModalCourse] = useState(null);
 
     // Modals
     const [showCourseModal, setShowCourseModal] = useState(false);
@@ -32,35 +51,40 @@ function App() {
     const [assignments, setAssignments] = useState([]);
     const [submissions, setSubmissions] = useState([]);
     const [readMaterials, setReadMaterials] = useState({});
+    const [availableCourses, setAvailableCourses] = useState([]);
 
     // UI State
     const [activeTab, setActiveTab] = useState('material');
     const [adminTab, setAdminTab] = useState('users');
     const [selectedAssignment, setSelectedAssignment] = useState(null);
 
-    // Forms
+    // Auth Forms
     const [loginForm, setLoginForm] = useState({ username: '', password: '' });
-    const [registerForm, setRegisterForm] = useState({ firstName: '', lastName: '', ssn: '', address: '', phone: '', email: '', username: '', password: '', role: 'STUDENT' });
+
+    // Registrerings-state (med uppdelad adress)
+    const [registerForm, setRegisterForm] = useState({
+        firstName: '', lastName: '', ssn: '',
+        street: '', zip: '', city: '', country: '',
+        phone: '', email: '',
+        username: '', password: '', role: 'STUDENT'
+    });
+
     const [usernameSuggestions, setUsernameSuggestions] = useState([]);
 
+    // Course & Assignment Forms
     const [courseForm, setCourseForm] = useState({ name: '', courseCode: '', description: '', teacherId: '', startDate: '' });
     const [assignmentForm, setAssignmentForm] = useState({ title: '', description: '', dueDate: '' });
-    const [formErrors, setFormErrors] = useState({});
 
+    // Material Form
     const [matTitle, setMatTitle] = useState('');
     const [matContent, setMatContent] = useState('');
     const [matLink, setMatLink] = useState('');
     const [matType, setMatType] = useState('TEXT');
     const [matFile, setMatFile] = useState(null);
-
-    const [docTitle, setDocTitle] = useState('');
-    const [docType, setDocType] = useState('CV');
-    const [docDesc, setDocDesc] = useState('');
-    const [docFile, setDocFile] = useState(null);
-
     const [submissionFile, setSubmissionFile] = useState(null);
     const [grading, setGrading] = useState({});
 
+    // Messages
     const [message, setMessage] = useState('');
     const [error, setError] = useState(null);
 
@@ -73,62 +97,180 @@ function App() {
         return headers;
     };
 
+    // --- HELPER: GET MY COURSES ---
+    const myCourses = currentUser?.role === 'STUDENT'
+        ? courses.filter(c => c.students?.some(s => s.id === currentUser.id))
+        : courses;
+
     // --- EFFECTS ---
     useEffect(() => { if (token && currentUser) initData(); }, [token, currentUser]);
+
     useEffect(() => { if (view === 'course-detail' && selectedCourseId) { fetchCourseDetails(selectedCourseId); fetchAssignments(selectedCourseId); } }, [selectedCourseId, view]);
     useEffect(() => { if (selectedAssignment) fetchSubmissions(selectedAssignment.id); }, [selectedAssignment]);
     useEffect(() => { if (view === 'admin' && adminTab === 'docs') fetchAllDocuments(); }, [view, adminTab]);
+    useEffect(() => { if (view === 'catalog') fetchAvailableCourses(); }, [view]);
+
+    // Hämta data för Dashboard och Kalender
+    useEffect(() => {
+        if (myCourses.length > 0) {
+            if (view === 'calendar') fetchAllCalendarData();
+            if (view === 'dashboard') fetchDashboardData();
+        }
+    }, [view, myCourses]);
 
     const initData = async () => { setIsLoading(true); await fetchUsers(); await fetchCourses(); setIsLoading(false); };
 
-    // --- AUTH ACTIONS ---
-    const handleLogin = async (e) => {
-        e.preventDefault(); setError(null); setIsLoading(true);
+    const refreshUser = async () => {
+        if (!currentUser) return;
         try {
-            const res = await fetch(`${API_BASE}/auth/login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(loginForm) });
+            const res = await fetch(`${API_BASE}/users/${currentUser.id}`, { headers: getAuthHeaders() });
             if (res.ok) {
-                const data = await res.json();
-                setToken(data.token);
-                const userObj = { id: data.id, username: data.username, fullName: data.fullName, role: data.role };
-                setCurrentUser(userObj);
-                localStorage.setItem('token', data.token); localStorage.setItem('user', JSON.stringify(userObj));
-                setLoginForm({ username: '', password: '' }); setIsOffline(false);
-            } else setError("Fel användarnamn eller lösenord.");
-        } catch (err) { setError("Kunde inte nå servern."); } finally { setIsLoading(false); }
+                const updatedUser = await res.json();
+                setCurrentUser(updatedUser);
+                localStorage.setItem('user', JSON.stringify(updatedUser));
+            }
+        } catch (err) {
+            console.error("Kunde inte uppdatera användardata", err);
+        }
     };
-    const handleGenerateUsernames = async () => {
-        if (!registerForm.firstName || !registerForm.lastName || !registerForm.ssn) return setError("Fyll i Förnamn, Efternamn och Personnummer först.");
-        try {
-            const res = await fetch(`${API_BASE}/users/generate-usernames`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ firstName: registerForm.firstName, lastName: registerForm.lastName, ssn: registerForm.ssn }) });
-            if (res.ok) setUsernameSuggestions(await res.json()); else setError("Kunde inte generera förslag.");
-        } catch (err) { setError("Nätverksfel vid generering."); }
-    };
-    const handleRegister = async (e) => {
-        e.preventDefault(); if (!registerForm.username) return setError("Välj ett användarnamn!");
-        try {
-            const headers = currentUser ? getAuthHeaders() : { 'Content-Type': 'application/json' };
-            const res = await fetch(`${API_BASE}/users/register`, { method: 'POST', headers: headers, body: JSON.stringify(registerForm) });
-            if (res.ok) { showMessage("Konto skapat!"); if (!currentUser) setAuthView('login'); else fetchUsers(); setRegisterForm({ firstName: '', lastName: '', ssn: '', address: '', phone: '', email: '', username: '', password: '', role: 'STUDENT' }); setUsernameSuggestions([]); } else setError("Kunde inte registrera användare.");
-        } catch (err) { setError("Nätverksfel vid registrering."); }
-    };
-    const logout = () => { setToken(null); setCurrentUser(null); localStorage.removeItem('token'); localStorage.removeItem('user'); setView('dashboard'); };
 
     // --- API CALLS ---
     const fetchUsers = async () => { try { const res = await fetch(`${API_BASE}/users`, { headers: getAuthHeaders() }); if (res.ok) setUsers(await res.json()); else if (res.status === 401) logout(); } catch (err) { setIsOffline(true); } };
     const fetchCourses = async () => { try { const res = await fetch(`${API_BASE}/courses`, { headers: getAuthHeaders() }); if(res.ok) setCourses(await res.json()); } catch (err) {} };
+    const fetchAvailableCourses = async () => { try { const res = await fetch(`${API_BASE}/courses/available/${currentUser.id}`, { headers: getAuthHeaders() }); if (res.ok) setAvailableCourses(await res.json()); } catch (err) { setError("Kunde inte hämta kurskatalog."); } };
     const fetchCourseDetails = async (id) => { setCurrentCourse(null); setMaterials([]); try { const cRes = await fetch(`${API_BASE}/courses/${id}`, { headers: getAuthHeaders() }); if (cRes.ok) setCurrentCourse(await cRes.json()); const mRes = await fetch(`${API_BASE}/courses/${id}/materials`, { headers: getAuthHeaders() }); if (mRes.ok) setMaterials(await mRes.json()); } catch (err) { setError("Fel vid hämtning."); } };
     const fetchAssignments = async (cid) => { try { const res = await fetch(`${API_BASE}/courses/${cid}/assignments`, { headers: getAuthHeaders() }); if (res.ok) setAssignments(await res.json()); } catch (err) {} };
     const fetchSubmissions = async (aid) => { try { const res = await fetch(`${API_BASE}/assignments/${aid}/submissions`, { headers: getAuthHeaders() }); if (res.ok) setSubmissions(await res.json()); } catch (err) {} };
     const fetchDocuments = async (uid) => { try { const res = await fetch(`${API_BASE}/documents/user/${uid}`, { headers: getAuthHeaders() }); if (res.ok) setDocuments(await res.json()); } catch (err) {} };
     const fetchAllDocuments = async () => { try { const res = await fetch(`${API_BASE}/documents/all`, { headers: getAuthHeaders() }); if (res.ok) setAllDocuments(await res.json()); } catch (err) {} };
 
-    // --- ACTION HANDLERS ---
+    const fetchAllCalendarData = async () => {
+        try {
+            const promises = myCourses.map(course =>
+                fetch(`${API_BASE}/courses/${course.id}/assignments`, { headers: getAuthHeaders() })
+                    .then(res => res.ok ? res.json() : [])
+                    .then(data => data.map(a => ({ ...a, courseName: course.name, courseCode: course.courseCode, type: 'ASSIGNMENT' })))
+            );
+            const assignmentsResults = await Promise.all(promises);
+            const allAssignments = assignmentsResults.flat();
+
+            const courseStarts = myCourses.filter(c => c.startDate).map(c => ({
+                id: `start-${c.id}`, title: `Kursstart: ${c.name}`, dueDate: c.startDate,
+                courseName: c.name, courseCode: c.courseCode, type: 'COURSE_START'
+            }));
+            setCalendarEvents([...allAssignments, ...courseStarts]);
+        } catch (err) { console.error("Kalenderfel", err); }
+    };
+
+    const fetchDashboardData = async () => {
+        if (!currentUser) return;
+        try {
+            // Hämta assignments
+            const promises = myCourses.map(course =>
+                fetch(`${API_BASE}/courses/${course.id}/assignments`, { headers: getAuthHeaders() })
+                    .then(res => res.ok ? res.json() : [])
+                    .then(data => data.map(a => ({ ...a, courseName: course.name, courseId: course.id })))
+            );
+            const results = await Promise.all(promises);
+            const allAssigns = results.flat();
+
+            const future = allAssigns
+                .filter(a => new Date(a.dueDate) > new Date())
+                .sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate))
+                .slice(0, 5);
+            setUpcomingAssignments(future);
+
+            if (currentUser.role === 'TEACHER' || currentUser.role === 'ADMIN') {
+                const subPromises = allAssigns.map(assign =>
+                    fetch(`${API_BASE}/assignments/${assign.id}/submissions`, { headers: getAuthHeaders() })
+                        .then(res => res.ok ? res.json() : [])
+                        .then(data => data.map(s => ({ ...s, assignmentTitle: assign.title, courseName: assign.courseName, assignmentId: assign.id })))
+                );
+                const subResults = await Promise.all(subPromises);
+                const allSubs = subResults.flat();
+                setUngradedSubmissions(allSubs.filter(s => !s.grade));
+            }
+
+            // NYTT: Hämta aktiva utvärderingar som eleven inte gjort än
+            // (Vi filtrerar detta på frontend för enkelhetens skull, men normalt görs det i backend)
+            const activeEvals = myCourses.filter(c => c.evaluation && c.evaluation.active);
+            // I en riktig app: kolla om studenten redan har svarat via en endpoint.
+            // Här visar vi alla aktiva kurser för demonstration.
+            setPendingEvaluations(activeEvals);
+
+        } catch (err) { console.error("Dashboardfel", err); }
+    };
+
+    const checkUsernameAvailability = async (username) => {
+        if (!username) return false;
+        try {
+            const res = await fetch(`${API_BASE}/users/exists?username=${username}`);
+            if (res.ok) return await res.json();
+        } catch (err) { return false; }
+        return false;
+    };
+
+    // --- AUTH ACTIONS ---
+    const handleLogin = async (e) => { e.preventDefault(); setError(null); setIsLoading(true); try { const res = await fetch(`${API_BASE}/auth/login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(loginForm) }); if (res.ok) { const data = await res.json(); setToken(data.token); const userObj = { id: data.id, username: data.username, fullName: data.fullName, role: data.role, profilePictureUrl: data.profilePictureUrl }; setCurrentUser(userObj); localStorage.setItem('token', data.token); localStorage.setItem('user', JSON.stringify(userObj)); setLoginForm({ username: '', password: '' }); setIsOffline(false); } else setError("Fel inloggning."); } catch (err) { setError("Kunde inte nå servern."); } finally { setIsLoading(false); } };
+    const handleGenerateUsernames = async () => { if (!registerForm.firstName || !registerForm.lastName || !registerForm.ssn) return setError("Fyll i uppgifter först."); try { const res = await fetch(`${API_BASE}/users/generate-usernames`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ firstName: registerForm.firstName, lastName: registerForm.lastName, ssn: registerForm.ssn }) }); if (res.ok) setUsernameSuggestions(await res.json()); else setError("Kunde inte generera."); } catch (err) { setError("Nätverksfel."); } };
+    const handleRegister = async (e) => { e.preventDefault(); if (!registerForm.username) return setError("Välj ett användarnamn!"); const fullAddress = `${registerForm.street}, ${registerForm.zip} ${registerForm.city}, ${registerForm.country}`; const payload = { ...registerForm, address: fullAddress }; delete payload.street; delete payload.zip; delete payload.city; delete payload.country; try { const headers = currentUser ? getAuthHeaders() : { 'Content-Type': 'application/json' }; const res = await fetch(`${API_BASE}/users/register`, { method: 'POST', headers: headers, body: JSON.stringify(payload) }); if (res.ok) { showMessage("Konto skapat!"); if (!currentUser) setAuthView('login'); else fetchUsers(); setRegisterForm({ firstName: '', lastName: '', ssn: '', street: '', zip: '', city: '', country: '', phone: '', email: '', username: '', password: '', role: 'STUDENT' }); setUsernameSuggestions([]); } else { const errText = await res.text(); setError(errText || "Kunde inte registrera användare."); } } catch (err) { setError("Nätverksfel vid registrering."); } };
+    const logout = () => { setToken(null); setCurrentUser(null); localStorage.removeItem('token'); localStorage.removeItem('user'); setView('dashboard'); };
+
+    // --- EVENT HANDLERS ---
+
+    // NYTT: Hantera skapande av utvärdering (Lärare)
+    const handleCreateEvaluation = async (questions) => {
+        if (!questions || questions.length === 0) return setError("Minst en fråga krävs.");
+
+        try {
+            // Antar endpoint POST /courses/:id/evaluation
+            const res = await fetch(`${API_BASE}/courses/${selectedCourseId}/evaluation`, {
+                method: 'POST',
+                headers: getAuthHeaders(),
+                body: JSON.stringify({ questions, active: true })
+            });
+
+            if (res.ok) {
+                showMessage("Utvärdering aktiverad!");
+                fetchCourseDetails(selectedCourseId); // Uppdatera kursen så vi ser ändringen
+            } else {
+                setError("Kunde inte skapa utvärdering.");
+            }
+        } catch (err) {
+            setError("Nätverksfel.");
+        }
+    };
+
+    // NYTT: Hantera inskick av utvärdering (Student)
+    const handleSubmitEvaluation = async (courseId, answers) => {
+        try {
+            // Antar endpoint POST /courses/:id/evaluation/submit
+            const res = await fetch(`${API_BASE}/courses/${courseId}/evaluation/submit`, {
+                method: 'POST',
+                headers: getAuthHeaders(),
+                body: JSON.stringify({ answers })
+            });
+
+            if (res.ok) {
+                showMessage("Tack för din feedback!");
+                setEvaluationModalCourse(null); // Stäng modal
+                // Ta bort från pending-listan lokalt
+                setPendingEvaluations(prev => prev.filter(c => c.id !== courseId));
+            } else {
+                setError("Kunde inte skicka svar.");
+            }
+        } catch (err) {
+            setError("Nätverksfel.");
+        }
+    };
+
+    const handleAddStudentToCourse = async (studentId) => { if (!studentId) return setError("Välj en student."); try { const res = await fetch(`${API_BASE}/courses/${selectedCourseId}/enroll/${studentId}`, { method: 'POST', headers: getAuthHeaders() }); if (res.ok) { showMessage("Student tillagd!"); fetchCourseDetails(selectedCourseId); } else setError("Kunde inte lägga till."); } catch (err) { setError("Nätverksfel."); } };
+    const handleEnroll = async (courseId) => { if(!window.confirm("Gå med i kurs?")) return; try { const res = await fetch(`${API_BASE}/courses/${courseId}/enroll/${currentUser.id}`, { method: 'POST', headers: getAuthHeaders() }); if (res.ok) { showMessage("Du har gått med!"); setAvailableCourses(prev => prev.filter(c => c.id !== courseId)); fetchCourses(); } else setError("Kunde inte gå med."); } catch (err) { setError("Nätverksfel."); } };
     const handleCourseSubmit = async (e) => { e.preventDefault(); const payload = { name: courseForm.name, courseCode: courseForm.courseCode, description: courseForm.description, startDate: courseForm.startDate || null }; try { const res = await fetch(`${API_BASE}/courses?teacherId=${courseForm.teacherId}`, { method: 'POST', headers: getAuthHeaders(), body: JSON.stringify(payload) }); if (res.ok) { showMessage('Kurs skapad!'); setShowCourseModal(false); fetchCourses(); } } catch (err) {} };
-    const handleDeleteCourse = async (id, e) => { if (e) e.stopPropagation(); if(!window.confirm("Ta bort kurs? Allt material försvinner.")) return; try { const res = await fetch(`${API_BASE}/courses/${id}`, { method: 'DELETE', headers: getAuthHeaders() }); if (res.ok) { showMessage('Kurs borttagen!'); fetchCourses(); if(selectedCourseId === id) navigateTo('courses'); } } catch (err) {} };
-    const handleAttemptDeleteUser = async (user) => { try { const res = await fetch(`${API_BASE}/documents/user/${user.id}`, { headers: getAuthHeaders() }); if (res.ok) { const docs = await res.json(); if (docs.length > 0) setPendingDeleteUser({ user, docs }); else if(window.confirm(`Ta bort ${user.fullName}?`)) performDeleteUser(user.id); } } catch (err) { setError("Kunde inte kontrollera filer."); } };
-    const performDeleteUser = async (userId) => { try { if (pendingDeleteUser) for (const doc of pendingDeleteUser.docs) await fetch(`${API_BASE}/documents/${doc.id}`, { method: 'DELETE', headers: getAuthHeaders() }); const res = await fetch(`${API_BASE}/users/${userId}`, { method: 'DELETE', headers: getAuthHeaders() }); if (res.ok) { showMessage("Användare raderad."); setPendingDeleteUser(null); fetchUsers(); } else setError("Kunde inte radera."); } catch (err) { setError("Fel vid radering."); } };
-    const handleDocSubmit = async (e) => { e.preventDefault(); const formData = new FormData(); formData.append("file", docFile); formData.append("title", docTitle); formData.append("type", docType); formData.append("description", docDesc); try { const res = await fetch(`${API_BASE}/documents/user/${currentUser.id}`, { method: 'POST', headers: { 'Authorization': `Bearer ${token}` }, body: formData }); if (res.ok) { showMessage('Uppladdat!'); setDocFile(null); fetchDocuments(currentUser.id); } } catch (err) {} };
-    const handleDeleteDoc = async (id, refreshAll = false) => { if(!window.confirm("Ta bort filen?")) return; try { const res = await fetch(`${API_BASE}/documents/${id}`, { method: 'DELETE', headers: getAuthHeaders() }); if (res.ok) { if (refreshAll) fetchAllDocuments(); else fetchDocuments(currentUser.id); } } catch (err) {} };
+    const handleDeleteCourse = async (id, e) => { if (e) e.stopPropagation(); if(!window.confirm("Ta bort kurs? Allt material försvinner.")) return; try { const res = await fetch(`${API_BASE}/courses/${id}`, { method: 'DELETE', headers: getAuthHeaders() }); if (res.ok) { showMessage('Raderad!'); fetchCourses(); if(selectedCourseId === id) navigateTo('courses'); } } catch (err) {} };
+    const handleAttemptDeleteUser = async (user) => { try { const res = await fetch(`${API_BASE}/documents/user/${user.id}`, { headers: getAuthHeaders() }); if (res.ok) { const docs = await res.json(); if (docs.length > 0) setPendingDeleteUser({ user, docs }); else if(window.confirm(`Ta bort ${user.fullName}?`)) performDeleteUser(user.id); } } catch (err) { setError("Kontroll misslyckades."); } };
+    const performDeleteUser = async (userId) => { try { if (pendingDeleteUser) for (const doc of pendingDeleteUser.docs) await fetch(`${API_BASE}/documents/${doc.id}`, { method: 'DELETE', headers: getAuthHeaders() }); const res = await fetch(`${API_BASE}/users/${userId}`, { method: 'DELETE', headers: getAuthHeaders() }); if (res.ok) { showMessage("Raderad."); setPendingDeleteUser(null); fetchUsers(); } else setError("Kunde inte radera."); } catch (err) { setError("Fel vid radering."); } };
+    const handleDeleteDoc = async (id, refreshAll = false) => { if(!window.confirm("Ta bort fil?")) return; try { const res = await fetch(`${API_BASE}/documents/${id}`, { method: 'DELETE', headers: getAuthHeaders() }); if (res.ok) { if (refreshAll) fetchAllDocuments(); else fetchDocuments(currentUser.id); } } catch (err) {} };
     const handleMaterialSubmit = async (e) => { e.preventDefault(); const formData = new FormData(); formData.append("title", matTitle); formData.append("content", matContent); formData.append("link", matLink); formData.append("type", matType); if (matFile) formData.append("file", matFile); try { const res = await fetch(`${API_BASE}/courses/${selectedCourseId}/materials`, { method: 'POST', headers: { 'Authorization': `Bearer ${token}` }, body: formData }); if (res.ok) { showMessage('Material tillagt!'); setMatFile(null); fetchCourseDetails(selectedCourseId); } } catch (err) {} };
     const handleDeleteMaterial = async (matId) => { if(!window.confirm("Ta bort?")) return; try { const res = await fetch(`${API_BASE}/courses/materials/${matId}`, { method: 'DELETE', headers: getAuthHeaders() }); if(res.ok) fetchCourseDetails(selectedCourseId); } catch(e){} };
     const handleCreateAssignment = async (e) => { e.preventDefault(); try { const res = await fetch(`${API_BASE}/courses/${selectedCourseId}/assignments`, { method: 'POST', headers: getAuthHeaders(), body: JSON.stringify(assignmentForm) }); if (res.ok) { showMessage("Uppgift skapad!"); setAssignmentForm({ title: '', description: '', dueDate: '' }); setShowAssignmentModal(false); fetchAssignments(selectedCourseId); } } catch (err) {} };
@@ -141,18 +283,36 @@ function App() {
     const navigateTo = (newView, courseId = null) => { setError(null); setSelectedCourseId(courseId); setView(newView); if (newView !== 'course-detail') { setCurrentCourse(null); setMaterials([]); setAssignments([]); setActiveTab('material'); setSelectedAssignment(null); }};
     const getYoutubeEmbed = (url) => { if (!url) return null; const m = url.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/); return (m && m[2].length === 11) ? m[2] : null; };
     const teachers = users.filter(u => u.role === 'TEACHER' || u.role === 'ADMIN');
-    const myCourses = currentUser?.role === 'STUDENT' ? courses.filter(c => c.students?.some(s => s.id === currentUser.id)) : courses;
     const getIcon = (type) => { switch(type) { case 'VIDEO': return <Video size={20} className="text-red-500"/>; case 'LINK': return <LinkIcon size={20} className="text-blue-500"/>; default: return <FileText size={20} className="text-gray-500"/>; } };
     const getMySubmission = () => submissions.find(s => s.studentId === currentUser.id);
 
     if (!token || !currentUser) {
-        return <Auth authView={authView} setAuthView={setAuthView} loginForm={loginForm} setLoginForm={setLoginForm} handleLogin={handleLogin} isLoading={isLoading} error={error} message={message}
-                     registerForm={registerForm} setRegisterForm={setRegisterForm} handleRegister={handleRegister} handleGenerateUsernames={handleGenerateUsernames} usernameSuggestions={usernameSuggestions} />;
+        return <Auth
+            authView={authView} setAuthView={setAuthView}
+            loginForm={loginForm} setLoginForm={setLoginForm}
+            handleLogin={handleLogin} isLoading={isLoading}
+            error={error} message={message}
+            registerForm={registerForm} setRegisterForm={setRegisterForm}
+            handleRegister={handleRegister}
+            handleGenerateUsernames={handleGenerateUsernames}
+            usernameSuggestions={usernameSuggestions}
+            checkUsernameAvailability={checkUsernameAvailability}
+        />;
     }
 
     return (
         <div className="flex h-screen bg-gray-50 font-sans text-gray-900 overflow-hidden">
-            {/* MODALS */}
+            {/* --- MODALER --- */}
+
+            {/* KURSUTVÄRDERINGS-MODAL (NY!) */}
+            {evaluationModalCourse && (
+                <EvaluationModal
+                    course={evaluationModalCourse}
+                    onClose={() => setEvaluationModalCourse(null)}
+                    onSubmit={handleSubmitEvaluation}
+                />
+            )}
+
             {pendingDeleteUser && (
                 <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex justify-center items-center z-50 p-4">
                     <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg p-6 animate-in zoom-in">
@@ -163,7 +323,6 @@ function App() {
                     </div>
                 </div>
             )}
-
             {showCourseModal && (
                 <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex justify-center items-center z-50 p-4">
                     <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg p-6">
@@ -178,7 +337,6 @@ function App() {
                     </div>
                 </div>
             )}
-
             {showAssignmentModal && (
                 <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex justify-center items-center z-50 p-4">
                     <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg animate-in fade-in zoom-in duration-200">
@@ -196,10 +354,8 @@ function App() {
                 </div>
             )}
 
-            {/* SIDEBAR */}
             <Sidebar view={view} navigateTo={navigateTo} currentUser={currentUser} logout={logout} />
 
-            {/* MAIN CONTENT */}
             <main className="flex-1 flex flex-col h-full overflow-hidden relative">
                 <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-8 flex-shrink-0">
                     <div className="flex items-center gap-4 bg-gray-100 px-4 py-2 rounded-lg w-96"><Search size={18} className="text-gray-400"/><input type="text" placeholder="Sök..." className="bg-transparent border-none outline-none text-sm w-full" /></div>
@@ -210,67 +366,40 @@ function App() {
                     {error && <div className="bg-red-50 text-red-700 px-4 py-3 rounded-xl mb-6 flex items-center gap-3"><AlertTriangle size={20}/> {error}</div>}
                     {message && <div className="bg-green-50 text-green-700 px-4 py-3 rounded-xl mb-6 flex items-center gap-3"><CheckCircle size={20}/> {message}</div>}
 
-                    {/* ADMIN VIEW - BRÖTS UT */}
-                    {view === 'admin' && (
-                        <AdminPanel
-                            adminTab={adminTab} setAdminTab={setAdminTab} users={users} currentUser={currentUser} handleAttemptDeleteUser={handleAttemptDeleteUser}
-                            courses={courses} setShowCourseModal={setShowCourseModal} handleDeleteCourse={handleDeleteCourse}
-                            allDocuments={allDocuments} fetchAllDocuments={fetchAllDocuments} handleDeleteDoc={handleDeleteDoc}
-                            registerForm={registerForm} setRegisterForm={setRegisterForm} handleRegister={handleRegister} handleGenerateUsernames={handleGenerateUsernames} usernameSuggestions={usernameSuggestions}
-                        />
-                    )}
+                    {view === 'dashboard' && <Dashboard
+                        currentUser={currentUser} myCourses={myCourses} documents={documents} navigateTo={navigateTo}
+                        upcomingAssignments={upcomingAssignments} ungradedSubmissions={ungradedSubmissions}
+                        pendingEvaluations={pendingEvaluations} // Skicka pending evals
+                        openEvaluationModal={setEvaluationModalCourse} // Funktion för att öppna modal
+                        setSelectedAssignment={setSelectedAssignment} fetchCourseDetails={fetchCourseDetails}
+                    />}
 
-                    {/* DASHBOARD */}
-                    {view === 'dashboard' && (
-                        <div className="animate-in fade-in">
-                            <h1 className="text-3xl font-bold text-gray-800 mb-6">Översikt</h1>
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                                <div className="bg-gradient-to-br from-indigo-600 to-violet-600 text-white rounded-2xl p-6 shadow-lg h-40 flex flex-col justify-between"><div><h1 className="text-2xl font-bold">Hej {currentUser.fullName?.split(' ')[0]}!</h1></div><p className="text-indigo-100 text-sm">Välkommen.</p></div>
-                                <div className="bg-white rounded-2xl p-6 shadow-sm border h-40 flex flex-col justify-between"><h3 className="text-gray-500 font-medium">Kurser</h3><h1 className="text-4xl font-bold text-gray-800">{myCourses.length}</h1></div>
-                                <div className="bg-white rounded-2xl p-6 shadow-sm border h-40 flex flex-col justify-between"><h3 className="text-gray-500 font-medium">Dokument</h3><h1 className="text-4xl font-bold text-gray-800">{documents.length}</h1></div>
-                            </div>
-                            <h2 className="text-xl font-bold text-gray-800 mb-4">Mina Kurser</h2>
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">{myCourses.map(c => (<div key={c.id} onClick={() => navigateTo('course-detail', c.id)} className="bg-white p-6 rounded-xl border hover:shadow-lg cursor-pointer transition-all"><span className="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs font-bold">{c.courseCode}</span><h3 className="text-lg font-bold mt-2">{c.name}</h3><p className="text-sm text-gray-500">{c.teacher?.fullName}</p></div>))}</div>
-                        </div>
-                    )}
+                    {view === 'catalog' && <CourseCatalog availableCourses={availableCourses} handleEnroll={handleEnroll} />}
+                    {view === 'calendar' && <CalendarView events={calendarEvents} navigateTo={navigateTo} />}
+                    {view === 'documents' && <DocumentManager documents={documents} handleDeleteDoc={handleDeleteDoc} currentUser={currentUser} token={token} API_BASE={API_BASE} fetchDocuments={fetchDocuments} showMessage={showMessage} setError={setError} />}
 
-                    {/* COURSES */}
-                    {view === 'courses' && (
-                        <div>
-                            <h1 className="text-3xl font-bold mb-6">Alla Kurser</h1>
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">{courses.map(c => (<div key={c.id} onClick={() => navigateTo('course-detail', c.id)} className="bg-white p-6 rounded-xl border hover:shadow-lg cursor-pointer transition-all"><h3 className="text-lg font-bold">{c.name}</h3><div className="text-sm text-gray-500">{c.courseCode}</div></div>))}</div>
-                        </div>
-                    )}
+                    {view === 'profile' && <UserProfile currentUser={currentUser} API_BASE={API_BASE} getAuthHeaders={getAuthHeaders} showMessage={showMessage} refreshUser={refreshUser} />}
 
-                    {/* DOCUMENTS */}
-                    {view === 'documents' && (
-                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                            <div className="bg-white p-6 rounded-xl border h-fit">
-                                <h3 className="font-bold mb-4">Ladda upp</h3>
-                                <form onSubmit={handleDocSubmit} className="space-y-4">
-                                    <input className="w-full px-4 py-2 border rounded-lg" value={docTitle} onChange={e => setDocTitle(e.target.value)} placeholder="Titel" required />
-                                    <select className="w-full px-4 py-2 border rounded-lg bg-white" value={docType} onChange={e => setDocType(e.target.value)}><option value="CV">CV</option><option value="BETYG">Betyg</option></select>
-                                    <input type="file" className="text-sm" onChange={e => setDocFile(e.target.files[0])} />
-                                    <button className="w-full py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">Spara</button>
-                                </form>
-                            </div>
-                            <div className="lg:col-span-2 space-y-4">
-                                {documents.map(doc => (<div key={doc.id} className="bg-white p-4 rounded-xl border flex justify-between items-center"><div className="flex items-center gap-4"><div className="p-3 bg-green-50 rounded-lg text-green-600"><File size={20}/></div><div><div className="font-bold">{doc.title}</div><div className="text-xs text-gray-500">{doc.type}</div></div></div><div className="flex gap-2">{doc.fileUrl && <a href={`http://127.0.0.1:8080${doc.fileUrl}`} target="_blank" className="p-2 text-indigo-600 hover:bg-indigo-50 rounded-full"><Download size={18}/></a>}<button onClick={() => handleDeleteDoc(doc.id)} className="p-2 text-red-400 hover:bg-red-50 rounded-full"><Trash2 size={18}/></button></div></div>))}
-                            </div>
-                        </div>
-                    )}
+                    {view === 'admin' && <AdminPanel adminTab={adminTab} setAdminTab={setAdminTab} users={users} currentUser={currentUser} handleAttemptDeleteUser={handleAttemptDeleteUser} courses={courses} setShowCourseModal={setShowCourseModal} handleDeleteCourse={handleDeleteCourse} allDocuments={allDocuments} fetchAllDocuments={fetchAllDocuments} handleDeleteDoc={handleDeleteDoc} registerForm={registerForm} setRegisterForm={setRegisterForm} handleRegister={handleRegister} handleGenerateUsernames={handleGenerateUsernames} usernameSuggestions={usernameSuggestions} checkUsernameAvailability={checkUsernameAvailability} />}
 
-                    {/* COURSE DETAIL - BRÖTS UT TILL EGEN KOMPONENT */}
-                    {view === 'course-detail' && currentCourse && (
-                        <CourseDetail
-                            currentCourse={currentCourse} activeTab={activeTab} setActiveTab={setActiveTab} selectedAssignment={selectedAssignment} setSelectedAssignment={setSelectedAssignment}
-                            currentUser={currentUser} materials={materials} assignments={assignments} submissions={submissions} grading={grading} setGrading={setGrading} readMaterials={readMaterials}
-                            setShowAssignmentModal={setShowAssignmentModal} handleMaterialSubmit={handleMaterialSubmit} handleStudentSubmit={handleStudentSubmit} handleGradeSubmission={handleGradeSubmission}
-                            handleDeleteMaterial={handleDeleteMaterial} toggleReadStatus={toggleReadStatus} getIcon={getIcon} getYoutubeEmbed={getYoutubeEmbed} getMySubmission={getMySubmission}
-                            matTitle={matTitle} setMatTitle={setMatTitle} matContent={matContent} setMatContent={setMatContent} matLink={matLink} setMatLink={setMatLink} matType={matType} setMatType={setMatType} setMatFile={setMatFile} setSubmissionFile={setSubmissionFile}
-                            navigateTo={navigateTo}
-                        />
-                    )}
+                    {view === 'course-detail' && currentCourse && <CourseDetail
+                        currentCourse={currentCourse}
+                        activeTab={activeTab} setActiveTab={setActiveTab}
+                        selectedAssignment={selectedAssignment} setSelectedAssignment={setSelectedAssignment}
+                        currentUser={currentUser} materials={materials} assignments={assignments}
+                        submissions={submissions} grading={grading} setGrading={setGrading}
+                        readMaterials={readMaterials} setShowAssignmentModal={setShowAssignmentModal}
+                        handleMaterialSubmit={handleMaterialSubmit} handleStudentSubmit={handleStudentSubmit}
+                        handleGradeSubmission={handleGradeSubmission} handleDeleteMaterial={handleDeleteMaterial}
+                        toggleReadStatus={toggleReadStatus} getIcon={getIcon} getYoutubeEmbed={getYoutubeEmbed}
+                        getMySubmission={getMySubmission} matTitle={matTitle} setMatTitle={setMatTitle}
+                        matContent={matContent} setMatContent={setMatContent} matLink={matLink}
+                        setMatLink={setMatLink} matType={matType} setMatType={setMatType}
+                        setMatFile={setMatFile} setSubmissionFile={setSubmissionFile} navigateTo={navigateTo}
+                        users={users} handleAddStudentToCourse={handleAddStudentToCourse}
+                        // NY PROP:
+                        handleCreateEvaluation={handleCreateEvaluation}
+                    />}
                 </div>
             </main>
         </div>

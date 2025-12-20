@@ -39,10 +39,12 @@ public class CourseController {
             return ResponseEntity.ok(dto);
         } catch (Exception e) {
             System.out.println("--- FEL VID HÄMTNING AV KURS: " + e.getMessage() + " ---");
-            e.printStackTrace(); // Visa felet i konsolen!
+            e.printStackTrace();
             return ResponseEntity.notFound().build();
         }
     }
+
+    // --- MATERIALHANTERING ---
 
     @PostMapping(value = "/{id}/materials", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<CourseMaterial> addMaterial(
@@ -54,6 +56,8 @@ public class CourseController {
             @RequestParam(value = "file", required = false) MultipartFile file
     ) {
         try {
+            // Här var felet tidigare: ordningen på argumenten eller antalet
+            // Nu matchar vi CourseService.addMaterial(Long courseId, String title, String content, String link, String type, MultipartFile file)
             return ResponseEntity.ok(courseService.addMaterial(id, title, content, link, type, file));
         } catch (Exception e) {
             e.printStackTrace();
@@ -75,6 +79,8 @@ public class CourseController {
             return ResponseEntity.badRequest().build();
         }
     }
+
+    // --- KURSHANTERING & REGISTRERING ---
 
     @PostMapping
     public ResponseEntity<CourseDTO> createCourse(@RequestBody CreateCourseDTO createCourseDTO, @RequestParam Long teacherId) {
@@ -101,6 +107,20 @@ public class CourseController {
     @GetMapping("/user/{userId}")
     public List<Course> getCoursesForUser(@PathVariable Long userId) {
         return courseService.getCoursesForUser(userId);
+    }
+
+    // --- NY ENDPOINT: Hämta tillgängliga kurser (Kurskatalog) ---
+    // Returnerar alla kurser som studenten INTE redan går
+    @GetMapping("/available/{studentId}")
+    public ResponseEntity<List<CourseDTO>> getAvailableCourses(@PathVariable Long studentId) {
+        try {
+            // Kontrollera att denna metod finns i CourseService!
+            // Om den saknas i din version av CourseService, måste den läggas till där först.
+            // Jag utgår från att den lades till i föregående steg.
+            return ResponseEntity.ok(courseService.getAvailableCoursesForStudent(studentId));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @DeleteMapping("/{id}")

@@ -26,30 +26,31 @@ public class User {
     @Column(nullable = false)
     private String password;
 
-    // --- NYA FÄLT ---
     @Column(nullable = false)
     private String firstName;
 
     @Column(nullable = false)
     private String lastName;
 
-    // Vi behåller fullName för enkelhetens skull, men den kan sättas automatiskt
     private String fullName;
 
     @Column(nullable = false, unique = true)
-    private String ssn; // Personnummer (YYYYMMDD-XXXX)
+    private String ssn;
 
     private String address;
     private String phone;
 
-    @Column(nullable = false) // Unik email är ofta bra praxis
+    @Column(nullable = false)
     private String email;
+
+    // NYTT FÄLT: Profilbild
+    private String profilePictureUrl;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;
 
-    // --- RELATIONER (Cascade för städning) ---
+    // --- RELATIONER ---
 
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
@@ -63,7 +64,6 @@ public class User {
     @JsonIgnore
     private List<Course> coursesCreated = new ArrayList<>();
 
-    // Hjälpmetod för att sätta fullständigt namn innan vi sparar
     @PrePersist
     @PreUpdate
     public void updateFullName() {
