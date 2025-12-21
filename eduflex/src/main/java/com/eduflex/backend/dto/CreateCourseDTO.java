@@ -6,5 +6,6 @@ public record CreateCourseDTO(
         String name,
         String courseCode,
         String description,
-        LocalDate startDate
+        LocalDate startDate,
+        LocalDate endDate // Nytt
 ) {}

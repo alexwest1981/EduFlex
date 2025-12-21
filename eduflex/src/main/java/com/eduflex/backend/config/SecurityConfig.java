@@ -61,11 +61,16 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/users/register").permitAll()
 
-                        // NYTT: Tillåt generering av användarnamn utan inloggning
+                        // Tillåt generering av användarnamn utan inloggning
                         .requestMatchers("/api/users/generate-usernames").permitAll()
+
+                        // NYTT: Tillåt licenskontroll och aktivering utan inloggning (VIKTIGT!)
+                        .requestMatchers("/api/system/license/**").permitAll()
 
                         .requestMatchers("/uploads/**").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
+
+                        .requestMatchers("/ws/**").permitAll() // TILLÅT WEBSOCKET
 
                         // Allt annat kräver inloggning
                         .anyRequest().authenticated()

@@ -16,6 +16,11 @@ import java.util.List;
 @AllArgsConstructor
 public class User {
 
+    // --- VIKTIGT: Denna Enum måste finnas HÄR ---
+    public enum Role {
+        ADMIN, TEACHER, STUDENT
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -43,7 +48,6 @@ public class User {
     @Column(nullable = false)
     private String email;
 
-    // NYTT FÄLT: Profilbild
     private String profilePictureUrl;
 
     @Enumerated(EnumType.STRING)
@@ -69,4 +73,7 @@ public class User {
     public void updateFullName() {
         this.fullName = this.firstName + " " + this.lastName;
     }
+
+    // Explicit getter behövs ibland även med Lombok om andra klasser refererar statiskt
+    public Role getRole() { return role; }
 }
