@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://upload.wikimedia.org/wikipedia/commons/4/4f/Octicons-mark-github.svg" width="80" alt="Fenrir Studio Logo" />
+  <img src="docs/images/fenrir.png" width="80" alt="Fenrir Studio Logo" />
 </p>
 
 <h1 align="center">🎓 EduFlex LMS</h1>
@@ -173,7 +173,7 @@ Alla rättigheter förbehållna.
 ---
 
 <p align="center">
-  <img src="https://upload.wikimedia.org/wikipedia/commons/4/4f/Octicons-mark-github.svg" width="40" alt="Fenrir Studio Icon" /><br/>
+  <img src="docs/images/fenrir.png" width="80" alt="Fenrir Studio Logo" /><br/>
   Made with ❤️ by <strong>Fenrir Studio</strong><br/>
   <sub>Where innovation meets precision.</sub>
 </p>
