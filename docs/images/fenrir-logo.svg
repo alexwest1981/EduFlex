@@ -1,0 +1,15 @@
+<svg width="160" height="160" viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+    <!-- Bakgrund transparent för GitHub -->
+    <g stroke="#111111" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" fill="none">
+        <!-- Romb (diamant) -->
+        <path d="M80 20 L120 60 L80 100 L40 60 Z" />
+        <!-- Vertikal stam genom romben och nedåt -->
+        <path d="M80 20 L80 140" />
+        <!-- Två sneda ben nedåt (som på din referens) -->
+        <path d="M80 100 L55 145" />
+        <path d="M80 100 L105 145" />
+        <!-- Två korta parallella tvärstreck upptill på stammen -->
+        <path d="M80 35 L105 35" />
+        <path d="M80 45 L105 45" />
+    </g>
+</svg>
