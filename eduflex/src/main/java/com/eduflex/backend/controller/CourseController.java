@@ -3,6 +3,7 @@ package com.eduflex.backend.controller;
 import com.eduflex.backend.dto.CourseDTO;
 import com.eduflex.backend.dto.CreateCourseDTO;
 import com.eduflex.backend.model.Course;
+import com.eduflex.backend.model.CourseEvaluation;
 import com.eduflex.backend.model.CourseMaterial;
 import com.eduflex.backend.service.CourseService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/courses")
@@ -32,14 +34,10 @@ public class CourseController {
 
     @GetMapping("/{id}")
     public ResponseEntity<CourseDTO> getCourse(@PathVariable Long id) {
-        System.out.println("--- HÄMTAR KURS ID: " + id + " ---");
         try {
             CourseDTO dto = courseService.getCourseDTOById(id);
-            System.out.println("--- KURS HITTAD, SKICKAR DTO ---");
             return ResponseEntity.ok(dto);
         } catch (Exception e) {
-            System.out.println("--- FEL VID HÄMTNING AV KURS: " + e.getMessage() + " ---");
-            e.printStackTrace();
             return ResponseEntity.notFound().build();
         }
     }
@@ -56,8 +54,6 @@ public class CourseController {
             @RequestParam(value = "file", required = false) MultipartFile file
     ) {
         try {
-            // Här var felet tidigare: ordningen på argumenten eller antalet
-            // Nu matchar vi CourseService.addMaterial(Long courseId, String title, String content, String link, String type, MultipartFile file)
             return ResponseEntity.ok(courseService.addMaterial(id, title, content, link, type, file));
         } catch (Exception e) {
             e.printStackTrace();
@@ -85,11 +81,9 @@ public class CourseController {
     @PostMapping
     public ResponseEntity<CourseDTO> createCourse(@RequestBody CreateCourseDTO createCourseDTO, @RequestParam Long teacherId) {
         try {
-            System.out.println("--- SKAPAR KURS: " + createCourseDTO.name() + " ---");
             Course newCourse = courseService.createCourse(createCourseDTO, teacherId);
             return ResponseEntity.ok(courseService.getCourseDTOById(newCourse.getId()));
         } catch (Exception e) {
-            e.printStackTrace();
             return ResponseEntity.badRequest().build();
         }
     }
@@ -109,14 +103,9 @@ public class CourseController {
         return courseService.getCoursesForUser(userId);
     }
 
-    // --- NY ENDPOINT: Hämta tillgängliga kurser (Kurskatalog) ---
-    // Returnerar alla kurser som studenten INTE redan går
     @GetMapping("/available/{studentId}")
     public ResponseEntity<List<CourseDTO>> getAvailableCourses(@PathVariable Long studentId) {
         try {
-            // Kontrollera att denna metod finns i CourseService!
-            // Om den saknas i din version av CourseService, måste den läggas till där först.
-            // Jag utgår från att den lades till i föregående steg.
             return ResponseEntity.ok(courseService.getAvailableCoursesForStudent(studentId));
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
@@ -131,5 +120,36 @@ public class CourseController {
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
+    }
+
+    // --- STATUS & UTVÄRDERING ---
+
+    @PutMapping("/{id}/toggle-status")
+    public ResponseEntity<Course> toggleCourseStatus(@PathVariable Long id) {
+        try {
+            Course course = courseService.getCourseById(id);
+            course.setOpen(!course.isOpen());
+            return ResponseEntity.ok(courseService.saveCourse(course));
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    // Denna saknades i din version!
+    @PostMapping("/{id}/evaluation")
+    public ResponseEntity<CourseEvaluation> createEvaluation(
+            @PathVariable Long id,
+            @RequestBody CourseEvaluation evaluation) {
+        try {
+            return ResponseEntity.ok(courseService.createEvaluation(id, evaluation));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @PostMapping("/{id}/evaluation/submit")
+    public ResponseEntity<Void> submitEvaluation(@PathVariable Long id, @RequestBody Map<String, Object> answers) {
+        System.out.println("Mottog utvärderingssvar för kurs " + id + ": " + answers);
+        return ResponseEntity.ok().build();
     }
 }

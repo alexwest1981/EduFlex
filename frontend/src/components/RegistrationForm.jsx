@@ -136,6 +136,7 @@ const RegistrationForm = ({
                         onChange={e => setRegisterForm(prev => ({...prev, role: e.target.value}))}
                     >
                         <option value="STUDENT">Student</option>
+                        <option value="ADMIN">Administratör</option>
                         {/* Visa alltid ADMIN/LÄRARE om vi är i Admin-panelen */}
                         {isAdminContext && <option value="TEACHER">Lärare</option>}
                         {isAdminContext && <option value="ADMIN">Administratör</option>}

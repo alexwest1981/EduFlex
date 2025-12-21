@@ -3,14 +3,15 @@ package com.eduflex.backend.controller;
 import com.eduflex.backend.dto.AssignmentDTO;
 import com.eduflex.backend.dto.SubmissionDTO;
 import com.eduflex.backend.model.Assignment;
+import com.eduflex.backend.model.Notification;
 import com.eduflex.backend.model.Submission;
+import com.eduflex.backend.repository.NotificationRepository;
 import com.eduflex.backend.service.AssignmentService;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -19,9 +20,12 @@ import java.util.List;
 public class AssignmentController {
 
     private final AssignmentService assignmentService;
+    // NYTT: Behövs för att skapa notiser
+    private final NotificationRepository notificationRepository;
 
-    public AssignmentController(AssignmentService assignmentService) {
+    public AssignmentController(AssignmentService assignmentService, NotificationRepository notificationRepository) {
         this.assignmentService = assignmentService;
+        this.notificationRepository = notificationRepository;
     }
 
     // --- ASSIGNMENTS ---
@@ -30,7 +34,6 @@ public class AssignmentController {
     public ResponseEntity<Assignment> createAssignment(
             @PathVariable Long courseId,
             @RequestBody AssignmentDTO dto) {
-        // Notera: DTO:n skickar datum som sträng i JSON, men Jackson konverterar till LocalDateTime om formatet är rätt
         return ResponseEntity.ok(assignmentService.createAssignment(courseId, dto.title(), dto.description(), dto.dueDate()));
     }
 
@@ -46,7 +49,26 @@ public class AssignmentController {
             @PathVariable Long assignmentId,
             @PathVariable Long studentId,
             @RequestParam("file") MultipartFile file) {
-        return ResponseEntity.ok(assignmentService.submitAssignment(assignmentId, studentId, file));
+
+        Submission submission = assignmentService.submitAssignment(assignmentId, studentId, file);
+
+        // --- NOTIFIERING (Till Läraren) ---
+        try {
+            Assignment assignment = submission.getAssignment();
+            // Vi antar att Assignment -> Course -> Teacher relationen finns och är laddad
+            Long teacherId = assignment.getCourse().getTeacher().getId();
+
+            Notification n = new Notification();
+            n.setUserId(teacherId);
+            n.setMessage("Ny inlämning: " + submission.getStudent().getFullName() + " i " + assignment.getTitle());
+            n.setType("INFO");
+            notificationRepository.save(n);
+        } catch (Exception e) {
+            System.err.println("Kunde inte skapa inlämningsnotis: " + e.getMessage());
+        }
+        // ----------------------------------
+
+        return ResponseEntity.ok(submission);
     }
 
     @GetMapping("/assignments/{assignmentId}/submissions")
@@ -59,6 +81,21 @@ public class AssignmentController {
             @PathVariable Long id,
             @RequestParam String grade,
             @RequestParam(required = false) String feedback) {
-        return ResponseEntity.ok(assignmentService.gradeSubmission(id, grade, feedback));
+
+        Submission submission = assignmentService.gradeSubmission(id, grade, feedback);
+
+        // --- NOTIFIERING (Till Eleven) ---
+        try {
+            Notification n = new Notification();
+            n.setUserId(submission.getStudent().getId());
+            n.setMessage("Betyg satt: " + grade + " på uppgiften " + submission.getAssignment().getTitle());
+            n.setType("SUCCESS");
+            notificationRepository.save(n);
+        } catch (Exception e) {
+            System.err.println("Kunde inte skapa betygsnotis: " + e.getMessage());
+        }
+        // --------------------------------
+
+        return ResponseEntity.ok(submission);
     }
 }

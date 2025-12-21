@@ -1,5 +1,6 @@
 package com.eduflex.backend.dto;
 
+import com.eduflex.backend.model.CourseEvaluation;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -9,6 +10,9 @@ public record CourseDTO(
         String courseCode,
         String description,
         LocalDate startDate,
-        UserSummaryDTO teacher,      // Vi använder vår säkra DTO här
-        List<UserSummaryDTO> students // Och en lista av säkra DTOer här
+        LocalDate endDate, // Nytt
+        UserSummaryDTO teacher,
+        List<UserSummaryDTO> students,
+        boolean isOpen,
+        CourseEvaluation evaluation
 ) {}

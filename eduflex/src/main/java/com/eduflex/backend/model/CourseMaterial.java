@@ -13,27 +13,28 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CourseMaterial {
 
+    // --- VIKTIGT: Enum definition ---
+    public enum MaterialType {
+        TEXT, VIDEO, FILE, LINK
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
     private String title;
 
-    // ÄNDRAT: Vi döper om till 'content' och tillåter mycket text (HTML/Markdown/Långa beskrivningar)
-    @Column(length = 10000)
+    @Column(length = 5000)
     private String content;
 
-    private String link; // För externa länkar (YouTube etc)
-    private String type; // "VIDEO", "LINK", "FILE", "TEXT"
-
-    // NYTT: Filer
-    private String fileName;
+    private String link;
     private String fileUrl;
-    private String fileType;
+
+    @Enumerated(EnumType.STRING)
+    private MaterialType type;
 
     @ManyToOne
-    @JoinColumn(name = "course_id", nullable = false)
+    @JoinColumn(name = "course_id")
     @JsonIgnore
     private Course course;
 }

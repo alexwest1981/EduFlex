@@ -1,6 +1,5 @@
 package com.eduflex.backend.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -28,14 +27,21 @@ public class Course {
     @Column(nullable = false, unique = true)
     private String courseCode;
 
-    @Column(length = 1000)
+    // VIKTIGT: Öka längden till 10000 tecken för att rymma HTML-kod, bilder(base64) etc.
+    @Column(length = 10000)
     private String description;
 
     private LocalDate startDate;
 
+    // NYTT FÄLT
+    private LocalDate endDate;
+
+    @Column(nullable = false)
+    private boolean isOpen = true;
+
     @ManyToOne
-    @JoinColumn(name = "teacher_id", nullable = false)
-    @JsonIgnoreProperties({"coursesCreated", "password", "submissions", "documents"})
+    @JoinColumn(name = "teacher_id")
+    @JsonIgnoreProperties({"password", "roles", "courses", "files"})
     private User teacher;
 
     @ManyToMany
@@ -44,18 +50,17 @@ public class Course {
             joinColumns = @JoinColumn(name = "course_id"),
             inverseJoinColumns = @JoinColumn(name = "student_id")
     )
-    @JsonIgnoreProperties({"coursesCreated", "password", "submissions", "documents"})
+    @JsonIgnoreProperties({"password", "roles", "courses", "files"})
     private List<User> students = new ArrayList<>();
 
-    // --- NYTT: Cascade-regler ---
-
-    // Om kurs raderas -> Ta bort alla uppgifter (Assignments)
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
+    @JsonIgnoreProperties("course")
+    private List<CourseMaterial> materials = new ArrayList<>();
+
+    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnoreProperties("course")
     private List<Assignment> assignments = new ArrayList<>();
 
-    // Om kurs raderas -> Ta bort allt material
-    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
-    private List<CourseMaterial> materials = new ArrayList<>();
+    @OneToOne(mappedBy = "course", cascade = CascadeType.ALL)
+    private CourseEvaluation evaluation;
 }

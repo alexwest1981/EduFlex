@@ -3,25 +3,18 @@ package com.eduflex.backend.service;
 import com.eduflex.backend.dto.CourseDTO;
 import com.eduflex.backend.dto.CreateCourseDTO;
 import com.eduflex.backend.dto.UserSummaryDTO;
-import com.eduflex.backend.model.Course;
-import com.eduflex.backend.model.CourseMaterial;
-import com.eduflex.backend.model.User;
+import com.eduflex.backend.model.*;
 import com.eduflex.backend.repository.CourseMaterialRepository;
 import com.eduflex.backend.repository.CourseRepository;
 import com.eduflex.backend.repository.UserRepository;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -32,110 +25,88 @@ public class CourseService {
     private final CourseRepository courseRepository;
     private final UserRepository userRepository;
     private final CourseMaterialRepository materialRepository;
-    private final Path fileStorageLocation;
 
-    @PersistenceContext
-    private EntityManager entityManager;
+    @Value("${file.upload-dir}")
+    private String uploadDir;
 
-    @Autowired
     public CourseService(CourseRepository courseRepository, UserRepository userRepository, CourseMaterialRepository materialRepository) {
         this.courseRepository = courseRepository;
         this.userRepository = userRepository;
         this.materialRepository = materialRepository;
-
-        // Skapa mapp för kursmaterial om den inte finns
-        this.fileStorageLocation = Paths.get("uploads/materials").toAbsolutePath().normalize();
-        try {
-            Files.createDirectories(this.fileStorageLocation);
-        } catch (Exception ex) {
-            throw new RuntimeException("Kunde inte skapa mapp för kursmaterial.", ex);
-        }
     }
 
     public List<CourseDTO> getAllCourseDTOs() {
-        return courseRepository.findAll().stream()
-                .map(this::mapToDTO)
-                .collect(Collectors.toList());
+        return courseRepository.findAll().stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 
     public CourseDTO getCourseDTOById(Long id) {
-        Course course = courseRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Kurs inte hittad"));
-        return mapToDTO(course);
+        Course course = courseRepository.findById(id).orElseThrow(() -> new RuntimeException("Kurs ej funnen"));
+        return convertToDTO(course);
     }
 
     public Course getCourseById(Long id) {
-        return courseRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Kurs inte hittad"));
+        return courseRepository.findById(id).orElseThrow(() -> new RuntimeException("Kurs ej funnen"));
     }
 
     public Course createCourse(CreateCourseDTO dto, Long teacherId) {
-        User teacher = userRepository.findById(teacherId)
-                .orElseThrow(() -> new RuntimeException("Lärare hittades inte"));
-
+        User teacher = userRepository.findById(teacherId).orElseThrow(() -> new RuntimeException("Lärare ej funnen"));
         Course course = new Course();
         course.setName(dto.name());
         course.setCourseCode(dto.courseCode());
         course.setDescription(dto.description());
         course.setStartDate(dto.startDate());
+        course.setEndDate(dto.endDate()); // SPARA SLUTDATUM
         course.setTeacher(teacher);
-
         return courseRepository.save(course);
     }
 
-    @Transactional
+    public Course saveCourse(Course course) {
+        return courseRepository.save(course);
+    }
+
     public void addStudentToCourse(Long courseId, Long studentId) {
         Course course = getCourseById(courseId);
-        User student = userRepository.findById(studentId)
-                .orElseThrow(() -> new RuntimeException("Student hittades inte"));
-        course.getStudents().add(student);
-        courseRepository.save(course);
+        User student = userRepository.findById(studentId).orElseThrow(() -> new RuntimeException("Student ej funnen"));
+        if (!course.getStudents().contains(student)) {
+            course.getStudents().add(student);
+            courseRepository.save(course);
+        }
     }
 
     public List<Course> getCoursesForUser(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("Användare hittades inte"));
-        switch (user.getRole()) {
-            case TEACHER: return courseRepository.findByTeacherId(userId);
-            case STUDENT: return courseRepository.findByStudents_Id(userId);
-            case ADMIN: return courseRepository.findAll();
-            default: return List.of();
+        User user = userRepository.findById(userId).orElseThrow();
+        if (user.getRole() == User.Role.TEACHER) {
+            return courseRepository.findAll().stream().filter(c -> c.getTeacher().getId().equals(userId)).toList();
+        } else {
+            return courseRepository.findAll().stream().filter(c -> c.getStudents().contains(user)).toList();
         }
     }
 
     public List<CourseDTO> getAvailableCoursesForStudent(Long studentId) {
-        List<Course> allCourses = courseRepository.findAll();
-        return allCourses.stream()
-                .filter(course -> course.getStudents().stream()
-                        .noneMatch(student -> student.getId().equals(studentId)))
-                .map(this::mapToDTO)
+        User student = userRepository.findById(studentId).orElseThrow();
+        return courseRepository.findAll().stream()
+                .filter(c -> !c.getStudents().contains(student))
+                .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
 
-    // --- MATERIALHANTERING (Här är metoden som saknades) ---
-
-    public CourseMaterial addMaterial(Long courseId, String title, String content, String link, String type, MultipartFile file) {
+    public CourseMaterial addMaterial(Long courseId, String title, String content, String link, String type, MultipartFile file) throws IOException {
         Course course = getCourseById(courseId);
         CourseMaterial material = new CourseMaterial();
         material.setTitle(title);
         material.setContent(content);
         material.setLink(link);
-        material.setType(type);
+        material.setType(CourseMaterial.MaterialType.valueOf(type));
         material.setCourse(course);
 
         if (file != null && !file.isEmpty()) {
-            String originalName = StringUtils.cleanPath(file.getOriginalFilename());
-            String fileName = UUID.randomUUID().toString() + "_" + originalName;
-            try {
-                Path target = this.fileStorageLocation.resolve(fileName);
-                Files.copy(file.getInputStream(), target, StandardCopyOption.REPLACE_EXISTING);
-                material.setFileName(originalName);
-                material.setFileType(file.getContentType());
-                material.setFileUrl("/uploads/materials/" + fileName);
-            } catch (IOException ex) {
-                throw new RuntimeException("Kunde inte spara fil", ex);
-            }
+            String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
+            Path path = Paths.get(uploadDir + "/" + fileName);
+            Files.createDirectories(path.getParent());
+            Files.write(path, file.getBytes());
+            material.setFileUrl("/uploads/" + fileName);
         }
+
         return materialRepository.save(material);
     }
 
@@ -147,59 +118,45 @@ public class CourseService {
         materialRepository.deleteById(id);
     }
 
-    // --- SLUT PÅ MATERIALHANTERING ---
-
-    @Transactional
     public void deleteCourse(Long id) {
-        try {
-            Course course = getCourseById(id);
-            course.getStudents().clear();
-            courseRepository.save(course);
-            courseRepository.deleteById(id);
-        } catch (Exception e) {
-            System.err.println("Kunde inte radera kurs via JPA (" + e.getMessage() + "). Försöker tvinga bort den via SQL...");
-            forceDeleteCourse(id);
+        courseRepository.deleteById(id);
+    }
+
+    public CourseEvaluation createEvaluation(Long courseId, CourseEvaluation evaluation) {
+        Course course = getCourseById(courseId);
+        evaluation.setCourse(course);
+        course.setEvaluation(evaluation);
+        courseRepository.save(course);
+        return evaluation;
+    }
+
+    // Helper för DTO konvertering
+    private CourseDTO convertToDTO(Course c) {
+        UserSummaryDTO teacherDTO = null;
+        if (c.getTeacher() != null) {
+            teacherDTO = new UserSummaryDTO(
+                    c.getTeacher().getId(),
+                    c.getTeacher().getFullName(),
+                    c.getTeacher().getUsername(),
+                    c.getTeacher().getRole().name()
+            );
         }
-    }
 
-    private void forceDeleteCourse(Long courseId) {
-        entityManager.createNativeQuery("DELETE FROM course_students WHERE course_id = :id")
-                .setParameter("id", courseId)
-                .executeUpdate();
-        entityManager.createNativeQuery("DELETE FROM course_materials WHERE course_id = :id")
-                .setParameter("id", courseId)
-                .executeUpdate();
-        entityManager.createNativeQuery("DELETE FROM submissions WHERE assignment_id IN (SELECT id FROM assignments WHERE course_id = :id)")
-                .setParameter("id", courseId)
-                .executeUpdate();
-        entityManager.createNativeQuery("DELETE FROM assignments WHERE course_id = :id")
-                .setParameter("id", courseId)
-                .executeUpdate();
-        entityManager.createNativeQuery("DELETE FROM courses WHERE id = :id")
-                .setParameter("id", courseId)
-                .executeUpdate();
-    }
-
-    private CourseDTO mapToDTO(Course course) {
-        UserSummaryDTO teacherDTO = new UserSummaryDTO(
-                course.getTeacher().getId(),
-                course.getTeacher().getFullName(),
-                course.getTeacher().getUsername(),
-                course.getTeacher().getRole().name()
-        );
-
-        List<UserSummaryDTO> studentDTOs = course.getStudents().stream()
+        List<UserSummaryDTO> studentDTOs = c.getStudents().stream()
                 .map(s -> new UserSummaryDTO(s.getId(), s.getFullName(), s.getUsername(), s.getRole().name()))
                 .collect(Collectors.toList());
 
         return new CourseDTO(
-                course.getId(),
-                course.getName(),
-                course.getCourseCode(),
-                course.getDescription(),
-                course.getStartDate(),
+                c.getId(),
+                c.getName(),
+                c.getCourseCode(),
+                c.getDescription(),
+                c.getStartDate(),
+                c.getEndDate(), // SKICKA MED SLUTDATUM
                 teacherDTO,
-                studentDTOs
+                studentDTOs,
+                c.isOpen(),
+                c.getEvaluation()
         );
     }
 }
