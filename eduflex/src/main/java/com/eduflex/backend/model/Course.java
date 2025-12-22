@@ -1,47 +1,33 @@
 package com.eduflex.backend.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "courses")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class Course {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
     private String name;
-
-    @Column(nullable = false, unique = true)
     private String courseCode;
 
-    // VIKTIGT: Öka längden till 10000 tecken för att rymma HTML-kod, bilder(base64) etc.
-    @Column(length = 10000)
+    @Column(length = 1000)
     private String description;
 
-    private LocalDate startDate;
+    private String startDate;
+    private String endDate;
 
-    // NYTT FÄLT
-    private LocalDate endDate;
+    // NYTT FÄLT FÖR FÄRG
+    private String color;
 
-    @Column(nullable = false)
     private boolean isOpen = true;
 
     @ManyToOne
     @JoinColumn(name = "teacher_id")
-    @JsonIgnoreProperties({"password", "roles", "courses", "files"})
     private User teacher;
 
     @ManyToMany
@@ -50,17 +36,43 @@ public class Course {
             joinColumns = @JoinColumn(name = "course_id"),
             inverseJoinColumns = @JoinColumn(name = "student_id")
     )
-    @JsonIgnoreProperties({"password", "roles", "courses", "files"})
-    private List<User> students = new ArrayList<>();
-
-    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnoreProperties("course")
-    private List<CourseMaterial> materials = new ArrayList<>();
-
-    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnoreProperties("course")
-    private List<Assignment> assignments = new ArrayList<>();
+    private Set<User> students = new HashSet<>();
 
     @OneToOne(mappedBy = "course", cascade = CascadeType.ALL)
     private CourseEvaluation evaluation;
+
+    // --- GETTERS & SETTERS ---
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+
+    public String getCourseCode() { return courseCode; }
+    public void setCourseCode(String courseCode) { this.courseCode = courseCode; }
+
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
+
+    public String getStartDate() { return startDate; }
+    public void setStartDate(String startDate) { this.startDate = startDate; }
+
+    public String getEndDate() { return endDate; }
+    public void setEndDate(String endDate) { this.endDate = endDate; }
+
+    // NYA GETTERS/SETTERS FÖR FÄRG
+    public String getColor() { return color; }
+    public void setColor(String color) { this.color = color; }
+
+    public boolean isOpen() { return isOpen; }
+    public void setOpen(boolean open) { isOpen = open; }
+
+    public User getTeacher() { return teacher; }
+    public void setTeacher(User teacher) { this.teacher = teacher; }
+
+    public Set<User> getStudents() { return students; }
+    public void setStudents(Set<User> students) { this.students = students; }
+
+    public CourseEvaluation getEvaluation() { return evaluation; }
+    public void setEvaluation(CourseEvaluation evaluation) { this.evaluation = evaluation; }
 }

@@ -17,7 +17,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/courses")
-@CrossOrigin(origins = "*")
+// @CrossOrigin(origins = "*") <--- BORTTAGEN: Orsakar konflikt med SecurityConfig
 public class CourseController {
 
     private final CourseService courseService;
@@ -39,6 +39,18 @@ public class CourseController {
             return ResponseEntity.ok(dto);
         } catch (Exception e) {
             return ResponseEntity.notFound().build();
+        }
+    }
+
+    // --- NY METOD: UPPDATERA KURS (Löser ditt problem) ---
+    @PutMapping("/{id}")
+    public ResponseEntity<CourseDTO> updateCourse(@PathVariable Long id, @RequestBody CourseDTO courseDTO) {
+        try {
+            // Anropar servicen för att spara ändringarna
+            CourseDTO updatedCourse = courseService.updateCourse(id, courseDTO);
+            return ResponseEntity.ok(updatedCourse);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
         }
     }
 
@@ -135,7 +147,6 @@ public class CourseController {
         }
     }
 
-    // Denna saknades i din version!
     @PostMapping("/{id}/evaluation")
     public ResponseEntity<CourseEvaluation> createEvaluation(
             @PathVariable Long id,
