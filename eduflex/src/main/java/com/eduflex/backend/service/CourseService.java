@@ -48,14 +48,37 @@ public class CourseService {
         return courseRepository.findById(id).orElseThrow(() -> new RuntimeException("Kurs ej funnen"));
     }
 
+    // --- METOD: UPPDATERA KURS ---
+    public CourseDTO updateCourse(Long id, CourseDTO courseDTO) {
+        Course course = getCourseById(id);
+
+        if (courseDTO.name() != null) course.setName(courseDTO.name());
+        if (courseDTO.courseCode() != null) course.setCourseCode(courseDTO.courseCode());
+        if (courseDTO.description() != null) course.setDescription(courseDTO.description());
+
+        // FIX: Konvertera LocalDate till String med .toString()
+        if (courseDTO.startDate() != null) course.setStartDate(courseDTO.startDate().toString());
+        if (courseDTO.endDate() != null) course.setEndDate(courseDTO.endDate().toString());
+
+        // Uppdatera färg om den finns
+        if (courseDTO.color() != null) course.setColor(courseDTO.color());
+
+        Course updatedCourse = courseRepository.save(course);
+        return convertToDTO(updatedCourse);
+    }
+
     public Course createCourse(CreateCourseDTO dto, Long teacherId) {
         User teacher = userRepository.findById(teacherId).orElseThrow(() -> new RuntimeException("Lärare ej funnen"));
         Course course = new Course();
         course.setName(dto.name());
         course.setCourseCode(dto.courseCode());
         course.setDescription(dto.description());
-        course.setStartDate(dto.startDate());
-        course.setEndDate(dto.endDate()); // SPARA SLUTDATUM
+
+        // FIX: Konvertera LocalDate till String här också
+        if (dto.startDate() != null) course.setStartDate(dto.startDate().toString());
+        if (dto.endDate() != null) course.setEndDate(dto.endDate().toString());
+
+        course.setColor("bg-indigo-600"); // Default-färg
         course.setTeacher(teacher);
         return courseRepository.save(course);
     }
@@ -152,7 +175,8 @@ public class CourseService {
                 c.getCourseCode(),
                 c.getDescription(),
                 c.getStartDate(),
-                c.getEndDate(), // SKICKA MED SLUTDATUM
+                c.getEndDate(),
+                c.getColor(),
                 teacherDTO,
                 studentDTOs,
                 c.isOpen(),
