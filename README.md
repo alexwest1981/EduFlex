@@ -24,6 +24,28 @@
 **EduFlex** är ett avancerat, rollbaserat **Learning Management System (LMS)** med fokus på **säkerhet, realtidskommunikation och automatisk administration**.  
 Systemet stödjer nu licenshantering, närvarospårning och chattfunktion i realtid — vilket gör det ännu mer komplett för både **utbildningsinstitut och företag**.
 
+## 📸 Skärmdumpar
+
+### 🎯 Dashboard (Studentvy)
+![EduFlex Dashboard - Student Overview](docs/images/dashboard-student.png)  
+*Personlig översikt med widgets för kurser, deadlines, notifieringar och chatt-badge.*
+
+### 👤 Profilhantering
+![EduFlex Profile Management](docs/images/profile-management.png)  
+*Avatar-uppladdning, personuppgifter, adress och lösenordsändring med förhandsgranskning.*
+
+### 🔑 Licenshantering
+![EduFlex License Lock](docs/images/license.png)  
+*Licensstatus-indikator med validering, aktiveringsknapp och begränsad åtkomst-varning.*
+
+### 💬 Realtidschatt
+![EduFlex Chat Overlay](docs/images/chat-overlay.png)  
+*Chat-fönster med historik, användarlista, bildstöd och olästa meddelanden.*
+
+### 📊 Närvaro & Bedömning
+![EduFlex Attendance & Assessment](docs/images/attendance-assessment.png)  
+*Visuell närvaroöversikt kombinerad med betygs- och inlämningsstatus.*
+
 ---
 
 ## 🚀 Nya Funktioner (v2.0)
@@ -69,8 +91,82 @@ Systemet stödjer nu licenshantering, närvarospårning och chattfunktion i real
 - **Säkerhet:** Spring Security + JWT + WS-auth  
 - **Databas:** MySQL / H2 (dev)  
 - **Kommunikation:** REST API + WebSockets  
-- **Moduler:** User, Course, Material, License, Attendance, Chat, Notifications  
+- **Moduler:** User, Course, Material, License, Attendance, Chat, Notifications
 
+🧩 Systemarkitektur (överblick)
+EduFlex är byggt som en modulär fullstack-applikation med en tydlig separation mellan frontend, API och realtidslager (WebSocket). Nedan följer en översikt över hur huvudmodulerna interagerar:
+
+                 ┌───────────────────────┐
+                 │       Frontend        │
+                 │   (React + Vite)      │
+                 │───────────────────────│
+                 │   Dashboard / UI      │
+                 │   ChatOverlay         │
+                 │   AttendanceView      │
+                 │   AssessmentView      │
+                 │   LicenseOverlay      │
+                 └──────────┬────────────┘
+                            │ REST + WS
+                            ▼
+              ┌────────────────────────────┐
+              │        Spring Boot API      │
+              │────────────────────────────│
+              │  Modules:                   │
+              │  - User / Auth (JWT)        │
+              │  - Course / Material        │
+              │  - Chat (STOMP / SockJS)    │
+              │  - Attendance & Events      │
+              │  - License Validation        │
+              │  - Notifications Service     │
+              └──────────┬──────────────────┘
+                         │ JPA / Hibernate
+                         ▼
+              ┌────────────────────────────┐
+              │         Database            │
+              │ (MySQL / H2 for Dev)        │
+              │────────────────────────────│
+              │  user, course, license,     │
+              │  attendance, chat_message,  │
+              │  notification, submission   │
+              └────────────────────────────┘
+### 🔄 Modulkommunikation
+
+| **Modul** | **Syfte** | **Kommunikation** | **Beroenden** |
+|------------|------------|--------------------|----------------|
+| **Auth** | JWT-baserad autentisering och rollstyrning | REST | UserRepository |
+| **License** | Validerar licensnyckel vid inloggning och API-anrop | REST | User + LicenseRepository |
+| **Chat** | Realtidskommunikation via STOMP-over-SockJS | WebSocket | UserSessionRegistry |
+| **Attendance** | Registrerar kursnärvaro per event | REST | CourseEvent + User |
+| **Assessment** | Samlar betyg och inlämningsstatus | REST | Course + Submission |
+| **Notifications** | Pushar systemaviseringar (chat, grading, submissions) | WebSocket + AsyncEvents | User, Chat, Submission |
+
+
+### ⚙️ Intern Logik
+Autentisering:
+Efter JWT-validering laddas användarens roll och licensstatus.
+En ogiltig eller inaktiv licens blockerar API-anrop och UI-funktioner.
+
+Realtidsflöde (Chat och Notifieringar):
+Klienter ansluter via WebSocket (/ws/eduflex) med användarens JWT-token som header.
+Backend hanterar användarsessioner och distribuerar meddelanden genom STOMP-kanaler.
+Samtidigt genererar notifieringstjänsten systemhändelser (t.ex. ny inlämning).
+
+Kurslogik:
+Kurser innehåller metadata om start/slutdatum, status (öppen/stängd) samt relaterade events.
+Vid uppdatering pushas ändringar till prenumeranter via notifieringstjänsten.
+
+Närvarohantering:
+Lärare kan skapa CourseEvents och markera studenter som närvarande/frånvarande.
+Data används senare i rapportmodulen för statistik.
+
+### 🧠 Skalbarhet & Säkerhet
+Realtidslager: WS-trafik isoleras i separat WebSocketConfig med @EnableWebSocketMessageBroker.
+
+JWT Security Filter: Tillåter WS-uppkoppling endast för autentiserade token.
+
+CORS och Sessions: Konfigurerat för localhost:5173 (Vite dev) och framtida domäner.
+
+Modularitet: Varje backendmodul har egen Service, Controller, och Repository med minimal koppling.
 ---
 
 ## ⚙️ Installation & Setup
