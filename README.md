@@ -117,13 +117,13 @@ EduFlex använder en modern rich text-lösning för kursinnehåll, uppgifter och
 
 ### 🎯 Dashboards
 
-![Student Dashboard](docs/images/dashboard-student.png)  
+![Student Dashboard](docs/images/dashboard-studen1t.png)  
 *Personlig studentvy med kurser, deadlines, quiz och notifieringar.*
 
-![Teacher Dashboard](docs/images/dashboard-teacher.png)  
+![Teacher Dashboard](docs/images/dashboard-teacher1.png)  
 *Läraröversikt med at-risk-studenter, kursstatus och senaste aktivitet.*
 
-![Admin Dashboard](docs/images/dashboard-admin.png)  
+![Admin Dashboard](docs/images/dashboard-admin1.png)  
 *System-KPI:er, senaste händelser och genvägar till adminverktyg.*
 
 ### 👤 Profil & Licens
