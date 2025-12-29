@@ -142,7 +142,7 @@ EduFlex använder en modern rich text-lösning för kursinnehåll, uppgifter och
 ![Course Forum](docs/images/forum.png)  
 *Forum med kategorier, trådar och diskussion per kurs.*
 
-![Real-time Chat](docs/images/chaty.png)  
+![Real-time Chat](docs/images/chat.png)  
 *Realtidschatt med notifieringsbadges och användarlista.*
 
 ---
