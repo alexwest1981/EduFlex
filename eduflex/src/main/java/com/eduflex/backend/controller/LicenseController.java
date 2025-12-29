@@ -8,7 +8,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/system/license")
-@CrossOrigin(origins = "*")
 public class LicenseController {
 
     private final LicenseService licenseService;

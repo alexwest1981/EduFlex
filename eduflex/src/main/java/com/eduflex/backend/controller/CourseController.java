@@ -17,7 +17,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/courses")
-// @CrossOrigin(origins = "*") <--- BORTTAGEN: Orsakar konflikt med SecurityConfig
 public class CourseController {
 
     private final CourseService courseService;
@@ -42,7 +41,6 @@ public class CourseController {
         }
     }
 
-    // --- NY METOD: UPPDATERA KURS (Löser ditt problem) ---
     @PutMapping("/{id}")
     public ResponseEntity<CourseDTO> updateCourse(@PathVariable Long id, @RequestBody CourseDTO courseDTO) {
         try {

@@ -1,5 +1,6 @@
 package com.eduflex.backend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
@@ -21,13 +22,13 @@ public class Course {
     private String startDate;
     private String endDate;
 
-    // NYTT FÄLT FÖR FÄRG
     private String color;
 
     private boolean isOpen = true;
 
     @ManyToOne
     @JoinColumn(name = "teacher_id")
+    @JsonIgnoreProperties({"courses", "coursesCreated", "documents", "submissions"}) // STOPPAR LOOPEN
     private User teacher;
 
     @ManyToMany
@@ -36,6 +37,7 @@ public class Course {
             joinColumns = @JoinColumn(name = "course_id"),
             inverseJoinColumns = @JoinColumn(name = "student_id")
     )
+    @JsonIgnoreProperties("courses") // STOPPAR LOOPEN
     private Set<User> students = new HashSet<>();
 
     @OneToOne(mappedBy = "course", cascade = CascadeType.ALL)
@@ -60,7 +62,6 @@ public class Course {
     public String getEndDate() { return endDate; }
     public void setEndDate(String endDate) { this.endDate = endDate; }
 
-    // NYA GETTERS/SETTERS FÖR FÄRG
     public String getColor() { return color; }
     public void setColor(String color) { this.color = color; }
 
