@@ -115,8 +115,6 @@ EduFlex använder en modern rich text-lösning för kursinnehåll, uppgifter och
 
 ## 📸 Skärmdumpar
 
-> Justera filnamn efter dina faktiska bilder i `docs/images/`.
-
 ### 🎯 Dashboards
 
 ![Student Dashboard](docs/images/dashboard-student.png)  
