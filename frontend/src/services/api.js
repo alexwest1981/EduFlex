@@ -57,6 +57,13 @@ export const api = {
         register: (data) => fetch(`${API_BASE}/users/register`, { method: 'POST', headers: getHeaders(), body: JSON.stringify(data) }).then(handleResponse),
         generateUsernames: (data) => fetch(`${API_BASE}/users/generate-usernames`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }).then(handleResponse),
         delete: (id) => fetch(`${API_BASE}/users/${id}`, { method: 'DELETE', headers: getHeaders() }).then(handleResponse),
+
+        // --- NY FUNKTION: Uppdatera användare ---
+        update: (id, data) => fetch(`${API_BASE}/users/${id}`, {
+            method: 'PUT',
+            headers: getHeaders(),
+            body: JSON.stringify(data)
+        }).then(handleResponse),
     },
     courses: {
         getAll: () => fetch(`${API_BASE}/courses`, { headers: getHeaders() }).then(handleResponse),
