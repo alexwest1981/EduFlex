@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
-import { ChevronLeft, ChevronRight, Clock, Calendar as CalendarIcon, ArrowLeft } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Clock, Calendar as CalendarIcon } from 'lucide-react';
+import { useTranslation } from 'react-i18next'; // <---
 
 const CalendarView = ({ events = [], navigateTo }) => {
+    const { t, i18n } = useTranslation(); // <---
     const [currentDate, setCurrentDate] = useState(new Date());
 
-    const months = [
-        "Januari", "Februari", "Mars", "April", "Maj", "Juni",
-        "Juli", "Augusti", "September", "Oktober", "November", "December"
-    ];
+    // Dynamisk månad beroende på valt språk
+    const currentMonthName = currentDate.toLocaleString(i18n.language, { month: 'long' });
+    const capitalizedMonth = currentMonthName.charAt(0).toUpperCase() + currentMonthName.slice(1);
 
     // --- DATUM-LOGIK ---
     const getDaysInMonth = (date) => new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
@@ -76,12 +77,12 @@ const CalendarView = ({ events = [], navigateTo }) => {
         <div className="animate-in fade-in h-full flex flex-col">
             <div className="flex items-center justify-between mb-6">
                 <div>
-                    <h1 className="text-3xl font-bold text-gray-800">Kalender</h1>
-                    <p className="text-gray-500">Håll koll på dina deadlines och kursstarter.</p>
+                    <h1 className="text-3xl font-bold text-gray-800">{t('calendar.title')}</h1>
+                    <p className="text-gray-500">{t('calendar.subtitle')}</p>
                 </div>
                 <div className="flex items-center gap-4 bg-white p-2 rounded-xl shadow-sm border">
                     <button onClick={prevMonth} className="p-2 hover:bg-gray-100 rounded-lg"><ChevronLeft/></button>
-                    <span className="font-bold text-lg w-32 text-center">{months[currentDate.getMonth()]} {currentDate.getFullYear()}</span>
+                    <span className="font-bold text-lg w-32 text-center">{capitalizedMonth} {currentDate.getFullYear()}</span>
                     <button onClick={nextMonth} className="p-2 hover:bg-gray-100 rounded-lg"><ChevronRight/></button>
                 </div>
             </div>
@@ -90,7 +91,7 @@ const CalendarView = ({ events = [], navigateTo }) => {
                 {/* Själva Kalendern */}
                 <div className="flex-1 bg-white rounded-2xl shadow-sm border flex flex-col overflow-hidden">
                     <div className="grid grid-cols-7 border-b bg-gray-50">
-                        {['Mån', 'Tis', 'Ons', 'Tor', 'Fre', 'Lör', 'Sön'].map(d => (
+                        {t('calendar.days', { returnObjects: true }).map(d => (
                             <div key={d} className="py-3 text-center text-xs font-bold text-gray-500 uppercase">{d}</div>
                         ))}
                     </div>
@@ -102,11 +103,11 @@ const CalendarView = ({ events = [], navigateTo }) => {
                 {/* Sidopanel med lista */}
                 <div className="w-80 bg-white rounded-2xl shadow-sm border p-6 overflow-y-auto hidden xl:block">
                     <h3 className="font-bold text-gray-800 mb-4 flex items-center gap-2">
-                        <CalendarIcon size={18} className="text-indigo-600"/> Händer i {months[currentDate.getMonth()]}
+                        <CalendarIcon size={18} className="text-indigo-600"/> {t('calendar.events_in')} {capitalizedMonth}
                     </h3>
 
                     {currentMonthEvents.length === 0 ? (
-                        <p className="text-sm text-gray-400 italic">Ingenting inplanerat denna månad.</p>
+                        <p className="text-sm text-gray-400 italic">{t('calendar.no_events')}</p>
                     ) : (
                         <div className="space-y-3">
                             {currentMonthEvents.map((evt, idx) => (
@@ -118,8 +119,8 @@ const CalendarView = ({ events = [], navigateTo }) => {
                                         <div className="font-bold text-sm text-gray-900">{evt.title}</div>
                                         <div className="text-xs text-gray-500 mb-1">{evt.courseName}</div>
                                         <div className={`text-xs font-bold ${evt.type === 'COURSE_START' ? 'text-blue-600' : 'text-red-500'}`}>
-                                            {new Date(evt.dueDate).toLocaleDateString()}
-                                            {evt.type !== 'COURSE_START' && `, kl ${new Date(evt.dueDate).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`}
+                                            {new Date(evt.dueDate).toLocaleDateString(i18n.language)}
+                                            {evt.type !== 'COURSE_START' && `, kl ${new Date(evt.dueDate).toLocaleTimeString(i18n.language, {hour: '2-digit', minute:'2-digit'})}`}
                                         </div>
                                     </div>
                                 </div>

@@ -18,7 +18,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Controller
-@CrossOrigin(origins = "*")
 public class ChatController {
 
     private final SimpMessagingTemplate messagingTemplate;

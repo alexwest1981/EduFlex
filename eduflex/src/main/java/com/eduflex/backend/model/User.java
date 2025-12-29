@@ -1,6 +1,7 @@
 package com.eduflex.backend.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -16,7 +17,6 @@ import java.util.List;
 @AllArgsConstructor
 public class User {
 
-    // --- VIKTIGT: Denna Enum måste finnas HÄR ---
     public enum Role {
         ADMIN, TEACHER, STUDENT
     }
@@ -48,6 +48,9 @@ public class User {
     @Column(nullable = false)
     private String email;
 
+    @Column(length = 5)
+    private String language = "sv";
+
     private String profilePictureUrl;
 
     @Enumerated(EnumType.STRING)
@@ -55,6 +58,11 @@ public class User {
     private Role role;
 
     // --- RELATIONER ---
+
+    // Denna lista MÅSTE finnas för att dashboard ska kunna visa "Mina Kurser"
+    @ManyToMany(mappedBy = "students", fetch = FetchType.EAGER)
+    @JsonIgnoreProperties({"students", "teacher"}) // STOPPAR LOOPEN HÄR
+    private List<Course> courses = new ArrayList<>();
 
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
@@ -74,6 +82,5 @@ public class User {
         this.fullName = this.firstName + " " + this.lastName;
     }
 
-    // Explicit getter behövs ibland även med Lombok om andra klasser refererar statiskt
     public Role getRole() { return role; }
 }

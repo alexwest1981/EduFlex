@@ -4,6 +4,7 @@ import com.eduflex.backend.security.AuthTokenFilter;
 import com.eduflex.backend.security.CustomUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -57,20 +58,20 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // Tillåt dessa endpoints publikt:
+                        // VIKTIGT: Släpp igenom alla "Preflight"-anrop (OPTIONS) för CORS
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+
+                        // Publika endpoints
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/users/register").permitAll()
-
-                        // Tillåt generering av användarnamn utan inloggning
                         .requestMatchers("/api/users/generate-usernames").permitAll()
-
-                        // NYTT: Tillåt licenskontroll och aktivering utan inloggning (VIKTIGT!)
                         .requestMatchers("/api/system/license/**").permitAll()
-
                         .requestMatchers("/uploads/**").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
+                        .requestMatchers("/ws/**").permitAll()
 
-                        .requestMatchers("/ws/**").permitAll() // TILLÅT WEBSOCKET
+                        // Specifika endpoints för inloggade
+                        .requestMatchers("/api/quizzes/**").authenticated()
 
                         // Allt annat kräver inloggning
                         .anyRequest().authenticated()
@@ -87,7 +88,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOriginPatterns(List.of("*"));
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")); // Se till att PUT/DELETE finns
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

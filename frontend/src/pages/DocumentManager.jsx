@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
-import { FileText, Trash2, Upload, Search, Download, File, Image as ImageIcon, Film } from 'lucide-react';
+import { FileText, Trash2, Upload, Search, Download, File as FileIcon, Image as ImageIcon, Film } from 'lucide-react'; // <--- VIKTIGT: Alias här
 
-// Vi döper om 'Image' till 'ImageIcon' vid import för att undvika krock med webbläsarens inbyggda 'Image'
 const DocumentManager = ({
-                             documents = [], // Default-värde: tom lista om props saknas
+                             documents = [],
                              handleUploadDoc,
                              handleDeleteDoc,
                              currentUser
@@ -12,7 +11,6 @@ const DocumentManager = ({
     const [searchTerm, setSearchTerm] = useState('');
     const [isUploading, setIsUploading] = useState(false);
 
-    // SÄKERHETSKONTROLL: Om documents av någon anledning är null, använd en tom array
     const safeDocuments = Array.isArray(documents) ? documents : [];
 
     const onUpload = (e) => {
@@ -21,7 +19,6 @@ const DocumentManager = ({
 
         setIsUploading(true);
 
-        // Simulera nätverksfördröjning för bättre känsla
         setTimeout(() => {
             const newDoc = {
                 id: Date.now(),
@@ -29,7 +26,6 @@ const DocumentManager = ({
                 size: (uploadFile.size / 1024).toFixed(1) + ' KB',
                 type: uploadFile.type || 'unknown',
                 date: new Date().toISOString().split('T')[0],
-                // Hantera olika varianter av användarnamn (name vs fullName)
                 owner: currentUser?.fullName || currentUser?.name || currentUser?.username || 'Jag'
             };
 
@@ -37,7 +33,6 @@ const DocumentManager = ({
             setUploadFile(null);
             setIsUploading(false);
 
-            // Återställ filväljaren säkert
             const fileInput = document.getElementById('file-upload');
             if (fileInput) fileInput.value = "";
         }, 800);
@@ -48,7 +43,7 @@ const DocumentManager = ({
         if (type.includes('image')) return <ImageIcon size={20} className="text-purple-500" />;
         if (type.includes('video')) return <Film size={20} className="text-red-500" />;
         if (type.includes('pdf')) return <FileText size={20} className="text-red-600" />;
-        return <File size={20} className="text-blue-500" />;
+        return <FileIcon size={20} className="text-blue-500" />; // <--- Använd FileIcon
     };
 
     const filteredDocs = safeDocuments.filter(d =>
@@ -155,7 +150,7 @@ const DocumentManager = ({
                                 <tr>
                                     <td colSpan="4" className="p-12 text-center text-gray-400">
                                         <div className="flex flex-col items-center">
-                                            <File size={48} className="text-gray-200 mb-2"/>
+                                            <FileIcon size={48} className="text-gray-200 mb-2"/> {/* <--- Använd FileIcon */}
                                             <p>Inga dokument hittades.</p>
                                         </div>
                                     </td>
