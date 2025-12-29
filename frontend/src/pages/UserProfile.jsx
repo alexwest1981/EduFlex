@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Camera, Mail, Phone, MapPin, Save, Lock, User, AlertTriangle, Globe } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { api } from '../services/api'; // VIKTIGT
+import { api } from '../services/api';
 
-const UserProfile = ({ currentUser, API_BASE, getAuthHeaders, showMessage, refreshUser }) => {
+const UserProfile = ({ currentUser, showMessage, refreshUser }) => {
     const { t, i18n } = useTranslation();
     const [activeTab, setActiveTab] = useState('details');
     const [isLoading, setIsLoading] = useState(false);
@@ -23,19 +23,17 @@ const UserProfile = ({ currentUser, API_BASE, getAuthHeaders, showMessage, refre
         const fetchFullProfile = async () => {
             if (currentUser?.id) {
                 try {
-                    // Använd vår nya api-metod
                     const data = await api.users.getById(currentUser.id);
                     setFullUserData(data);
                     parseAndSetUserData(data);
                 } catch (e) {
                     console.error("Kunde inte hämta profil:", e);
-                    // Fallback till det vi har i context
                     parseAndSetUserData(currentUser);
                 }
             }
         };
         fetchFullProfile();
-    }, [currentUser]); // Körs när currentUser ändras (t.ex. vid sidladdning)
+    }, [currentUser]);
 
     const parseAndSetUserData = (user) => {
         let street = '', zip = '', city = '', country = '';
@@ -77,9 +75,12 @@ const UserProfile = ({ currentUser, API_BASE, getAuthHeaders, showMessage, refre
         formDataUpload.append('file', file);
 
         try {
-            const res = await fetch(`${API_BASE}/users/${currentUser.id}/avatar`, {
+            // Använd api.documents.upload eller manuell fetch om api saknar avatar-stöd specifikt
+            // Här använder vi en direkt fetch men med token från localStorage då api.js inte hade avatar-metod
+            const token = localStorage.getItem('token');
+            const res = await fetch(`http://127.0.0.1:8080/api/users/${currentUser.id}/avatar`, {
                 method: 'POST',
-                headers: { 'Authorization': getAuthHeaders().Authorization },
+                headers: { 'Authorization': `Bearer ${token}` },
                 body: formDataUpload
             });
             if (res.ok) {
@@ -105,19 +106,19 @@ const UserProfile = ({ currentUser, API_BASE, getAuthHeaders, showMessage, refre
         };
 
         try {
-            const res = await fetch(`${API_BASE}/users/${currentUser.id}`, {
-                method: 'PUT',
-                headers: getAuthHeaders(),
-                body: JSON.stringify(payload)
-            });
+            // FIX: Använd api.users.update istället för fetch.
+            // Detta löser Content-Type felet eftersom api.js sätter 'application/json'
+            await api.users.update(currentUser.id, payload);
 
-            if (res.ok) {
-                showMessage(t('messages.profile_updated'));
-                i18n.changeLanguage(formData.language);
-                refreshUser();
-            }
-        } catch (err) { console.error(err); }
-        finally { setIsLoading(false); }
+            showMessage(t('messages.profile_updated'));
+            i18n.changeLanguage(formData.language);
+            refreshUser();
+        } catch (err) {
+            console.error(err);
+            alert("Kunde inte spara profil. Kontrollera att alla fält är korrekta.");
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const handleChangePassword = async (e) => {
@@ -127,9 +128,13 @@ const UserProfile = ({ currentUser, API_BASE, getAuthHeaders, showMessage, refre
             return;
         }
         try {
-            const res = await fetch(`${API_BASE}/users/${currentUser.id}/password`, {
+            const token = localStorage.getItem('token');
+            const res = await fetch(`http://127.0.0.1:8080/api/users/${currentUser.id}/password`, {
                 method: 'PUT',
-                headers: getAuthHeaders(),
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json' // VIKTIGT
+                },
                 body: JSON.stringify({ currentPassword: passData.current, newPassword: passData.new })
             });
             if (res.ok) {
@@ -144,7 +149,7 @@ const UserProfile = ({ currentUser, API_BASE, getAuthHeaders, showMessage, refre
     const displayUser = fullUserData || currentUser;
 
     return (
-        <div className="animate-in fade-in max-w-4xl mx-auto">
+        <div className="animate-in fade-in max-w-4xl mx-auto pb-20">
             <h1 className="text-3xl font-bold mb-8 text-gray-800">{t('profile.title')}</h1>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -192,25 +197,11 @@ const UserProfile = ({ currentUser, API_BASE, getAuthHeaders, showMessage, refre
                                         className="w-full px-4 py-2 border rounded-lg bg-white"
                                         value={formData.language}
                                         onChange={(e) => {
-                                            const newLang = e.target.value;
-                                            setFormData({...formData, language: newLang});
-                                            // Byt språk direkt i appen
-                                            i18n.changeLanguage(newLang);
-
-                                            // (Valfritt) Hantera RTL för Arabiska direkt vid byte
-                                            if(newLang === 'ar') {
-                                                document.body.dir = 'rtl';
-                                            } else {
-                                                document.body.dir = 'ltr';
-                                            }
+                                            setFormData({...formData, language: e.target.value});
                                         }}
                                     >
                                         <option value="sv">Svenska</option>
                                         <option value="en">English</option>
-                                        <option value="fr">Français</option>
-                                        <option value="de">Deutsch</option>
-                                        <option value="es">Español</option>
-                                        <option value="ar">العربية (Arabic)</option>
                                     </select>
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
@@ -231,7 +222,9 @@ const UserProfile = ({ currentUser, API_BASE, getAuthHeaders, showMessage, refre
                                     </div>
                                 </div>
                                 <div className="flex justify-end pt-4">
-                                    <button className="bg-indigo-600 text-white px-6 py-2.5 rounded-lg font-bold hover:bg-indigo-700 shadow-sm flex items-center gap-2"><Save size={18}/> {t('profile.save_changes')}</button>
+                                    <button disabled={isLoading} className="bg-indigo-600 text-white px-6 py-2.5 rounded-lg font-bold hover:bg-indigo-700 shadow-sm flex items-center gap-2 disabled:opacity-50">
+                                        <Save size={18}/> {isLoading ? 'Sparar...' : t('profile.save_changes')}
+                                    </button>
                                 </div>
                             </form>
                         )}
