@@ -12,7 +12,28 @@ export const AppProvider = ({ children }) => {
     const [notifications, setNotifications] = useState([]);
     const [licenseStatus, setLicenseStatus] = useState('checking');
 
+    // Hantera tema (Ljust/Mörkt)
+    const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
+
     const API_BASE = 'http://127.0.0.1:8080/api';
+
+    // Effekt som styr CSS-klassen 'dark' på hela sidan
+    useEffect(() => {
+        const isModuleActive = systemSettings['dark_mode_enabled'] === 'true';
+
+        if (!isModuleActive) {
+            document.documentElement.classList.remove('dark');
+            return;
+        }
+
+        if (theme === 'dark') {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+
+        localStorage.setItem('theme', theme);
+    }, [theme, systemSettings]);
 
     useEffect(() => {
         const checkLicense = async () => {
@@ -37,12 +58,45 @@ export const AppProvider = ({ children }) => {
 
     const fetchSystemSettings = async () => {
         try {
-            const data = await api.settings.getAll();
-            const settingsMap = {};
-            data.forEach(s => settingsMap[s.settingKey] = s.settingValue);
-            setSystemSettings(settingsMap);
+            // Vi använder direkt fetch mot din endpoint
+            const response = await fetch(`${API_BASE}/settings`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (response.ok) {
+                const data = await response.json();
+                const settingsMap = {};
+                // Hantera både om backend skickar lista eller map
+                if (Array.isArray(data)) {
+                    data.forEach(s => settingsMap[s.settingKey] = s.settingValue);
+                } else {
+                    Object.assign(settingsMap, data);
+                }
+                setSystemSettings(settingsMap);
+            }
         } catch (e) { console.error("Kunde inte hämta inställningar"); }
     };
+
+    // --- FUNKTIONEN SOM SAKNADES ---
+    const updateSystemSetting = async (key, value) => {
+        try {
+            // Optimistisk uppdatering i UI
+            setSystemSettings(prev => ({ ...prev, [key]: value }));
+
+            // Skicka till backend
+            await fetch(`${API_BASE}/settings/${key}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ value: value })
+            });
+        } catch (error) {
+            console.error("Fel vid uppdatering av inställning:", error);
+            fetchSystemSettings(); // Rulla tillbaka vid fel
+        }
+    };
+    // -------------------------------
 
     const fetchNotifications = async () => {
         if (!currentUser) return;
@@ -73,9 +127,15 @@ export const AppProvider = ({ children }) => {
         } catch {}
     };
 
+    const toggleTheme = () => {
+        setTheme(prev => prev === 'dark' ? 'light' : 'dark');
+    };
+
     const value = {
         token, currentUser, systemSettings, notifications, licenseStatus, API_BASE,
-        setLicenseStatus, login, logout, markNotificationAsRead, fetchSystemSettings
+        theme, toggleTheme,
+        setLicenseStatus, login, logout, markNotificationAsRead, fetchSystemSettings,
+        updateSystemSetting // <--- Exporterad
     };
 
     return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

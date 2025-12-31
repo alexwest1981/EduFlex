@@ -371,5 +371,16 @@
     "joined_course": "Gick med!",
     "loading": "Laddar...",
     "loading_course": "Laddar kurs..."
+  },
+
+  "gamification": {
+    "level_title": "NUVARANDE NIVÅ",
+    "points_to_next": "poäng till nästa nivå",
+    "my_badges": "Mina Utmärkelser",
+    "rank_newbie": "Nybörjare",
+    "rank_apprentice": "Lärling",
+    "rank_expert": "Expert",
+    "rank_master": "Mästare",
+    "rank_legend": "Legend"
   }
 }

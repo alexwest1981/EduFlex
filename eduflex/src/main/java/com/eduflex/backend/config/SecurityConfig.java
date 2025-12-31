@@ -58,22 +58,29 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // VIKTIGT: Släpp igenom alla "Preflight"-anrop (OPTIONS) för CORS
+                        // 1. VIKTIGT: Tillåt alltid OPTIONS (CORS pre-flight)
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
-                        // Publika endpoints
-                        .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/users/register").permitAll()
-                        .requestMatchers("/api/users/generate-usernames").permitAll()
-                        .requestMatchers("/api/system/license/**").permitAll()
-                        .requestMatchers("/uploads/**").permitAll()
-                        .requestMatchers("/h2-console/**").permitAll()
-                        .requestMatchers("/ws/**").permitAll()
+                        // 2. Publika endpoints
+                        .requestMatchers("/api/auth/**", "/api/users/register", "/api/users/generate-usernames").permitAll()
+                        .requestMatchers("/api/system/license/**", "/uploads/**", "/h2-console/**", "/ws/**").permitAll()
 
-                        // Specifika endpoints för inloggade
+                        // 3. KURS-REGLER - "Hängsle och livrem"
+                        // Vi kollar både "ADMIN" och "ROLE_ADMIN" för att vara säkra
+                        .requestMatchers(HttpMethod.POST, "/api/courses/**")
+                        .hasAnyAuthority("ADMIN", "ROLE_ADMIN", "TEACHER", "ROLE_TEACHER")
+
+                        .requestMatchers(HttpMethod.PUT, "/api/courses/**")
+                        .hasAnyAuthority("ADMIN", "ROLE_ADMIN", "TEACHER", "ROLE_TEACHER")
+
+                        .requestMatchers(HttpMethod.DELETE, "/api/courses/**")
+                        .hasAnyAuthority("ADMIN", "ROLE_ADMIN", "TEACHER", "ROLE_TEACHER")
+
+                        // Alla inloggade får läsa (GET)
+                        .requestMatchers(HttpMethod.GET, "/api/courses/**").authenticated()
+
+                        // 4. Övrigt
                         .requestMatchers("/api/quizzes/**").authenticated()
-
-                        // Allt annat kräver inloggning
                         .anyRequest().authenticated()
                 );
 
@@ -87,10 +94,12 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
+        // Tillåt din frontend specifikt (säkrare) eller alla (*)
         configuration.setAllowedOriginPatterns(List.of("*"));
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")); // Se till att PUT/DELETE finns
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
+
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;

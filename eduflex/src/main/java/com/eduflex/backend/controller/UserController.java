@@ -17,7 +17,7 @@ import java.util.Map;
 public class UserController {
 
     private final UserService userService;
-    private final UserRepository userRepository; // Behövs för direkt access vid update
+    private final UserRepository userRepository;
 
     @Autowired
     public UserController(UserService userService, UserRepository userRepository) {
@@ -40,7 +40,6 @@ public class UserController {
         String firstName = payload.get("firstName");
         String lastName = payload.get("lastName");
         String ssn = payload.get("ssn");
-
         if (firstName == null || lastName == null || ssn == null) {
             return ResponseEntity.badRequest().build();
         }
@@ -61,7 +60,7 @@ public class UserController {
         }
     }
 
-    // --- UPPDATERAD METOD: Hanterar partiell uppdatering via Map ---
+    // --- UPPDATERAD METOD: Nu med isActive och Role ---
     @PutMapping("/{id}")
     public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody Map<String, Object> updates) {
         return userRepository.findById(id).map(user -> {
@@ -71,10 +70,21 @@ public class UserController {
             if (updates.containsKey("phone")) user.setPhone((String) updates.get("phone"));
             if (updates.containsKey("address")) user.setAddress((String) updates.get("address"));
             if (updates.containsKey("language")) user.setLanguage((String) updates.get("language"));
+            if (updates.containsKey("username")) user.setUsername((String) updates.get("username"));
 
-            // Uppdatera visningsnamn om för/efternamn ändrats
-            if (updates.containsKey("firstName") || updates.containsKey("lastName")) {
-                user.updateFullName();
+            // NYTT: Hantera Roll
+            if (updates.containsKey("role")) {
+                user.setRole(User.Role.valueOf((String) updates.get("role")));
+            }
+
+            // NYTT: Hantera Aktiv/Inaktiv
+            if (updates.containsKey("isActive")) {
+                Object activeVal = updates.get("isActive");
+                if (activeVal instanceof Boolean) {
+                    user.setActive((Boolean) activeVal);
+                } else {
+                    user.setActive(Boolean.parseBoolean(activeVal.toString()));
+                }
             }
 
             return ResponseEntity.ok(userRepository.save(user));

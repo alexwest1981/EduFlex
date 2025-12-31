@@ -14,9 +14,13 @@ public class Course {
     private Long id;
 
     private String name;
+
+    @Column(unique = true) // Bra praxis: Kurskod bör vara unik
     private String courseCode;
 
-    @Column(length = 1000)
+    private String category; // <--- NYTT FÄLT I DATABASEN
+
+    @Column(length = 5000) // Vi ökar längden för beskrivningar
     private String description;
 
     private String startDate;
@@ -28,7 +32,7 @@ public class Course {
 
     @ManyToOne
     @JoinColumn(name = "teacher_id")
-    @JsonIgnoreProperties({"courses", "coursesCreated", "documents", "submissions"}) // STOPPAR LOOPEN
+    @JsonIgnoreProperties({"courses", "coursesCreated", "documents", "submissions", "password", "roles"})
     private User teacher;
 
     @ManyToMany
@@ -37,7 +41,7 @@ public class Course {
             joinColumns = @JoinColumn(name = "course_id"),
             inverseJoinColumns = @JoinColumn(name = "student_id")
     )
-    @JsonIgnoreProperties("courses") // STOPPAR LOOPEN
+    @JsonIgnoreProperties({"courses", "password", "roles"})
     private Set<User> students = new HashSet<>();
 
     @OneToOne(mappedBy = "course", cascade = CascadeType.ALL)
@@ -52,6 +56,11 @@ public class Course {
 
     public String getCourseCode() { return courseCode; }
     public void setCourseCode(String courseCode) { this.courseCode = courseCode; }
+
+    // --- NYA GETTERS & SETTERS FÖR KATEGORI ---
+    public String getCategory() { return category; }
+    public void setCategory(String category) { this.category = category; }
+    // ------------------------------------------
 
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
