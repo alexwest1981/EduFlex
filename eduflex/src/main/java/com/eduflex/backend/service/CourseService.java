@@ -16,6 +16,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -48,20 +49,38 @@ public class CourseService {
         return courseRepository.findById(id).orElseThrow(() -> new RuntimeException("Kurs ej funnen"));
     }
 
-    // --- METOD: UPPDATERA KURS ---
-    public CourseDTO updateCourse(Long id, CourseDTO courseDTO) {
+    // --- UPPDATERAD METOD: Nu med isOpen-hantering ---
+    public CourseDTO updateCourse(Long id, Map<String, Object> updates) {
         Course course = getCourseById(id);
 
-        if (courseDTO.name() != null) course.setName(courseDTO.name());
-        if (courseDTO.courseCode() != null) course.setCourseCode(courseDTO.courseCode());
-        if (courseDTO.description() != null) course.setDescription(courseDTO.description());
+        if (updates.containsKey("name")) course.setName((String) updates.get("name"));
+        if (updates.containsKey("courseCode")) course.setCourseCode((String) updates.get("courseCode"));
+        if (updates.containsKey("category")) course.setCategory((String) updates.get("category"));
+        if (updates.containsKey("description")) course.setDescription((String) updates.get("description"));
+        if (updates.containsKey("startDate")) course.setStartDate((String) updates.get("startDate"));
+        if (updates.containsKey("endDate")) course.setEndDate((String) updates.get("endDate"));
+        if (updates.containsKey("color")) course.setColor((String) updates.get("color"));
 
-        // FIX: Konvertera LocalDate till String med .toString()
-        if (courseDTO.startDate() != null) course.setStartDate(courseDTO.startDate().toString());
-        if (courseDTO.endDate() != null) course.setEndDate(courseDTO.endDate().toString());
+        // NYTT: Hantera om kursen är öppen eller stängd
+        if (updates.containsKey("isOpen")) {
+            Object openVal = updates.get("isOpen");
+            if (openVal instanceof Boolean) {
+                course.setOpen((Boolean) openVal);
+            } else if (openVal instanceof String) {
+                course.setOpen(Boolean.parseBoolean((String) openVal));
+            }
+        }
 
-        // Uppdatera färg om den finns
-        if (courseDTO.color() != null) course.setColor(courseDTO.color());
+        // Hantera uppdatering av lärare via teacherId
+        if (updates.containsKey("teacherId")) {
+            Object tidObj = updates.get("teacherId");
+            if (tidObj != null && !tidObj.toString().isEmpty()) {
+                Long teacherId = Long.valueOf(tidObj.toString());
+                userRepository.findById(teacherId).ifPresent(course::setTeacher);
+            } else {
+                course.setTeacher(null);
+            }
+        }
 
         Course updatedCourse = courseRepository.save(course);
         return convertToDTO(updatedCourse);
@@ -72,20 +91,19 @@ public class CourseService {
         Course course = new Course();
         course.setName(dto.name());
         course.setCourseCode(dto.courseCode());
+        course.setCategory(dto.category());
         course.setDescription(dto.description());
 
-        // FIX: Konvertera LocalDate till String här också
         if (dto.startDate() != null) course.setStartDate(dto.startDate().toString());
         if (dto.endDate() != null) course.setEndDate(dto.endDate().toString());
 
-        course.setColor("bg-indigo-600"); // Default-färg
+        course.setColor("bg-indigo-600");
         course.setTeacher(teacher);
+        course.setOpen(true); // Default öppen vid skapande
         return courseRepository.save(course);
     }
 
-    public Course saveCourse(Course course) {
-        return courseRepository.save(course);
-    }
+    public Course saveCourse(Course course) { return courseRepository.save(course); }
 
     public void addStudentToCourse(Long courseId, Long studentId) {
         Course course = getCourseById(courseId);
@@ -109,6 +127,8 @@ public class CourseService {
         User student = userRepository.findById(studentId).orElseThrow();
         return courseRepository.findAll().stream()
                 .filter(c -> !c.getStudents().contains(student))
+                // NYTT: Visa bara kurser som faktiskt är öppna
+                .filter(Course::isOpen)
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
@@ -121,7 +141,6 @@ public class CourseService {
         material.setLink(link);
         material.setType(CourseMaterial.MaterialType.valueOf(type));
         material.setCourse(course);
-
         if (file != null && !file.isEmpty()) {
             String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
             Path path = Paths.get(uploadDir + "/" + fileName);
@@ -129,21 +148,12 @@ public class CourseService {
             Files.write(path, file.getBytes());
             material.setFileUrl("/uploads/" + fileName);
         }
-
         return materialRepository.save(material);
     }
 
-    public List<CourseMaterial> getMaterialsForCourse(Long courseId) {
-        return materialRepository.findByCourseId(courseId);
-    }
-
-    public void deleteMaterial(Long id) {
-        materialRepository.deleteById(id);
-    }
-
-    public void deleteCourse(Long id) {
-        courseRepository.deleteById(id);
-    }
+    public List<CourseMaterial> getMaterialsForCourse(Long courseId) { return materialRepository.findByCourseId(courseId); }
+    public void deleteMaterial(Long id) { materialRepository.deleteById(id); }
+    public void deleteCourse(Long id) { courseRepository.deleteById(id); }
 
     public CourseEvaluation createEvaluation(Long courseId, CourseEvaluation evaluation) {
         Course course = getCourseById(courseId);
@@ -153,7 +163,6 @@ public class CourseService {
         return evaluation;
     }
 
-    // Helper för DTO konvertering
     private CourseDTO convertToDTO(Course c) {
         UserSummaryDTO teacherDTO = null;
         if (c.getTeacher() != null) {
@@ -173,13 +182,14 @@ public class CourseService {
                 c.getId(),
                 c.getName(),
                 c.getCourseCode(),
+                c.getCategory(),
                 c.getDescription(),
                 c.getStartDate(),
                 c.getEndDate(),
                 c.getColor(),
                 teacherDTO,
                 studentDTOs,
-                c.isOpen(),
+                c.isOpen(), // Skickar med status
                 c.getEvaluation()
         );
     }

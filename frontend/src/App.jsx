@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Loader2, AlertTriangle, CheckCircle } from 'lucide-react';
-import { BrowserRouter, Routes, Route, Navigate, useNavigate, useParams } from 'react-router-dom';
-import { useTranslation } from 'react-i18next'; // <--- IMPORT
+import { BrowserRouter, Routes, Route, Navigate, useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 // Services & Context
 import { api } from './services/api';
@@ -11,9 +11,8 @@ import { AppProvider, useAppContext } from './context/AppContext';
 import Layout from './components/Layout';
 import Auth from './components/Auth';
 import Dashboard from './components/Dashboards';
-import { QuizBuilderModal, QuizRunnerModal } from './components/QuizModals';
 import LicenseLockScreen from './components/LicenseLockScreen';
-import ChatOverlay from './components/ChatOverlay';
+import ChatModule, { ChatModuleMetadata } from './modules/chat/ChatModule';
 
 // Pages
 import AdminPanel from './pages/AdminPanel';
@@ -23,11 +22,12 @@ import DocumentManager from './pages/DocumentManager';
 import UserProfile from './pages/UserProfile';
 
 const AppContent = () => {
-    const { t, i18n } = useTranslation(); // <--- HOOK
+    const { t, i18n } = useTranslation();
     const {
         currentUser, token, login, licenseStatus, setLicenseStatus, systemSettings, fetchSystemSettings
     } = useAppContext();
 
+    // UI States
     const [isLoading, setIsLoading] = useState(false);
     const [message, setMessage] = useState('');
     const [error, setError] = useState(null);
@@ -36,13 +36,15 @@ const AppContent = () => {
     // Data States
     const [myCourses, setMyCourses] = useState([]);
     const [allCourses, setAllCourses] = useState([]);
+    const [availableCourses, setAvailableCourses] = useState([]);
     const [documents, setDocuments] = useState([]);
     const [users, setUsers] = useState([]);
+
+    // LMS Data
     const [upcomingAssignments, setUpcomingAssignments] = useState([]);
     const [ungradedSubmissions, setUngradedSubmissions] = useState([]);
     const [allAssignments, setAllAssignments] = useState([]);
     const [allSubmissions, setAllSubmissions] = useState([]);
-    const [availableCourses, setAvailableCourses] = useState([]);
 
     // Auth Forms
     const [loginForm, setLoginForm] = useState({ username: '', password: '' });
@@ -52,19 +54,15 @@ const AppContent = () => {
 
     const [adminTab, setAdminTab] = useState('users');
 
-    // --- FIX: LANGUAGE PERSISTENCE ---
+    // --- EFFEKTER ---
+
     useEffect(() => {
-        if (currentUser && currentUser.language) {
-            // Om användaren är inloggad, tvinga appen att använda deras språk
-            if (i18n.language !== currentUser.language) {
-                i18n.changeLanguage(currentUser.language);
-            }
+        if (currentUser && currentUser.language && i18n.language !== currentUser.language) {
+            i18n.changeLanguage(currentUser.language);
         }
     }, [currentUser, i18n]);
 
-    // --- HANTERA MÖRKT LÄGE (DARK MODE) ---
     useEffect(() => {
-        // Kontrollera systeminställningarna
         if (systemSettings && systemSettings['dark_mode_enabled'] === 'true') {
             document.documentElement.classList.add('dark');
         } else {
@@ -76,26 +74,56 @@ const AppContent = () => {
         if (licenseStatus === 'valid' && currentUser) {
             initData();
         }
-    }, [licenseStatus, currentUser]);
+    }, [licenseStatus, currentUser?.token]); // Kör bara om vi har en token
+
+    // --- DATAHÄMTNING ---
 
     const initData = async () => {
+        // Undvik att köra om vi inte är inloggade
+        if (!currentUser) return;
+
         setIsLoading(true);
         try {
             const [usersData, coursesData] = await Promise.all([
                 api.users.getAll(),
                 api.courses.getAll()
             ]);
+
             setUsers(usersData || []);
             setAllCourses(coursesData || []);
+            setAvailableCourses(coursesData || []);
+
             updateMyCourses(coursesData || []);
 
-            if (currentUser.role === 'ADMIN') {
-                const docs = await api.documents.getAll();
-                setDocuments(docs || []);
+            // --- FIX: Uppdatera inloggad användare med senaste data (t.ex. ny bild) ---
+            const me = usersData.find(u => u.id === currentUser.id);
+            if (me) {
+                // Vi uppdaterar kontexten men behåller token
+                login({
+                    id: me.id,
+                    username: me.username,
+                    fullName: me.fullName,
+                    role: me.role,
+                    language: me.language,
+                    profilePictureUrl: me.profilePictureUrl // Uppdaterar bilden live
+                }, token);
             }
-            if (currentUser.role === 'ADMIN' || currentUser.role === 'TEACHER') {
-                await fetchAllLmsData();
+            // -------------------------------------------------------------------------
+
+            try {
+                if (currentUser.role === 'ADMIN' || currentUser.role === 'TEACHER') {
+                    const docs = await api.documents.getAll();
+                    setDocuments(docs || []);
+                    await fetchAllLmsData();
+                } else {
+                    const myDocs = await api.documents.getUserDocs(currentUser.id);
+                    setDocuments(myDocs || []);
+                }
+            } catch (docErr) {
+                console.warn("Kunde inte hämta dokument:", docErr);
+                setDocuments([]);
             }
+
         } catch (e) {
             console.error("Init data error", e);
         } finally {
@@ -105,9 +133,13 @@ const AppContent = () => {
 
     const updateMyCourses = (courses) => {
         if (!currentUser) return;
-        if (currentUser.role === 'STUDENT') setMyCourses(courses.filter(c => c.students?.some(s => s.id === currentUser.id)));
-        else if (currentUser.role === 'TEACHER') setMyCourses(courses.filter(c => c.teacher?.id === currentUser.id));
-        else setMyCourses(courses);
+        if (currentUser.role === 'STUDENT') {
+            setMyCourses(courses.filter(c => c.students?.some(s => s.id === currentUser.id)));
+        } else if (currentUser.role === 'TEACHER') {
+            setMyCourses(courses.filter(c => c.teacher?.id === currentUser.id));
+        } else {
+            setMyCourses(courses);
+        }
     };
 
     const fetchAllLmsData = async () => {
@@ -115,24 +147,36 @@ const AppContent = () => {
             const courses = await api.courses.getAll();
             let allAss = [];
             let allSubs = [];
+
             for (const course of courses) {
                 const assigns = await api.assignments.getByCourse(course.id);
-                if(assigns) {
+                if(assigns && Array.isArray(assigns)) {
                     allAss = [...allAss, ...assigns.map(a => ({...a, courseId: course.id}))];
+
                     if (currentUser.role !== 'STUDENT') {
                         for (const assign of assigns) {
                             const subs = await api.assignments.getSubmissions(assign.id);
-                            if(subs) allSubs = [...allSubs, ...subs.map(s => ({...s, assignmentId: assign.id}))];
+                            if(subs && Array.isArray(subs)) {
+                                allSubs = [...allSubs, ...subs.map(s => ({...s, assignmentId: assign.id}))];
+                            }
                         }
                     }
                 }
             }
             setAllAssignments(allAss);
             setAllSubmissions(allSubs);
-        } catch (e) { console.error("LMS Data Error", e); }
+
+            const ungraded = allSubs.filter(s => s.status === 'SUBMITTED');
+            setUngradedSubmissions(ungraded);
+
+        } catch (e) {
+            console.error("LMS Data Error", e);
+        }
     };
 
     const showMessage = (msg) => { setMessage(msg); setTimeout(() => setMessage(''), 3000); };
+
+    // --- ACTIONS ---
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -140,7 +184,16 @@ const AppContent = () => {
         try {
             const data = await api.auth.login(loginForm);
             if (data && data.token) {
-                login({ id: data.id, username: data.username, fullName: data.fullName, role: data.role, language: data.language }, data.token);
+                // --- FIX: Inkludera profilePictureUrl här ---
+                login({
+                    id: data.id,
+                    username: data.username,
+                    fullName: data.fullName,
+                    role: data.role,
+                    language: data.language,
+                    profilePictureUrl: data.profilePictureUrl // <--- NU SPARAS BILDEN
+                }, data.token);
+                // --------------------------------------------
             } else {
                 setError(t('messages.login_failed'));
             }
@@ -188,9 +241,22 @@ const AppContent = () => {
         try {
             await api.documents.upload(currentUser.id, fd);
             showMessage(t('messages.upload_success'));
-            const docs = await api.documents.getAll();
+
+            // Uppdatera
+            const docs = currentUser.role === 'STUDENT'
+                ? await api.documents.getUserDocs(currentUser.id)
+                : await api.documents.getAll();
             setDocuments(docs);
         } catch { setError(t('messages.upload_error')); }
+    };
+
+    const handleDeleteDoc = async (id) => {
+        if(!window.confirm("Är du säker på att du vill radera filen?")) return;
+        try {
+            await api.documents.delete(id);
+            setDocuments(prev => prev.filter(d => d.id !== id));
+            showMessage("Fil raderad.");
+        } catch { setError("Kunde inte radera filen."); }
     };
 
     const handleUpdateSetting = async (key, value) => {
@@ -206,8 +272,8 @@ const AppContent = () => {
         try {
             await api.users.delete(u.id);
             showMessage(t('messages.user_deleted'));
-            const users = await api.users.getAll();
-            setUsers(users);
+            const newUsers = await api.users.getAll();
+            setUsers(newUsers);
         } catch { setError(t('messages.delete_error')); }
     };
 
@@ -218,17 +284,11 @@ const AppContent = () => {
             showMessage(t('messages.course_deleted'));
             const c = await api.courses.getAll();
             setAllCourses(c);
+            setAvailableCourses(c);
         } catch { setError(t('messages.course_delete_error')); }
     };
 
-    const handleDeleteDoc = async (id) => {
-        if(!window.confirm("Radera?")) return;
-        try {
-            await api.documents.delete(id);
-            const d = await api.documents.getAll();
-            setDocuments(d);
-        } catch {}
-    };
+    // --- RENDERING ---
 
     if (licenseStatus === 'checking') return <div className="h-screen flex items-center justify-center bg-gray-900 text-white"><Loader2 className="animate-spin"/></div>;
     if (licenseStatus === 'locked') return <LicenseLockScreen onActivate={handleActivateLicense} error={licenseError} isLoading={isLoading} />;
@@ -264,7 +324,7 @@ const AppContent = () => {
                                 users={users} currentUser={currentUser}
                                 handleAttemptDeleteUser={handleDeleteUser}
                                 courses={allCourses} handleDeleteCourse={handleDeleteCourse}
-                                allDocuments={documents} fetchAllDocuments={async () => { const d = await api.documents.getAll(); setDocuments(d); }}
+                                allDocuments={documents} fetchAllDocuments={initData}
                                 handleDeleteDoc={handleDeleteDoc}
                                 handleAdminUpload={handleAdminUpload}
                                 systemSettings={systemSettings} onUpdateSetting={handleUpdateSetting}
@@ -281,29 +341,44 @@ const AppContent = () => {
                     <Route path="/documents" element={
                         <DocumentManager
                             documents={documents}
-                            handleUploadDoc={async (file) => { /* User upload logic if needed */ }}
-                            handleDeleteDoc={async (id) => { /* User delete logic */ }}
+                            myCourses={myCourses}
+                            handleUploadDoc={handleAdminUpload}
+                            handleDeleteDoc={handleDeleteDoc}
                             currentUser={currentUser}
                         />
                     }/>
 
                     <Route path="/profile" element={
-                        <UserProfile currentUser={currentUser} showMessage={showMessage} refreshUser={initData} API_BASE={'http://127.0.0.1:8080/api'} getAuthHeaders={() => ({ 'Authorization': `Bearer ${token}` })} />
+                        <UserProfile
+                            currentUser={currentUser}
+                            showMessage={showMessage}
+                            refreshUser={initData}
+                            API_BASE={'http://127.0.0.1:8080/api'}
+                            getAuthHeaders={() => ({ 'Authorization': `Bearer ${token}` })}
+                        />
                     }/>
 
                     <Route path="/catalog" element={
                         <CourseCatalog
                             availableCourses={availableCourses}
-                            handleEnroll={async (cid) => { await api.courses.enroll(cid, currentUser.id); showMessage(t('messages.joined_course')); initData(); }}
+                            handleEnroll={async (cid) => {
+                                await api.courses.enroll(cid, currentUser.id);
+                                showMessage(t('messages.joined_course'));
+                                initData();
+                            }}
                         />
                     }/>
 
                     <Route path="*" element={<Navigate to="/" />} />
                 </Routes>
 
-                {/* --- VILLKORLIG RENDERING AV CHATTEN --- */}
-                {systemSettings['chat_enabled'] === 'true' && (
-                    <ChatOverlay currentUser={currentUser} API_BASE={'http://127.0.0.1:8080/api'} token={token} />
+                {/* DYNAMISK CHATT-MODUL */}
+                {systemSettings && systemSettings[ChatModuleMetadata.settingsKey] === 'true' && (
+                    <ChatModule
+                        currentUser={currentUser}
+                        API_BASE={'http://127.0.0.1:8080/api'}
+                        token={token}
+                    />
                 )}
             </Layout>
         </BrowserRouter>
@@ -324,9 +399,7 @@ const CourseWrapper = ({ currentUser, users, showMessage }) => {
     if (!course) return <div>{t('messages.loading_course')}</div>;
 
     return (
-        <CourseDetail
-            currentUser={currentUser}
-        />
+        <CourseDetail currentUser={currentUser} />
     );
 };
 

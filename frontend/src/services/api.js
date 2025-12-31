@@ -68,12 +68,24 @@ export const api = {
     courses: {
         getAll: () => fetch(`${API_BASE}/courses`, { headers: getHeaders() }).then(handleResponse),
         getOne: (id) => fetch(`${API_BASE}/courses/${id}`, { headers: getHeaders() }).then(handleResponse),
-        getAvailable: (userId) => fetch(`${API_BASE}/courses/available/${userId}`, { headers: getHeaders() }).then(handleResponse),
-        create: (data, teacherId) => fetch(`${API_BASE}/courses?teacherId=${teacherId}`, { method: 'POST', headers: getHeaders(), body: JSON.stringify(data) }).then(handleResponse),
-        update: (id, data) => fetch(`${API_BASE}/courses/${id}`, { method: 'PUT', headers: getHeaders(), body: JSON.stringify(data) }).then(handleResponse),
+
+        // FIX: Backend kräver teacherId som query param: POST /api/courses?teacherId=123
+        create: (data, teacherId) => fetch(`${API_BASE}/courses?teacherId=${teacherId}`, {
+            method: 'POST',
+            headers: getHeaders(),
+            body: JSON.stringify(data)
+        }).then(handleResponse),
+
+        enroll: (cid, uid) => fetch(`${API_BASE}/courses/${cid}/enroll/${uid}`, { method: 'POST', headers: getHeaders() }).then(handleResponse),
+
         delete: (id) => fetch(`${API_BASE}/courses/${id}`, { method: 'DELETE', headers: getHeaders() }).then(handleResponse),
-        toggleStatus: (id) => fetch(`${API_BASE}/courses/${id}/toggle-status`, { method: 'PUT', headers: getHeaders() }).then(handleResponse),
-        enroll: (courseId, studentId) => fetch(`${API_BASE}/courses/${courseId}/enroll/${studentId}`, { method: 'POST', headers: getHeaders() }).then(handleResponse),
+
+        // NY: Update (PUT)
+        update: (id, data) => fetch(`${API_BASE}/courses/${id}`, {
+            method: 'PUT',
+            headers: getHeaders(),
+            body: JSON.stringify(data)
+        }).then(handleResponse),
     },
     documents: {
         getAll: () => fetch(`${API_BASE}/documents/all`, { headers: getHeaders() }).then(handleResponse),

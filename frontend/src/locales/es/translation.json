@@ -371,5 +371,16 @@
     "joined_course": "¡Unido!",
     "loading": "Cargando...",
     "loading_course": "Cargando curso..."
+  },
+
+  "gamification": {
+    "level_title": "NIVEL ACTUAL",
+    "points_to_next": "puntos para el siguiente nivel",
+    "my_badges": "Mis Insignias",
+    "rank_newbie": "Novato",
+    "rank_apprentice": "Aprendiz",
+    "rank_expert": "Experto",
+    "rank_master": "Maestro",
+    "rank_legend": "Leyenda"
   }
 }

@@ -371,5 +371,16 @@
     "joined_course": "Rejoint !",
     "loading": "Chargement...",
     "loading_course": "Chargement du cours..."
+  },
+
+  "gamification": {
+    "level_title": "NIVEAU ACTUEL",
+    "points_to_next": "points pour le niveau suivant",
+    "my_badges": "Mes Badges",
+    "rank_newbie": "Novice",
+    "rank_apprentice": "Apprenti",
+    "rank_expert": "Expert",
+    "rank_master": "Maître",
+    "rank_legend": "Légende"
   }
 }

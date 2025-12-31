@@ -41,13 +41,15 @@ public class CourseController {
         }
     }
 
+    // --- FIX: Ändrat till Map för att matcha Service och hantera partial updates ---
     @PutMapping("/{id}")
-    public ResponseEntity<CourseDTO> updateCourse(@PathVariable Long id, @RequestBody CourseDTO courseDTO) {
+    public ResponseEntity<CourseDTO> updateCourse(@PathVariable Long id, @RequestBody Map<String, Object> updates) {
         try {
-            // Anropar servicen för att spara ändringarna
-            CourseDTO updatedCourse = courseService.updateCourse(id, courseDTO);
+            // Nu matchar detta signaturen i CourseService: updateCourse(Long, Map)
+            CourseDTO updatedCourse = courseService.updateCourse(id, updates);
             return ResponseEntity.ok(updatedCourse);
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.badRequest().build();
         }
     }

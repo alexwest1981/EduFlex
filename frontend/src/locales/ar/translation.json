@@ -371,5 +371,16 @@
     "joined_course": "تم الانضمام!",
     "loading": "جاري التحميل...",
     "loading_course": "جاري تحميل الدورة..."
+  },
+
+  "gamification": {
+    "level_title": "المستوى الحالي",
+    "points_to_next": "نقطة للمستوى التالي",
+    "my_badges": "شاراتي",
+    "rank_newbie": "مبتدأ",
+    "rank_apprentice": "متدرب",
+    "rank_expert": "خبير",
+    "rank_master": "سيد",
+    "rank_legend": "أسطورة"
   }
 }
