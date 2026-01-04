@@ -5,36 +5,33 @@ import {
     Zap, ShieldAlert
 } from 'lucide-react';
 import { api } from '../../services/api.js';
+import { useAppContext } from '../../context/AppContext'; // VIKTIGT: Importera Context
 import { useTranslation } from 'react-i18next';
 import RichTextEditor from '../../components/RichTextEditor.jsx';
 
 const CourseForum = ({ courseId, currentUser }) => {
     const { t, i18n } = useTranslation();
-    const [view, setView] = useState('categories'); // 'categories', 'threads', 'create', 'thread_detail'
 
-    // Data State
+    // Hämta refreshUser från context för att kunna uppdatera poängen live
+    const { refreshUser } = useAppContext();
+
+    const [view, setView] = useState('categories');
     const [categories, setCategories] = useState([]);
     const [threads, setThreads] = useState([]);
     const [currentCategory, setCurrentCategory] = useState(null);
     const [currentThread, setCurrentThread] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
-
-    // UI State
     const [showCreateCategoryModal, setShowCreateCategoryModal] = useState(false);
     const [xpNotification, setXpNotification] = useState(null);
 
-    // Forms
     const [newThread, setNewThread] = useState({ title: '', content: '' });
     const [replyContent, setReplyContent] = useState('');
-
-    // Forms för ny kategori
     const [newCategoryName, setNewCategoryName] = useState('');
     const [newCategoryDesc, setNewCategoryDesc] = useState('');
     const [newCategoryTeacherOnly, setNewCategoryTeacherOnly] = useState(false);
 
     const isTeacher = currentUser.role === 'TEACHER' || currentUser.role === 'ADMIN';
 
-    // --- GAMIFICATION HELPER ---
     const triggerXp = (amount, text) => {
         setXpNotification({ amount, text });
         setTimeout(() => setXpNotification(null), 3000);
@@ -48,26 +45,19 @@ const CourseForum = ({ courseId, currentUser }) => {
 
     const formatDate = (dateStr) => new Date(dateStr).toLocaleString(i18n.language, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
 
-    // --- DATA LOADING ---
     useEffect(() => {
         if(courseId) loadCategories();
     }, [courseId]);
 
-    // FIX: Hämtar nu även antalet trådar för varje kategori
     const loadCategories = async () => {
         setIsLoading(true);
         try {
             const cats = await api.forum.getCategories(courseId);
-
             if (Array.isArray(cats)) {
-                // Vi måste hämta trådarna (eller count) för varje kategori för att siffran ska stämma
                 const catsWithCounts = await Promise.all(cats.map(async (cat) => {
                     try {
                         const catThreads = await api.forum.getThreads(cat.id);
-                        return {
-                            ...cat,
-                            threadCount: Array.isArray(catThreads) ? catThreads.length : 0
-                        };
+                        return { ...cat, threadCount: Array.isArray(catThreads) ? catThreads.length : 0 };
                     } catch {
                         return { ...cat, threadCount: 0 };
                     }
@@ -99,7 +89,6 @@ const CourseForum = ({ courseId, currentUser }) => {
         }
     };
 
-    // --- ACTIONS ---
     const handleCreateCategory = async (e) => {
         e.preventDefault();
         if (!newCategoryName) return;
@@ -113,6 +102,7 @@ const CourseForum = ({ courseId, currentUser }) => {
             setNewCategoryName(''); setNewCategoryDesc(''); setNewCategoryTeacherOnly(false);
             await loadCategories();
             triggerXp(50, "Kategori skapad!");
+            refreshUser(); // UPPDATERA ANVÄNDARE
         } catch (e) { alert("Kunde inte skapa kategori."); }
     };
 
@@ -124,6 +114,7 @@ const CourseForum = ({ courseId, currentUser }) => {
             setNewThread({ title: '', content: '' });
             handleSelectCategory(currentCategory);
             triggerXp(20, "Tråd skapad!");
+            refreshUser(); // UPPDATERA ANVÄNDARE
         } catch (e) { alert(t('forum.create_error')); }
     };
 
@@ -137,6 +128,7 @@ const CourseForum = ({ courseId, currentUser }) => {
             setThreads(threads.map(t => t.id === updatedThread.id ? updatedThread : t));
             setReplyContent('');
             triggerXp(10, "Svar postat!");
+            refreshUser(); // UPPDATERA ANVÄNDARE
         } catch (e) { alert(t('forum.reply_error')); }
     };
 
@@ -146,7 +138,6 @@ const CourseForum = ({ courseId, currentUser }) => {
         try {
             await api.forum.deleteThread(threadId);
             setThreads(threads.filter(t => t.id !== threadId));
-            // Uppdatera även kategorilistan i bakgrunden så count stämmer nästa gång
             loadCategories();
         } catch (e) { alert("Kunde inte ta bort tråd."); }
     };
@@ -171,7 +162,6 @@ const CourseForum = ({ courseId, currentUser }) => {
         } catch (e) { alert("Kunde inte ta bort inlägg."); }
     };
 
-    // --- RENDERERS ---
     const renderXpToast = () => {
         if (!xpNotification) return null;
         return (
@@ -204,8 +194,6 @@ const CourseForum = ({ courseId, currentUser }) => {
                                 <div className="relative z-10">
                                     <div className="flex justify-between items-start mb-2">
                                         <div className={`p-3 rounded-xl w-fit ${cat.teacherOnly ? 'bg-amber-100 text-amber-700' : 'bg-indigo-50 text-indigo-600'}`}>{cat.teacherOnly ? <Lock size={20}/> : <MessageSquare size={20}/>}</div>
-
-                                        {/* FIX: Visar nu threadCount som vi beräknade i loadCategories */}
                                         <div className="text-right">
                                             <span className="text-2xl font-bold text-gray-300 group-hover:text-indigo-200 transition-colors">
                                                 {cat.threadCount !== undefined ? cat.threadCount : (cat.threads ? cat.threads.length : 0)}
