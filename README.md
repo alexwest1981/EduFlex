@@ -119,12 +119,11 @@ Certifikat genereras dynamiskt med **OpenPDF**:
 | ![Student](docs/images/dashboard-student1.png) | ![Teacher](docs/images/dashboard-teacher1.png) | ![Admin](docs/images/dashboard-admin1.png) |
 
 ### Gamification & Certifikat
-| Widgets | Certifikat |
-|:--:|:--:|
-| ![Gamification](docs/images/gamification-widgets.png) | ![Certificate](docs/images/certificate-sample.png) |
+| Widgets | Certifikat | CourseDetail |
+|:--:|:--:|:--:|
+| ![Gamification](docs/images/gamification-widgets.png) | ![Certificate](docs/images/certificate-sample.png) | ![CourseDetail](docs/images/course-detail.png) |
 
-### CourseDetail
-![CourseDetail](docs/images/course-detail.png)
+
 
 ---
 
