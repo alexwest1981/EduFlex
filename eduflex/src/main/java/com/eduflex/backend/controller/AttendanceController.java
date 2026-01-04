@@ -36,7 +36,7 @@ public class AttendanceController {
     // 2. Student: Hämta events och se min status
     @GetMapping("/course/{courseId}/student/{studentId}")
     public ResponseEntity<List<Map<String, Object>>> getStudentAttendance(@PathVariable Long courseId, @PathVariable Long studentId) {
-        List<CourseEvent> events = eventRepository.findByCourseIdOrderByDateAsc(courseId);
+        List<CourseEvent> events = eventRepository.findByCourseIdOrderByStartTimeAsc(courseId);
 
         List<Map<String, Object>> response = events.stream().map(event -> {
             Attendance att = attendanceRepository.findByEventIdAndStudentId(event.getId(), studentId);

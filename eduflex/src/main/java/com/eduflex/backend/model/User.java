@@ -1,7 +1,7 @@
 package com.eduflex.backend.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty; // VIKTIGT: Denna import behövdes
 import jakarta.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
@@ -29,7 +29,9 @@ public class User {
     private String language = "sv";
     private String profilePictureUrl;
 
-    @JsonIgnore
+    // FIX: Byt @JsonIgnore mot detta.
+    // Det gör att lösenordet kan skrivas (vid registrering) men inte läsas (vid hämtning).
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
     @Enumerated(EnumType.STRING)

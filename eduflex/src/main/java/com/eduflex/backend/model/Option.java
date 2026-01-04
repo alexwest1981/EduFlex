@@ -1,6 +1,7 @@
 package com.eduflex.backend.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty; // <--- VIKTIG IMPORT
 import jakarta.persistence.*;
 
 @Entity
@@ -11,6 +12,8 @@ public class Option {
     private Long id;
 
     private String text;
+
+    @JsonProperty("isCorrect")
     private boolean isCorrect;
 
     @ManyToOne
@@ -30,8 +33,10 @@ public class Option {
     public void setId(Long id) { this.id = id; }
     public String getText() { return text; }
     public void setText(String text) { this.text = text; }
+
     public boolean isCorrect() { return isCorrect; }
     public void setCorrect(boolean correct) { isCorrect = correct; }
+
     public Question getQuestion() { return question; }
     public void setQuestion(Question question) { this.question = question; }
 }

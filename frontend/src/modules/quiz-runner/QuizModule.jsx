@@ -3,6 +3,7 @@ import { HelpCircle, Plus, Trash2, Edit, PlayCircle, Award } from 'lucide-react'
 import { useTranslation } from 'react-i18next';
 import { api } from '../../services/api';
 import { QuizBuilderModal, QuizRunnerModal } from './QuizModals';
+import { useAppContext } from '../../context/AppContext';
 
 // Metadata för systemet (används för dynamisk laddning)
 export const QuizModuleMetadata = {
@@ -17,6 +18,7 @@ export const QuizModuleMetadata = {
 
 const QuizModule = ({ courseId, currentUser, isTeacher }) => {
     const { t } = useTranslation();
+    const { refreshUser } = useAppContext(); // <--- Hämta refreshUser
     const [quizzes, setQuizzes] = useState([]);
     const [activeQuiz, setActiveQuiz] = useState(null);
     const [editingQuiz, setEditingQuiz] = useState(null);
@@ -60,8 +62,14 @@ const QuizModule = ({ courseId, currentUser, isTeacher }) => {
     const handleSubmitResult = async (quizId, score, maxScore) => {
         try {
             await api.quiz.submit(quizId, { studentId: currentUser.id, score, maxScore });
-            setActiveQuiz(null);
-        } catch (e) { console.error(e); }
+
+            loadQuizzes();
+
+            if (refreshUser) await refreshUser();
+
+        } catch (e) {
+            console.error(e);
+        }
     };
 
     return (

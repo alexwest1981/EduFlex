@@ -1,18 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Loader2, Download } from 'lucide-react'; // Importerade Download
+import { ArrowLeft, Loader2, Download } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { api } from '../services/api';
+import { api } from '../../services/api';
 
 // --- CONTEXT ---
-import { useAppContext } from '../context/AppContext';
+import { useAppContext } from '../../context/AppContext';
 
 // --- MODULER ---
-import CourseContentModule, { CourseContentModuleMetadata } from '../modules/course-content/CourseContentModule';
-import QuizModule, { QuizModuleMetadata } from '../modules/quiz-runner/QuizModule';
-import AssignmentsModule, { AssignmentsModuleMetadata } from '../modules/assignments/AssignmentsModule';
-import ForumModule, { ForumModuleMetadata } from '../modules/forum/ForumModule';
-import ParticipantsModule, { ParticipantsModuleMetadata } from '../modules/participants/ParticipantsModule';
+import CourseContentModule, { CourseContentModuleMetadata } from '../../modules/course-content/CourseContentModule';
+import QuizModule, { QuizModuleMetadata } from '../../modules/quiz-runner/QuizModule';
+import AssignmentsModule, { AssignmentsModuleMetadata } from '../../modules/assignments/AssignmentsModule';
+import ForumModule, { ForumModuleMetadata } from '../../modules/forum/ForumModule';
+import ParticipantsModule, { ParticipantsModuleMetadata } from '../../modules/participants/ParticipantsModule';
 
 const CourseDetail = ({ currentUser }) => {
     const { id } = useParams();

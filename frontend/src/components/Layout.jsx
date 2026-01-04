@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
-import { LayoutDashboard, FileText, User, Settings, LogOut, Layers, Menu, X, Award, Zap, Moon, Sun } from 'lucide-react';
+import { LayoutDashboard, FileText, User, Settings, LogOut, Layers, Menu, X, Award, Zap, Moon, Sun, Calendar } from 'lucide-react';
 import { useAppContext } from '../context/AppContext';
 import { useTranslation } from 'react-i18next';
 
@@ -19,11 +19,9 @@ const Layout = ({ children }) => {
     const gamificationActive = systemSettings && systemSettings['gamification_enabled'] === 'true';
     const darkModeActive = systemSettings && systemSettings['dark_mode_enabled'] === 'true';
 
-    // HÄMTA SIDANS NAMN (Fallback till EduFlex)
-    const siteName = systemSettings['site_name'] || "EduFlex";
-
     const navItems = [
         { path: '/', icon: <LayoutDashboard size={20} />, label: t('sidebar.dashboard') },
+        { path: '/calendar', icon: <Calendar size={20} />, label: t('sidebar.calendar') || 'Kalender' },
         ...(currentUser?.role === 'ADMIN' ? [{ path: '/admin', icon: <Settings size={20} />, label: t('sidebar.admin') }] : []),
         { path: '/catalog', icon: <Layers size={20} />, label: t('sidebar.catalog') },
         { path: '/documents', icon: <FileText size={20} />, label: t('sidebar.documents') },
@@ -35,11 +33,10 @@ const Layout = ({ children }) => {
 
             <aside className={`${sidebarOpen ? 'w-64' : 'w-20'} bg-white dark:bg-[#1E1F20] border-r border-gray-200 dark:border-[#282a2c] transition-all duration-300 flex flex-col fixed h-full z-20 shadow-sm`}>
 
-                {/* LOGO: Neutral Svart/Vit - MEN MED DYNAMISKT NAMN */}
+                {/* LOGO */}
                 <div className="h-16 flex items-center px-6 border-b border-gray-100 dark:border-[#282a2c]">
                     <div className="w-8 h-8 bg-black dark:bg-white rounded-lg flex items-center justify-center text-white dark:text-black font-bold text-xl mr-3 shadow-sm">E</div>
-                    {/* HÄR ÄR ÄNDRINGEN: Visar siteName */}
-                    {sidebarOpen && <span className="font-bold text-xl tracking-tight text-gray-800 dark:text-white">{siteName}</span>}
+                    {sidebarOpen && <span className="font-bold text-xl tracking-tight text-gray-800 dark:text-white">{systemSettings['site_name'] || "EduFlex"}</span>}
                 </div>
 
                 <div className={`p-6 flex flex-col items-center border-b border-gray-100 dark:border-[#282a2c] transition-all ${!sidebarOpen && 'px-2'}`}>
@@ -55,13 +52,20 @@ const Layout = ({ children }) => {
                             <span className="text-[10px] uppercase font-bold text-gray-500 dark:text-gray-400 tracking-wider">{currentUser?.role}</span>
                         </div>
                     )}
+
+                    {/* FIX: Dynamisk Gamification-data */}
                     {sidebarOpen && gamificationActive && (
                         <div className="mt-4 w-full bg-gradient-to-r from-amber-50 to-orange-50 dark:from-[#282a2c] dark:to-[#282a2c] border border-amber-200 dark:border-[#3c4043] rounded-xl p-3 flex items-center justify-between animate-in zoom-in duration-300">
                             <div className="flex items-center gap-2">
                                 <div className="bg-white dark:bg-[#3c4043] p-1.5 rounded-full text-amber-600 dark:text-amber-400 shadow-sm"><Award size={16}/></div>
-                                <div className="text-left"><p className="text-[10px] font-bold text-amber-800 dark:text-amber-400 uppercase">Level 5</p><p className="text-xs font-bold text-gray-800 dark:text-gray-300">Expert</p></div>
+                                <div className="text-left">
+                                    <p className="text-[10px] font-bold text-amber-800 dark:text-amber-400 uppercase">Level {currentUser?.level || 1}</p>
+                                    <p className="text-xs font-bold text-gray-800 dark:text-gray-300">{currentUser?.role === 'STUDENT' ? 'Student' : currentUser?.role === 'TEACHER' ? 'Lärare' : 'Admin'}</p>
+                                </div>
                             </div>
-                            <div className="text-amber-600 dark:text-amber-400 font-bold text-xs flex items-center gap-1"><Zap size={12} fill="currentColor"/> 2.4k</div>
+                            <div className="text-amber-600 dark:text-amber-400 font-bold text-xs flex items-center gap-1">
+                                <Zap size={12} fill="currentColor"/> {currentUser?.points || 0}
+                            </div>
                         </div>
                     )}
                 </div>

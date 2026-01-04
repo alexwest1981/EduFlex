@@ -1,42 +1,60 @@
 package com.eduflex.backend.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "submissions")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class Submission {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String fileUrl;
+    private String fileName;
+
+    // --- LÄGG TILL DETTA FÄLT ---
+    private String fileType;
+    // ----------------------------
+
+    private LocalDateTime submittedAt;
+    private String grade;
+    private String feedback;
+
     @ManyToOne
-    @JoinColumn(name = "assignment_id", nullable = false)
+    @JoinColumn(name = "assignment_id")
     private Assignment assignment;
 
     @ManyToOne
-    @JoinColumn(name = "student_id", nullable = false)
-    @JsonIgnoreProperties({"password", "courses"})
+    @JoinColumn(name = "student_id")
     private User student;
 
-    private String fileName;
-    private String fileUrl;
-    private String fileType;
+    // Getters & Setters
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    private LocalDateTime submittedAt;
+    public String getFileUrl() { return fileUrl; }
+    public void setFileUrl(String fileUrl) { this.fileUrl = fileUrl; }
 
-    // Betygsfält
-    private String grade; // T.ex. "G", "VG", "IG"
+    public String getFileName() { return fileName; }
+    public void setFileName(String fileName) { this.fileName = fileName; }
 
-    @Column(length = 1000)
-    private String feedback; // Lärarens kommentar
+    // --- LÄGG TILL GETTER & SETTER FÖR FILETYPE ---
+    public String getFileType() { return fileType; }
+    public void setFileType(String fileType) { this.fileType = fileType; }
+    // ----------------------------------------------
+
+    public LocalDateTime getSubmittedAt() { return submittedAt; }
+    public void setSubmittedAt(LocalDateTime submittedAt) { this.submittedAt = submittedAt; }
+
+    public String getGrade() { return grade; }
+    public void setGrade(String grade) { this.grade = grade; }
+
+    public String getFeedback() { return feedback; }
+    public void setFeedback(String feedback) { this.feedback = feedback; }
+
+    public Assignment getAssignment() { return assignment; }
+    public void setAssignment(Assignment assignment) { this.assignment = assignment; }
+
+    public User getStudent() { return student; }
+    public void setStudent(User student) { this.student = student; }
 }

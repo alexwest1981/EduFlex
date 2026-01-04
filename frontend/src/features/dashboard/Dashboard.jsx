@@ -1,20 +1,17 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import AdminDashboard from '../modules/dashboard/AdminDashboard';
-import TeacherDashboard from '../modules/dashboard/TeacherDashboard';
-import StudentDashboard from '../modules/dashboard/StudentDashboard';
+import { useAppContext } from '../../context/AppContext'; // Uppdaterad sökväg
 
-const Dashboard = ({
-                       currentUser,
-                       myCourses,
-                       allCourses,
-                       documents,
-                       upcomingAssignments,
-                       ungradedSubmissions,
-                       users,
-                       handleToggleCourseStatus
-                   }) => {
-    // Enkel routing baserat på roll
+// Importera vyerna från SAMMA mapp (.)
+import AdminDashboard from './AdminDashboard';
+import TeacherDashboard from './TeacherDashboard';
+import StudentDashboard from './StudentDashboard';
+
+const Dashboard = ({ currentUser, myCourses, upcomingAssignments, users, allCourses, documents, ungradedSubmissions, handleToggleCourseStatus }) => {
+
+    // Fallback om currentUser inte laddats än
+    if (!currentUser) return null;
+
     if (currentUser.role === 'ADMIN') {
         return (
             <AdminDashboard
@@ -36,7 +33,6 @@ const Dashboard = ({
         );
     }
 
-    // Default: Student
     return (
         <StudentDashboard
             currentUser={currentUser}

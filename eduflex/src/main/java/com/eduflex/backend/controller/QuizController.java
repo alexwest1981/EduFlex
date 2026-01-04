@@ -2,6 +2,7 @@ package com.eduflex.backend.controller;
 
 import com.eduflex.backend.model.*;
 import com.eduflex.backend.repository.*;
+import com.eduflex.backend.service.GamificationService; // <--- NY IMPORT
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,7 +12,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/quizzes")
-// 👇 HÄR ÄR RADEN SOM SAKNADES I DIN FIL 👇
 @CrossOrigin(origins = "*", allowedHeaders = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE})
 public class QuizController {
 
@@ -19,12 +19,14 @@ public class QuizController {
     private final QuizResultRepository resultRepository;
     private final CourseRepository courseRepository;
     private final UserRepository userRepository;
+    private final GamificationService gamificationService;
 
-    public QuizController(QuizRepository q, QuizResultRepository r, CourseRepository c, UserRepository u) {
+    public QuizController(QuizRepository q, QuizResultRepository r, CourseRepository c, UserRepository u, GamificationService g) {
         this.quizRepository = q;
         this.resultRepository = r;
         this.courseRepository = c;
         this.userRepository = u;
+        this.gamificationService = g; // <--- INJICERA HÄR
     }
 
     @GetMapping("/course/{courseId}")
@@ -36,11 +38,9 @@ public class QuizController {
     public ResponseEntity<Quiz> updateQuiz(@PathVariable Long id, @RequestBody Quiz quizData) {
         Quiz existingQuiz = quizRepository.findById(id).orElseThrow();
 
-        // 1. Uppdatera enkla fält
         existingQuiz.setTitle(quizData.getTitle());
         existingQuiz.setDescription(quizData.getDescription());
 
-        // 2. Hantera frågorna
         if (existingQuiz.getQuestions() == null) {
             existingQuiz.setQuestions(new ArrayList<>());
         } else {
@@ -49,10 +49,10 @@ public class QuizController {
 
         if (quizData.getQuestions() != null) {
             for (Question q : quizData.getQuestions()) {
-                q.setQuiz(existingQuiz); // Sätt relationen
+                q.setQuiz(existingQuiz);
                 if (q.getOptions() != null) {
                     for (Option o : q.getOptions()) {
-                        o.setQuestion(q); // Sätt relationen för alternativen
+                        o.setQuestion(q);
                     }
                 }
                 existingQuiz.getQuestions().add(q);
@@ -96,7 +96,27 @@ public class QuizController {
         result.setScore(score);
         result.setMaxScore(maxScore);
 
-        return ResponseEntity.ok(resultRepository.save(result));
+        QuizResult savedResult = resultRepository.save(result);
+
+        if (score > 0) {
+            // Ge 10 poäng per rätt svar
+            gamificationService.addPoints(studentId, score * 10);
+        }
+
+        // Om maxpoäng: Ge 'Quiz Master' badge (ID 2 i vår init-lista) + 50 bonuspoäng
+        if (score == maxScore && maxScore > 0) {
+            gamificationService.addPoints(studentId, 50);
+
+            // Hämta badge baserat på namn istället för hårdkodat ID 2 för säkerhets skull
+            // Men för nu kör vi ID 2 då vi vet att initBadges skapar den som nr 2.
+            try {
+                gamificationService.awardBadge(studentId, 2L);
+            } catch (Exception e) {
+                System.err.println("Kunde inte dela ut badge: " + e.getMessage());
+            }
+        }
+
+        return ResponseEntity.ok(savedResult);
     }
 
     @DeleteMapping("/{id}")

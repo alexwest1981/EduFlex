@@ -2,6 +2,7 @@ package com.eduflex.backend.service;
 
 import com.eduflex.backend.model.*;
 import com.eduflex.backend.repository.*;
+import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
@@ -50,11 +51,24 @@ public class GamificationService {
     }
 
     // Initieringsmetod för att skapa standard-badges om systemet är tomt
+    @PostConstruct
     public void initBadges() {
         if (badgeRepository.count() == 0) {
-            Badge b1 = new Badge(); b1.setName("Första Steget"); b1.setDescription("Du loggade in och startade din resa."); b1.setIconKey("FLAG");
-            Badge b2 = new Badge(); b2.setName("Quiz Master"); b2.setDescription("Du fick 100% rätt på ett prov."); b2.setIconKey("TROPHY");
-            Badge b3 = new Badge(); b3.setName("Flitig Myra"); b3.setDescription("Du lämnade in en uppgift i tid."); b3.setIconKey("CLOCK");
+            Badge b1 = new Badge();
+            b1.setName("Första Steget");
+            b1.setDescription("Du loggade in och startade din resa.");
+            b1.setIconKey("FLAG");
+
+            Badge b2 = new Badge();
+            b2.setName("Quiz Master");
+            b2.setDescription("Du fick 100% rätt på ett prov.");
+            b2.setIconKey("TROPHY");
+
+            Badge b3 = new Badge();
+            b3.setName("Flitig Myra");
+            b3.setDescription("Du lämnade in en uppgift i tid.");
+            b3.setIconKey("CLOCK");
+
             badgeRepository.save(b1);
             badgeRepository.save(b2);
             badgeRepository.save(b3);

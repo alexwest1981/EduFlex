@@ -1,13 +1,56 @@
-import React, { useState } from 'react';
-import { Users, Briefcase, FileText, User, Layers, Search, Lock, Unlock, File as FileIcon } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Users, Briefcase, FileText, User, Layers, Search, Lock, Unlock, File as FileIcon, Loader2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, Link } from 'react-router-dom';
+import { api } from '../../services/api'; // Glöm inte att importera API!
 
-const AdminDashboard = ({ users, courses, documents, handleToggleCourseStatus }) => {
+const AdminDashboard = () => { // Tar inga props längre
     const { t } = useTranslation();
     const navigate = useNavigate();
+
+    // Lokalt state för data
+    const [users, setUsers] = useState([]);
+    const [courses, setCourses] = useState([]);
+    const [documents, setDocuments] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+
     const [searchTerm, setSearchTerm] = useState('');
     const [filterStatus, setFilterStatus] = useState('ALL');
+
+    useEffect(() => {
+        const fetchStats = async () => {
+            setIsLoading(true);
+            try {
+                // Hämta allt parallellt
+                const [u, c, d] = await Promise.all([
+                    api.users.getAll(),
+                    api.courses.getAll(),
+                    api.documents.getAll()
+                ]);
+                setUsers(u);
+                setCourses(c);
+                setDocuments(d);
+            } catch (error) {
+                console.error("Kunde inte hämta dashboard-data", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        fetchStats();
+    }, []);
+
+    const handleToggleCourseStatus = async (courseId) => {
+        // Enkel toggle-logik (kräver att backend har stöd för update, eller specifik toggle)
+        const course = courses.find(c => c.id === courseId);
+        if (!course) return;
+        try {
+            await api.courses.update(courseId, { ...course, isOpen: !course.isOpen });
+            // Uppdatera lokalt
+            setCourses(prev => prev.map(c => c.id === courseId ? { ...c, isOpen: !c.isOpen } : c));
+        } catch (e) {
+            alert("Kunde inte ändra status.");
+        }
+    };
 
     const filteredCourses = courses.filter(c => {
         const matchesSearch = c.name.toLowerCase().includes(searchTerm.toLowerCase()) || (c.courseCode && c.courseCode.toLowerCase().includes(searchTerm.toLowerCase()));
@@ -17,6 +60,8 @@ const AdminDashboard = ({ users, courses, documents, handleToggleCourseStatus })
 
     const latestUsers = [...users].reverse().slice(0, 5);
     const latestDocs = [...documents].reverse().slice(0, 5);
+
+    if (isLoading) return <div className="p-20 flex justify-center"><Loader2 className="animate-spin text-indigo-600" size={40}/></div>;
 
     return (
         <div className="max-w-7xl mx-auto animate-in fade-in pb-20">

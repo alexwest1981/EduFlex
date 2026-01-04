@@ -5,6 +5,7 @@ import com.eduflex.backend.dto.CreateCourseDTO;
 import com.eduflex.backend.model.Course;
 import com.eduflex.backend.model.CourseEvaluation;
 import com.eduflex.backend.model.CourseMaterial;
+import com.eduflex.backend.repository.CourseRepository; // <--- NY IMPORT
 import com.eduflex.backend.service.CourseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -20,10 +21,12 @@ import java.util.Map;
 public class CourseController {
 
     private final CourseService courseService;
+    private final CourseRepository courseRepository; // <--- NYTT FÄLT
 
     @Autowired
-    public CourseController(CourseService courseService) {
+    public CourseController(CourseService courseService, CourseRepository courseRepository) { // <--- UPPDATERAD KONSTRUKTOR
         this.courseService = courseService;
+        this.courseRepository = courseRepository;
     }
 
     @GetMapping
@@ -41,11 +44,16 @@ public class CourseController {
         }
     }
 
-    // --- FIX: Ändrat till Map för att matcha Service och hantera partial updates ---
+    // --- NY ENDPOINT: Hämta kurser för en specifik student ---
+    @GetMapping("/student/{studentId}")
+    public List<Course> getStudentCourses(@PathVariable Long studentId) {
+        return courseRepository.findByStudentsId(studentId);
+    }
+    // ---------------------------------------------------------
+
     @PutMapping("/{id}")
     public ResponseEntity<CourseDTO> updateCourse(@PathVariable Long id, @RequestBody Map<String, Object> updates) {
         try {
-            // Nu matchar detta signaturen i CourseService: updateCourse(Long, Map)
             CourseDTO updatedCourse = courseService.updateCourse(id, updates);
             return ResponseEntity.ok(updatedCourse);
         } catch (Exception e) {

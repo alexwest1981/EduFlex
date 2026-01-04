@@ -1,6 +1,6 @@
 import React from 'react';
 import { MessageSquare } from 'lucide-react';
-import CourseForum from './CourseForum'; // Eller '../components/CourseForum' om du inte flyttade filen
+import CourseForum from './CourseForum';
 
 export const ForumModuleMetadata = {
     id: 'module_forum_enabled',
@@ -13,9 +13,8 @@ export const ForumModuleMetadata = {
 };
 
 const ForumModule = ({ courseId, currentUser }) => {
-    // Här kan vi lägga till extra logik i framtiden, t.ex. gamification-triggers när man postar
     return (
-        <div className="animate-in fade-in">
+        <div className="animate-in fade-in h-full">
             <CourseForum courseId={courseId} currentUser={currentUser} />
         </div>
     );

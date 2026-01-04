@@ -7,8 +7,7 @@ import com.eduflex.backend.repository.CourseRepository;
 import com.eduflex.backend.repository.UserRepository;
 import com.eduflex.backend.repository.SystemSettingRepository;
 import com.lowagie.text.*;
-import com.lowagie.text.pdf.PdfContentByte;
-import com.lowagie.text.pdf.PdfWriter;
+import com.lowagie.text.pdf.*;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
@@ -35,10 +34,9 @@ public class CertificateService {
         Course course = courseRepository.findById(courseId).orElseThrow();
         User student = userRepository.findById(studentId).orElseThrow();
 
-        // Hämta skolans namn dynamiskt, fallback till "EduFlex"
-        String schoolName = settingRepository.findById("school_name")
-                .map(SystemSetting::getValue)
-                .orElse("EduFlex Learning System");
+        String schoolName = settingRepository.findBySettingKey("school_name")
+                .map(SystemSetting::getSettingValue)
+                .orElse("EduFlex Academy");
 
         // 1. Skapa dokument (A4 Landskap)
         Document document = new Document(PageSize.A4.rotate());
@@ -46,111 +44,144 @@ public class CertificateService {
         PdfWriter writer = PdfWriter.getInstance(document, out);
 
         document.open();
-
-        // --- FÄRGER & FONTER ---
-        Color primaryColor = new Color(37, 99, 235); // Blue-600 (Samma som nya loggan)
-        Color darkColor = new Color(30, 41, 59);     // Slate-800
-
-        Font titleFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 36, primaryColor);
-        Font subTitleFont = FontFactory.getFont(FontFactory.HELVETICA, 16, Color.GRAY);
-        Font nameFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 32, darkColor);
-        Font courseFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 22, darkColor);
-        Font textFont = FontFactory.getFont(FontFactory.HELVETICA, 14, Color.BLACK);
-        Font schoolFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 18, primaryColor);
-
-        // 2. RAM & DEKORATION
         PdfContentByte canvas = writer.getDirectContent();
-        canvas.setColorStroke(primaryColor);
-        canvas.setLineWidth(4);
-        // Yttre ram
-        canvas.rectangle(20, 20, document.getPageSize().getWidth() - 40, document.getPageSize().getHeight() - 40);
+
+        // --- FÄRGER ---
+        Color goldColor = new Color(197, 160, 9);   // Guld-aktig
+        Color darkBlue = new Color(30, 41, 59);     // Mörkblå
+        Color black = Color.BLACK;
+
+        // --- TYPSNITT (Använder inbyggda standardfonter för att slippa filberoenden) ---
+        BaseFont times = BaseFont.createFont(BaseFont.TIMES_ROMAN, BaseFont.CP1252, BaseFont.NOT_EMBEDDED);
+        BaseFont timesBold = BaseFont.createFont(BaseFont.TIMES_BOLD, BaseFont.CP1252, BaseFont.NOT_EMBEDDED);
+        BaseFont helvetica = BaseFont.createFont(BaseFont.HELVETICA, BaseFont.CP1252, BaseFont.NOT_EMBEDDED);
+
+        // --- 2. RITA RAM (Klassisk Design) ---
+        float width = document.getPageSize().getWidth();
+        float height = document.getPageSize().getHeight();
+
+        // Yttre tjock ram (Guld)
+        canvas.setColorStroke(goldColor);
+        canvas.setLineWidth(8);
+        canvas.rectangle(20, 20, width - 40, height - 40);
         canvas.stroke();
 
-        // Tunn inre ram
-        canvas.setLineWidth(1);
-        canvas.setColorStroke(Color.LIGHT_GRAY);
-        canvas.rectangle(30, 30, document.getPageSize().getWidth() - 60, document.getPageSize().getHeight() - 60);
+        // Inre tunn ram (Mörkblå)
+        canvas.setColorStroke(darkBlue);
+        canvas.setLineWidth(2);
+        canvas.rectangle(35, 35, width - 70, height - 70);
         canvas.stroke();
 
-        // 3. LOGOTYP
+        // Hörn-dekorationer (Enkla cirklar i hörnen)
+        drawCornerDecoration(canvas, 35, 35, goldColor);
+        drawCornerDecoration(canvas, width - 35, 35, goldColor);
+        drawCornerDecoration(canvas, 35, height - 35, goldColor);
+        drawCornerDecoration(canvas, width - 35, height - 35, goldColor);
+
+        // --- 3. LOGOTYP (Försök ladda, annars hoppa över) ---
         try {
-            // Se till att lägga 'logo.png' i mappen 'src/main/resources/'
-            Image logo = Image.getInstance(new ClassPathResource("logo.png").getURL());
-            logo.scaleToFit(80, 80);
-            // Centrera loggan i toppen
-            logo.setAbsolutePosition((document.getPageSize().getWidth() - logo.getScaledWidth()) / 2, 480);
+            Image logo = Image.getInstance(new ClassPathResource("static/images/logo.png").getURL());
+            logo.scaleToFit(60, 60);
+            logo.setAbsolutePosition((width - logo.getScaledWidth()) / 2, height - 120);
             document.add(logo);
-        } catch (Exception e) {
-            System.out.println("Kunde inte ladda logo.png, kör utan.");
-        }
+        } catch (Exception ignored) {}
 
-        // 4. TEXTINNEHÅLL (Centrerat)
+        // --- 4. TEXTINNEHÅLL ---
 
-        // Lite space för att inte krocka med loggan
+        // Flytta ner markören lite
         Paragraph spacer = new Paragraph(" ");
-        spacer.setSpacingAfter(60);
+        spacer.setSpacingAfter(80);
         document.add(spacer);
 
-        Paragraph header = new Paragraph("KURSINTYG", titleFont);
-        header.setAlignment(Element.ALIGN_CENTER);
-        header.setSpacingAfter(30);
-        document.add(header);
+        // RUBRIK: "CERTIFICATE"
+        Font titleFont = new Font(timesBold, 42, Font.NORMAL, darkBlue);
+        Paragraph title = new Paragraph("K U R S I N T Y G", titleFont);
+        title.setAlignment(Element.ALIGN_CENTER);
+        title.setSpacingAfter(10);
+        document.add(title);
 
-        Paragraph intro = new Paragraph("Detta intygar härmed att", subTitleFont);
+        // UNDERRUBRIK: "OF COMPLETION"
+        Font subTitleFont = new Font(helvetica, 12, Font.BOLD, Color.GRAY);
+        Paragraph subTitle = new Paragraph("BEVIS PÅ GENOMFÖRD UTBILDNING", subTitleFont);
+        subTitle.setAlignment(Element.ALIGN_CENTER);
+        subTitle.setSpacingAfter(40);
+        document.add(subTitle);
+
+        // "Detta intygar att"
+        Font textFont = new Font(times, 18, Font.ITALIC, Color.BLACK);
+        Paragraph intro = new Paragraph("Härmed intygas att", textFont);
         intro.setAlignment(Element.ALIGN_CENTER);
-        intro.setSpacingAfter(10);
+        intro.setSpacingAfter(20);
         document.add(intro);
 
+        // STUDENTENS NAMN
+        Font nameFont = new Font(timesBold, 36, Font.UNDERLINE, darkBlue);
         Paragraph studentName = new Paragraph(student.getFullName(), nameFont);
         studentName.setAlignment(Element.ALIGN_CENTER);
-        studentName.setSpacingAfter(5);
+        studentName.setSpacingAfter(25);
         document.add(studentName);
 
-        // En dekorativ linje under namnet
-        PdfContentByte lineCanvas = writer.getDirectContent();
-        lineCanvas.setColorStroke(Color.GRAY);
-        lineCanvas.setLineWidth(0.5f);
-        lineCanvas.moveTo(250, 330); // Ungefärlig position, justera vid behov
-        lineCanvas.lineTo(document.getPageSize().getWidth() - 250, 330);
-        lineCanvas.stroke();
+        // "Har genomfört kursen"
+        Paragraph midText = new Paragraph("Har framgångsrikt genomfört kursen", textFont);
+        midText.setAlignment(Element.ALIGN_CENTER);
+        midText.setSpacingAfter(15);
+        document.add(midText);
 
-        Paragraph middleText = new Paragraph("\nHar framgångsrikt genomfört kursen", subTitleFont);
-        middleText.setAlignment(Element.ALIGN_CENTER);
-        middleText.setSpacingAfter(15);
-        document.add(middleText);
+        // KURSNAMN
+        Font courseFont = new Font(timesBold, 26, Font.NORMAL, black);
+        Paragraph courseName = new Paragraph(course.getName(), courseFont);
+        courseName.setAlignment(Element.ALIGN_CENTER);
+        document.add(courseName);
 
-        Paragraph courseTitle = new Paragraph(course.getName(), courseFont);
-        courseTitle.setAlignment(Element.ALIGN_CENTER);
-        document.add(courseTitle);
+        // KURSKOD & BETYG
+        Font detailsFont = new Font(helvetica, 10, Font.NORMAL, Color.GRAY);
+        Paragraph details = new Paragraph("Kurskod: " + course.getCourseCode() + "  |  Betyg: GODKÄND", detailsFont);
+        details.setAlignment(Element.ALIGN_CENTER);
+        details.setSpacingAfter(60);
+        document.add(details);
 
-        Paragraph courseCode = new Paragraph("Kurskod: " + course.getCourseCode(), textFont);
-        courseCode.setAlignment(Element.ALIGN_CENTER);
-        courseCode.setSpacingAfter(50);
-        document.add(courseCode);
-
-        // 5. SIGNATUR & DATUM (Botten)
-        // Vi använder en tabell för att snyggt separera Datum (Vänster) och Signatur (Höger)
+        // --- 5. SIGNATUR & DATUM ---
         PdfPTable table = new PdfPTable(2);
-        table.setWidthPercentage(80);
+        table.setWidthPercentage(75);
         table.setWidths(new int[]{1, 1});
 
+        // Vänster: Datum
         PdfPCell dateCell = new PdfPCell();
         dateCell.setBorder(Rectangle.NO_BORDER);
-        dateCell.addElement(new Paragraph("Datum: " + LocalDate.now().format(DateTimeFormatter.ISO_DATE), textFont));
-        dateCell.setHorizontalAlignment(Element.ALIGN_LEFT);
+        dateCell.addElement(new Paragraph("Datum: " + LocalDate.now().format(DateTimeFormatter.ISO_DATE), new Font(times, 14, Font.NORMAL, black)));
+        // Linje ovanför
+        dateCell.addElement(new Paragraph("__________________________", new Font(times, 12, Font.NORMAL, Color.LIGHT_GRAY)));
+        dateCell.addElement(new Paragraph("Utfärdat datum", new Font(helvetica, 8, Font.NORMAL, Color.GRAY)));
         table.addCell(dateCell);
 
+        // Höger: Signatur
         PdfPCell signCell = new PdfPCell();
         signCell.setBorder(Rectangle.NO_BORDER);
-        // Här visar vi det dynamiska skolnamnet
-        signCell.addElement(new Paragraph(schoolName, schoolFont));
-        signCell.addElement(new Paragraph("Signerat elektroniskt", new Font(FontFactory.HELVETICA, 10, Color.GRAY)));
         signCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
+
+        Paragraph signName = new Paragraph(schoolName, new Font(timesBold, 16, Font.ITALIC, goldColor)); // "Signatur-look"
+        signName.setAlignment(Element.ALIGN_RIGHT);
+        signCell.addElement(signName);
+
+        Paragraph signLine = new Paragraph("__________________________", new Font(times, 12, Font.NORMAL, Color.LIGHT_GRAY));
+        signLine.setAlignment(Element.ALIGN_RIGHT);
+        signCell.addElement(signLine);
+
+        Paragraph signLabel = new Paragraph("Signerat av Rektor", new Font(helvetica, 8, Font.NORMAL, Color.GRAY));
+        signLabel.setAlignment(Element.ALIGN_RIGHT);
+        signCell.addElement(signLabel);
+
         table.addCell(signCell);
 
         document.add(table);
-
         document.close();
+
         return out.toByteArray();
+    }
+
+    private void drawCornerDecoration(PdfContentByte canvas, float x, float y, Color color) {
+        canvas.setColorFill(color);
+        canvas.circle(x, y, 4);
+        canvas.fill();
     }
 }
