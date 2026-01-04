@@ -61,12 +61,13 @@ public class SecurityConfig {
                         // 1. VIKTIGT: Tillåt alltid OPTIONS (CORS pre-flight)
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
-                        // 2. Publika endpoints
+                        // 2. Publika endpoints - HÄR LIGGER LICENS-UNDANTAGET
                         .requestMatchers("/api/auth/**", "/api/users/register", "/api/users/generate-usernames").permitAll()
+                        // Tillåt licenssystem, bilduppladdningar och H2-databasen
                         .requestMatchers("/api/system/license/**", "/uploads/**", "/h2-console/**", "/ws/**").permitAll()
 
-                        // 3. KURS-REGLER - "Hängsle och livrem"
-                        // Vi kollar både "ADMIN" och "ROLE_ADMIN" för att vara säkra
+                        // 3. KURS-REGLER
+                        // Lärare och Admins får ändra i kurser
                         .requestMatchers(HttpMethod.POST, "/api/courses/**")
                         .hasAnyAuthority("ADMIN", "ROLE_ADMIN", "TEACHER", "ROLE_TEACHER")
 
@@ -76,16 +77,18 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE, "/api/courses/**")
                         .hasAnyAuthority("ADMIN", "ROLE_ADMIN", "TEACHER", "ROLE_TEACHER")
 
-                        // Alla inloggade får läsa (GET)
+                        // Alla inloggade får läsa kurser (GET)
                         .requestMatchers(HttpMethod.GET, "/api/courses/**").authenticated()
 
-                        // 4. Övrigt
+                        // 4. Övrigt - Allt annat kräver inloggning
                         .requestMatchers("/api/quizzes/**").authenticated()
                         .anyRequest().authenticated()
                 );
 
         http.authenticationProvider(authenticationProvider());
         http.addFilterBefore(authTokenFilter, UsernamePasswordAuthenticationFilter.class);
+
+        // Tillåt iFrames för H2-konsolen
         http.headers(headers -> headers.frameOptions(frame -> frame.disable()));
 
         return http.build();
@@ -94,7 +97,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        // Tillåt din frontend specifikt (säkrare) eller alla (*)
+        // Tillåt alla origins (*) för enkelhetens skull, eller specifik domän för säkerhet
         configuration.setAllowedOriginPatterns(List.of("*"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(List.of("*"));

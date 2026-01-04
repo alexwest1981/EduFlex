@@ -24,13 +24,14 @@ public class LicenseFilter extends HttpFilter {
         String path = request.getRequestURI();
 
         // Tillåt alltid licens-endpoints så man kan låsa upp systemet
-        if (path.startsWith("/api/system/license") || "OPTIONS".equals(request.getMethod())) {
+        // Vi kollar mot både den gamla och nya sökvägen för säkerhets skull
+        if (path.startsWith("/api/system/license") || path.startsWith("/api/license") || "OPTIONS".equals(request.getMethod())) {
             chain.doFilter(request, response);
             return;
         }
 
-        // Om systemet är aktivt -> kör som vanligt
-        if (licenseService.isSystemActive()) {
+        // FIX: Bytte från isSystemActive() till isValid() för att matcha nya LicenseService
+        if (licenseService.isValid()) {
             chain.doFilter(request, response);
         } else {
             // Annars blockera med 503 Service Unavailable

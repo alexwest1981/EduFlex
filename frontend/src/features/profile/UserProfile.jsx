@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Camera, Mail, Phone, MapPin, Save, Lock, User, AlertTriangle, Globe } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { api } from '../services/api';
+import { api } from '../../services/api.js';
 
 const UserProfile = ({ currentUser, showMessage, refreshUser }) => {
     const { t, i18n } = useTranslation();

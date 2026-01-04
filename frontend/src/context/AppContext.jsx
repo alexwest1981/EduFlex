@@ -7,7 +7,24 @@ export const useAppContext = () => useContext(AppContext);
 
 export const AppProvider = ({ children }) => {
     const [token, setToken] = useState(localStorage.getItem('token') || null);
-    const [currentUser, setCurrentUser] = useState(JSON.parse(localStorage.getItem('user')) || null);
+
+    // --- FIX: Säker JSON-parsning ---
+    const [currentUser, setCurrentUser] = useState(() => {
+        try {
+            const savedUser = localStorage.getItem('user');
+            // Kontrollera att det finns data och att det inte är strängen "undefined"
+            if (savedUser && savedUser !== "undefined") {
+                return JSON.parse(savedUser);
+            }
+            return null;
+        } catch (error) {
+            console.error("Kunde inte läsa användardata, rensar...", error);
+            localStorage.removeItem('user'); // Rensa trasig data
+            return null;
+        }
+    });
+    // --------------------------------
+
     const [systemSettings, setSystemSettings] = useState({});
     const [notifications, setNotifications] = useState([]);
     const [licenseStatus, setLicenseStatus] = useState('checking');
@@ -21,11 +38,13 @@ export const AppProvider = ({ children }) => {
     useEffect(() => {
         const isModuleActive = systemSettings['dark_mode_enabled'] === 'true';
 
+        // Om modulen är avstängd -> Tvinga ljust läge
         if (!isModuleActive) {
             document.documentElement.classList.remove('dark');
             return;
         }
 
+        // Om modulen är på -> Kolla användarens val
         if (theme === 'dark') {
             document.documentElement.classList.add('dark');
         } else {
@@ -58,14 +77,12 @@ export const AppProvider = ({ children }) => {
 
     const fetchSystemSettings = async () => {
         try {
-            // Vi använder direkt fetch mot din endpoint
             const response = await fetch(`${API_BASE}/settings`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             if (response.ok) {
                 const data = await response.json();
                 const settingsMap = {};
-                // Hantera både om backend skickar lista eller map
                 if (Array.isArray(data)) {
                     data.forEach(s => settingsMap[s.settingKey] = s.settingValue);
                 } else {
@@ -76,13 +93,23 @@ export const AppProvider = ({ children }) => {
         } catch (e) { console.error("Kunde inte hämta inställningar"); }
     };
 
-    // --- FUNKTIONEN SOM SAKNADES ---
+    // --- NY FUNKTION: Uppdatera användardata live ---
+    const refreshUser = async () => {
+        if (currentUser) {
+            try {
+                const updatedUser = await api.users.getById(currentUser.id);
+                setCurrentUser(updatedUser);
+                localStorage.setItem('user', JSON.stringify(updatedUser)); // Spara även i LS
+            } catch (e) {
+                console.error("Kunde inte uppdatera användare", e);
+            }
+        }
+    };
+    // ----------------------------------------------
+
     const updateSystemSetting = async (key, value) => {
         try {
-            // Optimistisk uppdatering i UI
             setSystemSettings(prev => ({ ...prev, [key]: value }));
-
-            // Skicka till backend
             await fetch(`${API_BASE}/settings/${key}`, {
                 method: 'PUT',
                 headers: {
@@ -93,10 +120,9 @@ export const AppProvider = ({ children }) => {
             });
         } catch (error) {
             console.error("Fel vid uppdatering av inställning:", error);
-            fetchSystemSettings(); // Rulla tillbaka vid fel
+            fetchSystemSettings();
         }
     };
-    // -------------------------------
 
     const fetchNotifications = async () => {
         if (!currentUser) return;
@@ -135,7 +161,7 @@ export const AppProvider = ({ children }) => {
         token, currentUser, systemSettings, notifications, licenseStatus, API_BASE,
         theme, toggleTheme,
         setLicenseStatus, login, logout, markNotificationAsRead, fetchSystemSettings,
-        updateSystemSetting // <--- Exporterad
+        updateSystemSetting, refreshUser // <--- Exponera refreshUser här
     };
 
     return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
