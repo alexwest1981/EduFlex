@@ -241,7 +241,7 @@ const CalendarView = () => {
                                         {dayEvents.slice(0, 4).map((evt, idx) => {
                                             let color = 'bg-blue-500';
                                             if (evt.type === 'course-start') color = 'bg-green-500';
-                                            if (evt.type === 'course-end') color = 'bg-red-500';
+                                            if (evt.type === 'course-end') color = 'bg-orange-500';
                                             if (evt.type === 'LECTURE') color = 'bg-purple-500';
                                             if (evt.type === 'EXAM') color = 'bg-orange-500';
                                             if (evt.type === 'ASSIGNMENT') color = 'bg-red-600';
@@ -257,7 +257,7 @@ const CalendarView = () => {
                     {/* Legend */}
                     <div className="mt-6 flex gap-4 text-xs text-gray-500 justify-center flex-wrap">
                         <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-green-500"></div> Start</div>
-                        <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-red-500"></div> Slut</div>
+                        <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-orange-500"></div> Slut</div>
                         <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-purple-500"></div> Föreläsning</div>
                         <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-red-600"></div> Deadline</div>
                     </div>

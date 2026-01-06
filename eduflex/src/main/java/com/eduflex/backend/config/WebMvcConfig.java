@@ -16,17 +16,27 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        // Exponera uploads-mappen så att filer kan nås via /uploads/...
         exposeDirectory(uploadDir, registry);
     }
 
     private void exposeDirectory(String dirName, ResourceHandlerRegistry registry) {
-        Path uploadDir = Paths.get(dirName);
-        String uploadPath = uploadDir.toFile().getAbsolutePath();
+        Path uploadDirPath = Paths.get(dirName);
 
-        if (dirName.startsWith("../")) dirName = dirName.replace("../", "");
+        // FIX: Använd toUri() för att skapa en korrekt fil-URL oavsett operativsystem (Windows/Mac/Linux)
+        // Detta löser problemet med brutna bilder på Windows.
+        String resourceLocation = uploadDirPath.toUri().toString();
 
-        registry.addResourceHandler("/" + dirName + "/**")
-                .addResourceLocations("file:/" + uploadPath + "/");
+        // Städa bort ./ och ../ för URL-mappningen (webbadressen)
+        String cleanDirName = dirName;
+        if (cleanDirName.startsWith("./")) {
+            cleanDirName = cleanDirName.substring(2);
+        }
+        if (cleanDirName.startsWith("../")) {
+            cleanDirName = cleanDirName.replace("../", "");
+        }
+
+        // Koppla URL:en /uploads/** till mappen på hårddisken
+        registry.addResourceHandler("/" + cleanDirName + "/**")
+                .addResourceLocations(resourceLocation);
     }
 }

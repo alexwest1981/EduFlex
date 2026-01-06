@@ -34,15 +34,20 @@ const Login = () => {
             const data = await response.json();
 
             if (response.ok) {
-                // HÄR ÄR FIXEN: Vi kollar bara om token finns
                 if (data.token) {
-                    // Vi bygger user-objektet från den platta datan
+                    // FIX: Vi sparar HELA objektet (minus token som hanteras separat)
+                    // Detta garanterar att points, level, firstName och badges följer med!
                     const userObj = {
                         id: data.id,
                         username: data.username,
+                        firstName: data.firstName, // <--- Nytt
+                        lastName: data.lastName,   // <--- Nytt
                         fullName: data.fullName,
                         role: data.role,
-                        profilePictureUrl: data.profilePictureUrl || null
+                        profilePictureUrl: data.profilePictureUrl || null,
+                        points: data.points,       // <--- VIKTIGT: Gamification data
+                        level: data.level,         // <--- VIKTIGT: Gamification data
+                        earnedBadges: data.earnedBadges || [] // <--- VIKTIGT
                     };
 
                     login(userObj, data.token);

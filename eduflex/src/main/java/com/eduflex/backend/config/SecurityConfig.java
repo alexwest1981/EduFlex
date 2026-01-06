@@ -61,13 +61,16 @@ public class SecurityConfig {
                         // 1. VIKTIGT: Tillåt alltid OPTIONS (CORS pre-flight)
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
-                        // 2. Publika endpoints - HÄR LIGGER LICENS-UNDANTAGET
+                        // 2. Publika endpoints - Inloggning, Registrering, Systemfiler
                         .requestMatchers("/api/auth/**", "/api/users/register", "/api/users/generate-usernames").permitAll()
-                        // Tillåt licenssystem, bilduppladdningar och H2-databasen
                         .requestMatchers("/api/system/license/**", "/uploads/**", "/h2-console/**", "/ws/**").permitAll()
 
-                        // 3. KURS-REGLER
-                        // Lärare och Admins får ändra i kurser
+                        // 3. KURS-REGLER (Specifika undantag FÖRE generella regler)
+
+                        // TILLÅT STUDENTER ATT GÅ MED: Explicita undantag för join/enroll
+                        .requestMatchers(HttpMethod.POST, "/api/courses/*/join", "/api/courses/*/enroll").authenticated()
+
+                        // Lärare och Admins får ändra i kurser (Skapa/Uppdatera/Radera)
                         .requestMatchers(HttpMethod.POST, "/api/courses/**")
                         .hasAnyAuthority("ADMIN", "ROLE_ADMIN", "TEACHER", "ROLE_TEACHER")
 
@@ -80,8 +83,11 @@ public class SecurityConfig {
                         // Alla inloggade får läsa kurser (GET)
                         .requestMatchers(HttpMethod.GET, "/api/courses/**").authenticated()
 
-                        // 4. Övrigt - Allt annat kräver inloggning
+                        // 4. Övrigt - Specifika regler
+                        .requestMatchers("/api/notifications/**").authenticated() // Fixar 403 på notiser
                         .requestMatchers("/api/quizzes/**").authenticated()
+
+                        // Allt annat kräver inloggning
                         .anyRequest().authenticated()
                 );
 
@@ -97,7 +103,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        // Tillåt alla origins (*) för enkelhetens skull, eller specifik domän för säkerhet
+        // Tillåt alla origins (*) för enkelhetens skull
         configuration.setAllowedOriginPatterns(List.of("*"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(List.of("*"));
