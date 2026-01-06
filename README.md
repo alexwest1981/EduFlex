@@ -28,7 +28,7 @@
 **EduFlex** är ett modernt, rollbaserat och modulärt **Learning Management System (LMS)** för skolor, utbildningsföretag och intern utbildning.  
 Systemet kombinerar **realtidskommunikation**, **dokumenthantering**, **gamification**, **PDF‑certifikat** och ett växande **analytics- & modulsystem** – byggt med fokus på säkerhet, skalbarhet och en exceptionell användarupplevelse.
 
-![EduFlex Dashboard Screenshot](docs/images/dashboard-student1.png)
+![EduFlex Dashboard Screenshot](docs/images/Student_overview.png)
 
 ---
 
