@@ -1,10 +1,10 @@
 import React from 'react';
 import { LayoutDashboard, BookOpen, FolderOpen, Users, UserCircle, LogOut, ShieldCheck, Calendar } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useTranslation } from 'react-i18next'; // <---
+import { useTranslation } from 'react-i18next';
 
 const Sidebar = ({ currentUser, logout, siteName, version }) => {
-    const { t } = useTranslation(); // <---
+    const { t } = useTranslation();
     const navigate = useNavigate();
     const location = useLocation();
     const currentPath = location.pathname;
@@ -18,58 +18,56 @@ const Sidebar = ({ currentUser, logout, siteName, version }) => {
         if (role === 'STUDENT') {
             items.push({ path: '/catalog', label: t('sidebar.catalog'), icon: <BookOpen size={20}/> });
         }
-
         if (role === 'ADMIN') {
             items.push({ path: '/admin', label: t('sidebar.admin'), icon: <Users size={20}/> });
         }
-
         if (role !== 'ADMIN') {
             items.push({ path: '/documents', label: t('sidebar.documents'), icon: <FolderOpen size={20}/> });
         }
-
-        // Alla kan se kalender (om du vill)
-        // items.push({ path: '/calendar', label: t('sidebar.calendar'), icon: <Calendar size={20}/> });
-
-        items.push({ path: '/profile', label: t('sidebar.my_profile'), icon: <UserCircle size={20}/> });
+        items.push({ path: '/calendar', label: t('sidebar.calendar'), icon: <Calendar size={20}/> });
 
         return items;
     };
 
-    const logoLetter = siteName ? siteName.charAt(0).toUpperCase() : 'E';
+    // FIX: Hjälpfunktion för att bygga bild-URL
+    const getProfileImage = () => {
+        if (!currentUser?.profilePictureUrl) return null;
+        // Om URL:en redan börjar med http, använd den. Annars lägg på localhost:8080
+        return currentUser.profilePictureUrl.startsWith('http')
+            ? currentUser.profilePictureUrl
+            : `http://127.0.0.1:8080${currentUser.profilePictureUrl}`;
+    };
 
     return (
-        <div className="w-64 bg-white border-r border-gray-200 flex flex-col h-full shadow-sm z-10 transition-all duration-300">
-            <div className="h-16 flex items-center px-8 border-b border-gray-100 overflow-hidden">
-                <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center mr-3 shadow-indigo-200 shadow-md shrink-0">
-                    <span className="text-white font-bold text-xl">{logoLetter}</span>
+        <aside className="w-64 bg-white border-r border-gray-200 h-screen flex flex-col fixed left-0 top-0 z-50">
+            {/* LOGO AREA */}
+            <div className="p-6 flex items-center gap-3 border-b border-gray-100">
+                <div className="bg-indigo-600 p-2 rounded-lg text-white">
+                    <ShieldCheck size={24} />
                 </div>
-                <span className="font-bold text-lg text-gray-800 tracking-tight truncate" title={siteName || 'EduFlex'}>
-                    {siteName || 'EduFlex'}
-                </span>
+                <div>
+                    <h1 className="font-bold text-xl text-gray-900 tracking-tight">{siteName || 'EduFlex'}</h1>
+                    <span className="text-[10px] text-gray-400 font-medium tracking-widest uppercase">LMS PLATTFORM</span>
+                </div>
             </div>
 
-            {currentUser && (
-                <div className="p-6 pb-2">
-                    <div className="bg-gray-50 rounded-xl p-4 border border-gray-100 flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold border-2 border-white shadow-sm overflow-hidden shrink-0">
-                            {currentUser.profilePictureUrl ? (
-                                <img src={`http://127.0.0.1:8080${currentUser.profilePictureUrl}`} alt="Avatar" className="w-full h-full object-cover"/>
-                            ) : (
-                                <span>{currentUser.firstName?.[0]}{currentUser.lastName?.[0]}</span>
-                            )}
-                        </div>
-                        <div className="overflow-hidden">
-                            <div className="font-bold text-sm text-gray-900 truncate">{currentUser.firstName}</div>
-                            <div className="text-[10px] uppercase font-bold text-indigo-500 tracking-wider flex items-center gap-1">
-                                {currentUser.role === 'ADMIN' && <ShieldCheck size={10}/>}
-                                {currentUser.role}
-                            </div>
-                        </div>
-                    </div>
+            {/* USER PROFILE SNIPPET (Denna saknades kanske innan) */}
+            <div className="p-4 mx-4 mt-4 bg-gray-50 rounded-xl border border-gray-100 flex items-center gap-3 cursor-pointer hover:bg-gray-100 transition-colors" onClick={() => navigate('/profile')}>
+                <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center overflow-hidden border border-indigo-200">
+                    {getProfileImage() ? (
+                        <img src={getProfileImage()} alt="Profil" className="w-full h-full object-cover" />
+                    ) : (
+                        <UserCircle size={24} className="text-indigo-500" />
+                    )}
                 </div>
-            )}
+                <div className="overflow-hidden">
+                    <p className="text-sm font-bold text-gray-900 truncate">{currentUser?.fullName || currentUser?.username}</p>
+                    <p className="text-xs text-indigo-600 font-medium truncate capitalize">{currentUser?.role?.toLowerCase()}</p>
+                </div>
+            </div>
 
-            <nav className="flex-1 px-4 py-4 space-y-1 overflow-y-auto">
+            {/* NAVIGATION */}
+            <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
                 {getMenuItems().map(item => (
                     <button
                         key={item.path}
@@ -88,6 +86,7 @@ const Sidebar = ({ currentUser, logout, siteName, version }) => {
                 ))}
             </nav>
 
+            {/* FOOTER */}
             <div className="p-4 border-t border-gray-100">
                 <button
                     onClick={logout}
@@ -99,7 +98,7 @@ const Sidebar = ({ currentUser, logout, siteName, version }) => {
                     v{version || '1.0.0'}
                 </div>
             </div>
-        </div>
+        </aside>
     );
 };
 

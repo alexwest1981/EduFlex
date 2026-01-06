@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Loader2, Download } from 'lucide-react';
+import { ArrowLeft, Loader2, Download, BookOpen, MessageSquare, FileText, Users, HelpCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { api } from '../../services/api';
 
 // --- CONTEXT ---
 import { useAppContext } from '../../context/AppContext';
+import { useModules } from '../../context/ModuleContext'; // <--- NY
 
 // --- MODULER ---
 import CourseContentModule, { CourseContentModuleMetadata } from '../../modules/course-content/CourseContentModule';
@@ -18,7 +19,7 @@ const CourseDetail = ({ currentUser }) => {
     const { id } = useParams();
     const navigate = useNavigate();
     const { t } = useTranslation();
-    const { systemSettings } = useAppContext();
+    const { isModuleActive } = useModules(); // <--- Hämta status
 
     // Core State
     const [course, setCourse] = useState(null);
@@ -30,34 +31,38 @@ const CourseDetail = ({ currentUser }) => {
     // --- MODULE CONFIG ---
     // Här definierar vi exakt vilka moduler som ska finnas i kursvyn
     const modules = [
-        // CORE: Alltid på
+        // CORE: Alltid på (eller via specifik switch)
         {
             key: 'material',
             comp: CourseContentModule,
             meta: CourseContentModuleMetadata,
-            enabled: true,
+            icon: <BookOpen size={18}/>,
+            enabled: true, // Material är kärnfunktionalitet
             visibleFor: 'ALL'
         },
-        // VALBARA: Styrs av systeminställningar
+        // VALBARA: Styrs av systeminställningar (ModuleContext)
         {
             key: 'assignments',
             comp: AssignmentsModule,
             meta: AssignmentsModuleMetadata,
-            enabled: systemSettings?.[AssignmentsModuleMetadata.settingsKey] === 'true',
+            icon: <FileText size={18}/>,
+            enabled: isModuleActive('SUBMISSIONS'), // Mappar mot DB-nyckel 'SUBMISSIONS'
             visibleFor: 'ALL'
         },
         {
             key: 'quiz',
             comp: QuizModule,
             meta: QuizModuleMetadata,
-            enabled: systemSettings?.[QuizModuleMetadata.settingsKey] === 'true',
+            icon: <HelpCircle size={18}/>,
+            enabled: isModuleActive('QUIZ'), // Mappar mot DB-nyckel 'QUIZ'
             visibleFor: 'ALL'
         },
         {
             key: 'forum',
             comp: ForumModule,
             meta: ForumModuleMetadata,
-            enabled: systemSettings?.[ForumModuleMetadata.settingsKey] === 'true',
+            icon: <MessageSquare size={18}/>,
+            enabled: isModuleActive('FORUM'), // Mappar mot DB-nyckel 'FORUM'
             visibleFor: 'ALL'
         },
         // CORE: Men endast synlig för lärare
@@ -65,6 +70,7 @@ const CourseDetail = ({ currentUser }) => {
             key: 'students',
             comp: ParticipantsModule,
             meta: ParticipantsModuleMetadata,
+            icon: <Users size={18}/>,
             enabled: true,
             visibleFor: 'TEACHER' // Egen logik för visning
         },
@@ -92,12 +98,11 @@ const CourseDetail = ({ currentUser }) => {
         if (currentMod && !currentMod.enabled) {
             setActiveTab('material');
         }
-    }, [systemSettings, activeTab]);
+    }, [modules, activeTab]);
 
     // --- CERTIFICATE HANDLER ---
     const downloadCertificate = async () => {
         try {
-            // OBS: I produktion bör du använda din api-tjänst, men för blob-nedladdning är fetch ofta enklast
             const response = await fetch(`http://127.0.0.1:8080/api/certificates/download/${id}/${currentUser.id}`, {
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
             });
@@ -137,7 +142,6 @@ const CourseDetail = ({ currentUser }) => {
                 <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-2">
                     <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{course.name}</h1>
 
-                    {/* Visa knappen för alla (för test) eller lägg till villkor: && course.isCompleted */}
                     <button
                         onClick={downloadCertificate}
                         className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-bold flex items-center gap-2 shadow-lg transition-all hover:scale-105"
@@ -165,7 +169,7 @@ const CourseDetail = ({ currentUser }) => {
                                 onClick={() => setActiveTab(mod.key)}
                                 className={`pb-3 flex gap-2 items-center whitespace-nowrap transition-colors ${activeTab === mod.key ? 'border-b-2 border-indigo-600 dark:border-indigo-400 text-indigo-600 dark:text-indigo-400 font-bold' : 'text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white'}`}
                             >
-                                <mod.meta.icon size={18} /> {t(`course.${mod.key}`) || mod.meta.name}
+                                {mod.icon} {t(`course.${mod.key}`) || mod.meta.name}
                             </button>
                         );
                     })}

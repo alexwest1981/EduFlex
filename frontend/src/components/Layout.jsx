@@ -1,11 +1,15 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { LayoutDashboard, FileText, User, Settings, LogOut, Layers, Menu, X, Award, Zap, Moon, Sun, Calendar } from 'lucide-react';
 import { useAppContext } from '../context/AppContext';
+import { useModules } from '../context/ModuleContext';
 import { useTranslation } from 'react-i18next';
 
+import ChatModule from '../modules/chat/ChatModule';
+
 const Layout = ({ children }) => {
-    const { currentUser, logout, systemSettings, theme, toggleTheme } = useAppContext();
+    const { currentUser, logout, systemSettings, theme, toggleTheme, API_BASE } = useAppContext();
+    const { isModuleActive } = useModules();
     const { t } = useTranslation();
     const navigate = useNavigate();
     const location = useLocation();
@@ -16,8 +20,16 @@ const Layout = ({ children }) => {
     const profileImgUrl = currentUser?.profilePictureUrl
         ? `http://127.0.0.1:8080${currentUser.profilePictureUrl}` : null;
 
-    const gamificationActive = systemSettings && systemSettings['gamification_enabled'] === 'true';
-    const darkModeActive = systemSettings && systemSettings['dark_mode_enabled'] === 'true';
+    const gamificationActive = isModuleActive('GAMIFICATION');
+    const darkModeActive = isModuleActive('DARK_MODE');
+    const token = localStorage.getItem('token');
+
+    // FIX: Uppdatera fönstertiteln när systemSettings ändras
+    useEffect(() => {
+        if (systemSettings && systemSettings.site_name) {
+            document.title = systemSettings.site_name;
+        }
+    }, [systemSettings]);
 
     const navItems = [
         { path: '/', icon: <LayoutDashboard size={20} />, label: t('sidebar.dashboard') },
@@ -33,10 +45,14 @@ const Layout = ({ children }) => {
 
             <aside className={`${sidebarOpen ? 'w-64' : 'w-20'} bg-white dark:bg-[#1E1F20] border-r border-gray-200 dark:border-[#282a2c] transition-all duration-300 flex flex-col fixed h-full z-20 shadow-sm`}>
 
-                {/* LOGO */}
+                {/* LOGO AREA - NU MED DYNAMISKT NAMN */}
                 <div className="h-16 flex items-center px-6 border-b border-gray-100 dark:border-[#282a2c]">
-                    <div className="w-8 h-8 bg-black dark:bg-white rounded-lg flex items-center justify-center text-white dark:text-black font-bold text-xl mr-3 shadow-sm">E</div>
-                    {sidebarOpen && <span className="font-bold text-xl tracking-tight text-gray-800 dark:text-white">{systemSettings['site_name'] || "EduFlex"}</span>}
+                    <div className="w-8 h-8 bg-black dark:bg-white rounded-lg flex items-center justify-center text-white dark:text-black font-bold text-xl mr-3 shadow-sm">
+                        {systemSettings?.site_name ? systemSettings.site_name[0] : 'E'}
+                    </div>
+                    {sidebarOpen && <span className="font-bold text-xl tracking-tight text-gray-800 dark:text-white truncate">
+                        {systemSettings?.site_name || "EduFlex"}
+                    </span>}
                 </div>
 
                 <div className={`p-6 flex flex-col items-center border-b border-gray-100 dark:border-[#282a2c] transition-all ${!sidebarOpen && 'px-2'}`}>
@@ -53,7 +69,6 @@ const Layout = ({ children }) => {
                         </div>
                     )}
 
-                    {/* FIX: Dynamisk Gamification-data */}
                     {sidebarOpen && gamificationActive && (
                         <div className="mt-4 w-full bg-gradient-to-r from-amber-50 to-orange-50 dark:from-[#282a2c] dark:to-[#282a2c] border border-amber-200 dark:border-[#3c4043] rounded-xl p-3 flex items-center justify-between animate-in zoom-in duration-300">
                             <div className="flex items-center gap-2">
@@ -101,6 +116,7 @@ const Layout = ({ children }) => {
                     {sidebarOpen && <p className="text-[10px] text-gray-300 dark:text-gray-600 text-center mt-2">EduFlex v1.0.2</p>}
                 </div>
             </aside>
+
             <main className={`flex-1 transition-all duration-300 ${sidebarOpen ? 'ml-64' : 'ml-20'} p-8 h-full overflow-y-auto bg-gray-50 dark:bg-[#131314]`}>
                 <div className="mb-6 flex items-center justify-between">
                     <button onClick={() => setSidebarOpen(!sidebarOpen)} className="p-2 hover:bg-gray-200 dark:hover:bg-[#282a2c] rounded-lg text-gray-500 dark:text-gray-400 transition-colors">
@@ -109,6 +125,14 @@ const Layout = ({ children }) => {
                 </div>
                 {children}
             </main>
+
+            {isModuleActive('CHAT') && (
+                <ChatModule
+                    currentUser={currentUser}
+                    API_BASE={API_BASE}
+                    token={token}
+                />
+            )}
         </div>
     );
 };

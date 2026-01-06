@@ -1,8 +1,9 @@
 package com.eduflex.backend.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty; // VIKTIGT: Denna import behövdes
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -29,8 +30,6 @@ public class User {
     private String language = "sv";
     private String profilePictureUrl;
 
-    // FIX: Byt @JsonIgnore mot detta.
-    // Det gör att lösenordet kan skrivas (vid registrering) men inte läsas (vid hämtning).
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
@@ -40,7 +39,24 @@ public class User {
     @Column(columnDefinition = "boolean default true")
     private Boolean isActive = true;
 
-    // --- GAMIFICATION FIELDS ---
+    // --- ANALYS-FÄLT ---
+    @Column(name = "last_login")
+    private LocalDateTime lastLogin;
+
+    @Column(columnDefinition = "integer default 0")
+    private int loginCount = 0;
+
+    // NYTT: För tillväxt-graf
+    @Column(updatable = false)
+    private LocalDateTime createdAt;
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
+    // -------------------
+
+    // --- GAMIFICATION ---
     @Column(columnDefinition = "integer default 0")
     private int points = 0;
 
@@ -50,7 +66,6 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     @JsonIgnoreProperties("user")
     private Set<UserBadge> earnedBadges = new HashSet<>();
-    // ---------------------------
 
     @ManyToMany(mappedBy = "students")
     @JsonIgnoreProperties("students")
@@ -69,9 +84,7 @@ public class User {
     public void setFirstName(String firstName) { this.firstName = firstName; }
     public String getLastName() { return lastName; }
     public void setLastName(String lastName) { this.lastName = lastName; }
-
     public String getFullName() { return firstName + " " + lastName; }
-
     public String getUsername() { return username; }
     public void setUsername(String username) { this.username = username; }
     public String getEmail() { return email; }
@@ -90,19 +103,24 @@ public class User {
     public void setPassword(String password) { this.password = password; }
     public Role getRole() { return role; }
     public void setRole(Role role) { this.role = role; }
-
     public Boolean getIsActive() { return isActive; }
-    public boolean isActive() { return isActive != null && isActive; }
     public void setActive(Boolean active) { isActive = active; }
 
-    // Gamification Getters/Setters
+    // Analytics
+    public LocalDateTime getLastLogin() { return lastLogin; }
+    public void setLastLogin(LocalDateTime lastLogin) { this.lastLogin = lastLogin; }
+    public int getLoginCount() { return loginCount; }
+    public void setLoginCount(int loginCount) { this.loginCount = loginCount; }
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+
+    // Gamification
     public int getPoints() { return points; }
     public void setPoints(int points) { this.points = points; }
     public int getLevel() { return level; }
     public void setLevel(int level) { this.level = level; }
     public Set<UserBadge> getEarnedBadges() { return earnedBadges; }
     public void setEarnedBadges(Set<UserBadge> earnedBadges) { this.earnedBadges = earnedBadges; }
-
     public Set<Course> getCourses() { return courses; }
     public void setCourses(Set<Course> courses) { this.courses = courses; }
     public Set<Course> getCoursesCreated() { return coursesCreated; }

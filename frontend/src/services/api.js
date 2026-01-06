@@ -21,6 +21,17 @@ export const api = {
         login: (credentials) => fetch(`${API_BASE}/auth/login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(credentials) }).then(handleResponse),
     },
 
+    // --- NYTT: MODULHANTERING (Detta saknades) ---
+    modules: {
+        getAll: () => fetch(`${API_BASE}/modules`, { headers: getHeaders() }).then(handleResponse),
+        toggle: (key, active) => fetch(`${API_BASE}/modules/${key}/toggle`, {
+            method: 'PUT',
+            headers: getHeaders(),
+            body: JSON.stringify({ active }) // Skicka 'active' (boolean)
+        }).then(handleResponse),
+    },
+    // ---------------------------------------------
+
     forum: {
         getCategories: (courseId) => fetch(`${API_BASE}/forum/course/${courseId}/categories`, { headers: getHeaders() }).then(handleResponse),
         createCategory: (courseId, data) => fetch(`${API_BASE}/forum/course/${courseId}/categories`, {
@@ -39,8 +50,6 @@ export const api = {
             headers: getHeaders(),
             body: JSON.stringify({ userId, content })
         }).then(handleResponse),
-
-        // --- NYA FUNKTIONER FÖR ADMIN ---
         deleteThread: (threadId) => fetch(`${API_BASE}/forum/thread/${threadId}`, { method: 'DELETE', headers: getHeaders() }).then(handleResponse),
         deletePost: (postId) => fetch(`${API_BASE}/forum/post/${postId}`, { method: 'DELETE', headers: getHeaders() }).then(handleResponse),
         toggleLockThread: (threadId, isLocked) => fetch(`${API_BASE}/forum/thread/${threadId}/lock`, {
@@ -48,6 +57,10 @@ export const api = {
             headers: getHeaders(),
             body: JSON.stringify({ locked: isLocked })
         }).then(handleResponse),
+    },
+
+    analytics: {
+        getOverview: () => fetch(`${API_BASE}/analytics/overview`, { headers: getHeaders() }).then(handleResponse),
     },
 
     messages: {
@@ -123,9 +136,7 @@ export const api = {
         create: (courseId, data) => fetch(`${API_BASE}/courses/${courseId}/assignments`, { method: 'POST', headers: getHeaders(), body: JSON.stringify(data) }).then(handleResponse),
         submit: (assignmentId, studentId, formData) => fetch(`${API_BASE}/assignments/${assignmentId}/submit/${studentId}`, { method: 'POST', headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }, body: formData }).then(handleResponse),
         getSubmissions: (assignmentId) => fetch(`${API_BASE}/assignments/${assignmentId}/submissions`, { headers: getHeaders() }).then(handleResponse),
-        // --- DEN HÄR BEHÖVS FÖR FIXEN ---
         getMySubmission: (assignmentId, studentId) => fetch(`${API_BASE}/assignments/${assignmentId}/my-submission/${studentId}`, { headers: getHeaders() }).then(handleResponse),
-        // --------------------------------
         grade: (subId, grade, feedback) => fetch(`${API_BASE}/submissions/${subId}/grade?grade=${grade}&feedback=${feedback || ''}`, { method: 'POST', headers: getHeaders() }).then(handleResponse),
     },
 

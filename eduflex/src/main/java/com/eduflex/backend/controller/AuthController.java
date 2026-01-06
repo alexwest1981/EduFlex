@@ -5,6 +5,7 @@ import com.eduflex.backend.dto.LoginRequest;
 import com.eduflex.backend.model.User;
 import com.eduflex.backend.repository.UserRepository;
 import com.eduflex.backend.security.JwtUtils;
+import com.eduflex.backend.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -19,11 +20,13 @@ public class AuthController {
 
     private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
+    private final UserService userService;
     private final JwtUtils jwtUtils;
 
-    public AuthController(AuthenticationManager authenticationManager, UserRepository userRepository, JwtUtils jwtUtils) {
+    public AuthController(AuthenticationManager authenticationManager, UserRepository userRepository, UserService userService, JwtUtils jwtUtils) {
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
+        this.userService = userService;
         this.jwtUtils = jwtUtils;
     }
 
@@ -38,12 +41,21 @@ public class AuthController {
         User user = userRepository.findByUsername(loginRequest.username())
                 .orElseThrow(() -> new UsernameNotFoundException("Användare hittades inte"));
 
+        userService.updateLastLogin(user.getId());
+
+        // FIX: Skicka med firstName och lastName explicit
         return ResponseEntity.ok(new JwtResponse(
                 jwt,
                 user.getId(),
                 user.getUsername(),
+                user.getFirstName(), // <--- Nytt fält
+                user.getLastName(),  // <--- Nytt fält
                 user.getFullName(),
-                user.getRole().name()
+                user.getRole().name(),
+                user.getProfilePictureUrl(),
+                user.getPoints(),
+                user.getLevel(),
+                user.getEarnedBadges()
         ));
     }
 }

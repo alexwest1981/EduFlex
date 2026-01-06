@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AppProvider, useAppContext } from './context/AppContext';
+import { ModuleProvider } from './context/ModuleContext';
 
 // --- LAYOUT ---
 import Layout from './components/Layout';
@@ -9,30 +10,19 @@ import Layout from './components/Layout';
 import Login from './features/auth/Login';
 import Dashboard from './features/dashboard/Dashboard';
 import CourseDetail from './features/courses/CourseDetail';
-import AdminPanel from './features/admin/AdminPanel';
 import CalendarView from './features/calendar/CalendarView';
-import LicenseLockScreen from './features/auth/LicenseLockScreen'; // Försäkra dig om att denna import stämmer
+import LicenseLockScreen from './features/auth/LicenseLockScreen';
 
 // --- DE RIKTIGA SIDORNA ---
 import UserProfile from './features/profile/UserProfile';
 import CourseCatalog from './features/catalog/CourseCatalog';
 import DocumentManager from './features/documents/DocumentManager';
+// FIX: Ändrad sökväg eftersom AdminDashboard ligger i dashboard-mappen
+import AdminDashboard from './features/dashboard/AdminDashboard';
 
 // --- PROTECTED ROUTE ---
 const ProtectedRoute = ({ children, roles }) => {
-    const { currentUser, licenseStatus, api } = useAppContext();
-
-    // Hantera licenslåsning
-    const handleActivate = async (key) => {
-        try {
-            // Vi använder api direkt här, eller skickar ner funktionen till LicenseLockScreen
-            // Men LicenseLockScreen i din fil använder 'onActivate' prop
-            // Så logiken för aktivering ligger egentligen i LicenseLockScreen eller AppContext
-            // Här renderar vi bara vyn.
-        } catch (e) {
-            console.error(e);
-        }
-    };
+    const { currentUser, licenseStatus } = useAppContext();
 
     // Om vi fortfarande kollar status
     if (licenseStatus === 'checking') {
@@ -46,20 +36,7 @@ const ProtectedRoute = ({ children, roles }) => {
 
     // Om licensen är ogiltig eller saknas -> Visa Låsskärm
     if (licenseStatus === 'locked' || licenseStatus === 'invalid') {
-        // Vi behöver skicka en aktiveringsfunktion till LicenseLockScreen
-        // Eftersom LicenseLockScreen gör API-anropet själv i din kod (via api.system.activateLicense),
-        // behöver vi bara en callback för att ladda om sidan vid succé.
-        const onActivateSuccess = () => {
-            window.location.reload();
-        };
-
-        // OBS: Din LicenseLockScreen tar 'onActivate' som en funktion som tar en key och gör api-anropet?
-        // Tittar på din bifogade LicenseLockScreen: Den tar `onActivate` och anropar den med `keyInput`.
-        // Då måste vi definiera onActivate här.
-
         const activateLicense = async (key) => {
-            // Här måste vi importera 'api' eller använda fetch direkt
-            // Eftersom vi inte har 'api' i scope här (bara via hook), gör vi en fetch
             try {
                 const res = await fetch('http://127.0.0.1:8080/api/system/license/activate', {
                     method: 'POST',
@@ -94,20 +71,6 @@ const ProtectedRoute = ({ children, roles }) => {
 };
 
 // --- DATA WRAPPERS ---
-const AdminWrapper = ({ currentUser }) => {
-    const [adminTab, setAdminTab] = React.useState('users');
-    return (
-        <AdminPanel
-            adminTab={adminTab}
-            setAdminTab={setAdminTab}
-            currentUser={currentUser}
-            users={[]}
-            courses={[]}
-            allDocuments={[]}
-        />
-    );
-};
-
 const DashboardWrapper = ({ currentUser }) => {
     return (
         <Dashboard
@@ -149,12 +112,11 @@ const AppRoutes = () => {
             <Route path="/admin" element={
                 <ProtectedRoute roles={['ADMIN']}>
                     <Layout currentUser={currentUser} handleLogout={logout}>
-                        <AdminWrapper currentUser={currentUser} />
+                        <AdminDashboard />
                     </Layout>
                 </ProtectedRoute>
             } />
 
-            {/* --- SIDOR --- */}
             <Route path="/calendar" element={
                 <ProtectedRoute>
                     <Layout currentUser={currentUser} handleLogout={logout}>
@@ -195,9 +157,11 @@ const AppRoutes = () => {
 const App = () => {
     return (
         <AppProvider>
-            <Router>
-                <AppRoutes />
-            </Router>
+            <ModuleProvider>
+                <Router>
+                    <AppRoutes />
+                </Router>
+            </ModuleProvider>
         </AppProvider>
     );
 };
