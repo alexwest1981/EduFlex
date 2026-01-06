@@ -15,7 +15,7 @@
   <img src="https://img.shields.io/badge/Spring%20Boot-3.x-brightgreen?style=for-the-badge&logo=springboot"/>
   <img src="https://img.shields.io/badge/TailwindCSS-v4-38B2AC?style=for-the-badge&logo=tailwindcss"/>
   <img src="https://img.shields.io/badge/WebSocket-STOMP/SockJS-orange?style=for-the-badge&logo=socketdotio&logoColor=white"/>
-  <img src="https://img.shields.io/badge/MySQL/H2-4479A1?style=for-the-badge&logo=mysql&logoColor=white"/>
+  <img src="https://img.shields.io/badge/PostgreSQL/H2-336791?style=for-the-badge&logo=postgresql&logoColor=white"/>
   <img src="https://img.shields.io/badge/OpenPDF-Certificates-ff6b6b?style=for-the-badge&logo=pdf&logoColor=white"/>
   <img src="https://img.shields.io/badge/License-Private-red?style=for-the-badge&logo=lock"/>
   <img src="https://img.shields.io/badge/Status-Active%20Development-blue?style=for-the-badge"/>
@@ -25,46 +25,48 @@
 
 ## 🏫 Om Projektet
 
-**EduFlex** är ett modernt, rollbaserat **Learning Management System (LMS)** för skolor, utbildningsföretag och intern utbildning.  
-Systemet kombinerar **realtidskommunikation**, **gamification**, **automatiserad administration** och **PDF-certifikat** – byggt med fokus på säkerhet, skalbarhet och en exceptionell användarupplevelse.
+**EduFlex** är ett modernt, rollbaserat och modulärt **Learning Management System (LMS)** för skolor, utbildningsföretag och intern utbildning.  
+Systemet kombinerar **realtidskommunikation**, **dokumenthantering**, **gamification**, **PDF‑certifikat** och ett växande **analytics- & modulsystem** – byggt med fokus på säkerhet, skalbarhet och en exceptionell användarupplevelse.
 
-![EduFlex Dashboard Screenshot](docs/images/dashboard-student1.png)
+![EduFlex Dashboard Screenshot](docs/images/Student_overview.png)
 
 ---
 
 ## 🚀 Kärnfunktioner
 
-### 👤 Gemensamt för alla användare
-- Säker **JWT-autentisering** med rollbaserad åtkomst (Admin, Teacher, Student)  
-- **Modulär Dashboard** med rollspecifika widgets  
-- **Profilhantering** med avatar och lösenordsbyte  
-- **Dokumentarkiv** med persistens och felhantering  
-- **Kalender** med kursdeadlines och händelser  
-- **Notifieringscenter** med systemaviseringar  
-- **Gamification-widgets** (poäng, badges, nivåer)
+### 🛡️ Admin & System
 
-### 🎓 Studenter
-- **Kurskatalog** med self-enrollment och status  
-- **CourseDetail** med Content, Assignments, Quiz, Forum, Participants  
-- **Uppgifter & inlämningar** med feedbackhantering  
-- **QuizRunner** för interaktiva prov  
-- **Kursforum** med tråddiskussioner  
-- **PDF-certifikat** vid kursavslut
+- **AnalyticsDashboard** med statistiköversikt över användare, kurser, aktivitet och certifikat.
+- **SystemModules** – dedikerat modulsystem separat från **SystemSettings**.
+- **Dynamisk branding** – sidans namn, logotyp/branding och metadata styrs via databasen.
+- **”App Store”-lik modulhantering** – aktivera/avaktivera moduler (Chat, Gamification, Forum, Certificates, Calendar m.fl.) direkt från admin.
+- Licens- och versionsinformation tydligt separerad från enkla inställningar (t.ex. `site_name`).
 
 ### 🍎 Lärare
-- **Kurshantering (CRUD)** med status, datum och färgteman  
-- **Materialhantering** med rich text-editor  
-- **Rättningssystem** med betyg (IG/G/VG)  
-- **AttendanceView** för närvaro  
-- **AssessmentView** för elevöversikt  
-- **QuizBuilder** och **ParticipantsView** med gamification-data
 
-### 🛡️ Administratörer
-- **Admin Dashboard** med KPI:er och loggar  
-- **Användarhantering** och **säkerhetsvarningar**  
-- **Licenshantering** med validering  
-- **System Settings** för namn, moduler och funktioner  
-- **Modules-flik** för att aktivera/avaktivera Chat, Gamification, Dark Mode  
+- **TeacherDashboard 2.0** med fördjupad kursöversikt (progress, aktivitet, deadlines).
+- Snabb **elevmodal** från dashboarden för att se elevens status, närvaro och resultat utan att lämna vyn.
+- Kursvy med dynamiska flikar beroende på vilka moduler som är aktiva (Assignments, Quiz, Forum, Documents, Gamification etc.).
+- Rättning, feedback och uppföljning integrerade i dashboards & course views.
+
+### 🎓 Studenter
+
+- **Gamification-UI** med level‑kort, badges och poängräknare direkt i studentens dashboard.
+- Widget för **kommande inlämningar och deadlines** med länkar direkt till uppgifter/kurs.
+- Kursvy som automatiskt anpassas efter aktiverade moduler (t.ex. döljer Forum/Chat om de stängts av i SystemModules).
+- Förbättrat flöde vid inloggning – fullständig användarprofil och gamification-data laddas direkt.
+
+### 🔐 Backend & Säkerhet
+
+- Uppdaterad **JwtResponse** och **AuthController** för att skicka med:
+  - fullständiga användaruppgifter
+  - rollinformation
+  - gamification‑data (level, XP, badges) vid inloggning.
+- Tydlig arkitektonisk separation:
+  - **SystemSettings** för enkla inställningar (t.ex. `site_name`, språk, standardtema)
+  - **SystemModules** för komplexa moduler (version, licensstatus, aktiv/inaktiv).
+- Förberett för vidare fas 2-utbyggnad (Analytics, PWA, integrationer).
+
 
 ---
 
@@ -116,7 +118,20 @@ Certifikat genereras dynamiskt med **OpenPDF**:
 ### Rollbaserade Dashboards
 | Student | Teacher | Admin |
 |:--:|:--:|:--:|
-| ![Student](docs/images/dashboard-student1.png) | ![Teacher](docs/images/dashboard-teacher1.png) | ![Admin](docs/images/dashboard-admin1.png) |
+| ![Student](docs/images/Student_overview.png) | ![Teacher](docs/images/Teacher_Overview.png) | ![Admin](docs/images/Admin_Overview.png) |
+
+### Primära vyer
+| Kalender | Internmail | Dokument |
+|:--:|:--:|:--:|
+| ![Student](docs/images/Calender_View.png) | ![Teacher](docs/images/Communication.png) | ![Admin](docs/images/Documents.png) |
+
+| Kalender | Internmail | Dokument |
+|:--:|:--:|:--:|
+| ![Student](docs/images/Calender_View.png) | ![Teacher](docs/images/Communication.png) | ![Admin](docs/images/Documents.png) |
+
+| Provhantering | Studenthantering | Kurshantering |
+|:--:|:--:|:--:|
+| ![Student](docs/images/TestManagement.png) | ![Teacher](docs/images/Students.png) | ![Admin](docs/images/Teacher_courses.png) |
 
 ### Gamification & Certifikat
 | Widgets | Certifikat | CourseDetail |
@@ -141,7 +156,7 @@ Certifikat genereras dynamiskt med **OpenPDF**:
 - Spring Data JPA / Hibernate (@EntityGraph mot N+1)  
 - OpenPDF för certifikat  
 - SystemSettings-modul för dynamiska inställningar  
-- Databaser: MySQL (prod) / H2 (dev)  
+- Databas: PostgreSQL (prod) / H2 (dev) 
 
 ### Prestanda & Kvalitet
 - Eliminering av N+1-problem  
@@ -211,18 +226,16 @@ npm run dev   # http://localhost:5173</br>
 mvn spring-boot:run   # http://127.0.0.1:8080/api
 ```
 
-### 📆 Roadmap
-# ✅ Färdigställt
+## 📆 Roadmap – Fas 2 (Pågår)
 
-- Rollbaserade dashboards
+- ✅ AnalyticsDashboard för administratörer (MVP klar).
+- ✅ SystemModules – arkitektonisk uppdelning från SystemSettings.
+- ✅ Branding via databasen (site name, profil, modulbaserad UI).
+- ✅ Utökade Teacher/Student‑dashboards med gamification‑data.
+- 🔄 Fördjupad analytics (exporter, rapporter, dashboards per modul).
+- 🔄 E-postnotifieringar & PWA.
+- 🔄 Integrationer (LTI, SSO, HR/ERP).
 
-- Kurs-CRUD, realtid, licens
-
-- Quizsystem, forum, närvaro
-
-- Gamification Engine + PDF-certifikat
-
-- System Settings och modulhantering
 
 ### 🚀 Nästa steg
 
