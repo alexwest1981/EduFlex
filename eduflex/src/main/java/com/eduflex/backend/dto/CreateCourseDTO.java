@@ -9,5 +9,7 @@ public record CreateCourseDTO(
         String description,
         LocalDate startDate,
         LocalDate endDate,
-        String color
+        Long teacherId,
+        String color,
+        Integer maxStudents // <--- NYTT FÄLT
 ) {}
