@@ -17,7 +17,6 @@ import LicenseLockScreen from './features/auth/LicenseLockScreen';
 import UserProfile from './features/profile/UserProfile';
 import CourseCatalog from './features/catalog/CourseCatalog';
 import DocumentManager from './features/documents/DocumentManager';
-// FIX: Ändrad sökväg eftersom AdminDashboard ligger i dashboard-mappen
 import AdminDashboard from './features/dashboard/AdminDashboard';
 
 // --- PROTECTED ROUTE ---
@@ -158,7 +157,8 @@ const App = () => {
     return (
         <AppProvider>
             <ModuleProvider>
-                <Router>
+                {/* UPPDATERAT: Future flags tillagda för att slippa varningar */}
+                <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
                     <AppRoutes />
                 </Router>
             </ModuleProvider>

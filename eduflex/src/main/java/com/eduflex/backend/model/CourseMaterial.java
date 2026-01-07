@@ -13,9 +13,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CourseMaterial {
 
-    // --- VIKTIGT: Enum definition ---
     public enum MaterialType {
-        TEXT, VIDEO, FILE, LINK
+        TEXT, VIDEO, FILE, LINK, LESSON // <--- VIKTIGT: Lade till LESSON
     }
 
     @Id

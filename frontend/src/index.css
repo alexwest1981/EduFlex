@@ -1,23 +1,8 @@
-@import "tailwindcss";
-@config "../tailwind.config.js";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-/* --- TEMA: GEMINI / MATTE BLACK --- */
-@theme {
-    /* Vi skriver över standardfärgerna med "True Neutral" */
-    --color-gray-50: #f9fafb;
-    --color-gray-100: #f3f4f6;
-    --color-gray-200: #e5e7eb;
-    --color-gray-800: #1e1f20; /* Gemini Card BG */
-    --color-gray-900: #0e0e0e; /* Gemini Main BG */
-    --color-gray-950: #000000;
-
-    /* Ersätt "Slate" (Blågrå) med "Zinc" (Neutralgrå) för säkerhets skull */
-    --color-slate-50: #fafafa;
-    --color-slate-800: #1e1f20; /* Kort */
-    --color-slate-900: #131314; /* Bakgrund */
-    --color-slate-950: #0e0e0e;
-}
-
+/* --- GLOBALA REGLER --- */
 body {
     margin: 0;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
@@ -26,11 +11,12 @@ body {
 
     /* Grundfärger */
     @apply bg-gray-50 text-gray-900 transition-colors duration-300;
-    /* DARK MODE: Gemini background color (#131314) */
+
+    /* DARK MODE */
     @apply dark:bg-[#131314] dark:text-[#E3E3E3];
 }
 
-/* --- GLOBALA INPUT-REGLER (Gemini Style) --- */
+/* --- GLOBALA INPUT-REGLER --- */
 @layer base {
     input[type="text"],
     input[type="password"],
@@ -41,28 +27,11 @@ body {
     textarea,
     select {
         @apply w-full px-4 py-2.5 border rounded-lg outline-none transition-all;
-
-        /* LJUST LÄGE */
         @apply bg-white border-gray-300 text-gray-900 placeholder-gray-500;
         @apply focus:ring-1 focus:ring-black focus:border-black;
 
-        /* MÖRKT LÄGE (Gemini Input) */
-        /* Mörkare än kortet, ingen border förrens focus */
+        /* MÖRKT LÄGE */
         @apply dark:bg-[#282a2c] dark:border-transparent dark:text-white dark:placeholder-gray-500;
         @apply dark:focus:bg-[#303336] dark:focus:border-gray-500 dark:focus:ring-1 dark:focus:ring-gray-500;
     }
-
-    /* Gör select-pilen vit i dark mode */
-    select {
-        @apply dark:bg-[#282a2c];
-    }
 }
-
-/* --- SCROLLBAR (Minimalistisk) --- */
-::-webkit-scrollbar { width: 8px; height: 8px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
-
-.dark ::-webkit-scrollbar-thumb { background: #444746; }
-.dark ::-webkit-scrollbar-thumb:hover { background: #5e6060; }

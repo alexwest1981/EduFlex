@@ -15,12 +15,12 @@ public class Course {
 
     private String name;
 
-    @Column(unique = true) // Bra praxis: Kurskod bör vara unik
+    @Column(unique = true)
     private String courseCode;
 
-    private String category; // <--- NYTT FÄLT I DATABASEN
+    private String category;
 
-    @Column(length = 5000) // Vi ökar längden för beskrivningar
+    @Column(length = 5000)
     private String description;
 
     private String startDate;
@@ -29,6 +29,11 @@ public class Course {
     private String color;
 
     private boolean isOpen = true;
+
+    // --- NYTT FÄLT: Max antal platser ---
+    @Column(columnDefinition = "integer default 100")
+    private Integer maxStudents = 100;
+    // ------------------------------------
 
     @ManyToOne
     @JoinColumn(name = "teacher_id")
@@ -57,10 +62,8 @@ public class Course {
     public String getCourseCode() { return courseCode; }
     public void setCourseCode(String courseCode) { this.courseCode = courseCode; }
 
-    // --- NYA GETTERS & SETTERS FÖR KATEGORI ---
     public String getCategory() { return category; }
     public void setCategory(String category) { this.category = category; }
-    // ------------------------------------------
 
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
@@ -76,6 +79,9 @@ public class Course {
 
     public boolean isOpen() { return isOpen; }
     public void setOpen(boolean open) { isOpen = open; }
+
+    public Integer getMaxStudents() { return maxStudents; }
+    public void setMaxStudents(Integer maxStudents) { this.maxStudents = maxStudents; }
 
     public User getTeacher() { return teacher; }
     public void setTeacher(User teacher) { this.teacher = teacher; }
