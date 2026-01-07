@@ -16,10 +16,12 @@
   <img src="https://img.shields.io/badge/TailwindCSS-v4-38B2AC?style=for-the-badge&logo=tailwindcss"/>
   <img src="https://img.shields.io/badge/WebSocket-STOMP/SockJS-orange?style=for-the-badge&logo=socketdotio&logoColor=white"/>
   <img src="https://img.shields.io/badge/PostgreSQL/H2-336791?style=for-the-badge&logo=postgresql&logoColor=white"/>
+  <img src="https://img.shields.io/badge/Docker-Production%20Ready-blue?style=for-the-badge&logo=docker&logoColor=white"/>
   <img src="https://img.shields.io/badge/OpenPDF-Certificates-ff6b6b?style=for-the-badge&logo=pdf&logoColor=white"/>
   <img src="https://img.shields.io/badge/License-Private-red?style=for-the-badge&logo=lock"/>
-  <img src="https://img.shields.io/badge/Status-Active%20Development-blue?style=for-the-badge"/>
+  <img src="https://img.shields.io/badge/Status-Fas%202%20Onboarding-blue?style=for-the-badge"/>
 </p>
+
 
 ---
 
@@ -29,6 +31,14 @@
 Systemet kombinerar **realtidskommunikation**, **dokumenthantering**, **gamification**, **PDF‑certifikat** och ett växande **analytics- & modulsystem** – byggt med fokus på säkerhet, skalbarhet och en exceptionell användarupplevelse.
 
 ![EduFlex Dashboard Screenshot](docs/images/Student_overview.png)
+
+### 🆕 Nytt i senaste versionen
+
+- Kursansökningssystem med godkänn/avslå-flöde.
+- Max antal studenter per kurs med automatisk enforcement.
+- Förbättrade Teacher/Admin/Student-dashboards för ansökningar och kursstatus.
+- Justerad SecurityConfig för korrekta rollbaserade endpoints.
+- Verifierad Docker-setup med fungerande fullstack-flöde.
 
 ---
 
@@ -48,6 +58,10 @@ Systemet kombinerar **realtidskommunikation**, **dokumenthantering**, **gamifica
 - Snabb **elevmodal** från dashboarden för att se elevens status, närvaro och resultat utan att lämna vyn.
 - Kursvy med dynamiska flikar beroende på vilka moduler som är aktiva (Assignments, Quiz, Forum, Documents, Gamification etc.).
 - Rättning, feedback och uppföljning integrerade i dashboards & course views.
+- **Översiktswidgets:** KPI:er, schema och genvägar återställda och förbättrade.
+- **Applications‑tabb:** Ny flik för att hantera kursansökningar (approve/reject) per kurs.
+- **Max Students:** Skapa/ändra kurs med fält för max antal studenter direkt i modalerna.
+- **Materialredigering:** Endpoint & UI‑stöd för att uppdatera kursmaterial (LESSON m.m.).
 
 ### 🎓 Studenter
 
@@ -55,6 +69,17 @@ Systemet kombinerar **realtidskommunikation**, **dokumenthantering**, **gamifica
 - Widget för **kommande inlämningar och deadlines** med länkar direkt till uppgifter/kurs.
 - Kursvy som automatiskt anpassas efter aktiverade moduler (t.ex. döljer Forum/Chat om de stängts av i SystemModules).
 - Förbättrat flöde vid inloggning – fullständig användarprofil och gamification-data laddas direkt.
+- **Stabil åtkomst:** 403‑problemen lösta genom uppdaterad `SecurityConfig` och justerade API‑anrop för studentvyer.
+- **Course Catalog:** Visar antal inskrivna vs max (`current/max`) samt status om kursen är full.
+- **Apply‑flöde:** Tydlig "Apply"-knapp med visuell feedback (lyckad ansökan / fel) och integration mot backendens ansökningslogik.
+
+  ### 📚 Kurser & ansökningar
+
+- **Kursansökningar:** Studenter kan ansöka till kurser via Course Catalog, och lärare/admin kan godkänna eller neka via en dedikerad Applications‑vy.
+- **Max antal studenter:** Varje kurs kan konfigureras med `maxStudents`, och backend logiken säkerställer att gränsen inte överskrids.
+- **Tillgängliga platser:** Kurskatalogen visar live‑status, t.ex. `5/30 students`, baserat på aktuella inskrivningar.
+- **Rollsäkerhet:** Endast autentiserade användare kan ansöka, och endpoints är skyddade via finjusterad `SecurityConfig`.
+- **Kursmaterial:** Stöd för materialtypen `LESSON` i CourseMaterial + endpoint för att uppdatera innehåll (`updateMaterial`).
 
 ### 🔐 Backend & Säkerhet
 
@@ -66,6 +91,13 @@ Systemet kombinerar **realtidskommunikation**, **dokumenthantering**, **gamifica
   - **SystemSettings** för enkla inställningar (t.ex. `site_name`, språk, standardtema)
   - **SystemModules** för komplexa moduler (version, licensstatus, aktiv/inaktiv).
 - Förberett för vidare fas 2-utbyggnad (Analytics, PWA, integrationer).
+
+### 🔐 Security & API-access
+
+- **SecurityConfig:**
+  - Tillåter `POST /api/courses/*/apply/*` för alla autentiserade användare.
+  - Tillåter `/api/courses/student/**` för studenters kurs- och dashboard‑data.
+- **JWT-respons:** Fortsätter att exponera fullständiga användaruppgifter och rollinformation så att rätt vyer laddas direkt vid inloggning.
 
 
 ---
@@ -111,6 +143,14 @@ Certifikat genereras dynamiskt med **OpenPDF**:
 - Egen `RichTextEditor`-komponent med memoiserad config  
 - Används i material, uppgifter och forum  
 
+---
+
+## 🐳 Docker & Deployment
+
+- Fullt kursflöde (ansökningar, maxStudents, dashboards) är verifierat inom Docker-nätverket.
+- Backend och frontend kommunicerar internt via container‑nätverk utan extra port-hackar.
+- Säkerhetsrelaterade rättighetsproblem i Docker‑miljön är åtgärdade (permissions fixade).
+  
 ---
 
 ## 📸 Skärmdumpar
