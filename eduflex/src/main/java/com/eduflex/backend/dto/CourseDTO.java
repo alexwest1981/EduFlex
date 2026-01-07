@@ -7,7 +7,7 @@ public record CourseDTO(
         Long id,
         String name,
         String courseCode,
-        String category, // <--- DETTA FÄLT SAKNADES
+        String category,
         String description,
         String startDate,
         String endDate,
@@ -15,5 +15,7 @@ public record CourseDTO(
         UserSummaryDTO teacher,
         List<UserSummaryDTO> students,
         boolean isOpen,
-        CourseEvaluation evaluation
+        CourseEvaluation evaluation,
+        Integer maxStudents,   // <--- NYTT FÄLT
+        Integer enrolledCount  // <--- NYTT FÄLT
 ) {}

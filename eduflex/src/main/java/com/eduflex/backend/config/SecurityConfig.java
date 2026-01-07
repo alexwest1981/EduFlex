@@ -61,16 +61,23 @@ public class SecurityConfig {
                         // 1. VIKTIGT: Tillåt alltid OPTIONS (CORS pre-flight)
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
-                        // 2. Publika endpoints - Inloggning, Registrering, Systemfiler
+                        // 2. Publika endpoints
                         .requestMatchers("/api/auth/**", "/api/users/register", "/api/users/generate-usernames").permitAll()
                         .requestMatchers("/api/system/license/**", "/uploads/**", "/h2-console/**", "/ws/**").permitAll()
 
-                        // 3. KURS-REGLER (Specifika undantag FÖRE generella regler)
+                        // 3. KURS-REGLER
 
-                        // TILLÅT STUDENTER ATT GÅ MED: Explicita undantag för join/enroll
+                        // --- FIX: TILLÅT ANSÖKAN FÖR ALLA INLOGGADE ---
+                        // Detta måste ligga INNAN regeln som blockerar POST för studenter
+                        .requestMatchers(HttpMethod.POST, "/api/courses/*/apply/*").authenticated()
+                        // ----------------------------------------------
+
                         .requestMatchers(HttpMethod.POST, "/api/courses/*/join", "/api/courses/*/enroll").authenticated()
 
-                        // Lärare och Admins får ändra i kurser (Skapa/Uppdatera/Radera)
+                        // Tillåt studenter att se sina egna kurser
+                        .requestMatchers("/api/courses/student/**").authenticated()
+
+                        // ENDAST Lärare och Admins får ändra/skapa kurser generellt
                         .requestMatchers(HttpMethod.POST, "/api/courses/**")
                         .hasAnyAuthority("ADMIN", "ROLE_ADMIN", "TEACHER", "ROLE_TEACHER")
 
@@ -83,8 +90,8 @@ public class SecurityConfig {
                         // Alla inloggade får läsa kurser (GET)
                         .requestMatchers(HttpMethod.GET, "/api/courses/**").authenticated()
 
-                        // 4. Övrigt - Specifika regler
-                        .requestMatchers("/api/notifications/**").authenticated() // Fixar 403 på notiser
+                        // 4. Övrigt
+                        .requestMatchers("/api/notifications/**").authenticated()
                         .requestMatchers("/api/quizzes/**").authenticated()
 
                         // Allt annat kräver inloggning
@@ -103,7 +110,6 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        // Tillåt alla origins (*) för enkelhetens skull
         configuration.setAllowedOriginPatterns(List.of("*"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(List.of("*"));
