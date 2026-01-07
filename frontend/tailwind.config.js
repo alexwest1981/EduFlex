@@ -4,18 +4,33 @@ export default {
         "./index.html",
         "./src/**/*.{js,ts,jsx,tsx}",
     ],
-    darkMode: 'class', // <--- VIKTIGT: Lägg till denna rad!
+    darkMode: 'class',
     theme: {
         extend: {
-            // Du kan lägga till egna färger här om du vill, t.ex:
             colors: {
+                // Vi översätter dina @theme inställningar hit för v3
+                gray: {
+                    50: '#f9fafb',
+                    100: '#f3f4f6',
+                    200: '#e5e7eb',
+                    800: '#1e1f20', // Gemini Card BG
+                    900: '#0e0e0e', // Gemini Main BG
+                    950: '#000000',
+                },
+                slate: {
+                    50: '#fafafa',
+                    800: '#1e1f20',
+                    900: '#131314', // Bakgrund
+                    950: '#0e0e0e',
+                },
+                // En specifik dark-palett om du använder 'bg-dark-bg' i koden
                 dark: {
-                    bg: '#0f172a', // Slate-900 (vanlig mörk bakgrund)
-                    card: '#1e293b', // Slate-800
-                    text: '#f1f5f9', // Slate-100
+                    bg: '#131314',
+                    card: '#1e1f20',
+                    text: '#E3E3E3'
                 }
             }
         },
     },
-    plugins: [], // Om du använder @tailwindcss/typography för forumet, se till att det är med här
+    plugins: [],
 }

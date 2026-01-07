@@ -25,7 +25,9 @@ const Login = () => {
         setError('');
 
         try {
-            const response = await fetch(`${API_BASE}/auth/login`, {
+            // Kontrollera att API_BASE inte slutar med snedstreck för att undvika dubbla //
+            const baseUrl = API_BASE.endsWith('/') ? API_BASE.slice(0, -1) : API_BASE;
+            const response = await fetch(`${baseUrl}/auth/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData)
@@ -35,26 +37,34 @@ const Login = () => {
 
             if (response.ok) {
                 if (data.token) {
-                    // FIX: Vi sparar HELA objektet (minus token som hanteras separat)
-                    // Detta garanterar att points, level, firstName och badges följer med!
+
+                    // --- VIKTIGT: Spara Token Explicit ---
+                    localStorage.setItem('token', data.token);
+                    // -------------------------------------
+
+                    // Bygg användarobjektet
                     const userObj = {
                         id: data.id,
                         username: data.username,
-                        firstName: data.firstName, // <--- Nytt
-                        lastName: data.lastName,   // <--- Nytt
-                        fullName: data.fullName,
+                        firstName: data.firstName || data.username, // Fallback
+                        lastName: data.lastName || '',
+                        fullName: data.fullName || data.username,   // Fallback
                         role: data.role,
                         profilePictureUrl: data.profilePictureUrl || null,
-                        points: data.points,       // <--- VIKTIGT: Gamification data
-                        level: data.level,         // <--- VIKTIGT: Gamification data
-                        earnedBadges: data.earnedBadges || [] // <--- VIKTIGT
+                        points: data.points || 0,
+                        level: data.level || 1,
+                        earnedBadges: data.earnedBadges || []
                     };
 
-                    login(userObj, data.token);
+                    // Anropa context-funktionen för att uppdatera state i hela appen
+                    if (login) {
+                        login(userObj, data.token);
+                    }
+
                     navigate('/');
                 } else {
                     console.error("Svaret saknade token:", data);
-                    setError('Servern skickade ett ofullständigt svar.');
+                    setError('Servern skickade ett ofullständigt svar (ingen token).');
                 }
             } else {
                 setError(t('messages.login_failed') || 'Fel användarnamn eller lösenord.');

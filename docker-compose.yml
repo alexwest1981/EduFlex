@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  # --- DATABASE (PostgreSQL) ---
+  db:
+    image: postgres:15-alpine
+    container_name: eduflex-db
+    environment:
+      - POSTGRES_DB=eduflex
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=gotland81 # Samma lösenord som du är van vid
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - eduflex-net
+
+  # --- BACKEND (Spring Boot) ---
+  backend:
+    build: ./eduflex
+    container_name: eduflex-backend
+    ports:
+      - "8080:8080"
+    environment:
+      # Dessa variabler skriver över din application.properties
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/eduflex
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=gotland81
+      - FILE_UPLOAD_DIR=/app/uploads
+    volumes:
+      - ./uploads:/app/uploads # Sparar uppladdade filer på din hårddisk
+      - ./eduflex.license:/app/eduflex.license
+    depends_on:
+      - db
+    networks:
+      - eduflex-net
+
+  # --- FRONTEND (React) ---
+  frontend:
+    build: ./frontend
+    container_name: eduflex-frontend
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_BASE_URL=http://localhost:8080/api
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+    networks:
+      - eduflex-net
+
+volumes:
+  postgres_data: # Här sparas databasen så den inte försvinner vid omstart
+
+networks:
+  eduflex-net:
+    driver: bridge

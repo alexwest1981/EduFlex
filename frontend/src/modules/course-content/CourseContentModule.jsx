@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { BookOpen, PlayCircle, Plus, Edit2, Trash2, Save, FileText, ChevronRight, Video, Download, Paperclip } from 'lucide-react';
-import { api } from '../../services/api';
+// Vi använder fetch direkt här för att ha full kontroll över FormData
+// (Du kan använda api.js också men detta minimerar risken för missförstånd med parametrarna)
 
 export const CourseContentModuleMetadata = {
     key: 'material',
@@ -24,10 +25,19 @@ const CourseContentModule = ({ courseId, isTeacher }) => {
 
     const loadLessons = async () => {
         try {
-            const data = await api.lessons.getByCourse(courseId);
-            setLessons(data);
-            if (data.length > 0 && !selectedLesson) {
-                setSelectedLesson(data[0]); // Välj första lektionen automatiskt
+            const token = localStorage.getItem('token');
+            const res = await fetch(`http://127.0.0.1:8080/api/courses/${courseId}/materials`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (res.ok) {
+                const data = await res.json();
+                // Filtrera eller sortera om du vill. Nu tar vi allt.
+                setLessons(data);
+
+                // Om vi har data men inget valt, välj första
+                if (data.length > 0 && !selectedLesson) {
+                    setSelectedLesson(data[0]);
+                }
             }
         } catch (e) {
             console.error("Failed to load lessons", e);
@@ -37,40 +47,67 @@ const CourseContentModule = ({ courseId, isTeacher }) => {
     const handleCreateClick = () => {
         setFormData({ title: 'Ny Lektion', content: '', videoUrl: '' });
         setFile(null);
-        setSelectedLesson(null); // Deselecta för att visa "create mode"
+        setSelectedLesson(null); // Deselecta för att visa editor
         setIsEditing(true);
     };
 
     const handleSave = async () => {
+        const token = localStorage.getItem('token');
         const fd = new FormData();
         fd.append('title', formData.title);
-        fd.append('content', formData.content);
-        fd.append('videoUrl', formData.videoUrl);
+        fd.append('content', formData.content || '');
+        fd.append('link', formData.videoUrl || ''); // Vi mappar videoUrl -> link i backend
+        fd.append('type', 'LESSON'); // Vi sätter typen hårt till LESSON
+
         if (file) fd.append('file', file);
 
         try {
+            let url = `http://127.0.0.1:8080/api/courses/${courseId}/materials`;
+            let method = 'POST';
+
             if (selectedLesson && selectedLesson.id) {
-                // Update
-                const updated = await api.lessons.update(selectedLesson.id, fd);
-                setLessons(lessons.map(l => l.id === updated.id ? updated : l));
-                setSelectedLesson(updated);
-            } else {
-                // Create
-                const created = await api.lessons.create(courseId, fd);
-                setLessons([...lessons, created]);
-                setSelectedLesson(created);
+                // UPDATE
+                url = `http://127.0.0.1:8080/api/courses/materials/${selectedLesson.id}`;
+                method = 'PUT'; // Vi använder PUT för uppdatering
             }
-            setIsEditing(false);
-            setFile(null);
+
+            const res = await fetch(url, {
+                method: method,
+                headers: { 'Authorization': `Bearer ${token}` },
+                body: fd
+            });
+
+            if (res.ok) {
+                const savedItem = await res.json();
+
+                if (method === 'POST') {
+                    setLessons([...lessons, savedItem]);
+                    setSelectedLesson(savedItem);
+                } else {
+                    setLessons(lessons.map(l => l.id === savedItem.id ? savedItem : l));
+                    setSelectedLesson(savedItem);
+                }
+
+                setIsEditing(false);
+                setFile(null);
+            } else {
+                alert("Kunde inte spara. Kontrollera filstorleken.");
+            }
         } catch(e) {
-            alert("Kunde inte spara lektionen. Kontrollera att filen inte är för stor.");
+            console.error(e);
+            alert("Ett fel inträffade.");
         }
     };
 
     const handleDelete = async (id) => {
-        if(!confirm("Är du säker på att du vill radera lektionen?")) return;
+        if(!window.confirm("Är du säker på att du vill radera lektionen?")) return;
         try {
-            await api.lessons.delete(id);
+            const token = localStorage.getItem('token');
+            await fetch(`http://127.0.0.1:8080/api/courses/materials/${id}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
             const remaining = lessons.filter(l => l.id !== id);
             setLessons(remaining);
             setSelectedLesson(remaining.length > 0 ? remaining[0] : null);
@@ -83,6 +120,17 @@ const CourseContentModule = ({ courseId, isTeacher }) => {
         const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
         const match = url.match(regExp);
         return (match && match[2].length === 11) ? `https://www.youtube.com/embed/${match[2]}` : null;
+    };
+
+    // Helper för att ladda editor med befintlig data
+    const startEditing = (lesson) => {
+        setFormData({
+            title: lesson.title,
+            content: lesson.content,
+            videoUrl: lesson.link // Mappa 'link' från backend till 'videoUrl' i frontend
+        });
+        setSelectedLesson(lesson); // Behåll selection så vi vet ID
+        setIsEditing(true);
     };
 
     return (
@@ -99,7 +147,7 @@ const CourseContentModule = ({ courseId, isTeacher }) => {
                     {lessons.map((lesson, idx) => (
                         <div
                             key={lesson.id}
-                            onClick={() => { setSelectedLesson(lesson); setIsEditing(false); setFormData(lesson); }}
+                            onClick={() => { setSelectedLesson(lesson); setIsEditing(false); }}
                             className={`p-3 rounded-lg cursor-pointer text-sm flex items-center justify-between group transition-colors ${selectedLesson?.id === lesson.id ? 'bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 font-bold' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-[#282a2c]'}`}
                         >
                             <div className="flex items-center gap-3 truncate">
@@ -154,17 +202,17 @@ const CourseContentModule = ({ courseId, isTeacher }) => {
                             </div>
                             {isTeacher && (
                                 <div className="flex gap-2">
-                                    <button onClick={() => { setFormData(selectedLesson); setIsEditing(true); }} className="p-2 text-gray-500 hover:text-indigo-600 hover:bg-gray-100 dark:hover:bg-[#3c4043] rounded-lg transition-colors"><Edit2 size={18}/></button>
+                                    <button onClick={() => startEditing(selectedLesson)} className="p-2 text-gray-500 hover:text-indigo-600 hover:bg-gray-100 dark:hover:bg-[#3c4043] rounded-lg transition-colors"><Edit2 size={18}/></button>
                                     <button onClick={() => handleDelete(selectedLesson.id)} className="p-2 text-gray-500 hover:text-red-600 hover:bg-gray-100 dark:hover:bg-[#3c4043] rounded-lg transition-colors"><Trash2 size={18}/></button>
                                 </div>
                             )}
                         </div>
 
                         {/* VIDEO PLAYER */}
-                        {selectedLesson.videoUrl && getEmbedUrl(selectedLesson.videoUrl) && (
+                        {selectedLesson.link && getEmbedUrl(selectedLesson.link) && (
                             <div className="aspect-video w-full bg-black rounded-xl overflow-hidden mb-8 shadow-lg ring-1 ring-black/10">
                                 <iframe
-                                    src={getEmbedUrl(selectedLesson.videoUrl)}
+                                    src={getEmbedUrl(selectedLesson.link)}
                                     title={selectedLesson.title}
                                     className="w-full h-full"
                                     frameBorder="0"
@@ -175,7 +223,7 @@ const CourseContentModule = ({ courseId, isTeacher }) => {
                         )}
 
                         {/* ATTACHMENT */}
-                        {selectedLesson.attachmentUrl && (
+                        {selectedLesson.fileUrl && (
                             <div className="mb-8 p-4 bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-100 dark:border-indigo-800 rounded-xl flex items-center justify-between">
                                 <div className="flex items-center gap-3">
                                     <div className="p-2 bg-white dark:bg-[#1E1F20] rounded-lg shadow-sm text-indigo-600">
@@ -183,10 +231,10 @@ const CourseContentModule = ({ courseId, isTeacher }) => {
                                     </div>
                                     <div>
                                         <p className="text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase">Resurs</p>
-                                        <p className="font-bold text-gray-900 dark:text-white text-sm">{selectedLesson.attachmentName || "Bifogad fil"}</p>
+                                        <p className="font-bold text-gray-900 dark:text-white text-sm">Bifogad fil</p>
                                     </div>
                                 </div>
-                                <a href={`http://127.0.0.1:8080${selectedLesson.attachmentUrl}`} download target="_blank" rel="noreferrer" className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-[#1E1F20] hover:bg-gray-50 dark:hover:bg-[#282a2c] text-sm font-bold text-gray-700 dark:text-gray-200 rounded-lg shadow-sm border border-gray-200 dark:border-[#3c4043] transition-colors">
+                                <a href={`http://127.0.0.1:8080${selectedLesson.fileUrl}`} download target="_blank" rel="noreferrer" className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-[#1E1F20] hover:bg-gray-50 dark:hover:bg-[#282a2c] text-sm font-bold text-gray-700 dark:text-gray-200 rounded-lg shadow-sm border border-gray-200 dark:border-[#3c4043] transition-colors">
                                     <Download size={16}/> Ladda ner
                                 </a>
                             </div>
