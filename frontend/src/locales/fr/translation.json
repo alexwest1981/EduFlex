@@ -27,8 +27,9 @@
     "my_profile": "Mon Profil",
     "logout": "Déconnexion",
     "documents": "Documents",
-    "catalog": "Catalogue",
-    "calendar": "Calendrier"
+    "catalog": "Catalogue des Cours",
+    "calendar": "Calendrier",
+    "resource_bank": "Banque de Ressources"
   },
   "dashboard": {
     "welcome": "Bienvenue, {{name}} !",
@@ -252,7 +253,15 @@
     "subtitle": "Suivez vos échéances.",
     "events_in": "Événements en",
     "no_events": "Rien de prévu.",
-    "days": ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"]
+    "days": [
+      "Lun",
+      "Mar",
+      "Mer",
+      "Jeu",
+      "Ven",
+      "Sam",
+      "Dim"
+    ]
   },
   "course": {
     "back": "Retour",
@@ -348,8 +357,14 @@
     "update_password": "Mettre à jour",
     "save_changes": "Enregistrer",
     "password_mismatch": "Les mots de passe ne correspondent pas !",
-    "password_error": "Erreur.",
-    "choose_strong_password": "Choisissez un mot de passe fort."
+    "password_error": "Impossible de changer le mot de passe.",
+    "choose_strong_password": "Choisissez un mot de passe fort pour protéger votre compte.",
+    "settings": "Paramètres",
+    "settings_header": "Personnaliser l'Accueil",
+    "settings_desc": "Choisissez les widgets à afficher sur votre vue d'ensemble.",
+    "show_calendar": "Afficher le Calendrier",
+    "show_messages": "Afficher les Messages",
+    "show_stats": "Afficher les Statistiques"
   },
   "messages": {
     "profile_updated": "Profil enregistré !",
@@ -372,7 +387,6 @@
     "loading": "Chargement...",
     "loading_course": "Chargement du cours..."
   },
-
   "gamification": {
     "level_title": "NIVEAU ACTUEL",
     "points_to_next": "points pour le niveau suivant",
@@ -382,5 +396,50 @@
     "rank_expert": "Expert",
     "rank_master": "Maître",
     "rank_legend": "Légende"
+  },
+  "teacher_dashboard": {
+    "tab_overview": "Aperçu",
+    "tab_grading": "À Noter",
+    "tab_applications": "Candidatures",
+    "tab_courses": "Mes Cours",
+    "tab_students": "Progrès des Étudiants",
+    "tab_communication": "Communication",
+    "section_schedule": "Calendrier à Venir",
+    "section_shortcuts": "Raccourcis",
+    "section_admin": "Administration",
+    "ongoing_course": "Cours en Cours",
+    "upcoming_event": "Événement à Venir",
+    "no_events": "Aucun événement prévu.",
+    "new_message": "Nouveau Message"
+  },
+  "shortcuts": {
+    "calendar": "Aller au Calendrier",
+    "students": "Gérer les Étudiants",
+    "grading": "Noter les Devoirs",
+    "messages": "Messages",
+    "create_course": "Créer un Nouveau Cours"
+  },
+  "widgets": {
+    "recent_messages": {
+      "title": "Messages Récents",
+      "view_all": "Voir Tout",
+      "empty": "Pas de nouveaux messages.",
+      "from": "De"
+    }
+  },
+  "course_modal": {
+    "create_title": "Créer un Nouveau Cours",
+    "edit_title": "Modifier le Cours",
+    "name": "Nom du Cours",
+    "code": "Code du Cours",
+    "category": "Catégorie",
+    "description": "Description du Cours",
+    "start_date": "Date de Début",
+    "end_date": "Date de Fin",
+    "max_students": "Max Étudiants",
+    "classroom_section": "Classe Numérique",
+    "classroom_link": "Lien de Réunion",
+    "exam_link": "Lien Salle d'Examen",
+    "create_btn": "Créer"
   }
 }

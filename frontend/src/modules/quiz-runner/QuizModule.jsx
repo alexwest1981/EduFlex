@@ -16,7 +16,7 @@ export const QuizModuleMetadata = {
     permissions: ['READ', 'WRITE']
 };
 
-const QuizModule = ({ courseId, currentUser, isTeacher }) => {
+const QuizModule = ({ courseId, currentUser, isTeacher, mode = 'COURSE' }) => {
     const { t } = useTranslation();
     const { refreshUser } = useAppContext(); // <--- Hämta refreshUser
     const [quizzes, setQuizzes] = useState([]);
@@ -27,12 +27,17 @@ const QuizModule = ({ courseId, currentUser, isTeacher }) => {
 
     useEffect(() => {
         loadQuizzes();
-    }, [courseId]);
+    }, [courseId, mode]);
 
     const loadQuizzes = async () => {
         setIsLoading(true);
         try {
-            const data = await api.quiz.getByCourse(courseId);
+            let data;
+            if (mode === 'GLOBAL') {
+                data = await api.quiz.getMy(currentUser.id);
+            } else {
+                data = await api.quiz.getByCourse(courseId);
+            }
             setQuizzes(data || []);
         } catch (e) {
             console.error("Quiz load error", e);
@@ -44,7 +49,10 @@ const QuizModule = ({ courseId, currentUser, isTeacher }) => {
     const handleSave = async (quizData, quizId) => {
         try {
             if (quizId) await api.quiz.update(quizId, quizData);
-            else await api.quiz.create(courseId, quizData);
+            else {
+                if (mode === 'GLOBAL') await api.quiz.createGlobal(currentUser.id, quizData);
+                else await api.quiz.create(courseId, currentUser.id, quizData);
+            }
             loadQuizzes();
             setShowBuilder(false);
             setEditingQuiz(null);
@@ -110,7 +118,7 @@ const QuizModule = ({ courseId, currentUser, isTeacher }) => {
                         ))
                     ) : (
                         <div className="col-span-full text-center py-12 text-gray-400 bg-gray-50 dark:bg-[#131314] rounded-xl border border-dashed border-gray-300 dark:border-[#3c4043]">
-                            <Award size={48} className="mx-auto mb-2 opacity-50"/><p>{t('quiz.no_quizzes')}</p>
+                            <Award size={48} className="mx-auto mb-2 opacity-50" /><p>{t('quiz.no_quizzes')}</p>
                         </div>
                     )}
             </div>

@@ -27,8 +27,9 @@
     "my_profile": "Mein Profil",
     "logout": "Abmelden",
     "documents": "Dokumente",
-    "catalog": "Katalog",
-    "calendar": "Kalender"
+    "catalog": "Kurskatalog",
+    "calendar": "Kalender",
+    "resource_bank": "Ressourcenbank"
   },
   "dashboard": {
     "welcome": "Willkommen, {{name}}!",
@@ -252,7 +253,15 @@
     "subtitle": "Behalte deine Fristen im Blick.",
     "events_in": "Ereignisse im",
     "no_events": "Nichts geplant.",
-    "days": ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"]
+    "days": [
+      "Mo",
+      "Di",
+      "Mi",
+      "Do",
+      "Fr",
+      "Sa",
+      "So"
+    ]
   },
   "course": {
     "back": "Zurück",
@@ -348,8 +357,14 @@
     "update_password": "Aktualisieren",
     "save_changes": "Speichern",
     "password_mismatch": "Passwörter stimmen nicht überein!",
-    "password_error": "Fehler.",
-    "choose_strong_password": "Wähle ein starkes Passwort."
+    "password_error": "Passwort konnte nicht geändert werden.",
+    "choose_strong_password": "Wählen Sie ein starkes Passwort zum Schutz Ihres Kontos.",
+    "settings": "Einstellungen",
+    "settings_header": "Startseite Anpassen",
+    "settings_desc": "Wählen Sie aus, welche Widgets in Ihrer Übersicht angezeigt werden sollen.",
+    "show_calendar": "Kalender Anzeigen",
+    "show_messages": "Nachrichten Anzeigen",
+    "show_stats": "Statistiken Anzeigen"
   },
   "messages": {
     "profile_updated": "Profil gespeichert!",
@@ -372,7 +387,6 @@
     "loading": "Laden...",
     "loading_course": "Lade Kurs..."
   },
-
   "gamification": {
     "level_title": "AKTUELLES LEVEL",
     "points_to_next": "Punkte bis zum nächsten Level",
@@ -382,5 +396,50 @@
     "rank_expert": "Experte",
     "rank_master": "Meister",
     "rank_legend": "Legende"
+  },
+  "teacher_dashboard": {
+    "tab_overview": "Übersicht",
+    "tab_grading": "Zu Bewerten",
+    "tab_applications": "Bewerbungen",
+    "tab_courses": "Meine Kurse",
+    "tab_students": "Studentenfortschritt",
+    "tab_communication": "Kommunikation",
+    "section_schedule": "Kommender Zeitplan",
+    "section_shortcuts": "Verknüpfungen",
+    "section_admin": "Verwaltung",
+    "ongoing_course": "Laufender Kurs",
+    "upcoming_event": "Kommendes Ereignis",
+    "no_events": "Keine geplanten Ereignisse.",
+    "new_message": "Neue Nachricht"
+  },
+  "shortcuts": {
+    "calendar": "Zum Kalender",
+    "students": "Studenten Verwalten",
+    "grading": "Aufgaben Bewerten",
+    "messages": "Nachrichten",
+    "create_course": "Neuen Kurs Erstellen"
+  },
+  "widgets": {
+    "recent_messages": {
+      "title": "Neueste Nachrichten",
+      "view_all": "Alle Anzeigen",
+      "empty": "Keine neuen Nachrichten.",
+      "from": "Von"
+    }
+  },
+  "course_modal": {
+    "create_title": "Neuen Kurs Erstellen",
+    "edit_title": "Kurs Bearbeiten",
+    "name": "Kursname",
+    "code": "Kurs-Code",
+    "category": "Kategorie",
+    "description": "Kursbeschreibung",
+    "start_date": "Startdatum",
+    "end_date": "Enddatum",
+    "max_students": "Max Studenten",
+    "classroom_section": "Digitales Klassenzimmer",
+    "classroom_link": "Meeting-Link",
+    "exam_link": "Prüfungsraum-Link",
+    "create_btn": "Erstellen"
   }
 }

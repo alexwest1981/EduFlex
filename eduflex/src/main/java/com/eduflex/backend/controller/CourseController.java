@@ -32,27 +32,105 @@ public class CourseController {
 
     // --- GET & CRUD ---
     @GetMapping
-    public List<CourseDTO> getAllCourses() { return courseService.getAllCourseDTOs(); }
+    public List<CourseDTO> getAllCourses() {
+        return courseService.getAllCourseDTOs();
+    }
 
     @GetMapping("/{id}")
     public ResponseEntity<CourseDTO> getCourse(@PathVariable Long id) {
-        try { return ResponseEntity.ok(courseService.getCourseDTOById(id)); }
-        catch (Exception e) { return ResponseEntity.notFound().build(); }
+        try {
+            return ResponseEntity.ok(courseService.getCourseDTOById(id));
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
-    @PostMapping
-    public ResponseEntity<CourseDTO> createCourse(@RequestBody CreateCourseDTO createCourseDTO) {
-        try {
-            Long teacherId = createCourseDTO.teacherId() != null ? createCourseDTO.teacherId() : 1L;
-            Course newCourse = courseService.createCourse(createCourseDTO, teacherId);
-            return ResponseEntity.ok(courseService.getCourseDTOById(newCourse.getId()));
-        } catch (Exception e) { return ResponseEntity.badRequest().build(); }
+    @GetMapping("/student/{studentId}")
+    public List<Course> getStudentCourses(@PathVariable Long studentId) {
+        return courseRepository.findByStudentsId(studentId);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<CourseDTO> updateCourse(@PathVariable Long id, @RequestBody Map<String, Object> updates) {
-        try { return ResponseEntity.ok(courseService.updateCourse(id, updates)); }
-        catch (Exception e) { return ResponseEntity.badRequest().build(); }
+        try {
+            return ResponseEntity.ok(courseService.updateCourse(id, updates));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    // --- MATERIALHANTERING (FIXAD) ---
+
+    @PostMapping(value = "/{id}/materials", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> addMaterial(
+            @PathVariable Long id,
+            @RequestParam("title") String title,
+            @RequestParam(value = "content", required = false) String content,
+            @RequestParam(value = "link", required = false) String link,
+            @RequestParam(value = "type", defaultValue = "LESSON") String type, // Default till LESSON
+            @RequestParam(value = "file", required = false) MultipartFile file) {
+        try {
+            // Logga för debugging
+            System.out.println("Adding material: " + title + ", Type: " + type + ", Link: " + link);
+            return ResponseEntity.ok(courseService.addMaterial(id, title, content, link, type, file));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body("Fel vid skapande av material: " + e.getMessage());
+        }
+    }
+
+    @PutMapping(value = "/materials/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> updateMaterial(
+            @PathVariable Long id,
+            @RequestParam("title") String title,
+            @RequestParam(value = "content", required = false) String content,
+            @RequestParam(value = "link", required = false) String link,
+            @RequestParam(value = "file", required = false) MultipartFile file) {
+        try {
+            return ResponseEntity.ok(courseService.updateMaterial(id, title, content, link, file));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body("Fel vid uppdatering: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/{id}/materials")
+    public List<CourseMaterial> getMaterials(@PathVariable Long id) {
+        return courseService.getMaterialsForCourse(id);
+    }
+
+    @DeleteMapping("/materials/{id}")
+    public ResponseEntity<Void> deleteMaterial(@PathVariable Long id) {
+        try {
+            courseService.deleteMaterial(id);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    // --- ÖVRIGA ENDPOINTS (KVAR) ---
+
+    @PostMapping
+    public ResponseEntity<?> createCourse(@RequestBody CreateCourseDTO createCourseDTO) {
+        try {
+            Long teacherId = createCourseDTO.teacherId() != null ? createCourseDTO.teacherId() : 1L;
+            Course newCourse = courseService.createCourse(createCourseDTO, teacherId);
+            return ResponseEntity.ok(courseService.getCourseDTOById(newCourse.getId()));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Fel vid skapande av kurs: " + e.getMessage());
+        }
+    }
+
+    @PostMapping("/{courseId}/enroll/{studentId}")
+    public ResponseEntity<Void> enrollStudent(@PathVariable Long courseId, @PathVariable Long studentId) {
+        courseService.addStudentToCourse(courseId, studentId);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/available/{studentId}")
+    public ResponseEntity<List<CourseDTO>> getAvailableCourses(@PathVariable Long studentId) {
+        return ResponseEntity.ok(courseService.getAvailableCoursesForStudent(studentId));
     }
 
     @DeleteMapping("/{id}")
@@ -61,50 +139,11 @@ public class CourseController {
         return ResponseEntity.ok().build();
     }
 
-    // --- MATERIAL (Fixar felet här) ---
-
-    @GetMapping("/{id}/materials")
-    public List<CourseMaterial> getMaterials(@PathVariable Long id) {
-        return courseService.getMaterialsForCourse(id);
-    }
-
-    @PostMapping(value = "/{id}/materials", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<CourseMaterial> addMaterial(
-            @PathVariable Long id,
-            @RequestParam("title") String title,
-            @RequestParam(value = "content", required = false) String content,
-            @RequestParam(value = "link", required = false) String link,
-            @RequestParam(value = "type", defaultValue = "TEXT") String type,
-            @RequestParam(value = "file", required = false) MultipartFile file
-    ) {
-        try {
-            return ResponseEntity.ok(courseService.addMaterial(id, title, content, link, type, file));
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.badRequest().build();
-        }
-    }
-
-    // NYTT: Uppdatera material (PUT)
-    @PutMapping(value = "/materials/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<CourseMaterial> updateMaterial(
-            @PathVariable Long id,
-            @RequestParam("title") String title,
-            @RequestParam(value = "content", required = false) String content,
-            @RequestParam(value = "link", required = false) String link,
-            @RequestParam(value = "file", required = false) MultipartFile file
-    ) {
-        try {
-            return ResponseEntity.ok(courseService.updateMaterial(id, title, content, link, file));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
-    }
-
-    @DeleteMapping("/materials/{id}")
-    public ResponseEntity<Void> deleteMaterial(@PathVariable Long id) {
-        courseService.deleteMaterial(id);
-        return ResponseEntity.ok().build();
+    @PutMapping("/{id}/toggle-status")
+    public ResponseEntity<Course> toggleCourseStatus(@PathVariable Long id) {
+        Course course = courseService.getCourseById(id);
+        course.setOpen(!course.isOpen());
+        return ResponseEntity.ok(courseService.saveCourse(course));
     }
 
     // --- ANSÖKNINGAR ---
@@ -113,7 +152,9 @@ public class CourseController {
         try {
             courseService.applyToCourse(id, studentId);
             return ResponseEntity.ok().body("{\"message\": \"Ansökan skickad\"}");
-        } catch (Exception e) { return ResponseEntity.badRequest().body(e.getMessage()); }
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @GetMapping("/applications/teacher/{teacherId}")
@@ -123,31 +164,36 @@ public class CourseController {
 
     @PostMapping("/applications/{appId}/{status}")
     public ResponseEntity<?> handleApplication(@PathVariable Long appId, @PathVariable String status) {
-        try {
-            courseService.handleApplication(appId, status.equalsIgnoreCase("approve"));
-            return ResponseEntity.ok().build();
-        } catch (Exception e) { return ResponseEntity.badRequest().body(e.getMessage()); }
-    }
-
-    // --- ÖVRIGT ---
-    @GetMapping("/available/{studentId}")
-    public ResponseEntity<List<CourseDTO>> getAvailableCourses(@PathVariable Long studentId) {
-        return ResponseEntity.ok(courseService.getAvailableCoursesForStudent(studentId));
-    }
-
-    @PostMapping("/{courseId}/enroll/{studentId}")
-    public ResponseEntity<Void> enrollStudent(@PathVariable Long courseId, @PathVariable Long studentId) {
-        courseService.addStudentToCourse(courseId, studentId);
+        courseService.handleApplication(appId, status.equalsIgnoreCase("approve"));
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/student/{studentId}")
-    public List<Course> getStudentCourses(@PathVariable Long studentId) {
-        return courseRepository.findByStudentsId(studentId);
+    @PostMapping("/{id}/evaluation/submit")
+    public ResponseEntity<Void> submitEvaluation(@PathVariable Long id, @RequestBody Map<String, Object> payload) {
+        Long studentId = ((Number) payload.get("studentId")).longValue();
+        @SuppressWarnings("unchecked")
+        Map<Integer, String> answers = (Map<Integer, String>) payload.get("answers");
+        courseService.submitEvaluation(id, studentId, answers);
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/{id}/evaluation")
-    public ResponseEntity<CourseEvaluation> createEvaluation(@PathVariable Long id, @RequestBody CourseEvaluation evaluation) {
+    public ResponseEntity<CourseEvaluation> createEvaluation(@PathVariable Long id,
+            @RequestBody CourseEvaluation evaluation) {
         return ResponseEntity.ok(courseService.createEvaluation(id, evaluation));
+    }
+
+    @PostMapping("/{id}/result/{studentId}")
+    public ResponseEntity<Void> setCourseResult(@PathVariable Long id, @PathVariable Long studentId,
+            @RequestBody Map<String, String> payload) {
+        String status = payload.get("status");
+        courseService.setCourseResult(id, studentId, status);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{id}/result/{studentId}")
+    public ResponseEntity<com.eduflex.backend.model.CourseResult> getCourseResult(@PathVariable Long id,
+            @PathVariable Long studentId) {
+        return ResponseEntity.ok(courseService.getCourseResult(id, studentId));
     }
 }

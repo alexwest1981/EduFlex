@@ -43,4 +43,10 @@ public class DocumentController {
         documentService.deleteDocument(id);
         return ResponseEntity.ok().build();
     }
+
+    @PostMapping("/{id}/share")
+    public ResponseEntity<?> share(@PathVariable Long id, @RequestParam Long userId) {
+        documentService.shareDocument(id, userId);
+        return ResponseEntity.ok().build();
+    }
 }

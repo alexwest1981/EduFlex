@@ -17,11 +17,14 @@ public class LessonController {
 
     private final LessonRepository lessonRepo;
     private final CourseRepository courseRepo;
+    private final com.eduflex.backend.repository.UserRepository userRepo; // <--- NY
     private final FileStorageService fileService;
 
-    public LessonController(LessonRepository lessonRepo, CourseRepository courseRepo, FileStorageService fileService) {
+    public LessonController(LessonRepository lessonRepo, CourseRepository courseRepo,
+            com.eduflex.backend.repository.UserRepository userRepo, FileStorageService fileService) {
         this.lessonRepo = lessonRepo;
         this.courseRepo = courseRepo;
+        this.userRepo = userRepo;
         this.fileService = fileService;
     }
 
@@ -34,18 +37,21 @@ public class LessonController {
     @PostMapping("/course/{courseId}")
     public Lesson createLesson(
             @PathVariable Long courseId,
+            @RequestParam Long userId, // <--- NY PARAM
             @RequestParam("title") String title,
             @RequestParam("content") String content,
             @RequestParam(value = "videoUrl", required = false) String videoUrl,
             @RequestParam(value = "file", required = false) MultipartFile file) {
 
         Course course = courseRepo.findById(courseId).orElseThrow();
+        com.eduflex.backend.model.User author = userRepo.findById(userId).orElseThrow(); // <--- HÄMTA AUTHOR
 
         Lesson lesson = new Lesson();
         lesson.setTitle(title);
         lesson.setContent(content);
         lesson.setVideoUrl(videoUrl);
         lesson.setCourse(course);
+        lesson.setAuthor(author); // <--- SÄTT AUTHOR
 
         // Sätt sist i ordningen
         List<Lesson> existing = lessonRepo.findByCourseIdOrderBySortOrderAsc(courseId);
@@ -58,6 +64,38 @@ public class LessonController {
         }
 
         return lessonRepo.save(lesson);
+    }
+
+    // NY ENDPOINT: Skapa fristående lektion
+    @PostMapping("/create")
+    public Lesson createGlobalLesson(
+            @RequestParam Long userId,
+            @RequestParam("title") String title,
+            @RequestParam("content") String content,
+            @RequestParam(value = "videoUrl", required = false) String videoUrl,
+            @RequestParam(value = "file", required = false) MultipartFile file) {
+
+        com.eduflex.backend.model.User author = userRepo.findById(userId).orElseThrow();
+
+        Lesson lesson = new Lesson();
+        lesson.setTitle(title);
+        lesson.setContent(content);
+        lesson.setVideoUrl(videoUrl);
+        lesson.setAuthor(author);
+        lesson.setSortOrder(0);
+
+        if (file != null && !file.isEmpty()) {
+            String path = fileService.storeFile(file);
+            lesson.setAttachmentUrl(path);
+            lesson.setAttachmentName(file.getOriginalFilename());
+        }
+
+        return lessonRepo.save(lesson);
+    }
+
+    @GetMapping("/my")
+    public List<Lesson> getMyLessons(@RequestParam Long userId) {
+        return lessonRepo.findByAuthorId(userId);
     }
 
     // Uppdatera lektion

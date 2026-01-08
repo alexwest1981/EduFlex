@@ -1,117 +1,201 @@
 package com.eduflex.backend.service;
 
-import com.eduflex.backend.dto.AnalyticsDTO;
+import com.eduflex.backend.model.Assignment;
 import com.eduflex.backend.model.Course;
-import com.eduflex.backend.model.Document;
+import com.eduflex.backend.model.Submission;
 import com.eduflex.backend.model.User;
+import com.eduflex.backend.repository.AssignmentRepository;
 import com.eduflex.backend.repository.CourseRepository;
-import com.eduflex.backend.repository.DocumentRepository;
+import com.eduflex.backend.repository.SubmissionRepository;
 import com.eduflex.backend.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.time.Month;
+import java.time.format.TextStyle;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 public class AnalyticsService {
 
-    private final UserRepository userRepository;
-    private final CourseRepository courseRepository;
-    private final DocumentRepository documentRepository; // <--- NYTT
+        private final UserRepository userRepository;
+        private final CourseRepository courseRepository;
+        private final AssignmentRepository assignmentRepository;
+        private final SubmissionRepository submissionRepository;
 
-    public AnalyticsService(UserRepository userRepository, CourseRepository courseRepository, DocumentRepository documentRepository) {
-        this.userRepository = userRepository;
-        this.courseRepository = courseRepository;
-        this.documentRepository = documentRepository;
-    }
-
-    public AnalyticsDTO getSystemOverview() {
-        List<User> allUsers = userRepository.findAll();
-        List<Course> allCourses = courseRepository.findAll();
-        List<Document> allDocs = documentRepository.findAll(); // Hämta alla filer
-
-        // --- GRUNDDATA ---
-        long totalUsers = allUsers.size();
-        long totalStudents = allUsers.stream().filter(u -> u.getRole() == User.Role.STUDENT).count();
-        long totalTeachers = allUsers.stream().filter(u -> u.getRole() == User.Role.TEACHER).count();
-        long totalCourses = allCourses.size();
-
-        // --- AKTIVITET ---
-        LocalDateTime limitDate = LocalDateTime.now().minusDays(30);
-        long activeUsers = allUsers.stream()
-                .filter(u -> u.getLastLogin() != null && u.getLastLogin().isAfter(limitDate))
-                .count();
-
-        LocalDateTime startOfToday = LocalDate.now().atStartOfDay();
-        long activeToday = allUsers.stream()
-                .filter(u -> u.getLastLogin() != null && u.getLastLogin().isAfter(startOfToday))
-                .count();
-
-        double avgLogins = totalUsers > 0
-                ? allUsers.stream().mapToInt(User::getLoginCount).average().orElse(0.0)
-                : 0.0;
-        avgLogins = Math.round(avgLogins * 10.0) / 10.0;
-
-        // --- LAGRING & FILER ---
-        long totalStorage = allDocs.stream().mapToLong(Document::getSize).sum();
-
-        // Gruppera filer på typ (Image, PDF, Other)
-        Map<String, Long> fileTypes = allDocs.stream()
-                .collect(Collectors.groupingBy(doc -> {
-                    String type = doc.getFileType();
-                    if (type == null) return "Okänd";
-                    if (type.contains("image")) return "Bilder";
-                    if (type.contains("pdf")) return "PDF";
-                    if (type.contains("word") || type.contains("document")) return "Word/Dokument";
-                    return "Övrigt";
-                }, Collectors.counting()));
-
-        // --- TILLVÄXT (Users by Month) ---
-        // Använd createdAt om det finns, annars "Okänd"
-        Map<String, Long> growthMap = new TreeMap<>(); // TreeMap håller ordning
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM");
-
-        for (User u : allUsers) {
-            String month = u.getCreatedAt() != null ? u.getCreatedAt().format(formatter) : "Tidigare";
-            growthMap.put(month, growthMap.getOrDefault(month, 0L) + 1);
+        public AnalyticsService(UserRepository userRepository, CourseRepository courseRepository,
+                        AssignmentRepository assignmentRepository, SubmissionRepository submissionRepository) {
+                this.userRepository = userRepository;
+                this.courseRepository = courseRepository;
+                this.assignmentRepository = assignmentRepository;
+                this.submissionRepository = submissionRepository;
         }
 
-        // --- KURSKATEGORIER ---
-        Map<String, Long> categoryMap = allCourses.stream()
-                .collect(Collectors.groupingBy(
-                        c -> c.getCategory() != null && !c.getCategory().isEmpty() ? c.getCategory() : "Okategoriserad",
-                        Collectors.counting()
-                ));
+        public Map<String, Object> getSystemOverview() {
+                Map<String, Object> data = new HashMap<>();
+                long userCount = userRepository.count();
+                long courseCount = courseRepository.count();
 
-        // --- TOPPLISTA KURSER ---
-        List<AnalyticsDTO.CourseStat> courseStats = allCourses.stream()
-                .map(course -> new AnalyticsDTO.CourseStat(
-                        course.getName(),
-                        course.getStudents().size()
-                ))
-                .sorted((a, b) -> Long.compare(b.students(), a.students()))
-                .limit(8)
-                .collect(Collectors.toList());
+                // Active sessions (Login within last 30 min)
+                long activeSessions = userRepository.findAll().stream()
+                                .filter(u -> u.getLastLogin() != null
+                                                && u.getLastLogin().isAfter(LocalDateTime.now().minusMinutes(30)))
+                                .count();
 
-        // --- TOPPLISTA ANVÄNDARE ---
-        List<AnalyticsDTO.UserActivityStat> topUsers = allUsers.stream()
-                .sorted((a, b) -> Integer.compare(b.getLoginCount(), a.getLoginCount()))
-                .limit(5)
-                .map(u -> new AnalyticsDTO.UserActivityStat(u.getFullName(), u.getRole().name(), u.getLoginCount()))
-                .collect(Collectors.toList());
+                // Financials (Still projected based on users, as we have no payment gateway)
+                double mrr = userCount * 99.0;
 
-        return new AnalyticsDTO(
-                totalUsers, totalStudents, totalTeachers, totalCourses,
-                activeUsers, activeToday, avgLogins,
-                totalStorage,
-                growthMap,
-                fileTypes,
-                categoryMap,
-                courseStats,
-                topUsers
-        );
-    }
+                data.put("totalUsers", userCount);
+                data.put("totalCourses", courseCount);
+                data.put("mrr", mrr);
+                data.put("arr", mrr * 12);
+                data.put("serverHealth", "Operational");
+                data.put("activeSessions", activeSessions);
+
+                return data;
+        }
+
+        public List<Map<String, Object>> getUserGrowth() {
+                List<User> users = userRepository.findAll();
+
+                // Group by Month of Creation
+                Map<Month, Long> growthMap = users.stream()
+                                .filter(u -> u.getCreatedAt() != null)
+                                .collect(Collectors.groupingBy(
+                                                u -> u.getCreatedAt().getMonth(),
+                                                Collectors.counting()));
+
+                List<Map<String, Object>> growth = new ArrayList<>();
+
+                // Iterate months Jan-Dec
+                long cumulative = 0;
+                for (Month m : Month.values()) {
+                        Map<String, Object> point = new HashMap<>();
+                        point.put("name", m.getDisplayName(TextStyle.SHORT, Locale.ENGLISH));
+
+                        long newUsers = growthMap.getOrDefault(m, 0L);
+                        cumulative += newUsers;
+
+                        point.put("users", cumulative);
+                        point.put("revenue", cumulative * 99);
+                        growth.add(point);
+
+                        // Stop if future month relative to now? Optional, but let's show full year
+                        // context.
+                }
+                return growth;
+        }
+
+        public Map<String, Object> getEngagementStats() {
+                List<Course> courses = courseRepository.findAll();
+                long totalStudents = courses.stream().mapToLong(c -> c.getStudents().size()).sum();
+
+                // Submissions vs Assignments
+                long totalAssignments = assignmentRepository.count();
+                long totalSubmissions = submissionRepository.count();
+
+                int globalCompletionRate = 0;
+                if (totalAssignments > 0 && totalSubmissions > 0) {
+                        // This is a rough heuristic. Ideally: Sum of (StudentSubmissions /
+                        // CourseAssignments)
+                        // But simplistic: Global Submissions / (Students * AvgAssignmentsPerCourse ?
+                        // No)
+                        // Let's stick to a simpler metric: % of users who have logged in this week.
+                        long activeUsers = userRepository.findAll().stream()
+                                        .filter(u -> u.getLastLogin() != null
+                                                        && u.getLastLogin().isAfter(LocalDateTime.now().minusDays(7)))
+                                        .count();
+
+                        // Churn: Inactive > 30 days
+                        long churnRisk = userRepository.findAll().stream()
+                                        .filter(u -> u.getLastLogin() != null
+                                                        && u.getLastLogin().isBefore(LocalDateTime.now().minusDays(30)))
+                                        .count();
+
+                        // Completion Rate
+                        // Let's use getStudentInsights logic aggregation
+                        double avgCompletion = getStudentInsights().stream()
+                                        .mapToInt(m -> Integer
+                                                        .parseInt(m.get("completionRate").toString().replace("%", "")))
+                                        .average().orElse(0);
+
+                        return Map.of(
+                                        "totalEnrollments", totalStudents,
+                                        "avgStudentsPerCourse", courses.isEmpty() ? 0 : totalStudents / courses.size(),
+                                        "completionRate", (int) avgCompletion + "%",
+                                        "churnRate", churnRisk // Raw count of at-risk users
+                        );
+                }
+
+                return Map.of(
+                                "totalEnrollments", totalStudents,
+                                "avgStudentsPerCourse", courses.isEmpty() ? 0 : totalStudents / courses.size(),
+                                "completionRate", "0%",
+                                "churnRate", 0);
+        }
+
+        public List<Map<String, Object>> getStudentInsights() {
+                List<User> students = userRepository.findAll().stream()
+                                .filter(u -> u.getRole() == User.Role.STUDENT)
+                                .collect(Collectors.toList());
+
+                List<Assignment> allAssignments = assignmentRepository.findAll();
+                List<Submission> allSubmissions = submissionRepository.findAll();
+
+                return students.stream().map(student -> {
+                        Map<String, Object> map = new HashMap<>();
+                        map.put("id", student.getId());
+                        map.put("name", student.getFullName());
+                        map.put("email", student.getEmail());
+                        map.put("lastLogin", student.getLastLogin());
+                        map.put("loginCount", student.getLoginCount());
+                        map.put("totalTimeOnline", student.getLoginCount() * 20); // Estimation 20 min/session
+                        map.put("coursesEnrolled", student.getCourses().size());
+
+                        // Real Completion Rate
+                        // 1. Find all courses student is in.
+                        // 2. Count total assignments in those courses.
+                        // 3. Count submissions by student in those courses.
+
+                        long studentAssignmentCount = allAssignments.stream()
+                                        .filter(a -> student.getCourses().contains(a.getCourse())) // Assuming
+                                                                                                   // bidirectional/equals
+                                                                                                   // works or ID check
+                                        .count();
+
+                        long studentSubmissionCount = allSubmissions.stream()
+                                        .filter(s -> s.getStudent().getId().equals(student.getId()))
+                                        .count();
+
+                        int completion = 0;
+                        if (studentAssignmentCount > 0) {
+                                completion = (int) ((double) studentSubmissionCount / studentAssignmentCount * 100);
+                        } else if (student.getCourses().isEmpty()) {
+                                completion = 0; // No courses
+                        } else {
+                                completion = 100; // Courses have no assignments yet
+                        }
+                        if (completion > 100)
+                                completion = 100;
+
+                        map.put("completionRate", completion + "%");
+
+                        // Risk Logic
+                        String risk = "Low";
+                        if (student.getLastLogin() == null
+                                        || student.getLastLogin().isBefore(LocalDateTime.now().minusDays(14)))
+                                risk = "Medium";
+                        if (student.getLastLogin() != null
+                                        && student.getLastLogin().isBefore(LocalDateTime.now().minusDays(30)))
+                                risk = "High";
+                        if (completion < 20 && studentAssignmentCount > 0)
+                                risk = "High";
+
+                        map.put("status", risk.equals("High") ? "At Risk" : "Active");
+                        map.put("riskFactor", risk);
+
+                        return map;
+                }).collect(Collectors.toList());
+        }
 }

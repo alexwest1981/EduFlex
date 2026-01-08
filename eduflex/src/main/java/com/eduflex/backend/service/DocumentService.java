@@ -43,13 +43,24 @@ public class DocumentService {
                 file.getContentType(),
                 "/uploads/" + uniqueName,
                 file.getSize(),
-                user
-        );
+                user);
         return documentRepository.save(doc);
     }
 
-    public List<Document> getAllDocuments() { return documentRepository.findAll(); }
-    public List<Document> getUserDocuments(Long userId) { return documentRepository.findByOwnerId(userId); }
+    public List<Document> getAllDocuments() {
+        return documentRepository.findAll();
+    }
+
+    public List<Document> getUserDocuments(Long userId) {
+        return documentRepository.findByOwnerIdOrSharedWithId(userId);
+    }
+
+    public void shareDocument(Long docId, Long targetUserId) {
+        Document doc = documentRepository.findById(docId).orElseThrow();
+        User target = userRepository.findById(targetUserId).orElseThrow();
+        doc.getSharedWith().add(target);
+        documentRepository.save(doc);
+    }
 
     public void deleteDocument(Long id) {
         documentRepository.findById(id).ifPresent(doc -> {

@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
-import { LayoutDashboard, FileText, User, Settings, LogOut, Layers, Menu, X, Award, Zap, Moon, Sun, Calendar } from 'lucide-react';
+import { LayoutDashboard, FileText, User, Settings, LogOut, Layers, Menu, X, Award, Zap, Moon, Sun, Calendar, BookOpen, TrendingUp } from 'lucide-react';
 import { useAppContext } from '../context/AppContext';
 import { useModules } from '../context/ModuleContext';
 import { useTranslation } from 'react-i18next';
@@ -21,6 +21,7 @@ const Layout = ({ children }) => {
         ? `http://127.0.0.1:8080${currentUser.profilePictureUrl}` : null;
 
     const gamificationActive = isModuleActive('GAMIFICATION');
+    const analyticsActive = isModuleActive('ANALYTICS');
     const darkModeActive = isModuleActive('DARK_MODE');
     const token = localStorage.getItem('token');
 
@@ -34,7 +35,9 @@ const Layout = ({ children }) => {
     const navItems = [
         { path: '/', icon: <LayoutDashboard size={20} />, label: t('sidebar.dashboard') },
         { path: '/calendar', icon: <Calendar size={20} />, label: t('sidebar.calendar') || 'Kalender' },
+        ...(currentUser?.role === 'TEACHER' || currentUser?.role === 'ADMIN' ? [{ path: '/resources', icon: <BookOpen size={20} />, label: t('sidebar.resource_bank') }] : []),
         ...(currentUser?.role === 'ADMIN' ? [{ path: '/admin', icon: <Settings size={20} />, label: t('sidebar.admin') }] : []),
+        ...(analyticsActive && currentUser?.role === 'ADMIN' ? [{ path: '/analytics', icon: <TrendingUp size={20} />, label: t('sidebar.analytics') }] : []),
         { path: '/catalog', icon: <Layers size={20} />, label: t('sidebar.catalog') },
         { path: '/documents', icon: <FileText size={20} />, label: t('sidebar.documents') },
         { path: '/profile', icon: <User size={20} />, label: t('sidebar.my_profile') },
@@ -72,14 +75,14 @@ const Layout = ({ children }) => {
                     {sidebarOpen && gamificationActive && (
                         <div className="mt-4 w-full bg-gradient-to-r from-amber-50 to-orange-50 dark:from-[#282a2c] dark:to-[#282a2c] border border-amber-200 dark:border-[#3c4043] rounded-xl p-3 flex items-center justify-between animate-in zoom-in duration-300">
                             <div className="flex items-center gap-2">
-                                <div className="bg-white dark:bg-[#3c4043] p-1.5 rounded-full text-amber-600 dark:text-amber-400 shadow-sm"><Award size={16}/></div>
+                                <div className="bg-white dark:bg-[#3c4043] p-1.5 rounded-full text-amber-600 dark:text-amber-400 shadow-sm"><Award size={16} /></div>
                                 <div className="text-left">
                                     <p className="text-[10px] font-bold text-amber-800 dark:text-amber-400 uppercase">Level {currentUser?.level || 1}</p>
-                                    <p className="text-xs font-bold text-gray-800 dark:text-gray-300">{currentUser?.role === 'STUDENT' ? 'Student' : currentUser?.role === 'TEACHER' ? 'Lärare' : 'Admin'}</p>
+                                    <p className="text-xs font-bold text-gray-800 dark:text-gray-300">{currentUser?.role === 'STUDENT' ? t('auth.student') : currentUser?.role === 'TEACHER' ? t('auth.teacher') : t('auth.admin')}</p>
                                 </div>
                             </div>
                             <div className="text-amber-600 dark:text-amber-400 font-bold text-xs flex items-center gap-1">
-                                <Zap size={12} fill="currentColor"/> {currentUser?.points || 0}
+                                <Zap size={12} fill="currentColor" /> {currentUser?.points || 0}
                             </div>
                         </div>
                     )}
@@ -91,9 +94,9 @@ const Layout = ({ children }) => {
                         return (
                             <NavLink key={item.path} to={item.path} className={`flex items-center px-3 py-3 rounded-xl transition-all duration-200 group 
                                 ${isActive
-                                ? 'bg-gray-900 text-white dark:bg-[#004A77] dark:text-[#c2e7ff]'
-                                : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-[#282a2c] hover:text-gray-900 dark:hover:text-gray-200'
-                            }`}>
+                                    ? 'bg-gray-900 text-white dark:bg-[#004A77] dark:text-[#c2e7ff]'
+                                    : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-[#282a2c] hover:text-gray-900 dark:hover:text-gray-200'
+                                }`}>
                                 <div className={`${!sidebarOpen && 'mx-auto'}`}>{item.icon}</div>
                                 {sidebarOpen && <span className="ml-3 font-medium text-sm">{item.label}</span>}
                                 {!sidebarOpen && <div className="absolute left-16 bg-black text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-50 pointer-events-none">{item.label}</div>}
@@ -105,8 +108,8 @@ const Layout = ({ children }) => {
                 <div className="p-4 border-t border-gray-100 dark:border-[#282a2c] space-y-2">
                     {darkModeActive && (
                         <button onClick={toggleTheme} className={`flex items-center w-full px-3 py-2 rounded-xl transition-colors bg-gray-50 dark:bg-[#282a2c] hover:bg-gray-100 dark:hover:bg-[#3c4043] text-gray-600 dark:text-gray-300 ${!sidebarOpen && 'justify-center'}`}>
-                            {theme === 'dark' ? <Sun size={20}/> : <Moon size={20}/>}
-                            {sidebarOpen && <span className="ml-3 font-medium text-sm">{theme === 'dark' ? 'Ljust läge' : 'Mörkt läge'}</span>}
+                            {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+                            {sidebarOpen && <span className="ml-3 font-medium text-sm">{theme === 'dark' ? t('common.light_mode') : t('common.dark_mode')}</span>}
                         </button>
                     )}
                     <button onClick={handleLogout} className={`flex items-center w-full px-3 py-3 rounded-xl text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/10 transition-colors ${!sidebarOpen && 'justify-center'}`}>
@@ -120,7 +123,7 @@ const Layout = ({ children }) => {
             <main className={`flex-1 transition-all duration-300 ${sidebarOpen ? 'ml-64' : 'ml-20'} p-8 h-full overflow-y-auto bg-gray-50 dark:bg-[#131314]`}>
                 <div className="mb-6 flex items-center justify-between">
                     <button onClick={() => setSidebarOpen(!sidebarOpen)} className="p-2 hover:bg-gray-200 dark:hover:bg-[#282a2c] rounded-lg text-gray-500 dark:text-gray-400 transition-colors">
-                        {sidebarOpen ? <X size={20}/> : <Menu size={20}/>}
+                        {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
                     </button>
                 </div>
                 {children}

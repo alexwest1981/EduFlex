@@ -18,6 +18,8 @@ import UserProfile from './features/profile/UserProfile';
 import CourseCatalog from './features/catalog/CourseCatalog';
 import DocumentManager from './features/documents/DocumentManager';
 import AdminDashboard from './features/dashboard/AdminDashboard';
+import ResourceBank from './features/resources/ResourceBank';
+import AnalyticsDashboard from './features/analytics/AnalyticsDashboard'; // <--- NY
 
 // --- PROTECTED ROUTE ---
 const ProtectedRoute = ({ children, roles }) => {
@@ -80,7 +82,7 @@ const DashboardWrapper = ({ currentUser }) => {
             allCourses={[]}
             documents={[]}
             ungradedSubmissions={[]}
-            handleToggleCourseStatus={()=>{}}
+            handleToggleCourseStatus={() => { }}
         />
     );
 };
@@ -140,10 +142,26 @@ const AppRoutes = () => {
                 </ProtectedRoute>
             } />
 
+            <Route path="/analytics" element={
+                <ProtectedRoute roles={['ADMIN']}>
+                    <Layout currentUser={currentUser} handleLogout={logout}>
+                        <AnalyticsDashboard />
+                    </Layout>
+                </ProtectedRoute>
+            } />
+
+            <Route path="/resources" element={
+                <ProtectedRoute roles={['TEACHER', 'ADMIN']}>
+                    <Layout currentUser={currentUser} handleLogout={logout}>
+                        <ResourceBank />
+                    </Layout>
+                </ProtectedRoute>
+            } />
+
             <Route path="/profile" element={
                 <ProtectedRoute>
                     <Layout currentUser={currentUser} handleLogout={logout}>
-                        <UserProfile currentUser={currentUser} showMessage={(msg)=>alert(msg)} refreshUser={()=>{}} />
+                        <UserProfile currentUser={currentUser} showMessage={(msg) => alert(msg)} refreshUser={() => { }} />
                     </Layout>
                 </ProtectedRoute>
             } />

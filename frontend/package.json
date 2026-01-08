@@ -18,7 +18,7 @@
     "react-i18next": "^14.1.0",
     "react-quill-new": "^3.7.0",
     "react-router-dom": "^6.22.3",
-    "recharts": "^2.12.2",
+    "recharts": "^2.15.4",
     "sockjs-client": "^1.6.1",
     "stompjs": "^2.3.3"
   },

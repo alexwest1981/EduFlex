@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
-    FileText, Image as ImageIcon, File, Trash2, Download,
-    Search, UploadCloud, Grid, List, HardDrive, FileCode
+    Search, UploadCloud, Grid, List, HardDrive, FileCode, Share2, UserPlus, X, Download, Trash2, File, FileText, Image as ImageIcon
 } from 'lucide-react';
 import { api } from '../../services/api';
 import { useAppContext } from '../../context/AppContext';
@@ -13,6 +12,10 @@ const DocumentManager = () => {
     const [viewMode, setViewMode] = useState('grid');
     const [filter, setFilter] = useState('all');
     const [search, setSearch] = useState('');
+    const [shareModalOpen, setShareModalOpen] = useState(false);
+    const [selectedDoc, setSelectedDoc] = useState(null);
+    const [allUsers, setAllUsers] = useState([]);
+    const [userSearch, setUserSearch] = useState('');
 
     // Drag & Drop State
     const [isDragging, setIsDragging] = useState(false);
@@ -49,6 +52,28 @@ const DocumentManager = () => {
             }
         }
         loadDocuments();
+    };
+
+    const openShareModal = async (doc) => {
+        setSelectedDoc(doc);
+        setShareModalOpen(true);
+        try {
+            // Hämta användare att dela med (kan optimeras till contacts)
+            const users = await api.users.getAll();
+            setAllUsers(users.filter(u => u.id !== currentUser.id));
+        } catch (e) {
+            console.error("Failed to load users");
+        }
+    };
+
+    const handleShare = async (userId) => {
+        try {
+            await api.documents.share(selectedDoc.id, userId);
+            alert(`Filen delad!`);
+            setShareModalOpen(false);
+        } catch (e) {
+            alert("Kunde inte dela filen.");
+        }
     };
 
     const handleDelete = async (id) => {
@@ -97,13 +122,13 @@ const DocumentManager = () => {
 
     // --- HELPERS ---
     const getFileIcon = (mimeType) => {
-        if (!mimeType) return <File size={40} className="text-gray-400"/>;
-        if (mimeType.startsWith('image/')) return <ImageIcon size={40} className="text-purple-500"/>;
-        if (mimeType.includes('pdf')) return <FileText size={40} className="text-red-500"/>;
-        if (mimeType.includes('word') || mimeType.includes('document')) return <FileText size={40} className="text-blue-500"/>;
-        if (mimeType.includes('excel') || mimeType.includes('sheet')) return <FileText size={40} className="text-green-500"/>;
-        if (mimeType.includes('code') || mimeType.includes('javascript') || mimeType.includes('html')) return <FileCode size={40} className="text-yellow-500"/>;
-        return <File size={40} className="text-gray-400"/>;
+        if (!mimeType) return <File size={40} className="text-gray-400" />;
+        if (mimeType.startsWith('image/')) return <ImageIcon size={40} className="text-purple-500" />;
+        if (mimeType.includes('pdf')) return <FileText size={40} className="text-red-500" />;
+        if (mimeType.includes('word') || mimeType.includes('document')) return <FileText size={40} className="text-blue-500" />;
+        if (mimeType.includes('excel') || mimeType.includes('sheet')) return <FileText size={40} className="text-green-500" />;
+        if (mimeType.includes('code') || mimeType.includes('javascript') || mimeType.includes('html')) return <FileCode size={40} className="text-yellow-500" />;
+        return <File size={40} className="text-gray-400" />;
     };
 
     const formatSize = (bytes) => {
@@ -148,8 +173,8 @@ const DocumentManager = () => {
                 </div>
 
                 <div className="flex items-center gap-3 bg-white dark:bg-[#1E1F20] p-1 rounded-xl border border-gray-200 dark:border-[#3c4043] shadow-sm">
-                    <button onClick={() => setViewMode('grid')} className={`p-2 rounded-lg transition-colors ${viewMode === 'grid' ? 'bg-indigo-50 text-indigo-600 dark:bg-indigo-900/20' : 'text-gray-400'}`}><Grid size={20}/></button>
-                    <button onClick={() => setViewMode('list')} className={`p-2 rounded-lg transition-colors ${viewMode === 'list' ? 'bg-indigo-50 text-indigo-600 dark:bg-indigo-900/20' : 'text-gray-400'}`}><List size={20}/></button>
+                    <button onClick={() => setViewMode('grid')} className={`p-2 rounded-lg transition-colors ${viewMode === 'grid' ? 'bg-indigo-50 text-indigo-600 dark:bg-indigo-900/20' : 'text-gray-400'}`}><Grid size={20} /></button>
+                    <button onClick={() => setViewMode('list')} className={`p-2 rounded-lg transition-colors ${viewMode === 'list' ? 'bg-indigo-50 text-indigo-600 dark:bg-indigo-900/20' : 'text-gray-400'}`}><List size={20} /></button>
                 </div>
             </div>
 
@@ -169,7 +194,7 @@ const DocumentManager = () => {
 
                 <div className="flex gap-4 w-full md:w-auto">
                     <div className="relative flex-1 md:w-64">
-                        <Search className="absolute left-3 top-2.5 text-gray-400" size={18}/>
+                        <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
                         <input
                             type="text"
                             placeholder="Sök fil..."
@@ -179,7 +204,7 @@ const DocumentManager = () => {
                         />
                     </div>
                     <label className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-bold flex items-center gap-2 cursor-pointer shadow-lg hover:shadow-indigo-200 transition-all">
-                        <UploadCloud size={18}/> <span className="hidden sm:inline">Ladda upp</span>
+                        <UploadCloud size={18} /> <span className="hidden sm:inline">Ladda upp</span>
                         <input type="file" className="hidden" multiple onChange={(e) => handleFileUpload(e.target.files)} />
                     </label>
                 </div>
@@ -194,7 +219,7 @@ const DocumentManager = () => {
                     onDrop={handleDrop}
                 >
                     <div className="bg-white/20 p-8 rounded-full mb-6 animate-bounce">
-                        <UploadCloud size={64}/>
+                        <UploadCloud size={64} />
                     </div>
                     <h2 className="text-3xl font-bold mb-2">Släpp filerna här!</h2>
                     <p className="text-indigo-100">Ladda upp till ditt arkiv</p>
@@ -205,7 +230,7 @@ const DocumentManager = () => {
             {isLoading ? <div className="text-center py-20 text-gray-400">Laddar filer...</div> :
                 filteredDocs.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-20 border-2 border-dashed border-gray-200 dark:border-[#3c4043] rounded-2xl bg-gray-50/50">
-                        <HardDrive size={48} className="text-gray-300 mb-4"/>
+                        <HardDrive size={48} className="text-gray-300 mb-4" />
                         <p className="text-gray-500 font-medium">Här var det tomt.</p>
                         <p className="text-gray-400 text-sm">Ladda upp filer eller dra dem hit.</p>
                     </div>
@@ -216,7 +241,7 @@ const DocumentManager = () => {
                                 <div key={doc.id} className="group bg-white dark:bg-[#1E1F20] p-4 rounded-xl border border-gray-200 dark:border-[#3c4043] hover:border-indigo-400 hover:shadow-md transition-all relative flex flex-col items-center text-center">
                                     <div className="mb-3 p-4 bg-gray-50 dark:bg-[#131314] rounded-xl w-full flex justify-center h-32 items-center overflow-hidden">
                                         {doc.fileType?.startsWith('image/') ?
-                                            <img src={`http://127.0.0.1:8080${doc.fileUrl}`} alt={doc.fileName} className="h-full w-full object-cover rounded"/>
+                                            <img src={`http://127.0.0.1:8080${doc.fileUrl}`} alt={doc.fileName} className="h-full w-full object-cover rounded" />
                                             : getFileIcon(doc.fileType)
                                         }
                                     </div>
@@ -226,8 +251,9 @@ const DocumentManager = () => {
 
                                     {/* Hover Actions */}
                                     <div className="absolute inset-0 bg-black/60 rounded-xl flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-sm">
-                                        <a href={`http://127.0.0.1:8080${doc.fileUrl}`} download target="_blank" rel="noreferrer" className="p-2 bg-white rounded-full text-gray-800 hover:text-indigo-600"><Download size={18}/></a>
-                                        <button onClick={() => handleDelete(doc.id)} className="p-2 bg-white rounded-full text-gray-800 hover:text-red-600"><Trash2 size={18}/></button>
+                                        <a href={`http://127.0.0.1:8080${doc.fileUrl}`} download target="_blank" rel="noreferrer" className="p-2 bg-white rounded-full text-gray-800 hover:text-indigo-600"><Download size={18} /></a>
+                                        <button onClick={() => openShareModal(doc)} className="p-2 bg-white rounded-full text-gray-800 hover:text-blue-600"><Share2 size={18} /></button>
+                                        <button onClick={() => handleDelete(doc.id)} className="p-2 bg-white rounded-full text-gray-800 hover:text-red-600"><Trash2 size={18} /></button>
                                     </div>
                                 </div>
                             ))}
@@ -236,38 +262,77 @@ const DocumentManager = () => {
                         <div className="bg-white dark:bg-[#1E1F20] rounded-xl border border-gray-200 dark:border-[#3c4043] overflow-hidden">
                             <table className="w-full text-left">
                                 <thead className="bg-gray-50 dark:bg-[#282a2c] text-gray-500 text-xs uppercase font-bold border-b border-gray-200 dark:border-[#3c4043]">
-                                <tr>
-                                    <th className="p-4">Namn</th>
-                                    <th className="p-4">Datum</th>
-                                    <th className="p-4">Storlek</th>
-                                    <th className="p-4">Typ</th>
-                                    <th className="p-4 text-right">Åtgärd</th>
-                                </tr>
+                                    <tr>
+                                        <th className="p-4">Namn</th>
+                                        <th className="p-4">Datum</th>
+                                        <th className="p-4">Storlek</th>
+                                        <th className="p-4">Typ</th>
+                                        <th className="p-4 text-right">Åtgärd</th>
+                                    </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-100 dark:divide-[#3c4043]">
-                                {filteredDocs.map(doc => (
-                                    <tr key={doc.id} className="hover:bg-gray-50 dark:hover:bg-[#282a2c] transition-colors group">
-                                        <td className="p-4 flex items-center gap-3">
-                                            {getFileIcon(doc.fileType)}
-                                            <span className="font-medium text-gray-900 dark:text-white truncate max-w-[200px]">{doc.fileName}</span>
-                                        </td>
-                                        <td className="p-4 text-sm text-gray-500">{formatDate(doc.uploadedAt)}</td>
-                                        <td className="p-4 text-sm text-gray-500">{formatSize(doc.size)}</td>
-                                        <td className="p-4 text-sm text-gray-500 uppercase">{doc.fileType?.split('/')[1] || 'FIL'}</td>
-                                        <td className="p-4 text-right">
-                                            <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                <a href={`http://127.0.0.1:8080${doc.fileUrl}`} download target="_blank" rel="noreferrer" className="p-2 hover:bg-gray-200 rounded text-gray-600"><Download size={16}/></a>
-                                                <button onClick={() => handleDelete(doc.id)} className="p-2 hover:bg-red-100 rounded text-red-600"><Trash2 size={16}/></button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                ))}
+                                    {filteredDocs.map(doc => (
+                                        <tr key={doc.id} className="hover:bg-gray-50 dark:hover:bg-[#282a2c] transition-colors group">
+                                            <td className="p-4 flex items-center gap-3">
+                                                {getFileIcon(doc.fileType)}
+                                                <span className="font-medium text-gray-900 dark:text-white truncate max-w-[200px]">{doc.fileName}</span>
+                                            </td>
+                                            <td className="p-4 text-sm text-gray-500">{formatDate(doc.uploadedAt)}</td>
+                                            <td className="p-4 text-sm text-gray-500">{formatSize(doc.size)}</td>
+                                            <td className="p-4 text-sm text-gray-500 uppercase">{doc.fileType?.split('/')[1] || 'FIL'}</td>
+                                            <td className="p-4 text-right">
+                                                <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                    <a href={`http://127.0.0.1:8080${doc.fileUrl}`} download target="_blank" rel="noreferrer" className="p-2 hover:bg-gray-200 rounded text-gray-600"><Download size={16} /></a>
+                                                    <button onClick={() => openShareModal(doc)} className="p-2 hover:bg-blue-100 rounded text-blue-600"><Share2 size={16} /></button>
+                                                    <button onClick={() => handleDelete(doc.id)} className="p-2 hover:bg-red-100 rounded text-red-600"><Trash2 size={16} /></button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))}
                                 </tbody>
                             </table>
                         </div>
                     )
                 )}
-        </div>
+            {
+                shareModalOpen && (
+                    <div className="fixed inset-0 bg-black/50 z-[100] flex items-center justify-center p-4 animate-in fade-in">
+                        <div className="bg-white dark:bg-[#1E1F20] w-full max-w-md rounded-2xl p-6 shadow-2xl relative">
+                            <button onClick={() => setShareModalOpen(false)} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"><X size={20} /></button>
+                            <h3 className="text-xl font-bold mb-4 dark:text-white">Dela fil</h3>
+                            <p className="text-sm text-gray-500 mb-4 truncate">Fil: <strong>{selectedDoc?.fileName}</strong></p>
+
+                            <div className="relative mb-4">
+                                <Search className="absolute left-3 top-2.5 text-gray-400" size={16} />
+                                <input
+                                    className="w-full pl-9 p-2 rounded-lg border dark:bg-[#131314] dark:border-[#3c4043] dark:text-white text-sm"
+                                    placeholder="Sök användare..."
+                                    value={userSearch}
+                                    onChange={e => setUserSearch(e.target.value)}
+                                />
+                            </div>
+
+                            <div className="max-h-60 overflow-y-auto space-y-2 custom-scrollbar">
+                                {allUsers.filter(u => u.username.toLowerCase().includes(userSearch.toLowerCase()) || u.fullName.toLowerCase().includes(userSearch.toLowerCase())).map(user => (
+                                    <div key={user.id} className="flex justify-between items-center p-3 hover:bg-gray-50 dark:hover:bg-[#282a2c] rounded-lg border border-transparent hover:border-gray-200 dark:hover:border-[#3c4043] transition-colors">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 flex items-center justify-center font-bold text-xs">
+                                                {user.firstName?.[0]}
+                                            </div>
+                                            <div>
+                                                <p className="font-bold text-sm dark:text-white">{user.fullName}</p>
+                                                <p className="text-xs text-gray-500">@{user.username}</p>
+                                            </div>
+                                        </div>
+                                        <button onClick={() => handleShare(user.id)} className="p-2 bg-indigo-50 text-indigo-600 rounded-lg hover:bg-indigo-100 font-bold text-xs">Dela</button>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                )
+            }
+        </div >
     );
 };
 
