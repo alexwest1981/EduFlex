@@ -35,7 +35,8 @@ public class AttendanceController {
 
     // 2. Student: Hämta events och se min status
     @GetMapping("/course/{courseId}/student/{studentId}")
-    public ResponseEntity<List<Map<String, Object>>> getStudentAttendance(@PathVariable Long courseId, @PathVariable Long studentId) {
+    public ResponseEntity<List<Map<String, Object>>> getStudentAttendance(@PathVariable Long courseId,
+            @PathVariable Long studentId) {
         List<CourseEvent> events = eventRepository.findByCourseIdOrderByStartTimeAsc(courseId);
 
         List<Map<String, Object>> response = events.stream().map(event -> {
@@ -44,11 +45,16 @@ public class AttendanceController {
                     "event", event,
                     "isPresent", att != null && att.isPresent(),
                     "hasRecord", att != null, // Om läraren registrerat något överhuvudtaget
-                    "note", att != null && att.getNote() != null ? att.getNote() : ""
-            );
+                    "note", att != null && att.getNote() != null ? att.getNote() : "");
         }).collect(Collectors.toList());
 
         return ResponseEntity.ok(response);
+    }
+
+    // 2.5 Hämta närvaro för ett event (ALLA studenter)
+    @GetMapping("/event/{eventId}")
+    public ResponseEntity<List<Attendance>> getEventAttendance(@PathVariable Long eventId) {
+        return ResponseEntity.ok(attendanceRepository.findByEventId(eventId));
     }
 
     // 3. Lärare: Registrera närvaro för en student på ett event
@@ -68,7 +74,8 @@ public class AttendanceController {
             attendance.setStudent(student);
         }
         attendance.setPresent(present);
-        if(note != null) attendance.setNote(note);
+        if (note != null)
+            attendance.setNote(note);
 
         attendanceRepository.save(attendance);
         return ResponseEntity.ok().build();

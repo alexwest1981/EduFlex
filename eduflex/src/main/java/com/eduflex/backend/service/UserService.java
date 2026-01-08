@@ -15,7 +15,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -41,7 +40,8 @@ public class UserService {
 
     public User registerUser(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        if (user.getRole() == null) user.setRole(User.Role.STUDENT);
+        if (user.getRole() == null)
+            user.setRole(User.Role.STUDENT);
         user.setActive(true);
         return userRepository.save(user);
     }
@@ -60,19 +60,24 @@ public class UserService {
         User user = getUserById(userId);
         Set<User> contacts = new HashSet<>();
 
-        if (user.getRole() == User.Role.ADMIN || user.getRole() == User.Role.TEACHER) {
-            // Admin och Lärare får se alla (eller begränsa lärare om du vill)
+        if (user.getRole() == User.Role.ADMIN) {
+            // Admin får se alla
             return userRepository.findAll();
-        }
+        } else if (user.getRole() == User.Role.TEACHER) {
+            // 1. Sina egna elever (från kurser de skapat/undervisar i)
+            // OBS: I modellen heter fältet 'coursesCreated' för lärare
+            for (Course course : user.getCoursesCreated()) {
+                contacts.addAll(course.getStudents());
+            }
 
-        if (user.getRole() == User.Role.STUDENT) {
-            // 1. Lägg till Administratörer
-            List<User> admins = userRepository.findAll().stream()
-                    .filter(u -> u.getRole() == User.Role.ADMIN)
-                    .collect(Collectors.toList());
-            contacts.addAll(admins);
+            // 2. Alla lärare
+            contacts.addAll(userRepository.findByRole(User.Role.TEACHER));
 
-            // 2. Loopa igenom studentens kurser
+            // 3. Alla administratörer
+            contacts.addAll(userRepository.findByRole(User.Role.ADMIN));
+
+        } else if (user.getRole() == User.Role.STUDENT) {
+            // 1. Loopa igenom studentens kurser
             for (Course course : user.getCourses()) {
                 // Lägg till läraren
                 if (course.getTeacher() != null) {

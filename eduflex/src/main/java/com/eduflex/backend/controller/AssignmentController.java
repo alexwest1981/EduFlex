@@ -8,7 +8,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
@@ -22,7 +21,7 @@ public class AssignmentController {
     private final FileStorageService fileService; // Återanvänd din filtjänst
 
     public AssignmentController(AssignmentRepository assignmentRepo, SubmissionRepository submissionRepo,
-                                CourseRepository courseRepo, UserRepository userRepo, FileStorageService fileService) {
+            CourseRepository courseRepo, UserRepository userRepo, FileStorageService fileService) {
         this.assignmentRepo = assignmentRepo;
         this.submissionRepo = submissionRepo;
         this.courseRepo = courseRepo;
@@ -38,10 +37,28 @@ public class AssignmentController {
     }
 
     @PostMapping("/courses/{courseId}/assignments")
-    public Assignment createAssignment(@PathVariable Long courseId, @RequestBody Assignment req) {
+    public Assignment createAssignment(@PathVariable Long courseId, @RequestParam Long userId,
+            @RequestBody Assignment req) {
         Course course = courseRepo.findById(courseId).orElseThrow();
+        User author = userRepo.findById(userId).orElseThrow();
         req.setCourse(course);
+        // Set the author of the assignment
+        req.setAuthor(author);
         return assignmentRepo.save(req);
+    }
+
+    @PostMapping("/assignments/create")
+    public Assignment createGlobalAssignment(@RequestParam Long userId, @RequestBody Assignment req) {
+        User author = userRepo.findById(userId).orElseThrow();
+        // Set the author
+        req.setAuthor(author);
+        // Ingen kurs satt
+        return assignmentRepo.save(req);
+    }
+
+    @GetMapping("/assignments/my")
+    public List<Assignment> getMyAssignments(@RequestParam Long userId) {
+        return assignmentRepo.findByAuthorId(userId);
     }
 
     // --- SUBMISSIONS ---
@@ -58,7 +75,7 @@ public class AssignmentController {
 
     @PostMapping("/assignments/{assignmentId}/submit/{studentId}")
     public Submission submitAssignment(@PathVariable Long assignmentId, @PathVariable Long studentId,
-                                       @RequestParam("file") MultipartFile file) {
+            @RequestParam("file") MultipartFile file) {
         Assignment assignment = assignmentRepo.findById(assignmentId).orElseThrow();
         User student = userRepo.findById(studentId).orElseThrow();
 
@@ -84,7 +101,8 @@ public class AssignmentController {
     // --- GRADING ---
 
     @PostMapping("/submissions/{id}/grade")
-    public Submission gradeSubmission(@PathVariable Long id, @RequestParam String grade, @RequestParam(required = false) String feedback) {
+    public Submission gradeSubmission(@PathVariable Long id, @RequestParam String grade,
+            @RequestParam(required = false) String feedback) {
         Submission sub = submissionRepo.findById(id).orElseThrow();
         sub.setGrade(grade);
         sub.setFeedback(feedback);

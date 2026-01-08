@@ -28,7 +28,9 @@
     "logout": "Log out",
     "documents": "Documents",
     "catalog": "Course Catalog",
-    "calendar": "Calendar"
+    "calendar": "Calendar",
+    "resource_bank": "Resource Bank",
+    "analytics": "Analytics & Insights"
   },
   "dashboard": {
     "welcome": "Welcome back, {{name}}!",
@@ -125,7 +127,23 @@
     "absent": "Absent",
     "description": "Description",
     "no_description": "No description available.",
-    "note": "Note"
+    "note": "Note",
+    "manage_attendance": "Manage Attendance",
+    "new_event": "New Occasion",
+    "create_event_title": "Create new occasion",
+    "event_title": "Title",
+    "event_start": "Start",
+    "event_end": "End",
+    "event_type": "Type",
+    "type_lesson": "Lesson",
+    "type_workshop": "Workshop",
+    "type_exam": "Exam",
+    "type_other": "Other",
+    "create_btn": "Create",
+    "save_attendance": "Save Attendance",
+    "saved_success": "Attendance saved!",
+    "save_error": "Error saving",
+    "create_error": "Could not create event"
   },
   "assessment": {
     "title": "Assessment & Results",
@@ -252,7 +270,15 @@
     "subtitle": "Keep track of your deadlines and course starts.",
     "events_in": "Events in",
     "no_events": "Nothing scheduled this month.",
-    "days": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+    "days": [
+      "Mon",
+      "Tue",
+      "Wed",
+      "Thu",
+      "Fri",
+      "Sat",
+      "Sun"
+    ]
   },
   "course": {
     "back": "Back to dashboard",
@@ -281,7 +307,19 @@
     "select_student": "Select student...",
     "role": "Role",
     "status": "Status",
-    "active": "Active"
+    "active": "Active",
+    "attendance": "Attendance",
+    "connect_classroom": "Connect to Classroom",
+    "evaluate_course": "Evaluate Course",
+    "feedback_thanks": "Thanks for your feedback!",
+    "error_occurred": "An error occurred:",
+    "result_passed": "Passed",
+    "result_failed": "Failed",
+    "result_pending": "Pending",
+    "mark_passed": "Pass",
+    "mark_failed": "Fail",
+    "certificate": "Certificate",
+    "course_completed": "Course Completed"
   },
   "assignments": {
     "header": "Assignments",
@@ -349,7 +387,13 @@
     "save_changes": "Save Changes",
     "password_mismatch": "Passwords do not match!",
     "password_error": "Could not change password.",
-    "choose_strong_password": "Choose a strong password to protect your account."
+    "choose_strong_password": "Choose a strong password to protect your account.",
+    "settings": "Settings",
+    "settings_header": "Customize Dashboard",
+    "settings_desc": "Choose which widgets you want to see on your overview.",
+    "show_calendar": "Show Calendar",
+    "show_messages": "Show Messages",
+    "show_stats": "Show Statistics"
   },
   "messages": {
     "profile_updated": "Profile saved!",
@@ -372,7 +416,6 @@
     "loading": "Loading...",
     "loading_course": "Loading course..."
   },
-
   "gamification": {
     "level_title": "CURRENT LEVEL",
     "points_to_next": "points to next level",
@@ -382,5 +425,54 @@
     "rank_expert": "Expert",
     "rank_master": "Master",
     "rank_legend": "Legend"
+  },
+  "teacher_dashboard": {
+    "tab_overview": "Overview",
+    "tab_grading": "To Grade",
+    "tab_applications": "Applications",
+    "tab_courses": "My Courses",
+    "tab_students": "Student Progress",
+    "tab_communication": "Communication",
+    "section_schedule": "Upcoming Schedule",
+    "section_shortcuts": "Shortcuts",
+    "section_admin": "Administration",
+    "ongoing_course": "Ongoing Course",
+    "upcoming_event": "Upcoming Event",
+    "no_events": "No scheduled events.",
+    "new_message": "New Message"
+  },
+  "shortcuts": {
+    "calendar": "Go to Calendar",
+    "students": "Manage Students",
+    "grading": "Grade Assignments",
+    "messages": "Messages",
+    "create_course": "Create New Course"
+  },
+  "widgets": {
+    "recent_messages": {
+      "title": "Recent Messages",
+      "view_all": "View All",
+      "empty": "No new messages.",
+      "from": "From"
+    }
+  },
+  "course_modal": {
+    "create_title": "Create New Course",
+    "edit_title": "Edit Course",
+    "name": "Course Name",
+    "code": "Course Code",
+    "category": "Category",
+    "description": "Course Description",
+    "start_date": "Start Date",
+    "end_date": "End Date",
+    "max_students": "Max Students",
+    "classroom_section": "Digital Classroom",
+    "classroom_link": "Meeting Link",
+    "exam_link": "Exam Room Link",
+    "create_btn": "Create"
+  },
+  "analytics": {
+    "title": "Investor Insights",
+    "subtitle": "Deep-dive analysis of platform performance and growth metrics."
   }
 }

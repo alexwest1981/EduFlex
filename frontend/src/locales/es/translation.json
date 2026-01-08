@@ -27,8 +27,9 @@
     "my_profile": "Mi Perfil",
     "logout": "Cerrar sesión",
     "documents": "Documentos",
-    "catalog": "Catálogo",
-    "calendar": "Calendario"
+    "catalog": "Catálogo de Cursos",
+    "calendar": "Calendario",
+    "resource_bank": "Banco de Recursos"
   },
   "dashboard": {
     "welcome": "¡Bienvenido, {{name}}!",
@@ -252,7 +253,15 @@
     "subtitle": "Sigue tus plazos.",
     "events_in": "Eventos en",
     "no_events": "Nada programado.",
-    "days": ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"]
+    "days": [
+      "Lun",
+      "Mar",
+      "Mié",
+      "Jue",
+      "Vie",
+      "Sáb",
+      "Dom"
+    ]
   },
   "course": {
     "back": "Atrás",
@@ -348,8 +357,14 @@
     "update_password": "Actualizar",
     "save_changes": "Guardar",
     "password_mismatch": "¡Las contraseñas no coinciden!",
-    "password_error": "Error.",
-    "choose_strong_password": "Elige una contraseña segura."
+    "password_error": "No se pudo cambiar la contraseña.",
+    "choose_strong_password": "Elige una contraseña segura para proteger tu cuenta.",
+    "settings": "Configuración",
+    "settings_header": "Personalizar Inicio",
+    "settings_desc": "Elige qué nodos quieres ver en tu resumen.",
+    "show_calendar": "Mostrar Calendario",
+    "show_messages": "Mostrar Mensajes",
+    "show_stats": "Mostrar Estadísticas"
   },
   "messages": {
     "profile_updated": "¡Perfil guardado!",
@@ -372,7 +387,6 @@
     "loading": "Cargando...",
     "loading_course": "Cargando curso..."
   },
-
   "gamification": {
     "level_title": "NIVEL ACTUAL",
     "points_to_next": "puntos para el siguiente nivel",
@@ -382,5 +396,50 @@
     "rank_expert": "Experto",
     "rank_master": "Maestro",
     "rank_legend": "Leyenda"
+  },
+  "teacher_dashboard": {
+    "tab_overview": "Resumen",
+    "tab_grading": "Por Calificar",
+    "tab_applications": "Solicitudes",
+    "tab_courses": "Mis Cursos",
+    "tab_students": "Progreso Estudiantil",
+    "tab_communication": "Comunicación",
+    "section_schedule": "Próximo Horario",
+    "section_shortcuts": "Accesos Directos",
+    "section_admin": "Administración",
+    "ongoing_course": "Curso en Curso",
+    "upcoming_event": "Próximo Evento",
+    "no_events": "No hay eventos programados.",
+    "new_message": "Nuevo Mensaje"
+  },
+  "shortcuts": {
+    "calendar": "Ir al Calendario",
+    "students": "Gestionar Estudiantes",
+    "grading": "Calificar Tareas",
+    "messages": "Mensajes",
+    "create_course": "Crear Nuevo Curso"
+  },
+  "widgets": {
+    "recent_messages": {
+      "title": "Mensajes Recientes",
+      "view_all": "Ver Todo",
+      "empty": "No hay mensajes nuevos.",
+      "from": "De"
+    }
+  },
+  "course_modal": {
+    "create_title": "Crear Nuevo Curso",
+    "edit_title": "Editar Curso",
+    "name": "Nombre del Curso",
+    "code": "Código del Curso",
+    "category": "Categoría",
+    "description": "Descripción del Curso",
+    "start_date": "Fecha de Inicio",
+    "end_date": "Fecha de Finalización",
+    "max_students": "Max Estudiantes",
+    "classroom_section": "Aula Digital",
+    "classroom_link": "Enlace de Reunión",
+    "exam_link": "Enlace de Sala de Examen",
+    "create_btn": "Crear"
   }
 }

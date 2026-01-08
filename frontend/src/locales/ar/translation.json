@@ -27,8 +27,9 @@
     "my_profile": "ملفي الشخصي",
     "logout": "تسجيل الخروج",
     "documents": "المستندات",
-    "catalog": "الكتالوج",
-    "calendar": "التقويم"
+    "catalog": "كتالوج الدورة",
+    "calendar": "التقويم",
+    "resource_bank": "بنك الموارد"
   },
   "dashboard": {
     "welcome": "مرحباً، {{name}}!",
@@ -252,7 +253,15 @@
     "subtitle": "تتبع مواعيدك النهائية.",
     "events_in": "أحداث في",
     "no_events": "لا شيء مخطط.",
-    "days": ["إثنين", "ثلاثاء", "أربعاء", "خميس", "جمعة", "سبت", "أحد"]
+    "days": [
+      "إثنين",
+      "ثلاثاء",
+      "أربعاء",
+      "خميس",
+      "جمعة",
+      "سبت",
+      "أحد"
+    ]
   },
   "course": {
     "back": "رجوع",
@@ -348,8 +357,14 @@
     "update_password": "تحديث",
     "save_changes": "حفظ",
     "password_mismatch": "كلمات المرور غير متطابقة!",
-    "password_error": "خطأ.",
-    "choose_strong_password": "اختر كلمة مرور قوية."
+    "password_error": "لم يتم تغيير كلمة المرور.",
+    "choose_strong_password": "اختر كلمة مرور قوية لحماية حسابك.",
+    "settings": "الإعدادات",
+    "settings_header": "تخصيص لوحة التحكم",
+    "settings_desc": "اختر الأدوات التي تريد رؤيتها في نظرتك العامة.",
+    "show_calendar": "إظهار التقويم",
+    "show_messages": "إظهار الرسائل",
+    "show_stats": "إظهار الإحصائيات"
   },
   "messages": {
     "profile_updated": "تم حفظ الملف الشخصي!",
@@ -372,7 +387,6 @@
     "loading": "جاري التحميل...",
     "loading_course": "جاري تحميل الدورة..."
   },
-
   "gamification": {
     "level_title": "المستوى الحالي",
     "points_to_next": "نقطة للمستوى التالي",
@@ -382,5 +396,50 @@
     "rank_expert": "خبير",
     "rank_master": "سيد",
     "rank_legend": "أسطورة"
+  },
+  "teacher_dashboard": {
+    "tab_overview": "نظرة عامة",
+    "tab_grading": "للتصحيح",
+    "tab_applications": "الطلبات",
+    "tab_courses": "دوراتي",
+    "tab_students": "تقدم الطالب",
+    "tab_communication": "التواصل",
+    "section_schedule": "الجدول القادم",
+    "section_shortcuts": "اختصارات",
+    "section_admin": "إدارة",
+    "ongoing_course": "دورة جارية",
+    "upcoming_event": "حدث قادم",
+    "no_events": "لا توجد أحداث مجدولة.",
+    "new_message": "رسالة جديدة"
+  },
+  "shortcuts": {
+    "calendar": "الذهاب إلى التقويم",
+    "students": "إدارة الطلاب",
+    "grading": "تصحيح الواجبات",
+    "messages": "الرسائل",
+    "create_course": "إنشاء دورة جديدة"
+  },
+  "widgets": {
+    "recent_messages": {
+      "title": "الرسائل الأخيرة",
+      "view_all": "عرض الكل",
+      "empty": "لا توجد رسائل جديدة.",
+      "from": "من"
+    }
+  },
+  "course_modal": {
+    "create_title": "إنشاء دورة جديدة",
+    "edit_title": "تعديل الدورة",
+    "name": "اسم الدورة",
+    "code": "رمز الدورة",
+    "category": "الفئة",
+    "description": "وصف الدورة",
+    "start_date": "تاريخ البدء",
+    "end_date": "تاريخ الانتهاء",
+    "max_students": "أقصى عدد للطلاب",
+    "classroom_section": "الفصل الرقمي",
+    "classroom_link": "رابط الاجتماع",
+    "exam_link": "رابط قاعة الاختبار",
+    "create_btn": "إنشاء"
   }
 }

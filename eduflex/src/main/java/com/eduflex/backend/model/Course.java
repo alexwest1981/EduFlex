@@ -30,10 +30,16 @@ public class Course {
 
     private boolean isOpen = true;
 
-    // --- NYTT FÄLT: Max antal platser ---
+    // --- NYA FÄLT: DIGITALA RUM ---
+    private String classroomLink;   // URL till mötet
+    private String classroomType;   // T.ex. "ZOOM", "TEAMS", "MEET"
+
+    private String examLink;        // URL till tentarum
+    private String examType;        // T.ex. "ZOOM", "INSPO"
+    // ------------------------------
+
     @Column(columnDefinition = "integer default 100")
     private Integer maxStudents = 100;
-    // ------------------------------------
 
     @ManyToOne
     @JoinColumn(name = "teacher_id")
@@ -79,6 +85,18 @@ public class Course {
 
     public boolean isOpen() { return isOpen; }
     public void setOpen(boolean open) { isOpen = open; }
+
+    public String getClassroomLink() { return classroomLink; }
+    public void setClassroomLink(String classroomLink) { this.classroomLink = classroomLink; }
+
+    public String getClassroomType() { return classroomType; }
+    public void setClassroomType(String classroomType) { this.classroomType = classroomType; }
+
+    public String getExamLink() { return examLink; }
+    public void setExamLink(String examLink) { this.examLink = examLink; }
+
+    public String getExamType() { return examType; }
+    public void setExamType(String examType) { this.examType = examType; }
 
     public Integer getMaxStudents() { return maxStudents; }
     public void setMaxStudents(Integer maxStudents) { this.maxStudents = maxStudents; }

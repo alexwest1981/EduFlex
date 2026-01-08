@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Camera, Mail, Phone, MapPin, Save, Lock, User, AlertTriangle, Globe } from 'lucide-react';
+import { Camera, Mail, Phone, MapPin, Save, Lock, User, AlertTriangle, Globe, Settings as SettingsIcon, Layout } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { api } from '../../services/api.js';
 
@@ -10,7 +10,8 @@ const UserProfile = ({ currentUser, showMessage, refreshUser }) => {
 
     const [formData, setFormData] = useState({
         firstName: '', lastName: '', email: '', phone: '',
-        street: '', zip: '', city: '', country: '', language: 'sv'
+        street: '', zip: '', city: '', country: '', language: 'sv',
+        dashboardSettings: { showCalendar: true, showMessages: true, showStats: true }
     });
 
     const [passData, setPassData] = useState({ current: '', new: '', confirm: '' });
@@ -43,10 +44,16 @@ const UserProfile = ({ currentUser, showMessage, refreshUser }) => {
             } else { street = user.address; }
         }
         const userLang = user.language || 'sv';
+        let dbSettings = { showCalendar: true, showMessages: true, showStats: true };
+        try {
+            if (user.settings) dbSettings = JSON.parse(user.settings);
+        } catch (e) { console.error("Could not parse settings", e); }
+
         setFormData({
             firstName: user.firstName || '', lastName: user.lastName || '',
             email: user.email || '', phone: user.phone || '',
-            street, zip, city, country, language: userLang
+            street, zip, city, country, language: userLang,
+            dashboardSettings: dbSettings
         });
         if (userLang !== i18n.language) i18n.changeLanguage(userLang);
     };
@@ -75,7 +82,8 @@ const UserProfile = ({ currentUser, showMessage, refreshUser }) => {
         const payload = {
             firstName: formData.firstName, lastName: formData.lastName,
             email: formData.email, phone: formData.phone,
-            address: fullAddress, language: formData.language
+            address: fullAddress, language: formData.language,
+            settings: JSON.stringify(formData.dashboardSettings)
         };
         try {
             await api.users.update(currentUser.id, payload);
@@ -113,23 +121,23 @@ const UserProfile = ({ currentUser, showMessage, refreshUser }) => {
                     <div className="relative group mb-4">
                         <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-gray-100 dark:border-[#282a2c] shadow-sm bg-gray-50 dark:bg-[#131314] flex items-center justify-center">
                             {previewImage || displayUser.profilePictureUrl ? (
-                                <img src={previewImage || `http://127.0.0.1:8080${displayUser.profilePictureUrl}`} alt="Profil" className="w-full h-full object-cover"/>
+                                <img src={previewImage || `http://127.0.0.1:8080${displayUser.profilePictureUrl}`} alt="Profil" className="w-full h-full object-cover" />
                             ) : (
                                 <span className="text-4xl font-bold text-gray-400 dark:text-gray-500">{displayUser.firstName?.[0]}</span>
                             )}
                         </div>
                         {/* Kamera-knapp */}
                         <label className="absolute bottom-0 right-0 bg-black dark:bg-[#3c4043] text-white p-2 rounded-full cursor-pointer hover:bg-gray-800 transition-colors shadow-md border border-white dark:border-[#1E1F20]">
-                            <Camera size={16}/>
+                            <Camera size={16} />
                             <input type="file" className="hidden" accept="image/*" onChange={handleImageChange} />
                         </label>
                     </div>
                     <h2 className="text-xl font-bold text-gray-900 dark:text-[#E3E3E3]">{formData.firstName} {formData.lastName}</h2>
                     <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">@{currentUser.username} • {currentUser.role}</p>
                     <div className="w-full border-t border-gray-100 dark:border-[#282a2c] pt-4 text-left space-y-3">
-                        <div className="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-300"><Mail size={16} className="text-gray-400"/> {formData.email || "-"}</div>
-                        <div className="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-300"><Phone size={16} className="text-gray-400"/> {formData.phone || "-"}</div>
-                        <div className="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-300"><MapPin size={16} className="text-gray-400"/> {formData.city || "-"}</div>
+                        <div className="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-300"><Mail size={16} className="text-gray-400" /> {formData.email || "-"}</div>
+                        <div className="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-300"><Phone size={16} className="text-gray-400" /> {formData.phone || "-"}</div>
+                        <div className="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-300"><MapPin size={16} className="text-gray-400" /> {formData.city || "-"}</div>
                     </div>
                 </div>
 
@@ -138,10 +146,13 @@ const UserProfile = ({ currentUser, showMessage, refreshUser }) => {
                     <div className="flex border-b border-gray-200 dark:border-[#282a2c]">
                         {/* Tabbar: Subtil border, vit text */}
                         <button onClick={() => setActiveTab('details')} className={`flex-1 py-4 font-bold text-sm transition-colors ${activeTab === 'details' ? 'bg-gray-50 dark:bg-[#282a2c] text-gray-900 dark:text-white border-b-2 border-black dark:border-white' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-[#282a2c]'}`}>
-                            <div className="flex items-center justify-center gap-2"><User size={18}/> {t('profile.details')}</div>
+                            <div className="flex items-center justify-center gap-2"><User size={18} /> {t('profile.details')}</div>
                         </button>
                         <button onClick={() => setActiveTab('security')} className={`flex-1 py-4 font-bold text-sm transition-colors ${activeTab === 'security' ? 'bg-gray-50 dark:bg-[#282a2c] text-gray-900 dark:text-white border-b-2 border-black dark:border-white' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-[#282a2c]'}`}>
-                            <div className="flex items-center justify-center gap-2"><Lock size={18}/> {t('profile.security')}</div>
+                            <div className="flex items-center justify-center gap-2"><Lock size={18} /> {t('profile.security')}</div>
+                        </button>
+                        <button onClick={() => setActiveTab('settings')} className={`flex-1 py-4 font-bold text-sm transition-colors ${activeTab === 'settings' ? 'bg-gray-50 dark:bg-[#282a2c] text-gray-900 dark:text-white border-b-2 border-black dark:border-white' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-[#282a2c]'}`}>
+                            <div className="flex items-center justify-center gap-2"><SettingsIcon size={18} /> {t('profile.settings')}</div>
                         </button>
                     </div>
 
@@ -169,37 +180,72 @@ const UserProfile = ({ currentUser, showMessage, refreshUser }) => {
                                     </select>
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
-                                    <div><label className="block text-xs font-bold text-gray-500 dark:text-gray-400 mb-1">{t('profile.firstname')}</label><input value={formData.firstName} onChange={e => setFormData({...formData, firstName: e.target.value})} /></div>
-                                    <div><label className="block text-xs font-bold text-gray-500 dark:text-gray-400 mb-1">{t('profile.lastname')}</label><input value={formData.lastName} onChange={e => setFormData({...formData, lastName: e.target.value})} /></div>
+                                    <div><label className="block text-xs font-bold text-gray-500 dark:text-gray-400 mb-1">{t('profile.firstname')}</label><input value={formData.firstName} onChange={e => setFormData({ ...formData, firstName: e.target.value })} /></div>
+                                    <div><label className="block text-xs font-bold text-gray-500 dark:text-gray-400 mb-1">{t('profile.lastname')}</label><input value={formData.lastName} onChange={e => setFormData({ ...formData, lastName: e.target.value })} /></div>
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
-                                    <div><label className="block text-xs font-bold text-gray-500 dark:text-gray-400 mb-1">{t('profile.email')}</label><input value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} /></div>
-                                    <div><label className="block text-xs font-bold text-gray-500 dark:text-gray-400 mb-1">{t('profile.phone')}</label><input value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} /></div>
+                                    <div><label className="block text-xs font-bold text-gray-500 dark:text-gray-400 mb-1">{t('profile.email')}</label><input value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })} /></div>
+                                    <div><label className="block text-xs font-bold text-gray-500 dark:text-gray-400 mb-1">{t('profile.phone')}</label><input value={formData.phone} onChange={e => setFormData({ ...formData, phone: e.target.value })} /></div>
                                 </div>
                                 <div className="bg-gray-50 dark:bg-[#282a2c] p-4 rounded-xl border border-gray-100 dark:border-[#3c4043] space-y-3 transition-colors">
                                     <h3 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">{t('profile.address_header')}</h3>
                                     <div className="grid grid-cols-3 gap-3">
-                                        <div className="col-span-3"><input placeholder={t('profile.street')} value={formData.street} onChange={e => setFormData({...formData, street: e.target.value})} /></div>
-                                        <input placeholder={t('profile.zip')} value={formData.zip} onChange={e => setFormData({...formData, zip: e.target.value})} />
-                                        <input placeholder={t('profile.city')} value={formData.city} onChange={e => setFormData({...formData, city: e.target.value})} />
-                                        <input placeholder={t('profile.country')} value={formData.country} onChange={e => setFormData({...formData, country: e.target.value})} />
+                                        <div className="col-span-3"><input placeholder={t('profile.street')} value={formData.street} onChange={e => setFormData({ ...formData, street: e.target.value })} /></div>
+                                        <input placeholder={t('profile.zip')} value={formData.zip} onChange={e => setFormData({ ...formData, zip: e.target.value })} />
+                                        <input placeholder={t('profile.city')} value={formData.city} onChange={e => setFormData({ ...formData, city: e.target.value })} />
+                                        <input placeholder={t('profile.country')} value={formData.country} onChange={e => setFormData({ ...formData, country: e.target.value })} />
                                     </div>
                                 </div>
                                 <div className="flex justify-end pt-4">
                                     {/* KNAPP: Vit/Svart för maximal kontrast */}
                                     <button disabled={isLoading} className="bg-gray-900 dark:bg-[#c2e7ff] text-white dark:text-[#001d35] px-6 py-2.5 rounded-lg font-bold hover:bg-black dark:hover:bg-[#b3d7ef] shadow-sm flex items-center gap-2 disabled:opacity-50 transition-colors">
-                                        <Save size={18}/> {isLoading ? 'Sparar...' : t('profile.save_changes')}
+                                        <Save size={18} /> {isLoading ? 'Sparar...' : t('profile.save_changes')}
                                     </button>
                                 </div>
                             </form>
                         )}
                         {activeTab === 'security' && (
                             <form onSubmit={handleChangePassword} className="space-y-6 max-w-md mx-auto py-4">
-                                <div className="bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-900/30 rounded-lg p-4 mb-6 flex gap-3 text-sm text-amber-800 dark:text-amber-500"><AlertTriangle size={20} className="shrink-0"/><p>{t('profile.choose_strong_password')}</p></div>
-                                <div><label className="block text-xs font-bold text-gray-500 dark:text-gray-400 mb-1">{t('profile.current_password')}</label><input type="password" value={passData.current} onChange={e => setPassData({...passData, current: e.target.value})} required /></div>
-                                <div><label className="block text-xs font-bold text-gray-500 dark:text-gray-400 mb-1">{t('profile.new_password')}</label><input type="password" value={passData.new} onChange={e => setPassData({...passData, new: e.target.value})} required /></div>
-                                <div><label className="block text-xs font-bold text-gray-500 dark:text-gray-400 mb-1">{t('profile.confirm_password')}</label><input type="password" value={passData.confirm} onChange={e => setPassData({...passData, confirm: e.target.value})} required /></div>
-                                <button className="w-full bg-gray-900 dark:bg-white text-white dark:text-black px-6 py-3 rounded-lg font-bold hover:bg-black dark:hover:bg-gray-100 shadow-sm flex items-center justify-center gap-2 mt-4 transition-colors"><Lock size={18}/> {t('profile.update_password')}</button>
+                                <div className="bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-900/30 rounded-lg p-4 mb-6 flex gap-3 text-sm text-amber-800 dark:text-amber-500"><AlertTriangle size={20} className="shrink-0" /><p>{t('profile.choose_strong_password')}</p></div>
+                                <div><label className="block text-xs font-bold text-gray-500 dark:text-gray-400 mb-1">{t('profile.current_password')}</label><input type="password" value={passData.current} onChange={e => setPassData({ ...passData, current: e.target.value })} required /></div>
+                                <div><label className="block text-xs font-bold text-gray-500 dark:text-gray-400 mb-1">{t('profile.new_password')}</label><input type="password" value={passData.new} onChange={e => setPassData({ ...passData, new: e.target.value })} required /></div>
+                                <div><label className="block text-xs font-bold text-gray-500 dark:text-gray-400 mb-1">{t('profile.confirm_password')}</label><input type="password" value={passData.confirm} onChange={e => setPassData({ ...passData, confirm: e.target.value })} required /></div>
+                                <button className="w-full bg-gray-900 dark:bg-white text-white dark:text-black px-6 py-3 rounded-lg font-bold hover:bg-black dark:hover:bg-gray-100 shadow-sm flex items-center justify-center gap-2 mt-4 transition-colors"><Lock size={18} /> {t('profile.update_password')}</button>
+                            </form>
+                        )}
+                        {activeTab === 'settings' && (
+                            <form onSubmit={handleUpdateProfile} className="space-y-6">
+                                <h3 className="font-bold text-gray-900 dark:text-white flex items-center gap-2"><Layout size={20} /> {t('profile.settings_header')}</h3>
+                                <p className="text-sm text-gray-500 dark:text-gray-400">{t('profile.settings_desc')}</p>
+
+                                <div className="space-y-4">
+                                    <label className="flex items-center gap-3 p-4 border border-gray-200 dark:border-[#3c4043] rounded-xl cursor-pointer hover:bg-gray-50 dark:hover:bg-[#282a2c]">
+                                        <input type="checkbox" className="w-5 h-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                                            checked={formData.dashboardSettings.showCalendar}
+                                            onChange={e => setFormData({ ...formData, dashboardSettings: { ...formData.dashboardSettings, showCalendar: e.target.checked } })}
+                                        />
+                                        <span className="font-medium text-gray-700 dark:text-gray-200">{t('profile.show_calendar')}</span>
+                                    </label>
+                                    <label className="flex items-center gap-3 p-4 border border-gray-200 dark:border-[#3c4043] rounded-xl cursor-pointer hover:bg-gray-50 dark:hover:bg-[#282a2c]">
+                                        <input type="checkbox" className="w-5 h-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                                            checked={formData.dashboardSettings.showMessages}
+                                            onChange={e => setFormData({ ...formData, dashboardSettings: { ...formData.dashboardSettings, showMessages: e.target.checked } })}
+                                        />
+                                        <span className="font-medium text-gray-700 dark:text-gray-200">{t('profile.show_messages')}</span>
+                                    </label>
+                                    <label className="flex items-center gap-3 p-4 border border-gray-200 dark:border-[#3c4043] rounded-xl cursor-pointer hover:bg-gray-50 dark:hover:bg-[#282a2c]">
+                                        <input type="checkbox" className="w-5 h-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                                            checked={formData.dashboardSettings.showStats}
+                                            onChange={e => setFormData({ ...formData, dashboardSettings: { ...formData.dashboardSettings, showStats: e.target.checked } })}
+                                        />
+                                        <span className="font-medium text-gray-700 dark:text-gray-200">{t('profile.show_stats')}</span>
+                                    </label>
+                                </div>
+                                <div className="flex justify-end pt-4">
+                                    <button disabled={isLoading} className="bg-gray-900 dark:bg-[#c2e7ff] text-white dark:text-[#001d35] px-6 py-2.5 rounded-lg font-bold hover:bg-black dark:hover:bg-[#b3d7ef] shadow-sm flex items-center gap-2 disabled:opacity-50 transition-colors">
+                                        <Save size={18} /> {isLoading ? 'Sparar...' : t('profile.save_changes')}
+                                    </button>
+                                </div>
                             </form>
                         )}
                     </div>

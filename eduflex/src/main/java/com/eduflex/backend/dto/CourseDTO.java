@@ -16,6 +16,9 @@ public record CourseDTO(
         List<UserSummaryDTO> students,
         boolean isOpen,
         CourseEvaluation evaluation,
-        Integer maxStudents,   // <--- NYTT FÄLT
-        Integer enrolledCount  // <--- NYTT FÄLT
+        Integer maxStudents,
+        Integer enrolledCount,
+        String classroomLink,
+        String classroomType,
+        String examLink
 ) {}

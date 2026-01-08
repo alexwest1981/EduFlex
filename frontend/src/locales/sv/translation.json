@@ -19,7 +19,9 @@
     "send": "Skicka",
     "yes": "Ja",
     "no": "Nej",
-    "unknown": "Okänd"
+    "unknown": "Okänd",
+    "light_mode": "Ljust läge",
+    "dark_mode": "Mörkt läge"
   },
   "sidebar": {
     "dashboard": "Översikt",
@@ -28,7 +30,9 @@
     "logout": "Logga ut",
     "documents": "Filer & Dokument",
     "catalog": "Kurskatalog",
-    "calendar": "Kalender"
+    "calendar": "Kalender",
+    "resource_bank": "Resursbank",
+    "analytics": "Analyser & Insikter"
   },
   "dashboard": {
     "welcome": "Välkommen tillbaka, {{name}}!",
@@ -125,7 +129,23 @@
     "absent": "Frånvarande",
     "description": "Beskrivning",
     "no_description": "Ingen beskrivning tillgänglig.",
-    "note": "Notering"
+    "note": "Notering",
+    "manage_attendance": "Hantera Närvaro",
+    "new_event": "Nytt Tillfälle",
+    "create_event_title": "Skapa nytt tillfälle",
+    "event_title": "Titel",
+    "event_start": "Start",
+    "event_end": "Slut",
+    "event_type": "Typ",
+    "type_lesson": "Lektion",
+    "type_workshop": "Workshop",
+    "type_exam": "Prov",
+    "type_other": "Annat",
+    "create_btn": "Skapa",
+    "save_attendance": "Spara Närvaro",
+    "saved_success": "Närvaro sparad!",
+    "save_error": "Fel vid sparande",
+    "create_error": "Kunde inte skapa event"
   },
   "assessment": {
     "title": "Bedömning & Resultat",
@@ -252,7 +272,15 @@
     "subtitle": "Håll koll på dina deadlines och kursstarter.",
     "events_in": "Händer i",
     "no_events": "Ingenting inplanerat denna månad.",
-    "days": ["Mån", "Tis", "Ons", "Tor", "Fre", "Lör", "Sön"]
+    "days": [
+      "Mån",
+      "Tis",
+      "Ons",
+      "Tor",
+      "Fre",
+      "Lör",
+      "Sön"
+    ]
   },
   "course": {
     "back": "Tillbaka till översikten",
@@ -281,7 +309,19 @@
     "select_student": "Välj student...",
     "role": "Roll",
     "status": "Status",
-    "active": "Aktiv"
+    "active": "Aktiv",
+    "attendance": "Närvaro",
+    "connect_classroom": "Anslut till Klassrum",
+    "evaluate_course": "Utvärdera Kurs",
+    "feedback_thanks": "Tack för din feedback!",
+    "error_occurred": "Ett fel uppstod:",
+    "result_passed": "Godkänd",
+    "result_failed": "Underkänd",
+    "result_pending": "Ej bedömd",
+    "mark_passed": "Godkänn",
+    "mark_failed": "Underkänn",
+    "certificate": "Certifikat",
+    "course_completed": "Kursen avslutad"
   },
   "assignments": {
     "header": "Inlämningsuppgifter",
@@ -349,7 +389,13 @@
     "save_changes": "Spara Ändringar",
     "password_mismatch": "Lösenorden matchar inte!",
     "password_error": "Kunde inte byta lösenord.",
-    "choose_strong_password": "Välj ett starkt lösenord för att skydda ditt konto."
+    "choose_strong_password": "Välj ett starkt lösenord för att skydda ditt konto.",
+    "settings": "Inställningar",
+    "settings_header": "Anpassa Startsidan",
+    "settings_desc": "Välj vilka noder du vill se på din översikt.",
+    "show_calendar": "Visa Kalender",
+    "show_messages": "Visa Meddelanden",
+    "show_stats": "Visa Statistik"
   },
   "messages": {
     "profile_updated": "Profil sparad!",
@@ -372,7 +418,6 @@
     "loading": "Laddar...",
     "loading_course": "Laddar kurs..."
   },
-
   "gamification": {
     "level_title": "NUVARANDE NIVÅ",
     "points_to_next": "poäng till nästa nivå",
@@ -382,5 +427,54 @@
     "rank_expert": "Expert",
     "rank_master": "Mästare",
     "rank_legend": "Legend"
+  },
+  "teacher_dashboard": {
+    "tab_overview": "Översikt",
+    "tab_grading": "Att Rätta",
+    "tab_applications": "Ansökningar",
+    "tab_courses": "Mina Kurser",
+    "tab_students": "Studentuppföljning",
+    "tab_communication": "Kommunikation",
+    "section_schedule": "Kommande Schema",
+    "section_shortcuts": "Genvägar",
+    "section_admin": "Administration",
+    "ongoing_course": "Pågående kurs",
+    "upcoming_event": "Kommande händelse",
+    "no_events": "Inga inbokade händelser.",
+    "new_message": "Nytt Meddelande"
+  },
+  "shortcuts": {
+    "calendar": "Gå till Kalender",
+    "students": "Hantera Studenter",
+    "grading": "Rätta Uppgifter",
+    "messages": "Meddelanden",
+    "create_course": "Skapa ny kurs"
+  },
+  "widgets": {
+    "recent_messages": {
+      "title": "Senaste Meddelanden",
+      "view_all": "Visa alla",
+      "empty": "Inga nya meddelanden.",
+      "from": "Från"
+    }
+  },
+  "course_modal": {
+    "create_title": "Skapa ny kurs",
+    "edit_title": "Redigera kurs",
+    "name": "Kursnamn",
+    "code": "Kurskod",
+    "category": "Kategori",
+    "description": "Kursbeskrivning",
+    "start_date": "Startdatum",
+    "end_date": "Slutdatum",
+    "max_students": "Max platser",
+    "classroom_section": "Digitalt Klassrum",
+    "classroom_link": "Möteslänk",
+    "exam_link": "Länk till Tentarum",
+    "create_btn": "Skapa"
+  },
+  "analytics": {
+    "title": "Systeminsikter",
+    "subtitle": "Djupgående analys av plattformens prestanda och tillväxt."
   }
 }

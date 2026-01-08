@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 public class CourseMaterial {
 
     public enum MaterialType {
-        TEXT, VIDEO, FILE, LINK, LESSON // <--- VIKTIGT: Lade till LESSON
+        TEXT, VIDEO, FILE, LINK, LESSON
     }
 
     @Id
@@ -26,8 +26,8 @@ public class CourseMaterial {
     @Column(length = 5000)
     private String content;
 
-    private String link;
-    private String fileUrl;
+    private String link;    // För YouTube-länkar
+    private String fileUrl; // För uppladdade filer/bilder
 
     @Enumerated(EnumType.STRING)
     private MaterialType type;

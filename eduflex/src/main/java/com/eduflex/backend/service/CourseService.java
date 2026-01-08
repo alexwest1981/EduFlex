@@ -27,22 +27,26 @@ public class CourseService {
     private final CourseRepository courseRepository;
     private final UserRepository userRepository;
     private final CourseMaterialRepository materialRepository;
-    private final CourseApplicationRepository applicationRepository; // Nytt repository
+    private final CourseApplicationRepository applicationRepository;
+    private final com.eduflex.backend.repository.CourseEvaluationResponseRepository evaluationResponseRepository;
+    private final com.eduflex.backend.repository.CourseResultRepository resultRepository;
 
     @Value("${file.upload-dir}")
     private String uploadDir;
 
     public CourseService(CourseRepository courseRepository,
-                         UserRepository userRepository,
-                         CourseMaterialRepository materialRepository,
-                         CourseApplicationRepository applicationRepository) {
+            UserRepository userRepository,
+            CourseMaterialRepository materialRepository,
+            CourseApplicationRepository applicationRepository,
+            com.eduflex.backend.repository.CourseEvaluationResponseRepository evaluationResponseRepository,
+            com.eduflex.backend.repository.CourseResultRepository resultRepository) {
         this.courseRepository = courseRepository;
         this.userRepository = userRepository;
         this.materialRepository = materialRepository;
         this.applicationRepository = applicationRepository;
+        this.evaluationResponseRepository = evaluationResponseRepository;
+        this.resultRepository = resultRepository;
     }
-
-    // --- CRUD ---
 
     public List<CourseDTO> getAllCourseDTOs() {
         return courseRepository.findAll().stream().map(this::convertToDTO).collect(Collectors.toList());
@@ -58,27 +62,20 @@ public class CourseService {
     }
 
     public Course createCourse(CreateCourseDTO dto, Long teacherId) {
-        User teacher = userRepository.findById(teacherId)
-                .orElseThrow(() -> new RuntimeException("Lärare ej funnen"));
+        User teacher = userRepository.findById(teacherId).orElseThrow(() -> new RuntimeException("Lärare ej funnen"));
 
         Course course = new Course();
         course.setName(dto.name());
         course.setCourseCode(dto.courseCode());
         course.setCategory(dto.category());
         course.setDescription(dto.description());
-
-        if (dto.startDate() != null) course.setStartDate(dto.startDate().toString());
-        if (dto.endDate() != null) course.setEndDate(dto.endDate().toString());
-
-        if (dto.color() != null && !dto.color().isEmpty()) {
-            course.setColor(dto.color());
-        } else {
-            course.setColor("bg-indigo-600");
-        }
-
-        if (dto.maxStudents() != null) {
+        if (dto.startDate() != null)
+            course.setStartDate(dto.startDate().toString());
+        if (dto.endDate() != null)
+            course.setEndDate(dto.endDate().toString());
+        course.setColor(dto.color() != null && !dto.color().isEmpty() ? dto.color() : "bg-indigo-600");
+        if (dto.maxStudents() != null)
             course.setMaxStudents(dto.maxStudents());
-        }
 
         course.setTeacher(teacher);
         course.setOpen(true);
@@ -88,40 +85,59 @@ public class CourseService {
     public CourseDTO updateCourse(Long id, Map<String, Object> updates) {
         Course course = getCourseById(id);
 
-        if (updates.containsKey("name")) course.setName((String) updates.get("name"));
-        if (updates.containsKey("courseCode")) course.setCourseCode((String) updates.get("courseCode"));
-        if (updates.containsKey("category")) course.setCategory((String) updates.get("category"));
-        if (updates.containsKey("description")) course.setDescription((String) updates.get("description"));
-        if (updates.containsKey("startDate")) course.setStartDate((String) updates.get("startDate"));
-        if (updates.containsKey("endDate")) course.setEndDate((String) updates.get("endDate"));
-        if (updates.containsKey("color")) course.setColor((String) updates.get("color"));
-        if (updates.containsKey("maxStudents")) course.setMaxStudents((Integer) updates.get("maxStudents"));
+        if (updates.containsKey("name"))
+            course.setName((String) updates.get("name"));
+        if (updates.containsKey("courseCode"))
+            course.setCourseCode((String) updates.get("courseCode"));
+        if (updates.containsKey("category"))
+            course.setCategory((String) updates.get("category"));
+        if (updates.containsKey("description"))
+            course.setDescription((String) updates.get("description"));
+        if (updates.containsKey("startDate"))
+            course.setStartDate((String) updates.get("startDate"));
+        if (updates.containsKey("endDate"))
+            course.setEndDate((String) updates.get("endDate"));
+        if (updates.containsKey("color"))
+            course.setColor((String) updates.get("color"));
+        if (updates.containsKey("maxStudents"))
+            course.setMaxStudents((Integer) updates.get("maxStudents"));
+
+        // --- NYA FÄLT: DIGITALA RUM ---
+        if (updates.containsKey("classroomLink"))
+            course.setClassroomLink((String) updates.get("classroomLink"));
+        if (updates.containsKey("classroomType"))
+            course.setClassroomType((String) updates.get("classroomType"));
+        if (updates.containsKey("examLink"))
+            course.setExamLink((String) updates.get("examLink"));
+        if (updates.containsKey("examType"))
+            course.setExamType((String) updates.get("examType"));
+        // ------------------------------
 
         if (updates.containsKey("isOpen")) {
             Object openVal = updates.get("isOpen");
-            if (openVal instanceof Boolean) {
+            if (openVal instanceof Boolean)
                 course.setOpen((Boolean) openVal);
-            } else if (openVal instanceof String) {
+            else if (openVal instanceof String)
                 course.setOpen(Boolean.parseBoolean((String) openVal));
-            }
         }
 
-        Course updatedCourse = courseRepository.save(course);
-        return convertToDTO(updatedCourse);
+        return convertToDTO(courseRepository.save(course));
     }
 
-    public void deleteCourse(Long id) { courseRepository.deleteById(id); }
-    public Course saveCourse(Course course) { return courseRepository.save(course); }
+    // --- ÖVRIGA METODER (KVAR) ---
+    public void deleteCourse(Long id) {
+        courseRepository.deleteById(id);
+    }
 
-    // --- ANSÖKNINGAR ---
+    public Course saveCourse(Course course) {
+        return courseRepository.save(course);
+    }
 
     public void applyToCourse(Long courseId, Long studentId) {
-        if (applicationRepository.findByCourseIdAndStudentId(courseId, studentId).isPresent()) {
+        if (applicationRepository.findByCourseIdAndStudentId(courseId, studentId).isPresent())
             throw new RuntimeException("Redan ansökt.");
-        }
         Course course = getCourseById(courseId);
         User student = userRepository.findById(studentId).orElseThrow();
-
         CourseApplication app = new CourseApplication();
         app.setCourse(course);
         app.setStudent(student);
@@ -132,7 +148,8 @@ public class CourseService {
         CourseApplication app = applicationRepository.findById(appId).orElseThrow();
         if (approved) {
             Course c = app.getCourse();
-            if(c.getStudents().size() >= c.getMaxStudents()) throw new RuntimeException("Fullt!");
+            if (c.getStudents().size() >= c.getMaxStudents())
+                throw new RuntimeException("Fullt!");
             c.getStudents().add(app.getStudent());
             courseRepository.save(c);
             app.setStatus(CourseApplication.Status.APPROVED);
@@ -155,18 +172,15 @@ public class CourseService {
         }
     }
 
-    // --- MATERIALHANTERING (DETTA VAR FELET) ---
-
-    // Metod 1: Skapa nytt material
-    public CourseMaterial addMaterial(Long courseId, String title, String content, String link, String type, MultipartFile file) throws IOException {
+    public CourseMaterial addMaterial(Long courseId, String title, String content, String link, String type,
+            MultipartFile file) throws IOException {
         Course course = getCourseById(courseId);
         CourseMaterial material = new CourseMaterial();
         material.setTitle(title);
         material.setContent(content);
         material.setLink(link);
-        material.setType(CourseMaterial.MaterialType.valueOf(type)); // Enum konvertering
+        material.setType(CourseMaterial.MaterialType.valueOf(type));
         material.setCourse(course);
-
         if (file != null && !file.isEmpty()) {
             String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
             Path path = Paths.get(uploadDir + "/" + fileName);
@@ -177,15 +191,16 @@ public class CourseService {
         return materialRepository.save(material);
     }
 
-    // Metod 2: Uppdatera material (NYTT)
-    public CourseMaterial updateMaterial(Long id, String title, String content, String link, MultipartFile file) throws IOException {
+    public CourseMaterial updateMaterial(Long id, String title, String content, String link, MultipartFile file)
+            throws IOException {
         CourseMaterial material = materialRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Material hittades inte"));
-
-        if (title != null) material.setTitle(title);
-        if (content != null) material.setContent(content);
-        if (link != null) material.setLink(link);
-
+        if (title != null)
+            material.setTitle(title);
+        if (content != null)
+            material.setContent(content);
+        if (link != null)
+            material.setLink(link);
         if (file != null && !file.isEmpty()) {
             String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
             Path path = Paths.get(uploadDir + "/" + fileName);
@@ -193,14 +208,17 @@ public class CourseService {
             Files.write(path, file.getBytes());
             material.setFileUrl("/uploads/" + fileName);
         }
-
         return materialRepository.save(material);
     }
 
-    public List<CourseMaterial> getMaterialsForCourse(Long courseId) { return materialRepository.findByCourseId(courseId); }
-    public void deleteMaterial(Long id) { materialRepository.deleteById(id); }
+    public List<CourseMaterial> getMaterialsForCourse(Long courseId) {
+        return materialRepository.findByCourseId(courseId);
+    }
 
-    // --- HELPER ---
+    public void deleteMaterial(Long id) {
+        materialRepository.deleteById(id);
+    }
+
     public List<CourseDTO> getAvailableCoursesForStudent(Long studentId) {
         User student = userRepository.findById(studentId).orElseThrow();
         return courseRepository.findAll().stream()
@@ -227,6 +245,48 @@ public class CourseService {
         return evaluation;
     }
 
+    public void submitEvaluation(Long evaluationId, Long studentId, Map<Integer, String> answers) {
+        if (evaluationResponseRepository.existsByEvaluationIdAndStudentId(evaluationId, studentId)) {
+            throw new RuntimeException("Du har redan gjort denna utvärdering.");
+        }
+
+        CourseEvaluation evaluation = courseRepository.findAll().stream()
+                .filter(c -> c.getEvaluation() != null && c.getEvaluation().getId().equals(evaluationId))
+                .findFirst().map(Course::getEvaluation).orElseThrow(() -> new RuntimeException("Utvärdering saknas"));
+
+        User student = userRepository.findById(studentId).orElseThrow();
+
+        CourseEvaluationResponse response = new CourseEvaluationResponse();
+        response.setEvaluation(evaluation);
+        response.setStudent(student);
+        response.setAnswers(answers);
+        response.setSubmittedAt(java.time.LocalDateTime.now());
+
+        evaluationResponseRepository.save(response);
+    }
+
+    public void setCourseResult(Long courseId, Long studentId, String statusStr) {
+        CourseResult result = resultRepository.findByCourseIdAndStudentId(courseId, studentId)
+                .orElse(new CourseResult());
+
+        if (result.getId() == null) {
+            result.setCourse(getCourseById(courseId));
+            result.setStudent(userRepository.findById(studentId).orElseThrow());
+        }
+
+        try {
+            result.setStatus(CourseResult.Status.valueOf(statusStr.toUpperCase()));
+            result.setGradedAt(java.time.LocalDateTime.now());
+            resultRepository.save(result);
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException("Ogiltig status. Använd 'PASSED', 'FAILED' eller 'PENDING'.");
+        }
+    }
+
+    public CourseResult getCourseResult(Long courseId, Long studentId) {
+        return resultRepository.findByCourseIdAndStudentId(courseId, studentId).orElse(null);
+    }
+
     private CourseDTO convertToDTO(Course c) {
         UserSummaryDTO teacherDTO = null;
         if (c.getTeacher() != null) {
@@ -234,8 +294,7 @@ public class CourseService {
                     c.getTeacher().getId(),
                     c.getTeacher().getFullName(),
                     c.getTeacher().getUsername(),
-                    c.getTeacher().getRole().name()
-            );
+                    c.getTeacher().getRole().name());
         }
         List<UserSummaryDTO> studentDTOs = c.getStudents().stream()
                 .map(s -> new UserSummaryDTO(s.getId(), s.getFullName(), s.getUsername(), s.getRole().name()))
@@ -244,7 +303,8 @@ public class CourseService {
         return new CourseDTO(
                 c.getId(), c.getName(), c.getCourseCode(), c.getCategory(), c.getDescription(),
                 c.getStartDate(), c.getEndDate(), c.getColor(), teacherDTO, studentDTOs,
-                c.isOpen(), c.getEvaluation(), c.getMaxStudents(), c.getStudents().size()
+                c.isOpen(), c.getEvaluation(), c.getMaxStudents(), c.getStudents().size(),
+                c.getClassroomLink(), c.getClassroomType(), c.getExamLink() // Nya fält
         );
     }
 }

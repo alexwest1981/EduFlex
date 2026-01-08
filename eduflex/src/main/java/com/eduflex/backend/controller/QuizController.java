@@ -12,7 +12,8 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/quizzes")
-@CrossOrigin(origins = "*", allowedHeaders = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE})
+@CrossOrigin(origins = "*", allowedHeaders = "*", methods = { RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT,
+        RequestMethod.DELETE })
 public class QuizController {
 
     private final QuizRepository quizRepository;
@@ -21,7 +22,8 @@ public class QuizController {
     private final UserRepository userRepository;
     private final GamificationService gamificationService;
 
-    public QuizController(QuizRepository q, QuizResultRepository r, CourseRepository c, UserRepository u, GamificationService g) {
+    public QuizController(QuizRepository q, QuizResultRepository r, CourseRepository c, UserRepository u,
+            GamificationService g) {
         this.quizRepository = q;
         this.resultRepository = r;
         this.courseRepository = c;
@@ -32,6 +34,11 @@ public class QuizController {
     @GetMapping("/course/{courseId}")
     public List<Quiz> getQuizzesByCourse(@PathVariable Long courseId) {
         return quizRepository.findByCourseId(courseId);
+    }
+
+    @GetMapping("/my")
+    public List<Quiz> getMyQuizzes(@RequestParam Long userId) {
+        return quizRepository.findByAuthorId(userId);
     }
 
     @PutMapping("/{id}")
@@ -62,10 +69,16 @@ public class QuizController {
         return ResponseEntity.ok(quizRepository.save(existingQuiz));
     }
 
-    @PostMapping("/course/{courseId}")
-    public ResponseEntity<Quiz> createQuiz(@PathVariable Long courseId, @RequestBody Quiz quizData) {
-        Course course = courseRepository.findById(courseId).orElseThrow();
-        quizData.setCourse(course);
+    @PostMapping("/create")
+    public ResponseEntity<Quiz> createGlobalQuiz(@RequestParam Long userId,
+            @RequestParam(required = false) Long courseId, @RequestBody Quiz quizData) {
+        User author = userRepository.findById(userId).orElseThrow();
+        quizData.setAuthor(author);
+
+        if (courseId != null) {
+            Course course = courseRepository.findById(courseId).orElseThrow();
+            quizData.setCourse(course);
+        }
 
         if (quizData.getQuestions() != null) {
             for (Question q : quizData.getQuestions()) {
@@ -81,8 +94,15 @@ public class QuizController {
         return ResponseEntity.ok(quizRepository.save(quizData));
     }
 
+    @PostMapping("/course/{courseId}")
+    public ResponseEntity<Quiz> createQuiz(@PathVariable Long courseId, @RequestParam Long userId,
+            @RequestBody Quiz quizData) {
+        return createGlobalQuiz(userId, courseId, quizData);
+    }
+
     @PostMapping("/{quizId}/submit")
-    public ResponseEntity<QuizResult> submitResult(@PathVariable Long quizId, @RequestBody Map<String, Object> payload) {
+    public ResponseEntity<QuizResult> submitResult(@PathVariable Long quizId,
+            @RequestBody Map<String, Object> payload) {
         Long studentId = Long.valueOf(payload.get("studentId").toString());
         int score = Integer.parseInt(payload.get("score").toString());
         int maxScore = Integer.parseInt(payload.get("maxScore").toString());

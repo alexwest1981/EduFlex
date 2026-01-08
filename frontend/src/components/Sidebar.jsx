@@ -11,20 +11,25 @@ const Sidebar = ({ currentUser, logout, siteName, version }) => {
 
     const getMenuItems = () => {
         const role = currentUser?.role;
+        console.log("Sidebar Debug - User:", currentUser, "Role:", role);
         const items = [
-            { path: '/', label: t('sidebar.dashboard'), icon: <LayoutDashboard size={20}/> }
+            { path: '/', label: t('sidebar.dashboard'), icon: <LayoutDashboard size={20} /> }
         ];
 
+        if (role === 'TEACHER' || role === 'ADMIN' || true) { // DEBUG: Force show
+            items.push({ path: '/resources', label: t('sidebar.resource_bank'), icon: <BookOpen size={20} /> });
+        }
+
         if (role === 'STUDENT') {
-            items.push({ path: '/catalog', label: t('sidebar.catalog'), icon: <BookOpen size={20}/> });
+            items.push({ path: '/catalog', label: t('sidebar.catalog'), icon: <BookOpen size={20} /> });
         }
         if (role === 'ADMIN') {
-            items.push({ path: '/admin', label: t('sidebar.admin'), icon: <Users size={20}/> });
+            items.push({ path: '/admin', label: t('sidebar.admin'), icon: <Users size={20} /> });
         }
         if (role !== 'ADMIN') {
-            items.push({ path: '/documents', label: t('sidebar.documents'), icon: <FolderOpen size={20}/> });
+            items.push({ path: '/documents', label: t('sidebar.documents'), icon: <FolderOpen size={20} /> });
         }
-        items.push({ path: '/calendar', label: t('sidebar.calendar'), icon: <Calendar size={20}/> });
+        items.push({ path: '/calendar', label: t('sidebar.calendar'), icon: <Calendar size={20} /> });
 
         return items;
     };
@@ -74,9 +79,9 @@ const Sidebar = ({ currentUser, logout, siteName, version }) => {
                         onClick={() => navigate(item.path)}
                         className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 font-medium text-sm
                             ${currentPath === item.path
-                            ? 'bg-indigo-50 text-indigo-700 shadow-sm border border-indigo-100'
-                            : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'
-                        }`}
+                                ? 'bg-indigo-50 text-indigo-700 shadow-sm border border-indigo-100'
+                                : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'
+                            }`}
                     >
                         <div className={`${currentPath === item.path ? 'text-indigo-600' : 'text-gray-400'}`}>
                             {item.icon}
@@ -92,7 +97,7 @@ const Sidebar = ({ currentUser, logout, siteName, version }) => {
                     onClick={logout}
                     className="w-full flex items-center gap-2 px-4 py-3 text-red-600 hover:bg-red-50 rounded-xl transition-colors text-sm font-medium mb-2"
                 >
-                    <LogOut size={18}/> {t('sidebar.logout')}
+                    <LogOut size={18} /> {t('sidebar.logout')}
                 </button>
                 <div className="text-center text-[10px] text-gray-400 font-mono">
                     v{version || '1.0.0'}

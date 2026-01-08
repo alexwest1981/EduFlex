@@ -23,11 +23,13 @@ public class ForumThread {
     @Column(length = 5000)
     private String content;
 
+    private boolean locked = false;
+
     private LocalDateTime createdAt = LocalDateTime.now();
 
     @ManyToOne
     @JoinColumn(name = "author_id")
-    @JsonIgnoreProperties({"courses", "documents", "submissions", "coursesCreated"})
+    @JsonIgnoreProperties({ "courses", "documents", "submissions", "coursesCreated" })
     private User author;
 
     @ManyToOne
@@ -37,7 +39,7 @@ public class ForumThread {
 
     @ManyToOne
     @JoinColumn(name = "course_id")
-    @JsonIgnoreProperties({"students", "teacher"})
+    @JsonIgnoreProperties({ "students", "teacher" })
     private Course course;
 
     @OneToMany(mappedBy = "thread", cascade = CascadeType.ALL, orphanRemoval = true)

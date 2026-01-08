@@ -30,12 +30,19 @@ public class ModuleService {
     @PostConstruct
     public void initModules() {
         // Här definierar vi "App Store"-utbudet som ska finnas vid start
-        createIfNotExists("DARK_MODE", "Dark Mode Core", "Globalt mörkt tema för hela plattformen.", "2.4.0", true, false);
-        createIfNotExists("QUIZ", "QuizRunner Pro", "Skapa och genomför diagnostiska prov och tester.", "1.2.0", true, false);
-        createIfNotExists("SUBMISSIONS", "Inlämningar", "Hantera inlämningsuppgifter och bedömning.", "1.0.0", true, false);
-        createIfNotExists("FORUM", "EduForum", "Diskussionsforum för kurser med trådar och svar.", "2.0.1", true, false);
+        createIfNotExists("DARK_MODE", "Dark Mode Core", "Globalt mörkt tema för hela plattformen.", "2.4.0", true,
+                false);
+        createIfNotExists("QUIZ", "QuizRunner Pro", "Skapa och genomför diagnostiska prov och tester.", "1.2.0", true,
+                false);
+        createIfNotExists("SUBMISSIONS", "Inlämningar", "Hantera inlämningsuppgifter och bedömning.", "1.0.0", true,
+                false);
+        createIfNotExists("FORUM", "EduForum", "Diskussionsforum för kurser med trådar och svar.", "2.0.1", true,
+                false);
         createIfNotExists("CHAT", "EduChat Pro", "Realtidskommunikation via WebSockets.", "3.1.0", true, true);
-        createIfNotExists("GAMIFICATION", "Gamification Engine", "Engagera studenter med poäng, levlar och utmärkelser.", "1.5.0", true, false);
+        createIfNotExists("GAMIFICATION", "Gamification Engine",
+                "Engagera studenter med poäng, levlar och utmärkelser.", "1.5.0", true, false);
+        createIfNotExists("ANALYTICS", "Investor Insights", "Extensive system analysis and financial reporting.",
+                "1.0.0", true, true);
     }
 
     private void createIfNotExists(String key, String name, String desc, String ver, boolean active, boolean lic) {

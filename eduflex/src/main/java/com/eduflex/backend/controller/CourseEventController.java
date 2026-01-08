@@ -26,6 +26,11 @@ public class CourseEventController {
         return eventRepository.findAll();
     }
 
+    @GetMapping("/course/{courseId}")
+    public List<CourseEvent> getEventsByCourse(@PathVariable Long courseId) {
+        return eventRepository.findByCourseIdOrderByStartTimeAsc(courseId);
+    }
+
     @PostMapping
     public CourseEvent createEvent(@RequestBody EventRequest request) {
         Course course = courseRepository.findById(request.courseId).orElseThrow();

@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BookOpen, PlayCircle, Plus, Edit2, Trash2, Save, FileText, ChevronRight, Video, Download, Paperclip } from 'lucide-react';
-// Vi använder fetch direkt här för att ha full kontroll över FormData
-// (Du kan använda api.js också men detta minimerar risken för missförstånd med parametrarna)
+import { BookOpen, Plus, Edit2, Trash2, Save, ChevronRight, Video, Download, Paperclip, Loader2, Image as ImageIcon } from 'lucide-react';
 
 export const CourseContentModuleMetadata = {
     key: 'material',
@@ -10,10 +8,11 @@ export const CourseContentModuleMetadata = {
     settingsKey: 'module_content_enabled'
 };
 
-const CourseContentModule = ({ courseId, isTeacher }) => {
+const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE' }) => {
     const [lessons, setLessons] = useState([]);
     const [selectedLesson, setSelectedLesson] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
+    const [isSaving, setIsSaving] = useState(false);
 
     // Form data
     const [formData, setFormData] = useState({ title: '', content: '', videoUrl: '' });
@@ -21,20 +20,25 @@ const CourseContentModule = ({ courseId, isTeacher }) => {
 
     useEffect(() => {
         loadLessons();
-    }, [courseId]);
+    }, [courseId, mode]);
 
     const loadLessons = async () => {
         try {
+            // Refaktorerad för att använda api service eller url-switch
+            // Men för att behålla befintlig struktur med fetch:
             const token = localStorage.getItem('token');
-            const res = await fetch(`http://127.0.0.1:8080/api/courses/${courseId}/materials`, {
+            let url = `http://127.0.0.1:8080/api/courses/${courseId}/materials`;
+
+            if (mode === 'GLOBAL') {
+                url = `http://127.0.0.1:8080/api/lessons/my?userId=${currentUser?.id}`;
+            }
+
+            const res = await fetch(url, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             if (res.ok) {
                 const data = await res.json();
-                // Filtrera eller sortera om du vill. Nu tar vi allt.
                 setLessons(data);
-
-                // Om vi har data men inget valt, välj första
                 if (data.length > 0 && !selectedLesson) {
                     setSelectedLesson(data[0]);
                 }
@@ -47,28 +51,40 @@ const CourseContentModule = ({ courseId, isTeacher }) => {
     const handleCreateClick = () => {
         setFormData({ title: 'Ny Lektion', content: '', videoUrl: '' });
         setFile(null);
-        setSelectedLesson(null); // Deselecta för att visa editor
+        setSelectedLesson(null);
         setIsEditing(true);
     };
 
     const handleSave = async () => {
+        setIsSaving(true);
         const token = localStorage.getItem('token');
         const fd = new FormData();
-        fd.append('title', formData.title);
-        fd.append('content', formData.content || '');
-        fd.append('link', formData.videoUrl || ''); // Vi mappar videoUrl -> link i backend
-        fd.append('type', 'LESSON'); // Vi sätter typen hårt till LESSON
 
+        // --- VIKTIGT: Mappar datan korrekt mot backend ---
+        fd.append('title', formData.title || 'Namnlös lektion');
+        fd.append('content', formData.content || '');
+
+        // Mappa videoUrl till 'link' som backend förväntar sig
+        if (formData.videoUrl) fd.append('link', formData.videoUrl);
+
+        // Sätt typen till LESSON
+        fd.append('type', 'LESSON');
+
+        // Skicka fil om det finns
         if (file) fd.append('file', file);
 
         try {
-            let url = `http://127.0.0.1:8080/api/courses/${courseId}/materials`;
+            let url = `http://127.0.0.1:8080/api/courses/${courseId}/materials?userId=${currentUser?.id}`;
             let method = 'POST';
 
+            if (mode === 'GLOBAL') {
+                url = `http://127.0.0.1:8080/api/lessons/create?userId=${currentUser?.id}`;
+            }
+
             if (selectedLesson && selectedLesson.id) {
-                // UPDATE
+                // Vid update är det samma endpoint oavsett global/course
                 url = `http://127.0.0.1:8080/api/courses/materials/${selectedLesson.id}`;
-                method = 'PUT'; // Vi använder PUT för uppdatering
+                method = 'PUT'; // LessonController har @PutMapping("/{id}") för update
             }
 
             const res = await fetch(url, {
@@ -91,16 +107,19 @@ const CourseContentModule = ({ courseId, isTeacher }) => {
                 setIsEditing(false);
                 setFile(null);
             } else {
-                alert("Kunde inte spara. Kontrollera filstorleken.");
+                const errText = await res.text();
+                alert(`Kunde inte spara: ${errText || "Okänt fel"}`);
             }
-        } catch(e) {
+        } catch (e) {
             console.error(e);
-            alert("Ett fel inträffade.");
+            alert("Kunde inte ansluta till servern.");
+        } finally {
+            setIsSaving(false);
         }
     };
 
     const handleDelete = async (id) => {
-        if(!window.confirm("Är du säker på att du vill radera lektionen?")) return;
+        if (!window.confirm("Är du säker på att du vill radera lektionen?")) return;
         try {
             const token = localStorage.getItem('token');
             await fetch(`http://127.0.0.1:8080/api/courses/materials/${id}`, {
@@ -111,25 +130,28 @@ const CourseContentModule = ({ courseId, isTeacher }) => {
             const remaining = lessons.filter(l => l.id !== id);
             setLessons(remaining);
             setSelectedLesson(remaining.length > 0 ? remaining[0] : null);
-        } catch(e) { alert("Kunde inte radera"); }
+        } catch (e) { alert("Kunde inte radera"); }
     };
+
+    // Helper: Identifiera filtyp
+    const isVideoFile = (url) => url && url.match(/\.(mp4|webm|ogg|mov)$/i);
+    const isImageFile = (url) => url && url.match(/\.(jpg|jpeg|png|gif|webp)$/i);
 
     const getEmbedUrl = (url) => {
         if (!url) return null;
-        // Enkel regex för YouTube ID
         const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
         const match = url.match(regExp);
         return (match && match[2].length === 11) ? `https://www.youtube.com/embed/${match[2]}` : null;
     };
 
-    // Helper för att ladda editor med befintlig data
     const startEditing = (lesson) => {
         setFormData({
             title: lesson.title,
             content: lesson.content,
-            videoUrl: lesson.link // Mappa 'link' från backend till 'videoUrl' i frontend
+            videoUrl: lesson.link // Mappa tillbaka 'link' till 'videoUrl'
         });
-        setSelectedLesson(lesson); // Behåll selection så vi vet ID
+        setFile(null);
+        setSelectedLesson(lesson);
         setIsEditing(true);
     };
 
@@ -140,7 +162,7 @@ const CourseContentModule = ({ courseId, isTeacher }) => {
             <div className="lg:col-span-1 bg-white dark:bg-[#1E1F20] rounded-xl border border-gray-200 dark:border-[#3c4043] flex flex-col overflow-hidden h-[600px]">
                 <div className="p-4 border-b border-gray-100 dark:border-[#3c4043] bg-gray-50 dark:bg-[#131314] flex justify-between items-center">
                     <h3 className="font-bold text-gray-700 dark:text-gray-200">Kursplan</h3>
-                    {isTeacher && <button onClick={handleCreateClick} className="p-1.5 bg-indigo-600 text-white hover:bg-indigo-700 rounded-lg transition-colors"><Plus size={16}/></button>}
+                    {isTeacher && <button onClick={handleCreateClick} className="p-1.5 bg-indigo-600 text-white hover:bg-indigo-700 rounded-lg transition-colors"><Plus size={16} /></button>}
                 </div>
                 <div className="flex-1 overflow-y-auto p-2 space-y-1 custom-scrollbar">
                     {lessons.length === 0 && <p className="text-sm text-gray-400 text-center py-10">Inga lektioner än.</p>}
@@ -154,7 +176,7 @@ const CourseContentModule = ({ courseId, isTeacher }) => {
                                 <span className="flex-shrink-0 flex items-center justify-center w-5 h-5 rounded-full bg-gray-100 dark:bg-[#3c4043] text-xs font-mono">{idx + 1}</span>
                                 <span className="truncate">{lesson.title}</span>
                             </div>
-                            {selectedLesson?.id === lesson.id && <ChevronRight size={14}/>}
+                            {selectedLesson?.id === lesson.id && <ChevronRight size={14} />}
                         </div>
                     ))}
                 </div>
@@ -164,32 +186,53 @@ const CourseContentModule = ({ courseId, isTeacher }) => {
             <div className="lg:col-span-3 bg-white dark:bg-[#1E1F20] rounded-xl border border-gray-200 dark:border-[#3c4043] p-8 overflow-y-auto custom-scrollbar h-[600px] flex flex-col">
                 {isEditing ? (
                     /* EDITOR MODE */
-                    <div className="space-y-4 flex-1 animate-in fade-in">
-                        <h2 className="text-xl font-bold dark:text-white mb-4">{selectedLesson ? 'Redigera Lektion' : 'Ny Lektion'}</h2>
+                    <div className="space-y-4 flex-1 animate-in fade-in relative">
+                        {isSaving && (
+                            <div className="absolute inset-0 bg-white/80 dark:bg-black/80 z-10 flex items-center justify-center backdrop-blur-sm rounded-xl">
+                                <div className="flex flex-col items-center gap-2">
+                                    <Loader2 className="animate-spin text-indigo-600" size={32} />
+                                    <span className="font-bold text-gray-700 dark:text-gray-300">Sparar lektion...</span>
+                                </div>
+                            </div>
+                        )}
+
+                        <h2 className="text-xl font-bold dark:text-white mb-4">{selectedLesson?.id ? 'Redigera Lektion' : 'Ny Lektion'}</h2>
 
                         <div>
                             <label className="block text-xs font-bold text-gray-500 mb-1">Titel</label>
-                            <input className="w-full p-3 border rounded-xl dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} placeholder="T.ex. Introduktion till Java" />
+                            <input className="w-full p-3 border rounded-xl dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" value={formData.title} onChange={e => setFormData({ ...formData, title: e.target.value })} placeholder="T.ex. Introduktion till Java" />
                         </div>
 
                         <div>
-                            <label className="block text-xs font-bold text-gray-500 mb-1">Video URL (YouTube)</label>
-                            <input className="w-full p-3 border rounded-xl dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" placeholder="https://youtube.com/..." value={formData.videoUrl || ''} onChange={e => setFormData({...formData, videoUrl: e.target.value})} />
+                            <label className="block text-xs font-bold text-gray-500 mb-1">YouTube URL (Valfritt)</label>
+                            <input className="w-full p-3 border rounded-xl dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" placeholder="https://youtube.com/..." value={formData.videoUrl || ''} onChange={e => setFormData({ ...formData, videoUrl: e.target.value })} />
                         </div>
 
                         <div>
-                            <label className="block text-xs font-bold text-gray-500 mb-1">Bifoga Fil (PDF, PPT, Zip)</label>
-                            <input type="file" className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" onChange={e => setFile(e.target.files[0])} />
+                            <label className="block text-xs font-bold text-gray-500 mb-1">
+                                Ladda upp fil / Bild / Video (Valfritt)
+                            </label>
+                            <input
+                                type="file"
+                                accept=".pdf,.doc,.docx,.ppt,.pptx,.zip,.mp4,.mov,.webm,.jpg,.jpeg,.png,.gif,.webp"
+                                className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
+                                onChange={e => setFile(e.target.files[0])}
+                            />
+                            {selectedLesson?.fileUrl && !file && (
+                                <p className="text-xs text-green-600 mt-1 flex items-center gap-1">
+                                    <Paperclip size={12} /> Fil finns redan sparad. Ladda upp ny för att ersätta.
+                                </p>
+                            )}
                         </div>
 
                         <div className="flex-1">
                             <label className="block text-xs font-bold text-gray-500 mb-1">Innehåll / Beskrivning</label>
-                            <textarea className="w-full h-64 p-3 border rounded-xl dark:bg-[#131314] dark:border-[#3c4043] dark:text-white font-mono text-sm" placeholder="Skriv lektionsinnehållet här..." value={formData.content} onChange={e => setFormData({...formData, content: e.target.value})} />
+                            <textarea className="w-full h-64 p-3 border rounded-xl dark:bg-[#131314] dark:border-[#3c4043] dark:text-white font-mono text-sm" placeholder="Skriv lektionsinnehållet här..." value={formData.content} onChange={e => setFormData({ ...formData, content: e.target.value })} />
                         </div>
 
                         <div className="flex gap-3 pt-4 border-t dark:border-[#3c4043]">
-                            <button onClick={handleSave} className="bg-indigo-600 text-white px-6 py-2.5 rounded-lg font-bold flex items-center gap-2 hover:bg-indigo-700"><Save size={18}/> Spara Lektion</button>
-                            <button onClick={() => { setIsEditing(false); if(!selectedLesson && lessons.length > 0) setSelectedLesson(lessons[0]); }} className="bg-gray-100 dark:bg-[#3c4043] text-gray-700 dark:text-white px-6 py-2.5 rounded-lg font-bold">Avbryt</button>
+                            <button onClick={handleSave} disabled={isSaving} className="bg-indigo-600 text-white px-6 py-2.5 rounded-lg font-bold flex items-center gap-2 hover:bg-indigo-700 disabled:opacity-50"><Save size={18} /> Spara Lektion</button>
+                            <button onClick={() => { setIsEditing(false); if (!selectedLesson && lessons.length > 0) setSelectedLesson(lessons[0]); }} disabled={isSaving} className="bg-gray-100 dark:bg-[#3c4043] text-gray-700 dark:text-white px-6 py-2.5 rounded-lg font-bold">Avbryt</button>
                         </div>
                     </div>
                 ) : selectedLesson ? (
@@ -202,40 +245,49 @@ const CourseContentModule = ({ courseId, isTeacher }) => {
                             </div>
                             {isTeacher && (
                                 <div className="flex gap-2">
-                                    <button onClick={() => startEditing(selectedLesson)} className="p-2 text-gray-500 hover:text-indigo-600 hover:bg-gray-100 dark:hover:bg-[#3c4043] rounded-lg transition-colors"><Edit2 size={18}/></button>
-                                    <button onClick={() => handleDelete(selectedLesson.id)} className="p-2 text-gray-500 hover:text-red-600 hover:bg-gray-100 dark:hover:bg-[#3c4043] rounded-lg transition-colors"><Trash2 size={18}/></button>
+                                    <button onClick={() => startEditing(selectedLesson)} className="p-2 text-gray-500 hover:text-indigo-600 hover:bg-gray-100 dark:hover:bg-[#3c4043] rounded-lg transition-colors"><Edit2 size={18} /></button>
+                                    <button onClick={() => handleDelete(selectedLesson.id)} className="p-2 text-gray-500 hover:text-red-600 hover:bg-gray-100 dark:hover:bg-[#3c4043] rounded-lg transition-colors"><Trash2 size={18} /></button>
                                 </div>
                             )}
                         </div>
 
-                        {/* VIDEO PLAYER */}
-                        {selectedLesson.link && getEmbedUrl(selectedLesson.link) && (
-                            <div className="aspect-video w-full bg-black rounded-xl overflow-hidden mb-8 shadow-lg ring-1 ring-black/10">
-                                <iframe
-                                    src={getEmbedUrl(selectedLesson.link)}
-                                    title={selectedLesson.title}
-                                    className="w-full h-full"
-                                    frameBorder="0"
-                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                    allowFullScreen
-                                ></iframe>
-                            </div>
-                        )}
+                        {/* --- MEDIA VISARE --- */}
+                        <div className="space-y-6 mb-8">
 
-                        {/* ATTACHMENT */}
-                        {selectedLesson.fileUrl && (
+                            {/* 1. YOUTUBE */}
+                            {selectedLesson.link && getEmbedUrl(selectedLesson.link) && (
+                                <div className="aspect-video w-full bg-black rounded-xl overflow-hidden shadow-lg ring-1 ring-black/10">
+                                    <iframe src={getEmbedUrl(selectedLesson.link)} title={selectedLesson.title} className="w-full h-full" frameBorder="0" allowFullScreen></iframe>
+                                </div>
+                            )}
+
+                            {/* 2. EGEN VIDEO */}
+                            {selectedLesson.fileUrl && isVideoFile(selectedLesson.fileUrl) && (
+                                <div className="rounded-xl overflow-hidden shadow-lg bg-black">
+                                    <video controls className="w-full max-h-[500px]" src={`http://127.0.0.1:8080${selectedLesson.fileUrl}`}>Din webbläsare stödjer inte videouppspelning.</video>
+                                </div>
+                            )}
+
+                            {/* 3. BILD (NYTT!) */}
+                            {selectedLesson.fileUrl && isImageFile(selectedLesson.fileUrl) && (
+                                <div className="rounded-xl overflow-hidden shadow-lg border border-gray-200 dark:border-[#3c4043]">
+                                    <img src={`http://127.0.0.1:8080${selectedLesson.fileUrl}`} alt="Lektionsmaterial" className="w-full h-auto object-contain max-h-[600px] bg-gray-50 dark:bg-black/50" />
+                                </div>
+                            )}
+                        </div>
+
+                        {/* --- BIFOGAD FIL (Om det inte är video/bild) --- */}
+                        {selectedLesson.fileUrl && !isVideoFile(selectedLesson.fileUrl) && !isImageFile(selectedLesson.fileUrl) && (
                             <div className="mb-8 p-4 bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-100 dark:border-indigo-800 rounded-xl flex items-center justify-between">
                                 <div className="flex items-center gap-3">
-                                    <div className="p-2 bg-white dark:bg-[#1E1F20] rounded-lg shadow-sm text-indigo-600">
-                                        <Paperclip size={20}/>
-                                    </div>
+                                    <div className="p-2 bg-white dark:bg-[#1E1F20] rounded-lg shadow-sm text-indigo-600"><Paperclip size={20} /></div>
                                     <div>
                                         <p className="text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase">Resurs</p>
                                         <p className="font-bold text-gray-900 dark:text-white text-sm">Bifogad fil</p>
                                     </div>
                                 </div>
                                 <a href={`http://127.0.0.1:8080${selectedLesson.fileUrl}`} download target="_blank" rel="noreferrer" className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-[#1E1F20] hover:bg-gray-50 dark:hover:bg-[#282a2c] text-sm font-bold text-gray-700 dark:text-gray-200 rounded-lg shadow-sm border border-gray-200 dark:border-[#3c4043] transition-colors">
-                                    <Download size={16}/> Ladda ner
+                                    <Download size={16} /> Ladda ner
                                 </a>
                             </div>
                         )}
@@ -247,7 +299,7 @@ const CourseContentModule = ({ courseId, isTeacher }) => {
                     </div>
                 ) : (
                     <div className="h-full flex flex-col items-center justify-center text-gray-400">
-                        <BookOpen size={64} className="mb-4 opacity-10"/>
+                        <BookOpen size={64} className="mb-4 opacity-10" />
                         <p className="text-lg font-medium">Välj en lektion från listan för att börja plugga.</p>
                         {isTeacher && <button onClick={handleCreateClick} className="mt-4 text-indigo-600 hover:underline">Eller skapa en ny</button>}
                     </div>

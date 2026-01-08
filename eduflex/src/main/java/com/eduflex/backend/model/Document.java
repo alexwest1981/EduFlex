@@ -24,7 +24,12 @@ public class Document {
     @JoinColumn(name = "user_id")
     private User owner;
 
-    public Document() {}
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "document_shares", joinColumns = @JoinColumn(name = "document_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
+    private java.util.Set<User> sharedWith = new java.util.HashSet<>();
+
+    public Document() {
+    }
 
     public Document(String fileName, String fileType, String fileUrl, Long size, User owner) {
         this.fileName = fileName;
@@ -36,20 +41,68 @@ public class Document {
     }
 
     // Getters
-    public Long getId() { return id; }
-    public String getFileName() { return fileName; }
-    public String getFileType() { return fileType; }
-    public String getFileUrl() { return fileUrl; }
-    public Long getSize() { return size; }
-    public LocalDateTime getUploadedAt() { return uploadedAt; }
-    public User getOwner() { return owner; }
+    public Long getId() {
+        return id;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public String getFileType() {
+        return fileType;
+    }
+
+    public String getFileUrl() {
+        return fileUrl;
+    }
+
+    public Long getSize() {
+        return size;
+    }
+
+    public LocalDateTime getUploadedAt() {
+        return uploadedAt;
+    }
+
+    public User getOwner() {
+        return owner;
+    }
+
+    public java.util.Set<User> getSharedWith() {
+        return sharedWith;
+    }
 
     // Setters
-    public void setId(Long id) { this.id = id; }
-    public void setFileName(String fileName) { this.fileName = fileName; }
-    public void setFileType(String fileType) { this.fileType = fileType; }
-    public void setFileUrl(String fileUrl) { this.fileUrl = fileUrl; }
-    public void setSize(Long size) { this.size = size; }
-    public void setUploadedAt(LocalDateTime uploadedAt) { this.uploadedAt = uploadedAt; }
-    public void setOwner(User owner) { this.owner = owner; }
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
+
+    public void setFileType(String fileType) {
+        this.fileType = fileType;
+    }
+
+    public void setFileUrl(String fileUrl) {
+        this.fileUrl = fileUrl;
+    }
+
+    public void setSize(Long size) {
+        this.size = size;
+    }
+
+    public void setUploadedAt(LocalDateTime uploadedAt) {
+        this.uploadedAt = uploadedAt;
+    }
+
+    public void setOwner(User owner) {
+        this.owner = owner;
+    }
+
+    public void setSharedWith(java.util.Set<User> sharedWith) {
+        this.sharedWith = sharedWith;
+    }
 }
