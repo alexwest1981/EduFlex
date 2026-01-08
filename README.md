@@ -34,6 +34,9 @@ Systemet kombinerar **realtidskommunikation**, **dokumenthantering**, **gamifica
 
 ### 🆕 Nytt i senaste versionen
 
+- **Investor Analytics Module:** Djupgående analysmotor med "Real Data" (inga mockups) för användartillväxt, intäkter (MRR) och studentengagemang.
+- **CSV Export:** Möjlighet att exportera studentinsikter och risk-analyser direkt till Excel/CSV.
+- **Internationalisering (I18n):** Fullt stöd för 6 språk i samtliga vyer, inklusive den nya analys-dashboarden.
 - Kursansökningssystem med godkänn/avslå-flöde.
 - Max antal studenter per kurs med automatisk enforcement.
 - Förbättrade Teacher/Admin/Student-dashboards för ansökningar och kursstatus.
@@ -46,7 +49,7 @@ Systemet kombinerar **realtidskommunikation**, **dokumenthantering**, **gamifica
 
 ### 🛡️ Admin & System
 
-- **AnalyticsDashboard** med statistiköversikt över användare, kurser, aktivitet och certifikat.
+- **AnalyticsDashboard (Investor Insights):** Realtidsgrafer över systemhälsa och tillväxt. Inkluderar "Risk Factor"-analys för att identifiera inaktiva studenter.
 - **SystemModules** – dedikerat modulsystem separat från **SystemSettings**.
 - **Dynamisk branding** – sidans namn, logotyp/branding och metadata styrs via databasen.
 - **”App Store”-lik modulhantering** – aktivera/avaktivera moduler (Chat, Gamification, Forum, Certificates, Calendar m.fl.) direkt från admin.
@@ -189,6 +192,7 @@ Certifikat genereras dynamiskt med **OpenPDF**:
 - WebSocket (SockJS/STOMP)  
 - React-Quill-new, Lucide React  
 - Modulär Dashboard och CourseDetail  
+- **Recharts** för datavisualisering (Analytics)
 
 ### Backend
 - Spring Boot 3.x (Java LTS)  
@@ -268,7 +272,7 @@ mvn spring-boot:run   # http://127.0.0.1:8080/api
 
 ## 📆 Roadmap – Fas 2 (Pågår)
 
-- ✅ AnalyticsDashboard för administratörer (MVP klar).
+- ✅ AnalyticsDashboard för administratörer (MVP klar) – **Real Data & Export**.
 - ✅ SystemModules – arkitektonisk uppdelning från SystemSettings.
 - ✅ Branding via databasen (site name, profil, modulbaserad UI).
 - ✅ Utökade Teacher/Student‑dashboards med gamification‑data.
