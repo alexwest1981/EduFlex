@@ -34,13 +34,13 @@ Systemet kombinerar **realtidskommunikation**, **dokumenthantering**, **gamifica
 
 ### 🆕 Nytt i senaste versionen
 
+- **🎨 Theme Manager:** Fullskaligt temastöd med 6+ professionella färgteman (Emerald, Rose, Amber m.fl.) som byter utseende på hela plattformen i realtid.
+- **🛠️ Dashboard Customization:** Lärare kan nu skräddarsy sin dashboard genom att välja vilka widgets som ska visas via Profilinställningar.
 - **Investor Analytics Module:** Djupgående analysmotor med "Real Data" (inga mockups) för användartillväxt, intäkter (MRR) och studentengagemang.
 - **CSV Export:** Möjlighet att exportera studentinsikter och risk-analyser direkt till Excel/CSV.
 - **Internationalisering (I18n):** Fullt stöd för 6 språk i samtliga vyer, inklusive den nya analys-dashboarden.
 - Kursansökningssystem med godkänn/avslå-flöde.
 - Max antal studenter per kurs med automatisk enforcement.
-- Förbättrade Teacher/Admin/Student-dashboards för ansökningar och kursstatus.
-- Justerad SecurityConfig för korrekta rollbaserade endpoints.
 - Verifierad Docker-setup med fungerande fullstack-flöde.
 
 ---
@@ -51,57 +51,40 @@ Systemet kombinerar **realtidskommunikation**, **dokumenthantering**, **gamifica
 
 - **AnalyticsDashboard (Investor Insights):** Realtidsgrafer över systemhälsa och tillväxt. Inkluderar "Risk Factor"-analys för att identifiera inaktiva studenter.
 - **SystemModules** – dedikerat modulsystem separat från **SystemSettings**.
+- **Tema & Utseende:** Centraliserad temahanterare låter admins byta systemets färgschema med ett klick.
 - **Dynamisk branding** – sidans namn, logotyp/branding och metadata styrs via databasen.
 - **”App Store”-lik modulhantering** – aktivera/avaktivera moduler (Chat, Gamification, Forum, Certificates, Calendar m.fl.) direkt från admin.
-- Licens- och versionsinformation tydligt separerad från enkla inställningar (t.ex. `site_name`).
 
 ### 🍎 Lärare
 
-- **TeacherDashboard 2.0** med fördjupad kursöversikt (progress, aktivitet, deadlines).
+- **TeacherDashboard 2.0** med anpassningsbar layout (widgets) och fördjupad kursöversikt.
+- **Widget Control:** Välj exakt vilka kort (Schema, Genvägar, Att rätta) som syns på startsidan.
 - Snabb **elevmodal** från dashboarden för att se elevens status, närvaro och resultat utan att lämna vyn.
-- Kursvy med dynamiska flikar beroende på vilka moduler som är aktiva (Assignments, Quiz, Forum, Documents, Gamification etc.).
+- Kursvy med dynamiska flikar beroende på vilka moduler som är aktiva.
 - Rättning, feedback och uppföljning integrerade i dashboards & course views.
-- **Översiktswidgets:** KPI:er, schema och genvägar återställda och förbättrade.
-- **Applications‑tabb:** Ny flik för att hantera kursansökningar (approve/reject) per kurs.
-- **Max Students:** Skapa/ändra kurs med fält för max antal studenter direkt i modalerna.
-- **Materialredigering:** Endpoint & UI‑stöd för att uppdatera kursmaterial (LESSON m.m.).
+- **Applications‑tabb:** Hantera kursansökningar (approve/reject).
 
 ### 🎓 Studenter
 
-- **Gamification-UI** med level‑kort, badges och poängräknare direkt i studentens dashboard.
-- Widget för **kommande inlämningar och deadlines** med länkar direkt till uppgifter/kurs.
-- Kursvy som automatiskt anpassas efter aktiverade moduler (t.ex. döljer Forum/Chat om de stängts av i SystemModules).
+- **Gamification-UI** med level‑kort, badges och poängräknare direkt i dashboard.
+- Widget för **kommande inlämningar och deadlines**.
+- Kursvy som automatiskt anpassas efter aktiverade moduler.
 - Förbättrat flöde vid inloggning – fullständig användarprofil och gamification-data laddas direkt.
-- **Stabil åtkomst:** 403‑problemen lösta genom uppdaterad `SecurityConfig` och justerade API‑anrop för studentvyer.
-- **Course Catalog:** Visar antal inskrivna vs max (`current/max`) samt status om kursen är full.
-- **Apply‑flöde:** Tydlig "Apply"-knapp med visuell feedback (lyckad ansökan / fel) och integration mot backendens ansökningslogik.
 
-  ### 📚 Kurser & ansökningar
+### 📚 Kurser & ansökningar
 
-- **Kursansökningar:** Studenter kan ansöka till kurser via Course Catalog, och lärare/admin kan godkänna eller neka via en dedikerad Applications‑vy.
-- **Max antal studenter:** Varje kurs kan konfigureras med `maxStudents`, och backend logiken säkerställer att gränsen inte överskrids.
-- **Tillgängliga platser:** Kurskatalogen visar live‑status, t.ex. `5/30 students`, baserat på aktuella inskrivningar.
-- **Rollsäkerhet:** Endast autentiserade användare kan ansöka, och endpoints är skyddade via finjusterad `SecurityConfig`.
-- **Kursmaterial:** Stöd för materialtypen `LESSON` i CourseMaterial + endpoint för att uppdatera innehåll (`updateMaterial`).
+- **Kursansökningar:** Studenter kan ansöka till kurser, admin/lärare godkänner.
+- **Max antal studenter:** Gräns enforcement i backend.
+- **Tillgängliga platser:** Live-status i kurskatalogen.
+- **Rollsäkerhet:** Endast autentiserade användare kan ansöka.
 
 ### 🔐 Backend & Säkerhet
 
-- Uppdaterad **JwtResponse** och **AuthController** för att skicka med:
-  - fullständiga användaruppgifter
-  - rollinformation
-  - gamification‑data (level, XP, badges) vid inloggning.
+- Uppdaterad **JwtResponse** och **AuthController**.
 - Tydlig arkitektonisk separation:
   - **SystemSettings** för enkla inställningar (t.ex. `site_name`, språk, standardtema)
-  - **SystemModules** för komplexa moduler (version, licensstatus, aktiv/inaktiv).
-- Förberett för vidare fas 2-utbyggnad (Analytics, PWA, integrationer).
-
-### 🔐 Security & API-access
-
-- **SecurityConfig:**
-  - Tillåter `POST /api/courses/*/apply/*` för alla autentiserade användare.
-  - Tillåter `/api/courses/student/**` för studenters kurs- och dashboard‑data.
-- **JWT-respons:** Fortsätter att exponera fullständiga användaruppgifter och rollinformation så att rätt vyer laddas direkt vid inloggning.
-
+  - **SystemModules** för komplexa moduler.
+- Persistens av användarinställningar (`settings` JSON) säkerställer att teman och dashboard-val sparas.
 
 ---
 
@@ -123,7 +106,6 @@ Certifikat genereras dynamiskt med **OpenPDF**:
 - Innehåller elevnamn, kurs, datum och skolnamn  
 - Backendgenerering baserad på System Settings  
 - Nedladdningsbart från dashboard eller kursvy  
-- Används för kursavslut och gamification-belöningar  
 
 ---
 
@@ -150,9 +132,9 @@ Certifikat genereras dynamiskt med **OpenPDF**:
 
 ## 🐳 Docker & Deployment
 
-- Fullt kursflöde (ansökningar, maxStudents, dashboards) är verifierat inom Docker-nätverket.
-- Backend och frontend kommunicerar internt via container‑nätverk utan extra port-hackar.
-- Säkerhetsrelaterade rättighetsproblem i Docker‑miljön är åtgärdade (permissions fixade).
+- Fullt kursflöde verifierat i Docker-nätverk.
+- Backend och frontend kommunicerar internt.
+- Permissions och byggsteg optimerade.
   
 ---
 
@@ -168,20 +150,15 @@ Certifikat genereras dynamiskt med **OpenPDF**:
 |:--:|:--:|:--:|
 | ![Student](docs/images/Calender_View.png) | ![Teacher](docs/images/Communication.png) | ![Admin](docs/images/Documents.png) |
 
-| Kalender | Internmail | Dokument |
+### Admin & System
+| Systeminställningar | Temahanterare | Moduler |
 |:--:|:--:|:--:|
-| ![Student](docs/images/Calender_View.png) | ![Teacher](docs/images/Communication.png) | ![Admin](docs/images/Documents.png) |
-
-| Provhantering | Studenthantering | Kurshantering |
-|:--:|:--:|:--:|
-| ![Student](docs/images/TestManagement.png) | ![Teacher](docs/images/Students.png) | ![Admin](docs/images/Teacher_courses.png) |
+| ![System](docs/images/System_Settings.png) | ![Theme](docs/images/Theme_Manager.png) | ![Modules](docs/images/Modules.png) |
 
 ### Gamification & Certifikat
 | Widgets | Certifikat | CourseDetail |
 |:--:|:--:|:--:|
 | ![Gamification](docs/images/gamification-widgets.png) | ![Certificate](docs/images/certificate-sample.png) | ![CourseDetail](docs/images/course-detail.png) |
-
-
 
 ---
 
@@ -189,6 +166,7 @@ Certifikat genereras dynamiskt med **OpenPDF**:
 
 ### Frontend
 - React 19 + Vite + Tailwind CSS v4  
+- **ThemeContext & CSS Variables** för dynamisk theming
 - WebSocket (SockJS/STOMP)  
 - React-Quill-new, Lucide React  
 - Modulär Dashboard och CourseDetail  
@@ -199,8 +177,8 @@ Certifikat genereras dynamiskt med **OpenPDF**:
 - Spring Security (JWT + WebSocket)  
 - Spring Data JPA / Hibernate (@EntityGraph mot N+1)  
 - OpenPDF för certifikat  
-- SystemSettings-modul för dynamiska inställningar  
 - Databas: PostgreSQL (prod) / H2 (dev) 
+- Global License & Theme management
 
 ### Prestanda & Kvalitet
 - Eliminering av N+1-problem  
