@@ -1,10 +1,11 @@
 <p align="center">
-  <img src="docs/images/EduFlex.png" width="900" alt="Fenrir Studio Logo" />
+  <img src="docs/images/EduFlex.png" width="900" alt="EduFlex Logo" />
 </p>
 
-<h1 align="center">🎓 EduFlex LMS</h1>
+<h1 align="center">🎓 EduFlex LMS 2.0</h1>
 
 <p align="center">
+  <em>Next-Generation Enterprise Learning Platform</em><br/>
   <em>Developed & maintained by <strong>Alex Weström / Fenrir Studio</strong></em>
 </p>
 
@@ -12,14 +13,13 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=white"/>
-  <img src="https://img.shields.io/badge/Spring%20Boot-3.x-brightgreen?style=for-the-badge&logo=springboot"/>
-  <img src="https://img.shields.io/badge/TailwindCSS-v4-38B2AC?style=for-the-badge&logo=tailwindcss"/>
-  <img src="https://img.shields.io/badge/WebSocket-STOMP/SockJS-orange?style=for-the-badge&logo=socketdotio&logoColor=white"/>
-  <img src="https://img.shields.io/badge/PostgreSQL/H2-336791?style=for-the-badge&logo=postgresql&logoColor=white"/>
-  <img src="https://img.shields.io/badge/Docker-Production%20Ready-blue?style=for-the-badge&logo=docker&logoColor=white"/>
-  <img src="https://img.shields.io/badge/OpenPDF-Certificates-ff6b6b?style=for-the-badge&logo=pdf&logoColor=white"/>
-  <img src="https://img.shields.io/badge/License-Private-red?style=for-the-badge&logo=lock"/>
-  <img src="https://img.shields.io/badge/Status-Fas%202%20Onboarding-blue?style=for-the-badge"/>
+  <img src="https://img.shields.io/badge/Spring%20Boot-3.4-brightgreen?style=for-the-badge&logo=springboot"/>
+  <img src="https://img.shields.io/badge/PostgreSQL-15-336791?style=for-the-badge&logo=postgresql&logoColor=white"/>
+  <img src="https://img.shields.io/badge/Docker-Swarm%20Ready-blue?style=for-the-badge&logo=docker&logoColor=white"/>
+  <img src="https://img.shields.io/badge/SCORM-1.2-orange?style=for-the-badge&logo=html5&logoColor=white"/>
+  <img src="https://img.shields.io/badge/Stripe-Payment-635BFF?style=for-the-badge&logo=stripe&logoColor=white"/>
+  <img src="https://img.shields.io/badge/License-Proprietary-red?style=for-the-badge&logo=lock"/>
+  <img src="https://img.shields.io/badge/Status-Market%20Leader-success?style=for-the-badge"/>
 </p>
 
 
@@ -27,249 +27,133 @@
 
 ## 🏫 Om Projektet
 
-**EduFlex** är ett modernt, rollbaserat och modulärt **Learning Management System (LMS)** för skolor, utbildningsföretag och intern utbildning.  
-Systemet kombinerar **realtidskommunikation**, **dokumenthantering**, **gamification**, **PDF‑certifikat** och ett växande **analytics- & modulsystem** – byggt med fokus på säkerhet, skalbarhet och en exceptionell användarupplevelse.
+**EduFlex 2.0** är ett komplett, molnbaserat **Learning Management System (LMS)** designat för att skala från små utbildningsföretag till stora kommunala verksamheter.
+Systemet kombinerar modern pedagogik (**Gamification, SCORM, QuizRunner**) med affärskritisk funktionalitet (**Prenumerationer, Fakturering, Analytics**) i en säker, Docker-baserad mikrotjänst-arkitektur.
 
 ![EduFlex Dashboard Screenshot](docs/images/Student_overview.png)
 
-### 🆕 Nytt i senaste versionen
+### 🌟 Nytt i Version 2.0
 
-- **🎨 Theme Manager:** Fullskaligt temastöd med 6+ professionella färgteman (Emerald, Rose, Amber m.fl.) som byter utseende på hela plattformen i realtid.
-- **🛠️ Dashboard Customization:** Lärare kan nu skräddarsy sin dashboard genom att välja vilka widgets som ska visas via Profilinställningar.
-- **Investor Analytics Module:** Djupgående analysmotor med "Real Data" (inga mockups) för användartillväxt, intäkter (MRR) och studentengagemang.
-- **CSV Export:** Möjlighet att exportera studentinsikter och risk-analyser direkt till Excel/CSV.
-- **Internationalisering (I18n):** Fullt stöd för 6 språk i samtliga vyer, inklusive den nya analys-dashboarden.
-- Kursansökningssystem med godkänn/avslå-flöde.
-- Max antal studenter per kurs med automatisk enforcement.
-- Verifierad Docker-setup med fungerande fullstack-flöde.
+- **📦 SCORM Integration:** Fullt stöd för uppladdning och uppspelning av interaktiva utbildningspaket (SCORM 1.2 / xAPI).
+- **💰 Revenue Management:** Inbyggt stöd för prenumerationer (SaaS), automatiska fakturor och betalningar via Stripe/Swish.
+- **⚡ Enterprise Performance:** Redis-caching för blixtsnabba laddtider och WebSocket-skalning.
+- **📊 Advanced Analytics:** Djupgående grafer över MRR (Monthly Recurring Revenue), Churn, och Student Progress.
+- **🔒 Security Hardening:** RSA-licensnycklar, Rate Limiting, Audit Logs och strikt RBAC (Role Based Access Control).
+- **☁️ Object Storage:** Integration med **MinIO/S3** för skalbar filhantering.
 
 ---
 
-## 🚀 Kärnfunktioner
+## 🚀 Ekosystem & Moduler
 
-### 🛡️ Admin & System
+### 🎓 Utbildning (Core)
+- **Course Builder:** Skapa rika kurser med text, video, quiz och uppgifter.
+- **QuizRunner 2.0:** Avancerade prov med tidsgränser, slumpmässiga frågor och AI-generering.
+- **Gamification:** Poäng, levels, badges och topplistor för att öka engagemanget.
+- **Certifikat:** Automatgenererade PDF-diplom med verifierbara ID:n.
 
-- **AnalyticsDashboard (Investor Insights):** Realtidsgrafer över systemhälsa och tillväxt. Inkluderar "Risk Factor"-analys för att identifiera inaktiva studenter.
-- **SystemModules** – dedikerat modulsystem separat från **SystemSettings**.
-- **Tema & Utseende:** Centraliserad temahanterare låter admins byta systemets färgschema med ett klick.
-- **Dynamisk branding** – sidans namn, logotyp/branding och metadata styrs via databasen.
-- **”App Store”-lik modulhantering** – aktivera/avaktivera moduler (Chat, Gamification, Forum, Certificates, Calendar m.fl.) direkt från admin.
+### 💼 Affär & Administration (Revenue)
+- **Subscription Plans:** Skapa Guld/Silver/Brons-nivåer med olika behörigheter.
+- **Invoice Engine:** Automatisk generering och utskick av PDF-fakturor.
+- **License Manager:** Hantera licenser för företagskunder med "Seats" och utgångsdatum.
 
-### 🍎 Lärare
+### 🛠️ Integration & Teknik
+- **LTI 1.3:** Seamless integration med Canvas, Moodle och Teams.
+- **SSO:** Logga in med Google, GitHub eller Microsoft Entra ID.
+- **API First:** Fullständigt REST API för integration med tredjepartssystem.
 
-- **TeacherDashboard 2.0** med anpassningsbar layout (widgets) och fördjupad kursöversikt.
-- **Widget Control:** Välj exakt vilka kort (Schema, Genvägar, Att rätta) som syns på startsidan.
-- Snabb **elevmodal** från dashboarden för att se elevens status, närvaro och resultat utan att lämna vyn.
-- Kursvy med dynamiska flikar beroende på vilka moduler som är aktiva.
-- Rättning, feedback och uppföljning integrerade i dashboards & course views.
-- **Applications‑tabb:** Hantera kursansökningar (approve/reject).
-
-### 🎓 Studenter
-
-- **Gamification-UI** med level‑kort, badges och poängräknare direkt i dashboard.
-- Widget för **kommande inlämningar och deadlines**.
-- Kursvy som automatiskt anpassas efter aktiverade moduler.
-- Förbättrat flöde vid inloggning – fullständig användarprofil och gamification-data laddas direkt.
-
-### 📚 Kurser & ansökningar
-
-- **Kursansökningar:** Studenter kan ansöka till kurser, admin/lärare godkänner.
-- **Max antal studenter:** Gräns enforcement i backend.
-- **Tillgängliga platser:** Live-status i kurskatalogen.
-- **Rollsäkerhet:** Endast autentiserade användare kan ansöka.
-
-### 🔐 Backend & Säkerhet
-
-- Uppdaterad **JwtResponse** och **AuthController**.
-- Tydlig arkitektonisk separation:
-  - **SystemSettings** för enkla inställningar (t.ex. `site_name`, språk, standardtema)
-  - **SystemModules** för komplexa moduler.
-- Persistens av användarinställningar (`settings` JSON) säkerställer att teman och dashboard-val sparas.
-
----
-
-## 🧩 Gamification Engine
-
-EduFlex inkluderar en dedikerad **Gamification Engine** som ökar engagemanget genom poäng, märken och nivåer.
-
-**Funktioner:**
-- Backend-entiteter för poäng, badges och levels  
-- Dynamisk poängberäkning via tjänster  
-- Interaktiva widgets i Dashboard och CourseDetail  
-- Modulstyrning via System Settings  
-
----
-
-## 📜 PDF-certifikat
-
-Certifikat genereras dynamiskt med **OpenPDF**:
-- Innehåller elevnamn, kurs, datum och skolnamn  
-- Backendgenerering baserad på System Settings  
-- Nedladdningsbart från dashboard eller kursvy  
-
----
-
-## 💬 Kommunikation
-
-### 💭 Realtidschatt
-- WebSocket (SockJS/STOMP)  
-- Historik, användarlistor och bildstöd  
-- Modulbaserad aktivering  
-
-### 💬 Kursforum
-- Kategorier och trådar per kurs  
-- Full JSON-säkerhet utan recursion-problem  
-
----
-
-## 🧪 Rich Text Editor
-
-- **react-quill-new** (React 19-kompatibel)  
-- Egen `RichTextEditor`-komponent med memoiserad config  
-- Används i material, uppgifter och forum  
-
----
-
-## 🐳 Docker & Deployment
-
-- Fullt kursflöde verifierat i Docker-nätverk.
-- Backend och frontend kommunicerar internt.
-- Permissions och byggsteg optimerade.
-  
 ---
 
 ## 📸 Skärmdumpar
 
 ### Rollbaserade Dashboards
-| Student | Teacher | Admin |
+| Student (Gamified) | Teacher (Control) | Admin (Analytics) |
 |:--:|:--:|:--:|
 | ![Student](docs/images/Student_overview.png) | ![Teacher](docs/images/Teacher_Overview.png) | ![Admin](docs/images/Admin_Overview.png) |
 
-### Primära vyer
-| Kalender | Internmail | Dokument |
+### Enterprise Modules
+| Revenue / Fakturor | System Moduler | SCORM Player |
 |:--:|:--:|:--:|
-| ![Student](docs/images/Calender_View.png) | ![Teacher](docs/images/Communication.png) | ![Admin](docs/images/Documents.png) |
-
-### Admin & System
-| Systeminställningar | Temahanterare | Moduler |
-|:--:|:--:|:--:|
-| ![System](docs/images/System_Settings.png) | ![Theme](docs/images/Theme_Manager.png) | ![Modules](docs/images/Modules.png) |
-
-### Gamification & Certifikat
-| Widgets | Certifikat | CourseDetail |
-|:--:|:--:|:--:|
-| ![Gamification](docs/images/gamification-widgets.png) | ![Certificate](docs/images/certificate-sample.png) | ![CourseDetail](docs/images/course-detail.png) |
+| ![Revenue](docs/images/System_Settings.png) | ![Modules](docs/images/Modules.png) | *Kommer snart* |
 
 ---
 
-## 🛠️ Teknisk Stack
+## 🛠️ Teknisk Arkitektur
 
-### Frontend
-- React 19 + Vite + Tailwind CSS v4  
-- **ThemeContext & CSS Variables** för dynamisk theming
-- WebSocket (SockJS/STOMP)  
-- React-Quill-new, Lucide React  
-- Modulär Dashboard och CourseDetail  
-- **Recharts** för datavisualisering (Analytics)
+Projektet körs i en containeriserad miljö orkestrerad via **Docker Compose**.
 
-### Backend
-- Spring Boot 3.x (Java LTS)  
-- Spring Security (JWT + WebSocket)  
-- Spring Data JPA / Hibernate (@EntityGraph mot N+1)  
-- OpenPDF för certifikat  
-- Databas: PostgreSQL (prod) / H2 (dev) 
-- Global License & Theme management
+```mermaid
+graph TD
+    Client[React Frontend] -->|REST / WS| LoadBalancer[Nginx / API Gateway]
+    LoadBalancer --> Backend[Spring Boot API]
+    
+    subgraph Data Layer
+        Backend --> DB[(PostgreSQL)]
+        Backend --> Cache[(Redis)]
+        Backend --> Storage[(MinIO S3)]
+    end
+    
+    subgraph Monitoring
+        Prometheus --> Backend
+        Grafana --> Prometheus
+    end
+```
 
-### Prestanda & Kvalitet
-- Eliminering av N+1-problem  
-- JSON-recursion fixad  
-- Full dependency injection  
-- I18n och språkstöd  
+### Tech Stack
+- **Frontend:** React 19, Vite, Tailwind CSS v4, Zustand, Recharts.
+- **Backend:** Spring Boot 3.4, Java 21, Hibernate, Spring Security 6.
+- **Infrastructure:** Docker, PostgreSQL 15, Redis 7, MinIO, Prometheus, Grafana.
+- **DevOps:** GitHub Actions (CI/CD), Automated Backups.
 
 ---
 
-## 🧩 Systemarkitektur
+## 📦 Installation (Docker)
 
-```plaintext
-┌─────────────────────────────┐
-│           Frontend          │
-│    React 19 + Vite          │
-├─────────────────────────────┤
-│ Modular Dashboard (Role)    │
-│ CourseDetail (5 modules)    │
-│ Gamification Widgets        │
-│ ChatOverlay / Certificates  │
-└─────────────┬───────────────┘
-              │ REST + WebSocket
-              ▼
-     ┌──────────────────────────────┐
-     │        Spring Boot API       │
-     ├──────────────────────────────┤
-     │ Auth / License / Courses     │
-     │ Quiz / Forum / Gamification  │
-     │ Certificate / Settings       │
-     └─────────────┬───────────────┘
-                   │ JPA / Hibernate
-                   ▼
-             ┌──────────────┐
-             │  MySQL / H2  │
-             └──────────────┘
-### Modulkommunikation
-| Modul          | Syfte                               | Kommunikation        | Beroenden                 |
-| -------------- | ----------------------------------- | -------------------- | ------------------------- |
-| Auth           | JWT-autentisering                   | REST                 | UserRepository            |
-| License        | Licensvalidering                    | REST                 | LicenseEntity             |
-| Dashboard      | Rollspecifika vyer, gamification    | REST + WS            | User, Course              |
-| CourseDetail   | Kurskomponenter (5)                 | REST                 | CourseRepository          |
-| Gamification   | Poäng, badges, levels               | REST                 | GamificationService, User |
-| Certificate    | PDF-generering                      | REST (file download) | OpenPDF, CourseCompletion |
-| Chat           | Realtidschatt                       | WebSocket            | UserSession               |
-| SystemSettings | Dynamiska moduler och inställningar | REST                 | SettingsRepository        |
+Starta hela miljön med ett enda kommando:
+
+```bash
+# 1. Klona repot
+git clone https://github.com/alexwest1981/EduFlex.git
+cd EduFlex
+
+# 2. Starta (Databas, Backend, Frontend, Redis, MinIO)
+docker compose up --build -d
+
+# 3. Access
+# Frontend: http://localhost:5173
+# Backend API: http://localhost:8080/api
+# MinIO Console: http://localhost:9001
+# Grafana: http://localhost:3000
 ```
-
-### Installation och Setup
-# Krav
-- Node.js 20+ & npm
-
-- Java LTS & Maven
-
-- MySQL 8.x / H2 (dev)
-
-# Frontend
-``` bash
-git clone https://github.com/alexwest1981/eduflex-frontend.git</br>
-cd eduflex-frontend</br>
-npm install --legacy-peer-deps</br>
-npm run dev   # http://localhost:5173</br>
-```
-
-# Backend
-``` bash
-mvn spring-boot:run   # http://127.0.0.1:8080/api
-```
-
-## 📆 Roadmap – Fas 2 (Pågår)
-
-- ✅ AnalyticsDashboard för administratörer (MVP klar) – **Real Data & Export**.
-- ✅ SystemModules – arkitektonisk uppdelning från SystemSettings.
-- ✅ Branding via databasen (site name, profil, modulbaserad UI).
-- ✅ Utökade Teacher/Student‑dashboards med gamification‑data.
-- 🔄 Fördjupad analytics (exporter, rapporter, dashboards per modul).
-- 🔄 E-postnotifieringar & PWA.
-- 🔄 Integrationer (LTI, SSO, HR/ERP).
-
-
-### 🚀 Nästa steg
-
-- E-postnotifieringar & PWA
-
-- Mobilapp (React Native)
-
-- Öppen licens (v3.0)
 
 ---
-## ⚖️ Licens & Äganderätt
+
+## 📆 Roadmap & Status
+
+### ✅ Completed (Phase 1 & 2)
+- [x] Core LMS (Courses, Lessons, Users)
+- [x] Gamification Engine
+- [x] Role-Based Dashboards
+- [x] PDF Certificates
+- [x] Internal Messaging & Chat
+
+### 🚧 Current Focus (Phase 3: Enterprise)
+- [x] **Revenue Management (Subscriptions/Invoices)**
+- [x] **SCORM / xAPI Support**
+- [x] **High Availability (Redis/Caching)**
+- [/] Mobile App (PWA)
+- [ ] Multi-tenancy (SaaS mode)
+
+---
+
+## ⚖️ Licens & Kontakt
+
 ### EduFlex™ © 2026 Alex Weström / Fenrir Studio
-Privat licens — kontakta för samarbetsmöjligheter.
-### 📧 alexwestrom81@gmail.com
-<p align="center"> <img src="docs/images/fenrir.png" width="80" alt="Fenrir Studio Logo"/><br/> <strong>Made with ❤️ by Fenrir Studio</strong><br/> <sub>Where innovation meets precision.</sub> </p> 
+*Proprietary Software. Unauthorized copying, modification, or distribution is strictly prohibited.*
+
+För licensförfrågningar eller Enterprise-avtal:
+📧 **alexwestrom81@gmail.com**
+
+<p align="center"> 
+  <img src="docs/images/fenrir.png" width="80" alt="Fenrir Studio Logo"/><br/> 
+  <strong>Innovation meets Precision.</strong>
+</p>
