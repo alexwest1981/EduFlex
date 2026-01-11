@@ -7,7 +7,10 @@ import com.eduflex.backend.model.*;
 import com.eduflex.backend.repository.CourseApplicationRepository;
 import com.eduflex.backend.repository.CourseMaterialRepository;
 import com.eduflex.backend.repository.CourseRepository;
+
 import com.eduflex.backend.repository.UserRepository;
+import com.eduflex.backend.repository.AssignmentRepository;
+import com.eduflex.backend.repository.SubmissionRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,7 +32,10 @@ public class CourseService {
     private final CourseMaterialRepository materialRepository;
     private final CourseApplicationRepository applicationRepository;
     private final com.eduflex.backend.repository.CourseEvaluationResponseRepository evaluationResponseRepository;
+
     private final com.eduflex.backend.repository.CourseResultRepository resultRepository;
+    private final AssignmentRepository assignmentRepository;
+    private final SubmissionRepository submissionRepository;
 
     @Value("${file.upload-dir}")
     private String uploadDir;
@@ -39,13 +45,18 @@ public class CourseService {
             CourseMaterialRepository materialRepository,
             CourseApplicationRepository applicationRepository,
             com.eduflex.backend.repository.CourseEvaluationResponseRepository evaluationResponseRepository,
-            com.eduflex.backend.repository.CourseResultRepository resultRepository) {
+
+            com.eduflex.backend.repository.CourseResultRepository resultRepository,
+            AssignmentRepository assignmentRepository,
+            SubmissionRepository submissionRepository) {
         this.courseRepository = courseRepository;
         this.userRepository = userRepository;
         this.materialRepository = materialRepository;
         this.applicationRepository = applicationRepository;
         this.evaluationResponseRepository = evaluationResponseRepository;
         this.resultRepository = resultRepository;
+        this.assignmentRepository = assignmentRepository;
+        this.submissionRepository = submissionRepository;
     }
 
     public List<CourseDTO> getAllCourseDTOs() {
@@ -286,6 +297,35 @@ public class CourseService {
     public CourseResult getCourseResult(Long courseId, Long studentId) {
         return resultRepository.findByCourseIdAndStudentId(courseId, studentId).orElse(null);
     }
+
+    public boolean validateCompletion(Long courseId, Long studentId) {
+        List<Assignment> assignments = assignmentRepository.findByCourseId(courseId);
+        if (assignments.isEmpty())
+            return true;
+
+        List<Submission> submissions = submissionRepository.findByStudentId(studentId);
+
+        long completedCount = assignments.stream().filter(a -> submissions.stream().anyMatch(
+                s -> s.getAssignment().getId().equals(a.getId()) && s.getStatus() != Submission.Status.RETURNED))
+                .count();
+
+        return completedCount == assignments.size();
+    }
+
+    public void claimCertificate(Long courseId, Long studentId) {
+        if (!validateCompletion(courseId, studentId)) {
+            throw new RuntimeException("Du har inte slutfört alla uppgifter än.");
+        }
+        setCourseResult(courseId, studentId, "PASSED");
+    }
+
+    // FIX: Vi behöver AssignmentRepository och SubmissionRepository för att göra
+    // detta automatiskt.
+    // Låt oss istället göra en manuell endpoint "claimCertificate" som bara funkar
+    // om status redan är PASSED,
+    // ELLER en som läraren använder.
+    // Men användaren ville ha "när kriterier är uppfyllda".
+    // Okej, jag lägger till AssignmentRepository till CourseService.
 
     private CourseDTO convertToDTO(Course c) {
         UserSummaryDTO teacherDTO = null;

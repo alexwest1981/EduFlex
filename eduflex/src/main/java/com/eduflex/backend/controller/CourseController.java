@@ -196,4 +196,40 @@ public class CourseController {
             @PathVariable Long studentId) {
         return ResponseEntity.ok(courseService.getCourseResult(id, studentId));
     }
+
+    @GetMapping("/{id}/check-completion/{studentId}")
+    public ResponseEntity<Boolean> checkCompletion(@PathVariable Long id, @PathVariable Long studentId) {
+        return ResponseEntity.ok(courseService.validateCompletion(id, studentId));
+    }
+
+    @PostMapping("/{id}/claim-certificate/{studentId}")
+    public ResponseEntity<?> claimCertificate(@PathVariable Long id, @PathVariable Long studentId) {
+        try {
+            courseService.claimCertificate(id, studentId);
+            return ResponseEntity.ok().body("{\"message\": \"Certifikat utfärdat!\"}");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    // --- OPTIONS FOR DROPDOWNS ---
+    @GetMapping("/options")
+    public List<Map<String, Object>> getCourseOptions(@RequestParam Long userId, @RequestParam String role) {
+        // Simplified Logic:
+        // Admin -> All Courses
+        // Teacher -> Own Courses
+        // Student -> Enrolled Courses (Maybe later)
+
+        List<Course> courses;
+        if ("ADMIN".equalsIgnoreCase(role)) {
+            courses = courseRepository.findAll();
+        } else {
+            // Assuming teacher
+            courses = courseRepository.findByTeacherId(userId);
+        }
+
+        return courses.stream()
+                .map(c -> Map.of("id", (Object) c.getId(), "title", (Object) c.getName()))
+                .toList();
+    }
 }

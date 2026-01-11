@@ -1,21 +1,46 @@
 package com.eduflex.backend.model;
 
 public enum LicenseType {
-    BASIC(50, false, false),       // Max 50 användare
-    PLUS(200, true, false),        // Max 200 användare, Quiz ingår
-    ENTERPRISE(-1, true, true);    // Obegränsat, Quiz + Gamification
+    BASIC(50),
+    PRO(200),
+    ENTERPRISE(-1); // -1 = Unlimited
 
     private final int maxUsers;
-    private final boolean enableQuiz;
-    private final boolean enableGamification;
 
-    LicenseType(int maxUsers, boolean enableQuiz, boolean enableGamification) {
+    LicenseType(int maxUsers) {
         this.maxUsers = maxUsers;
-        this.enableQuiz = enableQuiz;
-        this.enableGamification = enableGamification;
     }
 
-    public int getMaxUsers() { return maxUsers; }
-    public boolean isQuizEnabled() { return enableQuiz; }
-    public boolean isGamificationEnabled() { return enableGamification; }
+    public int getMaxUsers() {
+        return maxUsers;
+    }
+
+    public boolean isModuleAllowed(String moduleKey) {
+        if (this == ENTERPRISE)
+            return true;
+
+        switch (moduleKey) {
+            case "DARK_MODE":
+            case "SUBMISSIONS":
+                return true; // Available for all
+
+            case "QUIZ":
+            case "CHAT":
+            case "FORUM":
+                // Basic has NO Quiz, Chat, Forum. Pro has them.
+                return this == PRO;
+
+            case "GAMIFICATION":
+            case "ANALYTICS":
+                // Only Enterprise has these
+                return false;
+
+            case "SCORM":
+                // Pro or Enterprise
+                return this != BASIC;
+
+            default:
+                return true; // Unknown modules default to allowed (or arguably restricted)
+        }
+    }
 }

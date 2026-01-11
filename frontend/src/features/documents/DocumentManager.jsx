@@ -59,7 +59,8 @@ const DocumentManager = () => {
         setShareModalOpen(true);
         try {
             // Hämta användare att dela med (kan optimeras till contacts)
-            const users = await api.users.getAll();
+            const usersRes = await api.users.getAll(0, 1000);
+            const users = usersRes?.content || usersRes || [];
             setAllUsers(users.filter(u => u.id !== currentUser.id));
         } catch (e) {
             console.error("Failed to load users");

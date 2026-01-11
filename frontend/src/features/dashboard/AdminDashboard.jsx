@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { LayoutDashboard, ShieldCheck, Loader2, MessageSquare } from 'lucide-react';
+import { LayoutDashboard, ShieldCheck, Loader2, MessageSquare, Users } from 'lucide-react'; // Added Users
 import { useTranslation } from 'react-i18next';
 import { api } from '../../services/api';
 
-// --- KOMPONENTER ---
+// --- COMPONENTS ---
+// --- COMPONENTS ---
 import AdminOverview from './AdminOverview';
-import SystemAdmin from './SystemAdmin';
+import SettingsTab from '../admin/SettingsTab'; // System tab
 import MessageCenter from '../messages/MessageCenter';
+import LicenseStatusCard from '../admin/LicenseStatusCard';
 
 const AdminDashboard = () => {
     const { t } = useTranslation();
@@ -16,17 +18,22 @@ const AdminDashboard = () => {
     const [documents, setDocuments] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
 
+    const [unreadCount, setUnreadCount] = useState(0);
+
     const fetchStats = async () => {
         setIsLoading(true);
         try {
-            const [u, c, d] = await Promise.all([
-                api.users.getAll(),
+            const [uData, c, d, unread] = await Promise.all([
+                api.users.getAll(0, 1000), // Tillfällig fix: Hämta fler för korrekt statistik tills backend-stats endpoints finns
                 api.courses.getAll(),
-                api.documents.getAll()
+                api.documents.getAll(),
+                api.messages.getUnreadCount()
             ]);
-            setUsers(u);
+            // Hantera om users är en Page (pagination) eller Array
+            setUsers(uData.content || uData || []);
             setCourses(c);
             setDocuments(d);
+            setUnreadCount(unread);
         } catch (error) {
             console.error("Kunde inte hämta dashboard-data", error);
         } finally {
@@ -35,9 +42,6 @@ const AdminDashboard = () => {
     };
 
     useEffect(() => { fetchStats(); }, []);
-
-    // Helpers
-    const teachers = users.filter(u => u.role === 'TEACHER' || u.role === 'ADMIN');
 
     if (isLoading) return <div className="p-20 flex justify-center"><Loader2 className="animate-spin text-indigo-600" size={40} /></div>;
 
@@ -66,7 +70,11 @@ const AdminDashboard = () => {
                     onClick={() => setActiveTab('communication')}
                     className={`pb-3 flex items-center gap-2 font-bold text-lg transition-colors border-b-2 whitespace-nowrap capitalize ${activeTab === 'communication' ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200'}`}
                 >
-                    <MessageSquare size={20} /> Kommunikation
+                    <div className="relative">
+                        <MessageSquare size={20} />
+                        {unreadCount > 0 && <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full font-bold">{unreadCount}</span>}
+                    </div>
+                    Kommunikation
                 </button>
             </div>
 
@@ -81,14 +89,12 @@ const AdminDashboard = () => {
                 />
             )}
 
-            {/* --- FLIK: SYSTEMADMIN --- */}
+            {/* --- FLIK: SYSTEM (ENBART SETTINGS NU) --- */}
             {activeTab === 'system' && (
-                <SystemAdmin
-                    users={users}
-                    courses={courses}
-                    teachers={teachers}
-                    fetchStats={fetchStats}
-                />
+                <div className="space-y-8">
+                    <LicenseStatusCard />
+                    <SettingsTab />
+                </div>
             )}
 
             {/* --- FLIK: KOMMUNIKATION --- */}

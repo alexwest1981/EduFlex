@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
-import { TrendingUp, Users, DollarSign, Activity, Server, ShieldCheck, Download, GraduationCap, Clock, AlertTriangle } from 'lucide-react';
+import { TrendingUp, Users, DollarSign, Activity, Server, ShieldCheck, Download, GraduationCap, Clock, AlertTriangle, Calendar, Wallet } from 'lucide-react';
 import { api } from '../../services/api';
+import RevenueAnalytics from './RevenueAnalytics';
 
 const AnalyticsDashboard = () => {
     const { t } = useTranslation();
     const [activeTab, setActiveTab] = useState('overview'); // 'overview' | 'students'
+    const [timeRange, setTimeRange] = useState('month'); // 'day' | 'week' | 'month' | 'year'
     const [overview, setOverview] = useState(null);
     const [growthData, setGrowthData] = useState([]);
     const [engagement, setEngagement] = useState(null);
@@ -17,11 +19,16 @@ const AnalyticsDashboard = () => {
         fetchAllData();
     }, []);
 
+    useEffect(() => {
+        // Refetch data when time range changes
+        fetchAllData();
+    }, [timeRange]);
+
     const fetchAllData = async () => {
         try {
             const [ovRes, grRes, enRes, stuRes] = await Promise.all([
-                api.get('/analytics/overview'),
-                api.get('/analytics/growth'),
+                api.get(`/analytics/overview?range=${timeRange}`),
+                api.get(`/analytics/growth?range=${timeRange}`),
                 api.get('/analytics/engagement'),
                 api.get('/analytics/students')
             ]);
@@ -116,11 +123,31 @@ const AnalyticsDashboard = () => {
             {/* TABS */}
             <div className="flex mb-8 border-b border-gray-200 dark:border-[#3c4043]">
                 <TabButton id="overview" label="Financial Overview" icon={<TrendingUp size={16} />} />
+                <TabButton id="revenue" label="Revenue Analytics" icon={<Wallet size={16} />} />
                 <TabButton id="students" label="Student Insights" icon={<GraduationCap size={16} />} />
+                <TabButton id="infrastructure" label="System Infrastructure" icon={<Server size={16} />} />
             </div>
 
             {activeTab === 'overview' && (
                 <div className="animate-in slide-in-from-bottom-2">
+                    {/* TIME RANGE FILTER */}
+                    <div className="flex justify-end mb-6">
+                        <div className="inline-flex items-center gap-2 bg-white dark:bg-[#1E1F20] p-1.5 rounded-lg border border-gray-200 dark:border-[#3c4043] shadow-sm">
+                            <Calendar size={16} className="text-gray-400 ml-2" />
+                            {['day', 'week', 'month', 'year'].map((range) => (
+                                <button
+                                    key={range}
+                                    onClick={() => setTimeRange(range)}
+                                    className={`px-4 py-2 rounded-md text-sm font-bold transition-all ${timeRange === range
+                                        ? 'bg-indigo-600 text-white shadow-sm'
+                                        : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-[#282a2c]'
+                                        }`}
+                                >
+                                    {range.charAt(0).toUpperCase() + range.slice(1)}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
                     {/* KPI CARDS */}
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                         {cards.map((card, idx) => (
@@ -144,7 +171,9 @@ const AnalyticsDashboard = () => {
                     {/* CHARTS ROW */}
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
                         <div className="lg:col-span-2 bg-white dark:bg-[#1E1F20] p-6 rounded-2xl border border-gray-200 dark:border-[#3c4043] shadow-sm">
-                            <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-6">Revenue Growth (2024)</h3>
+                            <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-6">
+                                Revenue Growth ({timeRange === 'day' ? 'Last 24 Hours' : timeRange === 'week' ? 'Last 7 Days' : timeRange === 'month' ? 'Last 30 Days' : 'Last 12 Months'})
+                            </h3>
                             <div className="h-80 w-full">
                                 <ResponsiveContainer width="100%" height="100%">
                                     <AreaChart data={growthData}>
@@ -201,6 +230,10 @@ const AnalyticsDashboard = () => {
                         </div>
                     </div>
                 </div>
+            )}
+
+            {activeTab === 'revenue' && (
+                <RevenueAnalytics />
             )}
 
             {activeTab === 'students' && (
@@ -284,6 +317,59 @@ const AnalyticsDashboard = () => {
                                     )}
                                 </tbody>
                             </table>
+                        </div>
+                    </div>
+                </div>
+            )}
+            {activeTab === 'infrastructure' && (
+                <div className="animate-in slide-in-from-bottom-2 space-y-6">
+                    <div className="bg-white dark:bg-[#1E1F20] p-6 rounded-2xl border border-gray-200 dark:border-[#3c4043] shadow-sm">
+                        <div className="flex justify-between items-center mb-6">
+                            <div>
+                                <h3 className="font-bold text-lg text-gray-900 dark:text-white">Grafana Dashboard</h3>
+                                <p className="text-gray-500 text-sm">Real-time system metrics (CPU, Memory, Requests).</p>
+                            </div>
+                            <a href="http://localhost:3000" target="_blank" rel="noopener noreferrer" className="text-sm bg-indigo-50 text-indigo-700 px-3 py-1.5 rounded-lg font-bold hover:bg-indigo-100 flex items-center gap-2">
+                                <Activity size={16} /> Open Full Grafana
+                            </a>
+                        </div>
+                        <div className="aspect-video w-full rounded-xl overflow-hidden border border-gray-200 dark:border-[#3c4043]">
+                            <iframe
+                                src="http://localhost:3000/d-solo/eduflex-main/eduflex-dashboard?orgId=1&refresh=5s&theme=light&panelId=2"
+                                className="w-full h-full"
+                                frameBorder="0"
+                                title="Grafana"
+                            ></iframe>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                            <div className="aspect-[4/2] w-full rounded-xl overflow-hidden border border-gray-200 dark:border-[#3c4043]">
+                                <iframe
+                                    src="http://localhost:3000/d-solo/eduflex-main/eduflex-dashboard?orgId=1&refresh=5s&theme=light&panelId=4"
+                                    className="w-full h-full"
+                                    frameBorder="0"
+                                    title="CPU"
+                                ></iframe>
+                            </div>
+                            <div className="aspect-[4/2] w-full rounded-xl overflow-hidden border border-gray-200 dark:border-[#3c4043]">
+                                <iframe
+                                    src="http://localhost:3000/d-solo/eduflex-main/eduflex-dashboard?orgId=1&refresh=5s&theme=light&panelId=6"
+                                    className="w-full h-full"
+                                    frameBorder="0"
+                                    title="HTTP"
+                                ></iframe>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="bg-white dark:bg-[#1E1F20] p-6 rounded-2xl border border-gray-200 dark:border-[#3c4043] shadow-sm">
+                        <div className="flex justify-between items-center mb-6">
+                            <div>
+                                <h3 className="font-bold text-lg text-gray-900 dark:text-white">Prometheus Metrics</h3>
+                                <p className="text-gray-500 text-sm">Raw metrics explorer.</p>
+                            </div>
+                            <a href="http://localhost:9090" target="_blank" rel="noopener noreferrer" className="text-sm bg-orange-50 text-orange-700 px-3 py-1.5 rounded-lg font-bold hover:bg-orange-100 flex items-center gap-2">
+                                <Activity size={16} /> Open Prometheus
+                            </a>
                         </div>
                     </div>
                 </div>

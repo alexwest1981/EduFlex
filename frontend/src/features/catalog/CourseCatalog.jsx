@@ -4,6 +4,8 @@ import { api } from '../../services/api';
 import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../../context/AppContext';
 
+import { COURSE_CATEGORIES } from '../../constants/courseCategories';
+
 const CourseCatalog = () => {
     const { currentUser } = useAppContext();
     const [courses, setCourses] = useState([]);
@@ -50,13 +52,30 @@ const CourseCatalog = () => {
         }
     };
 
-    // Extrahera unika kategorier
-    const categories = ['Alla Kurser', ...new Set(courses.map(c => c.category || 'Övrigt'))];
+    // calculate counts
+    const counts = courses.reduce((acc, course) => {
+        const cat = COURSE_CATEGORIES.includes(course.category) ? course.category : 'Övrigt';
+        acc[cat] = (acc[cat] || 0) + 1;
+        return acc;
+    }, {});
+
+    // Sort logic: 'Alla Kurser' first
+    // Then map COURSE_CATEGORIES to display list, filters out categories with 0 courses IF you want, or keeps them.
+    // User requested "browse categories", so maybe keeping them all is good, or only showing active ones. 
+    // Screenshot shows many categories. Better to show only those with > 0 or all? 
+    // Usually better to show all so users know what exists, or at least common ones.
+    // Let's filter to show categories with active courses OR the full list.
+    // Given the screenshot has "Bläddra bland kategorier", it looks like a full structure.
+    // I will show ALL categories from the constant.
 
     const filteredCourses = courses.filter(course => {
         const matchesSearch = course.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
             (course.courseCode && course.courseCode.toLowerCase().includes(searchTerm.toLowerCase()));
-        const matchesCategory = selectedCategory === 'Alla Kurser' || (course.category || 'Övrigt') === selectedCategory;
+
+        let courseCat = course.category;
+        if (!COURSE_CATEGORIES.includes(courseCat)) courseCat = 'Övrigt';
+
+        const matchesCategory = selectedCategory === 'Alla Kurser' || courseCat === selectedCategory;
         // Visa bara öppna kurser i katalogen
         return matchesSearch && matchesCategory && course.isOpen;
     });
@@ -82,25 +101,40 @@ const CourseCatalog = () => {
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
                 {/* --- KATEGORIER --- */}
                 <div className="lg:col-span-1">
-                    <div className="bg-white dark:bg-[#1E1F20] p-6 rounded-2xl shadow-sm border border-gray-200 dark:border-[#3c4043] sticky top-8">
+                    <div className="bg-white dark:bg-[#1E1F20] p-6 rounded-2xl shadow-sm border border-gray-200 dark:border-[#3c4043] sticky top-8 max-h-[85vh] overflow-y-auto custom-scrollbar">
                         <div className="flex items-center gap-2 mb-4 text-gray-900 dark:text-white font-bold">
-                            <Layers size={20}/>
+                            <Layers size={20} />
                             <h3>Kategorier</h3>
                         </div>
                         <div className="space-y-2">
-                            {categories.map(cat => (
-                                <button
-                                    key={cat}
-                                    onClick={() => setSelectedCategory(cat)}
-                                    className={`w-full text-left px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                                        selectedCategory === cat
+                            <button
+                                onClick={() => setSelectedCategory('Alla Kurser')}
+                                className={`w-full text-left px-4 py-2.5 rounded-lg text-sm font-medium transition-colors flex justify-between ${selectedCategory === 'Alla Kurser'
+                                    ? 'bg-black text-white dark:bg-white dark:text-black'
+                                    : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-[#3c4043]'
+                                    }`}
+                            >
+                                <span>Alla Kurser</span>
+                                <span className={`text-xs px-2 py-0.5 rounded-full ${selectedCategory === 'Alla Kurser' ? 'bg-white/20' : 'bg-gray-200 dark:bg-[#3c4043]'}`}>{courses.length}</span>
+                            </button>
+
+                            {COURSE_CATEGORIES.map(cat => {
+                                const count = counts[cat] || 0;
+                                if (count === 0) return null;
+                                return (
+                                    <button
+                                        key={cat}
+                                        onClick={() => setSelectedCategory(cat)}
+                                        className={`w-full text-left px-4 py-2.5 rounded-lg text-sm font-medium transition-colors flex justify-between ${selectedCategory === cat
                                             ? 'bg-black text-white dark:bg-white dark:text-black'
                                             : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-[#3c4043]'
-                                    }`}
-                                >
-                                    {cat}
-                                </button>
-                            ))}
+                                            }`}
+                                    >
+                                        <span className="truncate pr-2">{cat}</span>
+                                        <span className={`text-xs px-2 py-0.5 rounded-full ${selectedCategory === cat ? 'bg-white/20' : 'bg-gray-200 dark:bg-[#3c4043]'}`}>{count}</span>
+                                    </button>
+                                )
+                            })}
                         </div>
                     </div>
                 </div>
@@ -120,12 +154,12 @@ const CourseCatalog = () => {
                             return (
                                 <div key={course.id} className="group bg-white dark:bg-[#1E1F20] rounded-2xl border border-gray-200 dark:border-[#3c4043] overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col">
                                     {/* FÄRGAD HEADER/BANNER */}
-                                    <div className={`h-32 ${course.color || 'bg-indigo-600'} p-6 relative`}>
-                                        <div className="absolute top-4 left-4 flex gap-2">
-                                            <span className="bg-white/90 backdrop-blur-sm text-xs font-bold px-2 py-1 rounded text-gray-800 uppercase tracking-wider">
+                                    <div className={`h-16 ${course.color || 'bg-indigo-600'} p-4 relative`}>
+                                        <div className="absolute top-3 left-4 flex gap-2">
+                                            <span className="bg-white/90 backdrop-blur-sm text-[10px] font-bold px-2 py-0.5 rounded text-gray-800 uppercase tracking-wider">
                                                 {course.category || 'Allmänt'}
                                             </span>
-                                            <span className="bg-black/20 backdrop-blur-sm text-xs font-mono font-bold px-2 py-1 rounded text-white uppercase tracking-wider">
+                                            <span className="bg-black/20 backdrop-blur-sm text-[10px] font-mono font-bold px-2 py-0.5 rounded text-white uppercase tracking-wider">
                                                 {course.courseCode}
                                             </span>
                                         </div>
@@ -141,11 +175,11 @@ const CourseCatalog = () => {
 
                                         <div className="flex items-center gap-4 text-xs text-gray-400 mb-6 border-t border-gray-100 dark:border-[#3c4043] pt-4">
                                             <div className="flex items-center gap-1">
-                                                <Users size={14}/> <span>{current} / {max} studenter</span>
+                                                <Users size={14} /> <span>{current} / {max} studenter</span>
                                             </div>
                                             {course.startDate && (
                                                 <div className="flex items-center gap-1">
-                                                    <Calendar size={14}/>
+                                                    <Calendar size={14} />
                                                     <span>{new Date(course.startDate).toLocaleDateString()}</span>
                                                 </div>
                                             )}

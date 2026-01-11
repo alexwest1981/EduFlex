@@ -10,9 +10,12 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -23,12 +26,16 @@ public class ChatController {
     private final SimpMessagingTemplate messagingTemplate;
     private final ChatMessageRepository chatMessageRepository;
     private final NotificationRepository notificationRepository;
+    private final org.springframework.data.redis.core.RedisTemplate<String, Object> redisTemplate; // NEW
 
     @Autowired
-    public ChatController(SimpMessagingTemplate messagingTemplate, ChatMessageRepository chatMessageRepository, NotificationRepository notificationRepository) {
+    public ChatController(SimpMessagingTemplate messagingTemplate, ChatMessageRepository chatMessageRepository,
+            NotificationRepository notificationRepository,
+            org.springframework.data.redis.core.RedisTemplate<String, Object> redisTemplate) {
         this.messagingTemplate = messagingTemplate;
         this.chatMessageRepository = chatMessageRepository;
         this.notificationRepository = notificationRepository;
+        this.redisTemplate = redisTemplate; // NEW
     }
 
     // --- WEBSOCKET (Realtid) ---
@@ -43,9 +50,10 @@ public class ChatController {
         // Spara i databasen
         ChatMessage saved = chatMessageRepository.save(chatMessage);
 
-        // VIKTIGT: Skicka till mottagarens unika kanal
-        // Frontend lyssnar på: /topic/messages/{userId}
-        messagingTemplate.convertAndSend("/topic/messages/" + chatMessage.getRecipientId(), saved);
+        // VIKTIGT: Publicera till Redis Topic istället för direkt till klient
+        // Alla instanser som lyssnar på denna topic kommer att ta emot meddelandet via
+        // RedisMessageSubscriber
+        redisTemplate.convertAndSend("chat.topic", saved);
 
         // Skapa notis (så klockan i menyn också lyser upp)
         try {
@@ -54,6 +62,8 @@ public class ChatController {
             n.setMessage("Nytt meddelande från " + chatMessage.getSenderName());
             n.setType("INFO");
             notificationRepository.save(n);
+            // TODO: Publicera även notisen via Redis om vi vill att den ska vara realtid
+            // över kluster
         } catch (Exception e) {
             System.err.println("Kunde inte skapa notis: " + e.getMessage());
         }
@@ -61,12 +71,13 @@ public class ChatController {
 
     // --- REST API (Historik) ---
     @GetMapping("/api/messages/{senderId}/{recipientId}")
-    public ResponseEntity<List<ChatMessage>> getChatHistory(
+    public ResponseEntity<Page<ChatMessage>> getChatHistory(
             @PathVariable Long senderId,
-            @PathVariable Long recipientId) {
+            @PathVariable Long recipientId,
+            @PageableDefault(size = 20, sort = "timestamp", direction = Sort.Direction.DESC) Pageable pageable) {
 
-        return ResponseEntity.ok(chatMessageRepository.findBySenderIdAndRecipientIdOrSenderIdAndRecipientIdOrderByTimestampAsc(
-                senderId, recipientId, recipientId, senderId
-        ));
+        return ResponseEntity
+                .ok(chatMessageRepository.findBySenderIdAndRecipientIdOrSenderIdAndRecipientIdOrderByTimestampDesc(
+                        senderId, recipientId, recipientId, senderId, pageable));
     }
 }

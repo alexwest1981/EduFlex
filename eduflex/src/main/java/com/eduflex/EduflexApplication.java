@@ -1,4 +1,4 @@
-package com.eduflex.backend;
+package com.eduflex;
 
 import com.eduflex.backend.model.User;
 import com.eduflex.backend.model.User.Role;

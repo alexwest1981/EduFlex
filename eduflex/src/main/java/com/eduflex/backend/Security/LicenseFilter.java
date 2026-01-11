@@ -3,15 +3,15 @@ package com.eduflex.backend.security;
 import com.eduflex.backend.service.LicenseService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
 @Component
-public class LicenseFilter extends HttpFilter {
+public class LicenseFilter extends OncePerRequestFilter {
 
     private final LicenseService licenseService;
 
@@ -20,24 +20,30 @@ public class LicenseFilter extends HttpFilter {
     }
 
     @Override
-    protected void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
-        String path = request.getRequestURI();
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws ServletException, IOException {
 
-        // Tillåt alltid licens-endpoints så man kan låsa upp systemet
-        // Vi kollar mot både den gamla och nya sökvägen för säkerhets skull
-        if (path.startsWith("/api/system/license") || path.startsWith("/api/license") || "OPTIONS".equals(request.getMethod())) {
-            chain.doFilter(request, response);
+        // 1. Om systemet är upplåst -> Kör vidare
+        if (licenseService.isValid()) {
+            filterChain.doFilter(request, response);
             return;
         }
 
-        // FIX: Bytte från isSystemActive() till isValid() för att matcha nya LicenseService
-        if (licenseService.isValid()) {
-            chain.doFilter(request, response);
-        } else {
-            // Annars blockera med 503 Service Unavailable
-            response.setStatus(503);
-            response.setContentType("application/json");
-            response.getWriter().write("{\"error\": \"System locked. License required.\"}");
+        // 2. Om systemet är LÅST (ingen giltig licens)
+        String path = request.getRequestURI();
+
+        // 3. Tillåt ENDAST licens-endpoints (för att kunna låsa upp) och OPTIONS
+        if (path.startsWith("/api/system/license") || path.startsWith("/api/settings")
+                || "OPTIONS".equalsIgnoreCase(request.getMethod())) {
+            filterChain.doFilter(request, response);
+            return;
         }
+
+        // 4. Blockera allt annat
+        System.out.println("⛔ BLOCKED: " + path + " (Reason: System Locked)");
+        response.setStatus(402); // Payment Required (Signal to Frontend)
+        response.setContentType("application/json");
+        response.getWriter()
+                .write("{\"error\": \"LICENSE_REQUIRED\", \"message\": \"System is locked. Valid license required.\"}");
     }
 }

@@ -11,11 +11,13 @@ import java.util.Optional;
 @Repository
 public interface CourseRepository extends JpaRepository<Course, Long> {
 
-    @EntityGraph(attributePaths = {"teacher", "students", "evaluation"})
+    @EntityGraph(attributePaths = { "teacher", "students", "evaluation" })
     List<Course> findAll();
 
-    @EntityGraph(attributePaths = {"teacher", "students", "evaluation"})
+    @EntityGraph(attributePaths = { "teacher", "students", "evaluation" })
     Optional<Course> findById(Long id);
 
     List<Course> findByStudentsId(Long studentId);
+
+    List<Course> findByTeacherId(Long teacherId);
 }

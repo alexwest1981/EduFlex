@@ -38,14 +38,14 @@ export const useAppData = (currentUser, licenseStatus, showMessage, setError) =>
             // Loopa kurser för att hitta uppgifter
             for (const course of courses) {
                 const assigns = await api.assignments.getByCourse(course.id);
-                if(assigns) {
-                    allAss = [...allAss, ...assigns.map(a => ({...a, courseId: course.id}))];
+                if (assigns) {
+                    allAss = [...allAss, ...assigns.map(a => ({ ...a, courseId: course.id }))];
 
                     // Om lärare/admin -> Hämta inlämningar också
                     if (user.role !== 'STUDENT') {
                         for (const assign of assigns) {
                             const subs = await api.assignments.getSubmissions(assign.id);
-                            if(subs) allSubs = [...allSubs, ...subs.map(s => ({...s, assignmentId: assign.id}))];
+                            if (subs) allSubs = [...allSubs, ...subs.map(s => ({ ...s, assignmentId: assign.id }))];
                         }
                     }
                 }
@@ -68,11 +68,11 @@ export const useAppData = (currentUser, licenseStatus, showMessage, setError) =>
         setIsLoading(true);
         try {
             const [usersData, coursesData] = await Promise.all([
-                api.users.getAll(),
+                api.users.getAll(0, 1000),
                 api.courses.getAll()
             ]);
 
-            setUsers(usersData || []);
+            setUsers(usersData?.content || usersData || []);
             setAllCourses(coursesData || []);
             setAvailableCourses(coursesData || []); // Fixar katalogen
             updateMyCourses(coursesData || [], currentUser);
@@ -104,17 +104,17 @@ export const useAppData = (currentUser, licenseStatus, showMessage, setError) =>
     // --- ACTIONS (Delete, Upload, etc) ---
 
     const handleDeleteUser = async (u) => {
-        if(!window.confirm(`Radera ${u.fullName}?`)) return;
+        if (!window.confirm(`Radera ${u.fullName}?`)) return;
         try {
             await api.users.delete(u.id);
             showMessage("Användare raderad.");
-            const newUsers = await api.users.getAll();
-            setUsers(newUsers);
+            const newUsers = await api.users.getAll(0, 1000);
+            setUsers(newUsers?.content || newUsers || []);
         } catch { setError("Kunde inte radera användare."); }
     };
 
     const handleDeleteCourse = async (id) => {
-        if(!window.confirm("Radera kurs?")) return;
+        if (!window.confirm("Radera kurs?")) return;
         try {
             await api.courses.delete(id);
             showMessage("Kurs raderad.");
@@ -130,13 +130,13 @@ export const useAppData = (currentUser, licenseStatus, showMessage, setError) =>
         fd.append("file", file);
         fd.append("title", title);
         fd.append("type", "DOCUMENT");
-        if(description) fd.append("description", description);
+        if (description) fd.append("description", description);
 
         try {
             await api.documents.upload(currentUser.id, fd);
             showMessage("Fil uppladdad!");
             // Ladda om dokumentlistan
-            if(currentUser.role === 'STUDENT') {
+            if (currentUser.role === 'STUDENT') {
                 const d = await api.documents.getUserDocs(currentUser.id);
                 setDocuments(d);
             } else {
@@ -147,7 +147,7 @@ export const useAppData = (currentUser, licenseStatus, showMessage, setError) =>
     };
 
     const handleDeleteDoc = async (id) => {
-        if(!window.confirm("Radera fil?")) return;
+        if (!window.confirm("Radera fil?")) return;
         try {
             await api.documents.delete(id);
             showMessage("Fil raderad.");

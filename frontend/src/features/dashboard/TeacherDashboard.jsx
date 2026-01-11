@@ -11,7 +11,8 @@ import MessageCenter from '../messages/MessageCenter';
 import RecentMessagesWidget from './components/RecentMessagesWidget';
 
 // --- IMPORTERA KOMPONENTER (NYTT!) ---
-import TeacherStats from './components/TeacherStats';
+import TeacherStats from './components/TeacherStats'; // Keep for backward compatibility if needed, or remove? I will remove usage.
+import { ActiveCoursesCard, MyStudentsCard, GradingCard, ApplicationsCard, RiskCard } from './components/TeacherWidgetComponents';
 import { UngradedTable, ApplicationsTable } from './components/TeacherTables';
 import { CreateCourseModal, EditCourseModal } from './components/TeacherModals';
 
@@ -33,19 +34,30 @@ const TeacherDashboard = ({ currentUser }) => {
     // UI
     const [searchTerm, setSearchTerm] = useState('');
     const [messageRecipient, setMessageRecipient] = useState(null);
-    // showMessageModal borttagen enligt önskemål
 
     // Modal states
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
     const [courseToEdit, setCourseToEdit] = useState(null);
 
-    const [userSettings, setUserSettings] = useState({ showCalendar: true, showStats: true, showMessages: true });
+    // Granular Settings Default
+    const [userSettings, setUserSettings] = useState({
+        showActiveCourses: true,
+        showMyStudents: true,
+        showToGrade: true,
+        showApplications: true,
+        showAtRisk: true,
+        showSchedule: true,
+        showShortcuts: true,
+        showMessages: true
+    });
 
     useEffect(() => {
         if (currentUser?.settings) {
             try {
-                setUserSettings(JSON.parse(currentUser.settings));
+                const parsed = JSON.parse(currentUser.settings);
+                // Merge with defaults to handle new keys if they don't exist yet
+                setUserSettings(prev => ({ ...prev, ...parsed }));
             } catch (e) {
                 console.error("Failed to parse settings", e);
             }
@@ -86,7 +98,7 @@ const TeacherDashboard = ({ currentUser }) => {
                     }
                 }
             }
-            setUpcomingEvents(events.sort((a, b) => a.date - b.date)); // Sortera så pågående hamnar överst (äldre datum)
+            setUpcomingEvents(events.sort((a, b) => a.date - b.date));
 
             // Ansökningar
             try {
@@ -134,7 +146,6 @@ const TeacherDashboard = ({ currentUser }) => {
                     <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{t('dashboard.teacher_panel')}</h1>
                     <p className="text-gray-500 dark:text-gray-400">{t('dashboard.overview_for', { name: currentUser.fullName })}</p>
                 </div>
-                {/* Knappar borttagna härifrån enligt begäran */}
             </div>
 
             {/* TAB MENY */}
@@ -157,20 +168,20 @@ const TeacherDashboard = ({ currentUser }) => {
 
             {activeTab === 'OVERVIEW' && (
                 <div className="space-y-8 animate-in slide-in-from-bottom-2 duration-300">
-                    {userSettings.showStats && (
-                        <TeacherStats
-                            myCourses={myCourses}
-                            allStudents={allStudents}
-                            applications={applications}
-                            ungradedSubmissions={ungradedSubmissions}
-                            setActiveTab={setActiveTab}
-                        />
-                    )}
+
+                    {/* STATS ROW */}
+                    <div className="flex flex-wrap gap-6">
+                        {userSettings.showActiveCourses && <ActiveCoursesCard count={myCourses.length} />}
+                        {userSettings.showMyStudents && <MyStudentsCard count={allStudents.length} />}
+                        {userSettings.showToGrade && <GradingCard count={ungradedSubmissions.length} onClick={() => setActiveTab('GRADING')} />}
+                        {userSettings.showApplications && <ApplicationsCard count={applications.length} onClick={() => setActiveTab('APPLICATIONS')} />}
+                        {userSettings.showAtRisk && <RiskCard count={allStudents.filter(s => s.riskLevel === 'HIGH').length} onClick={() => setActiveTab('STUDENTS')} />}
+                    </div>
 
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                         {/* Schema & Genvägar (Vänster - 2 kolumner bred) */}
                         <div className="lg:col-span-2 space-y-8">
-                            {userSettings.showCalendar && (
+                            {userSettings.showSchedule && (
                                 <div className="bg-white dark:bg-[#1E1F20] rounded-2xl border border-gray-200 dark:border-[#3c4043] shadow-sm p-6">
                                     <h3 className="font-bold text-lg mb-4 flex items-center gap-2"><CalendarIcon className="text-indigo-600" /> {t('teacher_dashboard.section_schedule')}</h3>
                                     <div className="space-y-4">
@@ -192,21 +203,22 @@ const TeacherDashboard = ({ currentUser }) => {
                                 </div>
                             )}
 
-                            {/* Genvägar */}
-                            <div className="bg-white dark:bg-[#1E1F20] rounded-2xl border border-gray-200 dark:border-[#3c4043] shadow-sm p-6">
-                                <h3 className="font-bold text-lg mb-4">{t('teacher_dashboard.section_shortcuts')}</h3>
-                                <div className="grid grid-cols-2 gap-4">
-                                    <button onClick={() => navigate('/calendar')} className="p-4 bg-indigo-50 dark:bg-indigo-900/20 rounded-xl text-indigo-700 dark:text-indigo-300 font-bold text-sm hover:bg-indigo-100 transition-colors text-left">📅 {t('shortcuts.calendar')}</button>
-                                    <button onClick={() => setActiveTab('STUDENTS')} className="p-4 bg-pink-50 dark:bg-pink-900/20 rounded-xl text-pink-700 dark:text-pink-300 font-bold text-sm hover:bg-pink-100 transition-colors text-left">🎓 {t('shortcuts.students')}</button>
-                                    <button onClick={() => setActiveTab('GRADING')} className="p-4 bg-orange-50 dark:bg-orange-900/20 rounded-xl text-orange-700 dark:text-orange-300 font-bold text-sm hover:bg-orange-100 transition-colors text-left">📝 {t('shortcuts.grading')}</button>
-                                    <button onClick={() => setActiveTab('COMMUNICATION')} className="p-4 bg-green-50 dark:bg-green-900/20 rounded-xl text-green-700 dark:text-green-300 font-bold text-sm hover:bg-green-100 transition-colors text-left">💬 {t('shortcuts.messages')}</button>
+                            {userSettings.showShortcuts && (
+                                <div className="bg-white dark:bg-[#1E1F20] rounded-2xl border border-gray-200 dark:border-[#3c4043] shadow-sm p-6">
+                                    <h3 className="font-bold text-lg mb-4">{t('teacher_dashboard.section_shortcuts')}</h3>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <button onClick={() => navigate('/calendar')} className="p-4 bg-indigo-50 dark:bg-indigo-900/20 rounded-xl text-indigo-700 dark:text-indigo-300 font-bold text-sm hover:bg-indigo-100 transition-colors text-left">📅 {t('shortcuts.calendar')}</button>
+                                        <button onClick={() => setActiveTab('STUDENTS')} className="p-4 bg-pink-50 dark:bg-pink-900/20 rounded-xl text-pink-700 dark:text-pink-300 font-bold text-sm hover:bg-pink-100 transition-colors text-left">🎓 {t('shortcuts.students')}</button>
+                                        <button onClick={() => setActiveTab('GRADING')} className="p-4 bg-orange-50 dark:bg-orange-900/20 rounded-xl text-orange-700 dark:text-orange-300 font-bold text-sm hover:bg-orange-100 transition-colors text-left">📝 {t('shortcuts.grading')}</button>
+                                        <button onClick={() => setActiveTab('COMMUNICATION')} className="p-4 bg-green-50 dark:bg-green-900/20 rounded-xl text-green-700 dark:text-green-300 font-bold text-sm hover:bg-green-100 transition-colors text-left">💬 {t('shortcuts.messages')}</button>
+                                    </div>
                                 </div>
-                            </div>
+                            )}
                         </div>
 
                         {/* Meddelanden (Höger - 1 kolumn) */}
                         <div className="lg:col-span-1 h-full">
-                            <RecentMessagesWidget onViewAll={() => setActiveTab('COMMUNICATION')} />
+                            {userSettings.showMessages && <RecentMessagesWidget onViewAll={() => setActiveTab('COMMUNICATION')} />}
                         </div>
                     </div>
                 </div>

@@ -61,6 +61,44 @@ public class AssignmentController {
         return assignmentRepo.findByAuthorId(userId);
     }
 
+    // --- ATTACHMENTS (NEW) ---
+
+    @PostMapping("/assignments/{id}/attachments/file")
+    public Assignment addFileAttachment(@PathVariable Long id, @RequestParam("file") MultipartFile file) {
+        Assignment assignment = assignmentRepo.findById(id).orElseThrow();
+        String fileUrl = fileService.storeFile(file);
+
+        AssignmentAttachment attachment = new AssignmentAttachment(
+                file.getOriginalFilename(),
+                "FILE",
+                fileUrl,
+                assignment);
+
+        assignment.getAttachments().add(attachment);
+        return assignmentRepo.save(assignment);
+    }
+
+    @PostMapping("/assignments/{id}/attachments/link")
+    public Assignment addLinkAttachment(@PathVariable Long id, @RequestBody java.util.Map<String, String> payload) {
+        Assignment assignment = assignmentRepo.findById(id).orElseThrow();
+
+        String title = payload.getOrDefault("title", "Länk");
+        String url = payload.get("url");
+        String type = payload.getOrDefault("type", "LINK"); // LINK, YOUTUBE, RESOURCE
+
+        AssignmentAttachment attachment = new AssignmentAttachment(title, type, url, assignment);
+
+        assignment.getAttachments().add(attachment);
+        return assignmentRepo.save(assignment);
+    }
+
+    @DeleteMapping("/assignments/{id}/attachments/{attachmentId}")
+    public Assignment removeAttachment(@PathVariable Long id, @PathVariable Long attachmentId) {
+        Assignment assignment = assignmentRepo.findById(id).orElseThrow();
+        assignment.getAttachments().removeIf(a -> a.getId().equals(attachmentId));
+        return assignmentRepo.save(assignment);
+    }
+
     // --- SUBMISSIONS ---
 
     @GetMapping("/assignments/{assignmentId}/submissions")

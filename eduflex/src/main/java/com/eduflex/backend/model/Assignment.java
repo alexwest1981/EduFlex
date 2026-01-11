@@ -24,6 +24,9 @@ public class Assignment {
     @JoinColumn(name = "author_id")
     private User author;
 
+    @OneToMany(mappedBy = "assignment", cascade = CascadeType.ALL, orphanRemoval = true)
+    private java.util.List<AssignmentAttachment> attachments = new java.util.ArrayList<>();
+
     // Getters & Setters
     public Long getId() {
         return id;
@@ -71,5 +74,13 @@ public class Assignment {
 
     public void setAuthor(User author) {
         this.author = author;
+    }
+
+    public java.util.List<AssignmentAttachment> getAttachments() {
+        return attachments;
+    }
+
+    public void setAttachments(java.util.List<AssignmentAttachment> attachments) {
+        this.attachments = attachments;
     }
 }

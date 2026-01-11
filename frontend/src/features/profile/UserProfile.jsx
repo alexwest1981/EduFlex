@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Camera, Mail, Phone, MapPin, Save, Lock, User, AlertTriangle, Globe, Settings as SettingsIcon, Layout } from 'lucide-react';
+import { Camera, Mail, Phone, MapPin, Save, Lock, User, AlertTriangle, Globe, Settings as SettingsIcon, Layout, Download, Shield, CreditCard } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { api } from '../../services/api.js';
+import UserBilling from '../billing/UserBilling';
+import { useModules } from '../../context/ModuleContext';
 
 const UserProfile = ({ currentUser, showMessage, refreshUser }) => {
     const { t, i18n } = useTranslation();
+    const { isModuleActive } = useModules();
     const [activeTab, setActiveTab] = useState('details');
     const [isLoading, setIsLoading] = useState(false);
 
@@ -44,9 +47,22 @@ const UserProfile = ({ currentUser, showMessage, refreshUser }) => {
             } else { street = user.address; }
         }
         const userLang = user.language || 'sv';
-        let dbSettings = { showCalendar: true, showMessages: true, showStats: true };
+        let dbSettings = {
+            showActiveCourses: true,
+            showMyStudents: true,
+            showToGrade: true,
+            showApplications: true,
+            showAtRisk: true,
+            showSchedule: true,
+            showShortcuts: true,
+            showMessages: true
+        };
         try {
-            if (user.settings) dbSettings = JSON.parse(user.settings);
+            if (user.settings) {
+                const parsed = JSON.parse(user.settings);
+                // Merge parsed settings with defaults to ensure all keys exist
+                dbSettings = { ...dbSettings, ...parsed };
+            }
         } catch (e) { console.error("Could not parse settings", e); }
 
         setFormData({
@@ -112,7 +128,7 @@ const UserProfile = ({ currentUser, showMessage, refreshUser }) => {
     const displayUser = fullUserData || currentUser;
 
     return (
-        <div className="animate-in fade-in max-w-4xl mx-auto pb-20">
+        <div className="animate-in fade-in max-w-7xl mx-auto pb-20">
             <h1 className="text-3xl font-bold mb-8 text-gray-900 dark:text-[#E3E3E3] transition-colors">{t('profile.title')}</h1>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -154,6 +170,14 @@ const UserProfile = ({ currentUser, showMessage, refreshUser }) => {
                         <button onClick={() => setActiveTab('settings')} className={`flex-1 py-4 font-bold text-sm transition-colors ${activeTab === 'settings' ? 'bg-gray-50 dark:bg-[#282a2c] text-gray-900 dark:text-white border-b-2 border-black dark:border-white' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-[#282a2c]'}`}>
                             <div className="flex items-center justify-center gap-2"><SettingsIcon size={18} /> {t('profile.settings')}</div>
                         </button>
+                        <button onClick={() => setActiveTab('privacy')} className={`flex-1 py-4 font-bold text-sm transition-colors ${activeTab === 'privacy' ? 'bg-gray-50 dark:bg-[#282a2c] text-gray-900 dark:text-white border-b-2 border-black dark:border-white' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-[#282a2c]'}`}>
+                            <div className="flex items-center justify-center gap-2"><Shield size={18} /> Integritet</div>
+                        </button>
+                        {isModuleActive('REVENUE') && (
+                            <button onClick={() => setActiveTab('billing')} className={`flex-1 py-4 font-bold text-sm transition-colors ${activeTab === 'billing' ? 'bg-gray-50 dark:bg-[#282a2c] text-gray-900 dark:text-white border-b-2 border-black dark:border-white' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-[#282a2c]'}`}>
+                                <div className="flex items-center justify-center gap-2"><CreditCard size={18} /> Fakturering</div>
+                            </button>
+                        )}
                     </div>
 
                     <div className="p-8">
@@ -173,6 +197,9 @@ const UserProfile = ({ currentUser, showMessage, refreshUser }) => {
                                     >
                                         <option value="sv">Svenska</option>
                                         <option value="en">English</option>
+                                        <option value="no">Norsk (Norwegian)</option>
+                                        <option value="da">Dansk (Danish)</option>
+                                        <option value="fi">Suomi (Finnish)</option>
                                         <option value="ar">العربية (Arabic)</option>
                                         <option value="de">Deutsch (German)</option>
                                         <option value="fr">Français (French)</option>
@@ -218,28 +245,30 @@ const UserProfile = ({ currentUser, showMessage, refreshUser }) => {
                                 <h3 className="font-bold text-gray-900 dark:text-white flex items-center gap-2"><Layout size={20} /> {t('profile.settings_header')}</h3>
                                 <p className="text-sm text-gray-500 dark:text-gray-400">{t('profile.settings_desc')}</p>
 
-                                <div className="space-y-4">
-                                    <label className="flex items-center gap-3 p-4 border border-gray-200 dark:border-[#3c4043] rounded-xl cursor-pointer hover:bg-gray-50 dark:hover:bg-[#282a2c]">
-                                        <input type="checkbox" className="w-5 h-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                                            checked={formData.dashboardSettings.showCalendar}
-                                            onChange={e => setFormData({ ...formData, dashboardSettings: { ...formData.dashboardSettings, showCalendar: e.target.checked } })}
-                                        />
-                                        <span className="font-medium text-gray-700 dark:text-gray-200">{t('profile.show_calendar')}</span>
-                                    </label>
-                                    <label className="flex items-center gap-3 p-4 border border-gray-200 dark:border-[#3c4043] rounded-xl cursor-pointer hover:bg-gray-50 dark:hover:bg-[#282a2c]">
-                                        <input type="checkbox" className="w-5 h-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                                            checked={formData.dashboardSettings.showMessages}
-                                            onChange={e => setFormData({ ...formData, dashboardSettings: { ...formData.dashboardSettings, showMessages: e.target.checked } })}
-                                        />
-                                        <span className="font-medium text-gray-700 dark:text-gray-200">{t('profile.show_messages')}</span>
-                                    </label>
-                                    <label className="flex items-center gap-3 p-4 border border-gray-200 dark:border-[#3c4043] rounded-xl cursor-pointer hover:bg-gray-50 dark:hover:bg-[#282a2c]">
-                                        <input type="checkbox" className="w-5 h-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                                            checked={formData.dashboardSettings.showStats}
-                                            onChange={e => setFormData({ ...formData, dashboardSettings: { ...formData.dashboardSettings, showStats: e.target.checked } })}
-                                        />
-                                        <span className="font-medium text-gray-700 dark:text-gray-200">{t('profile.show_stats')}</span>
-                                    </label>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    {(currentUser.role === 'ADMIN' ? [
+                                        { key: 'showStats', label: 'Visa Statistik' },
+                                        { key: 'showRecentUsers', label: 'Visa Senaste Användare' },
+                                        { key: 'showRecentDocs', label: 'Visa Senaste Filer' },
+                                        { key: 'showMessages', label: 'Visa Meddelanden' }
+                                    ] : [
+                                        { key: 'showActiveCourses', label: 'Visa Aktiva kurser' },
+                                        { key: 'showMyStudents', label: 'Visa Mina Studenter' },
+                                        { key: 'showToGrade', label: 'Visa Att rätta' },
+                                        { key: 'showAtRisk', label: 'Visa Riskzon' },
+                                        { key: 'showApplications', label: 'Visa Ansökningar' },
+                                        { key: 'showSchedule', label: 'Visa Kommande Schema' },
+                                        { key: 'showMessages', label: 'Visa Senaste Meddelanden' },
+                                        { key: 'showShortcuts', label: 'Visa Genvägar' }
+                                    ]).map(setting => (
+                                        <label key={setting.key} className="flex items-center gap-3 p-4 border border-gray-200 dark:border-[#3c4043] rounded-xl cursor-pointer hover:bg-gray-50 dark:hover:bg-[#282a2c] transition-colors">
+                                            <input type="checkbox" className="w-5 h-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                                                checked={!!formData.dashboardSettings[setting.key]}
+                                                onChange={e => setFormData({ ...formData, dashboardSettings: { ...formData.dashboardSettings, [setting.key]: e.target.checked } })}
+                                            />
+                                            <span className="font-medium text-gray-700 dark:text-gray-200">{setting.label}</span>
+                                        </label>
+                                    ))}
                                 </div>
                                 <div className="flex justify-end pt-4">
                                     <button disabled={isLoading} className="bg-gray-900 dark:bg-[#c2e7ff] text-white dark:text-[#001d35] px-6 py-2.5 rounded-lg font-bold hover:bg-black dark:hover:bg-[#b3d7ef] shadow-sm flex items-center gap-2 disabled:opacity-50 transition-colors">
@@ -247,6 +276,59 @@ const UserProfile = ({ currentUser, showMessage, refreshUser }) => {
                                     </button>
                                 </div>
                             </form>
+                        )}
+                        {activeTab === 'privacy' && (
+                            <div className="space-y-8 py-4">
+                                <div className="bg-white dark:bg-[#1E1F20] rounded-xl border border-gray-200 dark:border-[#3c4043] p-6 shadow-sm">
+                                    <div className="flex items-center gap-3 mb-4">
+                                        <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-xl text-blue-600">
+                                            <Download size={24} />
+                                        </div>
+                                        <div>
+                                            <h2 className="text-xl font-bold text-gray-900 dark:text-white">Dataskydd & Integritet</h2>
+                                            <p className="text-gray-500 text-sm">Hantera din personliga data och export.</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-[#131314] rounded-xl border border-gray-100 dark:border-[#3c4043]">
+                                        <div>
+                                            <h3 className="font-bold text-gray-900 dark:text-white">Exportera min data (GDPR)</h3>
+                                            <p className="text-sm text-gray-500 mt-1">Ladda ner en JSON-fil med all din information, inklusive aktivitetshistorik.</p>
+                                        </div>
+                                        <button
+                                            onClick={async () => {
+                                                try {
+                                                    const data = await api.users.exportData();
+                                                    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                                                    const url = window.URL.createObjectURL(blob);
+                                                    const a = document.createElement('a');
+                                                    a.href = url;
+                                                    a.download = `gdpr-export-${new Date().toISOString().split('T')[0]}.json`;
+                                                    document.body.appendChild(a);
+                                                    a.click();
+                                                } catch (e) {
+                                                    alert("Kunde inte exportera data: " + e.message);
+                                                }
+                                            }}
+                                            className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700 transition-colors"
+                                        >
+                                            <Download size={18} />
+                                            Ladda ner min data
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div className="bg-red-50 dark:bg-red-900/10 rounded-xl border border-red-200 dark:border-red-900/30 p-6">
+                                    <h3 className="font-bold text-red-800 dark:text-red-400 mb-2">Radera konto</h3>
+                                    <p className="text-sm text-red-700 dark:text-red-300 mb-4">Om du raderar ditt konto försvinner all din data permanent. Detta går inte att ångra.</p>
+                                    <button onClick={() => alert("Kontakta admin för att radera ditt konto.")} className="text-xs bg-red-600 text-white px-3 py-2 rounded font-bold hover:bg-red-700">
+                                        Begär radering av konto
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+
+                        {activeTab === 'billing' && (
+                            <UserBilling userId={currentUser?.id} />
                         )}
                     </div>
                 </div>

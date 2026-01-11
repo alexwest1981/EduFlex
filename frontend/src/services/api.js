@@ -9,6 +9,10 @@ const getHeaders = (contentType = 'application/json') => {
 
 const handleResponse = async (res) => {
     if (!res.ok) {
+        if (res.status === 402) {
+            window.dispatchEvent(new Event('license-lock'));
+            throw new Error("LICENSE_REQUIRED");
+        }
         const errorText = await res.text();
         throw new Error(errorText || `HTTP Error: ${res.status}`);
     }
@@ -52,7 +56,7 @@ export const api = {
             headers: getHeaders(),
             body: JSON.stringify(data)
         }).then(handleResponse),
-        getThreads: (categoryId) => fetch(`${API_BASE}/forum/category/${categoryId}/threads`, { headers: getHeaders() }).then(handleResponse),
+        getThreads: (categoryId, page = 0, size = 10) => fetch(`${API_BASE}/forum/category/${categoryId}/threads?page=${page}&size=${size}`, { headers: getHeaders() }).then(handleResponse),
         createThread: (categoryId, userId, title, content) => fetch(`${API_BASE}/forum/category/${categoryId}/thread`, {
             method: 'POST',
             headers: getHeaders(),
@@ -80,14 +84,18 @@ export const api = {
     messages: {
         getInbox: () => fetch(`${API_BASE}/messages/inbox`, { headers: getHeaders() }).then(handleResponse),
         getSent: () => fetch(`${API_BASE}/messages/sent`, { headers: getHeaders() }).then(handleResponse),
+        getUnreadCount: () => fetch(`${API_BASE}/messages/unread`, { headers: getHeaders() }).then(handleResponse),
         send: (data) => fetch(`${API_BASE}/messages/send`, { method: 'POST', headers: getHeaders(), body: JSON.stringify(data) }).then(handleResponse),
         getRecentContacts: (userId) => fetch(`${API_BASE}/messages/contacts/${userId}`, { headers: getHeaders() }).then(handleResponse).catch(() => []),
-        getHistory: (userId, otherId) => fetch(`${API_BASE}/messages/${userId}/${otherId}`, { headers: getHeaders() }).then(handleResponse),
         getContacts: () => fetch(`${API_BASE}/messages/contacts`, { headers: getHeaders() }).then(handleResponse),
     },
 
+    chat: {
+        getHistory: (senderId, recipientId, page = 0, size = 20) => fetch(`${API_BASE}/messages/${senderId}/${recipientId}?page=${page}&size=${size}`, { headers: getHeaders() }).then(handleResponse)
+    },
+
     users: {
-        getAll: () => fetch(`${API_BASE}/users`, { headers: getHeaders() }).then(handleResponse),
+        getAll: (page = 0, size = 20) => fetch(`${API_BASE}/users?page=${page}&size=${size}`, { headers: getHeaders() }).then(handleResponse),
         getById: (id) => fetch(`${API_BASE}/users/${id}`, { headers: getHeaders() }).then(handleResponse),
         register: (data) => fetch(`${API_BASE}/users/register`, { method: 'POST', headers: getHeaders(), body: JSON.stringify(data) }).then(handleResponse),
         generateUsernames: (data) => fetch(`${API_BASE}/users/generate-usernames`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }).then(handleResponse),
@@ -97,6 +105,7 @@ export const api = {
             headers: getHeaders(),
             body: JSON.stringify(data)
         }).then(handleResponse),
+        exportData: () => fetch(`${API_BASE}/users/me/export`, { headers: getHeaders() }).then(handleResponse),
     },
 
     courses: {
@@ -121,12 +130,15 @@ export const api = {
         handleApplication: (appId, status) => fetch(`${API_BASE}/courses/applications/${appId}/${status}`, { method: 'POST', headers: getHeaders() }).then(handleResponse),
 
         // Resultat & Certifikat
+        checkCompletion: (id, studentId) => fetch(`${API_BASE}/courses/${id}/check-completion/${studentId}`, { headers: getHeaders() }).then(handleResponse),
+        claimCertificate: (id, studentId) => fetch(`${API_BASE}/courses/${id}/claim-certificate/${studentId}`, { method: 'POST', headers: getHeaders() }).then(handleResponse),
         setResult: (courseId, studentId, status) => fetch(`${API_BASE}/courses/${courseId}/result/${studentId}`, {
             method: 'POST',
             headers: getHeaders(),
             body: JSON.stringify({ status })
         }).then(handleResponse),
         getResult: (courseId, studentId) => fetch(`${API_BASE}/courses/${courseId}/result/${studentId}`, { headers: getHeaders() }).then(handleResponse),
+        getOptions: (userId, role) => fetch(`${API_BASE}/courses/options?userId=${userId}&role=${role}`, { headers: getHeaders() }).then(handleResponse),
     },
 
     // --- LEKTIONER / MATERIAL (FIXAD KOPPLING) ---
@@ -159,8 +171,34 @@ export const api = {
         share: (docId, userId) => fetch(`${API_BASE}/documents/${docId}/share?userId=${userId}`, { method: 'POST', headers: getHeaders() }).then(handleResponse),
     },
 
+    // --- RESTORED SECTIONS ---
+    system: {
+        getModules: () => api.get('/modules'),
+        toggleModule: (key, active) => api.post(`/modules/${key}/toggle?active=${active}`),
+        updateSetting: (key, value) => api.put(`/system-settings/${key}`, { value: value }),
+        getSettings: () => api.get('/system-settings'),
+        checkLicense: () => fetch(`${API_BASE}/system/license/status`).then(handleResponse),
+        activateLicense: (key) => fetch(`${API_BASE}/system/license/activate`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ key }) }).then(handleResponse)
+    },
+
+    license: { // Keeping for backward compat if anyone calls it separately, but consolidated in system for UI
+        getStatus: () => api.get('/system/license/status'),
+        activate: (key) => api.post('/system/license/activate', { key }),
+    },
+
     settings: {
-        getAll: () => fetch(`${API_BASE}/settings`, { headers: getHeaders() }).then(handleResponse),
+        getAll: () => fetch(`${API_BASE}/settings`, { headers: getHeaders() })
+            .then(handleResponse)
+            .then(data => {
+                // Transform Array [{key: 'k', value: 'v'}] to Object {k: 'v'}
+                if (Array.isArray(data)) {
+                    return data.reduce((acc, curr) => {
+                        acc[curr.key] = curr.value;
+                        return acc;
+                    }, {});
+                }
+                return data;
+            }),
         update: (key, value) => fetch(`${API_BASE}/settings/${key}`, { method: 'PUT', headers: getHeaders(), body: JSON.stringify({ value }) }).then(handleResponse),
     },
 
@@ -169,7 +207,6 @@ export const api = {
         markRead: (id) => fetch(`${API_BASE}/notifications/${id}/read`, { method: 'PUT', headers: getHeaders() }),
     },
 
-    // --- UPPGIFTER & INLÄMNINGAR ---
     assignments: {
         getByCourse: (courseId) => fetch(`${API_BASE}/courses/${courseId}/assignments`, { headers: getHeaders() }).then(handleResponse),
         create: (courseId, userId, data) => fetch(`${API_BASE}/courses/${courseId}/assignments?userId=${userId}`, { method: 'POST', headers: getHeaders(), body: JSON.stringify(data) }).then(handleResponse),
@@ -179,6 +216,11 @@ export const api = {
         getSubmissions: (assignmentId) => fetch(`${API_BASE}/assignments/${assignmentId}/submissions`, { headers: getHeaders() }).then(handleResponse),
         getMySubmission: (assignmentId, studentId) => fetch(`${API_BASE}/assignments/${assignmentId}/my-submission/${studentId}`, { headers: getHeaders() }).then(handleResponse),
         grade: (subId, grade, feedback) => fetch(`${API_BASE}/submissions/${subId}/grade?grade=${grade}&feedback=${feedback || ''}`, { method: 'POST', headers: getHeaders() }).then(handleResponse),
+
+        // Attachments
+        addAttachmentFile: (assignmentId, formData) => fetch(`${API_BASE}/assignments/${assignmentId}/attachments/file`, { method: 'POST', headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }, body: formData }).then(handleResponse),
+        addAttachmentLink: (assignmentId, data) => fetch(`${API_BASE}/assignments/${assignmentId}/attachments/link`, { method: 'POST', headers: getHeaders(), body: JSON.stringify(data) }).then(handleResponse),
+        removeAttachment: (assignmentId, attachmentId) => fetch(`${API_BASE}/assignments/${assignmentId}/attachments/${attachmentId}`, { method: 'DELETE', headers: getHeaders() }).then(handleResponse),
     },
 
     events: {
@@ -214,10 +256,35 @@ export const api = {
             body: JSON.stringify(resultData)
         }).then(handleResponse),
         delete: (id) => fetch(`${API_BASE}/quizzes/${id}`, { method: 'DELETE', headers: getHeaders() }).then(handleResponse),
+        generate: (data) => fetch(`${API_BASE}/quizzes/generate`, {
+            method: 'POST',
+            headers: getHeaders(),
+            body: JSON.stringify(data)
+        }).then(handleResponse),
     },
 
-    system: {
-        checkLicense: () => fetch(`${API_BASE}/system/license/status`).then(handleResponse),
-        activateLicense: (key) => fetch(`${API_BASE}/system/license/activate`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ key }) }).then(handleResponse)
+    questionBank: {
+        getMy: (userId) => fetch(`${API_BASE}/question-bank/my?userId=${userId}`, { headers: getHeaders() }).then(handleResponse),
+        add: (userId, item) => fetch(`${API_BASE}/question-bank/add?userId=${userId}`, {
+            method: 'POST',
+            headers: getHeaders(),
+            body: JSON.stringify(item)
+        }).then(handleResponse),
+        import: (userId, items) => fetch(`${API_BASE}/question-bank/import?userId=${userId}`, {
+            method: 'POST',
+            headers: getHeaders(),
+            body: JSON.stringify(items)
+        }).then(handleResponse),
+        getCategories: (userId) => fetch(`${API_BASE}/question-bank/categories?userId=${userId}`, { headers: getHeaders() }).then(handleResponse),
+        delete: (id) => fetch(`${API_BASE}/question-bank/${id}`, { method: 'DELETE', headers: getHeaders() }).then(handleResponse),
+    },
+
+    scorm: {
+        getByCourse: (courseId) => fetch(`${API_BASE}/scorm/course/${courseId}`, { headers: getHeaders() }).then(handleResponse),
+        upload: (courseId, formData) => fetch(`${API_BASE}/scorm/upload/${courseId}`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }, // Multipart handles content-type
+            body: formData
+        }).then(handleResponse)
     }
 };

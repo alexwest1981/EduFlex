@@ -23,6 +23,9 @@ public class Quiz {
     @JoinColumn(name = "author_id") // Den som skapade quizet
     private User author;
 
+    private java.time.LocalDateTime availableFrom;
+    private java.time.LocalDateTime availableTo;
+
     @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnoreProperties("quiz")
     private List<Question> questions;
@@ -50,6 +53,22 @@ public class Quiz {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public java.time.LocalDateTime getAvailableFrom() {
+        return availableFrom;
+    }
+
+    public void setAvailableFrom(java.time.LocalDateTime availableFrom) {
+        this.availableFrom = availableFrom;
+    }
+
+    public java.time.LocalDateTime getAvailableTo() {
+        return availableTo;
+    }
+
+    public void setAvailableTo(java.time.LocalDateTime availableTo) {
+        this.availableTo = availableTo;
     }
 
     public Course getCourse() {

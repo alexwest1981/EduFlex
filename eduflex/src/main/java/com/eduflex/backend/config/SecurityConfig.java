@@ -1,7 +1,9 @@
 package com.eduflex.backend.config;
 
 import com.eduflex.backend.security.AuthTokenFilter;
+import com.eduflex.backend.security.CustomOAuth2UserService;
 import com.eduflex.backend.security.CustomUserDetailsService;
+import com.eduflex.backend.security.LicenseFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -10,6 +12,7 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -24,19 +27,27 @@ import java.util.List;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
     private final CustomUserDetailsService userDetailsService;
+    private final CustomOAuth2UserService customOAuth2UserService;
     private final AuthTokenFilter authTokenFilter;
+    private final LicenseFilter licenseFilter;
 
-    public SecurityConfig(CustomUserDetailsService userDetailsService, AuthTokenFilter authTokenFilter) {
+    public SecurityConfig(CustomUserDetailsService userDetailsService, CustomOAuth2UserService customOAuth2UserService,
+            AuthTokenFilter authTokenFilter,
+            LicenseFilter licenseFilter) {
         this.userDetailsService = userDetailsService;
+        this.customOAuth2UserService = customOAuth2UserService;
         this.authTokenFilter = authTokenFilter;
+        this.licenseFilter = licenseFilter;
     }
 
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider(userDetailsService);
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+        authProvider.setUserDetailsService(userDetailsService);
         authProvider.setPasswordEncoder(passwordEncoder());
         return authProvider;
     }
@@ -62,8 +73,12 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
                         // 2. Publika endpoints
-                        .requestMatchers("/api/auth/**", "/api/users/register", "/api/users/generate-usernames").permitAll()
-                        .requestMatchers("/api/system/license/**", "/uploads/**", "/h2-console/**", "/ws/**").permitAll()
+                        .requestMatchers("/api/auth/**", "/api/users/register", "/api/users/generate-usernames",
+                                "/api/settings/**")
+                        .permitAll()
+                        .requestMatchers("/api/system/license/**", "/uploads/**", "/h2-console/**", "/ws/**",
+                                "/actuator/**", "/lti/**")
+                        .permitAll()
 
                         // 3. KURS-REGLER
 
@@ -72,7 +87,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/courses/*/apply/*").authenticated()
                         // ----------------------------------------------
 
-                        .requestMatchers(HttpMethod.POST, "/api/courses/*/join", "/api/courses/*/enroll").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/courses/*/join", "/api/courses/*/enroll")
+                        .authenticated()
 
                         // Tillåt studenter att se sina egna kurser
                         .requestMatchers("/api/courses/student/**").authenticated()
@@ -94,12 +110,24 @@ public class SecurityConfig {
                         .requestMatchers("/api/notifications/**").authenticated()
                         .requestMatchers("/api/quizzes/**").authenticated()
 
-                        // Allt annat kräver inloggning
-                        .anyRequest().authenticated()
-                );
+                        // All other requests require authentication
+                        .anyRequest().authenticated())
+                .exceptionHandling(e -> e.authenticationEntryPoint(
+                        new org.springframework.security.web.authentication.HttpStatusEntryPoint(
+                                org.springframework.http.HttpStatus.UNAUTHORIZED)));
 
         http.authenticationProvider(authenticationProvider());
         http.addFilterBefore(authTokenFilter, UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(licenseFilter, UsernamePasswordAuthenticationFilter.class); // Check License first
+
+        // OAuth2 Login
+        http.oauth2Login(oauth2 -> oauth2
+                .userInfoEndpoint(userInfo -> userInfo
+                        .userService(customOAuth2UserService))
+        // We will add a success handler later or let it redirect to default /
+        // For SPA, we usually want a custom success handler that generates a JWT and
+        // redirects to frontend with ?token=...
+        );
 
         // Tillåt iFrames för H2-konsolen
         http.headers(headers -> headers.frameOptions(frame -> frame.disable()));
@@ -112,11 +140,25 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOriginPatterns(List.of("*"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
-        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowedHeaders(List.of("Authorization", "Cache-Control", "Content-Type", "X-Requested-With",
+                "Accept", "Origin", "Access-Control-Request-Method", "Access-Control-Request-Headers"));
         configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
+    }
+
+    @Bean
+    public org.springframework.web.servlet.config.annotation.WebMvcConfigurer webMvcConfigurer() {
+        return new org.springframework.web.servlet.config.annotation.WebMvcConfigurer() {
+            @Override
+            public void addResourceHandlers(
+                    org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry registry) {
+                // Map /uploads/** URL to file system location
+                registry.addResourceHandler("/uploads/**")
+                        .addResourceLocations("file:uploads/");
+            }
+        };
     }
 }
