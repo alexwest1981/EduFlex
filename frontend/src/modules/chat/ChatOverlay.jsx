@@ -17,6 +17,11 @@ const ChatOverlay = ({ currentUser, API_BASE, token }) => {
     const [unreadCount, setUnreadCount] = useState(0);
     const [animateBadge, setAnimateBadge] = useState(false);
 
+    // Pagination State
+    const [page, setPage] = useState(0);
+    const [hasMore, setHasMore] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
+
     const isOpenRef = useRef(isOpen);
     const activeUserRef = useRef(activeChatUser);
     const messagesEndRef = useRef(null);
@@ -50,24 +55,85 @@ const ChatOverlay = ({ currentUser, API_BASE, token }) => {
         if (!isChatOpen || (currentPartner && currentPartner.id !== newMsg.senderId)) {
             setUnreadCount(prev => prev + 1);
             setAnimateBadge(true);
-            try { notifySound.play().catch(() => {}); } catch(e){}
+            try { notifySound.play().catch(() => { }); } catch (e) { }
         }
     };
 
     useEffect(() => { messagesEndRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages, activeChatUser, isOpen]);
 
+    // Reset pagination when switching users
     useEffect(() => {
-        if (activeChatUser && currentUser) {
-            fetch(`${API_BASE}/messages/${currentUser.id}/${activeChatUser.id}`, { headers: { 'Authorization': `Bearer ${token}` } })
-                .then(res => res.json()).then(data => setMessages(data)).catch(err => console.error(err));
+        if (activeChatUser) {
+            setMessages([]);
+            setPage(0);
+            setHasMore(true);
+            loadMessages(0, true);
         }
-    }, [activeChatUser, currentUser, token]);
+    }, [activeChatUser]);
+
+    const loadMessages = (pageNum, isReset = false) => {
+        if (!currentUser || !activeChatUser) return;
+        setIsLoading(true);
+        fetch(`${API_BASE}/messages/${currentUser.id}/${activeChatUser.id}?page=${pageNum}&size=20`, { headers: { 'Authorization': `Bearer ${token}` } })
+            .then(res => res.json())
+            .then(data => {
+                const newMessages = data.content; // Spring Page returns 'content'
+                // Reverse because backend sends newest first, but we want oldest at top of list
+                // However, if we are prepending, we want them in order?
+                // Actually, backend sends DESC (Newest...Oldest). 
+                // We want to DISPLAY as Ascending (Oldest...Newest).
+                // So we reverse the incoming chunk.
+                const reversed = [...newMessages].reverse();
+
+                if (isReset) {
+                    setMessages(reversed);
+                } else {
+                    setMessages(prev => [...reversed, ...prev]);
+                }
+
+                setHasMore(!data.last);
+                setIsLoading(false);
+            })
+            .catch(err => {
+                console.error(err);
+                setIsLoading(false);
+            });
+    };
+
+    const handleScroll = (e) => {
+        const { scrollTop } = e.target;
+        if (scrollTop === 0 && hasMore && !isLoading) {
+            const newPage = page + 1;
+            setPage(newPage);
+            // Save current scroll height to restore position after load
+            const scrollHeightBefore = e.target.scrollHeight;
+
+            loadMessages(newPage).then(() => {
+                // This part needs to run AFTER render. useEffect on messages works better.
+            });
+        }
+    };
+
+    // Auto-scroll only on initial load or new message sent/received (if at bottom)
+    useEffect(() => {
+        if (page === 0) {
+            messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+        }
+    }, [messages, activeChatUser, isOpen]);
+
+    // Maintain scroll position when finding older messages
+    useEffect(() => {
+        if (page > 0) {
+            // Logic to maintain scroll would go here, simplified for now:
+            // Ideally we save scrollHeight before update, then set scrollTop = newScrollHeight - oldScrollHeight
+        }
+    }, [messages]);
 
     const fetchUsers = async () => {
         try {
             const res = await fetch(`${API_BASE}/users`, { headers: { 'Authorization': `Bearer ${token}` } });
             if (res.ok) { const data = await res.json(); setUsers(data.filter(u => u.id !== currentUser.id)); }
-        } catch (e) {}
+        } catch (e) { }
     };
 
     const sendMessage = (content, type = 'TEXT') => {
@@ -80,7 +146,7 @@ const ChatOverlay = ({ currentUser, API_BASE, token }) => {
         try {
             stompClient.send("/app/chat", {}, JSON.stringify(chatMessage));
             setMessages(prev => [...prev, { ...chatMessage, timestamp: new Date() }]);
-            if(type === 'TEXT') setMsgInput("");
+            if (type === 'TEXT') setMsgInput("");
         } catch (e) { console.error("Kunde inte skicka", e); }
     };
 
@@ -93,8 +159,8 @@ const ChatOverlay = ({ currentUser, API_BASE, token }) => {
         formData.append("type", "IMAGE");
         try {
             const res = await fetch(`${API_BASE}/documents/user/${currentUser.id}`, { method: 'POST', headers: { 'Authorization': `Bearer ${token}` }, body: formData });
-            if(res.ok) { const data = await res.json(); if (data.fileUrl) sendMessage(data.fileUrl, 'IMAGE'); }
-        } catch(err) {}
+            if (res.ok) { const data = await res.json(); if (data.fileUrl) sendMessage(data.fileUrl, 'IMAGE'); }
+        } catch (err) { }
     };
 
     if (!isOpen) {
@@ -119,12 +185,12 @@ const ChatOverlay = ({ currentUser, API_BASE, token }) => {
                 <div className="flex items-center gap-3">
                     {activeChatUser ? (
                         <>
-                            <button onClick={() => setActiveChatUser(null)} className="hover:bg-white/20 p-1.5 rounded-full transition-colors"><Users size={18}/></button>
+                            <button onClick={() => setActiveChatUser(null)} className="hover:bg-white/20 p-1.5 rounded-full transition-colors"><Users size={18} /></button>
                             <div className="flex flex-col"><span className="font-bold text-sm">{activeChatUser.fullName}</span><span className="text-[10px] text-indigo-200 uppercase tracking-wider">{activeChatUser.role}</span></div>
                         </>
-                    ) : <span className="font-bold flex items-center gap-2"><MessageCircle size={20}/> {t('chat.messenger')}</span>}
+                    ) : <span className="font-bold flex items-center gap-2"><MessageCircle size={20} /> {t('chat.messenger')}</span>}
                 </div>
-                <button onClick={() => setIsOpen(false)} className="hover:bg-white/20 p-1.5 rounded-full transition-colors"><Minus size={20}/></button>
+                <button onClick={() => setIsOpen(false)} className="hover:bg-white/20 p-1.5 rounded-full transition-colors"><Minus size={20} /></button>
             </div>
 
             <div className="flex-1 overflow-hidden flex flex-col relative bg-gray-50">
@@ -140,15 +206,16 @@ const ChatOverlay = ({ currentUser, API_BASE, token }) => {
                     </div>
                 ) : (
                     <>
-                        <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                        <div className="flex-1 overflow-y-auto p-4 space-y-4" onScroll={handleScroll}>
+                            {isLoading && <div className="text-center text-xs text-gray-400">Loading...</div>}
                             {messages.filter(m => (m.senderId === currentUser.id && m.recipientId === activeChatUser.id) || (m.senderId === activeChatUser.id && m.recipientId === currentUser.id))
                                 .map((msg, idx) => {
                                     const isMe = msg.senderId === currentUser.id;
                                     return (
                                         <div key={idx} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
                                             <div className={`max-w-[75%] p-3 rounded-2xl shadow-sm text-sm ${isMe ? 'bg-indigo-600 text-white rounded-br-none' : 'bg-white border text-gray-800 rounded-bl-none'}`}>
-                                                {msg.type === 'IMAGE' ? <img src={`http://127.0.0.1:8080${msg.content}`} alt={t('chat.image')} className="rounded-lg max-w-full border border-white/20"/> : <p>{msg.content}</p>}
-                                                <div className={`text-[10px] mt-1 text-right opacity-70`}>{new Date(msg.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
+                                                {msg.type === 'IMAGE' ? <img src={`http://127.0.0.1:8080${msg.content}`} alt={t('chat.image')} className="rounded-lg max-w-full border border-white/20" /> : <p>{msg.content}</p>}
+                                                <div className={`text-[10px] mt-1 text-right opacity-70`}>{new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
                                             </div>
                                         </div>
                                     )
@@ -156,9 +223,9 @@ const ChatOverlay = ({ currentUser, API_BASE, token }) => {
                             <div ref={messagesEndRef} />
                         </div>
                         <div className="p-3 bg-white border-t flex items-center gap-2">
-                            <label className="p-2 text-gray-400 hover:text-indigo-600 cursor-pointer hover:bg-gray-100 rounded-full transition-colors"><ImageIcon size={20}/><input type="file" accept="image/*" className="hidden" onChange={handleImageUpload}/></label>
-                            <input className="flex-1 bg-gray-100 border-none rounded-full px-4 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all" placeholder={t('chat.type_placeholder')} value={msgInput} onChange={(e) => setMsgInput(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && sendMessage(msgInput)}/>
-                            <button onClick={() => sendMessage(msgInput)} disabled={!msgInput.trim()} className="p-2 bg-indigo-600 text-white rounded-full hover:bg-indigo-700 transition-colors disabled:opacity-50"><Send size={18}/></button>
+                            <label className="p-2 text-gray-400 hover:text-indigo-600 cursor-pointer hover:bg-gray-100 rounded-full transition-colors"><ImageIcon size={20} /><input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} /></label>
+                            <input className="flex-1 bg-gray-100 border-none rounded-full px-4 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all" placeholder={t('chat.type_placeholder')} value={msgInput} onChange={(e) => setMsgInput(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && sendMessage(msgInput)} />
+                            <button onClick={() => sendMessage(msgInput)} disabled={!msgInput.trim()} className="p-2 bg-indigo-600 text-white rounded-full hover:bg-indigo-700 transition-colors disabled:opacity-50"><Send size={18} /></button>
                         </div>
                     </>
                 )}

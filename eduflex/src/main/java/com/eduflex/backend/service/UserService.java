@@ -3,35 +3,43 @@ package com.eduflex.backend.service;
 import com.eduflex.backend.model.Course;
 import com.eduflex.backend.model.User;
 import com.eduflex.backend.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 @Service
 public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final LicenseService licenseService;
 
-    @Value("${file.upload-dir}")
-    private String uploadDir;
+    private final com.eduflex.backend.repository.AuditLogRepository auditLogRepository;
+    private final FileStorageService fileStorageService;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, LicenseService licenseService,
+            com.eduflex.backend.repository.AuditLogRepository auditLogRepository,
+            FileStorageService fileStorageService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.licenseService = licenseService;
+        this.auditLogRepository = auditLogRepository;
+        this.fileStorageService = fileStorageService;
     }
 
     public List<User> getAllUsers() {
         return userRepository.findAll();
+    }
+
+    public Page<User> getAllUsers(Pageable pageable) {
+        return userRepository.findAll(pageable);
     }
 
     public User getUserById(Long id) {
@@ -39,6 +47,13 @@ public class UserService {
     }
 
     public User registerUser(User user) {
+        // --- LICENSE LIMIT CHECK ---
+        int maxUsers = licenseService.getTier().getMaxUsers();
+        if (maxUsers != -1 && userRepository.count() >= maxUsers) {
+            throw new RuntimeException("Licensgräns uppnådd! Uppgradera din plan för att lägga till fler användare.");
+        }
+        // ---------------------------
+
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         if (user.getRole() == null)
             user.setRole(User.Role.STUDENT);
@@ -123,11 +138,8 @@ public class UserService {
     public User uploadProfilePicture(Long userId, MultipartFile file) throws IOException {
         User user = getUserById(userId);
         if (file != null && !file.isEmpty()) {
-            String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
-            Path path = Paths.get(uploadDir + "/" + fileName);
-            Files.createDirectories(path.getParent());
-            Files.write(path, file.getBytes());
-            user.setProfilePictureUrl("/uploads/" + fileName);
+            String path = fileStorageService.storeFile(file);
+            user.setProfilePictureUrl(path);
             return userRepository.save(user);
         }
         throw new RuntimeException("Ingen fil mottagen");
@@ -135,5 +147,62 @@ public class UserService {
 
     public void deleteUser(Long id) {
         userRepository.deleteById(id);
+    }
+
+    // --- GDPR EXPORT ---
+    @Transactional(readOnly = true)
+    public Map<String, Object> exportUserData(Long userId) {
+        User user = getUserById(userId);
+        Map<String, Object> data = new LinkedHashMap<>();
+
+        // 1. Profil
+        Map<String, Object> profile = new LinkedHashMap<>();
+        profile.put("id", user.getId());
+        profile.put("username", user.getUsername());
+        profile.put("fullName", user.getFullName());
+        profile.put("email", user.getEmail());
+        profile.put("ssn", user.getSsn());
+        profile.put("role", user.getRole());
+        profile.put("points", user.getPoints());
+        profile.put("level", user.getLevel());
+        profile.put("createdAt", user.getCreatedAt());
+        data.put("profile", profile);
+
+        // 2. Kurser
+        List<Map<String, Object>> courses = new ArrayList<>();
+        for (Course c : user.getCourses()) {
+            Map<String, Object> cm = new HashMap<>();
+            cm.put("id", c.getId());
+            cm.put("name", c.getName());
+            cm.put("code", c.getCourseCode());
+            cm.put("role", "STUDENT");
+            courses.add(cm);
+        }
+        for (Course c : user.getCoursesCreated()) {
+            Map<String, Object> cm = new HashMap<>();
+            cm.put("id", c.getId());
+            cm.put("name", c.getName());
+            cm.put("code", c.getCourseCode());
+            cm.put("role", "TEACHER");
+            courses.add(cm);
+        }
+        data.put("courses", courses);
+
+        // 3. Badges
+        data.put("badges", user.getEarnedBadges());
+
+        // 4. Audit Logs (Historik om vad jag gjort om userName matchar modifiedBy)
+        // OBS: Detta kräver att vi har en AuditLogRepository eller att vi söker via
+        // Example
+        // Vi gör en enkel implementation som hämtar via matchande username
+        // (Kan vara dyrt om tabellen är enorm, men OK för MVP)
+        // För prestanda borde vi ha index på modified_by
+        List<com.eduflex.backend.model.AuditLog> logs = auditLogRepository.findAll().stream()
+                .filter(log -> log.getModifiedBy().equals(user.getUsername()))
+                .limit(100)
+                .collect(java.util.stream.Collectors.toList());
+        data.put("activityLog", logs);
+
+        return data;
     }
 }

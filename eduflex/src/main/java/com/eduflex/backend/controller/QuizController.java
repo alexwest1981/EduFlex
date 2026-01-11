@@ -2,13 +2,15 @@ package com.eduflex.backend.controller;
 
 import com.eduflex.backend.model.*;
 import com.eduflex.backend.repository.*;
-import com.eduflex.backend.service.GamificationService; // <--- NY IMPORT
+import com.eduflex.backend.service.GamificationService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/quizzes")
@@ -21,14 +23,16 @@ public class QuizController {
     private final CourseRepository courseRepository;
     private final UserRepository userRepository;
     private final GamificationService gamificationService;
+    private final QuestionBankRepository bankRepo;
 
     public QuizController(QuizRepository q, QuizResultRepository r, CourseRepository c, UserRepository u,
-            GamificationService g) {
+            GamificationService g, QuestionBankRepository b) {
         this.quizRepository = q;
         this.resultRepository = r;
         this.courseRepository = c;
         this.userRepository = u;
-        this.gamificationService = g; // <--- INJICERA HÄR
+        this.gamificationService = g;
+        this.bankRepo = b;
     }
 
     @GetMapping("/course/{courseId}")
@@ -47,6 +51,12 @@ public class QuizController {
 
         existingQuiz.setTitle(quizData.getTitle());
         existingQuiz.setDescription(quizData.getDescription());
+        existingQuiz.setAvailableFrom(quizData.getAvailableFrom());
+        existingQuiz.setAvailableTo(quizData.getAvailableTo());
+
+        if (quizData.getCourse() != null) {
+            existingQuiz.setCourse(quizData.getCourse());
+        }
 
         if (existingQuiz.getQuestions() == null) {
             existingQuiz.setQuestions(new ArrayList<>());
@@ -100,6 +110,60 @@ public class QuizController {
         return createGlobalQuiz(userId, courseId, quizData);
     }
 
+    @PostMapping("/generate")
+    public ResponseEntity<Quiz> generateQuizFromBank(@RequestBody Map<String, Object> req) {
+        Long userId = Long.valueOf(req.get("userId").toString());
+        Long courseId = req.get("courseId") != null ? Long.valueOf(req.get("courseId").toString()) : null;
+        String category = (String) req.get("category");
+        int count = Integer.parseInt(req.get("count").toString());
+        String title = (String) req.get("title");
+
+        List<QuestionBankItem> bankItems = bankRepo.findByAuthorIdAndCategory(userId, category);
+        Collections.shuffle(bankItems);
+        List<QuestionBankItem> selectedItems = bankItems.stream().limit(Math.max(1, Math.min(count, bankItems.size())))
+                .collect(Collectors.toList());
+
+        Quiz quiz = new Quiz();
+        quiz.setTitle(title);
+        quiz.setDescription("Genererat quiz från kategori: " + category);
+
+        User author = userRepository.findById(userId).orElseThrow();
+        quiz.setAuthor(author);
+        if (courseId != null)
+            quiz.setCourse(courseRepository.findById(courseId).orElseThrow());
+
+        List<Question> questions = new ArrayList<>();
+        for (QuestionBankItem item : selectedItems) {
+            Question q = new Question();
+            q.setText(item.getQuestionText());
+            q.setQuiz(quiz);
+
+            List<Option> options = new ArrayList<>();
+            for (int i = 0; i < item.getOptions().size(); i++) {
+                Option o = new Option();
+                String optionText = item.getOptions().get(i);
+                o.setText(optionText);
+
+                // Om correctAnswer matchar denna option text, sätt som korrekt
+                // Eller om correctAnswer är ett index (legacy support), hantera det
+                // Men nu kör vi String matchning enligt nya modellen
+                boolean isCorrect = false;
+                if (item.getCorrectAnswer() != null) {
+                    isCorrect = item.getCorrectAnswer().equals(optionText);
+                }
+                o.setCorrect(isCorrect);
+
+                o.setQuestion(q);
+                options.add(o);
+            }
+            q.setOptions(options);
+            questions.add(q);
+        }
+        quiz.setQuestions(questions);
+
+        return ResponseEntity.ok(quizRepository.save(quiz));
+    }
+
     @PostMapping("/{quizId}/submit")
     public ResponseEntity<QuizResult> submitResult(@PathVariable Long quizId,
             @RequestBody Map<String, Object> payload) {
@@ -119,16 +183,11 @@ public class QuizController {
         QuizResult savedResult = resultRepository.save(result);
 
         if (score > 0) {
-            // Ge 10 poäng per rätt svar
             gamificationService.addPoints(studentId, score * 10);
         }
 
-        // Om maxpoäng: Ge 'Quiz Master' badge (ID 2 i vår init-lista) + 50 bonuspoäng
         if (score == maxScore && maxScore > 0) {
             gamificationService.addPoints(studentId, 50);
-
-            // Hämta badge baserat på namn istället för hårdkodat ID 2 för säkerhets skull
-            // Men för nu kör vi ID 2 då vi vet att initBadges skapar den som nr 2.
             try {
                 gamificationService.awardBadge(studentId, 2L);
             } catch (Exception e) {

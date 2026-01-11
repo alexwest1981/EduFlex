@@ -1,0 +1,18 @@
+{
+    "header": "Inlämningsuppgifter",
+    "new": "Ny Uppgift",
+    "create_header": "Skapa Uppgift",
+    "cancel": "Avbryt",
+    "save": "Spara",
+    "deadline": "Deadline",
+    "no_assignments": "Inga uppgifter.",
+    "submissions": "Inlämningar",
+    "no_submissions": "Inga inlämningar än.",
+    "file_received": "Fil mottagen",
+    "grade_placeholder": "- Sätt Betyg -",
+    "feedback_placeholder": "Feedback...",
+    "submitted": "Inlämnad!",
+    "submitted_desc": "Du har lämnat in denna uppgift.",
+    "submit_button": "Lämna in uppgift",
+    "select_file_alert": "Välj fil!"
+}

@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -12,7 +13,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/analytics")
-@PreAuthorize("hasRole('ADMIN')")
+@PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN')")
 public class AnalyticsController {
 
     private final AnalyticsService analyticsService;
@@ -22,13 +23,15 @@ public class AnalyticsController {
     }
 
     @GetMapping("/overview")
-    public ResponseEntity<Map<String, Object>> getOverview() {
-        return ResponseEntity.ok(analyticsService.getSystemOverview());
+    public ResponseEntity<Map<String, Object>> getOverview(
+            @RequestParam(required = false, defaultValue = "month") String range) {
+        return ResponseEntity.ok(analyticsService.getSystemOverview(range));
     }
 
     @GetMapping("/growth")
-    public ResponseEntity<List<Map<String, Object>>> getGrowth() {
-        return ResponseEntity.ok(analyticsService.getUserGrowth());
+    public ResponseEntity<List<Map<String, Object>>> getGrowth(
+            @RequestParam(required = false, defaultValue = "month") String range) {
+        return ResponseEntity.ok(analyticsService.getUserGrowth(range));
     }
 
     @GetMapping("/engagement")

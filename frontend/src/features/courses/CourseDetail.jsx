@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Loader2, Download, BookOpen, MessageSquare, FileText, Users, HelpCircle, Video, Monitor, Camera, Calendar } from 'lucide-react';
+import { ArrowLeft, Loader2, Download, BookOpen, MessageSquare, FileText, Users, HelpCircle, Video, Monitor, Camera, Calendar, Package } from 'lucide-react';
+import ScormList from '../scorm/ScormList';
 import { useTranslation } from 'react-i18next';
 import { api } from '../../services/api';
 
@@ -17,6 +18,7 @@ import ParticipantsModule, { ParticipantsModuleMetadata } from '../../modules/pa
 import AttendanceView from '../../components/AttendanceView';
 import TeacherAttendanceView from '../dashboard/components/teacher/TeacherAttendanceView';
 import EvaluationModal from '../../components/EvaluationModal';
+import TeacherEvaluationModal from '../../components/TeacherEvaluationModal';
 
 const CourseDetail = ({ currentUser }) => {
     const { id } = useParams();
@@ -29,12 +31,15 @@ const CourseDetail = ({ currentUser }) => {
     const [activeTab, setActiveTab] = useState('material');
     const [isLoading, setIsLoading] = useState(true);
     const [showEvaluationModal, setShowEvaluationModal] = useState(false);
+    const [showTeacherEvaluationModal, setShowTeacherEvaluationModal] = useState(false); // New state
+    const [isSavingEvaluation, setIsSavingEvaluation] = useState(false); // New state
     const [myResult, setMyResult] = useState(null);
+    const [canClaim, setCanClaim] = useState(false);
     const { API_BASE, token } = useAppContext();
 
     const isTeacher = currentUser && (currentUser.role === 'TEACHER' || currentUser.role === 'ADMIN');
 
-    // --- MODULE CONFIG (DIN GAMLA STRUKTUR) ---
+    // --- MODULE CONFIG ---
     const modules = [
         {
             key: 'material',
@@ -69,6 +74,14 @@ const CourseDetail = ({ currentUser }) => {
             visibleFor: 'ALL'
         },
         {
+            key: 'scorm',
+            comp: ScormList,
+            meta: { name: 'Interactive Modules' },
+            icon: <Package size={18} />,
+            enabled: isModuleActive('SCORM'),
+            visibleFor: 'ALL'
+        },
+        {
             key: 'students',
             comp: ParticipantsModule,
             meta: ParticipantsModuleMetadata,
@@ -83,7 +96,7 @@ const CourseDetail = ({ currentUser }) => {
                 if (isTeacher) return <TeacherAttendanceView course={course} currentUser={currentUser} API_BASE={API_BASE} token={token} />;
                 return <AttendanceView courseId={courseId} currentUser={currentUser} API_BASE={API_BASE} token={token} />;
             },
-            meta: { name: 'Närvaro' }, // Hardcoded metadata for now
+            meta: { name: 'Närvaro' },
             icon: <Calendar size={18} />,
             enabled: true,
             visibleFor: 'ALL'
@@ -107,6 +120,12 @@ const CourseDetail = ({ currentUser }) => {
             try {
                 const res = await api.courses.getResult(id, currentUser.id);
                 setMyResult(res);
+
+                // Om ej klar, kolla om vi KAN bli klara
+                if (!res || res.status !== 'PASSED') {
+                    const completed = await api.courses.checkCompletion(id, currentUser.id);
+                    setCanClaim(completed);
+                }
             } catch (e) { /* ignore */ }
         };
 
@@ -123,7 +142,7 @@ const CourseDetail = ({ currentUser }) => {
         }
     }, [modules, activeTab]);
 
-    // --- HELPER FÖR DIGITALT KLASSRUM (NYTT) ---
+    // --- HELPER FÖR DIGITALT KLASSRUM ---
     const getServiceIcon = (type) => {
         switch (type) {
             case 'ZOOM': return <Video size={18} />;
@@ -142,7 +161,7 @@ const CourseDetail = ({ currentUser }) => {
         }
     };
 
-    // --- CERTIFICATE HANDLER (BEHÅLLEN) ---
+    // --- CERTIFICATE HANDLER ---
     const downloadCertificate = async () => {
         try {
             const response = await fetch(`http://127.0.0.1:8080/api/certificates/download/${id}/${currentUser.id}`, {
@@ -164,6 +183,32 @@ const CourseDetail = ({ currentUser }) => {
         } catch (e) {
             console.error(e);
             alert("Ett fel inträffade vid nedladdning.");
+        }
+    };
+
+    // --- TEACHER EVALUATION HANDLER ---
+    const handleSaveEvaluation = async (evaluationData) => {
+        setIsSavingEvaluation(true);
+        try {
+            const res = await fetch(`${API_BASE}/courses/${id}/evaluation`, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify(evaluationData)
+            });
+
+            if (res.ok) {
+                const updatedEvaluation = await res.json();
+                setCourse(prev => ({ ...prev, evaluation: updatedEvaluation }));
+                setShowTeacherEvaluationModal(false);
+                alert(t('evaluation.saved_success') || "Utvärdering sparad!");
+            } else {
+                throw new Error("Failed to save");
+            }
+        } catch (error) {
+            console.error(error);
+            alert(t('evaluation.save_error') || "Kunde inte spara utvärderingen.");
+        } finally {
+            setIsSavingEvaluation(false);
         }
     };
 
@@ -190,7 +235,7 @@ const CourseDetail = ({ currentUser }) => {
                     </div>
 
                     <div className="flex gap-3">
-                        {/* --- NYTT: DIGITALT KLASSRUM KNAPP --- */}
+                        {/* DIGITAL CLASSROOM BUTTON */}
                         {course.classroomLink && (
                             <a
                                 href={course.classroomLink}
@@ -202,21 +247,40 @@ const CourseDetail = ({ currentUser }) => {
                             </a>
                         )}
 
-                        {/* --- CERTIFIKAT KNAPP (BEHÅLLEN MEN VILLKORAD) --- */}
-                        {/* --- CERTIFIKAT KNAPP (BEHÅLLEN MEN VILLKORAD) --- */}
-                        {/* OBS: Tog bort datumkoll för att underlätta testning. Lägg till '&& new Date(course.endDate) < new Date()' om strikt datum krävs. */}
-                        {!isTeacher && myResult?.status === 'PASSED' && (
+                        {/* CERTIFICATE BUTTON (STUDENT ONLY) */}
+                        {!isTeacher && (myResult?.status === 'PASSED' || canClaim) && (
                             <button
-                                onClick={downloadCertificate}
-                                className="bg-white border border-gray-200 text-gray-700 px-4 py-3 rounded-xl font-bold flex items-center gap-2 hover:bg-gray-50 transition-colors shadow-sm"
+                                onClick={async () => {
+                                    if (myResult?.status !== 'PASSED') {
+                                        try {
+                                            await api.courses.claimCertificate(id, currentUser.id);
+                                            // Uppdatera lokalt
+                                            setMyResult({ ...myResult, status: 'PASSED' });
+                                        } catch (e) {
+                                            alert("Kunde inte utfärda certifikat.");
+                                            return;
+                                        }
+                                    }
+                                    // Navigera till certifikatvyn
+                                    navigate(`/certificate/${id}`);
+                                }}
+                                className="bg-gradient-to-r from-amber-200 to-yellow-400 text-amber-900 border border-amber-300 px-4 py-3 rounded-xl font-bold flex items-center gap-2 hover:from-amber-300 hover:to-yellow-500 transition-all shadow-sm"
                             >
-                                <Download size={18} /> {t('course.certificate')}
+                                <Users size={18} /> {myResult?.status === 'PASSED' ? t('course.view_certificate') : t('course.claim_certificate')}
                             </button>
                         )}
 
-                        {/* För lärare visar vi den alltid eller inaktiverad? Låt oss dölja den för lärare om de inte har certifikatfunktion själva */}
+                        {/* TEACHER: MANAGE EVALUATION BUTTON */}
+                        {isTeacher && (
+                            <button
+                                onClick={() => setShowTeacherEvaluationModal(true)}
+                                className="bg-white border border-gray-200 text-gray-700 px-4 py-3 rounded-xl font-bold flex items-center gap-2 hover:bg-gray-50 transition-colors shadow-sm"
+                            >
+                                <MessageSquare size={18} /> {t('evaluation.manage_btn') || 'Hantera Utvärdering'}
+                            </button>
+                        )}
 
-                        {/* --- EVALUATION BUTTON --- */}
+                        {/* STUDENT: EVALUATE COURSE BUTTON */}
                         {course.evaluation && course.evaluation.active && !isTeacher && (
                             <button
                                 onClick={() => setShowEvaluationModal(true)}
@@ -230,8 +294,8 @@ const CourseDetail = ({ currentUser }) => {
 
                 <p className="text-gray-600 dark:text-gray-300 max-w-3xl relative z-10">{course.description}</p>
 
-                {/* DYNAMISK MODUL-MENY */}
-                <div className="flex gap-6 mt-8 border-b border-gray-100 dark:border-[#3c4043] overflow-x-auto">
+                {/* MODULE TABS */}
+                <div className="flex gap-6 mt-8 border-b border-gray-100 dark:border-[#3c4043] border-gray-100 overflow-x-auto">
                     {modules.map(mod => {
                         const isVisible = mod.enabled && (mod.visibleFor === 'ALL' || (mod.visibleFor === 'TEACHER' && isTeacher));
                         if (!isVisible) return null;
@@ -257,7 +321,7 @@ const CourseDetail = ({ currentUser }) => {
                 ))}
             </div>
 
-            {/* EVALUATION MODAL */}
+            {/* EVALUATION MODAL (STUDENT) */}
             {showEvaluationModal && (
                 <EvaluationModal
                     course={course}
@@ -274,6 +338,16 @@ const CourseDetail = ({ currentUser }) => {
                             })
                             .catch(err => console.error(err));
                     }}
+                />
+            )}
+
+            {/* TEACHER EVALUATION MODAL */}
+            {showTeacherEvaluationModal && (
+                <TeacherEvaluationModal
+                    course={course}
+                    onClose={() => setShowTeacherEvaluationModal(false)}
+                    onSave={handleSaveEvaluation}
+                    isLoading={isSavingEvaluation}
                 />
             )}
         </div>

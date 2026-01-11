@@ -7,6 +7,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "courses")
+@EntityListeners(com.eduflex.backend.service.AuditListener.class)
 public class Course {
 
     @Id
@@ -31,11 +32,11 @@ public class Course {
     private boolean isOpen = true;
 
     // --- NYA FÄLT: DIGITALA RUM ---
-    private String classroomLink;   // URL till mötet
-    private String classroomType;   // T.ex. "ZOOM", "TEAMS", "MEET"
+    private String classroomLink; // URL till mötet
+    private String classroomType; // T.ex. "ZOOM", "TEAMS", "MEET"
 
-    private String examLink;        // URL till tentarum
-    private String examType;        // T.ex. "ZOOM", "INSPO"
+    private String examLink; // URL till tentarum
+    private String examType; // T.ex. "ZOOM", "INSPO"
     // ------------------------------
 
     @Column(columnDefinition = "integer default 100")
@@ -43,70 +44,151 @@ public class Course {
 
     @ManyToOne
     @JoinColumn(name = "teacher_id")
-    @JsonIgnoreProperties({"courses", "coursesCreated", "documents", "submissions", "password", "roles"})
+    @JsonIgnoreProperties({ "courses", "coursesCreated", "documents", "submissions", "password", "roles" })
     private User teacher;
 
     @ManyToMany
-    @JoinTable(
-            name = "course_students",
-            joinColumns = @JoinColumn(name = "course_id"),
-            inverseJoinColumns = @JoinColumn(name = "student_id")
-    )
-    @JsonIgnoreProperties({"courses", "password", "roles"})
+    @JoinTable(name = "course_students", joinColumns = @JoinColumn(name = "course_id"), inverseJoinColumns = @JoinColumn(name = "student_id"))
+    @JsonIgnoreProperties({ "courses", "password", "roles" })
     private Set<User> students = new HashSet<>();
 
     @OneToOne(mappedBy = "course", cascade = CascadeType.ALL)
     private CourseEvaluation evaluation;
 
     // --- GETTERS & SETTERS ---
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public Long getId() {
+        return id;
+    }
 
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    public String getCourseCode() { return courseCode; }
-    public void setCourseCode(String courseCode) { this.courseCode = courseCode; }
+    public String getName() {
+        return name;
+    }
 
-    public String getCategory() { return category; }
-    public void setCategory(String category) { this.category = category; }
+    public void setName(String name) {
+        this.name = name;
+    }
 
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
+    public String getCourseCode() {
+        return courseCode;
+    }
 
-    public String getStartDate() { return startDate; }
-    public void setStartDate(String startDate) { this.startDate = startDate; }
+    public void setCourseCode(String courseCode) {
+        this.courseCode = courseCode;
+    }
 
-    public String getEndDate() { return endDate; }
-    public void setEndDate(String endDate) { this.endDate = endDate; }
+    public String getCategory() {
+        return category;
+    }
 
-    public String getColor() { return color; }
-    public void setColor(String color) { this.color = color; }
+    public void setCategory(String category) {
+        this.category = category;
+    }
 
-    public boolean isOpen() { return isOpen; }
-    public void setOpen(boolean open) { isOpen = open; }
+    public String getDescription() {
+        return description;
+    }
 
-    public String getClassroomLink() { return classroomLink; }
-    public void setClassroomLink(String classroomLink) { this.classroomLink = classroomLink; }
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-    public String getClassroomType() { return classroomType; }
-    public void setClassroomType(String classroomType) { this.classroomType = classroomType; }
+    public String getStartDate() {
+        return startDate;
+    }
 
-    public String getExamLink() { return examLink; }
-    public void setExamLink(String examLink) { this.examLink = examLink; }
+    public void setStartDate(String startDate) {
+        this.startDate = startDate;
+    }
 
-    public String getExamType() { return examType; }
-    public void setExamType(String examType) { this.examType = examType; }
+    public String getEndDate() {
+        return endDate;
+    }
 
-    public Integer getMaxStudents() { return maxStudents; }
-    public void setMaxStudents(Integer maxStudents) { this.maxStudents = maxStudents; }
+    public void setEndDate(String endDate) {
+        this.endDate = endDate;
+    }
 
-    public User getTeacher() { return teacher; }
-    public void setTeacher(User teacher) { this.teacher = teacher; }
+    public String getColor() {
+        return color;
+    }
 
-    public Set<User> getStudents() { return students; }
-    public void setStudents(Set<User> students) { this.students = students; }
+    public void setColor(String color) {
+        this.color = color;
+    }
 
-    public CourseEvaluation getEvaluation() { return evaluation; }
-    public void setEvaluation(CourseEvaluation evaluation) { this.evaluation = evaluation; }
+    public boolean isOpen() {
+        return isOpen;
+    }
+
+    public void setOpen(boolean open) {
+        isOpen = open;
+    }
+
+    public String getClassroomLink() {
+        return classroomLink;
+    }
+
+    public void setClassroomLink(String classroomLink) {
+        this.classroomLink = classroomLink;
+    }
+
+    public String getClassroomType() {
+        return classroomType;
+    }
+
+    public void setClassroomType(String classroomType) {
+        this.classroomType = classroomType;
+    }
+
+    public String getExamLink() {
+        return examLink;
+    }
+
+    public void setExamLink(String examLink) {
+        this.examLink = examLink;
+    }
+
+    public String getExamType() {
+        return examType;
+    }
+
+    public void setExamType(String examType) {
+        this.examType = examType;
+    }
+
+    public Integer getMaxStudents() {
+        return maxStudents;
+    }
+
+    public void setMaxStudents(Integer maxStudents) {
+        this.maxStudents = maxStudents;
+    }
+
+    public User getTeacher() {
+        return teacher;
+    }
+
+    public void setTeacher(User teacher) {
+        this.teacher = teacher;
+    }
+
+    public Set<User> getStudents() {
+        return students;
+    }
+
+    public void setStudents(Set<User> students) {
+        this.students = students;
+    }
+
+    public CourseEvaluation getEvaluation() {
+        return evaluation;
+    }
+
+    public void setEvaluation(CourseEvaluation evaluation) {
+        this.evaluation = evaluation;
+    }
 }

@@ -1,36 +1,46 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { api } from '../services/api';
+import i18n from '../i18n';
 
 const AppContext = createContext();
 
 export const AppProvider = ({ children }) => {
     const [currentUser, setCurrentUser] = useState(null);
-
-    // NYTT: Håller globala inställningar (t.ex. site_name)
     const [systemSettings, setSystemSettings] = useState({});
-
     const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
     const [licenseStatus, setLicenseStatus] = useState('checking');
+    const [licenseLocked, setLicenseLocked] = useState(false);
 
-    // Bas-URL för API (används av ChatModule m.m.)
     const API_BASE = 'http://127.0.0.1:8080/api';
 
-    // Ladda användare & inställningar vid start
+    // 1. Init Effect
     useEffect(() => {
         const storedUser = localStorage.getItem('user');
         if (storedUser) {
             try {
-                setCurrentUser(JSON.parse(storedUser));
+                const userObj = JSON.parse(storedUser);
+                setCurrentUser(userObj);
+
+                if (userObj.id) {
+                    refreshUser(userObj.id);
+                }
             } catch (e) {
                 console.error("Kunde inte läsa användardata", e);
                 localStorage.removeItem('user');
             }
         }
+
+        loadSettings();
         checkLicense();
-        loadSettings(); // <--- Hämta sidans namn m.m.
+
+        // Global Event Listener for Lock
+        const handleLock = () => setLicenseLocked(true);
+        window.addEventListener('license-lock', handleLock);
+        return () => window.removeEventListener('license-lock', handleLock);
+
     }, []);
 
-    // Hantera Mörkt läge
+    // 2. Theme Effect
     useEffect(() => {
         if (theme === 'dark') document.documentElement.classList.add('dark');
         else document.documentElement.classList.remove('dark');
@@ -39,22 +49,30 @@ export const AppProvider = ({ children }) => {
 
     const toggleTheme = () => setTheme(prev => prev === 'dark' ? 'light' : 'dark');
 
-    // Hämta inställningar från Backend
     const loadSettings = async () => {
         try {
             const settings = await api.settings.getAll();
             setSystemSettings(settings || {});
+            if (settings?.site_name) document.title = settings.site_name;
 
-            // Uppdatera webbläsarflikens titel direkt
-            if(settings && settings.site_name) {
-                document.title = settings.site_name;
+            // Language Logic
+            const userLang = currentUser?.language;
+            const sysLang = settings?.default_language;
+
+            if (userLang) {
+                i18n.changeLanguage(userLang);
+            } else if (sysLang) {
+                i18n.changeLanguage(sysLang);
+            } else {
+                i18n.changeLanguage('sv');
             }
+
         } catch (e) {
-            console.error("Kunde inte hämta inställningar", e);
+            // If locked, getAll() might fail with 402, triggering the listener
+            console.error("Settings load failed", e);
         }
     };
 
-    // Uppdatera inställningar live (utan omladdning)
     const updateSystemSetting = (key, value) => {
         setSystemSettings(prev => ({ ...prev, [key]: value }));
         if (key === 'site_name') document.title = value;
@@ -62,8 +80,12 @@ export const AppProvider = ({ children }) => {
 
     const checkLicense = async () => {
         try {
-            // Här kan du lägga till riktig licenskontroll senare
-            setLicenseStatus('active');
+            const res = await api.system.checkLicense();
+            if (res && res.status === 'valid') {
+                setLicenseStatus('active');
+            } else {
+                setLicenseStatus('locked'); // soft lock if just expired but not 402'ing yet
+            }
         } catch (e) {
             setLicenseStatus('error');
         }
@@ -73,21 +95,24 @@ export const AppProvider = ({ children }) => {
         localStorage.setItem('token', token);
         localStorage.setItem('user', JSON.stringify(user));
         setCurrentUser(user);
-        loadSettings(); // Ladda om inställningar vid inloggning för säkerhets skull
+        loadSettings();
     };
 
     const logout = () => {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
         setCurrentUser(null);
+
+        const sysLang = systemSettings?.default_language || 'sv';
+        i18n.changeLanguage(sysLang);
     };
 
-    const refreshUser = async () => {
-        if(!currentUser) return;
+    const refreshUser = async (id) => {
+        const uid = id || currentUser?.id;
+        if (!uid) return;
         try {
-            const updated = await api.users.getById(currentUser.id);
-            // Slå ihop befintlig data (som token) med ny data
-            const merged = { ...currentUser, ...updated };
+            const updated = await api.users.getById(uid);
+            const merged = { ...(currentUser || {}), ...updated };
             localStorage.setItem('user', JSON.stringify(merged));
             setCurrentUser(merged);
         } catch (e) { console.error(e); }
@@ -99,12 +124,13 @@ export const AppProvider = ({ children }) => {
             login,
             logout,
             refreshUser,
-            systemSettings,      // <--- Nu tillgänglig i hela appen
+            systemSettings,
             loadSettings,
-            updateSystemSetting, // <--- För att ändra namn live
+            updateSystemSetting,
             theme,
             toggleTheme,
             licenseStatus,
+            licenseLocked,
             API_BASE,
             api
         }}>

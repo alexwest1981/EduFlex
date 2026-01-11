@@ -1,0 +1,286 @@
+{
+    "annotations": {
+        "list": [
+            {
+                "builtIn": 1,
+                "datasource": "-- Grafana --",
+                "enable": true,
+                "hide": true,
+                "iconColor": "rgba(0, 211, 255, 1)",
+                "name": "Annotations & Alerts",
+                "type": "dashboard"
+            }
+        ]
+    },
+    "editable": true,
+    "gnetId": null,
+    "graphTooltip": 0,
+    "id": null,
+    "links": [],
+    "panels": [
+        {
+            "datasource": "Prometheus",
+            "gridPos": {
+                "h": 8,
+                "w": 12,
+                "x": 0,
+                "y": 0
+            },
+            "id": 2,
+            "options": {
+                "legend": {
+                    "calcs": [],
+                    "displayMode": "list",
+                    "placement": "bottom"
+                },
+                "tooltip": {
+                    "mode": "single",
+                    "sort": "none"
+                }
+            },
+            "targets": [
+                {
+                    "expr": "jvm_memory_used_bytes",
+                    "format": "time_series",
+                    "intervalFactor": 1,
+                    "legendFormat": "{{area}} - {{id}}",
+                    "refId": "A"
+                }
+            ],
+            "title": "JVM Memory Used",
+            "type": "timeseries",
+            "fieldConfig": {
+                "defaults": {
+                    "custom": {
+                        "drawStyle": "line",
+                        "lineInterpolation": "linear",
+                        "showPoints": "auto",
+                        "lineWidth": 1,
+                        "fillOpacity": 10,
+                        "gradientMode": "none"
+                    },
+                    "unit": "bytes"
+                },
+                "overrides": []
+            }
+        },
+        {
+            "datasource": "Prometheus",
+            "gridPos": {
+                "h": 8,
+                "w": 12,
+                "x": 12,
+                "y": 0
+            },
+            "id": 4,
+            "options": {
+                "legend": {
+                    "calcs": [],
+                    "displayMode": "list",
+                    "placement": "bottom"
+                },
+                "tooltip": {
+                    "mode": "single",
+                    "sort": "none"
+                }
+            },
+            "targets": [
+                {
+                    "expr": "system_cpu_usage",
+                    "format": "time_series",
+                    "intervalFactor": 1,
+                    "legendFormat": "System CPU",
+                    "refId": "A"
+                },
+                {
+                    "expr": "process_cpu_usage",
+                    "format": "time_series",
+                    "intervalFactor": 1,
+                    "legendFormat": "Process CPU",
+                    "refId": "B"
+                }
+            ],
+            "title": "CPU Usage",
+            "type": "timeseries",
+            "fieldConfig": {
+                "defaults": {
+                    "custom": {
+                        "drawStyle": "line",
+                        "lineInterpolation": "linear",
+                        "showPoints": "auto",
+                        "lineWidth": 1,
+                        "fillOpacity": 10,
+                        "gradientMode": "none"
+                    },
+                    "unit": "percentunit",
+                    "min": 0,
+                    "max": 1
+                },
+                "overrides": []
+            }
+        },
+        {
+            "datasource": "Prometheus",
+            "gridPos": {
+                "h": 8,
+                "w": 24,
+                "x": 0,
+                "y": 8
+            },
+            "id": 6,
+            "options": {
+                "legend": {
+                    "calcs": [],
+                    "displayMode": "list",
+                    "placement": "bottom"
+                },
+                "tooltip": {
+                    "mode": "single",
+                    "sort": "none"
+                }
+            },
+            "targets": [
+                {
+                    "expr": "rate(http_server_requests_seconds_count[1m])",
+                    "format": "time_series",
+                    "intervalFactor": 1,
+                    "legendFormat": "{{method}} {{uri}} {{status}}",
+                    "refId": "A"
+                }
+            ],
+            "title": "HTTP Requests (Rate per sec)",
+            "type": "timeseries",
+            "fieldConfig": {
+                "defaults": {
+                    "custom": {
+                        "drawStyle": "line",
+                        "lineInterpolation": "linear",
+                        "showPoints": "auto",
+                        "lineWidth": 1,
+                        "fillOpacity": 10,
+                        "gradientMode": "none"
+                    },
+                    "unit": "rps"
+                },
+                "overrides": []
+            }
+        },
+        {
+            "datasource": "Prometheus",
+            "gridPos": {
+                "h": 8,
+                "w": 12,
+                "x": 0,
+                "y": 16
+            },
+            "id": 8,
+            "options": {
+                "legend": {
+                    "calcs": [],
+                    "displayMode": "list",
+                    "placement": "bottom"
+                },
+                "tooltip": {
+                    "mode": "single",
+                    "sort": "none"
+                }
+            },
+            "targets": [
+                {
+                    "expr": "hikaricp_connections_active",
+                    "format": "time_series",
+                    "intervalFactor": 1,
+                    "legendFormat": "Active Connections",
+                    "refId": "A"
+                },
+                {
+                    "expr": "hikaricp_connections_idle",
+                    "format": "time_series",
+                    "intervalFactor": 1,
+                    "legendFormat": "Idle Connections",
+                    "refId": "B"
+                }
+            ],
+            "title": "DB Connections (HikariCP)",
+            "type": "timeseries",
+            "fieldConfig": {
+                "defaults": {
+                    "custom": {
+                        "drawStyle": "line",
+                        "lineInterpolation": "linear",
+                        "showPoints": "auto",
+                        "lineWidth": 1,
+                        "fillOpacity": 10
+                    }
+                },
+                "overrides": []
+            }
+        },
+        {
+            "datasource": "Prometheus",
+            "gridPos": {
+                "h": 8,
+                "w": 12,
+                "x": 12,
+                "y": 16
+            },
+            "id": 10,
+            "options": {
+                "reduceOptions": {
+                    "values": true,
+                    "calcs": [
+                        "lastNotNull"
+                    ],
+                    "fields": ""
+                }
+            },
+            "targets": [
+                {
+                    "expr": "process_uptime_seconds",
+                    "format": "time_series",
+                    "intervalFactor": 1,
+                    "legendFormat": "Uptime",
+                    "refId": "A"
+                }
+            ],
+            "title": "Uptime",
+            "type": "stat",
+            "fieldConfig": {
+                "defaults": {
+                    "unit": "s"
+                },
+                "overrides": []
+            }
+        }
+    ],
+    "schemaVersion": 30,
+    "style": "dark",
+    "tags": [
+        "eduflex",
+        "springboot"
+    ],
+    "templating": {
+        "list": []
+    },
+    "time": {
+        "from": "now-15m",
+        "to": "now"
+    },
+    "timepicker": {
+        "refresh_intervals": [
+            "5s",
+            "10s",
+            "30s",
+            "1m",
+            "5m",
+            "15m",
+            "30m",
+            "1h",
+            "2h",
+            "1d"
+        ]
+    },
+    "timezone": "",
+    "title": "EduFlex Dashboard",
+    "uid": "eduflex-main"
+}

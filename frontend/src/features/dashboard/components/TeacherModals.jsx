@@ -2,14 +2,18 @@ import React, { useState, useEffect } from 'react';
 import { X, Video } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { api } from '../../../services/api';
+import { COURSE_CATEGORIES } from '../../../constants/courseCategories';
 
+// --- CREATE COURSE ---
 // --- CREATE COURSE ---
 export const CreateCourseModal = ({ isOpen, onClose, onCourseCreated, currentUser }) => {
     const { t } = useTranslation();
-    if (!isOpen) return null;
+
     const [formData, setFormData] = useState({ name: '', courseCode: '', category: 'Programmering', description: '', startDate: '', endDate: '', color: 'bg-indigo-600', maxStudents: 30 });
     const [loading, setLoading] = useState(false);
     const colors = [{ name: 'Indigo', value: 'bg-indigo-600' }, { name: 'Röd', value: 'bg-red-600' }, { name: 'Grön', value: 'bg-emerald-600' }, { name: 'Blå', value: 'bg-blue-600' }, { name: 'Orange', value: 'bg-orange-500' }, { name: 'Lila', value: 'bg-purple-600' }];
+
+    if (!isOpen) return null;
 
     const handleSubmit = async (e) => {
         e.preventDefault(); setLoading(true);
@@ -33,7 +37,10 @@ export const CreateCourseModal = ({ isOpen, onClose, onCourseCreated, currentUse
                     <input required className="w-full p-2 border rounded dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} placeholder={t('course_modal.name')} />
                     <div className="grid grid-cols-2 gap-4">
                         <input required className="w-full p-2 border rounded dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" value={formData.courseCode} onChange={e => setFormData({ ...formData, courseCode: e.target.value })} placeholder={t('course_modal.code')} />
-                        <input className="w-full p-2 border rounded dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" value={formData.category} onChange={e => setFormData({ ...formData, category: e.target.value })} placeholder={t('course_modal.category')} />
+                        <select className="w-full p-2 border rounded dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" value={formData.category} onChange={e => setFormData({ ...formData, category: e.target.value })}>
+                            <option value="">{t('course_modal.category')}...</option>
+                            {COURSE_CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+                        </select>
                     </div>
                     <textarea className="w-full p-2 border rounded dark:bg-[#131314] dark:border-[#3c4043] dark:text-white min-h-[100px]" value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })} placeholder={t('course_modal.description')} />
                     <div className="grid grid-cols-2 gap-4">
@@ -52,7 +59,7 @@ export const CreateCourseModal = ({ isOpen, onClose, onCourseCreated, currentUse
 // --- EDIT COURSE ---
 export const EditCourseModal = ({ isOpen, onClose, onCourseUpdated, courseToEdit }) => {
     const { t } = useTranslation();
-    if (!isOpen || !courseToEdit) return null;
+
     const [formData, setFormData] = useState({ name: '', courseCode: '', category: '', description: '', startDate: '', endDate: '', color: '', isOpen: true, maxStudents: 30, classroomLink: '', classroomType: 'ZOOM', examLink: '' });
     const [loading, setLoading] = useState(false);
 
@@ -65,6 +72,8 @@ export const EditCourseModal = ({ isOpen, onClose, onCourseUpdated, courseToEdit
             });
         }
     }, [courseToEdit]);
+
+    if (!isOpen || !courseToEdit) return null;
 
     const handleSubmit = async (e) => {
         e.preventDefault(); setLoading(true);
@@ -85,7 +94,10 @@ export const EditCourseModal = ({ isOpen, onClose, onCourseUpdated, courseToEdit
                     <input className="w-full p-2 border rounded dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} />
                     <div className="grid grid-cols-2 gap-4">
                         <input className="w-full p-2 border rounded dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" value={formData.courseCode} onChange={e => setFormData({ ...formData, courseCode: e.target.value })} />
-                        <input className="w-full p-2 border rounded dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" value={formData.category} onChange={e => setFormData({ ...formData, category: e.target.value })} />
+                        <select className="w-full p-2 border rounded dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" value={formData.category} onChange={e => setFormData({ ...formData, category: e.target.value })}>
+                            <option value="">{t('course_modal.category')}...</option>
+                            {COURSE_CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+                        </select>
                     </div>
                     <textarea className="w-full p-2 border rounded dark:bg-[#131314] dark:border-[#3c4043] dark:text-white min-h-[100px]" value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })} placeholder={t('course_modal.description')} />
                     {/* Digitalt Klassrum */}

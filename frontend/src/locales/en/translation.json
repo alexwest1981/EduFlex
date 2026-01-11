@@ -164,7 +164,10 @@
     "comment_label": "Comment (Optional)",
     "comment_placeholder": "Write your opinion here...",
     "submit_btn": "Submit Evaluation",
-    "validation_error": "Please rate all questions."
+    "validation_error": "Please rate all questions.",
+    "manage_btn": "Manage Evaluation",
+    "saved_success": "Evaluation saved!",
+    "save_error": "Could not save evaluation."
   },
   "license": {
     "locked_title": "System Locked",

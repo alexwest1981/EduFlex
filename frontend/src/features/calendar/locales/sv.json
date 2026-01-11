@@ -1,0 +1,15 @@
+{
+    "title": "Kalender",
+    "subtitle": "Håll koll på dina deadlines och kursstarter.",
+    "events_in": "Händer i",
+    "no_events": "Ingenting inplanerat denna månad.",
+    "days": [
+        "Mån",
+        "Tis",
+        "Ons",
+        "Tor",
+        "Fre",
+        "Lör",
+        "Sön"
+    ]
+}

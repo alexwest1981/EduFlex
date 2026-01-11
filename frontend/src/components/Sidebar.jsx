@@ -1,5 +1,6 @@
 import React from 'react';
-import { LayoutDashboard, BookOpen, FolderOpen, Users, UserCircle, LogOut, ShieldCheck, Calendar } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { LayoutDashboard, BookOpen, FolderOpen, Users, UserCircle, LogOut, ShieldCheck, Calendar, MessageSquare, Settings2, FileQuestion } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
@@ -11,7 +12,6 @@ const Sidebar = ({ currentUser, logout, siteName, version }) => {
 
     const getMenuItems = () => {
         const role = currentUser?.role;
-        console.log("Sidebar Debug - User:", currentUser, "Role:", role);
         const items = [
             { path: '/', label: t('sidebar.dashboard'), icon: <LayoutDashboard size={20} /> }
         ];
@@ -23,8 +23,9 @@ const Sidebar = ({ currentUser, logout, siteName, version }) => {
         if (role === 'STUDENT') {
             items.push({ path: '/catalog', label: t('sidebar.catalog'), icon: <BookOpen size={20} /> });
         }
-        if (role === 'ADMIN') {
+        if (role === 'ADMIN' || role === 'TEACHER') { // TODO: Restrict to Admin in Prod
             items.push({ path: '/admin', label: t('sidebar.admin'), icon: <Users size={20} /> });
+            items.push({ path: '/system', label: 'System', icon: <Settings2 size={20} /> });
         }
         if (role !== 'ADMIN') {
             items.push({ path: '/documents', label: t('sidebar.documents'), icon: <FolderOpen size={20} /> });

@@ -3,6 +3,8 @@ package com.eduflex.backend.service;
 import com.eduflex.backend.model.SystemSetting;
 import com.eduflex.backend.repository.SystemSettingRepository;
 import jakarta.annotation.PostConstruct;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -34,10 +36,12 @@ public class SystemSettingService {
         }
     }
 
+    @Cacheable(value = "systemSettings")
     public List<SystemSetting> getAllSettings() {
         return repository.findAll();
     }
 
+    @CacheEvict(value = "systemSettings", allEntries = true)
     public SystemSetting updateSetting(String key, String value) {
         SystemSetting setting = repository.findBySettingKey(key)
                 .orElse(new SystemSetting(key, value, "Dynamisk inställning"));

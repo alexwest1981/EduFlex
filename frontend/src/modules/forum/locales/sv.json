@@ -1,0 +1,21 @@
+{
+    "title": "Klassforum",
+    "threads": "Trådar",
+    "all_categories": "Alla Kategorier",
+    "new_thread": "Ny Tråd",
+    "empty_title": "Här var det tomt.",
+    "empty_student": "Starta en diskussion!",
+    "empty_teacher": "Invänta information från läraren.",
+    "replies": "svar",
+    "create_header": "Starta ny diskussion i \"{{category}}\"",
+    "subject": "Rubrik",
+    "subject_placeholder": "Ämne...",
+    "content": "Innehåll",
+    "content_placeholder": "Skriv ditt meddelande här...",
+    "publish_btn": "Publicera Tråd",
+    "back_to": "Tillbaka till {{category}}",
+    "answers_header": "Svar",
+    "write_reply": "Skriv ett svar...",
+    "create_error": "Kunde inte skapa tråd.",
+    "reply_error": "Kunde inte svara."
+}

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FileText, Upload, CheckCircle, Clock, AlertCircle, Plus, ChevronDown, ChevronUp, Download, Trash2, Edit2 } from 'lucide-react';
+import { FileText, Upload, CheckCircle, Clock, AlertCircle, Plus, ChevronDown, ChevronUp, Download, Trash2, Edit2, Paperclip, Link as LinkIcon, Youtube } from 'lucide-react';
 import { api } from '../../services/api';
 
 export const AssignmentsModuleMetadata = {
@@ -20,6 +20,7 @@ const AssignmentsModule = ({ courseId, currentUser, isTeacher, mode = 'COURSE' }
 
     // Form Data
     const [newAssignment, setNewAssignment] = useState({ title: '', description: '', dueDate: '' });
+    const [attachments, setAttachments] = useState([]); // { type: 'FILE'|'LINK'|'YOUTUBE', file: File, url: '', title: '' }
 
     useEffect(() => {
         loadAssignments();
@@ -58,13 +59,31 @@ const AssignmentsModule = ({ courseId, currentUser, isTeacher, mode = 'COURSE' }
     const handleCreate = async (e) => {
         e.preventDefault();
         try {
+            let createdAssign;
             if (mode === 'GLOBAL') {
-                await api.assignments.createGlobal(currentUser.id, newAssignment);
+                createdAssign = await api.assignments.createGlobal(currentUser.id, newAssignment);
             } else {
-                await api.assignments.create(courseId, currentUser.id, newAssignment);
+                createdAssign = await api.assignments.create(courseId, currentUser.id, newAssignment);
             }
+
+            // Upload Attachments
+            for (const att of attachments) {
+                if (att.type === 'FILE' && att.file) {
+                    const fd = new FormData();
+                    fd.append('file', att.file);
+                    await api.assignments.addAttachmentFile(createdAssign.id, fd);
+                } else if (att.type === 'LINK' || att.type === 'YOUTUBE') {
+                    await api.assignments.addAttachmentLink(createdAssign.id, {
+                        title: att.title || att.url,
+                        url: att.url,
+                        type: att.type
+                    });
+                }
+            }
+
             setShowCreateForm(false);
             setNewAssignment({ title: '', description: '', dueDate: '' });
+            setAttachments([]);
             loadAssignments();
         } catch (e) {
             alert("Kunde inte skapa uppgift");
@@ -113,6 +132,46 @@ const AssignmentsModule = ({ courseId, currentUser, isTeacher, mode = 'COURSE' }
                                 onChange={e => setNewAssignment({ ...newAssignment, dueDate: e.target.value })}
                                 required
                             />
+                        </div>
+
+                        {/* ATTACHMENTS SECTION */}
+                        <div className="bg-white dark:bg-[#1E1F20] p-4 rounded-lg border border-gray-200 dark:border-[#3c4043]">
+                            <h4 className="font-bold text-sm mb-3">Bifoga Material</h4>
+                            <div className="space-y-3 mb-4">
+                                {attachments.map((att, idx) => (
+                                    <div key={idx} className="flex items-center justify-between bg-gray-50 dark:bg-[#131314] p-2 rounded text-sm">
+                                        <div className="flex items-center gap-2 overflow-hidden">
+                                            {att.type === 'FILE' && <Paperclip size={14} />}
+                                            {att.type === 'LINK' && <LinkIcon size={14} />}
+                                            {att.type === 'YOUTUBE' && <Youtube size={14} />}
+                                            <span className="truncate">{att.title || att.file?.name}</span>
+                                        </div>
+                                        <button type="button" onClick={() => setAttachments(attachments.filter((_, i) => i !== idx))} className="text-red-500 hover:bg-red-50 p-1 rounded"><Trash2 size={14} /></button>
+                                    </div>
+                                ))}
+                            </div>
+
+                            <div className="flex flex-wrap gap-2">
+                                <label className="cursor-pointer bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300 px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-2 hover:bg-indigo-100">
+                                    <Paperclip size={16} /> Ladda upp fil
+                                    <input type="file" className="hidden" onChange={e => {
+                                        if (e.target.files[0]) setAttachments([...attachments, { type: 'FILE', file: e.target.files[0] }]);
+                                    }} />
+                                </label>
+                                <button type="button" onClick={() => {
+                                    const url = prompt("Ange URL till YouTube-video:");
+                                    if (url) setAttachments([...attachments, { type: 'YOUTUBE', url, title: 'YouTube Video' }]);
+                                }} className="bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-2 hover:bg-red-100">
+                                    <Youtube size={16} /> YouTube
+                                </button>
+                                <button type="button" onClick={() => {
+                                    const url = prompt("Ange Länk URL:");
+                                    const title = url ? prompt("Ange Titel (valfritt):") : null;
+                                    if (url) setAttachments([...attachments, { type: 'LINK', url, title: title || url }]);
+                                }} className="bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-2 hover:bg-blue-100">
+                                    <LinkIcon size={16} /> Länk
+                                </button>
+                            </div>
                         </div>
                         <button type="submit" className="bg-indigo-600 text-white px-6 py-2.5 rounded-lg font-bold hover:bg-indigo-700">Publicera Uppgift</button>
                     </form>
@@ -221,7 +280,31 @@ const AssignmentCard = ({ assignment, isTeacher, currentUser, expanded, toggleEx
                 <div className="p-6 border-t border-gray-100 dark:border-[#3c4043] bg-gray-50/50 dark:bg-[#131314]">
                     <div className="prose dark:prose-invert max-w-none mb-8 text-gray-700 dark:text-gray-300 whitespace-pre-wrap bg-white dark:bg-[#1E1F20] p-4 rounded-xl border border-gray-200 dark:border-[#3c4043]">
                         {assignment.description}
+                        {assignment.description}
                     </div>
+
+                    {/* ATTACHMENTS DISPLAY */}
+                    {assignment.attachments && assignment.attachments.length > 0 && (
+                        <div className="mb-8">
+                            <h5 className="font-bold text-sm text-gray-500 uppercase mb-3">Material & Resurser</h5>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                {assignment.attachments.map(att => (
+                                    <div key={att.id} className="bg-white dark:bg-[#1E1F20] p-3 rounded-lg border border-gray-200 dark:border-[#3c4043] flex items-center gap-3 hover:border-indigo-300 transition-colors">
+                                        {att.type === 'FILE' && <div className="bg-indigo-100 p-2 rounded text-indigo-600"><Paperclip size={16} /></div>}
+                                        {att.type === 'LINK' && <div className="bg-blue-100 p-2 rounded text-blue-600"><LinkIcon size={16} /></div>}
+                                        {att.type === 'YOUTUBE' && <div className="bg-red-100 p-2 rounded text-red-600"><Youtube size={16} /></div>}
+
+                                        <div className="flex-1 overflow-hidden">
+                                            <div className="font-bold text-sm truncate">{att.name}</div>
+                                            <a href={`http://127.0.0.1:8080${att.url.startsWith('/') ? '' : '/'}${att.url}`} target="_blank" rel="noreferrer" className="text-xs text-indigo-500 hover:underline truncate block">
+                                                {att.type === 'FILE' ? 'Ladda ner fil' : 'Öppna länk'}
+                                            </a>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
 
                     {/* TEACHER VIEW: GRADING TABLE */}
                     {isTeacher ? (

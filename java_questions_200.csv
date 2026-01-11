@@ -1,0 +1,266 @@
+Category;Question;Option1;Option2;Option3;Option4;CorrectIndex
+Java Grund;Vad datatyp används för heltal?;int;double;boolean;String;1
+Java Grund;Vad datatyp används för text?;int;double;boolean;String;4
+Java Grund;Vad datatyp används för sant/falskt?;int;double;boolean;String;3
+Java Grund;Vad datatyp används för decimaltal?;int;double;boolean;String;2
+Java Grund;Vilket nyckelord används för att skapa en klass?;class;interface;void;static;1
+Java Grund;Vilket nyckelord används för att inte returnera något?;class;interface;void;static;3
+Java Grund;Vilken loop körs alltid minst en gång?;for;while;do-while;foreach;3
+Java Grund;Vad är syntaxen för "och" i if-satser?;||;&&;!;==;2
+Java Grund;Vad är syntaxen för "eller" i if-satser?;||;&&;!;==;1
+Java Grund;Vad betyder "static"?;Tillhör klassen;Tillhör objektet;Kan inte ändras;Privat;1
+Java Grund;Vad betyder "final" på en variabel?;Kan inte ändras;Tillhör klassen;Publik;Ingen av dessa;1
+Java Grund;Hur startar man en Java-applikation?;main metoden;start metoden;run metoden;init metoden;1
+Java Grund;Vad är en Array?;En samling av samma datatyp;En textsträng;Ett heltal;En loop;1
+Java Grund;Index i arrayer börjar på?;0;1;-1;Varierar;1
+Java Grund;Vad skriver System.out.println() ut?;Text till konsolen;Text till fil;Felmeddelande;Ingenting;1
+Java Grund;Vilket tecken avslutar en sats i Java?;:;.;,;;;4
+Java Grund;Vad används för kommentarer på en rad?;//;/*;*/;#;1
+Java Grund;Vad används för block-kommentarer?;/* ... */;# ... #;// ... //;<!-- ... -->;1
+Java Grund;Vad är skillnaden på = och ==?;Tilldelning vs Jämförelse;Jämförelse vs Tilldelning;Ingen skillnad;Matematik vs Logik;1
+Java Grund;Vilken loop är bäst när man vet antal iterationer?;for;while;do-while;if;1
+Java Grund;Vilken loop är bäst när man inte vet antal iterationer?;for;while;do-while;switch;2
+Java Grund;Vad är en konstruktor?;Metod för att skapa objekt;En variabel;En klass;Ett paket;1
+Java Grund;Har alla klasser en konstruktor?;Ja (default om ingen skrivs);Nej;Endast abstrakta;Endast public;1
+Java Grund;Vad är "this"?;Referens till nuvarande objekt;Referens till klassen;Referens till förälder;En loop;1
+Java Grund;Vad är "super"?;Referens till förälderklass;Referens till nuvarande objekt;En datatyp;En metod;1
+Java Grund;Vad betyder "public"?;Åtkomlig överallt;Endast i klassen;Endast i paketet;Endast av barn;1
+Java Grund;Vad betyder "private"?;Endast i klassen;Åtkomlig överallt;Endast i paketet;Endast av barn;1
+Java Grund;Vad betyder "protected"?;Paket och barn;Åtkomlig överallt;Endast i klassen;Ej användbart;1
+Java Grund;Vad är arv (inheritance)?;En klass ärver egenskaper;En klass kopierar en annan;En variabel byter typ;Ett fel;1
+Java Grund;Vilket ord används för arv?;extends;implements;inherits;super;1
+Java Grund;Vilket ord används för interface?;implements;extends;interface;using;1
+Java Grund;Kan en klass ärva från flera klasser?;Nej;Ja;Ibland;Endast interfaces;1
+Java Grund;Kan en klass implementera flera interfaces?;Ja;Nej;Endast en;Beror på JVM;1
+Java Grund;Vad är en abstrakt klass?;Kan inte instansieras;Måste instansieras;Har inga metoder;Är final;1
+Java Grund;Vad är polymorfism?;Samma gränssnitt olika former;Flera arv;Fler trådar;Minneshantering;1
+Java Grund;Vad är inkapsling (Encapsulation)?;Dölja data, visa metoder;Packa filer;Kryptering;Extend;1
+Java Grund;Vad gör "break"?;Avbryter loop/switch;Startar om loop;Pausar programmet;Kraschar;1
+Java Grund;Vad gör "continue"?;Hoppar till nästa iteration;Avbryter loopen;Avslutar programmet;Returnerar;1
+Java Grund;Vad är en Exception?;Ett fel under körning;En kommentar;En variabel;En loop;1
+Java Grund;Hur fångar man fel?;try-catch;if-else;for-loop;switch;1
+Java Grund;Vad gör "finally"?;Körs alltid efter try-catch;Körs vid fel;Körs om inga fel;Körs aldrig;1
+Java Grund;Vad är NullPointerException?;Försök att använda null-objekt;Division med noll;Index utanför array;Filfel;1
+Java Grund;Vad är ArrayIndexOutOfBoundsException?;Index utanför array;Null objekt;Fel typ;Minnesslut;1
+Java Grund;Hur skapar man ett objekt av klassen Bil?;Bil b = new Bil();Bil b = Bil();new Bil b;create Bil();1
+Java Grund;Vad är en primitiva variabler?;Enkla värden (int, double);Objekt;Klasser;Interfaces;1
+Java Grund;Är String primitiv?;Nej (Objekt);Ja;Beror på innehåll;Endast i Java 8;1
+Java Grund;Vad gör .length() på en String?;Returnerar längden;Returnerar innehållet;Tömmer strängen;Byter case;1
+Java Grund;Vad gör .length på en Array?;Ger antal platser;Ger sista index;Ger första elementet;Sorterar;1
+Java Grund;Hur jämför man två strängar?;.equals();==;=;.compare();1
+Java Grund;Vad är ArrayList?;Dynamisk lista;Statisk array;En primitiv;En loop;1
+Java Grund;Hur lägger man till i ArrayList?;.add();.push();.insert();.put();1
+Java Grund;Hur tar man bort i ArrayList?;.remove();.delete();.pop();.minus();1
+Java Grund;Vad är HashMap?;Nyckel-värde lagring;En lista;En array;En loop;1
+Java Grund;Hur lägger man till i HashMap?;.put();.add();.set();.insert();1
+Java Grund;Hur hämtar man från HashMap?;.get();.fetch();.read();.open();1
+Java Grund;Vad är garbage collection?;Automatisk minneshantering;Manuell städning;Skräpfil;Virus;1
+Java Grund;Kan man tvinga garbage collection?;Nej (endast föreslå);Ja alltid;System.gc(force);Endast i C++;1
+Java Grund;Vad är JVM?;Java Virtual Machine;Java Very Much;Just Virtual Machine;Java Visual Model;1
+Java Grund;Vad är JRE?;Java Runtime Environment;Java Real Engine;Java Run Era;Just Run Everything;1
+Java Grund;Vad är JDK?;Java Development Kit;Java Design Key;Just Do Kit;Java Debug Kit;1
+Java Grund;Vad är bytecode?;Kompilerad Java (.class);Källkod (.java);Maskinkod;C++;1
+Java Grund;Är Java plattformsoberoende?;Ja (Write once run anywhere);Nej;Endast Windows;Endast Linux;1
+Java Grund;Vad är en paket (package)?;Gruppering av klasser;En fil;En zip;En variabel;1
+Java Grund;Vad gör "import"?;Hämtar klasser från paket;Skickar data;Startar programmet;Sparar fil;1
+Java Grund;Vilket paket importeras automatiskt?;java.lang;java.util;java.io;java.net;1
+Java Grund;Vad är casting?;Omvandla datatyp;Kasta fel;Fiska;Byta namn;1
+Java Grund;Vad är (int) 5.5?;5;6;5.5;Fel;1
+Java Grund;Vad är 5 % 2?;1;2;2.5;0;1
+Java Grund;Vad är ++i?;Öka med 1 sedan använd;Använd sedan öka;Minska;Kvadrat;1
+Java Grund;Vad är i++;Använd sedan öka;Öka sedan använd;Minska;Kvadrat;1
+Java Grund;Vad är +=?;Addera och tilldela;Jämför;Bara addera;Negativt;1
+Java Grund;Vad är en konstant?;Variabel som ej ändras (final static);En metod;En klass;En loop;1
+Java Grund;Namnkonvention för klasser?;StorBokstav (PascalCase);litenBokstav (camelCase);HELT_STORA;kebab-case;1
+Java Grund;Namnkonvention för metoder?;camelCase;PascalCase;snake_case;UPPERCASE;1
+Java Grund;Namnkonvention för variabler?;camelCase;PascalCase;snake_case;UPPERCASE;1
+Java Grund;Namnkonvention för konstanter?;UPPER_SNAKE_CASE;camelCase;PascalCase;kebab-case;1
+Java Grund;Vad är en boolean?;Sant eller falskt;Ett heltal;En text;Ett decimaltal;1
+Java Grund;Vilka värden har boolean?;true/false;1/0;yes/no;on/off;1
+Java Grund;Vad är en char?;Ett tecken;En text;Ett tal;En lista;1
+Java Grund;Hur skrivs en char?;'A';"A";A;(char)A;1
+Java Grund;Hur skrivs en String?;"Text";'Text';Text;(String)Text;1
+Java Grund;Kan man addera char?;Ja (som heltal);Nej;Endast om de är bokstäver;Endast i loopar;1
+Java Grund;Vad är ASCII?;Teckenkodning;En metod;En variabel;Ett språk;1
+Java Grund;Vad är Unicode?;Standard för tecken;En variabel;En metod;En klass;1
+Java Grund;Vad är en metodsignatur?;Namn + parametrar;Endast namn;Returtyp;Kroppen;1
+Java Grund;Vad är metodöverlagring (Overloading)?;Samma namn olika parametrar;Ny metod annat namn;Arv;Interface;1
+Java Grund;Vad är metodöverskuggning (Overriding)?;Ändra beteende i barnklass;Ny metod;Interface;Statisk metod;1
+Java Grund;Vad krävs för main-metoden?;public static void main(String[] args);void main();public void main();String main();1
+Java Grund;Vad är args i main?;Argument från kommandoraden;Variabler;Systemfel;Minne;1
+Java Grund;Vad är en while-loop?;Kör så länge villkoret är sant;Kör en gång;Kör aldrig;Kör alltid;1
+Java Grund;Vad är en do-while loop?;Kör minst en gång;Kör aldrig om falskt;Samma som for;Samma som while;1
+Java Grund;Vad är en switch-sats?;Alternativ till många if-else;En loop;En metod;En array;1
+Java Grund;Vad krävs i switch för att inte "falla igenom"?;break;stop;return;continue;1
+Java Grund;Vilka typer funkar i switch?;int, char, String, enum;double;boolean;arrays;1
+Java Grund;Kan man switcha på boolean?;Nej;Ja;Endast i Java 10;Ibland;1
+Java Grund;Vad gör default i switch?;Körs om inget case matchar;Körs först;Körs sist;Kraschar;1
+Java Grund;Vad är ternär operatorn?;? :;if-else;switch;loop;1
+Java Grund;Exempel på ternär?;(villkor) ? sant : falskt;if ? sant;switch : falskt;loop;1
+Java Grund;Vad är scope?;Var en variabel är synlig;En kikare;En metod;En klass;1
+Java Grund;Vad är lokal variabel?;Inne i en metod/block;I klassen;Globalt;I paketet;1
+Java Grund;Vad är instansvariabel?;Tillhör objektet;Lokal;Statisk;Global;1
+Java Grund;Vad är klassvariabel?;Tillhör klassen (static);Lokal;Instans;Privat;1
+Java Grund;Vad händer om man inte initierar instansvariabel?;Får defaultvärde;Kraschar;Kompileringsfel;Blir -1;1
+Java Grund;Defaultvärde för int?;0;1;-1;null;1
+Java Grund;Defaultvärde för boolean?;false;true;null;-1;1
+Java Grund;Defaultvärde för referenser (Objekt)?;null;0;false;new;1
+Java Grund;Vad är Stack?;Minne för metoder/lokala var;Minne för objekt;En lista;En fil;1
+Java Grund;Vad är Heap?;Minne för objekt;Minne för metoder;En lista;En fil;1
+Java Grund;Var lagras lokala variabler?;Stack;Heap;Hårddisk;Nätverk;1
+Java Grund;Var lagras objekt?;Heap;Stack;Hårddisk;Nätverk;1
+Java Grund;Vad är rekursion?;Metod som anropar sig själv;Loop;Array;Klass;1
+Java Grund;Viktigt vid rekursion?;Basfall (avslut);Många variabler;Inga loopar;Statiska metoder;1
+Java Grund;Vad händer vid oändlig rekursion?;StackOverflowError;OutOfMemory;Ingenting;Långsamt;1
+Java Grund;Vad är "pass by value"?;Kopia av värdet skickas;Originalet skickas;Referens skickas;Adress skickas;1
+Java Grund;Använder Java pass by value?;Ja alltid;Nej pass by reference;Ibland;Endast primitiva;1
+Java Grund;Kan man ändra referensen i metoden så det syns ute?;Nej;Ja;Endast om public;Endast Arrays;1
+Java Grund;Kan man ändra objektets innehåll i metoden?;Ja;Nej;Endast om private;Aldrig;1
+Java Grund;Vad är Math.random()?;Ger tal mellan 0.0 och 1.0;Ger 1 till 100;Slumpar array;Inget;1
+Java Grund;Vad är Math.pow(a, b)?;a upphöjt till b;a gånger b;a plus b;roten ur;1
+Java Grund;Vad är Math.sqrt(a)?;Roten ur a;a i kvadrat;a gånger 2;a delat på 2;1
+Java Grund;Vad är StringBuilder?;Mutable (ändringsbar) sträng;Samma som String;En array;En int;1
+Java Grund;Varför använda StringBuilder?;Snabbare vid många ändringar;Snyggare kod;Krävs av kompilatorn;Mindre minne;1
+Java Grund;Metod för att lägga till i StringBuilder?;.append();.add();.plus();.insert();1
+Java Grund;Metod för att vända på StringBuilder?;.reverse();.back();.turn();.flip();1
+Java Grund;Vad är en wrapper-klass?;Objekt runt primitiv (Integer för int);En present;En metod;En loop;1
+Java Grund;Vad är autoboxing?;Automatisk primitiv till Wrapper;Manuell konvertering;Boxning;Bilresa;1
+Java Grund;Vad är unboxing?;Wrapper till primitiv;Öppna paket;Boxning;Bilresa;1
+Java Grund;Exempel på wrapper?;Integer, Double, Boolean;int, double;String;Array;1
+Java Grund;Vad är parse in "Integer.parseInt()"?;String till int;Int till String;Double till Int;Inget;1
+Java Grund;Vad är "toString()"?;Objekt till textrepresentation;Text till Objekt;Utskrift;Spara;1
+Java Grund;Varför överskugga toString?;För bättre utskrift/loggning;Krävs alltid;För prestanda;För säkerhet;1
+Java Grund;Vad är en enum?;Lista med konstanter;En metod;En klass;En loop;1
+Java Grund;När använda enum?;Fasta alternativ (Veckodagar, Färg);Varierande data;Text;Tal;1
+Java Grund;Kan en enum ha metoder?;Ja;Nej;Endast privata;Endast statiska;1
+Java Grund;Vad är "static final"?;Konstant;Variabel;Metod;Klass;1
+Java Grund;Vad är en IDE?;Integrated Development Environment;Java;Dator;Språk;1
+Java Grund;Exempel på Java IDE?;IntelliJ, Eclipse, NetBeans;Word, Excel;Chrome;Photoshop;1
+Java Grund;Vad är kompilering?;Källkod till maskinkod/bytecode;Köra programmet;Spara filen;Skriva kod;1
+Java Grund;Vilket kommando kompilerar?;javac;java;run;compile;1
+Java Grund;Vilket kommando kör?;java;javac;run;start;1
+Java Grund;Vad är en jar-fil?;Java ARchive (packad kod);En bild;En textfil;En mapp;1
+Java Grund;Hur kör man en jar-fil?;java -jar fil.jar;run fil.jar;open fil.jar;start fil.jar;1
+Java Grund;Vad är classpath?;Sökväg till klasser/paket;En variabel;En metod;En fil;1
+Java Grund;Vad är en bugg?;Fel i koden;En insekt;En funktion;En metod;1
+Java Grund;Vad är debugging?;Felsökning;Programmering;Design;Testning;1
+Java Grund;Vad är en breakpoint?;Pausar körning vid rad;Avslutar program;Startar program;Kommentar;1
+Java Grund;Vad är refactoring?;Städa/förbättra kod utan att ändra funktion;Skriva ny kod;Ta bort kod;Testa;1
+Java Grund;Vad är unit testing?;Testa små delar (metoder);Testa hela systemet;Användartest;Design;1
+Java Grund;Ramverk för unit test?;JUnit;React;Spring;Hibernate;1
+Java Grund;Vad är assert?;Verifierar antagande i test;En loop;En variabel;En klass;1
+Java Grund;Känsligt för stora/små bokstäver i Java?;Ja (Case sensitive);Nej;Endast variabler;Endast klasser;1
+Java Grund;Vad är camelCase?;litenStorStor;STOR_STOR;liten_liten;StorStor;1
+Java Grund;Vad är PascalCase?;StorStorStor;litenStor;liten_liten;STOR_STOR;1
+Java Grund;Block markeras med?;Måsvingar {};Parenteser ();Hakar [];Citationstecken "";1
+Java Grund;Parametrar markeras med?;Parenteser ();Måsvingar {};Hakar [];Citationstecken "";1
+Java Grund;Array-index markeras med?;Hakar [];Parenteser ();Måsvingar {};Citationstecken "";1
+Java Grund;Strängar markeras med?;Dubbelfnuttar "";Enkelfnuttar '';Hakar [];Inget;1
+Java Grund;Tecken markeras med?;Enkelfnuttar '';Dubbelfnuttar "";Hakar [];Inget;1
+Java Grund;Vad är syntax error?;Felaktig kod (grammatik);Körfel;Logiskt fel;Hårdvarufel;1
+Java Grund;Vad är runtime error?;Fel under körning (krasch);Felstavning;Logiskt fel;Designfel;1
+Java Grund;Vad är logic error?;Programmet gör fel sak men kraschar ej;Syntaxfel;Runtimefel;Hårdvarufel;1
+Java Grund;Vad är en algoritm?;Stegvis instruktion för lösning;En loop;En variabel;En dator;1
+Java Grund;Vad är pseudokod?;Kodliknande beskrivning;Riktig kod;Maskinkod;Bytecode;1
+Java Grund;Vad är flödesschema?;Grafisk bild av algoritm;En lista;En tabell;En kod;1
+Java Grund;Vad är källkod?;Människoläsbar kod (.java);Maskinkod;Bytecode;Exe-fil;1
+Java Grund;Vad är binärkod?;Ettor och nollor;Text;Bilder;Ljud;1
+Java Grund;Hur många bits i en byte?;8;16;32;64;1
+Java Grund;Hur många värden i en byte?;256;128;512;1024;1
+Java Grund;Största värde för int?;ca 2 miljarder;100;1 miljon;Oändligt;1
+Java Grund;Vad är overflow?;Värdet ryms inte i typen;Minnet slut;Disken full;Nätverksfel;1
+Java Grund;Modulo-operatorn (%) ger?;Resten vid division;Kvoten;Hela talet;Decimalen;1
+Java Grund;10 % 3 är?;1;3;0;3.33;1
+Java Grund;Vad är konkatenering?;Slå ihop strängar (+);Dela strängar;Ta bort strängar;Kopiera;1
+Java Grund;Vad händer: "5" + 5?;Resultat "55";Resultat 10;Fel;Resultat 5.5;1
+Java Grund;Vad händer: 5 + 5?;Resultat 10;Resultat "55";Fel;Resultat 55;1
+Java Grund;Vad är en operator?;Symbol för operation (+,-,*,/);En variabel;En metod;En klass;1
+Java Grund;Vad är operand?;Värdet operatorn jobbar på;Operatorn;Resultatet;Koden;1
+Java Grund;Vad är inkrementering?;Öka med 1;Minska med 1;Dubbla;Halvera;1
+Java Grund;Vad är dekrementering?;Minska med 1;Öka med 1;Dubbla;Halvera;1
+Java Grund;Vad är en nested loop?;Loop inuti en annan loop;En enkel loop;En metod;En array;1
+Java Grund;Vad är en infinite loop?;Loop som aldrig tar slut;Loop som kör en gång;Loop som kraschar;Loop som är snabb;1
+Java Grund;Orsak till infinite loop?;Villkoret blir aldrig falskt;Villkoret är alltid falskt;Ingen loop;Fel variabel;1
+Java Grund;Vad är iteration?;Ett varv i loopen;Hela programmet;En metod;En klass;1
+Java Grund;Vad är initiering?;Ge startvärde;Deklarera;Köra;Avsluta;1
+Java Grund;Vad är deklaration?;Skapa variabel (typ och namn);Ge värde;Köra;Avsluta;1
+Java Grund;Exempel deklaration?;int x;x = 5;if(x);for(x);1
+Java Grund;Exempel initiering?;x = 5;int x;if(x);for(x);1
+Java Grund;Kombinerad deklaration och initiering?;int x = 5;int x;x = 5;x == 5;1
+Java Grund;Får variabelnamn börja med siffra?;Nej;Ja;Endast om underscore;Ibland;1
+Java Grund;Får variabelnamn innehålla mellanslag?;Nej;Ja;Ibland;Endast i strängar;1
+Java Grund;Är "class" ett giltigt variabelnamn?;Nej (reserverat ord);Ja;Endast om Class;Ibland;1
+Java Grund;Är "String" ett giltigt variabelnamn?;Ja (men dåligt val);Nej;Aldrig;Endast i loop;1
+Java Grund;Vad är ASCII-värdet för 'A'?;65;97;1;0;1
+Java Grund;Vad är ASCII-värdet för 'a'?;97;65;1;0;1
+Java Grund;Vad är en boolesk operator?;AND, OR, NOT;+, -, *;=, +=;(), [];1
+Java Grund;Vad är jämförelseoperator?;==, !=, <, >;+, -;!, &&;=;1
+Java Grund;Vad betyder !=?;Inte lika med;Lika med;Tilldelning;Kanske;1
+Java Grund;Vad betyder >=?;Större än eller lika med;Mindre än;Lika med;Inte lika;1
+Java Grund;Vad är logisk negation (!)?;Vänder true till false;Gör negativt tal;Tar bort;Sparar;1
+Java Grund;!true är?;false;true;1;0;1
+Java Grund;!false är?;true;false;1;0;1
+Java Grund;true && true är?;true;false;1;0;1
+Java Grund;true && false är?;false;true;1;0;1
+Java Grund;true || false är?;true;false;1;0;1
+Java Grund;false || false är?;false;true;1;0;1
+Java Grund;Kortslutning (Short-circuit) i logik?;Utvärderar ej resten om svar klart;Kortslutning i datorn;Går snabbare;Fel;1
+Java Grund;Vad är en kommentar?;Kod som ignoreras av kompilator;Kod som körs;En variabel;En metod;1
+Java Grund;Varför kommentera?;Förklara kod för människor;För datorn;För att fylla ut;Krav;1
+Java Grund;Bör man kommentera allt?;Nej, bara det svåra/viktiga;Ja;Aldrig;Endast metoder;1
+Java Grund;Vad är "Clean Code"?;Lättläst och underhållbar kod;Kod utan buggar;Kort kod;Snabb kod;1
+Java Grund;Principen DRY betyder?;Don't Repeat Yourself;Do Repeat Yourself;Don't Read Yelling;Dry Code;1
+Java Grund;Principen KISS betyder?;Keep It Simple, Stupid;Keep It Super Safe;Kiss I Say;Keep It Short;1
+Java Grund;Vad är camelCase används för?;Variabler och metoder;Klasser;Paket;Konstanter;1
+Java Grund;Vad är PascalCase används för?;Klasser och Interface;Variabler;Metoder;Paket;1
+Java Grund;Vad är white space?;Mellanslag, tabb, ny rad;Vit färg;En variabel;En klass;1
+Java Grund;Bryr sig Java om white space?;Nej (förutom i strängar);Ja alltid;Endast i loopar;Endast i metoder;1
+Java Grund;Vad är indentering?;Indrag för struktur;Kommentar;Färg;Variabel;1
+Java Grund;Varför indentera?;Läsbarhet;Krav för kompilering;Snyggt;Mindre plats;1
+Java Grund;Standard indentering?;4 mellanslag eller 1 tabb;1 mellanslag;Ingen;10 mellanslag;1
+Java Grund;Vad är block?;Kod inom {};En rad;En fil;En metod;1
+Java Grund;Kan block nästlas?;Ja;Nej;Endast 2 nivåer;Ibland;1
+Java Grund;Variabel i inre block syns i yttre?;Nej;Ja;Endast om public;Ibland;1
+Java Grund;Variabel i yttre block syns i inre?;Ja;Nej;Endast om static;Aldrig;1
+Java Grund;Vad är hårdkodning?;Fasta värden i koden;Dynamiska värden;Variabler;Input;1
+Java Grund;Bör man hårdkoda?;Undvik, använd konstanter/input;Ja alltid;Det är snabbast;Endast lösenord;1
+Java Grund;Vad är input?;Data in i programmet;Data ut;Variabel;Loop;1
+Java Grund;Vad är output?;Data ut från programmet;Data in;Variabel;Loop;1
+Java Grund;Klass för input från konsol?;Scanner;System.out;Printer;Reader;1
+Java Grund;Metod för att läsa heltal med Scanner?;nextInt();nextLine();readInt();getInteger();1
+Java Grund;Metod för att läsa rad med Scanner?;nextLine();readString();Next();getString();1
+Java Grund;Vad måste man göra med Scanner efter användning?;.close();.stop();.end();.delete();1
+Java Grund;Vad är GUI?;Graphical User Interface;General User Info;Game UI;Global Unit Interface;1
+Java Grund;Bibliotek för GUI i Java?;Swing / JavaFX;React;Angular;Vue;1
+Java Grund;Vad är CLI?;Command Line Interface;Computer Line Info;Code Line Input;Class Line Interface;1
+Java Grund;Vad är en event listener?;Lyssnar på händelser (klick etc);En metod;En loop;En variabel;1
+Java Grund;Vad är en lambda (Java 8)?;Anonym funktion (x -> x+1);En klass;En variabel;Ett objekt;1
+Java Grund;Fördel med lambda?;Kortare kod;Snabbare;Mindre minne;Säkrare;1
+Java Grund;Vad är Stream API?;Hantera samlingar funktionellt;Youtube streaming;Filhantering;Nätverk;1
+Java Grund;Exempel på Stream operation?;.filter() .map();.add();.remove();.loop();1
+Java Grund;Vad är .forEach()?;Loopa över element;En loop;En if-sats;En metod;1
+Java Grund;Vad är versionshantering?;Git (spara historik);Backup;Spara fil;Mappsystem;1
+Java Grund;Varför använda Git?;Samarbete och historik;För att det är coolt;Krav;Snabbare;1
+Java Grund;Vad är ett repo?;Repository (lagringsplats);Rapport;Robot;Rep;1
+Java Grund;Vad är commit?;Spara ändringar lokalt;Skicka till server;Hämta;Radera;1
+Java Grund;Vad är push?;Skicka till server;Spara lokalt;Hämta;Radera;1
+Java Grund;Vad är pull?;Hämta från server;Skicka;Spara;Radera;1
+Java Grund;Vad är merge?;Slå ihop grenar;Ta bort;Kopiera;Dela;1
+Java Grund;Vad är konflikt (Git)?;Olika ändringar på samma rad;Krig;Fel i koden;Virus;1
+Java Grund;Vad är open source?;Öppen källkod (gratis/fri);Stängd kod;Betalprogram;Virus;1
+Java Grund;Vad är licens?;Regler för användning;Körkort;Pass;ID;1
+Java Grund;Exempel på licens?;MIT, Apache, GPL;Java;Windows;Word;1
+Java Grund;Vad är API?;Application Programming Interface;App Program Info;All People Info;Apple Pay;1
+Java Grund;Vad är REST?;Webbstandard för API;Vila;En klass;En metod;1
+Java Grund;Vad är JSON?;Dataformat (JavaScript Object Notation);En person;Ett språk;En databas;1
+Java Grund;Hur ser JSON objekt ut?;{"key": "value"};<key>value</key>;key=value;[key, value];1
+Java Grund;Vad är XML?;Markup språk;Programkod;Databas;Bild;1
+Java Grund;Vilket är vanligast idag för webb-API?;JSON;XML;HTML;CSV;1
+Java Grund;Vad är en databas?;Lagring av data;En fil;En mapp;En server;1
+Java Grund;Vad är SQL?;Språk för databaser;En orm;Ett spel;En bild;1
+Java Grund;Vad är JDBC?;Java Database Connectivity;Java Data Class;Just Do C;Java DB Code;1
+Java Grund;Vad är en tabell?;Struktur i databas (rader/kolumner);En stol;En lista;En fil;1
+Java Grund;Vad är Primary Key?;Unikt ID för rad;En nyckel;Lösenord;Namn;1
+Java Grund;Vad är Foreign Key?;Länk till annan tabell;Utländsk nyckel;Lösenord;Namn;1
+Java Grund;Vad är en Bug Report?;Beskrivning av ett fel;En insekt;En nyhet;En kod;1
+Java Grund;Vad är en Feature Request?;Önskemål om ny funktion;En bugg;Ett fel;En kod;1

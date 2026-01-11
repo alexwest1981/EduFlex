@@ -11,15 +11,20 @@ import Login from './features/auth/Login';
 import Dashboard from './features/dashboard/Dashboard';
 import CourseDetail from './features/courses/CourseDetail';
 import CalendarView from './features/calendar/CalendarView';
-import LicenseLockScreen from './features/auth/LicenseLockScreen';
+
+// --- SYSTEM ---
+import LicenseLock from './features/system/LicenseLock';
+import SystemSettings from './features/system/SystemSettings';
+import { ThemeProvider } from './context/ThemeContext';
 
 // --- DE RIKTIGA SIDORNA ---
 import UserProfile from './features/profile/UserProfile';
 import CourseCatalog from './features/catalog/CourseCatalog';
 import DocumentManager from './features/documents/DocumentManager';
-import AdminDashboard from './features/dashboard/AdminDashboard';
+import AdminAdministrationPage from './features/dashboard/AdminAdministrationPage';
 import ResourceBank from './features/resources/ResourceBank';
-import AnalyticsDashboard from './features/analytics/AnalyticsDashboard'; // <--- NY
+import AnalyticsDashboard from './features/analytics/AnalyticsDashboard';
+import CertificateView from './features/certificates/CertificateView';
 
 // --- PROTECTED ROUTE ---
 const ProtectedRoute = ({ children, roles }) => {
@@ -28,34 +33,11 @@ const ProtectedRoute = ({ children, roles }) => {
     // Om vi fortfarande kollar status
     if (licenseStatus === 'checking') {
         return (
-            <div className="h-screen flex flex-col items-center justify-center bg-gray-50 dark:bg-[#131314] text-gray-500">
+            <div className="h-screen flex flex-col items-center justify-center bg-gray-50 dark:bg-[#131314] text-gray-400">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 mb-2"></div>
-                Laddar systemstatus...
+                <span className="text-sm">Verifierar sytemstatus...</span>
             </div>
         );
-    }
-
-    // Om licensen är ogiltig eller saknas -> Visa Låsskärm
-    if (licenseStatus === 'locked' || licenseStatus === 'invalid') {
-        const activateLicense = async (key) => {
-            try {
-                const res = await fetch('http://127.0.0.1:8080/api/system/license/activate', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ key })
-                });
-                if (res.ok) {
-                    alert("Licens aktiverad! Startar om...");
-                    window.location.reload();
-                } else {
-                    alert("Ogiltig licensnyckel.");
-                }
-            } catch (e) {
-                alert("Kunde inte ansluta till servern.");
-            }
-        };
-
-        return <LicenseLockScreen onActivate={activateLicense} />;
     }
 
     // Om ingen användare är inloggad -> Gå till login
@@ -88,86 +70,108 @@ const DashboardWrapper = ({ currentUser }) => {
 };
 
 const AppRoutes = () => {
-    const { currentUser, logout } = useAppContext();
+    const { currentUser, logout, licenseLocked, licenseStatus } = useAppContext();
+
+    // 1. GLOBAL LICENSE LOCK (Triggered by 402 or explicit lock)
+    if (licenseLocked || licenseStatus === 'locked') {
+        return <LicenseLock />;
+    }
 
     return (
-        <Routes>
-            <Route path="/login" element={<Login />} />
+        <ThemeProvider currentUser={currentUser}>
+            <Routes>
+                <Route path="/login" element={<Login />} />
 
-            <Route path="/" element={
-                <ProtectedRoute>
-                    <Layout currentUser={currentUser} handleLogout={logout}>
-                        <DashboardWrapper currentUser={currentUser} />
-                    </Layout>
-                </ProtectedRoute>
-            } />
+                <Route path="/" element={
+                    <ProtectedRoute>
+                        <Layout currentUser={currentUser} handleLogout={logout}>
+                            <DashboardWrapper currentUser={currentUser} />
+                        </Layout>
+                    </ProtectedRoute>
+                } />
 
-            <Route path="/course/:id" element={
-                <ProtectedRoute>
-                    <Layout currentUser={currentUser} handleLogout={logout}>
-                        <CourseDetail currentUser={currentUser} />
-                    </Layout>
-                </ProtectedRoute>
-            } />
+                <Route path="/course/:id" element={
+                    <ProtectedRoute>
+                        <Layout currentUser={currentUser} handleLogout={logout}>
+                            <CourseDetail currentUser={currentUser} />
+                        </Layout>
+                    </ProtectedRoute>
+                } />
 
-            <Route path="/admin" element={
-                <ProtectedRoute roles={['ADMIN']}>
-                    <Layout currentUser={currentUser} handleLogout={logout}>
-                        <AdminDashboard />
-                    </Layout>
-                </ProtectedRoute>
-            } />
+                <Route path="/admin" element={
+                    <ProtectedRoute roles={['ADMIN']}>
+                        <Layout currentUser={currentUser} handleLogout={logout}>
+                            <AdminAdministrationPage />
+                        </Layout>
+                    </ProtectedRoute>
+                } />
 
-            <Route path="/calendar" element={
-                <ProtectedRoute>
-                    <Layout currentUser={currentUser} handleLogout={logout}>
-                        <CalendarView />
-                    </Layout>
-                </ProtectedRoute>
-            } />
+                {/* SYSTEM SETTINGS for PRO/ENTERPRISE */}
+                <Route path="/system" element={
+                    <ProtectedRoute roles={['ADMIN', 'TEACHER']}>
+                        <Layout currentUser={currentUser} handleLogout={logout}>
+                            <SystemSettings />
+                        </Layout>
+                    </ProtectedRoute>
+                } />
 
-            <Route path="/catalog" element={
-                <ProtectedRoute>
-                    <Layout currentUser={currentUser} handleLogout={logout}>
-                        <CourseCatalog />
-                    </Layout>
-                </ProtectedRoute>
-            } />
+                <Route path="/calendar" element={
+                    <ProtectedRoute>
+                        <Layout currentUser={currentUser} handleLogout={logout}>
+                            <CalendarView />
+                        </Layout>
+                    </ProtectedRoute>
+                } />
 
-            <Route path="/documents" element={
-                <ProtectedRoute>
-                    <Layout currentUser={currentUser} handleLogout={logout}>
-                        <DocumentManager currentUser={currentUser} />
-                    </Layout>
-                </ProtectedRoute>
-            } />
+                <Route path="/catalog" element={
+                    <ProtectedRoute>
+                        <Layout currentUser={currentUser} handleLogout={logout}>
+                            <CourseCatalog />
+                        </Layout>
+                    </ProtectedRoute>
+                } />
 
-            <Route path="/analytics" element={
-                <ProtectedRoute roles={['ADMIN']}>
-                    <Layout currentUser={currentUser} handleLogout={logout}>
-                        <AnalyticsDashboard />
-                    </Layout>
-                </ProtectedRoute>
-            } />
+                <Route path="/documents" element={
+                    <ProtectedRoute>
+                        <Layout currentUser={currentUser} handleLogout={logout}>
+                            <DocumentManager currentUser={currentUser} />
+                        </Layout>
+                    </ProtectedRoute>
+                } />
 
-            <Route path="/resources" element={
-                <ProtectedRoute roles={['TEACHER', 'ADMIN']}>
-                    <Layout currentUser={currentUser} handleLogout={logout}>
-                        <ResourceBank />
-                    </Layout>
-                </ProtectedRoute>
-            } />
+                <Route path="/analytics" element={
+                    <ProtectedRoute roles={['ADMIN']}>
+                        <Layout currentUser={currentUser} handleLogout={logout}>
+                            <AnalyticsDashboard />
+                        </Layout>
+                    </ProtectedRoute>
+                } />
 
-            <Route path="/profile" element={
-                <ProtectedRoute>
-                    <Layout currentUser={currentUser} handleLogout={logout}>
-                        <UserProfile currentUser={currentUser} showMessage={(msg) => alert(msg)} refreshUser={() => { }} />
-                    </Layout>
-                </ProtectedRoute>
-            } />
+                <Route path="/resources" element={
+                    <ProtectedRoute roles={['TEACHER', 'ADMIN']}>
+                        <Layout currentUser={currentUser} handleLogout={logout}>
+                            <ResourceBank />
+                        </Layout>
+                    </ProtectedRoute>
+                } />
 
-            <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
+                <Route path="/profile" element={
+                    <ProtectedRoute>
+                        <Layout currentUser={currentUser} handleLogout={logout}>
+                            <UserProfile currentUser={currentUser} showMessage={(msg) => alert(msg)} refreshUser={() => { }} />
+                        </Layout>
+                    </ProtectedRoute>
+                } />
+
+                <Route path="/certificate/:courseId" element={
+                    <ProtectedRoute>
+                        <CertificateView />
+                    </ProtectedRoute>
+                } />
+
+                <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+        </ThemeProvider>
     );
 };
 
@@ -175,7 +179,6 @@ const App = () => {
     return (
         <AppProvider>
             <ModuleProvider>
-                {/* UPPDATERAT: Future flags tillagda för att slippa varningar */}
                 <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
                     <AppRoutes />
                 </Router>

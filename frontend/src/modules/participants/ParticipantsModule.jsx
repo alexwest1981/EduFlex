@@ -30,10 +30,10 @@ const ParticipantsModule = ({ courseId, isTeacher }) => {
         try {
             const [c, users] = await Promise.all([
                 api.courses.getOne(courseId),
-                isTeacher ? api.users.getAll() : Promise.resolve([])
+                isTeacher ? api.users.getAll(0, 1000) : Promise.resolve([])
             ]);
             setCourse(c);
-            setAllUsers(users || []);
+            setAllUsers(users?.content || users || []);
 
             // Ladda resultat om lärare
             if (isTeacher && c.students) {

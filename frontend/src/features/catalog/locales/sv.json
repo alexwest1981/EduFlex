@@ -1,0 +1,11 @@
+{
+    "title": "Kurskatalog",
+    "subtitle": "Hitta och anmäl dig till nya kurser.",
+    "search_placeholder": "Sök kurser...",
+    "no_results": "Inga kurser hittades.",
+    "teacher": "Lärare",
+    "start": "Start",
+    "not_set": "Ej satt",
+    "join": "Gå med i kurs",
+    "closed_msg": "Kursen ej öppen för ansökan än"
+}

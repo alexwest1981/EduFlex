@@ -89,9 +89,14 @@ public class ForumController {
     // --- TRÅDAR ---
 
     @GetMapping("/category/{categoryId}/threads")
-    public List<ForumThread> getThreadsByCategory(@PathVariable Long categoryId) {
-        ForumCategory cat = categoryRepository.findById(categoryId).orElseThrow();
-        return cat.getThreads();
+    public org.springframework.data.domain.Page<ForumThread> getThreadsByCategory(
+            @PathVariable Long categoryId,
+            @org.springframework.data.web.PageableDefault(size = 10) org.springframework.data.domain.Pageable pageable) {
+
+        // Verifiera att kategorin finns (kastar error om inte)
+        categoryRepository.findById(categoryId).orElseThrow();
+
+        return threadRepository.findByCategoryIdOrderByCreatedAtDesc(categoryId, pageable);
     }
 
     @PostMapping("/category/{categoryId}/thread")

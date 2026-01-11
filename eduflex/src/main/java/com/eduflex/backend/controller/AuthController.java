@@ -6,6 +6,7 @@ import com.eduflex.backend.model.User;
 import com.eduflex.backend.repository.UserRepository;
 import com.eduflex.backend.security.JwtUtils;
 import com.eduflex.backend.service.UserService;
+import com.eduflex.backend.repository.SubscriptionPlanRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -14,6 +15,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder; // VIKTIG IMPORT
 import org.springframework.web.bind.annotation.*;
+import com.eduflex.backend.service.RateLimitingService;
+import io.github.bucket4j.Bucket;
+import org.springframework.http.HttpStatus;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -24,22 +28,36 @@ public class AuthController {
     private final UserService userService;
     private final JwtUtils jwtUtils;
     private final PasswordEncoder passwordEncoder; // Vi behöver denna för att spara säkra lösenord
+    private final RateLimitingService rateLimitingService;
+    private final SubscriptionPlanRepository subscriptionPlanRepository;
 
-    // Uppdaterad konstruktor med PasswordEncoder
     public AuthController(AuthenticationManager authenticationManager,
-                          UserRepository userRepository,
-                          UserService userService,
-                          JwtUtils jwtUtils,
-                          PasswordEncoder passwordEncoder) {
+            UserRepository userRepository,
+            UserService userService,
+            JwtUtils jwtUtils,
+            PasswordEncoder passwordEncoder,
+            RateLimitingService rateLimitingService,
+            SubscriptionPlanRepository subscriptionPlanRepository) {
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
         this.userService = userService;
         this.jwtUtils = jwtUtils;
         this.passwordEncoder = passwordEncoder;
+        this.rateLimitingService = rateLimitingService;
+        this.subscriptionPlanRepository = subscriptionPlanRepository;
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> authenticateUser(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<?> authenticateUser(@RequestBody LoginRequest loginRequest,
+            jakarta.servlet.http.HttpServletRequest request) {
+        // --- RATE LIMITING ---
+        Bucket bucket = rateLimitingService.resolveBucket(request.getRemoteAddr());
+        if (!bucket.tryConsume(1)) {
+            return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
+                    .body("För många inloggningsförsök. Försök igen om en minut.");
+        }
+        // ---------------------
+
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.username(), loginRequest.password()));
 
@@ -62,8 +80,7 @@ public class AuthController {
                 user.getProfilePictureUrl(),
                 user.getPoints(),
                 user.getLevel(),
-                user.getEarnedBadges()
-        ));
+                user.getEarnedBadges()));
     }
 
     // --- HÄR ÄR DEN NYA METODEN SOM SAKNADES ---
@@ -87,6 +104,9 @@ public class AuthController {
 
         // VIKTIGT: Kryptera lösenordet innan vi sparar
         user.setPassword(passwordEncoder.encode(signUpRequest.getPassword()));
+
+        // Assign default subscription plan if one exists
+        subscriptionPlanRepository.findByIsDefaultTrue().ifPresent(user::setSubscriptionPlan);
 
         userRepository.save(user);
 

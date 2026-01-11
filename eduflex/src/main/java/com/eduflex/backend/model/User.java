@@ -9,6 +9,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "app_users")
+@EntityListeners(com.eduflex.backend.service.AuditListener.class)
 public class User {
 
     @Id
@@ -69,6 +70,15 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     @JsonIgnoreProperties("user")
     private Set<UserBadge> earnedBadges = new HashSet<>();
+
+    // --- SUBSCRIPTION ---
+    @ManyToOne
+    @JoinColumn(name = "subscription_plan_id")
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
+    private SubscriptionPlan subscriptionPlan;
+
+    @Column(name = "trial_ends_at")
+    private LocalDateTime trialEndsAt;
 
     @ManyToMany(mappedBy = "students")
     @JsonIgnoreProperties("students")
@@ -247,6 +257,22 @@ public class User {
 
     public void setEarnedBadges(Set<UserBadge> earnedBadges) {
         this.earnedBadges = earnedBadges;
+    }
+
+    public SubscriptionPlan getSubscriptionPlan() {
+        return subscriptionPlan;
+    }
+
+    public void setSubscriptionPlan(SubscriptionPlan subscriptionPlan) {
+        this.subscriptionPlan = subscriptionPlan;
+    }
+
+    public LocalDateTime getTrialEndsAt() {
+        return trialEndsAt;
+    }
+
+    public void setTrialEndsAt(LocalDateTime trialEndsAt) {
+        this.trialEndsAt = trialEndsAt;
     }
 
     public Set<Course> getCourses() {

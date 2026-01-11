@@ -25,8 +25,9 @@ public class ModuleController {
     }
 
     @PutMapping("/{key}/toggle")
-    @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<SystemModule> toggleModule(@PathVariable String key, @RequestBody Map<String, Boolean> payload) {
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN')")
+    public ResponseEntity<SystemModule> toggleModule(@PathVariable String key,
+            @RequestBody Map<String, Boolean> payload) {
         // Vi hämtar "active" från JSON-payloaden
         return ResponseEntity.ok(moduleService.toggleModule(key, payload.get("active")));
     }

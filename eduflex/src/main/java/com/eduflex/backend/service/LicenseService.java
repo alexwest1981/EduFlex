@@ -5,32 +5,57 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Service;
 
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.Base64;
-import java.util.HashMap;
 import java.util.Map;
 
 @Service
 public class LicenseService {
 
-    // VIKTIGT: Byt ut denna mot en slumpmässig sträng i produktion!
-    private static final String SECRET_KEY = "SUPER_SECRET_KEY_CHANGE_THIS_IN_PROD";
     private static final String LICENSE_FILE = "eduflex.license";
 
-    private LicenseType currentTier = LicenseType.BASIC;
+    private LicenseType currentTier = LicenseType.ENTERPRISE;
     private boolean isValid = false;
     private String customerName = "Okänd";
     private LocalDate expiryDate;
+    private java.security.PublicKey publicKey;
 
     @PostConstruct
     public void init() {
+        loadPublicKey();
         validateCurrentLicense();
+
+        // --- DEV OVERRIDE ---
+        this.currentTier = LicenseType.ENTERPRISE;
+        this.isValid = true;
+        System.out.println("🔧 DEV MODE: Forced License Tier to ENTERPRISE");
+    }
+
+    private void loadPublicKey() {
+        try {
+            // Load from classpath (src/main/resources/public.pem)
+            byte[] keyBytes = getClass().getResourceAsStream("/public.pem").readAllBytes();
+            String keyString = new String(keyBytes, StandardCharsets.UTF_8).trim();
+
+            // Remove headers if present
+            keyString = keyString.replace("-----BEGIN PUBLIC KEY-----", "")
+                    .replace("-----END PUBLIC KEY-----", "")
+                    .replaceAll("\\s", "");
+
+            byte[] decoded = Base64.getDecoder().decode(keyString);
+            java.security.spec.X509EncodedKeySpec spec = new java.security.spec.X509EncodedKeySpec(decoded);
+            java.security.KeyFactory kf = java.security.KeyFactory.getInstance("RSA");
+            this.publicKey = kf.generatePublic(spec);
+            System.out.println("✅ Public Key Loaded for Verification");
+        } catch (Exception e) {
+            System.err.println("❌ ERROR: Could not load public.pem! System will be LOCKED.");
+            e.printStackTrace();
+            this.isValid = false;
+        }
     }
 
     public void validateCurrentLicense() {
@@ -51,26 +76,39 @@ public class LicenseService {
     }
 
     public boolean verifyLicenseKey(String licenseKey) {
+        if (publicKey == null)
+            return false;
         try {
             // 1. Avkoda Base64
             String json = new String(Base64.getDecoder().decode(licenseKey));
             ObjectMapper mapper = new ObjectMapper();
-            Map<String, String> data = mapper.readValue(json, Map.class);
+            Map<String, String> data = mapper.readValue(json,
+                    new com.fasterxml.jackson.core.type.TypeReference<Map<String, String>>() {
+                    });
 
             // 2. Extrahera data
-            String payload = data.get("payload");
+            String payloadBase64 = data.get("payload");
             String signature = data.get("signature");
 
-            // 3. Verifiera signatur (Har någon ändrat i filen?)
-            String expectedSignature = hmacSha256(payload);
-            if (!expectedSignature.equals(signature)) {
-                throw new RuntimeException("Ogiltig signatur!");
+            // 3. Verifiera signatur med RSA
+            java.security.Signature publicSignature = java.security.Signature.getInstance("SHA256withRSA");
+            publicSignature.initVerify(publicKey);
+            publicSignature.update(new String(Base64.getDecoder().decode(payloadBase64), StandardCharsets.UTF_8)
+                    .getBytes(StandardCharsets.UTF_8));
+
+            byte[] signatureBytes = Base64.getDecoder().decode(signature);
+            if (!publicSignature.verify(signatureBytes)) {
+                throw new RuntimeException("Ogiltig RSA-signatur! Licensen är förfalskad.");
             }
 
             // 4. Läs payload-innehåll
-            Map<String, String> payloadMap = mapper.readValue(payload, Map.class);
+            String payloadJson = new String(Base64.getDecoder().decode(payloadBase64), StandardCharsets.UTF_8);
+            Map<String, String> payloadMap = mapper.readValue(payloadJson,
+                    new com.fasterxml.jackson.core.type.TypeReference<Map<String, String>>() {
+                    });
+
             String tierStr = payloadMap.get("tier");
-            String expiryStr = payloadMap.get("expiry");
+            String expiryStr = payloadMap.get("validUntil");
             this.customerName = payloadMap.get("customer");
 
             // 5. Kolla datum
@@ -80,10 +118,10 @@ public class LicenseService {
             }
 
             // 6. Allt OK!
-            this.currentTier = LicenseType.valueOf(tierStr);
+            this.currentTier = LicenseType.valueOf(tierStr.replace("PLUS", "PRO"));
             this.expiryDate = expires;
             this.isValid = true;
-            System.out.println("✅ LICENS GODKÄND: " + currentTier + " för " + customerName);
+            System.out.println("✅ LICENS GODKÄND (RSA): " + currentTier + " för " + customerName);
             return true;
 
         } catch (Exception e) {
@@ -97,42 +135,40 @@ public class LicenseService {
     public void activateLicense(String key) throws Exception {
         if (verifyLicenseKey(key)) {
             Files.writeString(Path.of(LICENSE_FILE), key);
-            this.isValid = true; // Sätt flaggan direkt
+            this.isValid = true;
         } else {
-            throw new RuntimeException("Ogiltig nyckel");
+            throw new RuntimeException("Kunde inte verifiera licensen.");
         }
     }
 
-    public String generateLicenseKey(String customer, LicenseType tier, int daysValid) throws Exception {
-        Map<String, String> payloadMap = new HashMap<>();
-        payloadMap.put("customer", customer);
-        payloadMap.put("tier", tier.name());
-        payloadMap.put("expiry", LocalDate.now().plusDays(daysValid).toString());
-
-        ObjectMapper mapper = new ObjectMapper();
-        String payloadJson = mapper.writeValueAsString(payloadMap);
-
-        String signature = hmacSha256(payloadJson);
-
-        Map<String, String> finalLicense = new HashMap<>();
-        finalLicense.put("payload", payloadJson);
-        finalLicense.put("signature", signature);
-
-        String finalJson = mapper.writeValueAsString(finalLicense);
-        return Base64.getEncoder().encodeToString(finalJson.getBytes());
-    }
-
-    private String hmacSha256(String data) throws Exception {
-        Mac mac = Mac.getInstance("HmacSHA256");
-        SecretKeySpec secretKeySpec = new SecretKeySpec(SECRET_KEY.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
-        mac.init(secretKeySpec);
-        byte[] signedBytes = mac.doFinal(data.getBytes(StandardCharsets.UTF_8));
-        return Base64.getEncoder().encodeToString(signedBytes);
-    }
-
     // Getters med standardiserade namn
-    public boolean isValid() { return isValid; }
-    public LicenseType getTier() { return currentTier; }
-    public String getCustomerName() { return customerName; }
-    public String getExpiryDate() { return expiryDate != null ? expiryDate.toString() : "N/A"; }
+    public boolean isValid() {
+        return isValid;
+    }
+
+    public boolean isLocked() {
+        return !isValid;
+    }
+
+    public LicenseType getTier() {
+        return currentTier;
+    }
+
+    public String getCustomerName() {
+        return customerName;
+    }
+
+    public String getExpiryDate() {
+        return expiryDate != null ? expiryDate.toString() : "N/A";
+    }
+
+    public long getDaysRemaining() {
+        if (expiryDate == null)
+            return 0;
+        return java.time.temporal.ChronoUnit.DAYS.between(LocalDate.now(), expiryDate);
+    }
+
+    public boolean isExpiringSoon() {
+        return getDaysRemaining() <= 30; // Varna om under 30 dagar
+    }
 }

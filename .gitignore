@@ -1,1 +1,5 @@
 /uploads/
+/backups/
+
+# Secure License Generator (NEVER COMMIT)
+tools/secure-license-gen/
