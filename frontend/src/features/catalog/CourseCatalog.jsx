@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Layers, BookOpen, Users, Calendar, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { Search, Layers, BookOpen, Users, Calendar, AlertCircle, CheckCircle2, X } from 'lucide-react';
+import SkolverketCourseInfo from '../../components/SkolverketCourseInfo';
 import { api } from '../../services/api';
 import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../../context/AppContext';
@@ -12,6 +13,7 @@ const CourseCatalog = () => {
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('Alla Kurser');
+    const [selectedCourseInfo, setSelectedCourseInfo] = useState(null);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -192,7 +194,7 @@ const CourseCatalog = () => {
 
                                             <div className="flex gap-2">
                                                 <button
-                                                    onClick={() => navigate(`/course/${course.id}`)}
+                                                    onClick={() => setSelectedCourseInfo(course)}
                                                     className="px-3 py-2 text-xs font-bold text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
                                                 >
                                                     Info
@@ -218,6 +220,40 @@ const CourseCatalog = () => {
                     )}
                 </div>
             </div>
+
+            {/* INFO MODAL */}
+            {
+                selectedCourseInfo && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200" onClick={() => setSelectedCourseInfo(null)}>
+                        <div
+                            className="bg-white dark:bg-[#1E1F20] w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-2xl shadow-2xl relative animate-in zoom-in-95 duration-200 custom-scrollbar"
+                            onClick={e => e.stopPropagation()}
+                        >
+                            <button
+                                onClick={() => setSelectedCourseInfo(null)}
+                                className="absolute top-4 right-4 p-2 bg-gray-100 dark:bg-[#282a2c] rounded-full hover:bg-gray-200 transition-colors z-10"
+                            >
+                                <X size={20} className="text-gray-500" />
+                            </button>
+
+                            <div className="p-1">
+                                {selectedCourseInfo.skolverketCourse ? (
+                                    <SkolverketCourseInfo skolverketCourse={selectedCourseInfo.skolverketCourse} />
+                                ) : (
+                                    <div className="p-8 text-center">
+                                        <h2 className="text-2xl font-bold mb-4">{selectedCourseInfo.name}</h2>
+                                        <p className="text-gray-600 dark:text-gray-300 mb-6">{selectedCourseInfo.description}</p>
+                                        <div className="p-4 bg-yellow-50 dark:bg-yellow-900/10 border border-yellow-100 dark:border-yellow-900/30 rounded-xl text-yellow-800 dark:text-yellow-400 inline-block">
+                                            <AlertCircle className="inline-block mr-2" size={18} />
+                                            Denna kurs är inte kopplad till en officiell kursplan från Skolverket ännu.
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                )
+            }
         </div>
     );
 };
