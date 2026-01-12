@@ -24,13 +24,20 @@ public class DataInitializer implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         // 1. Seed Roles
-        createRoleIfNotFound("ADMIN", "Super Administrator", true, java.util.Set.of()); // Super admin gets everything
-                                                                                        // dynanmically
-        createRoleIfNotFound("TEACHER", "Lärare", false, java.util.Set.of(
+        createRoleIfNotFound("ADMIN", "Super Administrator", "ADMIN", true, java.util.Set.of());
+
+        createRoleIfNotFound("TEACHER", "Lärare", "TEACHER", false, java.util.Set.of(
                 com.eduflex.backend.model.Permission.COURSE_CREATE,
                 com.eduflex.backend.model.Permission.COURSE_EDIT,
                 com.eduflex.backend.model.Permission.GRADE_ASSIGN));
-        createRoleIfNotFound("STUDENT", "Student", false, java.util.Set.of(
+
+        createRoleIfNotFound("STUDENT", "Student", "STUDENT", false, java.util.Set.of(
+                com.eduflex.backend.model.Permission.VIEW_COURSES));
+
+        createRoleIfNotFound("PRINCIPAL", "Rektor", "PRINCIPAL", false, java.util.Set.of(
+                com.eduflex.backend.model.Permission.VIEW_COURSES));
+
+        createRoleIfNotFound("MENTOR", "Mentor", "MENTOR", false, java.util.Set.of(
                 com.eduflex.backend.model.Permission.VIEW_COURSES));
 
         // 2. Check/Create Admin User
@@ -54,10 +61,11 @@ public class DataInitializer implements CommandLineRunner {
         }
     }
 
-    private void createRoleIfNotFound(String name, String description, boolean isSuperAdmin,
+    private void createRoleIfNotFound(String name, String description, String defaultDashboard, boolean isSuperAdmin,
             java.util.Set<com.eduflex.backend.model.Permission> permissions) {
         if (roleRepository.findByName(name).isEmpty()) {
-            com.eduflex.backend.model.Role role = new com.eduflex.backend.model.Role(name, description, isSuperAdmin);
+            com.eduflex.backend.model.Role role = new com.eduflex.backend.model.Role(name, description,
+                    defaultDashboard, isSuperAdmin);
             role.setPermissions(permissions);
             roleRepository.save(role);
             System.out.println("✅ Skapade roll: " + name);

@@ -43,4 +43,17 @@ public class AnalyticsController {
     public ResponseEntity<List<Map<String, Object>>> getStudentInsights() {
         return ResponseEntity.ok(analyticsService.getStudentInsights());
     }
+
+    @GetMapping("/csn-report")
+    public ResponseEntity<List<Map<String, Object>>> getCSNReport() {
+        // Enbart PRINCIPAL/ADMIN borde nå denna
+        return ResponseEntity.ok(analyticsService.getCSNReport());
+    }
+
+    @GetMapping("/my-status")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<Map<String, Object>> getMyStatus(@RequestParam Long studentId) {
+        // I en riktig impl, hämta studentId från SecurityContext
+        return ResponseEntity.ok(analyticsService.getStudentSelfStatus(studentId));
+    }
 }

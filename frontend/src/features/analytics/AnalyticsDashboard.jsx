@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
-import { TrendingUp, Users, DollarSign, Activity, Server, ShieldCheck, Download, GraduationCap, Clock, AlertTriangle, Calendar, Wallet } from 'lucide-react';
+import { TrendingUp, Users, DollarSign, Activity, Server, ShieldCheck, Download, GraduationCap, Clock, AlertTriangle, Calendar, Wallet, FileText } from 'lucide-react';
 import { api } from '../../services/api';
 import RevenueAnalytics from './RevenueAnalytics';
+import StudentDrillDown from './StudentDrillDown';
 
 const AnalyticsDashboard = () => {
     const { t } = useTranslation();
@@ -14,6 +15,7 @@ const AnalyticsDashboard = () => {
     const [engagement, setEngagement] = useState(null);
     const [students, setStudents] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [selectedStudent, setSelectedStudent] = useState(null);
 
     useEffect(() => {
         fetchAllData();
@@ -90,12 +92,42 @@ const AnalyticsDashboard = () => {
             ...rows.map(r => r.join(","))
         ].join("\n");
 
-        // Create Blob and download
-        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        downloadCSV(csvContent, `eduflex_student_export_${new Date().toISOString().split('T')[0]}.csv`);
+    };
+
+    const handleCSNExport = async () => {
+        try {
+            const reportData = await api.get('/analytics/csn-report');
+            if (!reportData || reportData.length === 0) {
+                alert("Ingen data för CSN-rapport.");
+                return;
+            }
+
+            const headers = ["Student ID", "Namn", "Personnummer", "Närvaro %", "Status", "Kommentar"];
+            const rows = reportData.map(r => [
+                r.id,
+                `"${r.name}"`,
+                r.personnummer,
+                r.attendancePercent,
+                r.status,
+                r.comment
+            ]);
+
+            const csvContent = [headers.join(","), ...rows.map(r => r.join(","))].join("\n");
+            downloadCSV(csvContent, `csn_rapport_${new Date().toISOString().split('T')[0]}.csv`);
+
+        } catch (error) {
+            console.error("Failed to generate CSN report", error);
+            alert("Kunde inte generera CSN-rapport.");
+        }
+    };
+
+    const downloadCSV = (content, filename) => {
+        const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
         const url = URL.createObjectURL(blob);
         const link = document.createElement("a");
         link.setAttribute("href", url);
-        link.setAttribute("download", `eduflex_student_export_${new Date().toISOString().split('T')[0]}.csv`);
+        link.setAttribute("download", filename);
         link.style.visibility = 'hidden';
         document.body.appendChild(link);
         link.click();
@@ -112,6 +144,11 @@ const AnalyticsDashboard = () => {
                     <p className="text-gray-500 dark:text-gray-400 mt-1">{t('analytics.subtitle')}</p>
                 </div>
                 <div className="flex gap-2">
+                    <button
+                        onClick={handleCSNExport}
+                        className="flex items-center gap-2 px-4 py-2 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300 border border-indigo-100 dark:border-indigo-900/30 rounded-lg text-sm font-bold hover:bg-indigo-100 dark:hover:bg-indigo-900/30 transition-colors shadow-sm">
+                        <FileText size={16} /> CSN Rapport
+                    </button>
                     <button
                         onClick={handleExport}
                         className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-[#1E1F20] border border-gray-200 dark:border-[#3c4043] rounded-lg text-sm font-bold text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-[#282a2c] transition-colors shadow-sm">
@@ -282,7 +319,11 @@ const AnalyticsDashboard = () => {
                                 </thead>
                                 <tbody className="divide-y divide-gray-100 dark:divide-[#3c4043]">
                                     {students.map((student) => (
-                                        <tr key={student.id} className="hover:bg-gray-50 dark:hover:bg-[#282a2c] transition-colors">
+                                        <tr
+                                            key={student.id}
+                                            onClick={() => setSelectedStudent(student)}
+                                            className="hover:bg-gray-50 dark:hover:bg-[#282a2c] transition-colors cursor-pointer group"
+                                        >
                                             <td className="px-6 py-4 items-center gap-3 font-medium text-gray-900 dark:text-white">
                                                 {student.name}
                                                 <div className="text-xs font-normal text-gray-500">{student.email}</div>
@@ -373,6 +414,12 @@ const AnalyticsDashboard = () => {
                         </div>
                     </div>
                 </div>
+            )}
+            {selectedStudent && (
+                <StudentDrillDown
+                    student={selectedStudent}
+                    onClose={() => setSelectedStudent(null)}
+                />
             )}
         </div>
     );

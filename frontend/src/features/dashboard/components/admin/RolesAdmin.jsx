@@ -13,6 +13,7 @@ const RolesAdmin = () => {
     const [formData, setFormData] = useState({
         name: '',
         description: '',
+        defaultDashboard: 'STUDENT', // Default
         isSuperAdmin: false,
         permissions: []
     });
@@ -42,6 +43,7 @@ const RolesAdmin = () => {
         setFormData({
             name: role.name,
             description: role.description || '',
+            defaultDashboard: role.defaultDashboard || 'STUDENT',
             isSuperAdmin: role.superAdmin,
             permissions: role.permissions || []
         });
@@ -53,6 +55,7 @@ const RolesAdmin = () => {
         setFormData({
             name: '',
             description: '',
+            defaultDashboard: 'STUDENT',
             isSuperAdmin: false,
             permissions: []
         });
@@ -124,6 +127,7 @@ const RolesAdmin = () => {
                     <thead className="bg-gray-50 dark:bg-[#282a2c] text-gray-500 dark:text-gray-400 border-b dark:border-[#3c4043]">
                         <tr>
                             <th className="p-4">Rollnamn</th>
+                            <th className="p-4">Layout</th>
                             <th className="p-4">Beskrivning</th>
                             <th className="p-4">Behörigheter</th>
                             <th className="p-4 text-right">Åtgärd</th>
@@ -137,6 +141,11 @@ const RolesAdmin = () => {
                                         {role.name}
                                         {role.superAdmin && <Lock size={12} className="text-amber-500" title="Super Admin" />}
                                     </div>
+                                </td>
+                                <td className="p-4">
+                                    <span className="text-xs bg-indigo-50 text-indigo-700 font-bold px-2 py-1 rounded">
+                                        {role.defaultDashboard || '-'}
+                                    </span>
                                 </td>
                                 <td className="p-4 text-gray-500 dark:text-gray-400">{role.description}</td>
                                 <td className="p-4">
@@ -192,6 +201,22 @@ const RolesAdmin = () => {
                                         onChange={e => setFormData({ ...formData, description: e.target.value })}
                                     />
                                 </div>
+                            </div>
+
+                            <div className="mb-6">
+                                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">Dashboard Layout (Vy)</label>
+                                <select
+                                    className="w-full p-2 border rounded-lg dark:bg-[#131314] dark:border-[#3c4043] dark:text-white"
+                                    value={formData.defaultDashboard}
+                                    onChange={e => setFormData({ ...formData, defaultDashboard: e.target.value })}
+                                >
+                                    <option value="ADMIN">ADMIN (Systemadministration)</option>
+                                    <option value="PRINCIPAL">PRINCIPAL (Analys & Skolöversikt)</option>
+                                    <option value="TEACHER">TEACHER (Lärarpanel)</option>
+                                    <option value="MENTOR">MENTOR (Mentoröversikt)</option>
+                                    <option value="STUDENT">STUDENT (Studentpanel)</option>
+                                </select>
+                                <p className="text-xs text-gray-500 mt-1">Styr vilken startvy användarna med denna roll får.</p>
                             </div>
 
                             <div className="mb-6">
