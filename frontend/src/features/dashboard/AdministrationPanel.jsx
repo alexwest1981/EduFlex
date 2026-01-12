@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import { Users, BookOpen, DollarSign, FileText, Settings, Tag } from 'lucide-react';
+import { Users, BookOpen, DollarSign, FileText, Settings, Tag, Shield } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { AdminUserTable, AdminCourseRegistry } from './components/admin/AdminTables';
-import { CreateUserModal, CreateCourseModal, EditCourseModal } from './components/admin/AdminModals';
+import RolesAdmin from './components/admin/RolesAdmin';
+import { CreateUserModal, CreateCourseModal, EditCourseModal, EditUserModal } from './components/admin/AdminModals';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../../services/api';
 import { useModules } from '../../context/ModuleContext';
@@ -11,6 +13,7 @@ import PaymentGatewaySettings from '../admin/PaymentGatewaySettings';
 import PromoCodeManagement from '../admin/PromoCodeManagement';
 
 const AdministrationPanel = ({ users, courses, teachers, fetchStats }) => {
+    const { t } = useTranslation();
     const navigate = useNavigate();
     const { isModuleActive } = useModules();
     const [activeTab, setActiveTabState] = useState(() => localStorage.getItem('admin_panel_tab') || 'users');
@@ -22,6 +25,8 @@ const AdministrationPanel = ({ users, courses, teachers, fetchStats }) => {
 
     // Modal states
     const [showUserModal, setShowUserModal] = useState(false);
+    const [showEditUserModal, setShowEditUserModal] = useState(false);
+    const [userToEdit, setUserToEdit] = useState(null);
     const [showCourseModal, setShowCourseModal] = useState(false);
     const [showEditCourseModal, setShowEditCourseModal] = useState(false);
     const [courseToEdit, setCourseToEdit] = useState(null);
@@ -38,6 +43,18 @@ const AdministrationPanel = ({ users, courses, teachers, fetchStats }) => {
         }
     };
 
+    const handleDeleteUser = async (userId) => {
+        if (window.confirm("Är du säker på att du vill ta bort denna användare? Detta går inte att ångra.")) {
+            try {
+                await api.users.delete(userId);
+                fetchStats();
+            } catch (error) {
+                console.error("Failed to delete user", error);
+                alert("Kunde inte ta bort användaren.");
+            }
+        }
+    };
+
     return (
         <div className="animate-in fade-in space-y-6">
             {/* SUB-TABS */}
@@ -48,9 +65,12 @@ const AdministrationPanel = ({ users, courses, teachers, fetchStats }) => {
                 <button onClick={() => setActiveTab('courses')} className={`px-4 py-2 font-bold text-sm rounded-t-lg flex items-center gap-2 ${activeTab === 'courses' ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300 border-b-2 border-indigo-600' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50 dark:hover:bg-[#282a2c] dark:hover:text-gray-300'}`}>
                     <BookOpen size={16} /> Kurser
                 </button>
+                <button onClick={() => setActiveTab('roles')} className={`px-4 py-2 font-bold text-sm rounded-t-lg flex items-center gap-2 ${activeTab === 'roles' ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300 border-b-2 border-indigo-600' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50 dark:hover:bg-[#282a2c] dark:hover:text-gray-300'}`}>
+                    <Shield size={16} /> Roller
+                </button>
                 {isModuleActive('REVENUE') && (
                     <button onClick={() => setActiveTab('revenue')} className={`px-4 py-2 font-bold text-sm rounded-t-lg flex items-center gap-2 ${activeTab === 'revenue' ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300 border-b-2 border-indigo-600' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50 dark:hover:bg-[#282a2c] dark:hover:text-gray-300'}`}>
-                        <DollarSign size={16} /> Revenue
+                        <DollarSign size={16} /> {t('admin_tabs.revenue')}
                     </button>
                 )}
             </div>
@@ -60,6 +80,8 @@ const AdministrationPanel = ({ users, courses, teachers, fetchStats }) => {
                 <AdminUserTable
                     users={users}
                     onNewUser={() => setShowUserModal(true)}
+                    onEdit={(user) => { setUserToEdit(user); setShowEditUserModal(true); }}
+                    onDelete={handleDeleteUser}
                 />
             )}
 
@@ -73,6 +95,8 @@ const AdministrationPanel = ({ users, courses, teachers, fetchStats }) => {
                 />
             )}
 
+            {activeTab === 'roles' && <RolesAdmin />}
+
             {activeTab.startsWith('revenue') && (
                 <div className="space-y-6">
                     {/* Revenue Sub-Tabs */}
@@ -81,25 +105,25 @@ const AdministrationPanel = ({ users, courses, teachers, fetchStats }) => {
                             onClick={() => setActiveTab('revenue-plans')}
                             className={`px-4 py-2 font-bold text-sm rounded-t-lg flex items-center gap-2 ${activeTab === 'revenue-plans' || activeTab === 'revenue' ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300 border-b-2 border-indigo-600' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50 dark:hover:bg-[#282a2c] dark:hover:text-gray-300'}`}
                         >
-                            <DollarSign size={16} /> Subscription Plans
+                            <DollarSign size={16} /> {t('admin_tabs.subscription_plans')}
                         </button>
                         <button
                             onClick={() => setActiveTab('revenue-invoices')}
                             className={`px-4 py-2 font-bold text-sm rounded-t-lg flex items-center gap-2 ${activeTab === 'revenue-invoices' ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300 border-b-2 border-indigo-600' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50 dark:hover:bg-[#282a2c] dark:hover:text-gray-300'}`}
                         >
-                            <FileText size={16} /> Invoices
+                            <FileText size={16} /> {t('admin_tabs.invoices')}
                         </button>
                         <button
                             onClick={() => setActiveTab('revenue-payments')}
                             className={`px-4 py-2 font-bold text-sm rounded-t-lg flex items-center gap-2 ${activeTab === 'revenue-payments' ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300 border-b-2 border-indigo-600' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50 dark:hover:bg-[#282a2c] dark:hover:text-gray-300'}`}
                         >
-                            <Settings size={16} /> Payment Settings
+                            <Settings size={16} /> {t('admin_tabs.payment_settings')}
                         </button>
                         <button
                             onClick={() => setActiveTab('revenue-promocodes')}
                             className={`px-4 py-2 font-bold text-sm rounded-t-lg flex items-center gap-2 ${activeTab === 'revenue-promocodes' ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300 border-b-2 border-indigo-600' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50 dark:hover:bg-[#282a2c] dark:hover:text-gray-300'}`}
                         >
-                            <Tag size={16} /> Promo Codes
+                            <Tag size={16} /> {t('admin_tabs.promo_codes')}
                         </button>
                     </div>
 
@@ -112,6 +136,7 @@ const AdministrationPanel = ({ users, courses, teachers, fetchStats }) => {
 
             {/* MODALS */}
             <CreateUserModal isOpen={showUserModal} onClose={() => setShowUserModal(false)} onUserCreated={fetchStats} />
+            <EditUserModal isOpen={showEditUserModal} onClose={() => setShowEditUserModal(false)} onUserUpdated={fetchStats} userToEdit={userToEdit} />
             <CreateCourseModal isOpen={showCourseModal} onClose={() => setShowCourseModal(false)} onCourseCreated={fetchStats} teachers={teachers} />
             <EditCourseModal isOpen={showEditCourseModal} onClose={() => setShowEditCourseModal(false)} onCourseUpdated={fetchStats} teachers={teachers} courseToEdit={courseToEdit} />
         </div>

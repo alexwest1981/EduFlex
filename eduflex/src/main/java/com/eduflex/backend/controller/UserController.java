@@ -21,16 +21,49 @@ public class UserController {
 
     private final UserService userService;
     private final UserRepository userRepository;
+    private final com.eduflex.backend.repository.RoleRepository roleRepository;
 
     @Autowired
-    public UserController(UserService userService, UserRepository userRepository) {
+    public UserController(UserService userService, UserRepository userRepository,
+            com.eduflex.backend.repository.RoleRepository roleRepository) {
         this.userService = userService;
         this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
     }
 
     @PostMapping("/register")
-    public ResponseEntity<User> registerUser(@RequestBody User user) {
+    @org.springframework.security.access.prepost.PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN')")
+    public ResponseEntity<User> registerUser(@RequestBody Map<String, Object> payload) {
         try {
+            User user = new User();
+            user.setFirstName((String) payload.get("firstName"));
+            user.setLastName((String) payload.get("lastName"));
+            user.setUsername((String) payload.get("username"));
+            user.setEmail((String) payload.get("email"));
+            user.setPassword((String) payload.get("password"));
+
+            // Handle optional fields
+            if (payload.containsKey("ssn"))
+                user.setSsn((String) payload.get("ssn"));
+            if (payload.containsKey("phone"))
+                user.setPhone((String) payload.get("phone"));
+            if (payload.containsKey("address"))
+                user.setAddress((String) payload.get("address"));
+
+            // NYTT: Hantera Roll Lookup
+            if (payload.containsKey("role")) {
+                String roleName = (String) payload.get("role");
+                com.eduflex.backend.model.Role role = roleRepository.findByName(roleName)
+                        .orElseThrow(() -> new RuntimeException("Roll ej funnen: " + roleName));
+                user.setRole(role);
+            } else {
+                // Fallback if no role is sent (UserService sets STUDENT if null, but let's be
+                // explicit)
+                // Actually, letting UserService handle default is safer if we want centralized
+                // logic,
+                // but here we want to allow Admin to set it.
+            }
+
             User createdUser = userService.registerUser(user);
             return ResponseEntity.ok(createdUser);
         } catch (RuntimeException e) {
@@ -84,7 +117,10 @@ public class UserController {
 
             // NYTT: Hantera Roll
             if (updates.containsKey("role")) {
-                user.setRole(User.Role.valueOf((String) updates.get("role")));
+                String roleName = (String) updates.get("role");
+                com.eduflex.backend.model.Role role = roleRepository.findByName(roleName)
+                        .orElseThrow(() -> new RuntimeException("Roll ej funnen: " + roleName));
+                user.setRole(role);
             }
 
             // NYTT: Hantera Aktiv/Inaktiv

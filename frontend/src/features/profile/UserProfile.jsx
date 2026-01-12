@@ -82,12 +82,15 @@ const UserProfile = ({ currentUser, showMessage, refreshUser }) => {
         formDataUpload.append('file', file);
         try {
             const token = localStorage.getItem('token');
-            const res = await fetch(`http://127.0.0.1:8080/api/users/${currentUser.id}/avatar`, {
+            const res = await fetch(`http://localhost:8080/api/users/${currentUser.id}/avatar`, {
                 method: 'POST',
                 headers: { 'Authorization': `Bearer ${token}` },
                 body: formDataUpload
             });
-            if (res.ok) { showMessage(t('messages.profile_updated')); refreshUser(); }
+            if (res.ok) {
+                showMessage(t('messages.profile_updated'));
+                refreshUser();
+            }
         } catch (err) { console.error(err); }
     };
 
@@ -115,7 +118,7 @@ const UserProfile = ({ currentUser, showMessage, refreshUser }) => {
         if (passData.new !== passData.confirm) return alert(t('profile.password_mismatch'));
         try {
             const token = localStorage.getItem('token');
-            const res = await fetch(`http://127.0.0.1:8080/api/users/${currentUser.id}/password`, {
+            const res = await fetch(`http://localhost:8080/api/users/${currentUser.id}/password`, {
                 method: 'PUT',
                 headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
                 body: JSON.stringify({ currentPassword: passData.current, newPassword: passData.new })
@@ -136,11 +139,16 @@ const UserProfile = ({ currentUser, showMessage, refreshUser }) => {
                 <div className="p-6 flex flex-col items-center text-center h-fit bg-white dark:bg-[#1E1F20] rounded-2xl shadow-sm border border-gray-200 dark:border-[#282a2c] transition-colors">
                     <div className="relative group mb-4">
                         <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-gray-100 dark:border-[#282a2c] shadow-sm bg-gray-50 dark:bg-[#131314] flex items-center justify-center">
-                            {previewImage || displayUser.profilePictureUrl ? (
-                                <img src={previewImage || `http://127.0.0.1:8080${displayUser.profilePictureUrl}`} alt="Profil" className="w-full h-full object-cover" />
-                            ) : (
-                                <span className="text-4xl font-bold text-gray-400 dark:text-gray-500">{displayUser.firstName?.[0]}</span>
-                            )}
+                            {(() => {
+                                if (previewImage) return <img src={previewImage} alt="Profil" className="w-full h-full object-cover" />;
+                                if (displayUser.profilePictureUrl) {
+                                    let url = displayUser.profilePictureUrl;
+                                    if (url.includes('minio:9000')) url = url.replace('minio:9000', 'localhost:9000');
+                                    const finalUrl = url.startsWith('http') ? url : `http://localhost:8080${url}`;
+                                    return <img src={finalUrl} alt="Profil" className="w-full h-full object-cover" />;
+                                }
+                                return <span className="text-4xl font-bold text-gray-400 dark:text-gray-500">{displayUser.firstName?.[0]}</span>;
+                            })()}
                         </div>
                         {/* Kamera-knapp */}
                         <label className="absolute bottom-0 right-0 bg-black dark:bg-[#3c4043] text-white p-2 rounded-full cursor-pointer hover:bg-gray-800 transition-colors shadow-md border border-white dark:border-[#1E1F20]">
@@ -149,7 +157,7 @@ const UserProfile = ({ currentUser, showMessage, refreshUser }) => {
                         </label>
                     </div>
                     <h2 className="text-xl font-bold text-gray-900 dark:text-[#E3E3E3]">{formData.firstName} {formData.lastName}</h2>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">@{currentUser.username} • {currentUser.role}</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">@{currentUser.username} • {currentUser.role?.name || currentUser.role}</p>
                     <div className="w-full border-t border-gray-100 dark:border-[#282a2c] pt-4 text-left space-y-3">
                         <div className="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-300"><Mail size={16} className="text-gray-400" /> {formData.email || "-"}</div>
                         <div className="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-300"><Phone size={16} className="text-gray-400" /> {formData.phone || "-"}</div>
@@ -246,7 +254,7 @@ const UserProfile = ({ currentUser, showMessage, refreshUser }) => {
                                 <p className="text-sm text-gray-500 dark:text-gray-400">{t('profile.settings_desc')}</p>
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    {(currentUser.role === 'ADMIN' ? [
+                                    {((currentUser.role?.name || currentUser.role) === 'ADMIN' ? [
                                         { key: 'showStats', label: 'Visa Statistik' },
                                         { key: 'showRecentUsers', label: 'Visa Senaste Användare' },
                                         { key: 'showRecentDocs', label: 'Visa Senaste Filer' },

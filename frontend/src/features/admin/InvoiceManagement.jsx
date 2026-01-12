@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { FileText, Plus, Send, Download, Eye, Edit, Trash2, Clock, CheckCircle, XCircle, AlertTriangle, RefreshCw } from 'lucide-react';
 import { api } from '../../services/api';
 
 const InvoiceManagement = () => {
+    const { t } = useTranslation();
     const [invoices, setInvoices] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [filterStatus, setFilterStatus] = useState('ALL');
@@ -60,10 +62,10 @@ const InvoiceManagement = () => {
     };
 
     const handleSendReminder = async (id) => {
-        if (!confirm('Send payment reminder to customer?')) return;
+        if (!confirm(t('invoices.send_reminder_confirm'))) return;
         try {
             await api.post(`/invoices/${id}/send-reminder`);
-            alert('Payment reminder sent!');
+            alert(t('invoices.reminder_sent'));
             fetchInvoices();
         } catch (error) {
             console.error('Failed to send reminder:', error);
@@ -71,7 +73,7 @@ const InvoiceManagement = () => {
     };
 
     const handleDelete = async (id) => {
-        if (!confirm('Are you sure you want to delete this invoice?')) return;
+        if (!confirm(t('invoices.delete_confirm'))) return;
         try {
             await api.delete(`/invoices/${id}`);
             fetchInvoices();
@@ -81,7 +83,7 @@ const InvoiceManagement = () => {
     };
 
     const handleRefund = async (invoiceId, paymentId) => {
-        if (!confirm('ARe you sure you want to refund this payment? This action cannot be undone.')) return;
+        if (!confirm(t('invoices.refund_confirm'))) return;
 
         // If paymentId is missing, try to find it from the invoice object (assuming backend provides it)
         // In this current implementation invoice.payment might be an object or id.
@@ -89,17 +91,17 @@ const InvoiceManagement = () => {
         // We need to ensure the invoice object in state has the payment details.
 
         if (!paymentId) {
-            alert("Cannot find payment details for this invoice.");
+            alert(t('invoices.no_payment_details'));
             return;
         }
 
         try {
             await api.post(`/payments/${paymentId}/refund`);
-            alert('Refund initiated successfully');
+            alert(t('invoices.refund_success'));
             fetchInvoices();
         } catch (error) {
             console.error('Failed to refund payment:', error);
-            alert('Failed to process refund. Check console for details.');
+            alert(t('invoices.refund_failed'));
         }
     };
 
@@ -116,7 +118,7 @@ const InvoiceManagement = () => {
         return (
             <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-bold ${badge.color}`}>
                 {badge.icon}
-                {status}
+                {t(`invoices.${status.toLowerCase()}`)}
             </span>
         );
     };
@@ -126,7 +128,7 @@ const InvoiceManagement = () => {
         : invoices.filter(inv => inv.status === filterStatus);
 
     if (isLoading) {
-        return <div className="p-8 text-center">Loading invoices...</div>;
+        return <div className="p-8 text-center">{t('invoices.loading')}</div>;
     }
 
     return (
@@ -134,7 +136,7 @@ const InvoiceManagement = () => {
             {/* Header / Actions */}
             <div className="flex justify-between items-center bg-white dark:bg-[#1E1F20] p-4 rounded-xl shadow-sm border border-gray-200 dark:border-[#3c4043] mb-8">
                 <h2 className="text-xl font-bold flex items-center gap-2 text-gray-900 dark:text-white">
-                    <FileText className="text-indigo-600 dark:text-indigo-400" /> Invoice Management
+                    <FileText className="text-indigo-600 dark:text-indigo-400" /> {t('invoices.title')}
                 </h2>
                 <div className="flex gap-2">
                     <button
@@ -142,13 +144,13 @@ const InvoiceManagement = () => {
                         disabled={isExporting}
                         className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50"
                     >
-                        <Download size={18} /> {isExporting ? 'Exporting...' : 'Export CSV'}
+                        <Download size={18} /> {isExporting ? t('invoices.exporting') : t('invoices.export_csv')}
                     </button>
                     <button
                         onClick={() => setShowCreateModal(true)}
                         className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
                     >
-                        <Plus size={18} /> Create Invoice
+                        <Plus size={18} /> {t('invoices.create_invoice')}
                     </button>
                 </div>
             </div>
@@ -175,25 +177,25 @@ const InvoiceManagement = () => {
                     <thead className="bg-gray-50 dark:bg-[#282a2c] border-b border-gray-200 dark:border-[#3c4043]">
                         <tr>
                             <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                Invoice #
+                                {t('invoices.invoice_number')}
                             </th>
                             <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                Customer
+                                {t('invoices.customer')}
                             </th>
                             <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                Amount
+                                {t('invoices.amount')}
                             </th>
                             <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                Issue Date
+                                {t('invoices.issue_date')}
                             </th>
                             <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                Due Date
+                                {t('invoices.due_date')}
                             </th>
                             <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                Status
+                                {t('invoices.status')}
                             </th>
                             <th className="px-6 py-3 text-right text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                Actions
+                                {t('invoices.actions')}
                             </th>
                         </tr>
                     </thead>
@@ -201,7 +203,7 @@ const InvoiceManagement = () => {
                         {filteredInvoices.length === 0 ? (
                             <tr>
                                 <td colSpan={7} className="px-6 py-12 text-center text-gray-500">
-                                    No invoices found
+                                    {t('invoices.no_invoices_found')}
                                 </td>
                             </tr>
                         ) : (
@@ -293,23 +295,23 @@ const InvoiceManagement = () => {
             {/* Summary Stats */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mt-8">
                 <div className="bg-white dark:bg-[#1E1F20] p-6 rounded-2xl border border-gray-200 dark:border-[#3c4043] shadow-sm">
-                    <p className="text-xs font-bold text-gray-500 uppercase mb-2">Total Invoices</p>
+                    <p className="text-xs font-bold text-gray-500 uppercase mb-2">{t('invoices.total_invoices')}</p>
                     <p className="text-3xl font-black text-gray-900 dark:text-white">{invoices.length}</p>
                 </div>
                 <div className="bg-white dark:bg-[#1E1F20] p-6 rounded-2xl border border-gray-200 dark:border-[#3c4043] shadow-sm">
-                    <p className="text-xs font-bold text-gray-500 uppercase mb-2">Pending</p>
+                    <p className="text-xs font-bold text-gray-500 uppercase mb-2">{t('invoices.pending')}</p>
                     <p className="text-3xl font-black text-yellow-600">
                         {invoices.filter(i => i.status === 'PENDING').length}
                     </p>
                 </div>
                 <div className="bg-white dark:bg-[#1E1F20] p-6 rounded-2xl border border-gray-200 dark:border-[#3c4043] shadow-sm">
-                    <p className="text-xs font-bold text-gray-500 uppercase mb-2">Paid</p>
+                    <p className="text-xs font-bold text-gray-500 uppercase mb-2">{t('invoices.paid')}</p>
                     <p className="text-3xl font-black text-green-600">
                         {invoices.filter(i => i.status === 'PAID').length}
                     </p>
                 </div>
                 <div className="bg-white dark:bg-[#1E1F20] p-6 rounded-2xl border border-gray-200 dark:border-[#3c4043] shadow-sm">
-                    <p className="text-xs font-bold text-gray-500 uppercase mb-2">Overdue</p>
+                    <p className="text-xs font-bold text-gray-500 uppercase mb-2">{t('invoices.overdue')}</p>
                     <p className="text-3xl font-black text-red-600">
                         {invoices.filter(i => i.status === 'OVERDUE').length}
                     </p>

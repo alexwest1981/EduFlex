@@ -18,9 +18,12 @@ import java.util.UUID;
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     private final UserRepository userRepository;
+    private final com.eduflex.backend.repository.RoleRepository roleRepository;
 
-    public CustomOAuth2UserService(UserRepository userRepository) {
+    public CustomOAuth2UserService(UserRepository userRepository,
+            com.eduflex.backend.repository.RoleRepository roleRepository) {
         this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
     }
 
     @Override
@@ -90,7 +93,9 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         user.setCreatedAt(LocalDateTime.now());
 
         // Assign default role (singular)
-        user.setRole(User.Role.STUDENT);
+        com.eduflex.backend.model.Role studentRole = roleRepository.findByName("STUDENT")
+                .orElseThrow(() -> new RuntimeException("Default role STUDENT not found."));
+        user.setRole(studentRole);
 
         return userRepository.save(user);
     }

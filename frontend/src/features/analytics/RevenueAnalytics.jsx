@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { DollarSign, TrendingUp, CreditCard, CheckCircle, XCircle, Users, Calendar } from 'lucide-react';
 import { AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { api } from '../../services/api';
 
 const RevenueAnalytics = () => {
+    const { t } = useTranslation();
     const [stats, setStats] = useState(null);
     const [payments, setPayments] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -29,7 +31,7 @@ const RevenueAnalytics = () => {
     };
 
     if (isLoading) {
-        return <div className="p-8 text-center text-gray-500 font-mono animate-pulse">LOADING REVENUE DATA...</div>;
+        return <div className="p-8 text-center text-gray-500 font-mono animate-pulse">{t('analytics.loading_revenue_data')}</div>;
     }
 
     // Payment method distribution
@@ -58,7 +60,7 @@ const RevenueAnalytics = () => {
 
     const kpiCards = [
         {
-            title: 'Monthly Recurring Revenue',
+            title: t('analytics.monthly_recurring_revenue'),
             value: `${stats?.mrr || 0} SEK`,
             change: '+12.5%',
             icon: <DollarSign size={24} />,
@@ -66,7 +68,7 @@ const RevenueAnalytics = () => {
             bg: 'bg-green-50 dark:bg-green-900/20'
         },
         {
-            title: 'Annual Recurring Revenue',
+            title: t('analytics.annual_recurring_revenue'),
             value: `${stats?.arr || 0} SEK`,
             change: '+8.2%',
             icon: <TrendingUp size={24} />,
@@ -74,15 +76,15 @@ const RevenueAnalytics = () => {
             bg: 'bg-blue-50 dark:bg-blue-900/20'
         },
         {
-            title: 'Payment Success Rate',
+            title: t('analytics.payment_success_rate'),
             value: `${stats?.paymentSuccessRate?.toFixed(1) || 0}%`,
-            change: stats?.paymentSuccessRate > 95 ? 'Excellent' : 'Good',
+            change: stats?.paymentSuccessRate > 95 ? t('analytics.excellent') : t('analytics.good'),
             icon: <CheckCircle size={24} />,
             color: 'text-emerald-600',
             bg: 'bg-emerald-50 dark:bg-emerald-900/20'
         },
         {
-            title: 'Avg Payment Amount',
+            title: t('analytics.avg_payment_amount'),
             value: `${stats?.averagePaymentAmount || 0} SEK`,
             change: '+5.3%',
             icon: <CreditCard size={24} />,
@@ -97,10 +99,10 @@ const RevenueAnalytics = () => {
                 <div>
                     <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
                         <DollarSign className="text-green-600" />
-                        Revenue Analytics
+                        {t('analytics.revenue_title')}
                     </h1>
                     <p className="text-gray-500 dark:text-gray-400 mt-1">
-                        Comprehensive revenue and payment insights
+                        {t('analytics.revenue_subtitle')}
                     </p>
                 </div>
 
@@ -112,11 +114,11 @@ const RevenueAnalytics = () => {
                             key={range}
                             onClick={() => setTimeRange(range)}
                             className={`px-4 py-2 rounded-md text-sm font-bold transition-all ${timeRange === range
-                                    ? 'bg-green-600 text-white shadow-sm'
-                                    : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-[#282a2c]'
+                                ? 'bg-green-600 text-white shadow-sm'
+                                : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-[#282a2c]'
                                 }`}
                         >
-                            {range.charAt(0).toUpperCase() + range.slice(1)}
+                            {t(`analytics.${range}`)}
                         </button>
                     ))}
                 </div>
@@ -142,7 +144,7 @@ const RevenueAnalytics = () => {
                         <div className="flex items-center gap-1 text-xs font-bold text-green-600 dark:text-green-400">
                             <TrendingUp size={12} />
                             {card.change}
-                            <span className="text-gray-400 font-normal ml-1">vs last month</span>
+                            <span className="text-gray-400 font-normal ml-1">{t('analytics.vs_last_month')}</span>
                         </div>
                     </div>
                 ))}
@@ -153,7 +155,7 @@ const RevenueAnalytics = () => {
                 {/* Revenue Trend */}
                 <div className="lg:col-span-2 bg-white dark:bg-[#1E1F20] p-6 rounded-2xl border border-gray-200 dark:border-[#3c4043] shadow-sm">
                     <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-6">
-                        Revenue Growth Trend
+                        {t('analytics.revenue_growth_trend')}
                     </h3>
                     <div className="h-80 w-full">
                         <ResponsiveContainer width="100%" height="100%">
@@ -180,7 +182,7 @@ const RevenueAnalytics = () => {
                 {/* Payment Method Distribution */}
                 <div className="bg-white dark:bg-[#1E1F20] p-6 rounded-2xl border border-gray-200 dark:border-[#3c4043] shadow-sm">
                     <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-6">
-                        Payment Methods
+                        {t('analytics.payment_methods')}
                     </h3>
                     <div className="h-80 w-full flex items-center justify-center">
                         {methodChartData.length > 0 ? (
@@ -204,7 +206,7 @@ const RevenueAnalytics = () => {
                                 </PieChart>
                             </ResponsiveContainer>
                         ) : (
-                            <p className="text-gray-400 text-sm">No payment data available</p>
+                            <p className="text-gray-400 text-sm">{t('analytics.no_payment_data')}</p>
                         )}
                     </div>
                 </div>
@@ -218,7 +220,7 @@ const RevenueAnalytics = () => {
                             <CreditCard size={24} />
                         </div>
                         <div>
-                            <p className="text-sm text-gray-500 font-bold uppercase">Total Payments</p>
+                            <p className="text-sm text-gray-500 font-bold uppercase">{t('analytics.total_payments')}</p>
                             <p className="text-3xl font-black text-gray-900 dark:text-white">
                                 {stats?.totalPaymentsThisMonth || 0}
                             </p>
@@ -232,7 +234,7 @@ const RevenueAnalytics = () => {
                             <CheckCircle size={24} />
                         </div>
                         <div>
-                            <p className="text-sm text-gray-500 font-bold uppercase">Successful</p>
+                            <p className="text-sm text-gray-500 font-bold uppercase">{t('analytics.successful')}</p>
                             <p className="text-3xl font-black text-gray-900 dark:text-white">
                                 {stats?.successfulPaymentsThisMonth || 0}
                             </p>
@@ -246,7 +248,7 @@ const RevenueAnalytics = () => {
                             <XCircle size={24} />
                         </div>
                         <div>
-                            <p className="text-sm text-gray-500 font-bold uppercase">Failed</p>
+                            <p className="text-sm text-gray-500 font-bold uppercase">{t('analytics.failed')}</p>
                             <p className="text-3xl font-black text-gray-900 dark:text-white">
                                 {(stats?.totalPaymentsThisMonth || 0) - (stats?.successfulPaymentsThisMonth || 0)}
                             </p>

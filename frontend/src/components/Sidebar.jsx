@@ -11,7 +11,7 @@ const Sidebar = ({ currentUser, logout, siteName, version }) => {
     const currentPath = location.pathname;
 
     const getMenuItems = () => {
-        const role = currentUser?.role;
+        const role = currentUser?.role?.name || currentUser?.role;
         const items = [
             { path: '/', label: t('sidebar.dashboard'), icon: <LayoutDashboard size={20} /> }
         ];
@@ -38,10 +38,12 @@ const Sidebar = ({ currentUser, logout, siteName, version }) => {
     // FIX: Hjälpfunktion för att bygga bild-URL
     const getProfileImage = () => {
         if (!currentUser?.profilePictureUrl) return null;
-        // Om URL:en redan börjar med http, använd den. Annars lägg på localhost:8080
-        return currentUser.profilePictureUrl.startsWith('http')
-            ? currentUser.profilePictureUrl
-            : `http://127.0.0.1:8080${currentUser.profilePictureUrl}`;
+        let url = currentUser.profilePictureUrl;
+        if (url.includes('minio:9000')) url = url.replace('minio:9000', 'localhost:9000');
+
+        return url.startsWith('http')
+            ? url
+            : `http://localhost:8080${url}`;
     };
 
     return (
@@ -68,7 +70,7 @@ const Sidebar = ({ currentUser, logout, siteName, version }) => {
                 </div>
                 <div className="overflow-hidden">
                     <p className="text-sm font-bold text-gray-900 truncate">{currentUser?.fullName || currentUser?.username}</p>
-                    <p className="text-xs text-indigo-600 font-medium truncate capitalize">{currentUser?.role?.toLowerCase()}</p>
+                    <p className="text-xs text-indigo-600 font-medium truncate capitalize">{(currentUser?.role?.name || currentUser?.role || '').toLowerCase()}</p>
                 </div>
             </div>
 

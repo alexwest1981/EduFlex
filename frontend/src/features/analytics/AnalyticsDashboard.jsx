@@ -43,13 +43,13 @@ const AnalyticsDashboard = () => {
         }
     };
 
-    if (isLoading) return <div className="p-8 text-center text-gray-500 font-mono animate-pulse">BOOTING ANALYTICS ENGINE...</div>;
+    if (isLoading) return <div className="p-8 text-center text-gray-500 font-mono animate-pulse">{t('common.loading')}</div>;
 
     const cards = [
-        { title: "Monthly Recurring Revenue", value: `$${overview?.mrr?.toLocaleString()}`, change: "+12.5%", icon: <DollarSign size={24} />, color: "text-emerald-500", bg: "bg-emerald-50 dark:bg-emerald-900/20" },
-        { title: "Total Users", value: overview?.totalUsers, change: "+8.2%", icon: <Users size={24} />, color: "text-blue-500", bg: "bg-blue-50 dark:bg-blue-900/20" },
-        { title: "Active Sessions", value: overview?.activeSessions, change: "+24%", icon: <Activity size={24} />, color: "text-purple-500", bg: "bg-purple-50 dark:bg-purple-900/20" },
-        { title: "Server Health", value: overview?.serverHealth, change: "Stable", icon: <Server size={24} />, color: "text-green-500", bg: "bg-green-50 dark:bg-green-900/20" },
+        { title: t('analytics.monthly_recurring_revenue'), value: `$${overview?.mrr?.toLocaleString()}`, change: "+12.5%", icon: <DollarSign size={24} />, color: "text-emerald-500", bg: "bg-emerald-50 dark:bg-emerald-900/20" },
+        { title: t('analytics.total_users'), value: overview?.totalUsers, change: "+8.2%", icon: <Users size={24} />, color: "text-blue-500", bg: "bg-blue-50 dark:bg-blue-900/20" },
+        { title: t('analytics.active_sessions'), value: overview?.activeSessions, change: "+24%", icon: <Activity size={24} />, color: "text-purple-500", bg: "bg-purple-50 dark:bg-purple-900/20" },
+        { title: t('analytics.server_health'), value: overview?.serverHealth, change: t('analytics.stable'), icon: <Server size={24} />, color: "text-green-500", bg: "bg-green-50 dark:bg-green-900/20" },
     ];
 
     const TabButton = ({ id, label, icon }) => (
@@ -115,17 +115,17 @@ const AnalyticsDashboard = () => {
                     <button
                         onClick={handleExport}
                         className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-[#1E1F20] border border-gray-200 dark:border-[#3c4043] rounded-lg text-sm font-bold text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-[#282a2c] transition-colors shadow-sm">
-                        <Download size={16} /> Export CSV
+                        <Download size={16} /> {t('analytics.export_csv')}
                     </button>
                 </div>
             </div>
 
             {/* TABS */}
             <div className="flex mb-8 border-b border-gray-200 dark:border-[#3c4043]">
-                <TabButton id="overview" label="Financial Overview" icon={<TrendingUp size={16} />} />
-                <TabButton id="revenue" label="Revenue Analytics" icon={<Wallet size={16} />} />
-                <TabButton id="students" label="Student Insights" icon={<GraduationCap size={16} />} />
-                <TabButton id="infrastructure" label="System Infrastructure" icon={<Server size={16} />} />
+                <TabButton id="overview" label={t('analytics.financial_overview')} icon={<TrendingUp size={16} />} />
+                <TabButton id="revenue" label={t('analytics.revenue_analytics')} icon={<Wallet size={16} />} />
+                <TabButton id="students" label={t('analytics.student_insights')} icon={<GraduationCap size={16} />} />
+                <TabButton id="infrastructure" label={t('analytics.system_infrastructure')} icon={<Server size={16} />} />
             </div>
 
             {activeTab === 'overview' && (
@@ -143,7 +143,7 @@ const AnalyticsDashboard = () => {
                                         : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-[#282a2c]'
                                         }`}
                                 >
-                                    {range.charAt(0).toUpperCase() + range.slice(1)}
+                                    {t(`analytics.${range}`)}
                                 </button>
                             ))}
                         </div>
@@ -162,7 +162,7 @@ const AnalyticsDashboard = () => {
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-1 text-xs font-bold text-emerald-600 dark:text-emerald-400">
-                                    <TrendingUp size={12} /> {card.change} <span className="text-gray-400 font-normal ml-1">vs last month</span>
+                                    <TrendingUp size={12} /> {card.change} <span className="text-gray-400 font-normal ml-1">{t('analytics.vs_last_month')}</span>
                                 </div>
                             </div>
                         ))}
@@ -172,7 +172,7 @@ const AnalyticsDashboard = () => {
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
                         <div className="lg:col-span-2 bg-white dark:bg-[#1E1F20] p-6 rounded-2xl border border-gray-200 dark:border-[#3c4043] shadow-sm">
                             <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-6">
-                                Revenue Growth ({timeRange === 'day' ? 'Last 24 Hours' : timeRange === 'week' ? 'Last 7 Days' : timeRange === 'month' ? 'Last 30 Days' : 'Last 12 Months'})
+                                {t('analytics.revenue_growth')} ({timeRange === 'day' ? 'Last 24 Hours' : timeRange === 'week' ? 'Last 7 Days' : timeRange === 'month' ? 'Last 30 Days' : 'Last 12 Months'})
                             </h3>
                             <div className="h-80 w-full">
                                 <ResponsiveContainer width="100%" height="100%">
@@ -197,7 +197,7 @@ const AnalyticsDashboard = () => {
                         </div>
 
                         <div className="bg-white dark:bg-[#1E1F20] p-6 rounded-2xl border border-gray-200 dark:border-[#3c4043] shadow-sm">
-                            <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-6">User Acquisition</h3>
+                            <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-6">{t('analytics.user_acquisition')}</h3>
                             <div className="h-80 w-full">
                                 <ResponsiveContainer width="100%" height="100%">
                                     <BarChart data={growthData}>
@@ -219,11 +219,11 @@ const AnalyticsDashboard = () => {
                             <ShieldCheck size={200} />
                         </div>
                         <div className="relative z-10">
-                            <h2 className="text-2xl font-bold mb-2">System Status: Operational</h2>
-                            <p className="text-indigo-200 max-w-2xl mb-6">All systems running normally.</p>
+                            <h2 className="text-2xl font-bold mb-2">{t('analytics.system_status')}: {t('analytics.operational')}</h2>
+                            <p className="text-indigo-200 max-w-2xl mb-6">{t('analytics.all_systems_normal')}</p>
                             <div className="flex gap-4">
                                 <div className="bg-white/10 backdrop-blur-sm p-4 rounded-xl border border-white/20">
-                                    <p className="text-xs uppercase font-bold text-indigo-200">Uptime</p>
+                                    <p className="text-xs uppercase font-bold text-indigo-200">{t('analytics.uptime')}</p>
                                     <p className="text-2xl font-mono font-bold">99.99%</p>
                                 </div>
                             </div>
@@ -243,21 +243,21 @@ const AnalyticsDashboard = () => {
                         <div className="bg-white dark:bg-[#1E1F20] p-6 rounded-2xl border border-gray-200 dark:border-[#3c4043] shadow-sm flex items-center gap-4">
                             <div className="p-3 rounded-full bg-blue-50 text-blue-600 dark:bg-blue-900/20"><Users size={24} /></div>
                             <div>
-                                <p className="text-sm text-gray-500 font-bold uppercase">Total Students</p>
+                                <p className="text-sm text-gray-500 font-bold uppercase">{t('analytics.total_students')}</p>
                                 <p className="text-3xl font-black">{students.length}</p>
                             </div>
                         </div>
                         <div className="bg-white dark:bg-[#1E1F20] p-6 rounded-2xl border border-gray-200 dark:border-[#3c4043] shadow-sm flex items-center gap-4">
                             <div className="p-3 rounded-full bg-orange-50 text-orange-600 dark:bg-orange-900/20"><AlertTriangle size={24} /></div>
                             <div>
-                                <p className="text-sm text-gray-500 font-bold uppercase">At Risk</p>
+                                <p className="text-sm text-gray-500 font-bold uppercase">{t('analytics.at_risk')}</p>
                                 <p className="text-3xl font-black">{students.filter(s => s.riskFactor === 'High').length}</p>
                             </div>
                         </div>
                         <div className="bg-white dark:bg-[#1E1F20] p-6 rounded-2xl border border-gray-200 dark:border-[#3c4043] shadow-sm flex items-center gap-4">
                             <div className="p-3 rounded-full bg-purple-50 text-purple-600 dark:bg-purple-900/20"><Clock size={24} /></div>
                             <div>
-                                <p className="text-sm text-gray-500 font-bold uppercase">Avg Time Online</p>
+                                <p className="text-sm text-gray-500 font-bold uppercase">{t('analytics.avg_time_online')}</p>
                                 <p className="text-3xl font-black">2.4h</p>
                             </div>
                         </div>
@@ -266,18 +266,18 @@ const AnalyticsDashboard = () => {
                     {/* TABLE */}
                     <div className="bg-white dark:bg-[#1E1F20] rounded-2xl border border-gray-200 dark:border-[#3c4043] shadow-sm overflow-hidden">
                         <div className="p-6 border-b border-gray-100 dark:border-[#3c4043]">
-                            <h3 className="font-bold text-lg text-gray-900 dark:text-white">Student Performance Registry</h3>
+                            <h3 className="font-bold text-lg text-gray-900 dark:text-white">{t('analytics.student_performance_registry')}</h3>
                         </div>
                         <div className="overflow-x-auto">
                             <table className="w-full text-left text-sm">
                                 <thead className="bg-gray-50 dark:bg-[#282a2c] text-gray-500 dark:text-gray-400 font-bold uppercase text-xs">
                                     <tr>
-                                        <th className="px-6 py-4">Student Name</th>
-                                        <th className="px-6 py-4">Status</th>
-                                        <th className="px-6 py-4">Courses</th>
-                                        <th className="px-6 py-4">Completion</th>
-                                        <th className="px-6 py-4">Total Time Online</th>
-                                        <th className="px-6 py-4">Risk Factor</th>
+                                        <th className="px-6 py-4">{t('analytics.student_name')}</th>
+                                        <th className="px-6 py-4">{t('analytics.status')}</th>
+                                        <th className="px-6 py-4">{t('analytics.courses')}</th>
+                                        <th className="px-6 py-4">{t('analytics.completion')}</th>
+                                        <th className="px-6 py-4">{t('analytics.total_time_online')}</th>
+                                        <th className="px-6 py-4">{t('analytics.risk_factor')}</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-100 dark:divide-[#3c4043]">
@@ -312,7 +312,7 @@ const AnalyticsDashboard = () => {
                                     ))}
                                     {students.length === 0 && (
                                         <tr>
-                                            <td colSpan={6} className="px-6 py-8 text-center text-gray-500">No student data available.</td>
+                                            <td colSpan={6} className="px-6 py-8 text-center text-gray-500">{t('analytics.no_student_data')}</td>
                                         </tr>
                                     )}
                                 </tbody>
@@ -326,11 +326,11 @@ const AnalyticsDashboard = () => {
                     <div className="bg-white dark:bg-[#1E1F20] p-6 rounded-2xl border border-gray-200 dark:border-[#3c4043] shadow-sm">
                         <div className="flex justify-between items-center mb-6">
                             <div>
-                                <h3 className="font-bold text-lg text-gray-900 dark:text-white">Grafana Dashboard</h3>
-                                <p className="text-gray-500 text-sm">Real-time system metrics (CPU, Memory, Requests).</p>
+                                <h3 className="font-bold text-lg text-gray-900 dark:text-white">{t('analytics.grafana_dashboard')}</h3>
+                                <p className="text-gray-500 text-sm">{t('analytics.grafana_description')}</p>
                             </div>
                             <a href="http://localhost:3000" target="_blank" rel="noopener noreferrer" className="text-sm bg-indigo-50 text-indigo-700 px-3 py-1.5 rounded-lg font-bold hover:bg-indigo-100 flex items-center gap-2">
-                                <Activity size={16} /> Open Full Grafana
+                                <Activity size={16} /> {t('analytics.open_full_grafana')}
                             </a>
                         </div>
                         <div className="aspect-video w-full rounded-xl overflow-hidden border border-gray-200 dark:border-[#3c4043]">
@@ -364,11 +364,11 @@ const AnalyticsDashboard = () => {
                     <div className="bg-white dark:bg-[#1E1F20] p-6 rounded-2xl border border-gray-200 dark:border-[#3c4043] shadow-sm">
                         <div className="flex justify-between items-center mb-6">
                             <div>
-                                <h3 className="font-bold text-lg text-gray-900 dark:text-white">Prometheus Metrics</h3>
-                                <p className="text-gray-500 text-sm">Raw metrics explorer.</p>
+                                <h3 className="font-bold text-lg text-gray-900 dark:text-white">{t('analytics.prometheus_metrics')}</h3>
+                                <p className="text-gray-500 text-sm">{t('analytics.prometheus_description')}</p>
                             </div>
                             <a href="http://localhost:9090" target="_blank" rel="noopener noreferrer" className="text-sm bg-orange-50 text-orange-700 px-3 py-1.5 rounded-lg font-bold hover:bg-orange-100 flex items-center gap-2">
-                                <Activity size={16} /> Open Prometheus
+                                <Activity size={16} /> {t('analytics.open_prometheus')}
                             </a>
                         </div>
                     </div>

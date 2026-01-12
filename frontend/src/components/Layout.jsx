@@ -17,8 +17,13 @@ const Layout = ({ children }) => {
 
     const handleLogout = () => { logout(); navigate('/login'); };
 
-    const profileImgUrl = currentUser?.profilePictureUrl
-        ? `http://127.0.0.1:8080${currentUser.profilePictureUrl}` : null;
+    const getProfileUrl = () => {
+        if (!currentUser?.profilePictureUrl) return null;
+        let url = currentUser.profilePictureUrl;
+        if (url.includes('minio:9000')) url = url.replace('minio:9000', 'localhost:9000');
+        return url.startsWith('http') ? url : `http://localhost:8080${url}`;
+    };
+    const profileImgUrl = getProfileUrl();
 
     const gamificationActive = isModuleActive('GAMIFICATION');
     const analyticsActive = isModuleActive('ANALYTICS');
@@ -32,12 +37,14 @@ const Layout = ({ children }) => {
         }
     }, [systemSettings]);
 
+    const roleName = currentUser?.role?.name || currentUser?.role;
+
     const navItems = [
         { path: '/', icon: <LayoutDashboard size={20} />, label: t('sidebar.dashboard') },
         { path: '/calendar', icon: <Calendar size={20} />, label: t('sidebar.calendar') || 'Kalender' },
-        ...(currentUser?.role === 'TEACHER' || currentUser?.role === 'ADMIN' ? [{ path: '/resources', icon: <BookOpen size={20} />, label: t('sidebar.resource_bank') }] : []),
-        ...(currentUser?.role === 'ADMIN' ? [{ path: '/admin', icon: <Settings size={20} />, label: t('sidebar.admin') }] : []),
-        ...(analyticsActive && currentUser?.role === 'ADMIN' ? [{ path: '/analytics', icon: <TrendingUp size={20} />, label: t('sidebar.analytics') }] : []),
+        ...(roleName === 'TEACHER' || roleName === 'ADMIN' ? [{ path: '/resources', icon: <BookOpen size={20} />, label: t('sidebar.resource_bank') }] : []),
+        ...(roleName === 'ADMIN' ? [{ path: '/admin', icon: <Settings size={20} />, label: t('sidebar.admin') }] : []),
+        ...(analyticsActive && roleName === 'ADMIN' ? [{ path: '/analytics', icon: <TrendingUp size={20} />, label: t('sidebar.analytics') }] : []),
         { path: '/catalog', icon: <Layers size={20} />, label: t('sidebar.catalog') },
         { path: '/documents', icon: <FileText size={20} />, label: t('sidebar.documents') },
         { path: '/profile', icon: <User size={20} />, label: t('sidebar.my_profile') },
@@ -68,7 +75,7 @@ const Layout = ({ children }) => {
                     {sidebarOpen && (
                         <div className="text-center animate-in fade-in">
                             <h3 className="font-bold text-sm text-gray-900 dark:text-gray-200 truncate max-w-[200px]">{currentUser?.fullName}</h3>
-                            <span className="text-[10px] uppercase font-bold text-gray-500 dark:text-gray-400 tracking-wider">{currentUser?.role}</span>
+                            <span className="text-[10px] uppercase font-bold text-gray-500 dark:text-gray-400 tracking-wider">{roleName}</span>
                         </div>
                     )}
 
@@ -78,7 +85,7 @@ const Layout = ({ children }) => {
                                 <div className="bg-white dark:bg-[#3c4043] p-1.5 rounded-full text-amber-600 dark:text-amber-400 shadow-sm"><Award size={16} /></div>
                                 <div className="text-left">
                                     <p className="text-[10px] font-bold text-amber-800 dark:text-amber-400 uppercase">Level {currentUser?.level || 1}</p>
-                                    <p className="text-xs font-bold text-gray-800 dark:text-gray-300">{currentUser?.role === 'STUDENT' ? t('auth.student') : currentUser?.role === 'TEACHER' ? t('auth.teacher') : t('auth.admin')}</p>
+                                    <p className="text-xs font-bold text-gray-800 dark:text-gray-300">{roleName === 'STUDENT' ? t('auth.student') : roleName === 'TEACHER' ? t('auth.teacher') : t('auth.admin')}</p>
                                 </div>
                             </div>
                             <div className="text-amber-600 dark:text-amber-400 font-bold text-xs flex items-center gap-1">

@@ -76,7 +76,7 @@ public class AuthController {
                 user.getFirstName(),
                 user.getLastName(),
                 user.getFullName(),
-                user.getRole().name(),
+                user.getRole().getName(),
                 user.getProfilePictureUrl(),
                 user.getPoints(),
                 user.getLevel(),
