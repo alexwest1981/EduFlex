@@ -1,6 +1,6 @@
 import React from 'react';
 import AdminStats from './components/admin/AdminStats';
-import { AdminRecentActivity } from './components/admin/AdminTables';
+import { RecentUsersWidget, RecentUploadsWidget } from './components/admin/AdminTables';
 import RecentMessagesWidget from './components/RecentMessagesWidget';
 import { CreateUserModal } from './components/admin/AdminModals';
 
@@ -35,18 +35,23 @@ const AdminOverview = ({ users, courses, documents, fetchStats, setActiveTab }) 
             {settings.showStats && <AdminStats users={users} courses={courses} documents={documents} />}
 
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
-                {/* 2. Aktivitet (2/3 bredd) */}
-                {(settings.showRecentUsers || settings.showRecentDocs) && (
-                    <div className={settings.showMessages ? "xl:col-span-2" : "xl:col-span-3"}>
-                        <AdminRecentActivity
-                            latestUsers={latestUsers}
-                            latestDocs={latestDocs}
-                            onNewUserClick={() => setShowUserModal(true)}
-                            showUsers={settings.showRecentUsers}
-                            showDocs={settings.showRecentDocs}
-                        />
-                    </div>
-                )}
+                {/* 2. Aktivitet (Delat i två widgets) */}
+                <div className={settings.showMessages ? "xl:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-8" : "xl:col-span-3 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"}>
+                    {settings.showRecentUsers && (
+                        <div className={settings.showMessages ? "" : "lg:col-span-1"}>
+                            <RecentUsersWidget
+                                latestUsers={latestUsers}
+                                onNewUserClick={() => setShowUserModal(true)}
+                            />
+                        </div>
+                    )}
+
+                    {settings.showRecentDocs && (
+                        <div className={settings.showMessages ? "" : "lg:col-span-1"}>
+                            <RecentUploadsWidget latestDocs={latestDocs} />
+                        </div>
+                    )}
+                </div>
 
                 {/* 3. Meddelanden Preview (1/3 bredd) */}
                 {settings.showMessages && (

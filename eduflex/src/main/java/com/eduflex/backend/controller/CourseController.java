@@ -77,11 +77,12 @@ public class CourseController {
             @RequestParam(value = "content", required = false) String content,
             @RequestParam(value = "link", required = false) String link,
             @RequestParam(value = "type", defaultValue = "LESSON") String type, // Default till LESSON
+            @RequestParam(value = "availableFrom", required = false) String availableFrom,
             @RequestParam(value = "file", required = false) MultipartFile file) {
         try {
             // Logga för debugging
             System.out.println("Adding material: " + title + ", Type: " + type + ", Link: " + link);
-            return ResponseEntity.ok(courseService.addMaterial(id, title, content, link, type, file));
+            return ResponseEntity.ok(courseService.addMaterial(id, title, content, link, type, availableFrom, file));
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.badRequest().body("Fel vid skapande av material: " + e.getMessage());
@@ -94,9 +95,10 @@ public class CourseController {
             @RequestParam("title") String title,
             @RequestParam(value = "content", required = false) String content,
             @RequestParam(value = "link", required = false) String link,
+            @RequestParam(value = "availableFrom", required = false) String availableFrom,
             @RequestParam(value = "file", required = false) MultipartFile file) {
         try {
-            return ResponseEntity.ok(courseService.updateMaterial(id, title, content, link, file));
+            return ResponseEntity.ok(courseService.updateMaterial(id, title, content, link, availableFrom, file));
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.badRequest().body("Fel vid uppdatering: " + e.getMessage());

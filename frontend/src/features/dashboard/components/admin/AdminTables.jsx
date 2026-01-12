@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { User, FileText, File as FileIcon, Search, Plus, Edit2, Trash2 } from 'lucide-react';
+import { User, FileText, File as FileIcon, Search, Plus, Edit2, Trash2, FileCode, Image } from 'lucide-react';
 import { api } from '../../../../services/api';
 // ... (skip down to AdminCourseRegistry signature)
 export const AdminCourseRegistry = ({ courses, onEdit, onManage, onNewCourse, onDelete }) => {
@@ -68,71 +68,130 @@ export const AdminCourseRegistry = ({ courses, onEdit, onManage, onNewCourse, on
     );
 };
 
-export const AdminRecentActivity = ({ latestUsers, latestDocs, onNewUserClick, showUsers = true, showDocs = true }) => {
-    // Determine grid columns based on visibility
-    const gridCols = (showUsers && showDocs) ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1';
+export const RecentUsersWidget = ({ latestUsers, onNewUserClick }) => (
+    <div className="bg-white dark:bg-[#1E1F20] rounded-xl border border-gray-200 dark:border-[#3c4043] shadow-sm p-6 overflow-hidden animate-in slide-in-from-bottom-8 h-full">
+        <div className="flex justify-between items-center mb-4">
+            <h3 className="font-bold text-gray-800 dark:text-white flex items-center gap-2">
+                <User size={18} className="text-indigo-600" />
+                Senaste användare
+            </h3>
+            <button onClick={onNewUserClick} className="text-xs bg-indigo-600 text-white px-3 py-1.5 rounded-lg font-bold hover:bg-indigo-700 flex items-center gap-1">
+                <Plus size={12} /> Ny
+            </button>
+        </div>
+        <div className="space-y-3">
+            {latestUsers?.length > 0 ? latestUsers.map(u => (
+                <div key={u.id} className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-[#131314] rounded-lg border border-gray-100 dark:border-[#3c4043] hover:border-indigo-200 transition-colors">
+                    <div className="w-8 h-8 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center font-bold text-xs uppercase border border-indigo-200">
+                        {u.firstName?.[0] || '?'}
+                    </div>
+                    <div className="overflow-hidden">
+                        <p className="text-sm font-bold text-gray-900 dark:text-white truncate">{u.firstName} {u.lastName}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 font-mono capitalize">{(u.role?.name || u.role || '').toLowerCase()}</p>
+                    </div>
+                </div>
+            )) : (
+                <p className="text-sm text-gray-400 italic">Inga nya användare registrerade.</p>
+            )}
+        </div>
+    </div>
+);
+
+export const RecentUploadsWidget = ({ latestDocs }) => {
+    const [selectedDoc, setSelectedDoc] = useState(null);
+
+    const getFileIcon = (mimeType) => {
+        if (!mimeType) return <FileIcon size={16} />;
+        if (mimeType.startsWith('image/')) return <Image size={16} />;
+        if (mimeType.includes('pdf')) return <FileText size={16} />;
+        if (mimeType.includes('word') || mimeType.includes('document')) return <FileText size={16} />;
+        if (mimeType.includes('excel') || mimeType.includes('sheet')) return <FileText size={16} />;
+        if (mimeType.includes('code') || mimeType.includes('javascript') || mimeType.includes('html')) return <FileCode size={16} />;
+        return <FileIcon size={16} />;
+    };
 
     return (
-        <div className="bg-white dark:bg-[#1E1F20] rounded-xl border border-gray-200 dark:border-[#3c4043] shadow-sm p-6 overflow-hidden animate-in slide-in-from-bottom-8">
-            <div className={`grid ${gridCols} gap-8`}>
-                {/* Left: Latest Users */}
-                {showUsers && (
-                    <div>
-                        <div className="flex justify-between items-center mb-4">
-                            <h3 className="font-bold text-gray-800 dark:text-white flex items-center gap-2">
-                                <User size={18} className="text-indigo-600" />
-                                Senaste användare
-                            </h3>
-                            <button onClick={onNewUserClick} className="text-xs bg-indigo-600 text-white px-3 py-1.5 rounded-lg font-bold hover:bg-indigo-700 flex items-center gap-1">
-                                <Plus size={12} /> Ny
+        <>
+            <div className="bg-white dark:bg-[#1E1F20] rounded-xl border border-gray-200 dark:border-[#3c4043] shadow-sm p-6 overflow-hidden animate-in slide-in-from-bottom-8 h-full flex flex-col">
+                <div className="flex justify-between items-center mb-4">
+                    <h3 className="font-bold text-gray-800 dark:text-white flex items-center gap-2">
+                        <FileIcon size={18} className="text-blue-600" />
+                        Senaste uppladdningar
+                    </h3>
+                </div>
+                <div className="space-y-3 flex-1">
+                    {latestDocs?.length > 0 ? latestDocs.map(d => (
+                        <div
+                            key={d.id}
+                            onClick={() => setSelectedDoc(d)}
+                            className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-[#131314] rounded-lg border border-gray-100 dark:border-[#3c4043] hover:border-blue-400 hover:shadow-sm cursor-pointer transition-all group"
+                        >
+                            <div className="p-2 bg-blue-50 text-blue-600 rounded-lg border border-blue-100 dark:bg-blue-900/20 dark:border-blue-800 group-hover:bg-blue-100 dark:group-hover:bg-blue-900/40 transition-colors">
+                                {getFileIcon(d.fileType)}
+                            </div>
+                            <div className="overflow-hidden flex-1">
+                                <p className="text-sm font-bold text-gray-900 dark:text-white truncate" title={d.fileName || d.title}>{d.fileName || d.title}</p>
+                                <p className="text-xs text-gray-500 dark:text-gray-400">
+                                    {(d.size / 1024).toFixed(1)} KB • {new Date(d.uploadedAt).toLocaleDateString()}
+                                </p>
+                            </div>
+                        </div>
+                    )) : (
+                        <p className="text-sm text-gray-400 italic">Inga filer uppladdade än.</p>
+                    )}
+                </div>
+            </div>
+
+            {/* PREVIEW MODAL */}
+            {selectedDoc && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in" onClick={() => setSelectedDoc(null)}>
+                    <div className="bg-white dark:bg-[#1E1F20] w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in-95" onClick={e => e.stopPropagation()}>
+                        <div className="p-4 border-b border-gray-100 dark:border-[#3c4043] flex justify-between items-center">
+                            <h3 className="font-bold text-lg dark:text-white truncate pr-4">{selectedDoc.fileName || selectedDoc.title}</h3>
+                            <button onClick={() => setSelectedDoc(null)} className="p-1 hover:bg-gray-100 dark:hover:bg-[#282a2c] rounded-full text-gray-500">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
                             </button>
                         </div>
-                        <div className="space-y-3">
-                            {latestUsers?.length > 0 ? latestUsers.map(u => (
-                                <div key={u.id} className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-[#131314] rounded-lg border border-gray-100 dark:border-[#3c4043] hover:border-indigo-200 transition-colors">
-                                    <div className="w-8 h-8 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center font-bold text-xs uppercase border border-indigo-200">
-                                        {u.firstName?.[0] || '?'}
-                                    </div>
-                                    <div className="overflow-hidden">
-                                        <p className="text-sm font-bold text-gray-900 dark:text-white truncate">{u.firstName} {u.lastName}</p>
-                                        <p className="text-xs text-gray-500 dark:text-gray-400 font-mono capitalize">{(u.role?.name || u.role || '').toLowerCase()}</p>
-                                    </div>
-                                </div>
-                            )) : (
-                                <p className="text-sm text-gray-400 italic">Inga nya användare registrerade.</p>
-                            )}
-                        </div>
-                    </div>
-                )}
 
-                {/* Right: Latest Docs */}
-                {showDocs && (
-                    <div>
-                        <div className="flex justify-between items-center mb-4">
-                            <h3 className="font-bold text-gray-800 dark:text-white flex items-center gap-2">
-                                <FileIcon size={18} className="text-blue-600" />
-                                Senaste uppladdningar
-                            </h3>
-                        </div>
-                        <div className="space-y-3">
-                            {latestDocs?.length > 0 ? latestDocs.map(d => (
-                                <div key={d.id} className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-[#131314] rounded-lg border border-gray-100 dark:border-[#3c4043] hover:border-blue-200 transition-colors">
-                                    <div className="p-2 bg-blue-50 text-blue-600 rounded-lg border border-blue-100 dark:bg-blue-900/20 dark:border-blue-800">
-                                        <FileText size={16} />
-                                    </div>
-                                    <div className="overflow-hidden">
-                                        <p className="text-sm font-bold text-gray-900 dark:text-white truncate max-w-[200px]" title={d.title}>{d.title}</p>
-                                        <p className="text-xs text-gray-500 dark:text-gray-400">Uppladdad av {d.uploadedBy || 'Okänd'}</p>
-                                    </div>
+                        <div className="p-8 flex flex-col items-center text-center">
+                            {selectedDoc.fileType?.startsWith('image/') ? (
+                                <img
+                                    src={`http://127.0.0.1:8080${selectedDoc.fileUrl}`}
+                                    alt="Preview"
+                                    className="max-h-64 rounded-lg shadow-sm mb-6 object-contain"
+                                />
+                            ) : (
+                                <div className="w-24 h-24 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mb-6">
+                                    {React.cloneElement(getFileIcon(selectedDoc.fileType), { size: 48 })}
                                 </div>
-                            )) : (
-                                <p className="text-sm text-gray-400 italic">Inga filer uppladdade än.</p>
                             )}
+
+                            <div className="grid grid-cols-2 gap-4 w-full text-sm mb-6">
+                                <div className="bg-gray-50 dark:bg-[#131314] p-3 rounded-lg">
+                                    <p className="text-gray-500 text-xs uppercase mb-1">Storlek</p>
+                                    <p className="font-mono font-bold dark:text-white">{(selectedDoc.size / 1024).toFixed(1)} KB</p>
+                                </div>
+                                <div className="bg-gray-50 dark:bg-[#131314] p-3 rounded-lg">
+                                    <p className="text-gray-500 text-xs uppercase mb-1">Typ</p>
+                                    <p className="font-mono font-bold dark:text-white uppercase">{selectedDoc.fileType?.split('/')[1] || 'FIL'}</p>
+                                </div>
+                            </div>
+
+                            <a
+                                href={`http://127.0.0.1:8080${selectedDoc.fileUrl}`}
+                                download
+                                target="_blank"
+                                rel="noreferrer"
+                                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl transition-colors flex items-center justify-center gap-2"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" x2="12" y1="15" y2="3" /></svg>
+                                Ladda ner fil
+                            </a>
                         </div>
                     </div>
-                )}
-            </div>
-        </div>
+                </div>
+            )}
+        </>
     );
 };
 

@@ -192,6 +192,7 @@ public class CourseService {
     }
 
     public CourseMaterial addMaterial(Long courseId, String title, String content, String link, String type,
+            String availableFrom,
             MultipartFile file) throws IOException {
         Course course = getCourseById(courseId);
         CourseMaterial material = new CourseMaterial();
@@ -199,6 +200,9 @@ public class CourseService {
         material.setContent(content);
         material.setLink(link);
         material.setType(CourseMaterial.MaterialType.valueOf(type));
+        if (availableFrom != null && !availableFrom.isEmpty()) {
+            material.setAvailableFrom(java.time.LocalDateTime.parse(availableFrom));
+        }
         material.setCourse(course);
         if (file != null && !file.isEmpty()) {
             String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
@@ -210,7 +214,8 @@ public class CourseService {
         return materialRepository.save(material);
     }
 
-    public CourseMaterial updateMaterial(Long id, String title, String content, String link, MultipartFile file)
+    public CourseMaterial updateMaterial(Long id, String title, String content, String link, String availableFrom,
+            MultipartFile file)
             throws IOException {
         CourseMaterial material = materialRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Material hittades inte"));
@@ -220,6 +225,12 @@ public class CourseService {
             material.setContent(content);
         if (link != null)
             material.setLink(link);
+        if (availableFrom != null && !availableFrom.isEmpty()) {
+            material.setAvailableFrom(java.time.LocalDateTime.parse(availableFrom));
+        } else if (availableFrom != null && availableFrom.isEmpty()) {
+            // Om man skickar tom sträng betyder det att man vill ta bort datumet
+            material.setAvailableFrom(null);
+        }
         if (file != null && !file.isEmpty()) {
             String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
             Path path = Paths.get(uploadDir + "/" + fileName);

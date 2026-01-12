@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Loader2, Download, BookOpen, MessageSquare, FileText, Users, HelpCircle, Video, Monitor, Camera, Calendar, Package } from 'lucide-react';
+import { ArrowLeft, Loader2, Download, BookOpen, MessageSquare, FileText, Users, HelpCircle, Video, Monitor, Camera, Calendar, Package, Activity } from 'lucide-react';
+import StudentActivityBoard from '../../components/StudentActivityBoard';
 import ScormList from '../scorm/ScormList';
 import { useTranslation } from 'react-i18next';
 import { api } from '../../services/api';
@@ -38,7 +39,8 @@ const CourseDetail = ({ currentUser }) => {
     const [canClaim, setCanClaim] = useState(false);
     const { API_BASE, token } = useAppContext();
 
-    const isTeacher = currentUser && (currentUser.role === 'TEACHER' || currentUser.role === 'ADMIN');
+    const userRole = currentUser?.role?.name || currentUser?.role;
+    const isTeacher = currentUser && (userRole === 'TEACHER' || userRole === 'ADMIN');
 
     // --- MODULE CONFIG ---
     const modules = [
@@ -109,6 +111,14 @@ const CourseDetail = ({ currentUser }) => {
             icon: <BookOpen size={18} />,
             enabled: !!course?.skolverketCourse, // Only show if course is linked to Skolverket
             visibleFor: 'ALL'
+        },
+        {
+            key: 'activity',
+            comp: ({ courseId }) => <StudentActivityBoard courseId={courseId} />,
+            meta: { name: 'Aktivitetslogg' },
+            icon: <Activity size={18} />,
+            enabled: true,
+            visibleFor: 'TEACHER'
         }
     ];
 
@@ -241,6 +251,12 @@ const CourseDetail = ({ currentUser }) => {
                             <span className="bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300 px-2 py-1 rounded font-mono font-bold">{course.courseCode}</span>
                             <span>{course.teacher?.fullName}</span>
                         </div>
+                        <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                            <Calendar size={16} />
+                            <span>{course?.startDate} - {course?.endDate}</span>
+                        </div>
+
+
                     </div>
 
                     <div className="flex gap-3">
