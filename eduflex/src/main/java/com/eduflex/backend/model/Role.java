@@ -32,6 +32,13 @@ public class Role {
     public Role() {
     }
 
+    // Compatibility constructor
+    public Role(String name, String description, boolean isSuperAdmin) {
+        this.name = name;
+        this.description = description;
+        this.isSuperAdmin = isSuperAdmin;
+    }
+
     public Role(String name, String description, String defaultDashboard, boolean isSuperAdmin) {
         this.name = name;
         this.description = description;

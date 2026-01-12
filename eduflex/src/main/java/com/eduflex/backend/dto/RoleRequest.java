@@ -16,6 +16,13 @@ public class RoleRequest {
     public RoleRequest() {
     }
 
+    // Compatibility constructor
+    public RoleRequest(String name, String description, List<String> permissions) {
+        this.name = name;
+        this.description = description;
+        this.permissions = permissions;
+    }
+
     public RoleRequest(String name, String description, String defaultDashboard, List<String> permissions) {
         this.name = name;
         this.description = description;
