@@ -9,6 +9,10 @@
   <em>Developed & maintained by <strong>Alex Weström / Fenrir Studio</strong></em>
 </p>
 
+<p align="center">
+  <a href="#-english">🇬🇧 English</a> &nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp; <a href="#-svenska">🇸🇪 Svenska</a>
+</p>
+
 ---
 
 <p align="center">
@@ -17,14 +21,16 @@
   <img src="https://img.shields.io/badge/PostgreSQL-15-336791?style=for-the-badge&logo=postgresql&logoColor=white"/>
   <img src="https://img.shields.io/badge/Docker-Containerized-blue?style=for-the-badge&logo=docker&logoColor=white"/>
   <img src="https://img.shields.io/badge/MinIO-S3%20Compatible-c72c48?style=for-the-badge&logo=minio&logoColor=white"/>
-  <img src="https://img.shields.io/badge/Redis-高性能-red?style=for-the-badge&logo=redis&logoColor=white"/>
-  <img src="https://img.shields.io/badge/SCORM-1.2-orange?style=for-the-badge&logo=html5&logoColor=white"/>
-  <img src="https://img.shields.io/badge/License-Proprietary-red?style=for-the-badge&logo=lock"/>
+  <img src="https://img.shields.io/badge/Redis-High%20Perf-red?style=for-the-badge&logo=redis&logoColor=white"/>
 </p>
 
 ---
 
-## 📖 Table of Contents
+<div id="-english"></div>
+
+## 🇬🇧 English
+
+### 📖 Table of Contents
 - [About the Project](#-about-the-project)
 - [Key Features](#-key-features)
 - [System Architecture](#-system-architecture)
@@ -36,47 +42,43 @@
 - [Roadmap](#-roadmap)
 - [License](#-license)
 
----
-
-## 🏫 About the Project
+### 🏫 About the Project
 
 **EduFlex 2.0** is a robust, cloud-native Learning Management System (LMS) engineered for scalability and user engagement. It bridges the gap between traditional enterprise LMS (often clunky and boring) and modern consumer apps (gamified, fast, and beautiful).
 
 Whether you are a single educator, a private school, or a municipal education board, EduFlex scales to meet your needs using a microservices-ready architecture orchestrating storage, caching, and compute.
 
----
+### 🌟 Key Features
 
-## 🌟 Key Features
-
-### 🍎 Core Education
+#### 🍎 Core Education
 - **Course Management:** Create comprehensive courses with rich text, video, attachments and quizzes.
 - **SCORM / xAPI Support:** Import interactive course packages from Articulate/Adobe Captivate.
 - **Assignment Engine:** Students submit files, teachers grade with feedback.
 - **Certification:** Automatically generating verifiable PDF certificates upon course completion.
 
-### 🎮 Gamification & Engagement
+#### 🎮 Gamification & Engagement
 - **Points & Levels:** Users earn XP for logging in, completing lessons, and acing quizzes.
 - **Badges:** Visual achievements using Lucide iconography.
 - **Leaderboards:** Foster healthy competition (toggleable per course).
 
-### 🇸🇪 Skolverket Integration (New!)
+#### 🇸🇪 Skolverket Integration
 - **Curriculum Mapping:** Direct integration with Swedish National Agency for Education (Skolverket).
-- **Automated Import:** Python-based scrapers to fetch course codes, descriptions, and grading criteria.
+- **Automated Import:** Python mechanisms to fetch course codes, descriptions, and grading criteria.
 - **Detailed Views:** View "Kunskapskrav" (Grading Criteria) directly within the course interface.
 
-### 💼 Revenue & Administration
+#### 💼 Revenue & Administration
 - **SaaS Ready:** Built-in subscription tiers (Free, Pro, Enterprise).
 - **Invoicing:** Automatic PDF invoice generation for recurring payments.
 - **User Management:** Detailed profiles with avatar uploads (MinIO backed).
 - **Role-Based Access Control (RBAC):** Granular permissions for Super Admin, Admin, Teacher, and Student.
 
-### 🌍 Localization
+#### 🌍 Localization
 - **Multi-language Support:** Fully translated UI for minimal friction.
 - **Supported Languages:** Swedish (Primary), English, Arabic, Norwegian, Danish, Finnish, German, French, Spanish.
 
 ---
 
-## 🛠 System Architecture
+### 🛠 System Architecture
 
 EduFlex utilizes a containerized architecture managed by **Docker Compose**. This ensures identical environments from development to production.
 
@@ -98,31 +100,23 @@ graph TD
     Backend -.->|External| Skolverket[Skolverket Web]
 ```
 
-### Security Measures
-- **JWT Authentication:** Stateless, secure API access.
-- **Password Hashing:** BCrypt encryption for user credentials.
-- **MinIO Policies:** Public-read buckets configured programmatically for profile assets; private buckets for course materials.
-- **CORS & CSRF:** Configured for strict frontend-backend communication.
+### 💻 Technology Stack
 
----
-
-## 💻 Technology Stack
-
-### Frontend Service (`eduflex-frontend`)
+#### Frontend Service (`eduflex-frontend`)
 - **Core:** React 19, Vite (Build Tool)
 - **State:** Zustand (Global State), React Context
 - **Styling:** Tailwind CSS v4, Lucide React (Icons)
 - **Internationalization:** i18next
 - **Data Viz:** Recharts (Analytics)
 
-### Backend Service (`eduflex-backend`)
+#### Backend Service (`eduflex-backend`)
 - **Core:** Java 21, Spring Boot 3.4
 - **Security:** Spring Security 6
 - **Data:** Spring Data JPA (Hibernate), PostgreSQL Driver
 - **Caching:** Spring Data Redis
 - **Docs:** Swagger / OpenAPI 3.0
 
-### Infrastructure
+#### Infrastructure
 - **Database:** PostgreSQL 15 (Alpine)
 - **Object Storage:** MinIO (S3 compatible)
 - **Cache:** Redis 7 (Alpine)
@@ -131,13 +125,13 @@ graph TD
 
 ---
 
-## 🚀 Getting Started
+### 🚀 Getting Started
 
-### Prerequisites
+#### Prerequisites
 - **Docker Desktop** (latest version)
 - **Git**
 
-### Installation
+#### Installation
 
 1.  **Clone the Repository**
     ```bash
@@ -159,13 +153,12 @@ graph TD
 
 4.  **License Key**
     The system requires a signed license key (`eduflex.license`) to unlock Pro/Enterprise features.
-    > *For evaluation purposes or to request a developer license, please contact **alexwestrom81@gmail.com**.*
 
 ---
 
-## ⚙️ Configuration
+### ⚙️ Configuration
 
-### Environment Variables
+#### Environment Variables
 The system is pre-configured via `docker-compose.yml`. Key variables include:
 
 | Service | Variable | Description | Default |
@@ -175,73 +168,144 @@ The system is pre-configured via `docker-compose.yml`. Key variables include:
 | **Frontend** | `VITE_API_BASE_URL` | API Endpoint | `http://localhost:8080/api` |
 | **Grafana** | `GF_AUTH_ANONYMOUS_ENABLED` | Allow viewing without login | `true` |
 
-### Database Management
+#### Backups
 To access the running database directly:
 ```bash
 docker exec -it eduflex-db psql -U postgres -d eduflex
 ```
-
-### Backups
-Backups are automatically taken daily and stored in the `./backups` directory on the host machine.
-To force a backup:
+Backups are automatically taken daily. To force a backup:
 ```bash
 docker restart eduflex-backup
 ```
 
 ---
 
-## 🧩 Modules Deep Dive
+<br />
+<br />
+<div id="-svenska"></div>
 
-### Skolverket Integration
-EduFlex includes a powerful integration for Swedish education providers.
-- **Scraper Scripts:** Located in `scripts/` (Excluded from git), these Python scripts scrape course data from Skolverket.
-- **Admin UI:** Manually enter or edit course data via `Admin > Administration > Skolverket`.
-- **Data Model:** Stores Course Codes, Points, Subjects, and a JSON-structure for Grading Criteria (Kunskapskrav).
 
-### Analytics & Reporting
-Access real-time insights via the **Analytics Dashboard**:
-- **MRR / ARR:** Track financial health.
-- **Churn Rate:** Monitor student retention.
-- **Infrastructure:** View CPU/Memory usage and verified Docker container health status.
+## 🇸🇪 Svenska
+
+### 📖 Innehållsförteckning
+- [Om Projektet](#-om-projektet)
+- [Nyckelfunktioner](#-nyckelfunktioner)
+- [Systemarkitektur](#-systemarkitektur)
+- [Teknikstack](#-teknikstack)
+- [Kom igång](#-kom-igång)
+- [Konfiguration](#-konfiguration-sv)
+
+### 🏫 Om Projektet
+
+**EduFlex 2.0** är ett komplett, molnbaserat **Learning Management System (LMS)** designat för att skala från små utbildningsföretag till stora kommunala verksamheter. Systemet kombinerar modern pedagogik (Gamification, interaktiva element) med affärskritisk funktionalitet (fakturering, prenumerationer) i en säker, Docker-baserad mikrotjänst-arkitektur.
+
+### 🌟 Nyckelfunktioner
+
+#### 🍎 Utbildning (Core)
+- **Kurshantering:** Skapa rika kurser med text, video, bilagor och quiz.
+- **SCORM / xAPI:** Fullt stöd för uppladdning av paket från Articulate/Captivate.
+- **Uppgifter:** Elever lämnar in filer, lärare rättar och ger feedback.
+- **Certifikat:** Automatiska, spårbara PDF-diplom vid avklarad kurs.
+
+#### 🎮 Gamification
+- **Poäng & Levels:** Användare tjänar XP genom aktivitet och framsteg.
+- **Utmärkelser:** Visuella badges för prestationer.
+- **Topplistor:** Frivilliga topplistor för att öka engagemanget i klassen.
+
+#### 🇸🇪 Skolverket-integration
+- **Kurskoppling:** Direkt koppling till Skolverkets databas.
+- **Automatisk Import:** Python-verktyg hämtar kurskoder och beskrivningar.
+- **Kunskapskrav:** Visa betygsmatriser (E-A) direkt i kursvyn för elever och lärare.
+
+#### 💼 Administration & Ekonomi
+- **SaaS-stöd:** Inbyggda prenumerationsnivåer (Free, Pro, Enterprise).
+- **Fakturering:** Automatgenerering av PDF-fakturor.
+- **Användarprofiler:** Avancerad profilhantering med bildlagring via MinIO.
+- **Rättighetsstyrning (RBAC):** Detaljerade behörigheter för Admin, Lärare och Elev.
+
+#### 🌍 Lokalisering
+- **Flerspråksstöd:** Hela plattformen är översatt.
+- **Stödda språk:** Svenska (Primärt), Engelska, Arabiska, Norska, Danska, Finska, Tyska, Franska, Spanska.
 
 ---
 
-## 🇸🇪 Localization
+### 🛠 Systemarkitektur
 
-The platform automatically detects the user's preferred language but can be manually overridden in **My Profile**.
+Systemet körs i en container-miljö orkestrerad av **Docker Compose**. Detta garanterar identiska miljöer för utveckling och produktion.
 
-**Adding a new language:**
-1. Create `frontend/src/locales/{code}/translation.json`.
-2. Register the language in `frontend/src/i18n.js`.
-3. Add the option to `UserProfile.jsx` dropdown.
+*(Se diagram i den engelska sektionen ovan)*
+
+### 💻 Teknikstack
+
+#### Frontend (`eduflex-frontend`)
+- **Ramverk:** React 19, Vite
+- **State Management:** Zustand
+- **Design:** Tailwind CSS v4, Lucide React
+- **Grafer:** Recharts
+
+#### Backend (`eduflex-backend`)
+- **Kärna:** Java 21, Spring Boot 3.4
+- **Säkerhet:** Spring Security 6, JWT
+- **Databas:** PostgreSQL 15, Spring Data JPA
+- **Cache:** Redis 7
+
+#### Infrastruktur
+- **Objektlagring:** MinIO (S3-kompatibel för filer/bilder)
+- **Övervakning:** Prometheus & Grafana
+- **Backups:** Dagliga automatiska backuper av PostgreSQL
 
 ---
 
-## 📆 Roadmap
+### 🚀 Kom igång
 
-### ✅ Completed
-- [x] **Core Foundation:** Auth, User Profiles, Course CRUD.
-- [x] **Gamification:** Engine implementation.
-- [x] **MinIO Integration:** S3 storage for avatars/files.
-- [x] **Skolverket Integration:** Full scrape & display support.
-- [x] **Localization:** 100% Swedish translation.
+#### Förutsättningar
+- **Docker Desktop** (senaste versionen)
+- **Git**
 
-### 🚧 In Progress
-- [ ] **Mobile App:** React Native / PWA implementation.
-- [ ] **AI Tutor:** Chat interface for assignment help.
-- [ ] **Multi-Tenancy:** Single instance, multiple schools (SaaS).
+#### Installation
+
+1.  **Klona projektet**
+    ```bash
+    git clone https://github.com/alexwest1981/EduFlex.git
+    cd EduFlex
+    ```
+
+2.  **Starta systemet**
+    Detta bygger och startar alla 7 containers (DB, Redis, MinIO, Backend, Frontend, Monitorering).
+    ```bash
+    docker compose up --build -d
+    ```
+
+3.  **Öppna applikationen**
+    - **LMS (Frontend):** [http://localhost:5173](http://localhost:5173)
+    - **API Docs:** [http://localhost:8080/api](http://localhost:8080/api)
+    - **MinIO (Filer):** [http://localhost:9001](http://localhost:9001) (Anv: `minioadmin` / Lös: `minioadmin`)
+    - **Grafana (Statistik):** [http://localhost:3000](http://localhost:3000) (Anv/Lös: `admin`)
 
 ---
 
-## ⚖️ License
+### ⚙️ Konfiguration (Sv)
+
+#### Miljövariabler
+Systemet är förkonfigurerat via `docker-compose.yml`. Viktiga variabler:
+
+| Tjänst | Variabel | Beskrivning | Standardvärde |
+|:---|:---|:---|:---|
+| **Backend** | `SPRING_DATASOURCE_URL` | Databaslänk | `jdbc:postgresql://db:5432/eduflex` |
+| **Backend** | `MINIO_URL` | Intern S3-länk | `http://minio:9000` |
+| **Frontend** | `VITE_API_BASE_URL` | API-länk | `http://localhost:8080/api` |
+
+---
+
+## ⚖️ Licens & Kontakt
 
 **EduFlex™ © 2026 Alex Weström / Fenrir Studio**
 
 **Proprietary Software.**
-Unauthorized copying, modification, distribution, or use of this software without a valid license is strict prohibited.
-This source code is provided for authorized development and maintenance purposes only.
+Otillåten kopiering, modifiering eller distribution är förbjuden utan giltig licens.
+Källkoden tillhandahålls endast för auktoriserad utveckling och underhåll.
 
-For Enterprise inquiries:
+För Enterprise-frågor:
 📧 **alexwestrom81@gmail.com**
 
 <p align="center"> 
