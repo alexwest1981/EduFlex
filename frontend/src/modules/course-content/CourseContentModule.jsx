@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { BookOpen, Plus, Edit2, Trash2, Save, ChevronRight, Video, Download, Paperclip, Loader2, Image as ImageIcon } from 'lucide-react';
+import { api } from '../../services/api';
 
 export const CourseContentModuleMetadata = {
     key: 'material',
@@ -21,6 +22,21 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
     useEffect(() => {
         loadLessons();
     }, [courseId, mode]);
+
+    // --- TRACKING: VIEW_LESSON ---
+    useEffect(() => {
+        if (selectedLesson && !isTeacher && currentUser) {
+            // Debounce or just log immediately? Let's log immediately but prevent dupes if strict mode double-renders
+            // Better: Just fire and forget
+            api.activity.log({
+                userId: currentUser.id,
+                courseId: courseId,
+                materialId: selectedLesson.id,
+                type: 'VIEW_LESSON',
+                details: `Opened lesson: ${selectedLesson.title}`
+            }).catch(console.error);
+        }
+    }, [selectedLesson?.id]); // Only re-run if ID changes
 
     const loadLessons = async () => {
         try {
@@ -49,7 +65,7 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
     };
 
     const handleCreateClick = () => {
-        setFormData({ title: 'Ny Lektion', content: '', videoUrl: '' });
+        setFormData({ title: 'Nytt Innehåll', content: '', videoUrl: '', type: 'LESSON', availableFrom: '' });
         setFile(null);
         setSelectedLesson(null);
         setIsEditing(true);
@@ -67,8 +83,12 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
         // Mappa videoUrl till 'link' som backend förväntar sig
         if (formData.videoUrl) fd.append('link', formData.videoUrl);
 
-        // Sätt typen till LESSON
-        fd.append('type', 'LESSON');
+        // Sätt typen från formuläret
+        fd.append('type', formData.type || 'LESSON');
+
+        // Datumstyrning
+        if (formData.availableFrom) fd.append('availableFrom', formData.availableFrom);
+        else fd.append('availableFrom', ''); // Skicka tom sträng för att rensa om man tömt fältet
 
         // Skicka fil om det finns
         if (file) fd.append('file', file);
@@ -148,7 +168,9 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
         setFormData({
             title: lesson.title,
             content: lesson.content,
-            videoUrl: lesson.link // Mappa tillbaka 'link' till 'videoUrl'
+            videoUrl: lesson.link, // Mappa tillbaka 'link' till 'videoUrl'
+            type: lesson.type || 'LESSON',
+            availableFrom: lesson.availableFrom || ''
         });
         setFile(null);
         setSelectedLesson(lesson);
@@ -162,23 +184,49 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
             <div className="lg:col-span-1 bg-white dark:bg-[#1E1F20] rounded-xl border border-gray-200 dark:border-[#3c4043] flex flex-col overflow-hidden h-[600px]">
                 <div className="p-4 border-b border-gray-100 dark:border-[#3c4043] bg-gray-50 dark:bg-[#131314] flex justify-between items-center">
                     <h3 className="font-bold text-gray-700 dark:text-gray-200">Kursplan</h3>
-                    {isTeacher && <button onClick={handleCreateClick} className="p-1.5 bg-indigo-600 text-white hover:bg-indigo-700 rounded-lg transition-colors"><Plus size={16} /></button>}
+                    {isTeacher && <button onClick={handleCreateClick} className="p-2 bg-indigo-600 text-white hover:bg-indigo-700 rounded-lg transition-colors flex items-center justify-center shadow-sm" title="Lägg till nytt material"><Plus size={20} /></button>}
                 </div>
                 <div className="flex-1 overflow-y-auto p-2 space-y-1 custom-scrollbar">
                     {lessons.length === 0 && <p className="text-sm text-gray-400 text-center py-10">Inga lektioner än.</p>}
-                    {lessons.map((lesson, idx) => (
-                        <div
-                            key={lesson.id}
-                            onClick={() => { setSelectedLesson(lesson); setIsEditing(false); }}
-                            className={`p-3 rounded-lg cursor-pointer text-sm flex items-center justify-between group transition-colors ${selectedLesson?.id === lesson.id ? 'bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 font-bold' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-[#282a2c]'}`}
-                        >
-                            <div className="flex items-center gap-3 truncate">
-                                <span className="flex-shrink-0 flex items-center justify-center w-5 h-5 rounded-full bg-gray-100 dark:bg-[#3c4043] text-xs font-mono">{idx + 1}</span>
-                                <span className="truncate">{lesson.title}</span>
+                    {lessons.map((lesson, idx) => {
+                        const isLocked = !isTeacher && lesson.availableFrom && new Date(lesson.availableFrom) > new Date();
+                        const isScheduled = isTeacher && lesson.availableFrom && new Date(lesson.availableFrom) > new Date();
+
+                        return (
+                            <div
+                                key={lesson.id}
+                                onClick={() => {
+                                    if (!isLocked) {
+                                        setSelectedLesson(lesson);
+                                        setIsEditing(false);
+                                    }
+                                }}
+                                className={`p-3 rounded-lg cursor-pointer text-sm flex items-center justify-between group transition-colors ${selectedLesson?.id === lesson.id ? 'bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 font-bold' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-[#282a2c]'} ${isLocked ? 'opacity-60 cursor-not-allowed bg-gray-50 dark:bg-black/20' : ''}`}
+                            >
+                                <div className="flex items-center gap-3 truncate">
+                                    <span className="flex-shrink-0 flex items-center justify-center w-5 h-5 rounded-full bg-gray-100 dark:bg-[#3c4043] text-xs font-mono">
+                                        {isLocked ? <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg> : (idx + 1)}
+                                    </span>
+                                    <div className="truncate">
+                                        <span className="truncate block font-medium flex items-center gap-2">
+                                            {lesson.title}
+                                            {isScheduled && <span className="text-[9px] px-1.5 py-0.5 rounded bg-yellow-100 text-yellow-800 border border-yellow-200">Kommande</span>}
+                                        </span>
+                                        <span className="text-[10px] uppercase font-bold text-gray-400 flex gap-2">
+                                            <span>
+                                                {lesson.type === 'STUDY_MATERIAL' && 'Studiematerial'}
+                                                {lesson.type === 'QUESTIONS' && 'Instuderingsfrågor'}
+                                                {lesson.type === 'LINK' && 'Länk'}
+                                                {(!lesson.type || lesson.type === 'LESSON' || lesson.type === 'VIDEO') && 'Lektion'}
+                                            </span>
+                                            {isLocked && <span>• Tillgänglig {new Date(lesson.availableFrom).toLocaleDateString()}</span>}
+                                        </span>
+                                    </div>
+                                </div>
+                                {selectedLesson?.id === lesson.id && <ChevronRight size={14} />}
                             </div>
-                            {selectedLesson?.id === lesson.id && <ChevronRight size={14} />}
-                        </div>
-                    ))}
+                        );
+                    })}
                 </div>
             </div>
 
@@ -201,6 +249,31 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
                         <div>
                             <label className="block text-xs font-bold text-gray-500 mb-1">Titel</label>
                             <input className="w-full p-3 border rounded-xl dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" value={formData.title} onChange={e => setFormData({ ...formData, title: e.target.value })} placeholder="T.ex. Introduktion till Java" />
+                        </div>
+
+                        <div>
+                            <label className="block text-xs font-bold text-gray-500 mb-1">Typ av innehåll</label>
+                            <select
+                                className="w-full p-3 border rounded-xl dark:bg-[#131314] dark:border-[#3c4043] dark:text-white"
+                                value={formData.type || 'LESSON'}
+                                onChange={e => setFormData({ ...formData, type: e.target.value })}
+                            >
+                                <option value="LESSON">Lektion (Text/Video/Blandat)</option>
+                                <option value="STUDY_MATERIAL">Studiematerial (Fil/Dokument)</option>
+                                <option value="QUESTIONS">Instuderingsfrågor</option>
+                                <option value="LINK">Extern Länk</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label className="block text-xs font-bold text-gray-500 mb-1">Publiceras (Valfritt schema)</label>
+                            <input
+                                type="datetime-local"
+                                className="w-full p-3 border rounded-xl dark:bg-[#131314] dark:border-[#3c4043] dark:text-white"
+                                value={formData.availableFrom}
+                                onChange={e => setFormData({ ...formData, availableFrom: e.target.value })}
+                            />
+                            <p className="text-[10px] text-gray-400 mt-1">Låt stå tomt för att publicera direkt.</p>
                         </div>
 
                         <div>
@@ -257,14 +330,40 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
                             {/* 1. YOUTUBE */}
                             {selectedLesson.link && getEmbedUrl(selectedLesson.link) && (
                                 <div className="aspect-video w-full bg-black rounded-xl overflow-hidden shadow-lg ring-1 ring-black/10">
-                                    <iframe src={getEmbedUrl(selectedLesson.link)} title={selectedLesson.title} className="w-full h-full" frameBorder="0" allowFullScreen></iframe>
+                                    <iframe
+                                        src={getEmbedUrl(selectedLesson.link)}
+                                        title={selectedLesson.title}
+                                        className="w-full h-full"
+                                        frameBorder="0"
+                                        allowFullScreen
+                                        onLoad={() => {
+                                            // TODO: YouTube tracking is limited with iframe, sticking to VIEW_LESSON for now
+                                        }}
+                                    ></iframe>
                                 </div>
                             )}
 
                             {/* 2. EGEN VIDEO */}
                             {selectedLesson.fileUrl && isVideoFile(selectedLesson.fileUrl) && (
                                 <div className="rounded-xl overflow-hidden shadow-lg bg-black">
-                                    <video controls className="w-full max-h-[500px]" src={`http://127.0.0.1:8080${selectedLesson.fileUrl}`}>Din webbläsare stödjer inte videouppspelning.</video>
+                                    <video
+                                        controls
+                                        className="w-full max-h-[500px]"
+                                        src={`http://127.0.0.1:8080${selectedLesson.fileUrl}`}
+                                        onPlay={() => {
+                                            if (!isTeacher) {
+                                                api.activity.log({
+                                                    userId: currentUser.id,
+                                                    courseId: courseId,
+                                                    materialId: selectedLesson.id,
+                                                    type: 'WATCH_VIDEO',
+                                                    details: `Started watching: ${selectedLesson.title}`
+                                                }).catch(console.error);
+                                            }
+                                        }}
+                                    >
+                                        Din webbläsare stödjer inte videouppspelning.
+                                    </video>
                                 </div>
                             )}
 
@@ -286,7 +385,24 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
                                         <p className="font-bold text-gray-900 dark:text-white text-sm">Bifogad fil</p>
                                     </div>
                                 </div>
-                                <a href={`http://127.0.0.1:8080${selectedLesson.fileUrl}`} download target="_blank" rel="noreferrer" className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-[#1E1F20] hover:bg-gray-50 dark:hover:bg-[#282a2c] text-sm font-bold text-gray-700 dark:text-gray-200 rounded-lg shadow-sm border border-gray-200 dark:border-[#3c4043] transition-colors">
+                                <a
+                                    href={`http://127.0.0.1:8080${selectedLesson.fileUrl}`}
+                                    download
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-[#1E1F20] hover:bg-gray-50 dark:hover:bg-[#282a2c] text-sm font-bold text-gray-700 dark:text-gray-200 rounded-lg shadow-sm border border-gray-200 dark:border-[#3c4043] transition-colors"
+                                    onClick={() => {
+                                        if (!isTeacher) {
+                                            api.activity.log({
+                                                userId: currentUser.id,
+                                                courseId: courseId,
+                                                materialId: selectedLesson.id,
+                                                type: 'DOWNLOAD_FILE',
+                                                details: selectedLesson.fileUrl.split('/').pop()
+                                            }).catch(console.error);
+                                        }
+                                    }}
+                                >
                                     <Download size={16} /> Ladda ner
                                 </a>
                             </div>

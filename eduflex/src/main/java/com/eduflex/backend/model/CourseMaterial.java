@@ -8,7 +8,7 @@ import jakarta.persistence.*;
 public class CourseMaterial {
 
     public enum MaterialType {
-        TEXT, VIDEO, FILE, LINK, LESSON
+        TEXT, VIDEO, FILE, LINK, LESSON, STUDY_MATERIAL, QUESTIONS
     }
 
     @Id
@@ -22,6 +22,10 @@ public class CourseMaterial {
 
     private String link; // För YouTube-länkar
     private String fileUrl; // För uppladdade filer/bilder
+
+    // NYTT: Datumstyrning
+    @com.fasterxml.jackson.annotation.JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm")
+    private java.time.LocalDateTime availableFrom;
 
     @Enumerated(EnumType.STRING)
     private MaterialType type;
@@ -83,6 +87,14 @@ public class CourseMaterial {
 
     public void setFileUrl(String fileUrl) {
         this.fileUrl = fileUrl;
+    }
+
+    public java.time.LocalDateTime getAvailableFrom() {
+        return availableFrom;
+    }
+
+    public void setAvailableFrom(java.time.LocalDateTime availableFrom) {
+        this.availableFrom = availableFrom;
     }
 
     public MaterialType getType() {

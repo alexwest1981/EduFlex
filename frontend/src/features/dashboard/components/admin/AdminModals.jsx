@@ -228,6 +228,21 @@ export const CreateCourseModal = ({ isOpen, onClose, onCourseCreated, teachers }
                             <input type="date" className="w-full p-2 border rounded dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" value={formData.endDate} onChange={e => setFormData({ ...formData, endDate: e.target.value })} />
                         </div>
                         <input type="number" className="w-full p-2 border rounded dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" placeholder="Max platser" value={formData.maxStudents} onChange={e => setFormData({ ...formData, maxStudents: e.target.value })} />
+
+                        {/* DIGITAL CLASSROOM SETTINGS */}
+                        <div className="p-4 bg-gray-50 dark:bg-[#131314] border border-gray-100 dark:border-[#3c4043] rounded-lg space-y-3">
+                            <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider">Digitalt Klassrum (Frivilligt)</h4>
+                            <div className="grid grid-cols-2 gap-4">
+                                <select className="w-full p-2 text-sm border rounded dark:bg-[#1E1F20] dark:border-[#3c4043] dark:text-white" value={formData.classroomType || ''} onChange={e => setFormData({ ...formData, classroomType: e.target.value })}>
+                                    <option value="">Välj plattform...</option>
+                                    <option value="ZOOM">Zoom</option>
+                                    <option value="TEAMS">Microsoft Teams</option>
+                                    <option value="MEET">Google Meet</option>
+                                    <option value="DISCORD">Discord</option>
+                                </select>
+                                <input className="w-full p-2 text-sm border rounded dark:bg-[#1E1F20] dark:border-[#3c4043] dark:text-white" placeholder="Klistra in länk..." value={formData.classroomLink || ''} onChange={e => setFormData({ ...formData, classroomLink: e.target.value })} />
+                            </div>
+                        </div>
                         <div className="flex gap-2 flex-wrap">{colors.map((c) => (<button key={c.value} type="button" onClick={() => setFormData({ ...formData, color: c.value })} className={`w-6 h-6 rounded-full ${c.value} transition-transform hover:scale-110 ${formData.color === c.value ? 'ring-2 ring-offset-2 ring-gray-400' : ''}`} />))}</div>
                         <select className="w-full p-2 border rounded dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" value={formData.teacherId} onChange={e => setFormData({ ...formData, teacherId: e.target.value })}><option value="">Välj lärare...</option>{teachers.map(t => (<option key={t.id} value={t.id}>{t.fullName} ({t.email})</option>))}</select>
                         <textarea className="w-full p-2 border rounded dark:bg-[#131314] dark:border-[#3c4043] dark:text-white h-20 resize-none" placeholder="Beskrivning" value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })} />
@@ -251,7 +266,8 @@ export const EditCourseModal = ({ isOpen, onClose, onCourseUpdated, teachers, co
             setFormData({
                 name: courseToEdit.name || '', courseCode: courseToEdit.courseCode || '', category: courseToEdit.category || 'Övrigt',
                 description: courseToEdit.description || '', teacherId: courseToEdit.teacher?.id || '', startDate: courseToEdit.startDate || '',
-                endDate: courseToEdit.endDate || '', color: courseToEdit.color || 'bg-indigo-600', maxStudents: courseToEdit.maxStudents || 30
+                endDate: courseToEdit.endDate || '', color: courseToEdit.color || 'bg-indigo-600', maxStudents: courseToEdit.maxStudents || 30,
+                classroomType: courseToEdit.classroomType || '', classroomLink: courseToEdit.classroomLink || ''
             });
         }
     }, [courseToEdit]);
@@ -281,6 +297,21 @@ export const EditCourseModal = ({ isOpen, onClose, onCourseUpdated, teachers, co
                         </select>
                     </div>
                     <input className="w-full p-2 border rounded dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" type="number" value={formData.maxStudents} onChange={e => setFormData({ ...formData, maxStudents: e.target.value })} />
+
+                    {/* DIGITAL CLASSROOM SETTINGS */}
+                    <div className="p-4 bg-gray-50 dark:bg-[#131314] border border-gray-100 dark:border-[#3c4043] rounded-lg space-y-3">
+                        <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider">Digitalt Klassrum (Frivilligt)</h4>
+                        <div className="grid grid-cols-2 gap-4">
+                            <select className="w-full p-2 text-sm border rounded dark:bg-[#1E1F20] dark:border-[#3c4043] dark:text-white" value={formData.classroomType || ''} onChange={e => setFormData({ ...formData, classroomType: e.target.value })}>
+                                <option value="">Välj plattform...</option>
+                                <option value="ZOOM">Zoom</option>
+                                <option value="TEAMS">Microsoft Teams</option>
+                                <option value="MEET">Google Meet</option>
+                                <option value="DISCORD">Discord</option>
+                            </select>
+                            <input className="w-full p-2 text-sm border rounded dark:bg-[#1E1F20] dark:border-[#3c4043] dark:text-white" placeholder="Klistra in länk..." value={formData.classroomLink || ''} onChange={e => setFormData({ ...formData, classroomLink: e.target.value })} />
+                        </div>
+                    </div>
                     <select className="w-full p-2 border rounded dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" value={formData.teacherId} onChange={e => setFormData({ ...formData, teacherId: e.target.value })}><option value="">Välj lärare...</option>{teachers.map(t => (<option key={t.id} value={t.id}>{t.fullName} ({t.email})</option>))}</select>
                     <button disabled={loading} type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 rounded-lg mt-2">Spara</button>
                 </form>

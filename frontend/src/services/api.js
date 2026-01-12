@@ -313,5 +313,15 @@ export const api = {
             headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }, // Multipart handles content-type
             body: formData
         }).then(handleResponse)
+    },
+
+    activity: {
+        log: (data) => fetch(`${API_BASE}/activity/log`, {
+            method: 'POST',
+            headers: getHeaders(),
+            body: JSON.stringify(data)
+        }).then(handleResponse),
+        getCourseLogs: (courseId) => fetch(`${API_BASE}/activity/course/${courseId}`, { headers: getHeaders() }).then(handleResponse),
+        getStudentLogs: (courseId, userId) => fetch(`${API_BASE}/activity/course/${courseId}/student/${userId}`, { headers: getHeaders() }).then(handleResponse)
     }
 };

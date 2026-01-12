@@ -62,9 +62,22 @@ public class DocumentService {
         documentRepository.save(doc);
     }
 
+    @org.springframework.transaction.annotation.Transactional
     public void deleteDocument(Long id) {
         documentRepository.findById(id).ifPresent(doc -> {
-            // (Valfritt: Ta bort filen från disken här också)
+            // Rensa delningar först för att undvika FK-problem
+            doc.getSharedWith().clear();
+            documentRepository.save(doc); // Flush relation changes
+
+            // Ta bort filen från disken
+            try {
+                String fileName = doc.getFileUrl().replace("/uploads/", "");
+                Path path = Paths.get(uploadDir + "/" + fileName);
+                Files.deleteIfExists(path);
+            } catch (IOException e) {
+                System.err.println("Could not delete file from disk: " + e.getMessage());
+            }
+
             documentRepository.delete(doc);
         });
     }
