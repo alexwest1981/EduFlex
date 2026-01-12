@@ -71,6 +71,13 @@ Whether you are a single educator, a private school, or a municipal education bo
 - **Invoicing:** Automatic PDF invoice generation for recurring payments.
 - **User Management:** Detailed profiles with avatar uploads (MinIO backed).
 - **Role-Based Access Control (RBAC):** Granular permissions for Super Admin, Admin, Teacher, and Student.
+- **Configurable Dashboards:** Admins can define specific dashboard layouts (Admin, Principal, Teacher, Student, Mentor) for any role.
+
+#### 📊 Analytics & Insights (New)
+- **Principal Dashboard:** Dedicated view for school leaders with high-level metrics (Revenue, Active Users, Server Health).
+- **Risk Analysis:** AI-driven widgets identifying students at risk of failing or dropping out.
+- **CSN Reporting:** Automated export of student attendance and activity data for CSN compliance.
+- **Drill-Down:** Deep-dive into individual student history, logged hours, and activity logs.
 
 #### 🌍 Localization
 - **Multi-language Support:** Fully translated UI for minimal friction.
@@ -222,6 +229,13 @@ docker restart eduflex-backup
 - **Fakturering:** Automatgenerering av PDF-fakturor.
 - **Användarprofiler:** Avancerad profilhantering med bildlagring via MinIO.
 - **Rättighetsstyrning (RBAC):** Detaljerade behörigheter för Admin, Lärare och Elev.
+- **Konfigurerbara Dashboards:** Administratörer kan styra vilken dashboard-layout (Admin, Rektor, Lärare, Student, Mentor) en roll ska ha.
+
+#### 📊 Analys & Uppföljning (Nytt)
+- **Rektorspanel:** Dedikerad vy för skolledare med nyckeltal (Omsättning, Aktiva Användare, Systemhälsa).
+- **Riskanalys:** Widgets som identifierar elever i farozonen baserat på närvaro och aktivitet.
+- **CSN-rapportering:** Automatisk export av närvarodata för CSN-underlag.
+- **Djupdykning:** Detaljerad historik och aktivitetslogg på individnivå.
 
 #### 🌍 Lokalisering
 - **Flerspråksstöd:** Hela plattformen är översatt.
