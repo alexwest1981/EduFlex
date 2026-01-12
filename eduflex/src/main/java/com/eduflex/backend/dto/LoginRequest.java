@@ -1,3 +1,7 @@
 package com.eduflex.backend.dto;
 
-public record LoginRequest(String username, String password) {}
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+public record LoginRequest(String username, String password) {
+}

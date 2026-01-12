@@ -1,5 +1,9 @@
 /uploads/
 /backups/
+eduflex.license
 
 # Secure License Generator (NEVER COMMIT)
 tools/secure-license-gen/
+
+# Scripts (Local only)
+scripts/

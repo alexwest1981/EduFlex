@@ -37,7 +37,8 @@ public class User {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
-    @Enumerated(EnumType.STRING)
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "role_id")
     private Role role;
 
     @Column(columnDefinition = "boolean default true")
@@ -88,9 +89,7 @@ public class User {
     @JsonIgnoreProperties("teacher")
     private Set<Course> coursesCreated = new HashSet<>();
 
-    public enum Role {
-        STUDENT, TEACHER, ADMIN
-    }
+    // Inner Enum REMOVED - replaced by com.eduflex.backend.model.Role Entity
 
     // --- GETTERS & SETTERS ---
     public Long getId() {

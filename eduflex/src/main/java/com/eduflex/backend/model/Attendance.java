@@ -2,15 +2,9 @@ package com.eduflex.backend.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "attendance")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class Attendance {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,10 +16,61 @@ public class Attendance {
 
     @ManyToOne
     @JoinColumn(name = "student_id")
-    @JsonIgnoreProperties({"password", "courses", "documents", "submissions"})
+    @JsonIgnoreProperties({ "password", "courses", "documents", "submissions" })
     private User student;
 
     private boolean isPresent; // true = Närvarande, false = Frånvarande
 
     private String note; // T.ex. "Kom sent", "Giltig frånvaro"
+
+    public Attendance() {
+    }
+
+    public Attendance(Long id, CourseEvent event, User student, boolean isPresent, String note) {
+        this.id = id;
+        this.event = event;
+        this.student = student;
+        this.isPresent = isPresent;
+        this.note = note;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public CourseEvent getEvent() {
+        return event;
+    }
+
+    public void setEvent(CourseEvent event) {
+        this.event = event;
+    }
+
+    public User getStudent() {
+        return student;
+    }
+
+    public void setStudent(User student) {
+        this.student = student;
+    }
+
+    public boolean isPresent() {
+        return isPresent;
+    }
+
+    public void setPresent(boolean present) {
+        isPresent = present;
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
+    }
 }

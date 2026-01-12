@@ -20,9 +20,10 @@ export const useAppData = (currentUser, licenseStatus, showMessage, setError) =>
     // --- HELPER: Filtrera kurser baserat på roll ---
     const updateMyCourses = useCallback((courses, user) => {
         if (!user) return;
-        if (user.role === 'STUDENT') {
+        const role = user.role?.name || user.role;
+        if (role === 'STUDENT') {
             setMyCourses(courses.filter(c => c.students?.some(s => s.id === user.id)));
-        } else if (user.role === 'TEACHER') {
+        } else if (role === 'TEACHER') {
             setMyCourses(courses.filter(c => c.teacher?.id === user.id));
         } else {
             setMyCourses(courses); // Admin ser allt som "sitt"
@@ -42,7 +43,8 @@ export const useAppData = (currentUser, licenseStatus, showMessage, setError) =>
                     allAss = [...allAss, ...assigns.map(a => ({ ...a, courseId: course.id }))];
 
                     // Om lärare/admin -> Hämta inlämningar också
-                    if (user.role !== 'STUDENT') {
+                    const role = user.role?.name || user.role;
+                    if (role !== 'STUDENT') {
                         for (const assign of assigns) {
                             const subs = await api.assignments.getSubmissions(assign.id);
                             if (subs) allSubs = [...allSubs, ...subs.map(s => ({ ...s, assignmentId: assign.id }))];
@@ -78,7 +80,8 @@ export const useAppData = (currentUser, licenseStatus, showMessage, setError) =>
             updateMyCourses(coursesData || [], currentUser);
 
             // --- DOKUMENTLOGIK (Uppdaterad enligt krav) ---
-            if (currentUser.role === 'ADMIN' || currentUser.role === 'TEACHER') {
+            const role = currentUser.role?.name || currentUser.role;
+            if (role === 'ADMIN' || role === 'TEACHER') {
                 // Admin och Lärare hämtar ALLT (filtreras sen i vyn)
                 const docs = await api.documents.getAll();
                 setDocuments(docs || []);
@@ -136,7 +139,8 @@ export const useAppData = (currentUser, licenseStatus, showMessage, setError) =>
             await api.documents.upload(currentUser.id, fd);
             showMessage("Fil uppladdad!");
             // Ladda om dokumentlistan
-            if (currentUser.role === 'STUDENT') {
+            const role = currentUser.role?.name || currentUser.role;
+            if (role === 'STUDENT') {
                 const d = await api.documents.getUserDocs(currentUser.id);
                 setDocuments(d);
             } else {

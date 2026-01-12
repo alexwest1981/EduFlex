@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { User, FileText, File as FileIcon, Search, Plus, Edit2, Trash2 } from 'lucide-react';
+import { api } from '../../../../services/api';
 // ... (skip down to AdminCourseRegistry signature)
 export const AdminCourseRegistry = ({ courses, onEdit, onManage, onNewCourse, onDelete }) => {
     const [searchTerm, setSearchTerm] = useState('');
@@ -94,7 +95,7 @@ export const AdminRecentActivity = ({ latestUsers, latestDocs, onNewUserClick, s
                                     </div>
                                     <div className="overflow-hidden">
                                         <p className="text-sm font-bold text-gray-900 dark:text-white truncate">{u.firstName} {u.lastName}</p>
-                                        <p className="text-xs text-gray-500 dark:text-gray-400 font-mono capitalize">{u.role?.toLowerCase()}</p>
+                                        <p className="text-xs text-gray-500 dark:text-gray-400 font-mono capitalize">{(u.role?.name || u.role || '').toLowerCase()}</p>
                                     </div>
                                 </div>
                             )) : (
@@ -135,13 +136,18 @@ export const AdminRecentActivity = ({ latestUsers, latestDocs, onNewUserClick, s
     );
 };
 
-export const AdminUserTable = ({ users, onNewUser }) => {
+export const AdminUserTable = ({ users, onNewUser, onEdit, onDelete }) => {
     const [searchTerm, setSearchTerm] = React.useState('');
     const [filterRole, setFilterRole] = React.useState('ALL');
+    const [availableRoles, setAvailableRoles] = useState([]);
+
+    useEffect(() => {
+        api.roles.getAll().then(setAvailableRoles).catch(console.error);
+    }, []);
 
     const filteredUsers = users?.filter(u => {
         const matchesSearch = (u.firstName + ' ' + u.lastName + u.email).toLowerCase().includes(searchTerm.toLowerCase());
-        const matchesRole = filterRole === 'ALL' || u.role === filterRole;
+        const matchesRole = filterRole === 'ALL' || (u.role?.name || u.role) === filterRole;
         return matchesSearch && matchesRole;
     }) || [];
 
@@ -170,9 +176,17 @@ export const AdminUserTable = ({ users, onNewUser }) => {
                         onChange={e => setFilterRole(e.target.value)}
                     >
                         <option value="ALL">Alla Roller</option>
-                        <option value="STUDENT">Studenter</option>
-                        <option value="TEACHER">Lärare</option>
-                        <option value="ADMIN">Admins</option>
+                        {availableRoles && availableRoles.length > 0 ? (
+                            availableRoles.map(r => (
+                                <option key={r.id} value={r.name}>{r.name}</option>
+                            ))
+                        ) : (
+                            <>
+                                <option value="STUDENT">Studenter</option>
+                                <option value="TEACHER">Lärare</option>
+                                <option value="ADMIN">Admins</option>
+                            </>
+                        )}
                     </select>
                 </div>
             </div>
@@ -184,6 +198,7 @@ export const AdminUserTable = ({ users, onNewUser }) => {
                             <th className="p-4">Email</th>
                             <th className="p-4">Roll</th>
                             <th className="p-4">Status</th>
+                            <th className="p-4 text-right">Åtgärd</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-100 dark:divide-[#3c4043]">
@@ -197,14 +212,28 @@ export const AdminUserTable = ({ users, onNewUser }) => {
                                 </td>
                                 <td className="p-4 text-gray-500 dark:text-gray-400">{u.email}</td>
                                 <td className="p-4">
-                                    <span className={`px-2 py-1 rounded text-xs font-bold ${u.role === 'ADMIN' ? 'bg-purple-100 text-purple-700' :
-                                        u.role === 'TEACHER' ? 'bg-blue-100 text-blue-700' :
+                                    <span className={`px-2 py-1 rounded text-xs font-bold ${(u.role?.name || u.role) === 'ADMIN' ? 'bg-purple-100 text-purple-700' :
+                                        (u.role?.name || u.role) === 'TEACHER' ? 'bg-blue-100 text-blue-700' :
                                             'bg-green-100 text-green-700'
                                         }`}>
-                                        {u.role}
+                                        {u.role?.name || u.role}
                                     </span>
                                 </td>
                                 <td className="p-4 text-gray-400 text-xs">Aktiv</td>
+                                <td className="p-4 text-right">
+                                    <div className="flex justify-end gap-2">
+                                        {onEdit && (
+                                            <button onClick={() => onEdit(u)} className="p-2 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-gray-700 rounded-lg transition-colors" title="Redigera användare">
+                                                <Edit2 size={16} />
+                                            </button>
+                                        )}
+                                        {onDelete && (
+                                            <button onClick={() => onDelete(u.id)} className="p-2 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors" title="Ta bort användare">
+                                                <Trash2 size={16} />
+                                            </button>
+                                        )}
+                                    </div>
+                                </td>
                             </tr>
                         ))}
                     </tbody>

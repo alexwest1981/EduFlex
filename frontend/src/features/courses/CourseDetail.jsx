@@ -4,6 +4,7 @@ import { ArrowLeft, Loader2, Download, BookOpen, MessageSquare, FileText, Users,
 import ScormList from '../scorm/ScormList';
 import { useTranslation } from 'react-i18next';
 import { api } from '../../services/api';
+import SkolverketCourseInfo from '../../components/SkolverketCourseInfo';
 
 // --- CONTEXT ---
 import { useAppContext } from '../../context/AppContext';
@@ -99,6 +100,14 @@ const CourseDetail = ({ currentUser }) => {
             meta: { name: 'Närvaro' },
             icon: <Calendar size={18} />,
             enabled: true,
+            visibleFor: 'ALL'
+        },
+        {
+            key: 'kursinformation',
+            comp: ({ course }) => <SkolverketCourseInfo skolverketCourse={course?.skolverketCourse} />,
+            meta: { name: 'Kursinformation' },
+            icon: <BookOpen size={18} />,
+            enabled: !!course?.skolverketCourse, // Only show if course is linked to Skolverket
             visibleFor: 'ALL'
         }
     ];

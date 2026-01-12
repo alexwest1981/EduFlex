@@ -7,6 +7,7 @@ import com.eduflex.backend.model.*;
 import com.eduflex.backend.repository.CourseApplicationRepository;
 import com.eduflex.backend.repository.CourseMaterialRepository;
 import com.eduflex.backend.repository.CourseRepository;
+import com.eduflex.backend.repository.SkolverketCourseRepository; // Added import
 
 import com.eduflex.backend.repository.UserRepository;
 import com.eduflex.backend.repository.AssignmentRepository;
@@ -32,6 +33,7 @@ public class CourseService {
     private final CourseMaterialRepository materialRepository;
     private final CourseApplicationRepository applicationRepository;
     private final com.eduflex.backend.repository.CourseEvaluationResponseRepository evaluationResponseRepository;
+    private final SkolverketCourseRepository skolverketCourseRepository; // Added field
 
     private final com.eduflex.backend.repository.CourseResultRepository resultRepository;
     private final AssignmentRepository assignmentRepository;
@@ -45,10 +47,10 @@ public class CourseService {
             CourseMaterialRepository materialRepository,
             CourseApplicationRepository applicationRepository,
             com.eduflex.backend.repository.CourseEvaluationResponseRepository evaluationResponseRepository,
-
             com.eduflex.backend.repository.CourseResultRepository resultRepository,
             AssignmentRepository assignmentRepository,
-            SubmissionRepository submissionRepository) {
+            SubmissionRepository submissionRepository,
+            SkolverketCourseRepository skolverketCourseRepository) {
         this.courseRepository = courseRepository;
         this.userRepository = userRepository;
         this.materialRepository = materialRepository;
@@ -57,6 +59,7 @@ public class CourseService {
         this.resultRepository = resultRepository;
         this.assignmentRepository = assignmentRepository;
         this.submissionRepository = submissionRepository;
+        this.skolverketCourseRepository = skolverketCourseRepository;
     }
 
     public List<CourseDTO> getAllCourseDTOs() {
@@ -81,12 +84,17 @@ public class CourseService {
         course.setCategory(dto.category());
         course.setDescription(dto.description());
         if (dto.startDate() != null)
-            course.setStartDate(dto.startDate().toString());
+            course.setStartDate(dto.startDate().toString()); // Kept original conversion to String
         if (dto.endDate() != null)
-            course.setEndDate(dto.endDate().toString());
-        course.setColor(dto.color() != null && !dto.color().isEmpty() ? dto.color() : "bg-indigo-600");
-        if (dto.maxStudents() != null)
-            course.setMaxStudents(dto.maxStudents());
+            course.setEndDate(dto.endDate().toString()); // Kept original conversion to String
+        course.setColor(dto.color() != null && !dto.color().isEmpty() ? dto.color() : "bg-indigo-600"); // Kept original
+                                                                                                        // logic
+        course.setMaxStudents(dto.maxStudents() != null ? dto.maxStudents() : 30); // Modified maxStudents logic
+
+        // Link to Skolverket course if provided
+        if (dto.skolverketCourseId() != null) {
+            skolverketCourseRepository.findById(dto.skolverketCourseId()).ifPresent(course::setSkolverketCourse);
+        }
 
         course.setTeacher(teacher);
         course.setOpen(true);
@@ -241,7 +249,7 @@ public class CourseService {
 
     public List<Course> getCoursesForUser(Long userId) {
         User user = userRepository.findById(userId).orElseThrow();
-        if (user.getRole() == User.Role.TEACHER) {
+        if ("TEACHER".equals(user.getRole().getName())) {
             return courseRepository.findAll().stream().filter(c -> c.getTeacher().getId().equals(userId)).toList();
         } else {
             return courseRepository.findAll().stream().filter(c -> c.getStudents().contains(user)).toList();
@@ -334,17 +342,18 @@ public class CourseService {
                     c.getTeacher().getId(),
                     c.getTeacher().getFullName(),
                     c.getTeacher().getUsername(),
-                    c.getTeacher().getRole().name());
+                    c.getTeacher().getRole().getName());
         }
         List<UserSummaryDTO> studentDTOs = c.getStudents().stream()
-                .map(s -> new UserSummaryDTO(s.getId(), s.getFullName(), s.getUsername(), s.getRole().name()))
+                .map(s -> new UserSummaryDTO(s.getId(), s.getFullName(), s.getUsername(), s.getRole().getName()))
                 .collect(Collectors.toList());
 
         return new CourseDTO(
                 c.getId(), c.getName(), c.getCourseCode(), c.getCategory(), c.getDescription(),
                 c.getStartDate(), c.getEndDate(), c.getColor(), teacherDTO, studentDTOs,
                 c.isOpen(), c.getEvaluation(), c.getMaxStudents(), c.getStudents().size(),
-                c.getClassroomLink(), c.getClassroomType(), c.getExamLink() // Nya fält
+                c.getClassroomLink(), c.getClassroomType(), c.getExamLink(), // Nya fält
+                c.getSkolverketCourse() // Include Skolverket course data
         );
     }
 }

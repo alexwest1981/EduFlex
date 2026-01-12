@@ -55,6 +55,11 @@ public class Course {
     @OneToOne(mappedBy = "course", cascade = CascadeType.ALL)
     private CourseEvaluation evaluation;
 
+    @ManyToOne
+    @JoinColumn(name = "skolverket_course_id")
+    @JsonIgnoreProperties("createdAt")
+    private SkolverketCourse skolverketCourse;
+
     // --- GETTERS & SETTERS ---
     public Long getId() {
         return id;
@@ -190,5 +195,13 @@ public class Course {
 
     public void setEvaluation(CourseEvaluation evaluation) {
         this.evaluation = evaluation;
+    }
+
+    public SkolverketCourse getSkolverketCourse() {
+        return skolverketCourse;
+    }
+
+    public void setSkolverketCourse(SkolverketCourse skolverketCourse) {
+        this.skolverketCourse = skolverketCourse;
     }
 }

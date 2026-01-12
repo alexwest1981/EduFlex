@@ -23,6 +23,7 @@ const AdminPanel = ({ currentUser }) => {
     const [users, setUsers] = useState([]);
     const [courses, setCourses] = useState([]);
     const [allDocuments, setAllDocuments] = useState([]);
+    const [availableRoles, setAvailableRoles] = useState([]); // NYTT: För dynamiska roller
 
     // Pagination State
     const [currentPage, setCurrentPage] = useState(0);
@@ -89,12 +90,14 @@ const AdminPanel = ({ currentUser }) => {
 
     const fetchData = async () => {
         try {
-            const [cData, dData] = await Promise.all([
+            const [cData, dData, rData] = await Promise.all([
                 api.courses.getAll(),
-                api.documents.getAll()
+                api.documents.getAll(),
+                api.roles.getAll() // Hämta dynamiska roller
             ]);
             setCourses(cData);
             setAllDocuments(dData);
+            setAvailableRoles(rData || []);
         } catch (e) {
             console.error("Kunde inte hämta admin-data", e);
         }
@@ -236,7 +239,26 @@ const AdminPanel = ({ currentUser }) => {
                         <div><label className={labelClass}>Adress</label><input className={inputClass} value={editingUser.address || ''} onChange={e => setEditingUser({ ...editingUser, address: e.target.value })} /></div>
 
                         <div className="grid grid-cols-2 gap-4 pt-2">
-                            <div><label className={labelClass}>Roll</label><select className={inputClass} value={editingUser.role} onChange={e => setEditingUser({ ...editingUser, role: e.target.value })}><option value="STUDENT">Elev</option><option value="TEACHER">Lärare</option><option value="ADMIN">Administratör</option></select></div>
+                            <div>
+                                <label className={labelClass}>Roll</label>
+                                <select
+                                    className={inputClass}
+                                    value={editingUser.role}
+                                    onChange={e => setEditingUser({ ...editingUser, role: e.target.value })}
+                                >
+                                    {availableRoles && availableRoles.length > 0 ? (
+                                        availableRoles.map(r => (
+                                            <option key={r.id} value={r.name}>{r.name}</option>
+                                        ))
+                                    ) : (
+                                        <>
+                                            <option value="STUDENT">Elev</option>
+                                            <option value="TEACHER">Lärare</option>
+                                            <option value="ADMIN">Administratör</option>
+                                        </>
+                                    )}
+                                </select>
+                            </div>
                             <div><label className={labelClass}>Status</label><div className="flex items-center gap-2 mt-2 cursor-pointer p-2 rounded hover:bg-gray-100 dark:hover:bg-[#282a2c]" onClick={() => setEditingUser({ ...editingUser, isActive: !editingUser.isActive })}><div className={`w-10 h-5 rounded-full shadow-inner transition-colors relative ${editingUser.isActive ? 'bg-green-500' : 'bg-gray-400 dark:bg-gray-600'}`}><div className={`absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${editingUser.isActive ? 'translate-x-5' : 'translate-x-0'}`}></div></div><span className="text-sm font-medium text-gray-700 dark:text-gray-300">{editingUser.isActive ? 'Aktiv' : 'Inaktiverad'}</span></div></div>
                         </div>
                         <div className="flex justify-end gap-2 pt-4 border-t border-gray-100 dark:border-[#3c4043] mt-4">
@@ -308,10 +330,22 @@ const AdminPanel = ({ currentUser }) => {
 
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <input placeholder="Lösenord" type="password" className={inputClass} value={registerForm.password} onChange={e => setRegisterForm({ ...registerForm, password: e.target.value })} required />
-                                        <select className={inputClass} value={registerForm.role} onChange={e => setRegisterForm({ ...registerForm, role: e.target.value })}>
-                                            <option value="STUDENT">Elev</option>
-                                            <option value="TEACHER">Lärare</option>
-                                            <option value="ADMIN">Administratör</option>
+                                        <select
+                                            className={inputClass}
+                                            value={registerForm.role}
+                                            onChange={e => setRegisterForm({ ...registerForm, role: e.target.value })}
+                                        >
+                                            {availableRoles.length > 0 ? (
+                                                availableRoles.map(r => (
+                                                    <option key={r.id} value={r.name}>{r.name}</option>
+                                                ))
+                                            ) : (
+                                                <>
+                                                    <option value="STUDENT">Elev</option>
+                                                    <option value="TEACHER">Lärare</option>
+                                                    <option value="ADMIN">Administratör</option>
+                                                </>
+                                            )}
                                         </select>
                                     </div>
                                     <button type="submit" className="w-full bg-indigo-600 text-white py-2.5 rounded-lg font-bold hover:bg-indigo-700 shadow-sm">Skapa Konto</button>

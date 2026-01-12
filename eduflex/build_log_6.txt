@@ -1,0 +1,644 @@
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::staticFieldBase has been called by com.google.inject.internal.aop.HiddenClassDefiner (file:/C:/Users/alxpa/.m2/wrapper/dists/apache-maven-3.9.11/03d7e36a140982eea48e22c1dcac01d8862b2550b2939e09a0809bbc5182a5bc/lib/guice-5.1.0-classes.jar)
+WARNING: Please consider reporting this to the maintainers of class com.google.inject.internal.aop.HiddenClassDefiner
+WARNING: sun.misc.Unsafe::staticFieldBase will be removed in a future release
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] ------------------------< com.eduflex:eduflex >-------------------------
+[INFO] Building eduflex 0.0.2-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.3.2:clean (default-clean) @ eduflex ---
+[INFO] Deleting E:\Projekt\EduFlex\eduflex\target
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ eduflex ---
+[INFO] Copying 1 resource from src\main\resources to target\classes
+[INFO] Copying 3 resources from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.13.0:compile (default-compile) @ eduflex ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 158 source files with javac [debug parameters release 21] to target\classes
+[INFO] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/RateLimitingService.java: Some input files use or override a deprecated API.
+[INFO] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/RateLimitingService.java: Recompile with -Xlint:deprecation for details.
+[INFO] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/controller/PaymentController.java: E:\Projekt\EduFlex\eduflex\src\main\java\com\eduflex\backend\controller\PaymentController.java uses unchecked or unsafe operations.
+[INFO] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/controller/PaymentController.java: Recompile with -Xlint:unchecked for details.
+[INFO] -------------------------------------------------------------
+[ERROR] COMPILATION ERROR : 
+[INFO] -------------------------------------------------------------
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/RedisMessageSubscriber.java:[32,78] cannot find symbol
+  symbol:   method getRecipientId()
+  location: variable chatMessage of type com.eduflex.backend.model.ChatMessage
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/RedisMessageSubscriber.java:[34,92] cannot find symbol
+  symbol:   method getId()
+  location: variable chatMessage of type com.eduflex.backend.model.ChatMessage
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/controller/AttendanceController.java:[46,52] cannot find symbol
+  symbol:   method isPresent()
+  location: variable att of type com.eduflex.backend.model.Attendance
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/controller/AttendanceController.java:[48,47] cannot find symbol
+  symbol:   method getNote()
+  location: variable att of type com.eduflex.backend.model.Attendance
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/controller/AttendanceController.java:[48,71] cannot find symbol
+  symbol:   method getNote()
+  location: variable att of type com.eduflex.backend.model.Attendance
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/controller/AttendanceController.java:[73,23] cannot find symbol
+  symbol:   method setEvent(com.eduflex.backend.model.CourseEvent)
+  location: variable attendance of type com.eduflex.backend.model.Attendance
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/controller/AttendanceController.java:[74,23] cannot find symbol
+  symbol:   method setStudent(com.eduflex.backend.model.User)
+  location: variable attendance of type com.eduflex.backend.model.Attendance
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/controller/AttendanceController.java:[76,19] cannot find symbol
+  symbol:   method setPresent(boolean)
+  location: variable attendance of type com.eduflex.backend.model.Attendance
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/controller/AttendanceController.java:[78,23] cannot find symbol
+  symbol:   method setNote(java.lang.String)
+  location: variable attendance of type com.eduflex.backend.model.Attendance
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/controller/AuthController.java:[79,31] cannot find symbol
+  symbol:   method name()
+  location: class com.eduflex.backend.model.Role
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/controller/ChatController.java:[45,20] cannot find symbol
+  symbol:   method setTimestamp(java.time.LocalDateTime)
+  location: variable chatMessage of type com.eduflex.backend.model.ChatMessage
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/controller/ChatController.java:[46,24] cannot find symbol
+  symbol:   method getIsRead()
+  location: variable chatMessage of type com.eduflex.backend.model.ChatMessage
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/controller/ChatController.java:[47,24] cannot find symbol
+  symbol:   method setIsRead(boolean)
+  location: variable chatMessage of type com.eduflex.backend.model.ChatMessage
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/controller/ChatController.java:[61,36] cannot find symbol
+  symbol:   method getRecipientId()
+  location: variable chatMessage of type com.eduflex.backend.model.ChatMessage
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/controller/ChatController.java:[62,63] cannot find symbol
+  symbol:   method getSenderName()
+  location: variable chatMessage of type com.eduflex.backend.model.ChatMessage
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/CourseService.java:[190,17] cannot find symbol
+  symbol:   method setTitle(java.lang.String)
+  location: variable material of type com.eduflex.backend.model.CourseMaterial
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/CourseService.java:[191,17] cannot find symbol
+  symbol:   method setContent(java.lang.String)
+  location: variable material of type com.eduflex.backend.model.CourseMaterial
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/CourseService.java:[192,17] cannot find symbol
+  symbol:   method setLink(java.lang.String)
+  location: variable material of type com.eduflex.backend.model.CourseMaterial
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/CourseService.java:[193,17] cannot find symbol
+  symbol:   method setType(com.eduflex.backend.model.CourseMaterial.MaterialType)
+  location: variable material of type com.eduflex.backend.model.CourseMaterial
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/CourseService.java:[194,17] cannot find symbol
+  symbol:   method setCourse(com.eduflex.backend.model.Course)
+  location: variable material of type com.eduflex.backend.model.CourseMaterial
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/CourseService.java:[200,21] cannot find symbol
+  symbol:   method setFileUrl(java.lang.String)
+  location: variable material of type com.eduflex.backend.model.CourseMaterial
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/CourseService.java:[210,21] cannot find symbol
+  symbol:   method setTitle(java.lang.String)
+  location: variable material of type com.eduflex.backend.model.CourseMaterial
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/CourseService.java:[212,21] cannot find symbol
+  symbol:   method setContent(java.lang.String)
+  location: variable material of type com.eduflex.backend.model.CourseMaterial
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/CourseService.java:[214,21] cannot find symbol
+  symbol:   method setLink(java.lang.String)
+  location: variable material of type com.eduflex.backend.model.CourseMaterial
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/CourseService.java:[220,21] cannot find symbol
+  symbol:   method setFileUrl(java.lang.String)
+  location: variable material of type com.eduflex.backend.model.CourseMaterial
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/CourseService.java:[271,17] cannot find symbol
+  symbol:   method setEvaluation(com.eduflex.backend.model.CourseEvaluation)
+  location: variable response of type com.eduflex.backend.model.CourseEvaluationResponse
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/CourseService.java:[272,17] cannot find symbol
+  symbol:   method setStudent(com.eduflex.backend.model.User)
+  location: variable response of type com.eduflex.backend.model.CourseEvaluationResponse
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/CourseService.java:[273,17] cannot find symbol
+  symbol:   method setAnswers(java.util.Map<java.lang.Integer,java.lang.String>)
+  location: variable response of type com.eduflex.backend.model.CourseEvaluationResponse
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/CourseService.java:[274,17] cannot find symbol
+  symbol:   method setSubmittedAt(java.time.LocalDateTime)
+  location: variable response of type com.eduflex.backend.model.CourseEvaluationResponse
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/controller/ForumController.java:[55,24] cannot find symbol
+  symbol:   method setCourse(com.eduflex.backend.model.Course)
+  location: variable rulesThread of type com.eduflex.backend.model.ForumThread
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/controller/ForumController.java:[56,24] cannot find symbol
+  symbol:   method setCategory(com.eduflex.backend.model.ForumCategory)
+  location: variable rulesThread of type com.eduflex.backend.model.ForumThread
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/controller/ForumController.java:[57,24] cannot find symbol
+  symbol:   method setAuthor(com.eduflex.backend.model.User)
+  location: variable rulesThread of type com.eduflex.backend.model.ForumThread
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/controller/ForumController.java:[58,24] cannot find symbol
+  symbol:   method setTitle(java.lang.String)
+  location: variable rulesThread of type com.eduflex.backend.model.ForumThread
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/controller/ForumController.java:[59,24] cannot find symbol
+  symbol:   method setContent(java.lang.String)
+  location: variable rulesThread of type com.eduflex.backend.model.ForumThread
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/controller/ForumController.java:[113,34] cannot find symbol
+  symbol:   method getCourse()
+  location: variable category of type com.eduflex.backend.model.ForumCategory
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/controller/ForumController.java:[114,15] cannot find symbol
+  symbol:   method setCategory(com.eduflex.backend.model.ForumCategory)
+  location: variable thread of type com.eduflex.backend.model.ForumThread
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/controller/ForumController.java:[115,15] cannot find symbol
+  symbol:   method setAuthor(com.eduflex.backend.model.User)
+  location: variable thread of type com.eduflex.backend.model.ForumThread
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/controller/ForumController.java:[116,15] cannot find symbol
+  symbol:   method setTitle(java.lang.String)
+  location: variable thread of type com.eduflex.backend.model.ForumThread
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/controller/ForumController.java:[117,15] cannot find symbol
+  symbol:   method setContent(java.lang.String)
+  location: variable thread of type com.eduflex.backend.model.ForumThread
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/controller/ForumController.java:[138,10] cannot find symbol
+  symbol:   method setLocked(java.lang.Boolean)
+  location: variable t of type com.eduflex.backend.model.ForumThread
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/controller/ForumController.java:[155,13] cannot find symbol
+  symbol:   method setThread(com.eduflex.backend.model.ForumThread)
+  location: variable post of type com.eduflex.backend.model.ForumPost
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/controller/ForumController.java:[156,13] cannot find symbol
+  symbol:   method setAuthor(com.eduflex.backend.model.User)
+  location: variable post of type com.eduflex.backend.model.ForumPost
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/controller/ForumController.java:[157,13] cannot find symbol
+  symbol:   method setContent(java.lang.String)
+  location: variable post of type com.eduflex.backend.model.ForumPost
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/InvoiceService.java:[55,20] cannot find symbol
+  symbol:   method getInvoiceNumber()
+  location: variable invoice of type com.eduflex.backend.model.Invoice
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/InvoiceService.java:[55,58] cannot find symbol
+  symbol:   method getInvoiceNumber()
+  location: variable invoice of type com.eduflex.backend.model.Invoice
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/InvoiceService.java:[56,20] cannot find symbol
+  symbol:   method setInvoiceNumber(java.lang.String)
+  location: variable invoice of type com.eduflex.backend.model.Invoice
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/InvoiceService.java:[64,45] cannot find symbol
+  symbol:   method getAmount()
+  location: variable updatedInvoice of type com.eduflex.backend.model.Invoice
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/InvoiceService.java:[65,47] cannot find symbol
+  symbol:   method getCurrency()
+  location: variable updatedInvoice of type com.eduflex.backend.model.Invoice
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/InvoiceService.java:[66,45] cannot find symbol
+  symbol:   method getStatus()
+  location: variable updatedInvoice of type com.eduflex.backend.model.Invoice
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/InvoiceService.java:[67,46] cannot find symbol
+  symbol:   method getDueDate()
+  location: variable updatedInvoice of type com.eduflex.backend.model.Invoice
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/InvoiceService.java:[68,50] cannot find symbol
+  symbol:   method getDescription()
+  location: variable updatedInvoice of type com.eduflex.backend.model.Invoice
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/InvoiceService.java:[69,44] cannot find symbol
+  symbol:   method getNotes()
+  location: variable updatedInvoice of type com.eduflex.backend.model.Invoice
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/InvoiceService.java:[71,31] cannot find symbol
+  symbol:   method getStatus()
+  location: variable updatedInvoice of type com.eduflex.backend.model.Invoice
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/InvoiceService.java:[71,84] cannot find symbol
+  symbol:   method getPaidDate()
+  location: variable invoice of type com.eduflex.backend.model.Invoice
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/InvoiceService.java:[72,24] cannot find symbol
+  symbol:   method setPaidDate(java.time.LocalDate)
+  location: variable invoice of type com.eduflex.backend.model.Invoice
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/InvoiceService.java:[82,20] cannot find symbol
+  symbol:   method setStatus(com.eduflex.backend.model.Invoice.InvoiceStatus)
+  location: variable invoice of type com.eduflex.backend.model.Invoice
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/InvoiceService.java:[83,20] cannot find symbol
+  symbol:   method setPaidDate(java.time.LocalDate)
+  location: variable invoice of type com.eduflex.backend.model.Invoice
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/InvoiceService.java:[84,20] cannot find symbol
+  symbol:   method setPayment(com.eduflex.backend.model.Payment)
+  location: variable invoice of type com.eduflex.backend.model.Invoice
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/InvoiceService.java:[98,16] cannot find symbol
+  symbol:   method setInvoiceNumber(java.lang.String)
+  location: variable invoice of type com.eduflex.backend.model.Invoice
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/InvoiceService.java:[99,16] cannot find symbol
+  symbol:   method setUser(com.eduflex.backend.model.User)
+  location: variable invoice of type com.eduflex.backend.model.Invoice
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/InvoiceService.java:[100,16] cannot find symbol
+  symbol:   method setSubscriptionPlan(com.eduflex.backend.model.SubscriptionPlan)
+  location: variable invoice of type com.eduflex.backend.model.Invoice
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/InvoiceService.java:[101,33] cannot find symbol
+  symbol:   method getCurrency()
+  location: variable plan of type com.eduflex.backend.model.SubscriptionPlan
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/InvoiceService.java:[103,41] cannot find symbol
+  symbol:   method getPrice()
+  location: variable plan of type com.eduflex.backend.model.SubscriptionPlan
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/InvoiceService.java:[113,28] cannot find symbol
+  symbol:   method setPromoCode(java.lang.String)
+  location: variable invoice of type com.eduflex.backend.model.Invoice
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/InvoiceService.java:[118,16] cannot find symbol
+  symbol:   method setDiscountAmount(java.math.BigDecimal)
+  location: variable invoice of type com.eduflex.backend.model.Invoice
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/InvoiceService.java:[119,16] cannot find symbol
+  symbol:   method setAmount(java.math.BigDecimal)
+  location: variable invoice of type com.eduflex.backend.model.Invoice
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/InvoiceService.java:[132,16] cannot find symbol
+  symbol:   method setIssueDate(java.time.LocalDate)
+  location: variable invoice of type com.eduflex.backend.model.Invoice
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/InvoiceService.java:[133,16] cannot find symbol
+  symbol:   method setDueDate(java.time.LocalDate)
+  location: variable invoice of type com.eduflex.backend.model.Invoice
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/InvoiceService.java:[136,21] cannot find symbol
+  symbol:   method getDisplayName()
+  location: variable plan of type com.eduflex.backend.model.SubscriptionPlan
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/InvoiceService.java:[136,44] cannot find symbol
+  symbol:   method getBillingInterval()
+  location: variable plan of type com.eduflex.backend.model.SubscriptionPlan
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/InvoiceService.java:[137,16] cannot find symbol
+  symbol:   method setStatus(com.eduflex.backend.model.Invoice.InvoiceStatus)
+  location: variable invoice of type com.eduflex.backend.model.Invoice
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/InvoiceService.java:[138,16] cannot find symbol
+  symbol:   method setAutoGenerated(boolean)
+  location: variable invoice of type com.eduflex.backend.model.Invoice
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/InvoiceService.java:[172,74] cannot find symbol
+  symbol:   method getInvoiceNumber()
+  location: variable invoice of type com.eduflex.backend.model.Invoice
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/InvoiceService.java:[173,20] cannot find symbol
+  symbol:   method setPdfUrl(java.lang.String)
+  location: variable invoice of type com.eduflex.backend.model.Invoice
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/InvoiceService.java:[184,82] cannot find symbol
+  symbol:   method getInvoiceNumber()
+  location: variable invoice of type com.eduflex.backend.model.Invoice
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/InvoiceService.java:[185,20] cannot find symbol
+  symbol:   method setStatus(com.eduflex.backend.model.Invoice.InvoiceStatus)
+  location: variable invoice of type com.eduflex.backend.model.Invoice
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/PromoCodeService.java:[23,55] cannot find symbol
+  symbol:   method getCode()
+  location: variable promoCode of type com.eduflex.backend.model.PromoCode
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/PromoCodeService.java:[24,89] cannot find symbol
+  symbol:   method getCode()
+  location: variable promoCode of type com.eduflex.backend.model.PromoCode
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/PromoCodeService.java:[31,37] cannot find symbol
+  symbol:   method getCode()
+  location: variable updated of type com.eduflex.backend.model.PromoCode
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/PromoCodeService.java:[32,45] cannot find symbol
+  symbol:   method getDiscountType()
+  location: variable updated of type com.eduflex.backend.model.PromoCode
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/PromoCodeService.java:[33,46] cannot find symbol
+  symbol:   method getDiscountValue()
+  location: variable updated of type com.eduflex.backend.model.PromoCode
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/PromoCodeService.java:[34,42] cannot find symbol
+  symbol:   method getValidFrom()
+  location: variable updated of type com.eduflex.backend.model.PromoCode
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/PromoCodeService.java:[35,43] cannot find symbol
+  symbol:   method getValidUntil()
+  location: variable updated of type com.eduflex.backend.model.PromoCode
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/PromoCodeService.java:[36,40] cannot find symbol
+  symbol:   method getMaxUses()
+  location: variable updated of type com.eduflex.backend.model.PromoCode
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/PromoCodeService.java:[37,41] cannot find symbol
+  symbol:   method getIsActive()
+  location: variable updated of type com.eduflex.backend.model.PromoCode
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/PromoCodeService.java:[56,30] cannot find symbol
+  symbol:   method getDiscountType()
+  location: variable promo of type com.eduflex.backend.model.PromoCode
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/PromoCodeService.java:[57,65] cannot find symbol
+  symbol:   method getDiscountValue()
+  location: variable promo of type com.eduflex.backend.model.PromoCode
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/PromoCodeService.java:[60,41] cannot find symbol
+  symbol:   method getDiscountValue()
+  location: variable promo of type com.eduflex.backend.model.PromoCode
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/PromoCodeService.java:[75,39] cannot find symbol
+  symbol:   method getCurrentUses()
+  location: variable promo of type com.eduflex.backend.model.PromoCode
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/PaymentService.java:[68,20] cannot find symbol
+  symbol:   method setStatus(com.eduflex.backend.model.Payment.PaymentStatus)
+  location: variable payment of type com.eduflex.backend.model.Payment
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/PaymentService.java:[70,24] cannot find symbol
+  symbol:   method setPaymentDate(java.time.LocalDateTime)
+  location: variable payment of type com.eduflex.backend.model.Payment
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/PaymentService.java:[79,24] cannot find symbol
+  symbol:   method getStatus()
+  location: variable payment of type com.eduflex.backend.model.Payment
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/PaymentService.java:[85,47] cannot find symbol
+  symbol:   method getTransactionId()
+  location: variable payment of type com.eduflex.backend.model.Payment
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/PaymentService.java:[85,75] cannot find symbol
+  symbol:   method getAmount()
+  location: variable payment of type com.eduflex.backend.model.Payment
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/PaymentService.java:[87,20] cannot find symbol
+  symbol:   method setStatus(com.eduflex.backend.model.Payment.PaymentStatus)
+  location: variable payment of type com.eduflex.backend.model.Payment
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/PaymentService.java:[94,28] cannot find symbol
+  symbol:   method getPayment()
+  location: variable invoice of type com.eduflex.backend.model.Invoice
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/PaymentService.java:[94,60] cannot find symbol
+  symbol:   method getPayment()
+  location: variable invoice of type com.eduflex.backend.model.Invoice
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/PaymentService.java:[95,28] cannot find symbol
+  symbol:   method setStatus(com.eduflex.backend.model.Invoice.InvoiceStatus)
+  location: variable invoice of type com.eduflex.backend.model.Invoice
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/PaymentService.java:[112,36] cannot find symbol
+  symbol:   method setStatus(com.eduflex.backend.model.Payment.PaymentStatus)
+  location: variable payment of type com.eduflex.backend.model.Payment
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/PaymentService.java:[113,36] cannot find symbol
+  symbol:   method setPaymentDate(java.time.LocalDateTime)
+  location: variable payment of type com.eduflex.backend.model.Payment
+[INFO] 100 errors 
+[INFO] -------------------------------------------------------------
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  6.154 s
+[INFO] Finished at: 2026-01-12T09:38:45+01:00
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.13.0:compile (default-compile) on project eduflex: Compilation failure: Compilation failure: 
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/RedisMessageSubscriber.java:[32,78] cannot find symbol
+[ERROR]   symbol:   method getRecipientId()
+[ERROR]   location: variable chatMessage of type com.eduflex.backend.model.ChatMessage
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/RedisMessageSubscriber.java:[34,92] cannot find symbol
+[ERROR]   symbol:   method getId()
+[ERROR]   location: variable chatMessage of type com.eduflex.backend.model.ChatMessage
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/controller/AttendanceController.java:[46,52] cannot find symbol
+[ERROR]   symbol:   method isPresent()
+[ERROR]   location: variable att of type com.eduflex.backend.model.Attendance
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/controller/AttendanceController.java:[48,47] cannot find symbol
+[ERROR]   symbol:   method getNote()
+[ERROR]   location: variable att of type com.eduflex.backend.model.Attendance
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/controller/AttendanceController.java:[48,71] cannot find symbol
+[ERROR]   symbol:   method getNote()
+[ERROR]   location: variable att of type com.eduflex.backend.model.Attendance
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/controller/AttendanceController.java:[73,23] cannot find symbol
+[ERROR]   symbol:   method setEvent(com.eduflex.backend.model.CourseEvent)
+[ERROR]   location: variable attendance of type com.eduflex.backend.model.Attendance
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/controller/AttendanceController.java:[74,23] cannot find symbol
+[ERROR]   symbol:   method setStudent(com.eduflex.backend.model.User)
+[ERROR]   location: variable attendance of type com.eduflex.backend.model.Attendance
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/controller/AttendanceController.java:[76,19] cannot find symbol
+[ERROR]   symbol:   method setPresent(boolean)
+[ERROR]   location: variable attendance of type com.eduflex.backend.model.Attendance
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/controller/AttendanceController.java:[78,23] cannot find symbol
+[ERROR]   symbol:   method setNote(java.lang.String)
+[ERROR]   location: variable attendance of type com.eduflex.backend.model.Attendance
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/controller/AuthController.java:[79,31] cannot find symbol
+[ERROR]   symbol:   method name()
+[ERROR]   location: class com.eduflex.backend.model.Role
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/controller/ChatController.java:[45,20] cannot find symbol
+[ERROR]   symbol:   method setTimestamp(java.time.LocalDateTime)
+[ERROR]   location: variable chatMessage of type com.eduflex.backend.model.ChatMessage
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/controller/ChatController.java:[46,24] cannot find symbol
+[ERROR]   symbol:   method getIsRead()
+[ERROR]   location: variable chatMessage of type com.eduflex.backend.model.ChatMessage
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/controller/ChatController.java:[47,24] cannot find symbol
+[ERROR]   symbol:   method setIsRead(boolean)
+[ERROR]   location: variable chatMessage of type com.eduflex.backend.model.ChatMessage
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/controller/ChatController.java:[61,36] cannot find symbol
+[ERROR]   symbol:   method getRecipientId()
+[ERROR]   location: variable chatMessage of type com.eduflex.backend.model.ChatMessage
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/controller/ChatController.java:[62,63] cannot find symbol
+[ERROR]   symbol:   method getSenderName()
+[ERROR]   location: variable chatMessage of type com.eduflex.backend.model.ChatMessage
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/CourseService.java:[190,17] cannot find symbol
+[ERROR]   symbol:   method setTitle(java.lang.String)
+[ERROR]   location: variable material of type com.eduflex.backend.model.CourseMaterial
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/CourseService.java:[191,17] cannot find symbol
+[ERROR]   symbol:   method setContent(java.lang.String)
+[ERROR]   location: variable material of type com.eduflex.backend.model.CourseMaterial
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/CourseService.java:[192,17] cannot find symbol
+[ERROR]   symbol:   method setLink(java.lang.String)
+[ERROR]   location: variable material of type com.eduflex.backend.model.CourseMaterial
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/CourseService.java:[193,17] cannot find symbol
+[ERROR]   symbol:   method setType(com.eduflex.backend.model.CourseMaterial.MaterialType)
+[ERROR]   location: variable material of type com.eduflex.backend.model.CourseMaterial
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/CourseService.java:[194,17] cannot find symbol
+[ERROR]   symbol:   method setCourse(com.eduflex.backend.model.Course)
+[ERROR]   location: variable material of type com.eduflex.backend.model.CourseMaterial
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/CourseService.java:[200,21] cannot find symbol
+[ERROR]   symbol:   method setFileUrl(java.lang.String)
+[ERROR]   location: variable material of type com.eduflex.backend.model.CourseMaterial
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/CourseService.java:[210,21] cannot find symbol
+[ERROR]   symbol:   method setTitle(java.lang.String)
+[ERROR]   location: variable material of type com.eduflex.backend.model.CourseMaterial
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/CourseService.java:[212,21] cannot find symbol
+[ERROR]   symbol:   method setContent(java.lang.String)
+[ERROR]   location: variable material of type com.eduflex.backend.model.CourseMaterial
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/CourseService.java:[214,21] cannot find symbol
+[ERROR]   symbol:   method setLink(java.lang.String)
+[ERROR]   location: variable material of type com.eduflex.backend.model.CourseMaterial
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/CourseService.java:[220,21] cannot find symbol
+[ERROR]   symbol:   method setFileUrl(java.lang.String)
+[ERROR]   location: variable material of type com.eduflex.backend.model.CourseMaterial
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/CourseService.java:[271,17] cannot find symbol
+[ERROR]   symbol:   method setEvaluation(com.eduflex.backend.model.CourseEvaluation)
+[ERROR]   location: variable response of type com.eduflex.backend.model.CourseEvaluationResponse
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/CourseService.java:[272,17] cannot find symbol
+[ERROR]   symbol:   method setStudent(com.eduflex.backend.model.User)
+[ERROR]   location: variable response of type com.eduflex.backend.model.CourseEvaluationResponse
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/CourseService.java:[273,17] cannot find symbol
+[ERROR]   symbol:   method setAnswers(java.util.Map<java.lang.Integer,java.lang.String>)
+[ERROR]   location: variable response of type com.eduflex.backend.model.CourseEvaluationResponse
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/CourseService.java:[274,17] cannot find symbol
+[ERROR]   symbol:   method setSubmittedAt(java.time.LocalDateTime)
+[ERROR]   location: variable response of type com.eduflex.backend.model.CourseEvaluationResponse
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/controller/ForumController.java:[55,24] cannot find symbol
+[ERROR]   symbol:   method setCourse(com.eduflex.backend.model.Course)
+[ERROR]   location: variable rulesThread of type com.eduflex.backend.model.ForumThread
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/controller/ForumController.java:[56,24] cannot find symbol
+[ERROR]   symbol:   method setCategory(com.eduflex.backend.model.ForumCategory)
+[ERROR]   location: variable rulesThread of type com.eduflex.backend.model.ForumThread
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/controller/ForumController.java:[57,24] cannot find symbol
+[ERROR]   symbol:   method setAuthor(com.eduflex.backend.model.User)
+[ERROR]   location: variable rulesThread of type com.eduflex.backend.model.ForumThread
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/controller/ForumController.java:[58,24] cannot find symbol
+[ERROR]   symbol:   method setTitle(java.lang.String)
+[ERROR]   location: variable rulesThread of type com.eduflex.backend.model.ForumThread
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/controller/ForumController.java:[59,24] cannot find symbol
+[ERROR]   symbol:   method setContent(java.lang.String)
+[ERROR]   location: variable rulesThread of type com.eduflex.backend.model.ForumThread
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/controller/ForumController.java:[113,34] cannot find symbol
+[ERROR]   symbol:   method getCourse()
+[ERROR]   location: variable category of type com.eduflex.backend.model.ForumCategory
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/controller/ForumController.java:[114,15] cannot find symbol
+[ERROR]   symbol:   method setCategory(com.eduflex.backend.model.ForumCategory)
+[ERROR]   location: variable thread of type com.eduflex.backend.model.ForumThread
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/controller/ForumController.java:[115,15] cannot find symbol
+[ERROR]   symbol:   method setAuthor(com.eduflex.backend.model.User)
+[ERROR]   location: variable thread of type com.eduflex.backend.model.ForumThread
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/controller/ForumController.java:[116,15] cannot find symbol
+[ERROR]   symbol:   method setTitle(java.lang.String)
+[ERROR]   location: variable thread of type com.eduflex.backend.model.ForumThread
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/controller/ForumController.java:[117,15] cannot find symbol
+[ERROR]   symbol:   method setContent(java.lang.String)
+[ERROR]   location: variable thread of type com.eduflex.backend.model.ForumThread
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/controller/ForumController.java:[138,10] cannot find symbol
+[ERROR]   symbol:   method setLocked(java.lang.Boolean)
+[ERROR]   location: variable t of type com.eduflex.backend.model.ForumThread
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/controller/ForumController.java:[155,13] cannot find symbol
+[ERROR]   symbol:   method setThread(com.eduflex.backend.model.ForumThread)
+[ERROR]   location: variable post of type com.eduflex.backend.model.ForumPost
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/controller/ForumController.java:[156,13] cannot find symbol
+[ERROR]   symbol:   method setAuthor(com.eduflex.backend.model.User)
+[ERROR]   location: variable post of type com.eduflex.backend.model.ForumPost
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/controller/ForumController.java:[157,13] cannot find symbol
+[ERROR]   symbol:   method setContent(java.lang.String)
+[ERROR]   location: variable post of type com.eduflex.backend.model.ForumPost
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/InvoiceService.java:[55,20] cannot find symbol
+[ERROR]   symbol:   method getInvoiceNumber()
+[ERROR]   location: variable invoice of type com.eduflex.backend.model.Invoice
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/InvoiceService.java:[55,58] cannot find symbol
+[ERROR]   symbol:   method getInvoiceNumber()
+[ERROR]   location: variable invoice of type com.eduflex.backend.model.Invoice
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/InvoiceService.java:[56,20] cannot find symbol
+[ERROR]   symbol:   method setInvoiceNumber(java.lang.String)
+[ERROR]   location: variable invoice of type com.eduflex.backend.model.Invoice
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/InvoiceService.java:[64,45] cannot find symbol
+[ERROR]   symbol:   method getAmount()
+[ERROR]   location: variable updatedInvoice of type com.eduflex.backend.model.Invoice
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/InvoiceService.java:[65,47] cannot find symbol
+[ERROR]   symbol:   method getCurrency()
+[ERROR]   location: variable updatedInvoice of type com.eduflex.backend.model.Invoice
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/InvoiceService.java:[66,45] cannot find symbol
+[ERROR]   symbol:   method getStatus()
+[ERROR]   location: variable updatedInvoice of type com.eduflex.backend.model.Invoice
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/InvoiceService.java:[67,46] cannot find symbol
+[ERROR]   symbol:   method getDueDate()
+[ERROR]   location: variable updatedInvoice of type com.eduflex.backend.model.Invoice
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/InvoiceService.java:[68,50] cannot find symbol
+[ERROR]   symbol:   method getDescription()
+[ERROR]   location: variable updatedInvoice of type com.eduflex.backend.model.Invoice
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/InvoiceService.java:[69,44] cannot find symbol
+[ERROR]   symbol:   method getNotes()
+[ERROR]   location: variable updatedInvoice of type com.eduflex.backend.model.Invoice
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/InvoiceService.java:[71,31] cannot find symbol
+[ERROR]   symbol:   method getStatus()
+[ERROR]   location: variable updatedInvoice of type com.eduflex.backend.model.Invoice
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/InvoiceService.java:[71,84] cannot find symbol
+[ERROR]   symbol:   method getPaidDate()
+[ERROR]   location: variable invoice of type com.eduflex.backend.model.Invoice
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/InvoiceService.java:[72,24] cannot find symbol
+[ERROR]   symbol:   method setPaidDate(java.time.LocalDate)
+[ERROR]   location: variable invoice of type com.eduflex.backend.model.Invoice
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/InvoiceService.java:[82,20] cannot find symbol
+[ERROR]   symbol:   method setStatus(com.eduflex.backend.model.Invoice.InvoiceStatus)
+[ERROR]   location: variable invoice of type com.eduflex.backend.model.Invoice
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/InvoiceService.java:[83,20] cannot find symbol
+[ERROR]   symbol:   method setPaidDate(java.time.LocalDate)
+[ERROR]   location: variable invoice of type com.eduflex.backend.model.Invoice
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/InvoiceService.java:[84,20] cannot find symbol
+[ERROR]   symbol:   method setPayment(com.eduflex.backend.model.Payment)
+[ERROR]   location: variable invoice of type com.eduflex.backend.model.Invoice
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/InvoiceService.java:[98,16] cannot find symbol
+[ERROR]   symbol:   method setInvoiceNumber(java.lang.String)
+[ERROR]   location: variable invoice of type com.eduflex.backend.model.Invoice
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/InvoiceService.java:[99,16] cannot find symbol
+[ERROR]   symbol:   method setUser(com.eduflex.backend.model.User)
+[ERROR]   location: variable invoice of type com.eduflex.backend.model.Invoice
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/InvoiceService.java:[100,16] cannot find symbol
+[ERROR]   symbol:   method setSubscriptionPlan(com.eduflex.backend.model.SubscriptionPlan)
+[ERROR]   location: variable invoice of type com.eduflex.backend.model.Invoice
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/InvoiceService.java:[101,33] cannot find symbol
+[ERROR]   symbol:   method getCurrency()
+[ERROR]   location: variable plan of type com.eduflex.backend.model.SubscriptionPlan
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/InvoiceService.java:[103,41] cannot find symbol
+[ERROR]   symbol:   method getPrice()
+[ERROR]   location: variable plan of type com.eduflex.backend.model.SubscriptionPlan
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/InvoiceService.java:[113,28] cannot find symbol
+[ERROR]   symbol:   method setPromoCode(java.lang.String)
+[ERROR]   location: variable invoice of type com.eduflex.backend.model.Invoice
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/InvoiceService.java:[118,16] cannot find symbol
+[ERROR]   symbol:   method setDiscountAmount(java.math.BigDecimal)
+[ERROR]   location: variable invoice of type com.eduflex.backend.model.Invoice
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/InvoiceService.java:[119,16] cannot find symbol
+[ERROR]   symbol:   method setAmount(java.math.BigDecimal)
+[ERROR]   location: variable invoice of type com.eduflex.backend.model.Invoice
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/InvoiceService.java:[132,16] cannot find symbol
+[ERROR]   symbol:   method setIssueDate(java.time.LocalDate)
+[ERROR]   location: variable invoice of type com.eduflex.backend.model.Invoice
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/InvoiceService.java:[133,16] cannot find symbol
+[ERROR]   symbol:   method setDueDate(java.time.LocalDate)
+[ERROR]   location: variable invoice of type com.eduflex.backend.model.Invoice
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/InvoiceService.java:[136,21] cannot find symbol
+[ERROR]   symbol:   method getDisplayName()
+[ERROR]   location: variable plan of type com.eduflex.backend.model.SubscriptionPlan
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/InvoiceService.java:[136,44] cannot find symbol
+[ERROR]   symbol:   method getBillingInterval()
+[ERROR]   location: variable plan of type com.eduflex.backend.model.SubscriptionPlan
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/InvoiceService.java:[137,16] cannot find symbol
+[ERROR]   symbol:   method setStatus(com.eduflex.backend.model.Invoice.InvoiceStatus)
+[ERROR]   location: variable invoice of type com.eduflex.backend.model.Invoice
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/InvoiceService.java:[138,16] cannot find symbol
+[ERROR]   symbol:   method setAutoGenerated(boolean)
+[ERROR]   location: variable invoice of type com.eduflex.backend.model.Invoice
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/InvoiceService.java:[172,74] cannot find symbol
+[ERROR]   symbol:   method getInvoiceNumber()
+[ERROR]   location: variable invoice of type com.eduflex.backend.model.Invoice
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/InvoiceService.java:[173,20] cannot find symbol
+[ERROR]   symbol:   method setPdfUrl(java.lang.String)
+[ERROR]   location: variable invoice of type com.eduflex.backend.model.Invoice
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/InvoiceService.java:[184,82] cannot find symbol
+[ERROR]   symbol:   method getInvoiceNumber()
+[ERROR]   location: variable invoice of type com.eduflex.backend.model.Invoice
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/InvoiceService.java:[185,20] cannot find symbol
+[ERROR]   symbol:   method setStatus(com.eduflex.backend.model.Invoice.InvoiceStatus)
+[ERROR]   location: variable invoice of type com.eduflex.backend.model.Invoice
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/PromoCodeService.java:[23,55] cannot find symbol
+[ERROR]   symbol:   method getCode()
+[ERROR]   location: variable promoCode of type com.eduflex.backend.model.PromoCode
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/PromoCodeService.java:[24,89] cannot find symbol
+[ERROR]   symbol:   method getCode()
+[ERROR]   location: variable promoCode of type com.eduflex.backend.model.PromoCode
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/PromoCodeService.java:[31,37] cannot find symbol
+[ERROR]   symbol:   method getCode()
+[ERROR]   location: variable updated of type com.eduflex.backend.model.PromoCode
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/PromoCodeService.java:[32,45] cannot find symbol
+[ERROR]   symbol:   method getDiscountType()
+[ERROR]   location: variable updated of type com.eduflex.backend.model.PromoCode
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/PromoCodeService.java:[33,46] cannot find symbol
+[ERROR]   symbol:   method getDiscountValue()
+[ERROR]   location: variable updated of type com.eduflex.backend.model.PromoCode
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/PromoCodeService.java:[34,42] cannot find symbol
+[ERROR]   symbol:   method getValidFrom()
+[ERROR]   location: variable updated of type com.eduflex.backend.model.PromoCode
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/PromoCodeService.java:[35,43] cannot find symbol
+[ERROR]   symbol:   method getValidUntil()
+[ERROR]   location: variable updated of type com.eduflex.backend.model.PromoCode
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/PromoCodeService.java:[36,40] cannot find symbol
+[ERROR]   symbol:   method getMaxUses()
+[ERROR]   location: variable updated of type com.eduflex.backend.model.PromoCode
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/PromoCodeService.java:[37,41] cannot find symbol
+[ERROR]   symbol:   method getIsActive()
+[ERROR]   location: variable updated of type com.eduflex.backend.model.PromoCode
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/PromoCodeService.java:[56,30] cannot find symbol
+[ERROR]   symbol:   method getDiscountType()
+[ERROR]   location: variable promo of type com.eduflex.backend.model.PromoCode
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/PromoCodeService.java:[57,65] cannot find symbol
+[ERROR]   symbol:   method getDiscountValue()
+[ERROR]   location: variable promo of type com.eduflex.backend.model.PromoCode
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/PromoCodeService.java:[60,41] cannot find symbol
+[ERROR]   symbol:   method getDiscountValue()
+[ERROR]   location: variable promo of type com.eduflex.backend.model.PromoCode
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/PromoCodeService.java:[75,39] cannot find symbol
+[ERROR]   symbol:   method getCurrentUses()
+[ERROR]   location: variable promo of type com.eduflex.backend.model.PromoCode
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/PaymentService.java:[68,20] cannot find symbol
+[ERROR]   symbol:   method setStatus(com.eduflex.backend.model.Payment.PaymentStatus)
+[ERROR]   location: variable payment of type com.eduflex.backend.model.Payment
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/PaymentService.java:[70,24] cannot find symbol
+[ERROR]   symbol:   method setPaymentDate(java.time.LocalDateTime)
+[ERROR]   location: variable payment of type com.eduflex.backend.model.Payment
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/PaymentService.java:[79,24] cannot find symbol
+[ERROR]   symbol:   method getStatus()
+[ERROR]   location: variable payment of type com.eduflex.backend.model.Payment
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/PaymentService.java:[85,47] cannot find symbol
+[ERROR]   symbol:   method getTransactionId()
+[ERROR]   location: variable payment of type com.eduflex.backend.model.Payment
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/PaymentService.java:[85,75] cannot find symbol
+[ERROR]   symbol:   method getAmount()
+[ERROR]   location: variable payment of type com.eduflex.backend.model.Payment
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/PaymentService.java:[87,20] cannot find symbol
+[ERROR]   symbol:   method setStatus(com.eduflex.backend.model.Payment.PaymentStatus)
+[ERROR]   location: variable payment of type com.eduflex.backend.model.Payment
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/PaymentService.java:[94,28] cannot find symbol
+[ERROR]   symbol:   method getPayment()
+[ERROR]   location: variable invoice of type com.eduflex.backend.model.Invoice
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/PaymentService.java:[94,60] cannot find symbol
+[ERROR]   symbol:   method getPayment()
+[ERROR]   location: variable invoice of type com.eduflex.backend.model.Invoice
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/PaymentService.java:[95,28] cannot find symbol
+[ERROR]   symbol:   method setStatus(com.eduflex.backend.model.Invoice.InvoiceStatus)
+[ERROR]   location: variable invoice of type com.eduflex.backend.model.Invoice
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/PaymentService.java:[112,36] cannot find symbol
+[ERROR]   symbol:   method setStatus(com.eduflex.backend.model.Payment.PaymentStatus)
+[ERROR]   location: variable payment of type com.eduflex.backend.model.Payment
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/PaymentService.java:[113,36] cannot find symbol
+[ERROR]   symbol:   method setPaymentDate(java.time.LocalDateTime)
+[ERROR]   location: variable payment of type com.eduflex.backend.model.Payment
+[ERROR] -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException

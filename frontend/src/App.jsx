@@ -46,7 +46,9 @@ const ProtectedRoute = ({ children, roles }) => {
     }
 
     // Roll-kontroll
-    if (roles && !roles.includes(currentUser.role)) {
+    // Roll-kontroll
+    const userRole = currentUser.role?.name || currentUser.role;
+    if (roles && !roles.includes(userRole)) {
         return <Navigate to="/" replace />;
     }
 
@@ -70,7 +72,7 @@ const DashboardWrapper = ({ currentUser }) => {
 };
 
 const AppRoutes = () => {
-    const { currentUser, logout, licenseLocked, licenseStatus } = useAppContext();
+    const { currentUser, logout, licenseLocked, licenseStatus, refreshUser } = useAppContext();
 
     // 1. GLOBAL LICENSE LOCK (Triggered by 402 or explicit lock)
     if (licenseLocked || licenseStatus === 'locked') {
@@ -158,7 +160,7 @@ const AppRoutes = () => {
                 <Route path="/profile" element={
                     <ProtectedRoute>
                         <Layout currentUser={currentUser} handleLogout={logout}>
-                            <UserProfile currentUser={currentUser} showMessage={(msg) => alert(msg)} refreshUser={() => { }} />
+                            <UserProfile currentUser={currentUser} showMessage={(msg) => alert(msg)} refreshUser={refreshUser} />
                         </Layout>
                     </ProtectedRoute>
                 } />

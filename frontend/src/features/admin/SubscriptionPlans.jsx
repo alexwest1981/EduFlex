@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { DollarSign, Plus, Edit, Trash2, Check, X, Users, Package, HardDrive, Calendar } from 'lucide-react';
 import { api } from '../../services/api';
 
 const SubscriptionPlans = () => {
+    const { t } = useTranslation();
     const [plans, setPlans] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
@@ -55,7 +57,7 @@ const SubscriptionPlans = () => {
     };
 
     const handleDelete = async (id) => {
-        if (!confirm('Are you sure you want to delete this plan?')) return;
+        if (!confirm(t('subscription_plans.delete_confirm'))) return;
         try {
             await api.delete(`/subscription-plans/${id}`);
             fetchPlans();
@@ -105,7 +107,7 @@ const SubscriptionPlans = () => {
     };
 
     const handleFeatureAdd = () => {
-        const newFeature = prompt('Enter feature name:');
+        const newFeature = prompt(t('subscription_plans.enter_feature'));
         if (newFeature) {
             setFormData(prev => ({
                 ...prev,
@@ -122,7 +124,7 @@ const SubscriptionPlans = () => {
     };
 
     if (isLoading) {
-        return <div className="p-8 text-center">Loading subscription plans...</div>;
+        return <div className="p-8 text-center">{t('subscription_plans.loading')}</div>;
     }
 
     return (
@@ -131,10 +133,10 @@ const SubscriptionPlans = () => {
                 <div>
                     <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
                         <DollarSign className="text-indigo-600" />
-                        Subscription Plans
+                        {t('subscription_plans.title')}
                     </h1>
                     <p className="text-gray-500 dark:text-gray-400 mt-1">
-                        Manage pricing tiers and subscription options
+                        {t('subscription_plans.subtitle')}
                     </p>
                 </div>
                 <button
@@ -142,7 +144,7 @@ const SubscriptionPlans = () => {
                     className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-bold"
                 >
                     <Plus size={20} />
-                    Create Plan
+                    {t('subscription_plans.create_plan')}
                 </button>
             </div>
 
@@ -157,12 +159,12 @@ const SubscriptionPlans = () => {
                     >
                         {plan.isDefault && (
                             <div className="absolute top-4 right-4 bg-indigo-600 text-white text-xs font-bold px-2 py-1 rounded">
-                                DEFAULT
+                                {t('subscription_plans.default_badge')}
                             </div>
                         )}
                         {!plan.active && (
                             <div className="absolute top-4 right-4 bg-gray-400 text-white text-xs font-bold px-2 py-1 rounded">
-                                INACTIVE
+                                {t('subscription_plans.inactive_badge')}
                             </div>
                         )}
 
@@ -185,21 +187,21 @@ const SubscriptionPlans = () => {
                         <div className="space-y-3 mb-6">
                             <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
                                 <Users size={16} />
-                                <span>{plan.maxUsers === -1 ? 'Unlimited' : plan.maxUsers} Users</span>
+                                <span>{plan.maxUsers === -1 ? t('subscription_plans.unlimited') : plan.maxUsers} {t('subscription_plans.users')}</span>
                             </div>
                             <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
                                 <Package size={16} />
-                                <span>{plan.maxCourses === -1 ? 'Unlimited' : plan.maxCourses} Courses</span>
+                                <span>{plan.maxCourses === -1 ? t('subscription_plans.unlimited') : plan.maxCourses} {t('subscription_plans.courses')}</span>
                             </div>
                             <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
                                 <HardDrive size={16} />
-                                <span>{plan.maxStorage === -1 ? 'Unlimited' : `${plan.maxStorage} GB`} Storage</span>
+                                <span>{plan.maxStorage === -1 ? t('subscription_plans.unlimited') : `${plan.maxStorage} GB`} {t('subscription_plans.storage')}</span>
                             </div>
                         </div>
 
                         {plan.features && plan.features.length > 0 && (
                             <div className="border-t border-gray-200 dark:border-[#3c4043] pt-4 mb-4">
-                                <p className="text-xs font-bold text-gray-500 uppercase mb-2">Features</p>
+                                <p className="text-xs font-bold text-gray-500 uppercase mb-2">{t('subscription_plans.features')}</p>
                                 <ul className="space-y-1">
                                     {plan.features.map((feature, idx) => (
                                         <li key={idx} className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
@@ -217,7 +219,7 @@ const SubscriptionPlans = () => {
                                 className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-gray-100 dark:bg-[#282a2c] text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-200 dark:hover:bg-[#3c4043] transition-colors text-sm font-bold"
                             >
                                 <Edit size={16} />
-                                Edit
+                                {t('subscription_plans.edit')}
                             </button>
                             <button
                                 onClick={() => toggleStatus(plan.id)}
@@ -226,7 +228,7 @@ const SubscriptionPlans = () => {
                                     : 'bg-green-100 text-green-700 hover:bg-green-200'
                                     }`}
                             >
-                                {plan.active ? 'Deactivate' : 'Activate'}
+                                {plan.active ? t('subscription_plans.deactivate') : t('subscription_plans.activate')}
                             </button>
                             <button
                                 onClick={() => handleDelete(plan.id)}
@@ -245,7 +247,7 @@ const SubscriptionPlans = () => {
                     <div className="bg-white dark:bg-[#1E1F20] rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
                         <div className="p-6 border-b border-gray-200 dark:border-[#3c4043]">
                             <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-                                {editingPlan ? 'Edit Plan' : 'Create New Plan'}
+                                {editingPlan ? t('subscription_plans.edit_plan') : t('subscription_plans.create_new_plan')}
                             </h2>
                         </div>
 
@@ -253,7 +255,7 @@ const SubscriptionPlans = () => {
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
                                     <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
-                                        Plan Name (Internal)
+                                        {t('subscription_plans.plan_name_internal')}
                                     </label>
                                     <input
                                         type="text"
@@ -265,7 +267,7 @@ const SubscriptionPlans = () => {
                                 </div>
                                 <div>
                                     <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
-                                        Display Name
+                                        {t('subscription_plans.display_name')}
                                     </label>
                                     <input
                                         type="text"
@@ -279,7 +281,7 @@ const SubscriptionPlans = () => {
 
                             <div>
                                 <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
-                                    Description
+                                    {t('subscription_plans.description')}
                                 </label>
                                 <textarea
                                     value={formData.description}
@@ -292,7 +294,7 @@ const SubscriptionPlans = () => {
                             <div className="grid grid-cols-3 gap-4">
                                 <div>
                                     <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
-                                        Price
+                                        {t('subscription_plans.price')}
                                     </label>
                                     <input
                                         type="number"
@@ -304,7 +306,7 @@ const SubscriptionPlans = () => {
                                 </div>
                                 <div>
                                     <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
-                                        Currency
+                                        {t('subscription_plans.currency')}
                                     </label>
                                     <select
                                         value={formData.currency}
@@ -318,7 +320,7 @@ const SubscriptionPlans = () => {
                                 </div>
                                 <div>
                                     <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
-                                        Trial Period (Days)
+                                        {t('subscription_plans.trial_period_days')}
                                     </label>
                                     <input
                                         type="number"
@@ -332,23 +334,23 @@ const SubscriptionPlans = () => {
 
                             <div>
                                 <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
-                                    Billing Interval
+                                    {t('subscription_plans.billing_interval')}
                                 </label>
                                 <select
                                     value={formData.billingInterval}
                                     onChange={(e) => setFormData({ ...formData, billingInterval: e.target.value })}
                                     className="w-full px-4 py-2 border border-gray-300 dark:border-[#3c4043] rounded-lg bg-white dark:bg-[#282a2c] text-gray-900 dark:text-white"
                                 >
-                                    <option value="MONTHLY">Monthly</option>
-                                    <option value="YEARLY">Yearly</option>
-                                    <option value="LIFETIME">Lifetime</option>
+                                    <option value="MONTHLY">{t('subscription_plans.monthly')}</option>
+                                    <option value="YEARLY">{t('subscription_plans.yearly')}</option>
+                                    <option value="LIFETIME">{t('subscription_plans.lifetime')}</option>
                                 </select>
                             </div>
 
                             <div className="grid grid-cols-3 gap-4">
                                 <div>
                                     <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
-                                        Max Users (-1 = unlimited)
+                                        {t('subscription_plans.max_users')}
                                     </label>
                                     <input
                                         type="number"
@@ -359,7 +361,7 @@ const SubscriptionPlans = () => {
                                 </div>
                                 <div>
                                     <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
-                                        Max Courses (-1 = unlimited)
+                                        {t('subscription_plans.max_courses')}
                                     </label>
                                     <input
                                         type="number"
@@ -370,7 +372,7 @@ const SubscriptionPlans = () => {
                                 </div>
                                 <div>
                                     <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
-                                        Storage GB (-1 = unlimited)
+                                        {t('subscription_plans.max_storage')}
                                     </label>
                                     <input
                                         type="number"
@@ -383,7 +385,7 @@ const SubscriptionPlans = () => {
 
                             <div>
                                 <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
-                                    Features
+                                    {t('subscription_plans.features')}
                                 </label>
                                 <div className="space-y-2">
                                     {formData.features?.map((feature, idx) => (
@@ -412,7 +414,7 @@ const SubscriptionPlans = () => {
                                         onClick={handleFeatureAdd}
                                         className="w-full px-4 py-2 border-2 border-dashed border-gray-300 dark:border-[#3c4043] rounded-lg text-gray-600 dark:text-gray-400 hover:border-indigo-600 hover:text-indigo-600 transition-colors"
                                     >
-                                        + Add Feature
+                                        {t('subscription_plans.add_feature')}
                                     </button>
                                 </div>
                             </div>
@@ -425,7 +427,7 @@ const SubscriptionPlans = () => {
                                         onChange={(e) => setFormData({ ...formData, active: e.target.checked })}
                                         className="w-4 h-4"
                                     />
-                                    <label className="text-sm font-bold text-gray-700 dark:text-gray-300">Active</label>
+                                    <label className="text-sm font-bold text-gray-700 dark:text-gray-300">{t('subscription_plans.active')}</label>
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <input
@@ -434,11 +436,11 @@ const SubscriptionPlans = () => {
                                         onChange={(e) => setFormData({ ...formData, isDefault: e.target.checked })}
                                         className="w-4 h-4"
                                     />
-                                    <label className="text-sm font-bold text-gray-700 dark:text-gray-300">Default Plan</label>
+                                    <label className="text-sm font-bold text-gray-700 dark:text-gray-300">{t('subscription_plans.default_plan')}</label>
                                 </div>
                                 <div>
                                     <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
-                                        Sort Order
+                                        {t('subscription_plans.sort_order')}
                                     </label>
                                     <input
                                         type="number"
@@ -455,13 +457,13 @@ const SubscriptionPlans = () => {
                                     onClick={closeModal}
                                     className="flex-1 px-4 py-2 border border-gray-300 dark:border-[#3c4043] rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-[#282a2c] transition-colors font-bold"
                                 >
-                                    Cancel
+                                    {t('subscription_plans.cancel')}
                                 </button>
                                 <button
                                     type="submit"
                                     className="flex-1 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-bold"
                                 >
-                                    {editingPlan ? 'Update Plan' : 'Create Plan'}
+                                    {editingPlan ? t('subscription_plans.update_plan') : t('subscription_plans.create_plan_btn')}
                                 </button>
                             </div>
                         </form>

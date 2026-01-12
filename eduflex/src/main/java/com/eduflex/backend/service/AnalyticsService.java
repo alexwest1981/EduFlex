@@ -165,7 +165,7 @@ public class AnalyticsService {
 
         public List<Map<String, Object>> getStudentInsights() {
                 List<User> students = userRepository.findAll().stream()
-                                .filter(u -> u.getRole() == User.Role.STUDENT)
+                                .filter(u -> "STUDENT".equals(u.getRole().getName()))
                                 .collect(Collectors.toList());
 
                 List<Assignment> allAssignments = assignmentRepository.findAll();

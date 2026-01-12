@@ -81,6 +81,14 @@ export const api = {
         getStudentProgress: (studentId) => fetch(`${API_BASE}/analytics/student/${studentId}`, { headers: getHeaders() }).then(handleResponse)
     },
 
+    skolverket: {
+        getCourses: () => fetch(`${API_BASE}/skolverket/courses`, { headers: getHeaders() }).then(handleResponse),
+        search: (query) => fetch(`${API_BASE}/skolverket/courses/search?q=${query}`, { headers: getHeaders() }).then(handleResponse),
+        getBySubject: (subject) => fetch(`${API_BASE}/skolverket/courses/subject/${subject}`, { headers: getHeaders() }).then(handleResponse),
+        getSubjects: () => fetch(`${API_BASE}/skolverket/subjects`, { headers: getHeaders() }).then(handleResponse),
+        getStats: () => fetch(`${API_BASE}/skolverket/stats`, { headers: getHeaders() }).then(handleResponse)
+    },
+
     messages: {
         getInbox: () => fetch(`${API_BASE}/messages/inbox`, { headers: getHeaders() }).then(handleResponse),
         getSent: () => fetch(`${API_BASE}/messages/sent`, { headers: getHeaders() }).then(handleResponse),
@@ -94,9 +102,17 @@ export const api = {
         getHistory: (senderId, recipientId, page = 0, size = 20) => fetch(`${API_BASE}/messages/${senderId}/${recipientId}?page=${page}&size=${size}`, { headers: getHeaders() }).then(handleResponse)
     },
 
+    roles: {
+        getAll: () => fetch(`${API_BASE}/roles`, { headers: getHeaders() }).then(handleResponse),
+        getPermissions: () => fetch(`${API_BASE}/roles/permissions`, { headers: getHeaders() }).then(handleResponse),
+        create: (data) => fetch(`${API_BASE}/roles`, { method: 'POST', headers: getHeaders(), body: JSON.stringify(data) }).then(handleResponse),
+        update: (id, data) => fetch(`${API_BASE}/roles/${id}`, { method: 'PUT', headers: getHeaders(), body: JSON.stringify(data) }).then(handleResponse),
+        delete: (id) => fetch(`${API_BASE}/roles/${id}`, { method: 'DELETE', headers: getHeaders() }).then(handleResponse),
+    },
+
     users: {
         getAll: (page = 0, size = 20) => fetch(`${API_BASE}/users?page=${page}&size=${size}`, { headers: getHeaders() }).then(handleResponse),
-        getById: (id) => fetch(`${API_BASE}/users/${id}`, { headers: getHeaders() }).then(handleResponse),
+        getById: (id) => fetch(`${API_BASE}/users/${id}?t=${new Date().getTime()}`, { headers: getHeaders() }).then(handleResponse),
         register: (data) => fetch(`${API_BASE}/users/register`, { method: 'POST', headers: getHeaders(), body: JSON.stringify(data) }).then(handleResponse),
         generateUsernames: (data) => fetch(`${API_BASE}/users/generate-usernames`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }).then(handleResponse),
         delete: (id) => fetch(`${API_BASE}/users/${id}`, { method: 'DELETE', headers: getHeaders() }).then(handleResponse),
@@ -172,6 +188,17 @@ export const api = {
     },
 
     // --- RESTORED SECTIONS ---
+    skolverket: {
+        getCourses: () => api.get('/skolverket/courses'),
+        search: (query) => api.get(`/skolverket/courses/search?q=${query}`),
+        getBySubject: (subject) => api.get(`/skolverket/courses/subject/${subject}`),
+        getSubjects: () => api.get('/skolverket/subjects'),
+        getStats: () => api.get('/skolverket/stats'),
+        getCriteria: (courseCode) => api.get(`/skolverket/courses/${courseCode}/criteria`),
+        updateDetails: (courseCode, details) => api.put(`/skolverket/courses/${courseCode}/details`, details),
+        saveCriteria: (courseCode, criteria) => api.post(`/skolverket/courses/${courseCode}/criteria`, criteria)
+    },
+
     system: {
         getModules: () => api.get('/modules'),
         toggleModule: (key, active) => api.post(`/modules/${key}/toggle?active=${active}`),

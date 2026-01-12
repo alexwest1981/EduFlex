@@ -18,16 +18,20 @@ import org.springframework.data.domain.Pageable;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final com.eduflex.backend.repository.RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
     private final LicenseService licenseService;
 
     private final com.eduflex.backend.repository.AuditLogRepository auditLogRepository;
     private final FileStorageService fileStorageService;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, LicenseService licenseService,
+    public UserService(UserRepository userRepository,
+            com.eduflex.backend.repository.RoleRepository roleRepository,
+            PasswordEncoder passwordEncoder, LicenseService licenseService,
             com.eduflex.backend.repository.AuditLogRepository auditLogRepository,
             FileStorageService fileStorageService) {
         this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
         this.licenseService = licenseService;
         this.auditLogRepository = auditLogRepository;
@@ -55,8 +59,11 @@ public class UserService {
         // ---------------------------
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        if (user.getRole() == null)
-            user.setRole(User.Role.STUDENT);
+        if (user.getRole() == null) {
+            com.eduflex.backend.model.Role studentRole = roleRepository.findByName("STUDENT")
+                    .orElseThrow(() -> new RuntimeException("Default role STUDENT not found in database."));
+            user.setRole(studentRole);
+        }
         user.setActive(true);
         return userRepository.save(user);
     }
@@ -75,10 +82,12 @@ public class UserService {
         User user = getUserById(userId);
         Set<User> contacts = new HashSet<>();
 
-        if (user.getRole() == User.Role.ADMIN) {
+        String roleName = user.getRole().getName();
+
+        if ("ADMIN".equals(roleName) || user.getRole().isSuperAdmin()) {
             // Admin får se alla
             return userRepository.findAll();
-        } else if (user.getRole() == User.Role.TEACHER) {
+        } else if ("TEACHER".equals(roleName)) {
             // 1. Sina egna elever (från kurser de skapat/undervisar i)
             // OBS: I modellen heter fältet 'coursesCreated' för lärare
             for (Course course : user.getCoursesCreated()) {
@@ -86,12 +95,12 @@ public class UserService {
             }
 
             // 2. Alla lärare
-            contacts.addAll(userRepository.findByRole(User.Role.TEACHER));
+            contacts.addAll(userRepository.findByRole_Name("TEACHER"));
 
             // 3. Alla administratörer
-            contacts.addAll(userRepository.findByRole(User.Role.ADMIN));
+            contacts.addAll(userRepository.findByRole_Name("ADMIN"));
 
-        } else if (user.getRole() == User.Role.STUDENT) {
+        } else if ("STUDENT".equals(roleName)) {
             // 1. Loopa igenom studentens kurser
             for (Course course : user.getCourses()) {
                 // Lägg till läraren
@@ -162,7 +171,7 @@ public class UserService {
         profile.put("fullName", user.getFullName());
         profile.put("email", user.getEmail());
         profile.put("ssn", user.getSsn());
-        profile.put("role", user.getRole());
+        profile.put("role", user.getRole().getName());
         profile.put("points", user.getPoints());
         profile.put("level", user.getLevel());
         profile.put("createdAt", user.getCreatedAt());

@@ -20,7 +20,9 @@ const Dashboard = ({ currentUser, myCourses }) => {
     }
 
     // 2. Välj vilken Dashboard som ska visas baserat på roll
-    switch (currentUser.role) {
+    const roleName = currentUser.role?.name || currentUser.role;
+
+    switch (roleName) {
         case 'ADMIN':
             // VIKTIGT: Vi skickar INTE med props här längre.
             // AdminDashboard hämtar nu sin egen data (Users, Courses) från API:et.
@@ -51,7 +53,7 @@ const Dashboard = ({ currentUser, myCourses }) => {
                     <AlertCircle className="text-red-500 mb-4" size={48} />
                     <h2 className="text-2xl font-bold text-gray-800 dark:text-white">Behörighet saknas</h2>
                     <p className="text-gray-600 dark:text-gray-400 mt-2">
-                        Din användarroll <strong>({currentUser.role})</strong> har ingen tilldelad instrumentpanel.
+                        Din användarroll <strong>({roleName})</strong> har ingen tilldelad instrumentpanel.
                         <br />Kontakta administratören.
                     </p>
                 </div>

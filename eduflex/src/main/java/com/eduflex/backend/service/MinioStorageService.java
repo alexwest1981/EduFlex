@@ -4,6 +4,7 @@ import io.minio.BucketExistsArgs;
 import io.minio.MakeBucketArgs;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
+import io.minio.SetBucketPolicyArgs;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
@@ -36,16 +37,13 @@ public class MinioStorageService implements FileStorageService {
             boolean found = minioClient.bucketExists(BucketExistsArgs.builder().bucket(bucketName).build());
             if (!found) {
                 minioClient.makeBucket(MakeBucketArgs.builder().bucket(bucketName).build());
-                // Set policy to public read if needed, but for now we rely on Presigned URLs or
-                // Proxy.
-                // Actually, for simplicity in this project, we might want to just proxy or
-                // return direct link if public.
-                // But typically we return a URL relative to OUR backend, and we proxy it.
-                // OR we return the direct MinIO URL (localhost:9000).
-                // Let's stick to returning a relative path and proxying OR returning the
-                // absolute URL if client can access it.
-                // Since user runs local docker, client can access localhost:9000.
             }
+
+            // Always set public read policy
+            String policy = "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"AWS\":[\"*\"]},\"Action\":[\"s3:GetObject\"],\"Resource\":[\"arn:aws:s3:::"
+                    + bucketName + "/*\"]}]}";
+            minioClient.setBucketPolicy(
+                    SetBucketPolicyArgs.builder().bucket(bucketName).config(policy).build());
         } catch (Exception e) {
             throw new RuntimeException("Could not initialize MinIO storage", e);
         }

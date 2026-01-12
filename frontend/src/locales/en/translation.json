@@ -289,7 +289,10 @@
     "assignments": "Assignments",
     "quiz": "Quizzes & Exams",
     "forum": "Forum",
+    "scorm": "Interactive Modules",
+    "kursinformation": "Course Information",
     "students": "Students & Grades",
+    "attendance": "Attendance",
     "create_quiz": "Create New Quiz",
     "start_quiz": "Start Quiz",
     "no_material": "No course material uploaded yet.",
@@ -322,7 +325,9 @@
     "mark_passed": "Pass",
     "mark_failed": "Fail",
     "certificate": "Certificate",
-    "course_completed": "Course Completed"
+    "course_completed": "Course completed",
+    "view_certificate": "View Certificate",
+    "claim_certificate": "Claim Certificate"
   },
   "assignments": {
     "header": "Assignments",
