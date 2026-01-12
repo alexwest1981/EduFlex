@@ -15,6 +15,7 @@ import java.util.UUID;
 
 @Service
 @Primary
+@org.springframework.context.annotation.Profile("!test")
 public class MinioStorageService implements FileStorageService {
 
     private final MinioClient minioClient;
