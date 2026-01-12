@@ -7,6 +7,8 @@ import { Loader2, AlertCircle } from 'lucide-react';
 import AdminDashboard from './AdminDashboard';
 import TeacherDashboard from './TeacherDashboard';
 import StudentDashboard from './StudentDashboard';
+import PrincipalDashboard from './PrincipalDashboard';
+import MentorDashboard from './MentorDashboard';
 
 const Dashboard = ({ currentUser, myCourses }) => {
 
@@ -20,14 +22,22 @@ const Dashboard = ({ currentUser, myCourses }) => {
     }
 
     // 2. Välj vilken Dashboard som ska visas baserat på roll
-    const roleName = currentUser.role?.name || currentUser.role;
+    // Vi kollar först om rollen har en specifik dashboard-konfiguration (defaultDashboard)
+    // Annars faller vi tillbaka på rollnamnet.
+    const dashboardType = currentUser.role?.defaultDashboard || currentUser.role?.name || currentUser.role;
 
-    switch (roleName) {
+    switch (dashboardType) {
         case 'ADMIN':
             // VIKTIGT: Vi skickar INTE med props här längre.
             // AdminDashboard hämtar nu sin egen data (Users, Courses) från API:et.
             // Detta förhindrar att App.jsx skriver över datan med tomma arrayer.
             return <AdminDashboard />;
+
+        case 'PRINCIPAL':
+            return <PrincipalDashboard />;
+
+        case 'MENTOR':
+            return <MentorDashboard />;
 
         case 'TEACHER':
             // Lärare behöver sina kurser som props
@@ -53,7 +63,7 @@ const Dashboard = ({ currentUser, myCourses }) => {
                     <AlertCircle className="text-red-500 mb-4" size={48} />
                     <h2 className="text-2xl font-bold text-gray-800 dark:text-white">Behörighet saknas</h2>
                     <p className="text-gray-600 dark:text-gray-400 mt-2">
-                        Din användarroll <strong>({roleName})</strong> har ingen tilldelad instrumentpanel.
+                        Din användarroll <strong>({dashboardType})</strong> har ingen tilldelad instrumentpanel.
                         <br />Kontakta administratören.
                     </p>
                 </div>

@@ -17,6 +17,9 @@ public class Role {
 
     private String description; // e.g. "School Principal"
 
+    @Column(name = "default_dashboard")
+    private String defaultDashboard; // ADMIN, TEACHER, STUDENT, PRINCIPAL, MENTOR
+
     @Column(name = "is_super_admin", columnDefinition = "boolean default false")
     private boolean isSuperAdmin = false;
 
@@ -29,9 +32,10 @@ public class Role {
     public Role() {
     }
 
-    public Role(String name, String description, boolean isSuperAdmin) {
+    public Role(String name, String description, String defaultDashboard, boolean isSuperAdmin) {
         this.name = name;
         this.description = description;
+        this.defaultDashboard = defaultDashboard;
         this.isSuperAdmin = isSuperAdmin;
     }
 
@@ -57,6 +61,14 @@ public class Role {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getDefaultDashboard() {
+        return defaultDashboard;
+    }
+
+    public void setDefaultDashboard(String defaultDashboard) {
+        this.defaultDashboard = defaultDashboard;
     }
 
     public boolean isSuperAdmin() {

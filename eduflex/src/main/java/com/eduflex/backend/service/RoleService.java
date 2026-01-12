@@ -48,6 +48,7 @@ public class RoleService {
         Role role = new Role();
         role.setName(request.getName().toUpperCase());
         role.setDescription(request.getDescription());
+        role.setDefaultDashboard(request.getDefaultDashboard());
         role.setSuperAdmin(request.isSuperAdmin());
 
         Set<Permission> permissions = new HashSet<>();
@@ -84,6 +85,7 @@ public class RoleService {
 
         role.setName(request.getName().toUpperCase());
         role.setDescription(request.getDescription());
+        role.setDefaultDashboard(request.getDefaultDashboard());
         role.setSuperAdmin(request.isSuperAdmin());
 
         Set<Permission> permissions = new HashSet<>();

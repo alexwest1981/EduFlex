@@ -11,12 +11,15 @@ public class RoleRequest {
     @JsonProperty("isSuperAdmin")
     private boolean isSuperAdmin;
 
+    private String defaultDashboard;
+
     public RoleRequest() {
     }
 
-    public RoleRequest(String name, String description, List<String> permissions) {
+    public RoleRequest(String name, String description, String defaultDashboard, List<String> permissions) {
         this.name = name;
         this.description = description;
+        this.defaultDashboard = defaultDashboard;
         this.permissions = permissions;
     }
 
@@ -34,6 +37,14 @@ public class RoleRequest {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getDefaultDashboard() {
+        return defaultDashboard;
+    }
+
+    public void setDefaultDashboard(String defaultDashboard) {
+        this.defaultDashboard = defaultDashboard;
     }
 
     public List<String> getPermissions() {

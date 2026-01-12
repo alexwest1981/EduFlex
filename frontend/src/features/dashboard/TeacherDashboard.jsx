@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { api } from '../../services/api';
 import MessageCenter from '../messages/MessageCenter';
 import RecentMessagesWidget from './components/RecentMessagesWidget';
+import TeacherAtRiskWidget from './widgets/TeacherAtRiskWidget';
 
 // --- IMPORTERA KOMPONENTER (NYTT!) ---
 import TeacherStats from './components/TeacherStats'; // Keep for backward compatibility if needed, or remove? I will remove usage.
@@ -47,6 +48,7 @@ const TeacherDashboard = ({ currentUser }) => {
         showToGrade: true,
         showApplications: true,
         showAtRisk: true,
+        showRiskWidget: true, // NEW
         showSchedule: true,
         showShortcuts: true,
         showMessages: true
@@ -217,7 +219,8 @@ const TeacherDashboard = ({ currentUser }) => {
                         </div>
 
                         {/* Meddelanden (Höger - 1 kolumn) */}
-                        <div className="lg:col-span-1 h-full">
+                        <div className="lg:col-span-1 h-full space-y-6">
+                            {userSettings.showRiskWidget && <TeacherAtRiskWidget currentUser={currentUser} settings={{ enabled: true }} />}
                             {userSettings.showMessages && <RecentMessagesWidget onViewAll={() => setActiveTab('COMMUNICATION')} />}
                         </div>
                     </div>

@@ -6,11 +6,7 @@ import com.eduflex.backend.model.Course;
 import com.eduflex.backend.model.CourseApplication;
 import com.eduflex.backend.model.CourseEvaluation;
 import com.eduflex.backend.model.CourseMaterial;
-import com.eduflex.backend.model.SkolverketCourse;
-import com.eduflex.backend.model.User;
 import com.eduflex.backend.repository.CourseRepository;
-import com.eduflex.backend.repository.SkolverketCourseRepository;
-import com.eduflex.backend.repository.UserRepository;
 import com.eduflex.backend.service.CourseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -27,16 +23,12 @@ public class CourseController {
 
     private final CourseService courseService;
     private final CourseRepository courseRepository;
-    private final UserRepository userRepository;
-    private final SkolverketCourseRepository skolverketCourseRepository;
 
     @Autowired
-    public CourseController(CourseService courseService, CourseRepository courseRepository,
-            UserRepository userRepository, SkolverketCourseRepository skolverketCourseRepository) {
+    public CourseController(CourseService courseService,
+            CourseRepository courseRepository) {
         this.courseService = courseService;
         this.courseRepository = courseRepository;
-        this.userRepository = userRepository;
-        this.skolverketCourseRepository = skolverketCourseRepository;
     }
 
     // --- GET & CRUD ---

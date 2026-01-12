@@ -11,6 +11,7 @@ import MessageCenter from '../messages/MessageCenter';
 import StudentStats from './components/student/StudentStats';
 import StudentCourseGrid from './components/student/StudentCourseGrid';
 import StudentSidebar from './components/student/StudentSidebar';
+import StudentAttendanceWidget from './widgets/StudentAttendanceWidget';
 
 const StudentDashboard = () => {
     const { t } = useTranslation();
@@ -27,6 +28,7 @@ const StudentDashboard = () => {
     // Widget State
     const [widgets, setWidgets] = useState({
         stats: true,
+        attendance: true,
         courses: true,
         sidebar: true
     });
@@ -159,7 +161,10 @@ const StudentDashboard = () => {
                         {/* 1. Stats & Badges */}
                         {widgets.stats && <StudentStats currentUser={currentUser} isModuleActive={isModuleActive} />}
 
-                        {/* 2. Mina Kurser */}
+                        {/* 2. Attendance Widget */}
+                        {widgets.attendance && <StudentAttendanceWidget currentUser={currentUser} settings={{ enabled: true }} />}
+
+                        {/* 3. Mina Kurser */}
                         {widgets.courses && <StudentCourseGrid courses={myCourses} navigate={navigate} />}
 
                         {!widgets.stats && !widgets.courses && (
@@ -202,6 +207,10 @@ const StudentDashboard = () => {
                             <button onClick={() => toggleWidget('stats')} className="w-full flex items-center justify-between p-4 rounded-xl border border-gray-100 dark:border-[#3c4043] hover:bg-gray-50 dark:hover:bg-[#282a2c]">
                                 <span className="font-bold dark:text-white">Statistik & Utmärkelser</span>
                                 {widgets.stats ? <Eye className="text-indigo-600" size={20} /> : <EyeOff className="text-gray-400" size={20} />}
+                            </button>
+                            <button onClick={() => toggleWidget('attendance')} className="w-full flex items-center justify-between p-4 rounded-xl border border-gray-100 dark:border-[#3c4043] hover:bg-gray-50 dark:hover:bg-[#282a2c]">
+                                <span className="font-bold dark:text-white">Min Närvaro</span>
+                                {widgets.attendance ? <Eye className="text-indigo-600" size={20} /> : <EyeOff className="text-gray-400" size={20} />}
                             </button>
                             <button onClick={() => toggleWidget('courses')} className="w-full flex items-center justify-between p-4 rounded-xl border border-gray-100 dark:border-[#3c4043] hover:bg-gray-50 dark:hover:bg-[#282a2c]">
                                 <span className="font-bold dark:text-white">Mina Kurser</span>

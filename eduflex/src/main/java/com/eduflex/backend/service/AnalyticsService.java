@@ -163,7 +163,77 @@ public class AnalyticsService {
 
         }
 
+        public List<Map<String, Object>> getCSNReport() {
+                // Hämta alla studenter och beräkna "Digital Närvaro"
+                List<User> students = userRepository.findAll().stream()
+                                .filter(u -> "STUDENT".equals(u.getRole().getName()))
+                                .collect(Collectors.toList());
+
+                return students.stream().map(student -> {
+                        Map<String, Object> map = new HashMap<>();
+                        map.put("id", student.getId());
+                        map.put("name", student.getFullName());
+                        map.put("personnummer", "19900101-1234"); // Mockat då vi saknar fältet just nu
+
+                        // Aktivitet senaste 30 dagarna
+                        // LocalDateTime thirtyDaysAgo = LocalDateTime.now().minusDays(30);
+
+                        // Hämta kurser
+                        // List<Course> courses = new ArrayList<>(student.getCourses());
+
+                        // Loggad tid (baserat på activity logs + inloggningar)
+                        // Vi gör en approximation: Varje unikt datum med aktivitet = 4h studier
+                        // Detta är en förenkling för CSN-rappertering i MVP
+
+                        // TODO: Implementera mer exakt logik med timestamps från activityLogRepository
+                        // long activeDays = 0; // Placeholder
+
+                        // Mockad logik för demonstration:
+                        long loginCountLast30 = student.getLoginCount(); // Förenkling
+                        double attendancePercent = Math.min(100, (loginCountLast30 * 5)); // 20 inloggningar = 100%
+
+                        map.put("attendancePercent", attendancePercent);
+                        map.put("status", attendancePercent < 50 ? "Not Eligible" : "Eligible");
+                        map.put("comment", attendancePercent < 50 ? "För låg aktivitet" : "Godkänd");
+
+                        return map;
+                }).collect(Collectors.toList());
+        }
+
+        public Map<String, Object> getStudentSelfStatus(Long studentId) {
+                User student = userRepository.findById(studentId).orElseThrow();
+
+                // Hämta insikter för denna student (återanvänder logik från getStudentInsights)
+                // Enklast att anropa getStudentInsights och filtrera (ineffektivt men säkert
+                // för MVP)
+                // Bättre: Extrahera logiken.
+
+                // Göra en snabbkalkyl här:
+                Map<String, Object> status = new HashMap<>();
+
+                int loginScore = Math.min(100, student.getLoginCount() * 2);
+
+                // Risk factor
+                String risk = "Low";
+                if (student.getLastLogin() == null
+                                || student.getLastLogin().isBefore(LocalDateTime.now().minusDays(7))) {
+                        risk = "Medium";
+                }
+                if (student.getLastLogin() != null
+                                && student.getLastLogin().isBefore(LocalDateTime.now().minusDays(30))) {
+                        risk = "High";
+                }
+
+                status.put("healthScore", loginScore); // 0-100
+                status.put("riskLevel", risk); // Low, Medium, High
+                status.put("hoursLogged", student.getLoginCount() * 0.5); // Mockade timmar
+                status.put("expectedHours", 40); // Mockat mål
+
+                return status;
+        }
+
         public List<Map<String, Object>> getStudentInsights() {
+                // ... existing code ...
                 List<User> students = userRepository.findAll().stream()
                                 .filter(u -> "STUDENT".equals(u.getRole().getName()))
                                 .collect(Collectors.toList());
