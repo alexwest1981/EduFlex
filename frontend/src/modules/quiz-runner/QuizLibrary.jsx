@@ -52,10 +52,15 @@ export const QuizLibrary = () => {
             // We just strip the ID and set the new course.
 
             const quizCopy = {
-                ...selectedQuiz,
-                id: null,
-                course: { id: targetCourseId },
-                title: `${selectedQuiz.title} (Kopia)`
+                title: `${selectedQuiz.title} (Kopia)`,
+                description: selectedQuiz.description || '',
+                questions: selectedQuiz.questions?.map(q => ({
+                    text: q.text,
+                    options: q.options?.map(o => ({
+                        text: o.text,
+                        isCorrect: o.isCorrect
+                    })) || []
+                })) || []
             };
 
             await api.quiz.create(targetCourseId, currentUser.id, quizCopy);

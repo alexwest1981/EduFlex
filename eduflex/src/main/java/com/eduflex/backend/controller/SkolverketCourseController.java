@@ -53,7 +53,10 @@ public class SkolverketCourseController {
     @GetMapping("/stats")
     public ResponseEntity<Map<String, Object>> getStats() {
         Map<String, Object> stats = new HashMap<>();
-        stats.put("totalCourses", service.getCount());
+        long total = service.getCount();
+        long completed = service.getCompletedCount(); // Courses with description filled
+        stats.put("total", total);
+        stats.put("completed", completed);
         stats.put("subjects", service.getAllSubjects().size());
         return ResponseEntity.ok(stats);
     }

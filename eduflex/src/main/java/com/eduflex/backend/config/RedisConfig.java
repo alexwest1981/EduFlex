@@ -11,11 +11,11 @@ import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSeriali
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 @Configuration
-@EnableCaching
+// @EnableCaching
 public class RedisConfig {
 
-    @Bean("redisObjectMapper")
-    public ObjectMapper redisObjectMapper() {
+    // Removed @Bean to prevent conflict with WebConfig's primary ObjectMapper
+    private ObjectMapper createRedisObjectMapper() {
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule());
         mapper.registerModule(new com.fasterxml.jackson.module.paramnames.ParameterNamesModule());
@@ -29,11 +29,11 @@ public class RedisConfig {
     }
 
     @Bean
-    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory connectionFactory,
-            @org.springframework.beans.factory.annotation.Qualifier("redisObjectMapper") ObjectMapper mapper) {
+    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory connectionFactory) {
         RedisTemplate<String, Object> template = new RedisTemplate<>();
         template.setConnectionFactory(connectionFactory);
 
+        ObjectMapper mapper = createRedisObjectMapper();
         GenericJackson2JsonRedisSerializer serializer = new GenericJackson2JsonRedisSerializer(mapper);
 
         // serialize keys as Strings

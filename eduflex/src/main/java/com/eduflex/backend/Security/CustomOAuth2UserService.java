@@ -62,7 +62,10 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         User user;
         if (userOptional.isPresent()) {
             user = userOptional.get();
-            // Optional: Update info if changed
+            // Update stats
+            user.setLastLogin(LocalDateTime.now());
+            user.setLoginCount(user.getLoginCount() + 1);
+            user = userRepository.save(user);
         } else {
             user = registerNewUser(email, name);
         }
@@ -91,6 +94,10 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         user.setPassword(UUID.randomUUID().toString()); // strong random password
         user.setCreatedAt(LocalDateTime.now());
+
+        // Initial stats
+        user.setLastLogin(LocalDateTime.now());
+        user.setLoginCount(1);
 
         // Assign default role (singular)
         com.eduflex.backend.model.Role studentRole = roleRepository.findByName("STUDENT")

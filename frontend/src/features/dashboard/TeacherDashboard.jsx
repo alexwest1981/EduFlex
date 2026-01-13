@@ -17,6 +17,10 @@ import { ActiveCoursesCard, MyStudentsCard, GradingCard, ApplicationsCard, RiskC
 import { UngradedTable, ApplicationsTable } from './components/TeacherTables';
 import { CreateCourseModal, EditCourseModal } from './components/TeacherModals';
 
+// --- SHARED ---
+import { useDashboardWidgets } from '../../hooks/useDashboardWidgets';
+import DashboardCustomizer from '../../components/dashboard/DashboardCustomizer';
+
 const TeacherDashboard = ({ currentUser }) => {
     const { t, i18n } = useTranslation();
     const navigate = useNavigate();
@@ -41,30 +45,35 @@ const TeacherDashboard = ({ currentUser }) => {
     const [showEditModal, setShowEditModal] = useState(false);
     const [courseToEdit, setCourseToEdit] = useState(null);
 
-    // Granular Settings Default
-    const [userSettings, setUserSettings] = useState({
+    // Widget State via Hook
+    const { widgets, toggleWidget } = useDashboardWidgets('teacher', {
         showActiveCourses: true,
         showMyStudents: true,
         showToGrade: true,
         showApplications: true,
         showAtRisk: true,
-        showRiskWidget: true, // NEW
+        showRiskWidget: true,
         showSchedule: true,
         showShortcuts: true,
         showMessages: true
     });
 
+    const widgetLabels = {
+        showActiveCourses: 'Aktiva Kurser',
+        showMyStudents: 'Mina Studenter',
+        showToGrade: 'Att Rätta',
+        showApplications: 'Ansökningar',
+        showAtRisk: 'Studenter i Riskzon',
+        showRiskWidget: 'Risk Analys Widget',
+        showSchedule: 'Schema & Händelser',
+        showShortcuts: 'Genvägar',
+        showMessages: 'Meddelanden'
+    };
+
     useEffect(() => {
-        if (currentUser?.settings) {
-            try {
-                const parsed = JSON.parse(currentUser.settings);
-                // Merge with defaults to handle new keys if they don't exist yet
-                setUserSettings(prev => ({ ...prev, ...parsed }));
-            } catch (e) {
-                console.error("Failed to parse settings", e);
-            }
+        if (currentUser) {
+            loadDashboardData();
         }
-        loadDashboardData();
     }, [currentUser]);
 
     const loadDashboardData = async () => {
@@ -148,6 +157,13 @@ const TeacherDashboard = ({ currentUser }) => {
                     <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{t('dashboard.teacher_panel')}</h1>
                     <p className="text-gray-500 dark:text-gray-400">{t('dashboard.overview_for', { name: currentUser.fullName })}</p>
                 </div>
+                {activeTab === 'OVERVIEW' && (
+                    <DashboardCustomizer
+                        widgets={widgets}
+                        toggleWidget={toggleWidget}
+                        widgetLabels={widgetLabels}
+                    />
+                )}
             </div>
 
             {/* TAB MENY */}
@@ -173,17 +189,17 @@ const TeacherDashboard = ({ currentUser }) => {
 
                     {/* STATS ROW */}
                     <div className="flex flex-wrap gap-6">
-                        {userSettings.showActiveCourses && <ActiveCoursesCard count={myCourses.length} />}
-                        {userSettings.showMyStudents && <MyStudentsCard count={allStudents.length} />}
-                        {userSettings.showToGrade && <GradingCard count={ungradedSubmissions.length} onClick={() => setActiveTab('GRADING')} />}
-                        {userSettings.showApplications && <ApplicationsCard count={applications.length} onClick={() => setActiveTab('APPLICATIONS')} />}
-                        {userSettings.showAtRisk && <RiskCard count={allStudents.filter(s => s.riskLevel === 'HIGH').length} onClick={() => setActiveTab('STUDENTS')} />}
+                        {widgets.showActiveCourses && <ActiveCoursesCard count={myCourses.length} />}
+                        {widgets.showMyStudents && <MyStudentsCard count={allStudents.length} />}
+                        {widgets.showToGrade && <GradingCard count={ungradedSubmissions.length} onClick={() => setActiveTab('GRADING')} />}
+                        {widgets.showApplications && <ApplicationsCard count={applications.length} onClick={() => setActiveTab('APPLICATIONS')} />}
+                        {widgets.showAtRisk && <RiskCard count={allStudents.filter(s => s.riskLevel === 'HIGH').length} onClick={() => setActiveTab('STUDENTS')} />}
                     </div>
 
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                         {/* Schema & Genvägar (Vänster - 2 kolumner bred) */}
                         <div className="lg:col-span-2 space-y-8">
-                            {userSettings.showSchedule && (
+                            {widgets.showSchedule && (
                                 <div className="bg-white dark:bg-[#1E1F20] rounded-2xl border border-gray-200 dark:border-[#3c4043] shadow-sm p-6">
                                     <h3 className="font-bold text-lg mb-4 flex items-center gap-2"><CalendarIcon className="text-indigo-600" /> {t('teacher_dashboard.section_schedule')}</h3>
                                     <div className="space-y-4">
@@ -205,7 +221,7 @@ const TeacherDashboard = ({ currentUser }) => {
                                 </div>
                             )}
 
-                            {userSettings.showShortcuts && (
+                            {widgets.showShortcuts && (
                                 <div className="bg-white dark:bg-[#1E1F20] rounded-2xl border border-gray-200 dark:border-[#3c4043] shadow-sm p-6">
                                     <h3 className="font-bold text-lg mb-4">{t('teacher_dashboard.section_shortcuts')}</h3>
                                     <div className="grid grid-cols-2 gap-4">
@@ -220,8 +236,8 @@ const TeacherDashboard = ({ currentUser }) => {
 
                         {/* Meddelanden (Höger - 1 kolumn) */}
                         <div className="lg:col-span-1 h-full space-y-6">
-                            {userSettings.showRiskWidget && <TeacherAtRiskWidget currentUser={currentUser} settings={{ enabled: true }} />}
-                            {userSettings.showMessages && <RecentMessagesWidget onViewAll={() => setActiveTab('COMMUNICATION')} />}
+                            {widgets.showRiskWidget && <TeacherAtRiskWidget currentUser={currentUser} settings={{ enabled: true }} />}
+                            {widgets.showMessages && <RecentMessagesWidget onViewAll={() => setActiveTab('COMMUNICATION')} />}
                         </div>
                     </div>
                 </div>

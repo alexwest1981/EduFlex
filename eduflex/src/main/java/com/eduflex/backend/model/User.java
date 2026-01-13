@@ -1,16 +1,21 @@
 package com.eduflex.backend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "app_users")
 @EntityListeners(com.eduflex.backend.service.AuditListener.class)
-public class User {
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
+public class User implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -69,7 +74,7 @@ public class User {
     private int level = 1;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties("user")
+    @JsonIgnore
     private Set<UserBadge> earnedBadges = new HashSet<>();
 
     // --- SUBSCRIPTION ---
@@ -82,11 +87,11 @@ public class User {
     private LocalDateTime trialEndsAt;
 
     @ManyToMany(mappedBy = "students")
-    @JsonIgnoreProperties("students")
+    @JsonIgnore
     private Set<Course> courses = new HashSet<>();
 
     @OneToMany(mappedBy = "teacher")
-    @JsonIgnoreProperties("teacher")
+    @JsonIgnore
     private Set<Course> coursesCreated = new HashSet<>();
 
     // Inner Enum REMOVED - replaced by com.eduflex.backend.model.Role Entity
@@ -250,6 +255,7 @@ public class User {
         this.level = level;
     }
 
+    @JsonIgnore
     public Set<UserBadge> getEarnedBadges() {
         return earnedBadges;
     }
@@ -274,6 +280,7 @@ public class User {
         this.trialEndsAt = trialEndsAt;
     }
 
+    @JsonIgnore
     public Set<Course> getCourses() {
         return courses;
     }
@@ -282,6 +289,7 @@ public class User {
         this.courses = courses;
     }
 
+    @JsonIgnore
     public Set<Course> getCoursesCreated() {
         return coursesCreated;
     }

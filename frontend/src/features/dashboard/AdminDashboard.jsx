@@ -4,11 +4,14 @@ import { useTranslation } from 'react-i18next';
 import { api } from '../../services/api';
 
 // --- COMPONENTS ---
-// --- COMPONENTS ---
 import AdminOverview from './AdminOverview';
 import SettingsTab from '../admin/SettingsTab'; // System tab
 import MessageCenter from '../messages/MessageCenter';
 import LicenseStatusCard from '../admin/LicenseStatusCard';
+
+// --- SHARED ---
+import { useDashboardWidgets } from '../../hooks/useDashboardWidgets';
+import DashboardCustomizer from '../../components/dashboard/DashboardCustomizer';
 
 const AdminDashboard = () => {
     const { t } = useTranslation();
@@ -19,6 +22,21 @@ const AdminDashboard = () => {
     const [isLoading, setIsLoading] = useState(true);
 
     const [unreadCount, setUnreadCount] = useState(0);
+
+    // Widget State via Hook
+    const { widgets, toggleWidget } = useDashboardWidgets('admin', {
+        stats: true,
+        recentUsers: true,
+        recentDocs: true,
+        messages: true
+    });
+
+    const widgetLabels = {
+        stats: 'Statistik',
+        recentUsers: 'Senaste Användare',
+        recentDocs: 'Nyligen Uppladdat',
+        messages: 'Senaste Meddelanden'
+    };
 
     const fetchStats = async () => {
         setIsLoading(true);
@@ -47,9 +65,18 @@ const AdminDashboard = () => {
 
     return (
         <div className="max-w-7xl mx-auto animate-in fade-in pb-20">
-            <header className="mb-6">
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{t('dashboard.live_overview')}</h1>
-                <p className="text-gray-500 dark:text-gray-400">{t('dashboard.realtime_data')}</p>
+            <header className="mb-6 flex justify-between items-start">
+                <div>
+                    <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{t('dashboard.live_overview')}</h1>
+                    <p className="text-gray-500 dark:text-gray-400">{t('dashboard.realtime_data')}</p>
+                </div>
+                {activeTab === 'overview' && (
+                    <DashboardCustomizer
+                        widgets={widgets}
+                        toggleWidget={toggleWidget}
+                        widgetLabels={widgetLabels}
+                    />
+                )}
             </header>
 
             {/* TAB MENY - HUVUDNIVÅ */}
@@ -86,6 +113,7 @@ const AdminDashboard = () => {
                     documents={documents}
                     fetchStats={fetchStats}
                     setActiveTab={setActiveTab}
+                    widgets={widgets}
                 />
             )}
 

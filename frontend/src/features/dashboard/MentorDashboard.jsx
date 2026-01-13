@@ -3,9 +3,24 @@ import { useTranslation } from 'react-i18next';
 import { Users, BookOpen, AlertTriangle, CheckCircle } from 'lucide-react';
 import StudentDrillDown from '../analytics/StudentDrillDown';
 
+// --- SHARED ---
+import { useDashboardWidgets } from '../../hooks/useDashboardWidgets';
+import DashboardCustomizer from '../../components/dashboard/DashboardCustomizer';
+
 const MentorDashboard = () => {
     const { t } = useTranslation();
     const [selectedStudent, setSelectedStudent] = useState(null);
+
+    // Widget State via Hook
+    const { widgets, toggleWidget } = useDashboardWidgets('mentor', {
+        stats: true,
+        studentList: true
+    });
+
+    const widgetLabels = {
+        stats: 'Nyckeltal',
+        studentList: 'Elevlista'
+    };
 
     // Mock data for mentees - In real app, fetch from /api/mentor/mentees
     const mentees = [
@@ -23,65 +38,74 @@ const MentorDashboard = () => {
                     </h1>
                     <p className="text-gray-500 dark:text-gray-400 mt-1">Hantera dina mentorselver och följ deras utveckling.</p>
                 </div>
+                <DashboardCustomizer
+                    widgets={widgets}
+                    toggleWidget={toggleWidget}
+                    widgetLabels={widgetLabels}
+                />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <div className="bg-white dark:bg-[#1E1F20] p-6 rounded-2xl border border-gray-200 dark:border-[#3c4043] shadow-sm">
-                    <p className="text-sm font-bold text-gray-500 uppercase">Mina Elever</p>
-                    <p className="text-3xl font-black text-gray-900 dark:text-white">{mentees.length}</p>
+            {widgets.stats && (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div className="bg-white dark:bg-[#1E1F20] p-6 rounded-2xl border border-gray-200 dark:border-[#3c4043] shadow-sm">
+                        <p className="text-sm font-bold text-gray-500 uppercase">Mina Elever</p>
+                        <p className="text-3xl font-black text-gray-900 dark:text-white">{mentees.length}</p>
+                    </div>
+                    <div className="bg-white dark:bg-[#1E1F20] p-6 rounded-2xl border border-gray-200 dark:border-[#3c4043] shadow-sm">
+                        <p className="text-sm font-bold text-gray-500 uppercase">I Farozonen</p>
+                        <p className="text-3xl font-black text-red-500">{mentees.filter(m => m.risk === 'High').length}</p>
+                    </div>
+                    <div className="bg-white dark:bg-[#1E1F20] p-6 rounded-2xl border border-gray-200 dark:border-[#3c4043] shadow-sm">
+                        <p className="text-sm font-bold text-gray-500 uppercase">Genomsnittlig Närvaro</p>
+                        <p className="text-3xl font-black text-indigo-600">85%</p>
+                    </div>
                 </div>
-                <div className="bg-white dark:bg-[#1E1F20] p-6 rounded-2xl border border-gray-200 dark:border-[#3c4043] shadow-sm">
-                    <p className="text-sm font-bold text-gray-500 uppercase">I Farozonen</p>
-                    <p className="text-3xl font-black text-red-500">{mentees.filter(m => m.risk === 'High').length}</p>
-                </div>
-                <div className="bg-white dark:bg-[#1E1F20] p-6 rounded-2xl border border-gray-200 dark:border-[#3c4043] shadow-sm">
-                    <p className="text-sm font-bold text-gray-500 uppercase">Genomsnittlig Närvaro</p>
-                    <p className="text-3xl font-black text-indigo-600">85%</p>
-                </div>
-            </div>
+            )}
 
-            <div className="bg-white dark:bg-[#1E1F20] rounded-2xl border border-gray-200 dark:border-[#3c4043] shadow-sm overflow-hidden">
-                <div className="p-6 border-b border-gray-100 dark:border-[#3c4043]">
-                    <h3 className="font-bold text-lg text-gray-900 dark:text-white">Elevlista</h3>
-                </div>
-                <div className="overflow-x-auto">
-                    <table className="w-full text-left text-sm">
-                        <thead className="bg-gray-50 dark:bg-[#282a2c] text-gray-500 dark:text-gray-400 font-bold uppercase text-xs">
-                            <tr>
-                                <th className="px-6 py-4">Namn</th>
-                                <th className="px-6 py-4">Klass</th>
-                                <th className="px-6 py-4">Status</th>
-                                <th className="px-6 py-4">Närvaro</th>
-                                <th className="px-6 py-4">Risk</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-gray-100 dark:divide-[#3c4043]">
-                            {mentees.map((student) => (
-                                <tr
-                                    key={student.id}
-                                    onClick={() => setSelectedStudent(student)}
-                                    className="hover:bg-gray-50 dark:hover:bg-[#282a2c] transition-colors cursor-pointer"
-                                >
-                                    <td className="px-6 py-4 font-bold text-gray-900 dark:text-white">{student.name}</td>
-                                    <td className="px-6 py-4 text-gray-500">{student.class}</td>
-                                    <td className="px-6 py-4">
-                                        <span className={`px-2 py-1 rounded text-xs font-bold ${student.status === 'Active' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
-                                            {student.status}
-                                        </span>
-                                    </td>
-                                    <td className="px-6 py-4 font-mono">{student.attendance}%</td>
-                                    <td className="px-6 py-4">
-                                        <span className={`flex items-center gap-1 font-bold ${student.risk === 'High' ? 'text-red-500' : student.risk === 'Medium' ? 'text-yellow-500' : 'text-green-500'}`}>
-                                            {student.risk === 'High' && <AlertTriangle size={14} />}
-                                            {student.risk}
-                                        </span>
-                                    </td>
+            {widgets.studentList && (
+                <div className="bg-white dark:bg-[#1E1F20] rounded-2xl border border-gray-200 dark:border-[#3c4043] shadow-sm overflow-hidden">
+                    <div className="p-6 border-b border-gray-100 dark:border-[#3c4043]">
+                        <h3 className="font-bold text-lg text-gray-900 dark:text-white">Elevlista</h3>
+                    </div>
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-left text-sm">
+                            <thead className="bg-gray-50 dark:bg-[#282a2c] text-gray-500 dark:text-gray-400 font-bold uppercase text-xs">
+                                <tr>
+                                    <th className="px-6 py-4">Namn</th>
+                                    <th className="px-6 py-4">Klass</th>
+                                    <th className="px-6 py-4">Status</th>
+                                    <th className="px-6 py-4">Närvaro</th>
+                                    <th className="px-6 py-4">Risk</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody className="divide-y divide-gray-100 dark:divide-[#3c4043]">
+                                {mentees.map((student) => (
+                                    <tr
+                                        key={student.id}
+                                        onClick={() => setSelectedStudent(student)}
+                                        className="hover:bg-gray-50 dark:hover:bg-[#282a2c] transition-colors cursor-pointer"
+                                    >
+                                        <td className="px-6 py-4 font-bold text-gray-900 dark:text-white">{student.name}</td>
+                                        <td className="px-6 py-4 text-gray-500">{student.class}</td>
+                                        <td className="px-6 py-4">
+                                            <span className={`px-2 py-1 rounded text-xs font-bold ${student.status === 'Active' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                                                {student.status}
+                                            </span>
+                                        </td>
+                                        <td className="px-6 py-4 font-mono">{student.attendance}%</td>
+                                        <td className="px-6 py-4">
+                                            <span className={`flex items-center gap-1 font-bold ${student.risk === 'High' ? 'text-red-500' : student.risk === 'Medium' ? 'text-yellow-500' : 'text-green-500'}`}>
+                                                {student.risk === 'High' && <AlertTriangle size={14} />}
+                                                {student.risk}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-            </div>
+            )}
 
             {selectedStudent && (
                 <StudentDrillDown

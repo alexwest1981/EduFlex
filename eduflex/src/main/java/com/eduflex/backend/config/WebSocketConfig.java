@@ -12,17 +12,19 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
-        // Möjliggör att skicka meddelanden till specifika användare
-        config.enableSimpleBroker("/user", "/topic", "/queue");
-        config.setApplicationDestinationPrefixes("/app");
-        config.setUserDestinationPrefix("/user");
+        config.enableSimpleBroker("/topic"); // For subscribing to events
+        config.setApplicationDestinationPrefixes("/app"); // For sending messages to server
     }
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        // Detta är endpointen frontend kopplar upp sig mot
+        // Endpoint for log viewer (raw WebSocket)
+        registry.addEndpoint("/ws-log")
+                .setAllowedOriginPatterns("*");
+
+        // Endpoint for chat overlay (SockJS fallback for browser compatibility)
         registry.addEndpoint("/ws")
-                .setAllowedOriginPatterns("*") // Tillåt alla origins (React localhost)
-                .withSockJS(); // Fallback om webbläsaren inte stödjer websockets
+                .setAllowedOriginPatterns("*")
+                .withSockJS();
     }
 }

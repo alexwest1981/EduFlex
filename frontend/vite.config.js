@@ -9,6 +9,29 @@ export default defineConfig({
         port: 5173,
         watch: {
             usePolling: true // Bra för Windows/Docker fil-synk
+        },
+        proxy: {
+            '/api': {
+                target: 'http://eduflex-backend:8080',
+                changeOrigin: true
+            },
+            '/login': {
+                target: 'http://eduflex-backend:8080',
+                changeOrigin: true
+            },
+            '/oauth2/authorization': {
+                target: 'http://eduflex-backend:8080',
+                changeOrigin: true
+            },
+            '/login/oauth2': {
+                target: 'http://eduflex-backend:8080',
+                changeOrigin: true
+            },
+            '/ws': {
+                target: 'http://eduflex-backend:8080',
+                ws: true,
+                changeOrigin: true
+            }
         }
     }
 })

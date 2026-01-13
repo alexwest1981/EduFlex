@@ -104,6 +104,55 @@ const RolesAdmin = () => {
         return groups;
     }, {});
 
+    // TRANSLATIONS
+    const groupTranslations = {
+        'VIEW': 'Visning & Läsrättigheter',
+        'USER': 'Användarhantering',
+        'COURSE': 'Kurshantering',
+        'GRADE': 'Betyg & Bedömning',
+        'ROLE': 'Rollhantering',
+        'SETTINGS': 'Systeminställningar',
+        'MODULE': 'Kursmoduler',
+        'AUDIT': 'Loggar & Revision',
+        'SCORM': 'SCORM & Externa Paket'
+    };
+
+    const permissionTranslations = {
+        // VIEW
+        'VIEW_DASHBOARD': 'Visa Översiktspanel',
+        'VIEW_COURSES': 'Se Tillgängliga Kurser',
+        'VIEW_PROFILE': 'Se Egen Profil',
+
+        // USER
+        'USER_CREATE': 'Skapa Användare',
+        'USER_EDIT': 'Redigera Användare',
+        'USER_DELETE': 'Ta Bort Användare',
+        'USER_VIEW_ALL': 'Se Alla Användare',
+
+        // COURSE
+        'COURSE_CREATE': 'Skapa Nya Kurser',
+        'COURSE_EDIT': 'Redigera Kurser',
+        'COURSE_DELETE': 'Ta Bort Kurser',
+        'COURSE_VIEW_ALL': 'Se Alla Kurser (Oavsett deltagande)',
+
+        // GRADE
+        'GRADE_ASSIGN': 'Sätta/Ändra Betyg',
+        'GRADE_VIEW': 'Se Betyg',
+
+        // ROLE
+        'ROLE_MANAGE': 'Hantera Roller & Behörigheter',
+
+        // SETTINGS
+        'SETTINGS_MANAGE': 'Ändra Systeminställningar'
+    };
+
+    const getPermissionLabel = (perm) => {
+        if (permissionTranslations[perm]) return permissionTranslations[perm];
+        // Fallback: Format SCORM_UPLOAD -> Scorm Upload
+        return perm.split('_').map(word => word.charAt(0) + word.slice(1).toLowerCase()).join(' ');
+    };
+
+
     return (
         <div className="bg-white dark:bg-[#1E1F20] rounded-xl border border-gray-200 dark:border-[#3c4043] shadow-sm overflow-hidden animate-in slide-in-from-bottom-8">
             <div className="p-6 border-b border-gray-100 dark:border-[#3c4043] flex justify-between items-center bg-gray-50 dark:bg-[#131314]">
@@ -238,17 +287,22 @@ const RolesAdmin = () => {
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                     {Object.entries(permissionGroups).map(([group, perms]) => (
                                         <div key={group} className="bg-gray-50 dark:bg-[#131314] p-3 rounded-lg border border-gray-100 dark:border-[#3c4043]">
-                                            <h5 className="text-xs font-bold text-gray-500 uppercase mb-2 border-b border-gray-200 pb-1">{group}</h5>
+                                            <h5 className="text-xs font-bold text-gray-500 uppercase mb-2 border-b border-gray-200 dark:border-gray-700 pb-1 flex justify-between">
+                                                <span>{groupTranslations[group] || group}</span>
+                                            </h5>
                                             <div className="space-y-2">
                                                 {perms.map(perm => (
-                                                    <label key={perm} className="flex items-start gap-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-[#282a2c] p-1 rounded transition-colors">
+                                                    <label key={perm} className="flex items-start gap-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-[#282a2c] p-1 rounded transition-colors group">
                                                         <input
                                                             type="checkbox"
                                                             className="mt-0.5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                                                             checked={formData.permissions.includes(perm)}
                                                             onChange={() => togglePermission(perm)}
                                                         />
-                                                        <span className="text-xs font-medium text-gray-700 dark:text-gray-300 break-all">{perm}</span>
+                                                        <div className="flex flex-col">
+                                                            <span className="text-xs font-medium text-gray-700 dark:text-gray-300">{getPermissionLabel(perm)}</span>
+                                                            <span className="text-[10px] text-gray-400 group-hover:text-gray-500 font-mono transition-colors">{perm}</span>
+                                                        </div>
                                                     </label>
                                                 ))}
                                             </div>

@@ -96,13 +96,27 @@ const CourseDetail = ({ currentUser }) => {
             key: 'attendance',
             comp: ({ courseId, isTeacher, currentUser, course }) => {
                 const { API_BASE, token } = useAppContext();
-                if (isTeacher) return <TeacherAttendanceView course={course} currentUser={currentUser} API_BASE={API_BASE} token={token} />;
-                return <AttendanceView courseId={courseId} currentUser={currentUser} API_BASE={API_BASE} token={token} />;
+                // Visible only for teachers defined in config below, but double check safety
+                if (!isTeacher) return null;
+
+                return (
+                    <div className="space-y-12">
+                        <TeacherAttendanceView course={course} currentUser={currentUser} API_BASE={API_BASE} token={token} />
+
+                        <div className="pt-8 border-t border-gray-200 dark:border-[#3c4043]">
+                            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
+                                <Activity size={24} className="text-indigo-600 dark:text-indigo-400" />
+                                Aktivitetslogg
+                            </h3>
+                            <StudentActivityBoard courseId={courseId} />
+                        </div>
+                    </div>
+                );
             },
-            meta: { name: 'Närvaro' },
+            meta: { name: 'Närvaro & Aktivitet' },
             icon: <Calendar size={18} />,
             enabled: true,
-            visibleFor: 'ALL'
+            visibleFor: 'TEACHER'
         },
         {
             key: 'kursinformation',
@@ -112,14 +126,7 @@ const CourseDetail = ({ currentUser }) => {
             enabled: !!course?.skolverketCourse, // Only show if course is linked to Skolverket
             visibleFor: 'ALL'
         },
-        {
-            key: 'activity',
-            comp: ({ courseId }) => <StudentActivityBoard courseId={courseId} />,
-            meta: { name: 'Aktivitetslogg' },
-            icon: <Activity size={18} />,
-            enabled: true,
-            visibleFor: 'TEACHER'
-        }
+
     ];
 
     // --- DATA LOADING ---
