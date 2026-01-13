@@ -24,7 +24,16 @@
   <img src="https://img.shields.io/badge/Redis-High%20Perf-red?style=for-the-badge&logo=redis&logoColor=white"/>
 </p>
 
+
+### 🆕 Latest Updates (Jan 2026)
+
+*   **Global Dashboard Customization:** All users (Admin, Teacher, Student, Mentor) can now customize their dashboard widgets. Toggle visibility of stats, graphs, and lists via the new "Eye" icon.
+*   **Course View Refactoring:** Merged "Activity" and "Attendance" tabs for teachers to provide a consolidated view. Restricted sensitive student data visibility.
+*   **SSO Accuracy:** Fixed login tracking for Single Sign-On users. The "Studentuppföljning" now correctly reports last login times for Keycloak users.
+*   **Stability:** Resolved JSON recursion bugs in User API and fixed Docker network communication for authentication services.
+
 ---
+
 
 <div id="-english"></div>
 
