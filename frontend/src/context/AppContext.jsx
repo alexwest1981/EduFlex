@@ -115,7 +115,13 @@ export const AppProvider = ({ children }) => {
             const merged = { ...(currentUser || {}), ...updated };
             localStorage.setItem('user', JSON.stringify(merged));
             setCurrentUser(merged);
-        } catch (e) { console.error(e); }
+        } catch (e) { 
+            console.error("Failed to refresh user:", e);
+            if (e.message && (e.message.includes('401') || e.message.includes('403') || e.message.includes('LICENSE'))) {
+                console.warn("Session invalid or license locked, logging out...");
+                logout();
+            }
+        }
     };
 
     return (

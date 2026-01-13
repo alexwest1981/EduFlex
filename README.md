@@ -83,6 +83,27 @@ Whether you are a single educator, a private school, or a municipal education bo
 - **Multi-language Support:** Fully translated UI for minimal friction.
 - **Supported Languages:** Swedish (Primary), English, Arabic, Norwegian, Danish, Finnish, German, French, Spanish.
 
+#### 🛠 Monitoring & Maintenance (New)
+- **Real-time Debug Terminal:** "Matrix-style" live log streamer for instant backend feedback.
+- **Client Error Tracking:** Automatic capture of frontend crashes and JavaScript errors.
+- **Log Dashboard:** Searchable, color-coded view of server logs directly in the Admin UI.
+
+---
+
+### 📸 Screenshots
+
+| <img src="docs/ScreenGrabs/dashboard_overview.png" width="400" alt="Admin Dashboard" /> | <img src="docs/ScreenGrabs/teacher_dashboard.png" width="400" alt="Teacher Dashboard" /> |
+|:---:|:---:|
+| **Admin Dashboard** | **Teacher Dashboard** |
+
+| <img src="docs/ScreenGrabs/quiz_generator_ai.png" width="400" alt="AI Quiz Generator" /> | <img src="docs/ScreenGrabs/admin_system_settings.png" width="400" alt="System Settings" /> |
+|:---:|:---:|
+| **AI Quiz Generator** | **System Settings** |
+
+| <img src="docs/ScreenGrabs/admin_insights.png" width="400" alt="Analytics" /> | <img src="docs/ScreenGrabs/admin_debug_terminal.png" width="400" alt="Live Debug Terminal" /> |
+|:---:|:---:|
+| **Analytics & Insights** | **Live Debug Terminal** |
+
 ---
 
 ### 🛠 System Architecture
@@ -185,6 +206,24 @@ Backups are automatically taken daily. To force a backup:
 docker restart eduflex-backup
 ```
 
+
+### ❓ Troubleshooting
+
+#### Common Issues
+
+**1. "Port 8080 is already in use"**
+This means another service (like Tomcat or Jenkins) is running on your machine.
+*   **Fix:** Stop the conflicting service or change the port mapping in `docker-compose.yml` (e.g., `"8081:8080"`).
+
+**2. WebSocket Connection Failed (401/404)**
+If the Debug Terminal shows "OFFLINE":
+*   Ensure you are using `ws://` protocol (managed automatically by frontend).
+*   Check if `SecurityConfig` allows `/ws-log/**`.
+*   **Fix:** Run `docker compose down -v` to clear stale volumes and restart.
+
+**3. Database Connection Refused**
+*   Wait 10-15 seconds after startup. The Database container needs time to initialize before the Backend can connect.
+
 ---
 
 <br />
@@ -240,6 +279,28 @@ docker restart eduflex-backup
 #### 🌍 Lokalisering
 - **Flerspråksstöd:** Hela plattformen är översatt.
 - **Stödda språk:** Svenska (Primärt), Engelska, Arabiska, Norska, Danska, Finska, Tyska, Franska, Spanska.
+
+
+#### 🛠 Övervakning & Underhåll (Nytt)
+- **Real-time Debug Terminal:** "Matrix-liknande" live-strömning av loggar för direkt feedback.
+- **Klientfelspårning:** Automatisk insamling av frontend-krascher och JavaScript-fel.
+- **Log Dashboard:** Sökbar, färgkodad vy av serverloggar direkt i Admin-gränssnittet.
+
+---
+
+### 📸 Skärmdumpar
+
+| <img src="docs/ScreenGrabs/dashboard_overview.png" width="400" alt="Admin Översikt" /> | <img src="docs/ScreenGrabs/teacher_dashboard.png" width="400" alt="Lärarpanel" /> |
+|:---:|:---:|
+| **Admin Översikt** | **Lärarpanel** |
+
+| <img src="docs/ScreenGrabs/quiz_generator_ai.png" width="400" alt="AI Quiz-Generator" /> | <img src="docs/ScreenGrabs/admin_system_settings.png" width="400" alt="Systeminställningar" /> |
+|:---:|:---:|
+| **AI Quiz-Generator** | **Systeminställningar** |
+
+| <img src="docs/ScreenGrabs/admin_insights.png" width="400" alt="Analys & Insikter" /> | <img src="docs/ScreenGrabs/admin_debug_terminal.png" width="400" alt="Live Debug Terminal" /> |
+|:---:|:---:|
+| **Analys & Insikter** | **Live Debug Terminal** |
 
 ---
 
@@ -308,6 +369,24 @@ Systemet är förkonfigurerat via `docker-compose.yml`. Viktiga variabler:
 | **Backend** | `SPRING_DATASOURCE_URL` | Databaslänk | `jdbc:postgresql://db:5432/eduflex` |
 | **Backend** | `MINIO_URL` | Intern S3-länk | `http://minio:9000` |
 | **Frontend** | `VITE_API_BASE_URL` | API-länk | `http://localhost:8080/api` |
+
+
+### ❓ Felsökning
+
+#### Vanliga Problem
+
+**1. "Port 8080 is already in use"**
+Betyder att en annan tjänst (t.ex. en gammal Java-process eller Tomcat) körs på port 8080.
+*   **Lösning:** Stäng av den andra tjänsten eller ändra port i `docker-compose.yml` (t.ex. till `"8081:8080"`).
+
+**2. Debug Terminal visar "OFFLINE"**
+Om terminalen inte kopplar upp:
+*   Webbläsaren kanske cachar gamla JS-filer. Testa "Hård uppdatering" (Ctrl+F5).
+*   Nätverksfel i Docker?
+*   **Lösning:** Kör `docker compose down -v` och sedan `up --build` igen för att rensa skräp.
+
+**3. Databasfel vid uppstart**
+*   PostgreSQL tar några sekunder på sig att vakna. Backend försöker automatiskt igen, så ha is i magen i ca 15 sekunder.
 
 ---
 

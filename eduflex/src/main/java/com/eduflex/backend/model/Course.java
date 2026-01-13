@@ -1,5 +1,6 @@
 package com.eduflex.backend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import java.util.HashSet;
@@ -8,6 +9,7 @@ import java.util.Set;
 @Entity
 @Table(name = "courses")
 @EntityListeners(com.eduflex.backend.service.AuditListener.class)
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 public class Course {
 
     @Id
@@ -44,12 +46,13 @@ public class Course {
 
     @ManyToOne
     @JoinColumn(name = "teacher_id")
-    @JsonIgnoreProperties({ "courses", "coursesCreated", "documents", "submissions", "password", "roles" })
+    @JsonIgnoreProperties({ "courses", "coursesCreated", "documents", "submissions", "password", "roles",
+            "hibernateLazyInitializer", "handler" })
     private User teacher;
 
     @ManyToMany
     @JoinTable(name = "course_students", joinColumns = @JoinColumn(name = "course_id"), inverseJoinColumns = @JoinColumn(name = "student_id"))
-    @JsonIgnoreProperties({ "courses", "password", "roles" })
+    @JsonIgnore
     private Set<User> students = new HashSet<>();
 
     @OneToOne(mappedBy = "course", cascade = CascadeType.ALL)

@@ -13,7 +13,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/analytics")
-@PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN')")
+@PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN', 'TEACHER', 'ROLE_TEACHER')")
 public class AnalyticsController {
 
     private final AnalyticsService analyticsService;

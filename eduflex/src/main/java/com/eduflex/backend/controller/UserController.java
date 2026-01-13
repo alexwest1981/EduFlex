@@ -161,6 +161,51 @@ public class UserController {
         }
     }
 
+    @GetMapping("/me")
+    public ResponseEntity<Map<String, Object>> getCurrentUser() {
+        try {
+            String username = org.springframework.security.core.context.SecurityContextHolder.getContext()
+                    .getAuthentication().getName();
+
+            User user = userRepository.findByUsername(username)
+                    .orElseGet(() -> userRepository.findByEmail(username)
+                            .orElse(null));
+
+            if (user == null) {
+                return ResponseEntity.status(404).build();
+            }
+
+            Map<String, Object> response = new java.util.HashMap<>();
+            response.put("id", user.getId());
+            response.put("username", user.getUsername());
+            response.put("email", user.getEmail());
+            response.put("firstName", user.getFirstName());
+            response.put("lastName", user.getLastName());
+            response.put("fullName", user.getFullName());
+            response.put("profilePictureUrl", user.getProfilePictureUrl());
+
+            if (user.getRole() != null) {
+                Map<String, Object> roleMap = new java.util.HashMap<>();
+                roleMap.put("name", user.getRole().getName());
+                roleMap.put("description", user.getRole().getDescription());
+                roleMap.put("permissions", user.getRole().getPermissions());
+                response.put("role", roleMap);
+            }
+
+            return ResponseEntity.ok(response);
+
+        } catch (Throwable e) {
+            e.printStackTrace(); // Prints to stderr by default
+            Map<String, Object> error = new java.util.HashMap<>();
+            error.put("error", e.getClass().getName());
+            error.put("message", e.getMessage());
+            if (e.getStackTrace().length > 0) {
+                error.put("trace", e.getStackTrace()[0].toString());
+            }
+            return ResponseEntity.status(500).body(error);
+        }
+    }
+
     // --- GDPR EXPORT ---
     @GetMapping("/me/export")
     public ResponseEntity<Map<String, Object>> exportMyData() {

@@ -1,0 +1,167 @@
+{
+    "realm": "eduflex",
+    "enabled": true,
+    "sslRequired": "external",
+    "registrationAllowed": false,
+    "loginWithEmailAllowed": true,
+    "duplicateEmailsAllowed": false,
+    "resetPasswordAllowed": true,
+    "editUsernameAllowed": false,
+    "bruteForceProtected": true,
+    "roles": {
+        "realm": [
+            {
+                "name": "ADMIN",
+                "description": "Administrator role"
+            },
+            {
+                "name": "TEACHER",
+                "description": "Teacher role"
+            },
+            {
+                "name": "STUDENT",
+                "description": "Student role"
+            },
+            {
+                "name": "MENTOR",
+                "description": "Mentor role"
+            },
+            {
+                "name": "PRINCIPAL",
+                "description": "Principal role"
+            }
+        ]
+    },
+    "clients": [
+        {
+            "clientId": "eduflex-app",
+            "name": "EduFlex LMS",
+            "description": "EduFlex Learning Management System",
+            "enabled": true,
+            "clientAuthenticatorType": "client-secret",
+            "secret": "eduflex-secret-key-change-in-production",
+            "redirectUris": [
+                "http://localhost:5173/*",
+                "http://localhost:8080/*",
+                "http://127.0.0.1:5173/*",
+                "http://127.0.0.1:8080/*"
+            ],
+            "webOrigins": [
+                "http://localhost:5173",
+                "http://localhost:8080",
+                "http://127.0.0.1:5173",
+                "http://127.0.0.1:8080"
+            ],
+            "publicClient": false,
+            "standardFlowEnabled": true,
+            "directAccessGrantsEnabled": true,
+            "serviceAccountsEnabled": false,
+            "protocol": "openid-connect",
+            "attributes": {
+                "post.logout.redirect.uris": "http://localhost:5173/*"
+            },
+            "protocolMappers": [
+                {
+                    "name": "realm-roles",
+                    "protocol": "openid-connect",
+                    "protocolMapper": "oidc-usermodel-realm-role-mapper",
+                    "consentRequired": false,
+                    "config": {
+                        "multivalued": "true",
+                        "userinfo.token.claim": "true",
+                        "id.token.claim": "true",
+                        "access.token.claim": "true",
+                        "claim.name": "roles",
+                        "jsonType.label": "String"
+                    }
+                },
+                {
+                    "name": "username",
+                    "protocol": "openid-connect",
+                    "protocolMapper": "oidc-usermodel-property-mapper",
+                    "consentRequired": false,
+                    "config": {
+                        "userinfo.token.claim": "true",
+                        "id.token.claim": "true",
+                        "access.token.claim": "true",
+                        "claim.name": "preferred_username",
+                        "user.attribute": "username",
+                        "jsonType.label": "String"
+                    }
+                },
+                {
+                    "name": "email",
+                    "protocol": "openid-connect",
+                    "protocolMapper": "oidc-usermodel-property-mapper",
+                    "consentRequired": false,
+                    "config": {
+                        "userinfo.token.claim": "true",
+                        "id.token.claim": "true",
+                        "access.token.claim": "true",
+                        "claim.name": "email",
+                        "user.attribute": "email",
+                        "jsonType.label": "String"
+                    }
+                }
+            ]
+        }
+    ],
+    "users": [
+        {
+            "username": "admin",
+            "email": "admin@eduflex.local",
+            "enabled": true,
+            "emailVerified": true,
+            "firstName": "System",
+            "lastName": "Administrator",
+            "credentials": [
+                {
+                    "type": "password",
+                    "value": "admin123",
+                    "temporary": false
+                }
+            ],
+            "realmRoles": [
+                "ADMIN"
+            ]
+        },
+        {
+            "username": "teacher",
+            "email": "teacher@eduflex.local",
+            "enabled": true,
+            "emailVerified": true,
+            "firstName": "Test",
+            "lastName": "Teacher",
+            "credentials": [
+                {
+                    "type": "password",
+                    "value": "teacher123",
+                    "temporary": false
+                }
+            ],
+            "realmRoles": [
+                "TEACHER"
+            ]
+        },
+        {
+            "username": "student",
+            "email": "student@eduflex.local",
+            "enabled": true,
+            "emailVerified": true,
+            "firstName": "Test",
+            "lastName": "Student",
+            "credentials": [
+                {
+                    "type": "password",
+                    "value": "student123",
+                    "temporary": false
+                }
+            ],
+            "realmRoles": [
+                "STUDENT"
+            ]
+        }
+    ],
+    "identityProviders": [],
+    "identityProviderMappers": []
+}

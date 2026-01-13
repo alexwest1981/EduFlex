@@ -6,7 +6,7 @@ import { api } from '../../services/api';
 import RevenueAnalytics from './RevenueAnalytics';
 import StudentDrillDown from './StudentDrillDown';
 
-const AnalyticsDashboard = () => {
+const AnalyticsDashboard = ({ widgets, customizer }) => {
     const { t } = useTranslation();
     const [activeTab, setActiveTab] = useState('overview'); // 'overview' | 'students'
     const [timeRange, setTimeRange] = useState('month'); // 'day' | 'week' | 'month' | 'year'
@@ -154,6 +154,7 @@ const AnalyticsDashboard = () => {
                         className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-[#1E1F20] border border-gray-200 dark:border-[#3c4043] rounded-lg text-sm font-bold text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-[#282a2c] transition-colors shadow-sm">
                         <Download size={16} /> {t('analytics.export_csv')}
                     </button>
+                    {customizer}
                 </div>
             </div>
 
@@ -186,86 +187,94 @@ const AnalyticsDashboard = () => {
                         </div>
                     </div>
                     {/* KPI CARDS */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                        {cards.map((card, idx) => (
-                            <div key={idx} className="bg-white dark:bg-[#1E1F20] p-6 rounded-2xl border border-gray-200 dark:border-[#3c4043] shadow-sm flex flex-col justify-between h-32 hover:shadow-md transition-shadow">
-                                <div className="flex justify-between items-start">
-                                    <div>
-                                        <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{card.title}</p>
-                                        <h3 className="text-2xl font-black text-gray-900 dark:text-white mt-1">{card.value}</h3>
+                    {(!widgets || widgets.kpiCards) && (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                            {cards.map((card, idx) => (
+                                <div key={idx} className="bg-white dark:bg-[#1E1F20] p-6 rounded-2xl border border-gray-200 dark:border-[#3c4043] shadow-sm flex flex-col justify-between h-32 hover:shadow-md transition-shadow">
+                                    <div className="flex justify-between items-start">
+                                        <div>
+                                            <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{card.title}</p>
+                                            <h3 className="text-2xl font-black text-gray-900 dark:text-white mt-1">{card.value}</h3>
+                                        </div>
+                                        <div className={`p-2 rounded-lg ${card.bg} ${card.color}`}>
+                                            {card.icon}
+                                        </div>
                                     </div>
-                                    <div className={`p-2 rounded-lg ${card.bg} ${card.color}`}>
-                                        {card.icon}
+                                    <div className="flex items-center gap-1 text-xs font-bold text-emerald-600 dark:text-emerald-400">
+                                        <TrendingUp size={12} /> {card.change} <span className="text-gray-400 font-normal ml-1">{t('analytics.vs_last_month')}</span>
                                     </div>
                                 </div>
-                                <div className="flex items-center gap-1 text-xs font-bold text-emerald-600 dark:text-emerald-400">
-                                    <TrendingUp size={12} /> {card.change} <span className="text-gray-400 font-normal ml-1">{t('analytics.vs_last_month')}</span>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
+                            ))}
+                        </div>
+                    )}
 
                     {/* CHARTS ROW */}
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
-                        <div className="lg:col-span-2 bg-white dark:bg-[#1E1F20] p-6 rounded-2xl border border-gray-200 dark:border-[#3c4043] shadow-sm">
-                            <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-6">
-                                {t('analytics.revenue_growth')} ({timeRange === 'day' ? 'Last 24 Hours' : timeRange === 'week' ? 'Last 7 Days' : timeRange === 'month' ? 'Last 30 Days' : 'Last 12 Months'})
-                            </h3>
-                            <div className="h-80 w-full">
-                                <ResponsiveContainer width="100%" height="100%">
-                                    <AreaChart data={growthData}>
-                                        <defs>
-                                            <linearGradient id="colorRev" x1="0" y1="0" x2="0" y2="1">
-                                                <stop offset="5%" stopColor="#4F46E5" stopOpacity={0.3} />
-                                                <stop offset="95%" stopColor="#4F46E5" stopOpacity={0} />
-                                            </linearGradient>
-                                        </defs>
-                                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
-                                        <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6B7280' }} dy={10} />
-                                        <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6B7280' }} />
-                                        <Tooltip
-                                            contentStyle={{ backgroundColor: '#1F2937', color: '#fff', border: 'none', borderRadius: '8px' }}
-                                            itemStyle={{ color: '#fff' }}
-                                        />
-                                        <Area type="monotone" dataKey="revenue" stroke="#4F46E5" strokeWidth={3} fillOpacity={1} fill="url(#colorRev)" />
-                                    </AreaChart>
-                                </ResponsiveContainer>
+                        {(!widgets || widgets.revenueChart) && (
+                            <div className="lg:col-span-2 bg-white dark:bg-[#1E1F20] p-6 rounded-2xl border border-gray-200 dark:border-[#3c4043] shadow-sm">
+                                <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-6">
+                                    {t('analytics.revenue_growth')} ({timeRange === 'day' ? 'Last 24 Hours' : timeRange === 'week' ? 'Last 7 Days' : timeRange === 'month' ? 'Last 30 Days' : 'Last 12 Months'})
+                                </h3>
+                                <div className="h-80 w-full">
+                                    <ResponsiveContainer width="100%" height="100%">
+                                        <AreaChart data={growthData}>
+                                            <defs>
+                                                <linearGradient id="colorRev" x1="0" y1="0" x2="0" y2="1">
+                                                    <stop offset="5%" stopColor="#4F46E5" stopOpacity={0.3} />
+                                                    <stop offset="95%" stopColor="#4F46E5" stopOpacity={0} />
+                                                </linearGradient>
+                                            </defs>
+                                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
+                                            <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6B7280' }} dy={10} />
+                                            <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6B7280' }} />
+                                            <Tooltip
+                                                contentStyle={{ backgroundColor: '#1F2937', color: '#fff', border: 'none', borderRadius: '8px' }}
+                                                itemStyle={{ color: '#fff' }}
+                                            />
+                                            <Area type="monotone" dataKey="revenue" stroke="#4F46E5" strokeWidth={3} fillOpacity={1} fill="url(#colorRev)" />
+                                        </AreaChart>
+                                    </ResponsiveContainer>
+                                </div>
                             </div>
-                        </div>
+                        )}
 
-                        <div className="bg-white dark:bg-[#1E1F20] p-6 rounded-2xl border border-gray-200 dark:border-[#3c4043] shadow-sm">
-                            <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-6">{t('analytics.user_acquisition')}</h3>
-                            <div className="h-80 w-full">
-                                <ResponsiveContainer width="100%" height="100%">
-                                    <BarChart data={growthData}>
-                                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
-                                        <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#6B7280' }} />
-                                        <Tooltip
-                                            cursor={{ fill: 'rgba(255,255,255,0.1)' }}
-                                            contentStyle={{ backgroundColor: '#1F2937', color: '#fff', border: 'none', borderRadius: '8px' }}
-                                        />
-                                        <Bar dataKey="users" fill="#10B981" radius={[4, 4, 0, 0]} />
-                                    </BarChart>
-                                </ResponsiveContainer>
+                        {(!widgets || widgets.acquisitionChart) && (
+                            <div className="bg-white dark:bg-[#1E1F20] p-6 rounded-2xl border border-gray-200 dark:border-[#3c4043] shadow-sm">
+                                <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-6">{t('analytics.user_acquisition')}</h3>
+                                <div className="h-80 w-full">
+                                    <ResponsiveContainer width="100%" height="100%">
+                                        <BarChart data={growthData}>
+                                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
+                                            <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#6B7280' }} />
+                                            <Tooltip
+                                                cursor={{ fill: 'rgba(255,255,255,0.1)' }}
+                                                contentStyle={{ backgroundColor: '#1F2937', color: '#fff', border: 'none', borderRadius: '8px' }}
+                                            />
+                                            <Bar dataKey="users" fill="#10B981" radius={[4, 4, 0, 0]} />
+                                        </BarChart>
+                                    </ResponsiveContainer>
+                                </div>
                             </div>
-                        </div>
+                        )}
                     </div>
 
-                    <div className="bg-indigo-900 rounded-2xl p-8 text-white relative overflow-hidden">
-                        <div className="absolute top-0 right-0 p-4 opacity-10">
-                            <ShieldCheck size={200} />
-                        </div>
-                        <div className="relative z-10">
-                            <h2 className="text-2xl font-bold mb-2">{t('analytics.system_status')}: {t('analytics.operational')}</h2>
-                            <p className="text-indigo-200 max-w-2xl mb-6">{t('analytics.all_systems_normal')}</p>
-                            <div className="flex gap-4">
-                                <div className="bg-white/10 backdrop-blur-sm p-4 rounded-xl border border-white/20">
-                                    <p className="text-xs uppercase font-bold text-indigo-200">{t('analytics.uptime')}</p>
-                                    <p className="text-2xl font-mono font-bold">99.99%</p>
+                    {(!widgets || widgets.systemStatus) && (
+                        <div className="bg-indigo-900 rounded-2xl p-8 text-white relative overflow-hidden">
+                            <div className="absolute top-0 right-0 p-4 opacity-10">
+                                <ShieldCheck size={200} />
+                            </div>
+                            <div className="relative z-10">
+                                <h2 className="text-2xl font-bold mb-2">{t('analytics.system_status')}: {t('analytics.operational')}</h2>
+                                <p className="text-indigo-200 max-w-2xl mb-6">{t('analytics.all_systems_normal')}</p>
+                                <div className="flex gap-4">
+                                    <div className="bg-white/10 backdrop-blur-sm p-4 rounded-xl border border-white/20">
+                                        <p className="text-xs uppercase font-bold text-indigo-200">{t('analytics.uptime')}</p>
+                                        <p className="text-2xl font-mono font-bold">99.99%</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    )}
                 </div>
             )}
 

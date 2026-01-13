@@ -6,6 +6,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "quizzes")
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 public class Quiz {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -15,12 +16,13 @@ public class Quiz {
     private String description;
 
     @ManyToOne(optional = true)
-    @JoinColumn(name = "course_id", nullable = true) // Nullable för att kunna skapa resurser utan kurs
-    @JsonIgnoreProperties("quizzes")
+    @JoinColumn(name = "course_id", nullable = true)
+    @JsonIgnoreProperties({ "quizzes", "hibernateLazyInitializer", "handler" })
     private Course course;
 
     @ManyToOne
-    @JoinColumn(name = "author_id") // Den som skapade quizet
+    @JoinColumn(name = "author_id")
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "password", "courses", "coursesCreated" })
     private User author;
 
     private java.time.LocalDateTime availableFrom;

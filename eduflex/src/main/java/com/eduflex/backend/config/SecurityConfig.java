@@ -3,7 +3,9 @@ package com.eduflex.backend.config;
 import com.eduflex.backend.security.AuthTokenFilter;
 import com.eduflex.backend.security.CustomOAuth2UserService;
 import com.eduflex.backend.security.CustomUserDetailsService;
+import com.eduflex.backend.security.KeycloakJwtAuthConverter;
 import com.eduflex.backend.security.LicenseFilter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -34,14 +36,30 @@ public class SecurityConfig {
     private final CustomOAuth2UserService customOAuth2UserService;
     private final AuthTokenFilter authTokenFilter;
     private final LicenseFilter licenseFilter;
+    private final KeycloakJwtAuthConverter keycloakJwtAuthConverter;
+
+    @Value("${eduflex.auth.mode:hybrid}")
+    private String authMode;
+
+    private final com.eduflex.backend.security.OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
+    private final com.eduflex.backend.security.OAuth2LoginFailureHandler oAuth2LoginFailureHandler;
+    private final com.eduflex.backend.security.CustomOidcUserService customOidcUserService;
 
     public SecurityConfig(CustomUserDetailsService userDetailsService, CustomOAuth2UserService customOAuth2UserService,
             AuthTokenFilter authTokenFilter,
-            LicenseFilter licenseFilter) {
+            LicenseFilter licenseFilter,
+            KeycloakJwtAuthConverter keycloakJwtAuthConverter,
+            com.eduflex.backend.security.OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler,
+            com.eduflex.backend.security.OAuth2LoginFailureHandler oAuth2LoginFailureHandler,
+            com.eduflex.backend.security.CustomOidcUserService customOidcUserService) {
         this.userDetailsService = userDetailsService;
         this.customOAuth2UserService = customOAuth2UserService;
         this.authTokenFilter = authTokenFilter;
         this.licenseFilter = licenseFilter;
+        this.keycloakJwtAuthConverter = keycloakJwtAuthConverter;
+        this.oAuth2LoginSuccessHandler = oAuth2LoginSuccessHandler;
+        this.oAuth2LoginFailureHandler = oAuth2LoginFailureHandler;
+        this.customOidcUserService = customOidcUserService;
     }
 
     @Bean
@@ -74,10 +92,11 @@ public class SecurityConfig {
 
                         // 2. Publika endpoints
                         .requestMatchers("/api/auth/**", "/api/users/register", "/api/users/generate-usernames",
-                                "/api/settings/**")
+                                "/api/settings/**", "/login/**")
                         .permitAll()
                         .requestMatchers("/api/system/license/**", "/uploads/**", "/h2-console/**", "/ws/**",
-                                "/actuator/**", "/lti/**")
+                                "/ws-log/**",
+                                "/actuator/**", "/lti/**", "/error")
                         .permitAll()
 
                         // 3. KURS-REGLER
@@ -109,6 +128,9 @@ public class SecurityConfig {
                         // 4. Övrigt
                         .requestMatchers("/api/notifications/**").authenticated()
                         .requestMatchers("/api/quizzes/**").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/logs/client").authenticated() // Allow all authenticated
+                                                                                              // users to report errors
+                        .requestMatchers("/api/logs/**").hasAnyAuthority("ADMIN", "ROLE_ADMIN")
 
                         // All other requests require authentication
                         .anyRequest().authenticated())
@@ -120,14 +142,21 @@ public class SecurityConfig {
         http.addFilterBefore(authTokenFilter, UsernamePasswordAuthenticationFilter.class);
         http.addFilterBefore(licenseFilter, UsernamePasswordAuthenticationFilter.class); // Check License first
 
-        // OAuth2 Login
+        // OAuth2 Login (for social login and Keycloak browser-based SSO)
         http.oauth2Login(oauth2 -> oauth2
                 .userInfoEndpoint(userInfo -> userInfo
-                        .userService(customOAuth2UserService))
-        // We will add a success handler later or let it redirect to default /
-        // For SPA, we usually want a custom success handler that generates a JWT and
-        // redirects to frontend with ?token=...
-        );
+                        .userService(customOAuth2UserService)
+                        .oidcUserService(customOidcUserService))
+                .successHandler(oAuth2LoginSuccessHandler)
+                .failureHandler(oAuth2LoginFailureHandler));
+
+        // OAuth2 Resource Server (for validating Keycloak JWT tokens from API calls)
+        // This enables the backend to accept both internal JWT tokens and Keycloak
+        // tokens
+        if ("keycloak".equalsIgnoreCase(authMode) || "hybrid".equalsIgnoreCase(authMode)) {
+            http.oauth2ResourceServer(oauth2 -> oauth2
+                    .jwt(jwt -> jwt.jwtAuthenticationConverter(keycloakJwtAuthConverter)));
+        }
 
         // Tillåt iFrames för H2-konsolen
         http.headers(headers -> headers.frameOptions(frame -> frame.disable()));

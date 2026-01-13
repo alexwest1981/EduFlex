@@ -137,6 +137,13 @@ public class SkolverketCourseService {
         return repository.count();
     }
 
+    /**
+     * Count courses that have been completed (have description filled)
+     */
+    public long getCompletedCount() {
+        return repository.countByDescriptionIsNotNull();
+    }
+
     public void deleteAll() {
         repository.deleteAll();
     }

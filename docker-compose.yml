@@ -5,6 +5,7 @@ services:
   db:
     image: postgres:15-alpine
     container_name: eduflex-db
+    restart: always
     environment:
       - POSTGRES_DB=eduflex
       - POSTGRES_USER=postgres
@@ -43,10 +44,37 @@ services:
     networks:
       - eduflex-net
 
+  # --- IDENTITY PROVIDER (Keycloak) ---
+  keycloak:
+    image: quay.io/keycloak/keycloak:24.0
+    container_name: eduflex-keycloak
+    command: start-dev --import-realm
+    environment:
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin
+      - KC_DB=postgres
+      - KC_DB_URL=jdbc:postgresql://db:5432/eduflex
+      - KC_DB_USERNAME=postgres
+      - KC_DB_PASSWORD=gotland81
+      - KC_HOSTNAME_STRICT=false
+      - KC_HOSTNAME=localhost
+      - KC_HOSTNAME_PORT=8180
+      - KC_HTTP_ENABLED=true
+      - KC_PROXY=edge
+    ports:
+      - "8180:8080"
+    volumes:
+      - ./keycloak/realm-export.json:/opt/keycloak/data/import/realm-export.json
+    depends_on:
+      - db
+    networks:
+      - eduflex-net
+
   # --- BACKEND (Spring Boot) ---
   backend:
     build: ./eduflex
     container_name: eduflex-backend
+    restart: on-failure:5
     ports:
       - "8080:8080"
     environment:
@@ -62,6 +90,17 @@ services:
       - MINIO_ACCESS_KEY=minioadmin
       - MINIO_SECRET_KEY=minioadmin
       - MINIO_BUCKET=eduflex-storage
+      # Keycloak OAuth2/OIDC Configuration
+      # issuer-uri must match what Keycloak puts in tokens (localhost:8180)
+      # jwk-set-uri can use internal Docker hostname for server-to-server communication
+      - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI=http://localhost:8180/realms/eduflex
+      - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI=http://keycloak:8080/realms/eduflex/protocol/openid-connect/certs
+      - KEYCLOAK_AUTH_SERVER_URL=http://keycloak:8080
+      - KEYCLOAK_REALM=eduflex
+      - KEYCLOAK_CLIENT_ID=eduflex-app
+      - KEYCLOAK_CLIENT_SECRET=eduflex-secret-key-change-in-production
+    extra_hosts:
+      - "localhost:host-gateway"
     volumes:
       - ./uploads:/app/uploads # Sparar uppladdade filer på din hårddisk
       - ./eduflex.license:/app/eduflex.license
@@ -69,6 +108,7 @@ services:
       - db
       - redis
       - minio
+      - keycloak
     networks:
       - eduflex-net
 
@@ -85,6 +125,8 @@ services:
       - /app/node_modules
     depends_on:
       - backend
+    networks:
+      - eduflex-net
 
   # --- MONITORING (Prometheus & Grafana) ---
   prometheus:

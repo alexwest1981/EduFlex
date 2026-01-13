@@ -323,5 +323,15 @@ export const api = {
         }).then(handleResponse),
         getCourseLogs: (courseId) => fetch(`${API_BASE}/activity/course/${courseId}`, { headers: getHeaders() }).then(handleResponse),
         getStudentLogs: (courseId, userId) => fetch(`${API_BASE}/activity/course/${courseId}/student/${userId}`, { headers: getHeaders() }).then(handleResponse)
+    },
+
+    logs: {
+        getFiles: () => fetch(`${API_BASE}/logs/files`, { headers: getHeaders() }).then(handleResponse),
+        getContent: (filename, lines) => fetch(`${API_BASE}/logs/content?filename=${filename || ''}&lines=${lines || 100}`, { headers: getHeaders() }).then(handleResponse),
+        reportError: (errorData) => fetch(`${API_BASE}/logs/client`, {
+            method: 'POST',
+            headers: getHeaders(),
+            body: JSON.stringify(errorData)
+        }),
     }
 };

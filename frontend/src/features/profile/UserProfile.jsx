@@ -175,9 +175,7 @@ const UserProfile = ({ currentUser, showMessage, refreshUser }) => {
                         <button onClick={() => setActiveTab('security')} className={`flex-1 py-4 font-bold text-sm transition-colors ${activeTab === 'security' ? 'bg-gray-50 dark:bg-[#282a2c] text-gray-900 dark:text-white border-b-2 border-black dark:border-white' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-[#282a2c]'}`}>
                             <div className="flex items-center justify-center gap-2"><Lock size={18} /> {t('profile.security')}</div>
                         </button>
-                        <button onClick={() => setActiveTab('settings')} className={`flex-1 py-4 font-bold text-sm transition-colors ${activeTab === 'settings' ? 'bg-gray-50 dark:bg-[#282a2c] text-gray-900 dark:text-white border-b-2 border-black dark:border-white' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-[#282a2c]'}`}>
-                            <div className="flex items-center justify-center gap-2"><SettingsIcon size={18} /> {t('profile.settings')}</div>
-                        </button>
+
                         <button onClick={() => setActiveTab('privacy')} className={`flex-1 py-4 font-bold text-sm transition-colors ${activeTab === 'privacy' ? 'bg-gray-50 dark:bg-[#282a2c] text-gray-900 dark:text-white border-b-2 border-black dark:border-white' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-[#282a2c]'}`}>
                             <div className="flex items-center justify-center gap-2"><Shield size={18} /> Integritet</div>
                         </button>
@@ -248,43 +246,7 @@ const UserProfile = ({ currentUser, showMessage, refreshUser }) => {
                                 <button className="w-full bg-gray-900 dark:bg-white text-white dark:text-black px-6 py-3 rounded-lg font-bold hover:bg-black dark:hover:bg-gray-100 shadow-sm flex items-center justify-center gap-2 mt-4 transition-colors"><Lock size={18} /> {t('profile.update_password')}</button>
                             </form>
                         )}
-                        {activeTab === 'settings' && (
-                            <form onSubmit={handleUpdateProfile} className="space-y-6">
-                                <h3 className="font-bold text-gray-900 dark:text-white flex items-center gap-2"><Layout size={20} /> {t('profile.settings_header')}</h3>
-                                <p className="text-sm text-gray-500 dark:text-gray-400">{t('profile.settings_desc')}</p>
 
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    {((currentUser.role?.name || currentUser.role) === 'ADMIN' ? [
-                                        { key: 'showStats', label: 'Visa Statistik' },
-                                        { key: 'showRecentUsers', label: 'Visa Senaste Användare' },
-                                        { key: 'showRecentDocs', label: 'Visa Senaste Filer' },
-                                        { key: 'showMessages', label: 'Visa Meddelanden' }
-                                    ] : [
-                                        { key: 'showActiveCourses', label: 'Visa Aktiva kurser' },
-                                        { key: 'showMyStudents', label: 'Visa Mina Studenter' },
-                                        { key: 'showToGrade', label: 'Visa Att rätta' },
-                                        { key: 'showAtRisk', label: 'Visa Riskzon' },
-                                        { key: 'showApplications', label: 'Visa Ansökningar' },
-                                        { key: 'showSchedule', label: 'Visa Kommande Schema' },
-                                        { key: 'showMessages', label: 'Visa Senaste Meddelanden' },
-                                        { key: 'showShortcuts', label: 'Visa Genvägar' }
-                                    ]).map(setting => (
-                                        <label key={setting.key} className="flex items-center gap-3 p-4 border border-gray-200 dark:border-[#3c4043] rounded-xl cursor-pointer hover:bg-gray-50 dark:hover:bg-[#282a2c] transition-colors">
-                                            <input type="checkbox" className="w-5 h-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                                                checked={!!formData.dashboardSettings[setting.key]}
-                                                onChange={e => setFormData({ ...formData, dashboardSettings: { ...formData.dashboardSettings, [setting.key]: e.target.checked } })}
-                                            />
-                                            <span className="font-medium text-gray-700 dark:text-gray-200">{setting.label}</span>
-                                        </label>
-                                    ))}
-                                </div>
-                                <div className="flex justify-end pt-4">
-                                    <button disabled={isLoading} className="bg-gray-900 dark:bg-[#c2e7ff] text-white dark:text-[#001d35] px-6 py-2.5 rounded-lg font-bold hover:bg-black dark:hover:bg-[#b3d7ef] shadow-sm flex items-center gap-2 disabled:opacity-50 transition-colors">
-                                        <Save size={18} /> {isLoading ? 'Sparar...' : t('profile.save_changes')}
-                                    </button>
-                                </div>
-                            </form>
-                        )}
                         {activeTab === 'privacy' && (
                             <div className="space-y-8 py-4">
                                 <div className="bg-white dark:bg-[#1E1F20] rounded-xl border border-gray-200 dark:border-[#3c4043] p-6 shadow-sm">

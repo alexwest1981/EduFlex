@@ -2,12 +2,14 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AppProvider, useAppContext } from './context/AppContext';
 import { ModuleProvider } from './context/ModuleContext';
+import ErrorBoundary from './components/common/ErrorBoundary';
 
 // --- LAYOUT ---
 import Layout from './components/Layout';
 
 // --- FEATURES ---
 import Login from './features/auth/Login';
+import OAuth2Callback from './features/auth/OAuth2Callback';
 import Dashboard from './features/dashboard/Dashboard';
 import CourseDetail from './features/courses/CourseDetail';
 import CalendarView from './features/calendar/CalendarView';
@@ -83,6 +85,7 @@ const AppRoutes = () => {
         <ThemeProvider currentUser={currentUser}>
             <Routes>
                 <Route path="/login" element={<Login />} />
+                <Route path="/oauth2/callback" element={<OAuth2Callback />} />
 
                 <Route path="/" element={
                     <ProtectedRoute>
@@ -181,9 +184,11 @@ const App = () => {
     return (
         <AppProvider>
             <ModuleProvider>
-                <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-                    <AppRoutes />
-                </Router>
+                <ErrorBoundary>
+                    <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+                        <AppRoutes />
+                    </Router>
+                </ErrorBoundary>
             </ModuleProvider>
         </AppProvider>
     );

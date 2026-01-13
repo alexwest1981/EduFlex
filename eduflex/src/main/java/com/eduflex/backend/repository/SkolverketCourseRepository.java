@@ -22,4 +22,7 @@ public interface SkolverketCourseRepository extends JpaRepository<SkolverketCour
 
     @Query("SELECT DISTINCT s.subject FROM SkolverketCourse s ORDER BY s.subject")
     List<String> findAllSubjects();
+
+    // Count courses that have description filled (considered "completed")
+    long countByDescriptionIsNotNull();
 }

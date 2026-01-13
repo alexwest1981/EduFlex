@@ -1,8 +1,12 @@
+
 package com.eduflex.backend.security;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.HttpServletRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -12,16 +16,32 @@ import java.util.Date;
 
 @Component
 public class JwtUtils {
+    private static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
 
     // I en riktig app ska denna hemlighet ligga i application.properties
     private final String jwtSecret = "EduFlexSecretKeyForJwtSigningWhichMustBeVeryLongAndSecure123456";
     private final int jwtExpirationMs = 86400000; // 24 timmar
 
     public String generateJwtToken(Authentication authentication) {
-        UserDetails userPrincipal = (UserDetails) authentication.getPrincipal();
+        String username;
+        Object principal = authentication.getPrincipal();
+
+        if (principal instanceof UserDetails) {
+            username = ((UserDetails) principal).getUsername();
+        } else if (principal instanceof CustomOAuth2User) {
+            username = ((CustomOAuth2User) principal).getEmail(); // Use email as username for SSO
+        } else if (principal instanceof org.springframework.security.oauth2.core.oidc.user.OidcUser) {
+            org.springframework.security.oauth2.core.oidc.user.OidcUser oidcUser = (org.springframework.security.oauth2.core.oidc.user.OidcUser) principal;
+            username = oidcUser.getAttribute("email");
+            if (username == null) {
+                username = oidcUser.getAttribute("preferred_username");
+            }
+        } else {
+            throw new IllegalArgumentException("Unknown principal type: " + principal.getClass());
+        }
 
         return Jwts.builder()
-                .setSubject((userPrincipal.getUsername()))
+                .setSubject(username)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
                 .signWith(key(), SignatureAlgorithm.HS256)
@@ -29,7 +49,8 @@ public class JwtUtils {
     }
 
     private Key key() {
-        return Keys.hmacShaKeyFor(Decoders.BASE64.decode(java.util.Base64.getEncoder().encodeToString(jwtSecret.getBytes())));
+        return Keys.hmacShaKeyFor(
+                Decoders.BASE64.decode(java.util.Base64.getEncoder().encodeToString(jwtSecret.getBytes())));
     }
 
     public String getUserNameFromJwtToken(String token) {
@@ -39,11 +60,20 @@ public class JwtUtils {
 
     public boolean validateJwtToken(String authToken) {
         try {
-            Jwts.parserBuilder().setSigningKey(key()).build().parseClaimsJws(authToken);
+            Jwts.parserBuilder().setSigningKey(key()).build().parse(authToken);
             return true;
-        } catch (JwtException e) {
-            System.err.println("Ogiltig JWT token: " + e.getMessage());
+        } catch (MalformedJwtException e) {
+            logger.error("Invalid JWT token: {}", e.getMessage());
+        } catch (ExpiredJwtException e) {
+            logger.error("JWT token is expired: {}", e.getMessage());
+        } catch (UnsupportedJwtException e) {
+            logger.error("JWT token is unsupported: {}", e.getMessage());
+        } catch (IllegalArgumentException e) {
+            logger.error("JWT claims string is empty: {}", e.getMessage());
+        } catch (Exception e) {
+            logger.error("JWT validation failed: {}", e.getMessage());
         }
+
         return false;
     }
 }
