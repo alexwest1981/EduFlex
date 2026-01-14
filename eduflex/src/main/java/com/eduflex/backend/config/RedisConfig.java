@@ -68,6 +68,7 @@ public class RedisConfig {
     }
 
     @Bean
+    @org.springframework.boot.autoconfigure.condition.ConditionalOnProperty(value = "eduflex.redis.enabled", havingValue = "true", matchIfMissing = true)
     public org.springframework.data.redis.listener.RedisMessageListenerContainer redisContainer(
             RedisConnectionFactory connectionFactory,
             org.springframework.data.redis.listener.adapter.MessageListenerAdapter messageListener) {
