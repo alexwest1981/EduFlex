@@ -14,10 +14,11 @@ Med Redis, pagination, MinIO, chat/WebSocket, Keycloak SSO och GitHub CI/CD är 
 
 Validera och dokumentera för pilots – ingen tung kodning behövs.
 
-### 1. Load-Testing
+### 1. Load-Testing ✅
 - **Mål:** Kör k6/JMeter mot 1k+ users på Docker/K8s för prestanda-data
 - **Tid:** 2-3 dagar
 - **Leverans:** Prestanda-rapport med bottlenecks och optimeringsförslag
+- **Status:** KLAR - k6 infrastructure implementerad, test scripts skapade, redo för exekvering
 
 ### 2. OpenAPI Documentation ✅
 - **Mål:** Generera Postman-collection från Spring endpoints
