@@ -20,8 +20,11 @@
   <img src="https://img.shields.io/badge/Spring%20Boot-3.4-brightgreen?style=for-the-badge&logo=springboot"/>
   <img src="https://img.shields.io/badge/PostgreSQL-15-336791?style=for-the-badge&logo=postgresql&logoColor=white"/>
   <img src="https://img.shields.io/badge/Docker-Containerized-blue?style=for-the-badge&logo=docker&logoColor=white"/>
-  <img src="https://img.shields.io/badge/MinIO-S3%20Compatible-c72c48?style=for-the-badge&logo=minio&logoColor=white"/>
-  <img src="https://img.shields.io/badge/Redis-High%20Perf-red?style=for-the-badge&logo=redis&logoColor=white"/>
+  <img src="https://img.shields.io/badge/MinIO-S3%20Storage-c72c48?style=for-the-badge&logo=minio&logoColor=white"/>
+  <img src="https://img.shields.io/badge/Redis-Cache-red?style=for-the-badge&logo=redis&logoColor=white"/>
+  <img src="https://img.shields.io/badge/Keycloak-SSO-4d4d4d?style=for-the-badge&logo=keycloak&logoColor=white"/>
+  <img src="https://img.shields.io/github/actions/workflow/status/alexwest1981/EduFlex/ci.yml?style=for-the-badge&logo=github&label=CI%20Build"/>
+  <img src="https://img.shields.io/badge/License-Proprietary-orange?style=for-the-badge"/>
 </p>
 
 
