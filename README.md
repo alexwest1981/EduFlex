@@ -84,6 +84,16 @@ Whether you are a single educator, a private school, or a municipal education bo
 - **User Management:** Detailed profiles with avatar uploads (MinIO backed).
 - **Role-Based Access Control (RBAC):** Granular permissions for Super Admin, Admin, Teacher, and Student.
 - **Configurable Dashboards:** Admins can define specific dashboard layouts (Admin, Principal, Teacher, Student, Mentor) for any role.
+- **Enterprise Themes & Whitelabel:** Complete visual customization for Enterprise customers with 7 professional design systems:
+  - **EduFlex Classic:** Traditional sidebar layout with professional aesthetics
+  - **EduFlex Focus:** Minimalist design with left-marker navigation and floating container
+  - **EduFlex Horizon:** Top navigation with beige gradient and gold accents
+  - **EduFlex Nebula:** Glassmorphic design with purple/lavender palette
+  - **EduFlex Ember:** Card-contained sidebar with orange accents and dark green background
+  - **EduFlex Voltage:** Acid lime neon theme with integrated dark sidebar
+  - **EduFlex Midnight:** Dark mode with mint green accents and pill navigation
+  - **EduFlex Pulse:** Music player-inspired with bright red and circular navigation
+- **Theme Manager:** Real-time preview and customization of colors, typography, spacing, and layout per tenant.
 
 #### 📊 Analytics & Insights (New)
 - **Principal Dashboard:** Dedicated view for school leaders with high-level metrics (Revenue, Active Users, Server Health).
@@ -281,6 +291,16 @@ If the Debug Terminal shows "OFFLINE":
 - **Användarprofiler:** Avancerad profilhantering med bildlagring via MinIO.
 - **Rättighetsstyrning (RBAC):** Detaljerade behörigheter för Admin, Lärare och Elev.
 - **Konfigurerbara Dashboards:** Administratörer kan styra vilken dashboard-layout (Admin, Rektor, Lärare, Student, Mentor) en roll ska ha.
+- **Enterprise-teman & Whitelabel:** Komplett visuell anpassning för Enterprise-kunder med 7 professionella designsystem:
+  - **EduFlex Classic:** Traditionell sidopanel med professionell estetik
+  - **EduFlex Focus:** Minimalistisk design med vänstermarkör-navigering och flytande container
+  - **EduFlex Horizon:** Toppnavigering med beige gradient och guldaccenter
+  - **EduFlex Nebula:** Glassmorfisk design med lila/lavendel-palett
+  - **EduFlex Ember:** Kortinnesluten sidopanel med orange accenter och mörkgrön bakgrund
+  - **EduFlex Voltage:** Syra-lime neon-tema med integrerad mörk sidopanel
+  - **EduFlex Midnight:** Mörkt läge med mint-gröna accenter och pill-navigering
+  - **EduFlex Pulse:** Musikspelare-inspirerad med klarröd och cirkulär navigering
+- **Temahanterare:** Realtidsförhandsgranskning och anpassning av färger, typografi, avstånd och layout per tenant.
 
 #### 📊 Analys & Uppföljning (Nytt)
 - **Rektorspanel:** Dedikerad vy för skolledare med nyckeltal (Omsättning, Aktiva Användare, Systemhälsa).
