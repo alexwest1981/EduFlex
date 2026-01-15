@@ -96,7 +96,9 @@ public class SecurityConfig {
                         .permitAll()
                         .requestMatchers("/api/system/license/**", "/uploads/**", "/h2-console/**", "/ws/**",
                                 "/ws-log/**",
-                                "/actuator/**", "/lti/**", "/error")
+                                "/actuator/**", "/lti/**", "/error",
+                                // Swagger UI and OpenAPI Documentation
+                                "/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html", "/api-docs/**")
                         .permitAll()
 
                         // 3. KURS-REGLER

@@ -19,12 +19,13 @@ Validera och dokumentera för pilots – ingen tung kodning behövs.
 - **Tid:** 2-3 dagar
 - **Leverans:** Prestanda-rapport med bottlenecks och optimeringsförslag
 
-### 2. OpenAPI Documentation
+### 2. OpenAPI Documentation ✅
 - **Mål:** Generera Postman-collection från Spring endpoints
 - **Tid:** 1 dag
 - **Leverans:** Komplett API-dokumentation för externa utvecklare
+- **Status:** KLAR - Swagger UI tillgänglig på http://localhost:8080/swagger-ui/index.html
 
-### 3. README-Uppdatering
+### 3. README-Uppdatering ✅
 - **Mål:** Lägg till badges för Keycloak/MinIO/CI-status
 - **Tid:** 1 dag
 - **Leverans:** Professionell README med alla tekniska badges
