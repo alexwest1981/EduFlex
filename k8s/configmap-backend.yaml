@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backend-config
+  namespace: eduflex
+data:
+  # Database
+  SPRING_DATASOURCE_URL: "jdbc:postgresql://postgresql:5432/eduflex"
+  SPRING_DATASOURCE_USERNAME: "postgres"
+  
+  # Redis
+  SPRING_DATA_REDIS_HOST: "redis"
+  SPRING_DATA_REDIS_PORT: "6379"
+  
+  # MinIO
+  MINIO_ENDPOINT: "http://minio:9000"
+  MINIO_BUCKET_NAME: "eduflex"
+  
+  # Keycloak
+  SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_ISSUER_URI: "http://keycloak:8080/realms/eduflex"
+  SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: "http://keycloak:8080/realms/eduflex"
+  KEYCLOAK_AUTH_SERVER_URL: "http://keycloak:8080"
+  KEYCLOAK_REALM: "eduflex"
+  KEYCLOAK_RESOURCE: "eduflex-backend"
+  
+  # Application
+  SERVER_PORT: "8080"
+  EDUFLEX_AUTH_MODE: "hybrid"
+  
+  # JPA/Hibernate
+  SPRING_JPA_HIBERNATE_DDL_AUTO: "update"
+  SPRING_JPA_SHOW_SQL: "false"
+  SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: "org.hibernate.dialect.PostgreSQLDialect"
+  
+  # Actuator
+  MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: "health,metrics,prometheus"
+  MANAGEMENT_ENDPOINT_HEALTH_SHOW_DETAILS: "always"
