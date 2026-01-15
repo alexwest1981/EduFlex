@@ -11,3 +11,13 @@ scripts/
 # License Files (Private)
 license_history.json
 *.lic
+
+# Local Development Logs & Debug Files
+backend_*
+frontend_*
+current_*
+*.log
+*_logs.txt
+*_debug.txt
+*_error.txt
+debug_*.txt
