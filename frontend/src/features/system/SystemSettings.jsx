@@ -1,19 +1,25 @@
 import React, { useState } from 'react';
-import { Palette, ShieldCheck, Zap, Server, Database, Lock } from 'lucide-react';
+import { Palette, ShieldCheck, Zap, Server, Database, Lock, Sparkles } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../../context/ThemeContext';
 import { useAppContext } from '../../context/AppContext';
+import { useBranding } from '../../context/BrandingContext';
 import ThemeModal from './ThemeModal';
 
 import { useModules } from '../../context/ModuleContext';
 import { api } from '../../services/api';
 
-const SystemSettings = () => {
+const SystemSettings = ({ asTab = false }) => {
+    const navigate = useNavigate();
     const { themeId, themes } = useTheme();
     const { modules, refreshModules } = useModules();
+    const { currentUser } = useAppContext();
+    const { hasAccess } = useBranding();
     const [isThemeModalOpen, setIsThemeModalOpen] = useState(false);
     const [toggling, setToggling] = useState(null);
 
     const currentTheme = themes.find(t => t.id === themeId) || themes[0];
+    const isAdmin = currentUser?.role?.name === 'ADMIN' || currentUser?.role === 'ADMIN';
 
     const handleToggleModule = async (key, currentStatus) => {
         setToggling(key);
@@ -28,11 +34,15 @@ const SystemSettings = () => {
     };
 
     return (
-        <div className="p-8 max-w-7xl mx-auto animate-in fade-in pb-20">
-            <h1 className="text-3xl font-black text-gray-900 dark:text-white mb-2">Systeminställningar</h1>
-            <p className="text-gray-500 dark:text-gray-400 mb-8">Hantera globala inställningar, utseende och licenser för EduFlex.</p>
+        <div className={asTab ? "animate-in fade-in" : "p-8 max-w-7xl mx-auto animate-in fade-in pb-20"}>
+            {!asTab && (
+                <>
+                    <h1 className="text-3xl font-black text-gray-900 dark:text-white mb-2">Systeminställningar</h1>
+                    <p className="text-gray-500 dark:text-gray-400 mb-8">Hantera globala inställningar, utseende och licenser för EduFlex.</p>
+                </>
+            )}
 
-            {/* TOP GRID: THEME, LICENSE, SERVER */}
+            {/* TOP GRID: THEME, WHITELABEL (IF ADMIN), LICENSE, SERVER */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
                 {/* TEMA HANTERARE */}
                 <div className="bg-white dark:bg-[#1E1F20] rounded-3xl p-1 border border-gray-200 dark:border-[#3c4043] shadow-sm hover:shadow-md transition-shadow group">
@@ -67,6 +77,58 @@ const SystemSettings = () => {
                         </div>
                     </div>
                 </div>
+
+                {/* ENTERPRISE WHITELABEL - Only show for admins */}
+                {isAdmin && (
+                    <div className="bg-white dark:bg-[#1E1F20] rounded-3xl p-1 border border-gray-200 dark:border-[#3c4043] shadow-sm hover:shadow-md transition-shadow group">
+                        <div className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-[#282a2c] dark:to-[#131314] rounded-[20px] p-6 h-full flex flex-col justify-between relative overflow-hidden">
+                            <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity transform group-hover:scale-110 duration-500">
+                                <Sparkles size={120} />
+                            </div>
+
+                            <div>
+                                <div className="w-12 h-12 bg-white dark:bg-[#1E1F20] rounded-xl flex items-center justify-center shadow-sm text-purple-600 mb-4">
+                                    <Sparkles size={24} />
+                                </div>
+                                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-1">Enterprise Whitelabel</h3>
+                                <p className="text-sm text-gray-500 dark:text-gray-400">Fullt anpassningsbar branding för din organisation.</p>
+                            </div>
+
+                            <div className="mt-8">
+                                <div className="flex items-center gap-2 mb-4 text-xs font-bold uppercase tracking-wider text-gray-400">
+                                    <span>Status</span>
+                                    <div className="h-px bg-gray-200 dark:bg-[#3c4043] flex-1"></div>
+                                </div>
+                                <div className="mb-6 bg-white/50 dark:bg-black/20 p-3 rounded-xl backdrop-blur-sm border border-white/20">
+                                    {hasAccess ? (
+                                        <span className="text-sm font-bold text-green-600 dark:text-green-400 flex items-center gap-2">
+                                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
+                                                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                            </svg>
+                                            ENTERPRISE-licens aktiv
+                                        </span>
+                                    ) : (
+                                        <span className="text-sm font-bold text-amber-600 dark:text-amber-400 flex items-center gap-2">
+                                            <Lock size={16} />
+                                            Kräver ENTERPRISE-licens
+                                        </span>
+                                    )}
+                                </div>
+                                <button
+                                    onClick={() => navigate('/enterprise/whitelabel')}
+                                    className={`w-full py-3 rounded-xl font-bold shadow-lg hover:transform hover:scale-[1.02] transition-all flex items-center justify-center gap-2 ${
+                                        hasAccess
+                                            ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white'
+                                            : 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400'
+                                    }`}
+                                    disabled={!hasAccess}
+                                >
+                                    <Sparkles size={18} /> {hasAccess ? 'Öppna Whitelabel' : 'Uppgradera för access'}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
 
                 {/* LICENS STATUS */}
                 <div className="bg-white dark:bg-[#1E1F20] rounded-3xl p-6 border border-gray-200 dark:border-[#3c4043] shadow-sm flex flex-col">

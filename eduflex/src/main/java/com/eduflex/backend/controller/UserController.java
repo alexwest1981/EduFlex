@@ -87,12 +87,32 @@ public class UserController {
         return userService.getAllUsers(pageable);
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<List<User>> searchUsers(@RequestParam("query") String query) {
+        if (query == null || query.trim().length() < 2) {
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok(userService.searchUsers(query));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<User> getUser(@PathVariable Long id) {
         try {
             return ResponseEntity.ok(userService.getUserById(id));
         } catch (Exception e) {
             return ResponseEntity.notFound().build();
+        }
+    }
+
+    @GetMapping("/related")
+    public ResponseEntity<List<User>> getRelatedUsers() {
+        try {
+            String username = org.springframework.security.core.context.SecurityContextHolder.getContext()
+                    .getAuthentication().getName();
+            User currentUser = userRepository.findByUsername(username).orElseThrow();
+            return ResponseEntity.ok(userService.getContactsForUser(currentUser.getId()));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
         }
     }
 
@@ -137,6 +157,16 @@ public class UserController {
             if (updates.containsKey("settings")) {
                 user.setSettings((String) updates.get("settings"));
             }
+
+            // NYTT: Social Media
+            if (updates.containsKey("linkedinUrl"))
+                user.setLinkedinUrl((String) updates.get("linkedinUrl"));
+            if (updates.containsKey("instagramUrl"))
+                user.setInstagramUrl((String) updates.get("instagramUrl"));
+            if (updates.containsKey("facebookUrl"))
+                user.setFacebookUrl((String) updates.get("facebookUrl"));
+            if (updates.containsKey("twitterUrl"))
+                user.setTwitterUrl((String) updates.get("twitterUrl"));
 
             return ResponseEntity.ok(userRepository.save(user));
         }).orElse(ResponseEntity.notFound().build());

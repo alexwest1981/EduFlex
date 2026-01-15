@@ -1,0 +1,200 @@
+2026-01-14T23:29:51.543Z  INFO 1 --- [eduflex] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.eduflex.backend.repository.UserRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-01-14T23:29:51.546Z  INFO 1 --- [eduflex] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.eduflex.backend.repository.AttendanceRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-01-14T23:29:51.547Z  INFO 1 --- [eduflex] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.eduflex.backend.repository.BadgeRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-01-14T23:29:51.548Z  INFO 1 --- [eduflex] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.eduflex.backend.repository.UserDocumentRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-01-14T23:29:51.549Z  INFO 1 --- [eduflex] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.eduflex.backend.repository.BrandingRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-01-14T23:29:51.550Z  INFO 1 --- [eduflex] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.eduflex.backend.repository.ForumPostRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-01-14T23:29:51.551Z  INFO 1 --- [eduflex] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.eduflex.backend.repository.DocumentRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-01-14T23:29:51.552Z  INFO 1 --- [eduflex] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.eduflex.backend.repository.QuestionBankRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-01-14T23:29:51.553Z  INFO 1 --- [eduflex] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.eduflex.backend.repository.CourseRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-01-14T23:29:51.554Z  INFO 1 --- [eduflex] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.eduflex.backend.repository.PaymentRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-01-14T23:29:51.556Z  INFO 1 --- [eduflex] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.eduflex.backend.repository.MessageRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-01-14T23:29:51.557Z  INFO 1 --- [eduflex] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.eduflex.backend.repository.UserLessonProgressRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-01-14T23:29:51.560Z  INFO 1 --- [eduflex] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.eduflex.backend.repository.CalendarEventRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-01-14T23:29:51.561Z  INFO 1 --- [eduflex] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.eduflex.backend.repository.NotificationRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-01-14T23:29:51.565Z  INFO 1 --- [eduflex] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.eduflex.backend.repository.ConnectionRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-01-14T23:29:51.566Z  INFO 1 --- [eduflex] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.eduflex.backend.repository.StudentActivityLogRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-01-14T23:29:51.566Z  INFO 1 --- [eduflex] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.eduflex.backend.repository.CourseEvaluationResponseRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-01-14T23:29:51.567Z  INFO 1 --- [eduflex] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.eduflex.backend.repository.ForumThreadRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-01-14T23:29:51.568Z  INFO 1 --- [eduflex] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.eduflex.backend.repository.QuizResultRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-01-14T23:29:51.568Z  INFO 1 --- [eduflex] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.eduflex.backend.repository.SkolverketGradingCriteriaRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-01-14T23:29:51.569Z  INFO 1 --- [eduflex] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.eduflex.backend.repository.SystemSettingRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-01-14T23:29:51.570Z  INFO 1 --- [eduflex] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.eduflex.backend.repository.ChatMessageRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-01-14T23:29:51.570Z  INFO 1 --- [eduflex] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.eduflex.backend.repository.AssignmentRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-01-14T23:29:51.571Z  INFO 1 --- [eduflex] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.eduflex.backend.repository.CourseMaterialRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-01-14T23:29:51.572Z  INFO 1 --- [eduflex] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.eduflex.backend.repository.RoleRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-01-14T23:29:51.572Z  INFO 1 --- [eduflex] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.eduflex.backend.repository.SubmissionRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-01-14T23:29:51.573Z  INFO 1 --- [eduflex] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.eduflex.backend.repository.SkolverketCourseRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-01-14T23:29:51.573Z  INFO 1 --- [eduflex] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.eduflex.backend.repository.ModuleRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-01-14T23:29:51.574Z  INFO 1 --- [eduflex] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.eduflex.backend.repository.CourseApplicationRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-01-14T23:29:51.575Z  INFO 1 --- [eduflex] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.eduflex.backend.repository.ScormPackageRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-01-14T23:29:51.576Z  INFO 1 --- [eduflex] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.eduflex.backend.repository.LessonRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-01-14T23:29:51.577Z  INFO 1 --- [eduflex] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.eduflex.backend.repository.QuizRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-01-14T23:29:51.580Z  INFO 1 --- [eduflex] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.eduflex.backend.repository.PaymentSettingsRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-01-14T23:29:51.581Z  INFO 1 --- [eduflex] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 58 ms. Found 0 Redis repository interfaces.
+2026-01-14T23:29:52.990Z  INFO 1 --- [eduflex] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2026-01-14T23:29:53.017Z  INFO 1 --- [eduflex] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-01-14T23:29:53.017Z  INFO 1 --- [eduflex] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.19]
+2026-01-14T23:29:53.078Z  INFO 1 --- [eduflex] [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-01-14T23:29:53.078Z  INFO 1 --- [eduflex] [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 4450 ms
+2026-01-14T23:29:53.674Z  INFO 1 --- [eduflex] [           main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-01-14T23:29:53.763Z  INFO 1 --- [eduflex] [           main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.4.4.Final
+2026-01-14T23:29:53.816Z  INFO 1 --- [eduflex] [           main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2026-01-14T23:29:54.119Z  INFO 1 --- [eduflex] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-01-14T23:29:54.150Z  INFO 1 --- [eduflex] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-01-14T23:29:54.452Z  INFO 1 --- [eduflex] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@706c062e
+2026-01-14T23:29:54.456Z  INFO 1 --- [eduflex] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-01-14T23:29:54.504Z  WARN 1 --- [eduflex] [           main] org.hibernate.orm.deprecation            : HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-01-14T23:29:57.205Z  INFO 1 --- [eduflex] [           main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-01-14T23:29:58.046Z  INFO 1 --- [eduflex] [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+✅ Public Key Loaded for Verification
+✅ LICENS GODKÄND (RSA): ENTERPRISE för FenrirStudios
+🔧 DEV MODE: Forced License Tier to ENTERPRISE
+2026-01-14T23:29:58.805Z DEBUG 1 --- [eduflex] [           main] c.e.backend.security.AuthTokenFilter     : Filter 'authTokenFilter' configured for use
+2026-01-14T23:29:58.813Z DEBUG 1 --- [eduflex] [           main] o.s.w.f.ServerHttpObservationFilter      : Filter 'webMvcObservationFilter' configured for use
+2026-01-14T23:29:58.814Z DEBUG 1 --- [eduflex] [           main] c.e.backend.security.LicenseFilter       : Filter 'licenseFilter' configured for use
+2026-01-14T23:29:58.902Z  INFO 1 --- [eduflex] [           main] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-01-14T23:30:04.380Z DEBUG 1 --- [eduflex] [           main] o.s.w.s.s.s.WebSocketHandlerMapping      : Patterns [/ws-log, /ws/**] in 'stompWebSocketHandlerMapping'
+2026-01-14T23:30:04.741Z DEBUG 1 --- [eduflex] [           main] .WebSocketAnnotationMethodMessageHandler : 
+	c.e.b.c.SystemSettingController:
+	
+2026-01-14T23:30:04.743Z DEBUG 1 --- [eduflex] [           main] .WebSocketAnnotationMethodMessageHandler : 
+	c.e.b.c.RevenueExportController:
+	
+2026-01-14T23:30:04.743Z DEBUG 1 --- [eduflex] [           main] .WebSocketAnnotationMethodMessageHandler : 
+	c.e.b.c.RoleController:
+	
+2026-01-14T23:30:04.744Z DEBUG 1 --- [eduflex] [           main] .WebSocketAnnotationMethodMessageHandler : 
+	c.e.b.c.CertificateController:
+	
+2026-01-14T23:30:04.744Z DEBUG 1 --- [eduflex] [           main] .WebSocketAnnotationMethodMessageHandler : 
+	c.e.b.c.ForumController:
+	
+2026-01-14T23:30:04.744Z DEBUG 1 --- [eduflex] [           main] .WebSocketAnnotationMethodMessageHandler : 
+	c.e.b.c.ConnectionController:
+	
+2026-01-14T23:30:04.744Z DEBUG 1 --- [eduflex] [           main] .WebSocketAnnotationMethodMessageHandler : 
+	c.e.b.c.UserController:
+	
+2026-01-14T23:30:04.744Z DEBUG 1 --- [eduflex] [           main] .WebSocketAnnotationMethodMessageHandler : 
+	c.e.b.c.LtiController:
+	
+2026-01-14T23:30:04.744Z DEBUG 1 --- [eduflex] [           main] .WebSocketAnnotationMethodMessageHandler : 
+	c.e.b.c.CalendarEventController:
+	
+2026-01-14T23:30:04.745Z DEBUG 1 --- [eduflex] [           main] .WebSocketAnnotationMethodMessageHandler : 
+	c.e.b.c.AuthController:
+	
+2026-01-14T23:30:04.745Z DEBUG 1 --- [eduflex] [           main] .WebSocketAnnotationMethodMessageHandler : 
+	c.e.b.c.NotificationController:
+	
+2026-01-14T23:30:04.745Z DEBUG 1 --- [eduflex] [           main] .WebSocketAnnotationMethodMessageHandler : 
+	c.e.b.c.AnalyticsController:
+	
+2026-01-14T23:30:04.745Z DEBUG 1 --- [eduflex] [           main] .WebSocketAnnotationMethodMessageHandler : 
+	c.e.b.c.SkolverketCourseController:
+	
+2026-01-14T23:30:04.745Z DEBUG 1 --- [eduflex] [           main] .WebSocketAnnotationMethodMessageHandler : 
+	c.e.b.c.AssignmentController:
+	
+2026-01-14T23:30:04.745Z DEBUG 1 --- [eduflex] [           main] .WebSocketAnnotationMethodMessageHandler : 
+	c.e.b.c.StudentActivityController:
+	
+2026-01-14T23:30:04.746Z DEBUG 1 --- [eduflex] [           main] .WebSocketAnnotationMethodMessageHandler : 
+	c.e.b.c.PaymentSettingsController:
+	
+2026-01-14T23:30:04.759Z DEBUG 1 --- [eduflex] [           main] .WebSocketAnnotationMethodMessageHandler : 
+	c.e.b.c.ChatController:
+	{[MESSAGE],[/chat]}: processMessage(ChatMessage)
+2026-01-14T23:30:04.766Z DEBUG 1 --- [eduflex] [           main] .WebSocketAnnotationMethodMessageHandler : 
+	c.e.b.c.ScormController:
+	
+2026-01-14T23:30:04.767Z DEBUG 1 --- [eduflex] [           main] .WebSocketAnnotationMethodMessageHandler : 
+	c.e.b.c.MessageController:
+	
+2026-01-14T23:30:04.767Z DEBUG 1 --- [eduflex] [           main] .WebSocketAnnotationMethodMessageHandler : 
+	c.e.b.c.PaymentController:
+	
+2026-01-14T23:30:04.768Z DEBUG 1 --- [eduflex] [           main] .WebSocketAnnotationMethodMessageHandler : 
+	c.e.b.c.LicenseController:
+	
+2026-01-14T23:30:04.768Z DEBUG 1 --- [eduflex] [           main] .WebSocketAnnotationMethodMessageHandler : 
+	c.e.b.c.DocumentController:
+	
+2026-01-14T23:30:04.768Z DEBUG 1 --- [eduflex] [           main] .WebSocketAnnotationMethodMessageHandler : 
+	c.e.b.c.BrandingController:
+	
+2026-01-14T23:30:04.768Z DEBUG 1 --- [eduflex] [           main] .WebSocketAnnotationMethodMessageHandler : 
+	c.e.b.c.LogController:
+	
+2026-01-14T23:30:04.769Z DEBUG 1 --- [eduflex] [           main] .WebSocketAnnotationMethodMessageHandler : 
+	c.e.b.c.LessonController:
+	
+2026-01-14T23:30:04.769Z DEBUG 1 --- [eduflex] [           main] .WebSocketAnnotationMethodMessageHandler : 
+	c.e.b.c.QuestionBankController:
+	
+2026-01-14T23:30:04.769Z DEBUG 1 --- [eduflex] [           main] .WebSocketAnnotationMethodMessageHandler : 
+	c.e.b.c.SubscriptionPlanController:
+	
+2026-01-14T23:30:04.769Z DEBUG 1 --- [eduflex] [           main] .WebSocketAnnotationMethodMessageHandler : 
+	c.e.b.c.GamificationController:
+	
+2026-01-14T23:30:04.770Z DEBUG 1 --- [eduflex] [           main] .WebSocketAnnotationMethodMessageHandler : 
+	c.e.b.c.QuizController:
+	
+2026-01-14T23:30:04.770Z DEBUG 1 --- [eduflex] [           main] .WebSocketAnnotationMethodMessageHandler : 
+	c.e.b.c.ModuleController:
+	
+2026-01-14T23:30:04.770Z DEBUG 1 --- [eduflex] [           main] .WebSocketAnnotationMethodMessageHandler : 
+	c.e.b.c.InvoiceController:
+	
+2026-01-14T23:30:04.770Z DEBUG 1 --- [eduflex] [           main] .WebSocketAnnotationMethodMessageHandler : 
+	c.e.b.c.PromoCodeController:
+	
+2026-01-14T23:30:04.771Z DEBUG 1 --- [eduflex] [           main] .WebSocketAnnotationMethodMessageHandler : 
+	c.e.b.c.AttendanceController:
+	
+2026-01-14T23:30:04.771Z DEBUG 1 --- [eduflex] [           main] .WebSocketAnnotationMethodMessageHandler : 
+	c.e.b.c.CourseController:
+	
+2026-01-14T23:30:04.781Z DEBUG 1 --- [eduflex] [           main] .WebSocketAnnotationMethodMessageHandler : 
+	o.s.b.a.w.s.e.BasicErrorController:
+	
+2026-01-14T23:30:05.233Z DEBUG 1 --- [eduflex] [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : 199 mappings in 'requestMappingHandlerMapping'
+2026-01-14T23:30:05.304Z DEBUG 1 --- [eduflex] [           main] o.s.w.s.handler.SimpleUrlHandlerMapping  : Patterns [/webjars/**, /**, //app/uploads/**, /uploads/**] in 'resourceHandlerMapping'
+2026-01-14T23:30:05.508Z  INFO 1 --- [eduflex] [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 4 endpoint(s) beneath base path '/actuator'
+2026-01-14T23:30:05.638Z  INFO 1 --- [eduflex] [           main] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@24ebbeff, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@cc89be1, org.springframework.security.web.context.SecurityContextHolderFilter@15cf976f, org.springframework.security.web.header.HeaderWriterFilter@ec7e41d, org.springframework.web.filter.CorsFilter@4fd955d5, org.springframework.security.web.authentication.logout.LogoutFilter@2feb6b84, org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestRedirectFilter@6aaec13, org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter@1b0ff95b, com.eduflex.backend.security.AuthTokenFilter@7e47a922, com.eduflex.backend.security.LicenseFilter@ca72afb, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@578f663d, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@a1dbbf4, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@30a4cb7f, org.springframework.security.web.session.SessionManagementFilter@7166a6f7, org.springframework.security.web.access.ExceptionTranslationFilter@47560281, org.springframework.security.web.access.intercept.AuthorizationFilter@18a0c124]
+2026-01-14T23:30:05.768Z DEBUG 1 --- [eduflex] [           main] s.w.s.m.m.a.RequestMappingHandlerAdapter : ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
+2026-01-14T23:30:05.829Z DEBUG 1 --- [eduflex] [           main] .m.m.a.ExceptionHandlerExceptionResolver : ControllerAdvice beans: 0 @ExceptionHandler, 1 ResponseBodyAdvice
+2026-01-14T23:30:06.584Z  INFO 1 --- [eduflex] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path ''
+2026-01-14T23:30:06.586Z  INFO 1 --- [eduflex] [           main] o.s.m.s.b.SimpleBrokerMessageHandler     : Starting...
+2026-01-14T23:30:06.589Z  INFO 1 --- [eduflex] [           main] o.s.m.s.b.SimpleBrokerMessageHandler     : BrokerAvailabilityEvent[available=true, SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@7933dfc3]]
+2026-01-14T23:30:06.589Z  INFO 1 --- [eduflex] [           main] o.s.m.s.b.SimpleBrokerMessageHandler     : Started.
+2026-01-14T23:30:07.179Z  INFO 1 --- [eduflex] [           main] com.eduflex.EduflexApplication           : Started EduflexApplication in 19.793 seconds (process running for 21.157)
+2026-01-14T23:30:08.224Z  INFO 1 --- [eduflex] [nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-01-14T23:30:08.225Z  INFO 1 --- [eduflex] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-01-14T23:30:08.225Z DEBUG 1 --- [eduflex] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Detected StandardServletMultipartResolver
+2026-01-14T23:30:08.225Z DEBUG 1 --- [eduflex] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Detected AcceptHeaderLocaleResolver
+2026-01-14T23:30:08.225Z DEBUG 1 --- [eduflex] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Detected FixedThemeResolver
+2026-01-14T23:30:08.227Z DEBUG 1 --- [eduflex] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Detected org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator@40c6afcf
+2026-01-14T23:30:08.227Z DEBUG 1 --- [eduflex] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Detected org.springframework.web.servlet.support.SessionFlashMapManager@106ed2aa
+2026-01-14T23:30:08.228Z DEBUG 1 --- [eduflex] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : enableLoggingRequestDetails='false': request parameters and headers will be masked to prevent unsafe logging of potentially sensitive data
+2026-01-14T23:30:08.228Z  INFO 1 --- [eduflex] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 3 ms
+2026-01-14T23:30:08.245Z DEBUG 1 --- [eduflex] [nio-8080-exec-1] o.s.security.web.FilterChainProxy        : Securing GET /actuator/prometheus
+2026-01-14T23:30:08.261Z DEBUG 1 --- [eduflex] [nio-8080-exec-1] c.e.backend.security.AuthTokenFilter     : AuthTokenFilter: No JWT found in header
+2026-01-14T23:30:08.265Z DEBUG 1 --- [eduflex] [nio-8080-exec-1] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-01-14T23:30:08.270Z DEBUG 1 --- [eduflex] [nio-8080-exec-1] o.s.security.web.FilterChainProxy        : Secured GET /actuator/prometheus
+2026-01-14T23:30:08.274Z DEBUG 1 --- [eduflex] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : GET "/actuator/prometheus", parameters={}
+2026-01-14T23:30:08.315Z DEBUG 1 --- [eduflex] [nio-8080-exec-1] m.m.a.RequestResponseBodyMethodProcessor : Read "application/octet-stream" to []
+2026-01-14T23:30:08.379Z DEBUG 1 --- [eduflex] [nio-8080-exec-1] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Found 'Content-Type:application/openmetrics-text;version=1.0.0;charset=utf-8' in response
+2026-01-14T23:30:08.380Z DEBUG 1 --- [eduflex] [nio-8080-exec-1] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing ["# TYPE hikaricp_connections gauge<EOL># HELP hikaricp_connections Total connections<EOL>hikaricp_connections (truncated)..."]
+2026-01-14T23:30:08.390Z DEBUG 1 --- [eduflex] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2026-01-14T23:30:23.173Z DEBUG 1 --- [eduflex] [nio-8080-exec-2] o.s.security.web.FilterChainProxy        : Securing GET /actuator/prometheus
+2026-01-14T23:30:23.174Z DEBUG 1 --- [eduflex] [nio-8080-exec-2] c.e.backend.security.AuthTokenFilter     : AuthTokenFilter: No JWT found in header
+2026-01-14T23:30:23.175Z DEBUG 1 --- [eduflex] [nio-8080-exec-2] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-01-14T23:30:23.176Z DEBUG 1 --- [eduflex] [nio-8080-exec-2] o.s.security.web.FilterChainProxy        : Secured GET /actuator/prometheus
+2026-01-14T23:30:23.177Z DEBUG 1 --- [eduflex] [nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : GET "/actuator/prometheus", parameters={}
+2026-01-14T23:30:23.178Z DEBUG 1 --- [eduflex] [nio-8080-exec-2] m.m.a.RequestResponseBodyMethodProcessor : Read "application/octet-stream" to []
+2026-01-14T23:30:23.191Z DEBUG 1 --- [eduflex] [nio-8080-exec-2] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Found 'Content-Type:application/openmetrics-text;version=1.0.0;charset=utf-8' in response
+2026-01-14T23:30:23.191Z DEBUG 1 --- [eduflex] [nio-8080-exec-2] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing ["# TYPE hikaricp_connections gauge<EOL># HELP hikaricp_connections Total connections<EOL>hikaricp_connections (truncated)..."]
+2026-01-14T23:30:23.193Z DEBUG 1 --- [eduflex] [nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : Completed 200 OK

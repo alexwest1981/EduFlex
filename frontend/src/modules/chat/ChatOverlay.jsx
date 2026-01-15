@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { MessageCircle, X, Send, Image as ImageIcon, Minus, Users } from 'lucide-react';
+import { MessageCircle, X, Send, Image as ImageIcon, Minus, Users, ExternalLink } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import SockJS from 'sockjs-client';
 import Stomp from 'stompjs';
 import { useTranslation } from 'react-i18next'; // <---
@@ -21,6 +22,10 @@ const ChatOverlay = ({ currentUser, API_BASE, token }) => {
     const [page, setPage] = useState(0);
     const [hasMore, setHasMore] = useState(true);
     const [isLoading, setIsLoading] = useState(false);
+
+    // NYTT: Kategorier
+    const [categories, setCategories] = useState({ friends: [], classmates: [], administration: [], others: [] });
+    const [activeCategory, setActiveCategory] = useState('friends');
 
     const isOpenRef = useRef(isOpen);
     const activeUserRef = useRef(activeChatUser);
@@ -47,6 +52,11 @@ const ChatOverlay = ({ currentUser, API_BASE, token }) => {
         fetchUsers();
         return () => { if (client && client.connected) client.disconnect(); };
     }, [currentUser]);
+
+    // Update users list based on active category
+    useEffect(() => {
+        setUsers(categories[activeCategory] || []);
+    }, [activeCategory, categories]);
 
     const handleIncomingMessage = (newMsg) => {
         setMessages(prev => [...prev, newMsg]);
@@ -131,9 +141,22 @@ const ChatOverlay = ({ currentUser, API_BASE, token }) => {
 
     const fetchUsers = async () => {
         try {
-            const res = await fetch(`${API_BASE}/users`, { headers: { 'Authorization': `Bearer ${token}` } });
-            if (res.ok) { const data = await res.json(); setUsers(data.filter(u => u.id !== currentUser.id)); }
-        } catch (e) { }
+            const res = await fetch(`${API_BASE}/messages/contacts`, { headers: { 'Authorization': `Bearer ${token}` } });
+            if (res.ok) {
+                const data = await res.json();
+                // Data is now Map: { friends: [], classmates: [], administration: [] }
+                setCategories({
+                    friends: data.friends || [],
+                    classmates: data.classmates || [],
+                    administration: data.administration || [],
+                    others: data.others || []
+                });
+                // Default to friends if exists, else first available
+                if (data.friends?.length > 0) setActiveCategory('friends');
+                else if (data.classmates?.length > 0) setActiveCategory('classmates');
+                else setActiveCategory('administration');
+            }
+        } catch (e) { console.error(e); }
     };
 
     const sendMessage = (content, type = 'TEXT') => {
@@ -186,49 +209,88 @@ const ChatOverlay = ({ currentUser, API_BASE, token }) => {
                     {activeChatUser ? (
                         <>
                             <button onClick={() => setActiveChatUser(null)} className="hover:bg-white/20 p-1.5 rounded-full transition-colors"><Users size={18} /></button>
-                            <div className="flex flex-col"><span className="font-bold text-sm">{activeChatUser.fullName}</span><span className="text-[10px] text-indigo-200 uppercase tracking-wider">{activeChatUser.role}</span></div>
+                            <div className="flex flex-col">
+                                <span className="font-bold text-sm flex items-center gap-1">
+                                    {activeChatUser.fullName}
+                                    <Link to={`/profile/${activeChatUser.id}`} className="text-indigo-200 hover:text-white" title="Visa profil"><ExternalLink size={12} /></Link>
+                                </span>
+                                <span className="text-[10px] text-indigo-200 uppercase tracking-wider">{activeChatUser.role}</span>
+                            </div>
                         </>
                     ) : <span className="font-bold flex items-center gap-2"><MessageCircle size={20} /> {t('chat.messenger')}</span>}
                 </div>
                 <button onClick={() => setIsOpen(false)} className="hover:bg-white/20 p-1.5 rounded-full transition-colors"><Minus size={20} /></button>
             </div>
 
-            <div className="flex-1 overflow-hidden flex flex-col relative bg-gray-50">
-                {!activeChatUser ? (
-                    <div className="flex-1 overflow-y-auto p-2">
-                        <div className="text-xs font-bold text-gray-400 uppercase p-3 tracking-wider">{t('chat.contacts')}</div>
-                        {users.map(u => (
-                            <div key={u.id} onClick={() => setActiveChatUser(u)} className="p-3 bg-white mb-2 rounded-xl shadow-sm border border-gray-100 cursor-pointer flex items-center gap-3 hover:bg-indigo-50 hover:border-indigo-200 transition-all group">
-                                <div className="w-10 h-10 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center font-bold shrink-0 border border-indigo-50 group-hover:bg-indigo-600 group-hover:text-white transition-colors">{u.firstName?.[0]}{u.lastName?.[0]}</div>
-                                <div className="overflow-hidden"><div className="font-bold text-gray-800 text-sm truncate">{u.fullName}</div><div className="text-xs text-gray-500 truncate">{u.role}</div></div>
-                            </div>
-                        ))}
+            <div className="flex-1 overflow-hidden flex relative bg-gray-50">
+                {/* SIDEBAR FOR CATEGORIES (Visas endast i kontaktlistan) */}
+                {!activeChatUser && (
+                    <div className="w-16 bg-gray-100 dark:bg-[#1E1F20] border-r border-gray-200 dark:border-[#3c4043] flex flex-col items-center py-4 gap-4 shrink-0">
+                        <button onClick={() => setActiveCategory('friends')} title="Vänner" className={`p-2 rounded-xl transition-all ${activeCategory === 'friends' ? 'bg-indigo-600 text-white shadow-md' : 'text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-700'}`}>
+                            <Users size={20} />
+                        </button>
+                        <button onClick={() => setActiveCategory('classmates')} title="Klasskamrater" className={`p-2 rounded-xl transition-all ${activeCategory === 'classmates' ? 'bg-indigo-600 text-white shadow-md' : 'text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-700'}`}>
+                            <Users size={20} />
+                            <span className="text-[8px] font-bold block text-center -mt-1">Klass</span>
+                        </button>
+                        <button onClick={() => setActiveCategory('administration')} title="Administration & Lärare" className={`p-2 rounded-xl transition-all ${activeCategory === 'administration' ? 'bg-indigo-600 text-white shadow-md' : 'text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-700'}`}>
+                            <Users size={20} />
+                            <span className="text-[8px] font-bold block text-center -mt-1">Admin</span>
+                        </button>
                     </div>
-                ) : (
-                    <>
-                        <div className="flex-1 overflow-y-auto p-4 space-y-4" onScroll={handleScroll}>
-                            {isLoading && <div className="text-center text-xs text-gray-400">Loading...</div>}
-                            {messages.filter(m => (m.senderId === currentUser.id && m.recipientId === activeChatUser.id) || (m.senderId === activeChatUser.id && m.recipientId === currentUser.id))
-                                .map((msg, idx) => {
-                                    const isMe = msg.senderId === currentUser.id;
-                                    return (
-                                        <div key={idx} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
-                                            <div className={`max-w-[75%] p-3 rounded-2xl shadow-sm text-sm ${isMe ? 'bg-indigo-600 text-white rounded-br-none' : 'bg-white border text-gray-800 rounded-bl-none'}`}>
-                                                {msg.type === 'IMAGE' ? <img src={`http://127.0.0.1:8080${msg.content}`} alt={t('chat.image')} className="rounded-lg max-w-full border border-white/20" /> : <p>{msg.content}</p>}
-                                                <div className={`text-[10px] mt-1 text-right opacity-70`}>{new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
-                                            </div>
-                                        </div>
-                                    )
-                                })}
-                            <div ref={messagesEndRef} />
-                        </div>
-                        <div className="p-3 bg-white border-t flex items-center gap-2">
-                            <label className="p-2 text-gray-400 hover:text-indigo-600 cursor-pointer hover:bg-gray-100 rounded-full transition-colors"><ImageIcon size={20} /><input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} /></label>
-                            <input className="flex-1 bg-gray-100 border-none rounded-full px-4 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all" placeholder={t('chat.type_placeholder')} value={msgInput} onChange={(e) => setMsgInput(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && sendMessage(msgInput)} />
-                            <button onClick={() => sendMessage(msgInput)} disabled={!msgInput.trim()} className="p-2 bg-indigo-600 text-white rounded-full hover:bg-indigo-700 transition-colors disabled:opacity-50"><Send size={18} /></button>
-                        </div>
-                    </>
                 )}
+
+                <div className="flex-1 flex flex-col overflow-hidden">
+                    {!activeChatUser ? (
+                        <div className="flex-1 overflow-y-auto p-2">
+                            <div className="text-xs font-bold text-gray-400 uppercase p-3 tracking-wider border-b border-gray-100 mb-2">
+                                {activeCategory === 'friends' && "Vänner"}
+                                {activeCategory === 'classmates' && "Klasskamrater"}
+                                {activeCategory === 'administration' && "Administration"}
+                            </div>
+                            {users.length === 0 && <div className="text-center text-gray-400 p-4 text-xs italic">Inga kontakter i denna kategori.</div>}
+                            {users.map(u => (
+                                <div key={u.id} onClick={() => setActiveChatUser(u)} className="p-3 bg-white mb-2 rounded-xl shadow-sm border border-gray-100 cursor-pointer flex items-center gap-3 hover:bg-indigo-50 hover:border-indigo-200 transition-all group">
+                                    <div className="w-10 h-10 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center font-bold shrink-0 border border-indigo-50 group-hover:bg-indigo-600 group-hover:text-white transition-colors overflow-hidden">
+                                        {u.profilePictureUrl ? (
+                                            <img
+                                                src={u.profilePictureUrl.startsWith('http') ? u.profilePictureUrl : `${API_BASE.replace('/api', '')}${u.profilePictureUrl}`}
+                                                className="w-full h-full object-cover"
+                                                onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'block'; }}
+                                            />
+                                        ) : null}
+                                        <span style={{ display: u.profilePictureUrl ? 'none' : 'block' }}>{u.firstName?.[0]}{u.lastName?.[0]}</span>
+                                    </div>
+                                    <div className="overflow-hidden"><div className="font-bold text-gray-800 text-sm truncate">{u.fullName}</div><div className="text-xs text-gray-500 truncate">{u.role}</div></div>
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <>
+                            <div className="flex-1 overflow-y-auto p-4 space-y-4" onScroll={handleScroll}>
+                                {isLoading && <div className="text-center text-xs text-gray-400">Loading...</div>}
+                                {messages.filter(m => (m.senderId === currentUser.id && m.recipientId === activeChatUser.id) || (m.senderId === activeChatUser.id && m.recipientId === currentUser.id))
+                                    .map((msg, idx) => {
+                                        const isMe = msg.senderId === currentUser.id;
+                                        return (
+                                            <div key={idx} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
+                                                <div className={`max-w-[75%] p-3 rounded-2xl shadow-sm text-sm ${isMe ? 'bg-indigo-600 text-white rounded-br-none' : 'bg-white border text-gray-800 rounded-bl-none'}`}>
+                                                    {msg.type === 'IMAGE' ? <img src={`http://127.0.0.1:8080${msg.content}`} alt={t('chat.image')} className="rounded-lg max-w-full border border-white/20" /> : <p>{msg.content}</p>}
+                                                    <div className={`text-[10px] mt-1 text-right opacity-70`}>{new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
+                                                </div>
+                                            </div>
+                                        )
+                                    })}
+                                <div ref={messagesEndRef} />
+                            </div>
+                            <div className="p-3 bg-white border-t flex items-center gap-2">
+                                <label className="p-2 text-gray-400 hover:text-indigo-600 cursor-pointer hover:bg-gray-100 rounded-full transition-colors"><ImageIcon size={20} /><input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} /></label>
+                                <input className="flex-1 bg-gray-100 border-none rounded-full px-4 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all" placeholder={t('chat.type_placeholder')} value={msgInput} onChange={(e) => setMsgInput(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && sendMessage(msgInput)} />
+                                <button onClick={() => sendMessage(msgInput)} disabled={!msgInput.trim()} className="p-2 bg-indigo-600 text-white rounded-full hover:bg-indigo-700 transition-colors disabled:opacity-50"><Send size={18} /></button>
+                            </div>
+                        </>
+                    )}
+                </div>
             </div>
         </div>
     );

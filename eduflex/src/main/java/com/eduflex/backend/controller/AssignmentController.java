@@ -61,6 +61,21 @@ public class AssignmentController {
         return assignmentRepo.findByAuthorId(userId);
     }
 
+    @PutMapping("/assignments/{id}")
+    public Assignment updateAssignment(@PathVariable Long id, @RequestBody Assignment req) {
+        Assignment assignment = assignmentRepo.findById(id).orElseThrow();
+        assignment.setTitle(req.getTitle());
+        assignment.setDescription(req.getDescription());
+        assignment.setDueDate(req.getDueDate());
+        // Add other fields as needed, e.g., type
+        return assignmentRepo.save(assignment);
+    }
+
+    @DeleteMapping("/assignments/{id}")
+    public void deleteAssignment(@PathVariable Long id) {
+        assignmentRepo.deleteById(id);
+    }
+
     // --- ATTACHMENTS (NEW) ---
 
     @PostMapping("/assignments/{id}/attachments/file")

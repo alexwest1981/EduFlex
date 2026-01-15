@@ -70,6 +70,8 @@ public class ModuleService {
                                 "1.0.0", false, false);
                 createIfNotExists("SCORM", "SCORM / xAPI Integration",
                                 "Importera och kör interaktiva kurspaket (SCORM 1.2).", "1.0.0", false, true);
+                createIfNotExists("ENTERPRISE_WHITELABEL", "Enterprise Whitelabel",
+                                "Fullt anpassningsbar branding: logotyp, färgtema, favicon och mer. Endast för ENTERPRISE-licens.", "1.0.0", true, true);
         }
 
         private void createIfNotExists(String key, String name, String desc, String ver, boolean active, boolean lic) {

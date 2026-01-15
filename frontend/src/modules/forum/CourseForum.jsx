@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import {
     MessageSquare, Plus, ArrowLeft, Send, User, Clock,
     Lock, Folder, Loader2, X, Trash2, Unlock,
@@ -339,7 +340,18 @@ const CourseForum = ({ courseId, currentUser }) => {
                             <h1 className="text-2xl md:text-3xl font-bold text-gray-900 leading-tight mb-4">{currentThread.title}</h1>
                             {isTeacher && (<div className="flex gap-2"><button onClick={(e) => handleToggleLock(currentThread, e)} className={`p-2 rounded-lg ${currentThread.locked ? 'bg-red-100 text-red-600' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}>{currentThread.locked ? <Lock size={18} /> : <Unlock size={18} />}</button><button onClick={(e) => handleDeleteThread(currentThread.id, e)} className="p-2 bg-gray-100 text-gray-500 hover:bg-red-100 hover:text-red-600 rounded-lg"><Trash2 size={18} /></button></div>)}
                         </div>
-                        <div className="flex items-center gap-3"><div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-white shadow-sm ${currentThread.author?.role === 'TEACHER' ? 'bg-indigo-600' : 'bg-gray-400'}`}>{currentThread.author?.fullName?.[0]}</div><div><p className="text-sm font-bold text-gray-900 flex items-center gap-2">{currentThread.author?.fullName}{currentThread.author?.role === 'TEACHER' && <ShieldAlert size={14} className="text-indigo-600" />}</p><p className="text-xs text-gray-500 flex items-center gap-1"><Clock size={12} /> {formatDate(currentThread.createdAt)}</p></div></div>
+                        <div className="flex items-center gap-3">
+                            <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-white shadow-sm ${currentThread.author?.role === 'TEACHER' ? 'bg-indigo-600' : 'bg-gray-400'}`}>{currentThread.author?.fullName?.[0]}</div>
+                            <div>
+                                <p className="text-sm font-bold text-gray-900 flex items-center gap-2">
+                                    <Link to={`/profile/${currentThread.author?.id}`} className="hover:underline flex items-center gap-1">
+                                        {currentThread.author?.fullName}
+                                    </Link>
+                                    {currentThread.author?.role === 'TEACHER' && <ShieldAlert size={14} className="text-indigo-600" />}
+                                </p>
+                                <p className="text-xs text-gray-500 flex items-center gap-1"><Clock size={12} /> {formatDate(currentThread.createdAt)}</p>
+                            </div>
+                        </div>
                     </div>
                     <div className="p-6 md:p-8 prose max-w-none text-gray-800 leading-relaxed bg-white min-h-[150px]" dangerouslySetInnerHTML={{ __html: currentThread.content }} />
                 </div>

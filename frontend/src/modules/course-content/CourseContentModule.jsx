@@ -178,10 +178,10 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
     };
 
     return (
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 animate-in fade-in min-h-[600px]">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 animate-in fade-in min-h-[800px]">
 
             {/* VÄNSTER: LEKTIONSLISTA */}
-            <div className="lg:col-span-1 bg-white dark:bg-[#1E1F20] rounded-xl border border-gray-200 dark:border-[#3c4043] flex flex-col overflow-hidden h-[600px]">
+            <div className="lg:col-span-1 bg-white dark:bg-[#1E1F20] rounded-xl border border-gray-200 dark:border-[#3c4043] flex flex-col overflow-hidden h-[800px]">
                 <div className="p-4 border-b border-gray-100 dark:border-[#3c4043] bg-gray-50 dark:bg-[#131314] flex justify-between items-center">
                     <h3 className="font-bold text-gray-700 dark:text-gray-200">Kursplan</h3>
                     {isTeacher && <button onClick={handleCreateClick} className="p-2 bg-indigo-600 text-white hover:bg-indigo-700 rounded-lg transition-colors flex items-center justify-center shadow-sm" title="Lägg till nytt material"><Plus size={20} /></button>}
@@ -231,7 +231,7 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
             </div>
 
             {/* HÖGER: INNEHÅLL */}
-            <div className="lg:col-span-3 bg-white dark:bg-[#1E1F20] rounded-xl border border-gray-200 dark:border-[#3c4043] p-8 overflow-y-auto custom-scrollbar h-[600px] flex flex-col">
+            <div className="lg:col-span-3 bg-white dark:bg-[#1E1F20] rounded-xl border border-gray-200 dark:border-[#3c4043] p-8 overflow-y-auto custom-scrollbar h-[800px] flex flex-col">
                 {isEditing ? (
                     /* EDITOR MODE */
                     <div className="space-y-4 flex-1 animate-in fade-in relative">

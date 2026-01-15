@@ -2,6 +2,7 @@ import React from 'react';
 import AdminStats from './components/admin/AdminStats';
 import { RecentUsersWidget, RecentUploadsWidget } from './components/admin/AdminTables';
 import RecentMessagesWidget from './components/RecentMessagesWidget';
+import OnlineFriendsWidget from './widgets/OnlineFriendsWidget';
 import { CreateUserModal } from './components/admin/AdminModals';
 
 import { useAppContext } from '../../context/AppContext';
@@ -40,7 +41,12 @@ const AdminOverview = ({ users, courses, documents, fetchStats, setActiveTab, wi
 
                 {/* 3. Meddelanden Preview (1/3 bredd) */}
                 {widgets.messages && (
-                    <div className={(widgets.recentUsers || widgets.recentDocs) ? "xl:col-span-1" : "xl:col-span-3"}>
+                    <div className={(widgets.recentUsers || widgets.recentDocs) ? "xl:col-span-1 space-y-6" : "xl:col-span-3 space-y-6"}>
+                        {widgets.onlineFriends && (
+                            <div className="h-80">
+                                <OnlineFriendsWidget />
+                            </div>
+                        )}
                         <RecentMessagesWidget onViewAll={() => setActiveTab('communication')} />
                     </div>
                 )}

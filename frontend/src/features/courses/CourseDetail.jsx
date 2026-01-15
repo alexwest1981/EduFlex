@@ -123,10 +123,32 @@ const CourseDetail = ({ currentUser }) => {
             comp: ({ course }) => <SkolverketCourseInfo skolverketCourse={course?.skolverketCourse} />,
             meta: { name: 'Kursinformation' },
             icon: <BookOpen size={18} />,
-            enabled: !!course?.skolverketCourse, // Only show if course is linked to Skolverket
+            enabled: !!course?.skolverketCourse,
             visibleFor: 'ALL'
         },
-
+        {
+            key: 'grouprooms',
+            comp: ({ course }) => {
+                if (!course?.groupRooms?.length) return <div className="text-center p-12 text-gray-500">Inga grupprum tillgängliga.</div>;
+                return (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {course.groupRooms.map(room => (
+                            <div key={room.id} className="bg-white dark:bg-[#1E1F20] border border-gray-200 dark:border-[#3c4043] rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow">
+                                <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">{room.name}</h3>
+                                <div className="text-sm text-gray-500 mb-4 flex items-center gap-2"><Video size={14} /> {room.type}</div>
+                                <a href={room.link} target="_blank" rel="noreferrer" className="block w-full text-center bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 rounded-lg transition-colors">
+                                    Gå med
+                                </a>
+                            </div>
+                        ))}
+                    </div>
+                );
+            },
+            meta: { name: 'Grupprum' },
+            icon: <Users size={18} />,
+            enabled: true, // Always enabled, handles empty inside
+            visibleFor: 'ALL'
+        }
     ];
 
     // --- DATA LOADING ---
@@ -242,115 +264,132 @@ const CourseDetail = ({ currentUser }) => {
     if (!course) return <div className="text-center mt-10 text-gray-500 dark:text-gray-400">Kursen hittades inte.</div>;
 
     return (
-        <div className="max-w-6xl mx-auto pb-20 animate-in fade-in duration-500">
-            <button onClick={() => navigate('/')} className="flex items-center text-gray-500 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 mb-6 font-medium transition-colors">
-                <ArrowLeft size={20} className="mr-2" /> {t('course.back')}
-            </button>
+        <div className="max-w-screen-2xl mx-auto pb-20 animate-in fade-in duration-500">
 
-            {/* Course Header */}
-            <div className="bg-white dark:bg-[#1E1F20] rounded-2xl shadow-sm border border-gray-200 dark:border-[#3c4043] p-8 mb-8 relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-50 dark:bg-indigo-900/20 rounded-bl-full -mr-8 -mt-8"></div>
+            <div className="flex flex-col lg:flex-row gap-8 items-start">
+                {/* --- LEFT SIDEBAR (Navigation & Context) --- */}
+                <aside className="w-full lg:w-72 shrink-0 space-y-6">
+                    {/* Back & Title Card */}
+                    <div className="bg-white dark:bg-[#1E1F20] rounded-2xl shadow-sm border border-gray-200 dark:border-[#3c4043] p-6">
+                        <button onClick={() => navigate('/')} className="flex items-center text-gray-500 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 mb-6 font-medium transition-colors text-sm">
+                            <ArrowLeft size={16} className="mr-2" /> {t('course.back')}
+                        </button>
 
-                <div className="relative z-10 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-4">
-                    <div>
-                        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">{course.name}</h1>
-                        <div className="flex items-center gap-4 text-gray-500 dark:text-gray-400 text-sm">
-                            <span className="bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300 px-2 py-1 rounded font-mono font-bold">{course.courseCode}</span>
-                            <span>{course.teacher?.fullName}</span>
+                        <div className="mb-4">
+                            <span className="inline-block bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300 px-2 py-1 rounded text-xs font-mono font-bold mb-2">
+                                {course.courseCode}
+                            </span>
+                            <h1 className="text-2xl font-bold text-gray-900 dark:text-white leading-tight mb-2">{course.name}</h1>
+                            <div className="text-sm text-gray-500 dark:text-gray-400 flex flex-col gap-1">
+                                <span>{course.teacher?.fullName}</span>
+                                <span className="flex items-center gap-1"><Calendar size={12} /> {course.startDate} - {course.endDate}</span>
+                            </div>
                         </div>
-                        <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-                            <Calendar size={16} />
-                            <span>{course?.startDate} - {course?.endDate}</span>
+
+                        {/* Actions that fit in sidebar */}
+                        <div className="space-y-2 pt-4 border-t border-gray-100 dark:border-[#3c4043]">
+                            {/* DIGITAL CLASSROOM BUTTON (Compact) */}
+                            {course.classroomLink && (
+                                <a
+                                    href={course.classroomLink}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className={`w-full text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center justify-center gap-2 shadow-sm transition-all hover:opacity-90 ${getServiceColor(course.classroomType)}`}
+                                >
+                                    {getServiceIcon(course.classroomType)} {t('course.connect_classroom')}
+                                </a>
+                            )}
+
+                            {/* TEACHER: MANAGE EVALUATION BUTTON (Sidebar) */}
+                            {isTeacher && (
+                                <button
+                                    onClick={() => setShowTeacherEvaluationModal(true)}
+                                    className="w-full bg-white dark:bg-[#282a2c] border border-gray-200 dark:border-[#3c4043] text-gray-700 dark:text-gray-300 px-4 py-2 rounded-lg text-sm font-bold flex items-center justify-center gap-2 hover:bg-gray-50 dark:hover:bg-[#303336] transition-colors shadow-sm"
+                                >
+                                    <MessageSquare size={16} /> {t('evaluation.manage_btn') || 'Hantera Utvärdering'}
+                                </button>
+                            )}
                         </div>
-
-
                     </div>
 
-                    <div className="flex gap-3">
-                        {/* DIGITAL CLASSROOM BUTTON */}
-                        {course.classroomLink && (
-                            <a
-                                href={course.classroomLink}
-                                target="_blank"
-                                rel="noreferrer"
-                                className={`text-white px-5 py-3 rounded-xl font-bold flex items-center gap-2 shadow-lg transition-all hover:scale-105 ${getServiceColor(course.classroomType)}`}
-                            >
-                                {getServiceIcon(course.classroomType)} {t('course.connect_classroom')}
-                            </a>
-                        )}
+                    {/* Navigation Menu */}
+                    <nav className="bg-white dark:bg-[#1E1F20] rounded-2xl shadow-sm border border-gray-200 dark:border-[#3c4043] p-2 flex flex-col gap-1 sticky top-6">
+                        {modules.map(mod => {
+                            const isVisible = mod.enabled && (mod.visibleFor === 'ALL' || (mod.visibleFor === 'TEACHER' && isTeacher));
+                            if (!isVisible) return null;
+                            const isActive = activeTab === mod.key;
+                            return (
+                                <button
+                                    key={mod.key}
+                                    onClick={() => setActiveTab(mod.key)}
+                                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all duration-200 ${isActive
+                                        ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300 font-bold shadow-sm'
+                                        : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-[#282a2c] hover:text-indigo-600 dark:hover:text-indigo-400'
+                                        }`}
+                                >
+                                    <span className={`${isActive ? 'text-indigo-600 dark:text-indigo-400' : 'text-gray-400 dark:text-gray-500'}`}>
+                                        {mod.icon}
+                                    </span>
+                                    <span>{t(`course.${mod.key}`, mod.meta.name)}</span>
+                                    {isActive && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-indigo-600 dark:bg-indigo-400" />}
+                                </button>
+                            );
+                        })}
+                    </nav>
+                </aside>
 
-                        {/* CERTIFICATE BUTTON (STUDENT ONLY) */}
-                        {!isTeacher && (myResult?.status === 'PASSED' || canClaim) && (
-                            <button
-                                onClick={async () => {
-                                    if (myResult?.status !== 'PASSED') {
-                                        try {
-                                            await api.courses.claimCertificate(id, currentUser.id);
-                                            // Uppdatera lokalt
-                                            setMyResult({ ...myResult, status: 'PASSED' });
-                                        } catch (e) {
-                                            alert("Kunde inte utfärda certifikat.");
-                                            return;
+                {/* --- RIGHT CONTENT AREA --- */}
+                <main className="flex-1 min-w-0">
+                    {/* Top Actions Bar (Certificate, Eval, etc) - ONLY VISIBLE IF CONTENT EXISTS */}
+                    {!isTeacher && ((myResult?.status === 'PASSED' || canClaim) || (course.evaluation && course.evaluation.active)) && (
+                        <div className="flex flex-wrap gap-3 mb-6 justify-end">
+                            {/* CERTIFICATE BUTTON (STUDENT ONLY) */}
+                            {(myResult?.status === 'PASSED' || canClaim) && (
+                                <button
+                                    onClick={async () => {
+                                        if (myResult?.status !== 'PASSED') {
+                                            try {
+                                                await api.courses.claimCertificate(id, currentUser.id);
+                                                setMyResult({ ...myResult, status: 'PASSED' });
+                                            } catch (e) {
+                                                alert("Kunde inte utfärda certifikat.");
+                                                return;
+                                            }
                                         }
-                                    }
-                                    // Navigera till certifikatvyn
-                                    navigate(`/certificate/${id}`);
-                                }}
-                                className="bg-gradient-to-r from-amber-200 to-yellow-400 text-amber-900 border border-amber-300 px-4 py-3 rounded-xl font-bold flex items-center gap-2 hover:from-amber-300 hover:to-yellow-500 transition-all shadow-sm"
-                            >
-                                <Users size={18} /> {myResult?.status === 'PASSED' ? t('course.view_certificate') : t('course.claim_certificate')}
-                            </button>
-                        )}
+                                        navigate(`/certificate/${id}`);
+                                    }}
+                                    className="bg-gradient-to-r from-amber-200 to-yellow-400 text-amber-900 border border-amber-300 px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 hover:from-amber-300 hover:to-yellow-500 transition-all shadow-sm"
+                                >
+                                    <Users size={16} /> {myResult?.status === 'PASSED' ? t('course.view_certificate') : t('course.claim_certificate')}
+                                </button>
+                            )}
 
-                        {/* TEACHER: MANAGE EVALUATION BUTTON */}
-                        {isTeacher && (
-                            <button
-                                onClick={() => setShowTeacherEvaluationModal(true)}
-                                className="bg-white border border-gray-200 text-gray-700 px-4 py-3 rounded-xl font-bold flex items-center gap-2 hover:bg-gray-50 transition-colors shadow-sm"
-                            >
-                                <MessageSquare size={18} /> {t('evaluation.manage_btn') || 'Hantera Utvärdering'}
-                            </button>
-                        )}
 
-                        {/* STUDENT: EVALUATE COURSE BUTTON */}
-                        {course.evaluation && course.evaluation.active && !isTeacher && (
-                            <button
-                                onClick={() => setShowEvaluationModal(true)}
-                                className="bg-gradient-to-r from-pink-500 to-rose-500 text-white px-5 py-3 rounded-xl font-bold flex items-center gap-2 shadow-lg hover:shadow-pink-200 transition-all hover:-translate-y-0.5"
-                            >
-                                <MessageSquare size={18} /> {t('course.evaluate_course')}
-                            </button>
-                        )}
+
+                            {/* STUDENT: EVALUATE COURSE BUTTON */}
+                            {course.evaluation && course.evaluation.active && (
+                                <button
+                                    onClick={() => setShowEvaluationModal(true)}
+                                    className="bg-gradient-to-r from-pink-500 to-rose-500 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 shadow-lg hover:shadow-pink-200 transition-all hover:-translate-y-0.5"
+                                >
+                                    <MessageSquare size={16} /> {t('course.evaluate_course')}
+                                </button>
+                            )}
+                        </div>
+                    )}
+
+                    {/* Active Module Content */}
+                    <div className="bg-white dark:bg-[#1E1F20] rounded-2xl shadow-sm border border-gray-200 dark:border-[#3c4043] p-6 lg:p-8 min-h-[1000px]">
+                        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 pb-4 border-b border-gray-100 dark:border-[#3c4043]">
+                            {modules.find(m => m.key === activeTab)?.meta.name || t(`course.${activeTab}`)}
+                        </h2>
+                        {modules.map(mod => (
+                            activeTab === mod.key && mod.enabled && (
+                                <mod.comp key={mod.key} courseId={id} currentUser={currentUser} isTeacher={isTeacher} course={course} />
+                            )
+                        ))}
                     </div>
-                </div>
-
-                <p className="text-gray-600 dark:text-gray-300 max-w-3xl relative z-10">{course.description}</p>
-
-                {/* MODULE TABS */}
-                <div className="flex gap-6 mt-8 border-b border-gray-100 dark:border-[#3c4043] border-gray-100 overflow-x-auto">
-                    {modules.map(mod => {
-                        const isVisible = mod.enabled && (mod.visibleFor === 'ALL' || (mod.visibleFor === 'TEACHER' && isTeacher));
-                        if (!isVisible) return null;
-                        return (
-                            <button
-                                key={mod.key}
-                                onClick={() => setActiveTab(mod.key)}
-                                className={`pb-3 flex gap-2 items-center whitespace-nowrap transition-colors ${activeTab === mod.key ? 'border-b-2 border-indigo-600 dark:border-indigo-400 text-indigo-600 dark:text-indigo-400 font-bold' : 'text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white'}`}
-                            >
-                                {mod.icon} {t(`course.${mod.key}`) || mod.meta.name}
-                            </button>
-                        );
-                    })}
-                </div>
-            </div>
-
-            {/* CONTENT AREA */}
-            <div className="min-h-[400px]">
-                {modules.map(mod => (
-                    activeTab === mod.key && mod.enabled && (
-                        <mod.comp key={mod.key} courseId={id} currentUser={currentUser} isTeacher={isTeacher} course={course} />
-                    )
-                ))}
+                </main>
             </div>
 
             {/* EVALUATION MODAL (STUDENT) */}

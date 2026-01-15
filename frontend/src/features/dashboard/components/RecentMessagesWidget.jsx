@@ -26,8 +26,8 @@ const RecentMessagesWidget = ({ onViewAll }) => {
     };
 
     return (
-        <div className="bg-white dark:bg-[#1E1F20] rounded-2xl border border-gray-200 dark:border-[#3c4043] shadow-sm flex flex-col h-full">
-            <div className="p-6 border-b border-gray-100 dark:border-[#3c4043] flex justify-between items-center">
+        <div className="bg-card dark:bg-card-dark rounded-[var(--radius-xl)] border border-card dark:border-card-dark shadow-sm flex flex-col h-full" style={{ backdropFilter: 'var(--card-backdrop)' }}>
+            <div className="p-6 border-b border-card dark:border-card-dark flex justify-between items-center">
                 <h3 className="font-bold text-lg text-gray-900 dark:text-white flex items-center gap-2">
                     <Mail className="text-indigo-600" size={20} /> {t('widgets.recent_messages.title')}
                 </h3>

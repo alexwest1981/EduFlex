@@ -19,6 +19,7 @@ const AssignmentsModule = ({ courseId, currentUser, isTeacher, mode = 'COURSE' }
     const [expandedAssignment, setExpandedAssignment] = useState(null);
 
     // Form Data
+    const [selectedAssignmentId, setSelectedAssignmentId] = useState(null); // För editering
     const [newAssignment, setNewAssignment] = useState({ title: '', description: '', dueDate: '' });
     const [attachments, setAttachments] = useState([]); // { type: 'FILE'|'LINK'|'YOUTUBE', file: File, url: '', title: '' }
 
@@ -60,19 +61,26 @@ const AssignmentsModule = ({ courseId, currentUser, isTeacher, mode = 'COURSE' }
         e.preventDefault();
         try {
             let createdAssign;
-            if (mode === 'GLOBAL') {
-                createdAssign = await api.assignments.createGlobal(currentUser.id, newAssignment);
+
+            if (selectedAssignmentId) {
+                // UPDATE
+                createdAssign = await api.assignments.update(selectedAssignmentId, newAssignment);
             } else {
-                createdAssign = await api.assignments.create(courseId, currentUser.id, newAssignment);
+                // CREATE
+                if (mode === 'GLOBAL') {
+                    createdAssign = await api.assignments.createGlobal(currentUser.id, newAssignment);
+                } else {
+                    createdAssign = await api.assignments.create(courseId, currentUser.id, newAssignment);
+                }
             }
 
-            // Upload Attachments
+            // Upload Attachments (ONLY NEW ONES FOR NOW, OLD ONES REMAIN)
             for (const att of attachments) {
                 if (att.type === 'FILE' && att.file) {
                     const fd = new FormData();
                     fd.append('file', att.file);
                     await api.assignments.addAttachmentFile(createdAssign.id, fd);
-                } else if (att.type === 'LINK' || att.type === 'YOUTUBE') {
+                } else if ((att.type === 'LINK' || att.type === 'YOUTUBE') && !att.id) { // Only add if no ID (new)
                     await api.assignments.addAttachmentLink(createdAssign.id, {
                         title: att.title || att.url,
                         url: att.url,
@@ -84,10 +92,38 @@ const AssignmentsModule = ({ courseId, currentUser, isTeacher, mode = 'COURSE' }
             setShowCreateForm(false);
             setNewAssignment({ title: '', description: '', dueDate: '' });
             setAttachments([]);
+            setSelectedAssignmentId(null);
             loadAssignments();
         } catch (e) {
-            alert("Kunde inte skapa uppgift");
+            console.error(e);
+            alert("Kunde inte spara uppgift");
         }
+    };
+
+    const handleDelete = async (id) => {
+        if (!window.confirm("Är du säker på att du vill ta bort denna uppgift? Alla inlämningar kommer också tas bort.")) return;
+        try {
+            await api.assignments.delete(id);
+            setAssignments(assignments.filter(a => a.id !== id));
+        } catch (e) {
+            alert("Kunde inte ta bort uppgift");
+        }
+    };
+
+    const handleEdit = (assignment) => {
+        setNewAssignment({
+            title: assignment.title,
+            description: assignment.description,
+            dueDate: assignment.dueDate
+        });
+        // We don't populate attachments to state for deletion yet, but keeps them in DB.
+        // If we want to support deleting old attachments during edit, we need more complex logic.
+        // For now, let's keep it simple: Add new attachments.
+
+        setSelectedAssignmentId(assignment.id);
+        setShowCreateForm(true);
+        // Scroll to form
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
     return (
@@ -97,7 +133,14 @@ const AssignmentsModule = ({ courseId, currentUser, isTeacher, mode = 'COURSE' }
                 <h2 className="text-xl font-bold text-gray-900 dark:text-white">Inlämningsuppgifter</h2>
                 {isTeacher && (
                     <button
-                        onClick={() => setShowCreateForm(!showCreateForm)}
+                        onClick={() => {
+                            setShowCreateForm(!showCreateForm);
+                            if (!showCreateForm) {
+                                setSelectedAssignmentId(null);
+                                setNewAssignment({ title: '', description: '', dueDate: '' });
+                                setAttachments([]);
+                            }
+                        }}
                         className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 hover:bg-indigo-700"
                     >
                         {showCreateForm ? 'Avbryt' : <><Plus size={16} /> Skapa Ny</>}
@@ -108,7 +151,7 @@ const AssignmentsModule = ({ courseId, currentUser, isTeacher, mode = 'COURSE' }
             {/* Skapa Formulär (Endast lärare) */}
             {showCreateForm && (
                 <div className="bg-gray-50 dark:bg-[#282a2c] p-6 rounded-xl border border-gray-200 dark:border-[#3c4043] mb-6 animate-in slide-in-from-top-2">
-                    <h3 className="font-bold mb-4 text-gray-800 dark:text-white">Ny Uppgift</h3>
+                    <h3 className="font-bold mb-4 text-gray-800 dark:text-white">{selectedAssignmentId ? 'Redigera Uppgift' : 'Ny Uppgift'}</h3>
                     <form onSubmit={handleCreate} className="space-y-4">
                         <input
                             placeholder="Titel"
@@ -173,7 +216,7 @@ const AssignmentsModule = ({ courseId, currentUser, isTeacher, mode = 'COURSE' }
                                 </button>
                             </div>
                         </div>
-                        <button type="submit" className="bg-indigo-600 text-white px-6 py-2.5 rounded-lg font-bold hover:bg-indigo-700">Publicera Uppgift</button>
+                        <button type="submit" className="bg-indigo-600 text-white px-6 py-2.5 rounded-lg font-bold hover:bg-indigo-700">{selectedAssignmentId ? 'Spara Ändringar' : 'Publicera Uppgift'}</button>
                     </form>
                 </div>
             )}
@@ -197,6 +240,8 @@ const AssignmentsModule = ({ courseId, currentUser, isTeacher, mode = 'COURSE' }
                         toggleExpand={() => setExpandedAssignment(expandedAssignment === assign.id ? null : assign.id)}
                         preloadedSubmission={submissionsMap[assign.id]}
                         onUploadSuccess={() => loadAssignments()}
+                        onDelete={() => handleDelete(assign.id)}
+                        onEdit={() => handleEdit(assign)}
                     />
                 ))}
             </div>
@@ -205,7 +250,7 @@ const AssignmentsModule = ({ courseId, currentUser, isTeacher, mode = 'COURSE' }
 };
 
 // --- SUB-COMPONENT: KORT FÖR VARJE UPPGIFT ---
-const AssignmentCard = ({ assignment, isTeacher, currentUser, expanded, toggleExpand, preloadedSubmission, onUploadSuccess }) => {
+const AssignmentCard = ({ assignment, isTeacher, currentUser, expanded, toggleExpand, preloadedSubmission, onUploadSuccess, onDelete, onEdit }) => {
     const [mySubmission, setMySubmission] = useState(preloadedSubmission);
     const [allSubmissions, setAllSubmissions] = useState([]); // Endast för lärare
     const [file, setFile] = useState(null); // För upload
@@ -266,6 +311,26 @@ const AssignmentCard = ({ assignment, isTeacher, currentUser, expanded, toggleEx
                     </div>
                 </div>
                 <div className="flex items-center gap-3">
+                    {/* TEACHER ACTIONS */}
+                    {isTeacher && (
+                        <div className="flex items-center gap-1 mr-2">
+                            <button
+                                onClick={(e) => { e.stopPropagation(); onEdit(); }}
+                                className="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg transition-colors"
+                                title="Redigera"
+                            >
+                                <Edit2 size={16} />
+                            </button>
+                            <button
+                                onClick={(e) => { e.stopPropagation(); onDelete(); }}
+                                className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                                title="Ta bort"
+                            >
+                                <Trash2 size={16} />
+                            </button>
+                        </div>
+                    )}
+
                     {!isTeacher && (
                         mySubmission
                             ? <span className="bg-green-100 text-green-700 text-xs font-bold px-3 py-1.5 rounded-full flex items-center gap-1"><CheckCircle size={14} /> Inlämnad</span>

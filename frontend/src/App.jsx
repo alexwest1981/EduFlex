@@ -2,6 +2,8 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AppProvider, useAppContext } from './context/AppContext';
 import { ModuleProvider } from './context/ModuleContext';
+import { BrandingProvider } from './context/BrandingContext';
+import { DesignSystemProvider } from './context/DesignSystemContext';
 import ErrorBoundary from './components/common/ErrorBoundary';
 
 // --- LAYOUT ---
@@ -21,12 +23,14 @@ import { ThemeProvider } from './context/ThemeContext';
 
 // --- DE RIKTIGA SIDORNA ---
 import UserProfile from './features/profile/UserProfile';
+import PublicProfile from './features/profile/PublicProfile';
 import CourseCatalog from './features/catalog/CourseCatalog';
 import DocumentManager from './features/documents/DocumentManager';
 import AdminAdministrationPage from './features/dashboard/AdminAdministrationPage';
 import ResourceBank from './features/resources/ResourceBank';
 import AnalyticsDashboard from './features/analytics/AnalyticsDashboard';
 import CertificateView from './features/certificates/CertificateView';
+import EnterpriseWhitelabel from './features/admin/EnterpriseWhitelabel';
 
 // --- PROTECTED ROUTE ---
 const ProtectedRoute = ({ children, roles }) => {
@@ -120,6 +124,15 @@ const AppRoutes = () => {
                     </ProtectedRoute>
                 } />
 
+                {/* ENTERPRISE WHITELABEL (ADMIN ONLY) */}
+                <Route path="/enterprise/whitelabel" element={
+                    <ProtectedRoute roles={['ADMIN']}>
+                        <Layout currentUser={currentUser} handleLogout={logout}>
+                            <EnterpriseWhitelabel />
+                        </Layout>
+                    </ProtectedRoute>
+                } />
+
                 <Route path="/calendar" element={
                     <ProtectedRoute>
                         <Layout currentUser={currentUser} handleLogout={logout}>
@@ -168,6 +181,14 @@ const AppRoutes = () => {
                     </ProtectedRoute>
                 } />
 
+                <Route path="/profile/:userId" element={
+                    <ProtectedRoute>
+                        <Layout currentUser={currentUser} handleLogout={logout}>
+                            <PublicProfile currentUser={currentUser} showMessage={(msg) => alert(msg)} />
+                        </Layout>
+                    </ProtectedRoute>
+                } />
+
                 <Route path="/certificate/:courseId" element={
                     <ProtectedRoute>
                         <CertificateView />
@@ -183,13 +204,17 @@ const AppRoutes = () => {
 const App = () => {
     return (
         <AppProvider>
-            <ModuleProvider>
-                <ErrorBoundary>
-                    <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-                        <AppRoutes />
-                    </Router>
-                </ErrorBoundary>
-            </ModuleProvider>
+            <BrandingProvider>
+                <DesignSystemProvider>
+                    <ModuleProvider>
+                        <ErrorBoundary>
+                            <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+                                <AppRoutes />
+                            </Router>
+                        </ErrorBoundary>
+                    </ModuleProvider>
+                </DesignSystemProvider>
+            </BrandingProvider>
         </AppProvider>
     );
 };

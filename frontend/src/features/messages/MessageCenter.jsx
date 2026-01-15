@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import {
     Mail, Send, Inbox, ChevronRight, Search,
-    Trash2, User, CheckCircle, Clock, Reply, X
+    Trash2, User, CheckCircle, Clock, Reply, X, ExternalLink
 } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { api } from '../../services/api';
 import { useAppContext } from '../../context/AppContext';
 
@@ -73,7 +74,7 @@ const MessageCenter = ({ preSelectedRecipient = null }) => {
         if (activeTab === 'INBOX' && !msg.isRead) {
             try {
                 await api.messages.markAsRead(msg.id);
-                setMessages(prev => prev.map(m => m.id === msg.id ? {...m, isRead: true} : m));
+                setMessages(prev => prev.map(m => m.id === msg.id ? { ...m, isRead: true } : m));
             } catch (e) { console.error("Kunde inte markera som läst", e); }
         }
     };
@@ -124,15 +125,15 @@ const MessageCenter = ({ preSelectedRecipient = null }) => {
                         onClick={handleNewMessage}
                         className="w-full bg-indigo-600 text-white font-bold py-3 rounded-xl hover:bg-indigo-700 flex items-center justify-center gap-2 shadow-md transition-colors"
                     >
-                        <Send size={18}/> Nytt Meddelande
+                        <Send size={18} /> Nytt Meddelande
                     </button>
                 </div>
                 <nav className="flex-1 p-2 space-y-1">
                     <button onClick={() => setActiveTab('INBOX')} className={`w-full flex items-center justify-between px-4 py-3 text-sm font-bold rounded-lg transition-colors ${activeTab === 'INBOX' ? 'bg-white dark:bg-[#1E1F20] shadow-sm text-indigo-600' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-[#282a2c]'}`}>
-                        <span className="flex items-center gap-3"><Inbox size={18}/> Inkorg</span>
+                        <span className="flex items-center gap-3"><Inbox size={18} /> Inkorg</span>
                     </button>
                     <button onClick={() => setActiveTab('SENT')} className={`w-full flex items-center justify-between px-4 py-3 text-sm font-bold rounded-lg transition-colors ${activeTab === 'SENT' ? 'bg-white dark:bg-[#1E1F20] shadow-sm text-indigo-600' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-[#282a2c]'}`}>
-                        <span className="flex items-center gap-3"><Send size={18}/> Skickat</span>
+                        <span className="flex items-center gap-3"><Send size={18} /> Skickat</span>
                     </button>
                 </nav>
             </div>
@@ -147,7 +148,7 @@ const MessageCenter = ({ preSelectedRecipient = null }) => {
                             <h2 className="text-xl font-bold text-gray-900 dark:text-white">
                                 {replyModeUser ? 'Svara på meddelande' : 'Skriv nytt meddelande'}
                             </h2>
-                            <button onClick={() => setActiveTab('INBOX')} className="p-2 hover:bg-gray-100 dark:hover:bg-[#282a2c] rounded-full"><X size={20} className="text-gray-500"/></button>
+                            <button onClick={() => setActiveTab('INBOX')} className="p-2 hover:bg-gray-100 dark:hover:bg-[#282a2c] rounded-full"><X size={20} className="text-gray-500" /></button>
                         </div>
 
                         <form onSubmit={handleSend} className="space-y-4 max-w-2xl">
@@ -201,7 +202,7 @@ const MessageCenter = ({ preSelectedRecipient = null }) => {
                             <div className="flex justify-end gap-3">
                                 <button type="button" onClick={() => setActiveTab('INBOX')} className="px-6 py-2 font-bold text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">Avbryt</button>
                                 <button type="submit" disabled={isLoading} className="bg-indigo-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-indigo-700 disabled:opacity-50 flex items-center gap-2 shadow-lg shadow-indigo-200 dark:shadow-none">
-                                    <Send size={18}/> {isLoading ? 'Skickar...' : 'Skicka'}
+                                    <Send size={18} /> {isLoading ? 'Skickar...' : 'Skicka'}
                                 </button>
                             </div>
                         </form>
@@ -221,9 +222,9 @@ const MessageCenter = ({ preSelectedRecipient = null }) => {
                                                 className={`p-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-[#282a2c] transition-colors ${selectedMessage?.id === msg.id ? 'bg-indigo-50 dark:bg-indigo-900/20' : ''} ${!msg.isRead && activeTab === 'INBOX' ? 'border-l-4 border-indigo-500 bg-gray-50/50' : ''}`}
                                             >
                                                 <div className="flex justify-between mb-1">
-                                                <span className={`text-sm font-bold ${!msg.isRead && activeTab === 'INBOX' ? 'text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-400'}`}>
-                                                    {activeTab === 'INBOX' ? msg.senderName : `Till: ${msg.recipientName}`}
-                                                </span>
+                                                    <span className={`text-sm font-bold ${!msg.isRead && activeTab === 'INBOX' ? 'text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-400'}`}>
+                                                        {activeTab === 'INBOX' ? msg.senderName : `Till: ${msg.recipientName}`}
+                                                    </span>
                                                     <span className="text-[10px] text-gray-400">{new Date(msg.timestamp).toLocaleDateString()}</span>
                                                 </div>
                                                 <p className={`text-sm mb-1 ${!msg.isRead && activeTab === 'INBOX' ? 'font-bold text-gray-800 dark:text-gray-200' : 'text-gray-600 dark:text-gray-400'}`}>{msg.subject}</p>
@@ -238,7 +239,7 @@ const MessageCenter = ({ preSelectedRecipient = null }) => {
                         <div className={`flex-1 overflow-y-auto p-8 bg-gray-50/30 dark:bg-[#1E1F20] ${!selectedMessage ? 'hidden md:flex items-center justify-center' : 'block'}`}>
                             {!selectedMessage ? (
                                 <div className="text-center text-gray-400">
-                                    <Mail size={64} className="mx-auto mb-4 opacity-10"/>
+                                    <Mail size={64} className="mx-auto mb-4 opacity-10" />
                                     <p>Välj ett meddelande för att läsa</p>
                                 </div>
                             ) : (
@@ -251,7 +252,10 @@ const MessageCenter = ({ preSelectedRecipient = null }) => {
                                                     {activeTab === 'INBOX' ? selectedMessage.senderName[0] : selectedMessage.recipientName[0]}
                                                 </div>
                                                 <div>
-                                                    <p><span className="font-bold text-gray-900 dark:text-white">{activeTab === 'INBOX' ? selectedMessage.senderName : `Till: ${selectedMessage.recipientName}`}</span></p>
+                                                    <p className="flex items-center gap-2">
+                                                        <span className="font-bold text-gray-900 dark:text-white">{activeTab === 'INBOX' ? selectedMessage.senderName : `Till: ${selectedMessage.recipientName}`}</span>
+                                                        <Link to={`/profile/${activeTab === 'INBOX' ? selectedMessage.senderId : selectedMessage.recipientId}`} className="text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400"><ExternalLink size={14} /></Link>
+                                                    </p>
                                                     <p className="text-xs">{new Date(selectedMessage.timestamp).toLocaleString()}</p>
                                                 </div>
                                             </div>
@@ -259,11 +263,11 @@ const MessageCenter = ({ preSelectedRecipient = null }) => {
                                         <div className="flex gap-2">
                                             {activeTab === 'INBOX' && (
                                                 <button onClick={handleReply} className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 flex items-center gap-2 font-bold text-sm shadow-md">
-                                                    <Reply size={16}/> Svara
+                                                    <Reply size={16} /> Svara
                                                 </button>
                                             )}
                                             <button onClick={() => setSelectedMessage(null)} className="md:hidden p-2 text-gray-500">
-                                                <ChevronRight size={20}/>
+                                                <ChevronRight size={20} />
                                             </button>
                                         </div>
                                     </div>

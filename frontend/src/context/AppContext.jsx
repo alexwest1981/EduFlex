@@ -2,9 +2,25 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { api } from '../services/api';
 import i18n from '../i18n';
 
-const AppContext = createContext();
+const AppContext = createContext({
+    currentUser: null,
+    systemSettings: {},
+    theme: 'light',
+    licenseStatus: 'checking',
+    licenseLocked: false,
+    login: () => { },
+    logout: () => { },
+    refreshUser: () => { },
+    loadSettings: () => { },
+    updateSystemSetting: () => { },
+    toggleTheme: () => { },
+    API_BASE: '',
+    api: {}
+});
 
 export const AppProvider = ({ children }) => {
+    // ... existing code ...
+    // (Ensure this part matches existing file content during apply)
     const [currentUser, setCurrentUser] = useState(null);
     const [systemSettings, setSystemSettings] = useState({});
     const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
@@ -115,7 +131,7 @@ export const AppProvider = ({ children }) => {
             const merged = { ...(currentUser || {}), ...updated };
             localStorage.setItem('user', JSON.stringify(merged));
             setCurrentUser(merged);
-        } catch (e) { 
+        } catch (e) {
             console.error("Failed to refresh user:", e);
             if (e.message && (e.message.includes('401') || e.message.includes('403') || e.message.includes('LICENSE'))) {
                 console.warn("Session invalid or license locked, logging out...");
@@ -145,4 +161,10 @@ export const AppProvider = ({ children }) => {
     );
 };
 
-export const useAppContext = () => useContext(AppContext);
+export const useAppContext = () => {
+    const context = useContext(AppContext);
+    if (context === undefined) {
+        console.error("useAppContext must be used within an AppProvider. Returning default empty context to prevent crash, but app may behave unexpectedly.");
+    }
+    return context;
+};

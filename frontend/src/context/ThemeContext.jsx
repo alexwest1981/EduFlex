@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { api } from '../services/api';
+import { useBranding } from './BrandingContext';
 
 const ThemeContext = createContext();
 
@@ -66,10 +67,26 @@ const THEMES = {
 
 export const ThemeProvider = ({ children, currentUser }) => {
     const [themeId, setThemeId] = useState('default');
+    const { branding, getCustomTheme, loading } = useBranding();
 
     // Init Logic
     useEffect(() => {
-        // 1. Try to load from user settings if available
+        // Wait for branding to load
+        if (loading || !branding) return;
+
+        // PRIORITY 1: Organization-level enforced theme (Enterprise Whitelabel)
+        if (branding.enforceOrgTheme) {
+            // If custom theme exists, use 'custom', otherwise use org's defaultThemeId
+            if (branding.customTheme) {
+                setThemeId('custom');
+                return;
+            } else if (branding.defaultThemeId && THEMES[branding.defaultThemeId]) {
+                setThemeId(branding.defaultThemeId);
+                return;
+            }
+        }
+
+        // PRIORITY 2: User preference (if org doesn't enforce theme)
         if (currentUser && currentUser.settings) {
             try {
                 const settings = JSON.parse(currentUser.settings);
@@ -79,27 +96,60 @@ export const ThemeProvider = ({ children, currentUser }) => {
                 }
             } catch (e) { }
         }
-        // 2. Fallback to localStorage (browsing before login or if user settings fail)
+
+        // PRIORITY 3: Organization default (if no user preference)
+        if (branding.defaultThemeId) {
+            if (branding.defaultThemeId === 'custom' && branding.customTheme) {
+                setThemeId('custom');
+                return;
+            }
+            if (THEMES[branding.defaultThemeId]) {
+                setThemeId(branding.defaultThemeId);
+                return;
+            }
+        }
+
+        // PRIORITY 4: Fallback to localStorage (browsing before login or if all else fails)
         const local = localStorage.getItem('eduflex_theme');
         if (local && THEMES[local]) {
             setThemeId(local);
         }
-    }, [currentUser]);
+    }, [currentUser, branding, loading]);
 
     // Apply Logic
     useEffect(() => {
-        const theme = THEMES[themeId] || THEMES['default'];
         const root = document.documentElement;
+        let colorsToApply = null;
+
+        // Check if we should use custom theme from organization branding
+        if (themeId === 'custom' && branding.customTheme) {
+            const customTheme = getCustomTheme();
+            if (customTheme && customTheme.colors) {
+                colorsToApply = customTheme.colors;
+            }
+        }
+
+        // Otherwise use predefined theme
+        if (!colorsToApply) {
+            const theme = THEMES[themeId] || THEMES['default'];
+            colorsToApply = theme.colors;
+        }
 
         // Inject CSS variables
-        Object.keys(theme.colors).forEach(shade => {
-            root.style.setProperty(`--color-primary-${shade}`, theme.colors[shade]);
+        Object.keys(colorsToApply).forEach(shade => {
+            root.style.setProperty(`--color-primary-${shade}`, colorsToApply[shade]);
         });
 
         localStorage.setItem('eduflex_theme', themeId);
-    }, [themeId]);
+    }, [themeId, branding, getCustomTheme]);
 
     const changeTheme = async (newThemeId) => {
+        // Don't allow theme change if organization enforces theme
+        if (branding && branding.enforceOrgTheme) {
+            console.warn('Theme changes are disabled. Organization enforces a specific theme.');
+            return;
+        }
+
         if (!THEMES[newThemeId]) return;
         setThemeId(newThemeId);
 
@@ -118,7 +168,12 @@ export const ThemeProvider = ({ children, currentUser }) => {
     };
 
     return (
-        <ThemeContext.Provider value={{ themeId, changeTheme, themes: Object.values(THEMES) }}>
+        <ThemeContext.Provider value={{
+            themeId,
+            changeTheme,
+            themes: Object.values(THEMES),
+            isThemeLocked: branding?.enforceOrgTheme || false
+        }}>
             {children}
         </ThemeContext.Provider>
     );

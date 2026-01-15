@@ -18,9 +18,9 @@ export const AdminCourseRegistry = ({ courses, onEdit, onManage, onNewCourse, on
     }) || [];
 
     return (
-        <div className="bg-white dark:bg-[#1E1F20] rounded-xl border border-gray-200 dark:border-[#3c4043] shadow-sm overflow-hidden animate-in slide-in-from-bottom-8">
+        <div className="bg-card dark:bg-card-dark rounded-[var(--radius-xl)] border border-card dark:border-card-dark shadow-sm overflow-hidden animate-in slide-in-from-bottom-8" style={{ backdropFilter: 'var(--card-backdrop)' }}>
             {/* ... (keep header) ... */}
-            <div className="p-6 border-b border-gray-100 dark:border-[#3c4043] flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-gray-50 dark:bg-[#131314]">
+            <div className="p-6 border-b border-card dark:border-card-dark flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-gray-50/50 dark:bg-[#131314]/50">
                 <div className="flex items-center gap-4">
                     <h3 className="font-bold text-gray-800 dark:text-white">Kursregister</h3>
                     <button onClick={onNewCourse} className="text-xs bg-indigo-600 text-white px-3 py-1.5 rounded-lg font-bold hover:bg-indigo-700 flex items-center gap-1"><Plus size={14} /> Ny Kurs</button>
@@ -69,7 +69,7 @@ export const AdminCourseRegistry = ({ courses, onEdit, onManage, onNewCourse, on
 };
 
 export const RecentUsersWidget = ({ latestUsers, onNewUserClick }) => (
-    <div className="bg-white dark:bg-[#1E1F20] rounded-xl border border-gray-200 dark:border-[#3c4043] shadow-sm p-6 overflow-hidden animate-in slide-in-from-bottom-8 h-full">
+    <div className="bg-card dark:bg-card-dark rounded-[var(--radius-xl)] border border-card dark:border-card-dark shadow-sm p-6 overflow-hidden animate-in slide-in-from-bottom-8 h-full" style={{ backdropFilter: 'var(--card-backdrop)' }}>
         <div className="flex justify-between items-center mb-4">
             <h3 className="font-bold text-gray-800 dark:text-white flex items-center gap-2">
                 <User size={18} className="text-indigo-600" />
@@ -112,7 +112,7 @@ export const RecentUploadsWidget = ({ latestDocs }) => {
 
     return (
         <>
-            <div className="bg-white dark:bg-[#1E1F20] rounded-xl border border-gray-200 dark:border-[#3c4043] shadow-sm p-6 overflow-hidden animate-in slide-in-from-bottom-8 h-full flex flex-col">
+            <div className="bg-card dark:bg-card-dark rounded-[var(--radius-xl)] border border-card dark:border-card-dark shadow-sm p-6 overflow-hidden animate-in slide-in-from-bottom-8 h-full flex flex-col" style={{ backdropFilter: 'var(--card-backdrop)' }}>
                 <div className="flex justify-between items-center mb-4">
                     <h3 className="font-bold text-gray-800 dark:text-white flex items-center gap-2">
                         <FileIcon size={18} className="text-blue-600" />
@@ -211,8 +211,8 @@ export const AdminUserTable = ({ users, onNewUser, onEdit, onDelete }) => {
     }) || [];
 
     return (
-        <div className="bg-white dark:bg-[#1E1F20] rounded-xl border border-gray-200 dark:border-[#3c4043] shadow-sm overflow-hidden animate-in slide-in-from-bottom-8">
-            <div className="p-6 border-b border-gray-100 dark:border-[#3c4043] flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-gray-50 dark:bg-[#131314]">
+        <div className="bg-card dark:bg-card-dark rounded-[var(--radius-xl)] border border-card dark:border-card-dark shadow-sm overflow-hidden animate-in slide-in-from-bottom-8" style={{ backdropFilter: 'var(--card-backdrop)' }}>
+            <div className="p-6 border-b border-card dark:border-card-dark flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-gray-50/50 dark:bg-[#131314]/50">
                 <div className="flex items-center gap-4">
                     <h3 className="font-bold text-gray-800 dark:text-white">Användarregister</h3>
                     <button onClick={onNewUser} className="text-xs bg-indigo-600 text-white px-3 py-1.5 rounded-lg font-bold hover:bg-indigo-700 flex items-center gap-1">

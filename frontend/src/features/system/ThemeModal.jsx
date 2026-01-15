@@ -1,9 +1,9 @@
 import React from 'react';
-import { Check, X, Palette, Moon, Sun } from 'lucide-react';
+import { Check, X, Palette, Moon, Sun, Lock } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
 
 const ThemeModal = ({ isOpen, onClose }) => {
-    const { themes, themeId, changeTheme } = useTheme();
+    const { themes, themeId, changeTheme, isThemeLocked } = useTheme();
 
     if (!isOpen) return null;
 
@@ -27,6 +27,17 @@ const ThemeModal = ({ isOpen, onClose }) => {
 
                 {/* Content */}
                 <div className="p-8 overflow-y-auto bg-gray-50 dark:bg-[#131314]">
+                    {isThemeLocked && (
+                        <div className="mb-6 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg p-4 flex items-center gap-3">
+                            <Lock className="w-5 h-5 text-yellow-600 dark:text-yellow-400 flex-shrink-0" />
+                            <div>
+                                <p className="text-sm font-semibold text-yellow-800 dark:text-yellow-300">Tema låst av organisation</p>
+                                <p className="text-xs text-yellow-700 dark:text-yellow-400 mt-1">
+                                    Din organisation har valt ett standardtema. Kontakta din administratör för att ändra detta.
+                                </p>
+                            </div>
+                        </div>
+                    )}
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {themes.map((theme) => {
                             const isActive = themeId === theme.id;
@@ -34,7 +45,9 @@ const ThemeModal = ({ isOpen, onClose }) => {
                                 <button
                                     key={theme.id}
                                     onClick={() => changeTheme(theme.id)}
+                                    disabled={isThemeLocked}
                                     className={`group relative p-4 rounded-2xl border-2 transition-all duration-300 text-left hover:shadow-xl
+                                        ${isThemeLocked ? 'opacity-50 cursor-not-allowed' : ''}
                                         ${isActive
                                             ? 'border-indigo-600 bg-white dark:bg-[#1E1F20] shadow-lg scale-[1.02]'
                                             : 'border-transparent bg-white dark:bg-[#1E1F20] hover:border-gray-300 dark:hover:border-[#3c4043]'

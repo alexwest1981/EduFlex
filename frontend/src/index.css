@@ -35,3 +35,23 @@ body {
         @apply dark:focus:bg-[#303336] dark:focus:border-gray-500 dark:focus:ring-1 dark:focus:ring-gray-500;
     }
 }
+
+/* --- DESIGN SYSTEM EFFECTS --- */
+
+/* Glassmorphism Effect for Cards */
+html[data-use-blur="true"] .bg-white {
+    background-color: var(--card-background) !important;
+    backdrop-filter: var(--card-backdrop);
+    border: var(--card-border);
+}
+
+html[data-use-blur="true"] .dark .bg-white,
+html[data-use-blur="true"] .dark .dark\:bg-\[\#1e1f20\] {
+    background-color: var(--card-background-dark) !important;
+    border: var(--card-border-dark);
+}
+
+/* Brutalism Borders */
+html[data-use-blur="false"][data-use-glow="false"] {
+    /* Specific overrides for Brutalism if needed */
+}

@@ -8,7 +8,7 @@ const RichTextEditor = ({ value, onChange, placeholder, style }) => {
         toolbar: [
             [{ 'header': [1, 2, false] }],
             ['bold', 'italic', 'underline', 'strike', 'blockquote'],
-            [{'list': 'ordered'}, {'list': 'bullet'}],
+            [{ 'list': 'ordered' }, { 'list': 'bullet' }],
             ['link', 'clean']
         ],
     }), []);
@@ -16,7 +16,7 @@ const RichTextEditor = ({ value, onChange, placeholder, style }) => {
     const formats = [
         'header',
         'bold', 'italic', 'underline', 'strike', 'blockquote',
-        'list', 'bullet',
+        'list',
         'link'
     ];
 

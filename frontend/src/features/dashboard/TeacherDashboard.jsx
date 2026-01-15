@@ -10,6 +10,7 @@ import { api } from '../../services/api';
 import MessageCenter from '../messages/MessageCenter';
 import RecentMessagesWidget from './components/RecentMessagesWidget';
 import TeacherAtRiskWidget from './widgets/TeacherAtRiskWidget';
+import OnlineFriendsWidget from './widgets/OnlineFriendsWidget';
 
 // --- IMPORTERA KOMPONENTER (NYTT!) ---
 import TeacherStats from './components/TeacherStats'; // Keep for backward compatibility if needed, or remove? I will remove usage.
@@ -55,8 +56,10 @@ const TeacherDashboard = ({ currentUser }) => {
         showRiskWidget: true,
         showSchedule: true,
         showShortcuts: true,
-        showMessages: true
+        showMessages: true,
+        showOnlineFriends: true
     });
+
 
     const widgetLabels = {
         showActiveCourses: 'Aktiva Kurser',
@@ -67,7 +70,9 @@ const TeacherDashboard = ({ currentUser }) => {
         showRiskWidget: 'Risk Analys Widget',
         showSchedule: 'Schema & Händelser',
         showShortcuts: 'Genvägar',
-        showMessages: 'Meddelanden'
+        showShortcuts: 'Genvägar',
+        showMessages: 'Meddelanden',
+        showOnlineFriends: 'Online Vänner'
     };
 
     useEffect(() => {
@@ -237,6 +242,11 @@ const TeacherDashboard = ({ currentUser }) => {
                         {/* Meddelanden (Höger - 1 kolumn) */}
                         <div className="lg:col-span-1 h-full space-y-6">
                             {widgets.showRiskWidget && <TeacherAtRiskWidget currentUser={currentUser} settings={{ enabled: true }} />}
+                            {widgets.showOnlineFriends && (
+                                <div className="h-80">
+                                    <OnlineFriendsWidget />
+                                </div>
+                            )}
                             {widgets.showMessages && <RecentMessagesWidget onViewAll={() => setActiveTab('COMMUNICATION')} />}
                         </div>
                     </div>

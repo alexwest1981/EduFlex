@@ -12,7 +12,8 @@ public record CreateCourseDTO(
                 Long teacherId,
                 String color,
                 Integer maxStudents, // <--- NYTT FÄLT
-                Long skolverketCourseId // Link to Skolverket course
+                Long skolverketCourseId, // Link to Skolverket course
+                java.util.List<java.util.Map<String, String>> groupRooms // New field for group rooms
 ) {
         // Records automatically provide an accessor method named after the component
         // (e.g., skolverketCourseId()).
