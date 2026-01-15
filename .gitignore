@@ -22,3 +22,7 @@ current_*
 *_error.txt
 debug_*.txt
 DEBUG_STATUS_AND_PLAN.md
+build_log*.txt
+mvn_log*.txt
+debug_lombok*.txt
+build_output.txt
