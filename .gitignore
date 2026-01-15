@@ -26,3 +26,12 @@ build_log*.txt
 mvn_log*.txt
 debug_lombok*.txt
 build_output.txt
+
+# IDE / Editor Settings (Local only)
+.idea/
+.vscode/
+*.iml
+.DS_Store
+
+# Claude Local Settings
+.claude/settings.local.json
