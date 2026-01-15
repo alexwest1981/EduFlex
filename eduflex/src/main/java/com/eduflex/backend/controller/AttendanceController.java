@@ -14,11 +14,12 @@ import java.util.stream.Collectors;
 public class AttendanceController {
 
     private final CourseRepository courseRepository;
-    private final CourseEventRepository eventRepository;
+    private final CalendarEventRepository eventRepository;
     private final AttendanceRepository attendanceRepository;
     private final UserRepository userRepository;
 
-    public AttendanceController(CourseRepository c, CourseEventRepository e, AttendanceRepository a, UserRepository u) {
+    public AttendanceController(CourseRepository c, CalendarEventRepository e, AttendanceRepository a,
+            UserRepository u) {
         this.courseRepository = c;
         this.eventRepository = e;
         this.attendanceRepository = a;
@@ -27,8 +28,9 @@ public class AttendanceController {
 
     // 1. Lärare: Skapa ett nytt event (Lektion/Föreläsning)
     @PostMapping("/course/{courseId}/event")
-    public ResponseEntity<CourseEvent> createEvent(@PathVariable Long courseId, @RequestBody CourseEvent event) {
-        Course course = courseRepository.findById(courseId).orElseThrow();
+    public ResponseEntity<CalendarEvent> createEvent(@PathVariable Long courseId, @RequestBody CalendarEvent event) {
+        Course course = courseRepository.findById(courseId)
+                .orElseThrow(() -> new RuntimeException("Course not found"));
         event.setCourse(course);
         return ResponseEntity.ok(eventRepository.save(event));
     }
@@ -37,7 +39,7 @@ public class AttendanceController {
     @GetMapping("/course/{courseId}/student/{studentId}")
     public ResponseEntity<List<Map<String, Object>>> getStudentAttendance(@PathVariable Long courseId,
             @PathVariable Long studentId) {
-        List<CourseEvent> events = eventRepository.findByCourseIdOrderByStartTimeAsc(courseId);
+        List<CalendarEvent> events = eventRepository.findByCourseIdOrderByStartTimeAsc(courseId);
 
         List<Map<String, Object>> response = events.stream().map(event -> {
             Attendance att = attendanceRepository.findByEventIdAndStudentId(event.getId(), studentId);
@@ -64,7 +66,7 @@ public class AttendanceController {
         boolean present = (boolean) payload.get("present");
         String note = (String) payload.get("note");
 
-        CourseEvent event = eventRepository.findById(eventId).orElseThrow();
+        CalendarEvent event = eventRepository.findById(eventId).orElseThrow();
         User student = userRepository.findById(studentId).orElseThrow();
 
         Attendance attendance = attendanceRepository.findByEventIdAndStudentId(eventId, studentId);

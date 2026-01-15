@@ -12,7 +12,7 @@ public class Attendance {
 
     @ManyToOne
     @JoinColumn(name = "event_id")
-    private CourseEvent event;
+    private CalendarEvent event;
 
     @ManyToOne
     @JoinColumn(name = "student_id")
@@ -26,7 +26,7 @@ public class Attendance {
     public Attendance() {
     }
 
-    public Attendance(Long id, CourseEvent event, User student, boolean isPresent, String note) {
+    public Attendance(Long id, CalendarEvent event, User student, boolean isPresent, String note) {
         this.id = id;
         this.event = event;
         this.student = student;
@@ -42,11 +42,11 @@ public class Attendance {
         this.id = id;
     }
 
-    public CourseEvent getEvent() {
+    public CalendarEvent getEvent() {
         return event;
     }
 
-    public void setEvent(CourseEvent event) {
+    public void setEvent(CalendarEvent event) {
         this.event = event;
     }
 

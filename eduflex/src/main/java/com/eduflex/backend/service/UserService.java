@@ -1,7 +1,9 @@
 package com.eduflex.backend.service;
 
+import com.eduflex.backend.model.Connection;
 import com.eduflex.backend.model.Course;
 import com.eduflex.backend.model.User;
+import com.eduflex.backend.repository.ConnectionRepository;
 import com.eduflex.backend.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -24,22 +26,42 @@ public class UserService {
 
     private final com.eduflex.backend.repository.AuditLogRepository auditLogRepository;
     private final FileStorageService fileStorageService;
+    private final ConnectionRepository connectionRepository;
 
     public UserService(UserRepository userRepository,
             com.eduflex.backend.repository.RoleRepository roleRepository,
             PasswordEncoder passwordEncoder, LicenseService licenseService,
             com.eduflex.backend.repository.AuditLogRepository auditLogRepository,
-            FileStorageService fileStorageService) {
+            FileStorageService fileStorageService,
+            ConnectionRepository connectionRepository) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
         this.licenseService = licenseService;
         this.auditLogRepository = auditLogRepository;
         this.fileStorageService = fileStorageService;
+        this.connectionRepository = connectionRepository;
     }
 
     public List<User> getAllUsers() {
         return userRepository.findAll();
+    }
+
+    public List<User> searchUsers(String query) {
+        String q = query.toLowerCase();
+        return userRepository.findAll().stream()
+                .filter(this::isPublicProfile) // Only show public profiles
+                .filter(u -> (u.getFullName() != null && u.getFullName().toLowerCase().contains(q)) ||
+                        (u.getUsername() != null && u.getUsername().toLowerCase().contains(q)) ||
+                        (u.getEmail() != null && u.getEmail().toLowerCase().contains(q)))
+                .limit(20) // Limit results
+                .collect(java.util.stream.Collectors.toList());
+    }
+
+    private boolean isPublicProfile(User user) {
+        if (user.getSettings() == null || user.getSettings().isEmpty())
+            return true; // Default public
+        return !user.getSettings().contains("\"publicProfile\":false");
     }
 
     public Page<User> getAllUsers(Pageable pageable) {
@@ -79,43 +101,123 @@ public class UserService {
     // --- NY METOD: Hämta giltiga kontakter ---
     @Transactional
     public List<User> getContactsForUser(Long userId) {
+        // Fallback backward compatibility
+        Map<String, List<User>> categorized = getCategorizedContacts(userId);
+        List<User> all = new ArrayList<>();
+        all.addAll(categorized.getOrDefault("friends", Collections.emptyList()));
+        all.addAll(categorized.getOrDefault("classmates", Collections.emptyList()));
+        all.addAll(categorized.getOrDefault("administration", Collections.emptyList()));
+        all.addAll(categorized.getOrDefault("others", Collections.emptyList()));
+        // Deduplicate based on ID
+        return all.stream().distinct().collect(java.util.stream.Collectors.toList());
+    }
+
+    @Transactional
+    public Map<String, List<User>> getCategorizedContacts(Long userId) {
         User user = getUserById(userId);
-        Set<User> contacts = new HashSet<>();
+        Map<String, List<User>> result = new HashMap<>();
+        List<User> friends = new ArrayList<>();
+        List<User> classmates = new ArrayList<>();
+        List<User> admin = new ArrayList<>();
+        List<User> others = new ArrayList<>(); // För superadmin etc
+
+        // 1. FRIENDS (Connection Status ACCEPTED)
+        List<Connection> connections = connectionRepository.findAcceptedConnections(user);
+        for (Connection c : connections) {
+            if (c.getRequester().getId().equals(userId))
+                friends.add(c.getReceiver());
+            else
+                friends.add(c.getRequester());
+        }
 
         String roleName = user.getRole().getName();
 
         if ("ADMIN".equals(roleName) || user.getRole().isSuperAdmin()) {
-            // Admin får se alla
-            return userRepository.findAll();
-        } else if ("TEACHER".equals(roleName)) {
-            // 1. Sina egna elever (från kurser de skapat/undervisar i)
-            // OBS: I modellen heter fältet 'coursesCreated' för lärare
-            for (Course course : user.getCoursesCreated()) {
-                contacts.addAll(course.getStudents());
-            }
+            // Admin ser alla som "others" (eller i administration om vi vill)
+            // För enkelhetens skull, lägg alla i others förutom vänner
+            List<User> all = userRepository.findAll();
+            all.removeIf(u -> u.getId().equals(userId));
+            others.addAll(all);
+        } else {
+            // Hämta via KURSER (för Klasskamrater och Lärare för studenter)
+            Set<Course> activeCourses;
+            if ("TEACHER".equals(roleName))
+                activeCourses = user.getCoursesCreated();
+            else
+                activeCourses = user.getCourses(); // Students
 
-            // 2. Alla lärare
-            contacts.addAll(userRepository.findByRole_Name("TEACHER"));
-
-            // 3. Alla administratörer
-            contacts.addAll(userRepository.findByRole_Name("ADMIN"));
-
-        } else if ("STUDENT".equals(roleName)) {
-            // 1. Loopa igenom studentens kurser
-            for (Course course : user.getCourses()) {
-                // Lägg till läraren
-                if (course.getTeacher() != null) {
-                    contacts.add(course.getTeacher());
+            for (Course course : activeCourses) {
+                // Teachers (Om jag är student -> teacher är admin/lärare)
+                if (course.getTeacher() != null && !course.getTeacher().getId().equals(userId)) {
+                    // För Teachers är detta redundant om vi hämtar alla lärare senare, men skadar
+                    // inte
+                    if (!"TEACHER".equals(roleName))
+                        admin.add(course.getTeacher());
                 }
-                // Lägg till klasskamrater
-                contacts.addAll(course.getStudents());
+
+                // Students -> Classmates
+                for (User student : course.getStudents()) {
+                    if (!student.getId().equals(userId)) {
+                        classmates.add(student);
+                    }
+                }
             }
+
+            // Hämta Administrativ personal (ADMIN, PRINCIPAL, MENTOR)
+            // Oavsett om jag är Student eller Teacher, ska jag se dessa.
+            // Teachers ska dessutom se alla andra Teachers.
+
+            List<User> allStaff = userRepository.findAll().stream()
+                    .filter(u -> {
+                        String r = u.getRole().getName();
+                        boolean isStaff = "ADMIN".equals(r) || "PRINCIPAL".equals(r) || "MENTOR".equals(r);
+                        boolean isTeacher = "TEACHER".equals(r);
+
+                        // Om jag är Teacher, vill jag se alla andra Teachers också
+                        if ("TEACHER".equals(roleName) && isTeacher)
+                            return true;
+
+                        // Alla vill se chefer/mentorer
+                        return isStaff;
+                    })
+                    .collect(java.util.stream.Collectors.toList());
+
+            // Filtrera bort mig själv
+            allStaff.removeIf(u -> u.getId().equals(userId));
+            admin.addAll(allStaff);
         }
 
-        // Ta bort mig själv från listan
-        contacts.removeIf(u -> u.getId().equals(userId));
+        // Remove duplicates within lists (Robust implementation using TreeSet with ID
+        // comparator)
+        result.put("friends", friends.stream()
+                .filter(u -> u != null && u.getId() != null)
+                .collect(java.util.stream.Collectors.collectingAndThen(
+                        java.util.stream.Collectors.toCollection(
+                                () -> new java.util.TreeSet<>(java.util.Comparator.comparing(User::getId))),
+                        ArrayList::new)));
 
-        return new ArrayList<>(contacts);
+        result.put("classmates", classmates.stream()
+                .filter(u -> u != null && u.getId() != null)
+                .collect(java.util.stream.Collectors.collectingAndThen(
+                        java.util.stream.Collectors.toCollection(
+                                () -> new java.util.TreeSet<>(java.util.Comparator.comparing(User::getId))),
+                        ArrayList::new)));
+
+        result.put("administration", admin.stream()
+                .filter(u -> u != null && u.getId() != null)
+                .collect(java.util.stream.Collectors.collectingAndThen(
+                        java.util.stream.Collectors.toCollection(
+                                () -> new java.util.TreeSet<>(java.util.Comparator.comparing(User::getId))),
+                        ArrayList::new)));
+
+        result.put("others", others.stream()
+                .filter(u -> u != null && u.getId() != null)
+                .collect(java.util.stream.Collectors.collectingAndThen(
+                        java.util.stream.Collectors.toCollection(
+                                () -> new java.util.TreeSet<>(java.util.Comparator.comparing(User::getId))),
+                        ArrayList::new)));
+
+        return result;
     }
     // -----------------------------------------
 

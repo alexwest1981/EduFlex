@@ -1,14 +1,29 @@
 import React from 'react';
 import React, { useState, useEffect } from 'react';
-import { LayoutDashboard, BookOpen, FolderOpen, Users, UserCircle, LogOut, ShieldCheck, Calendar, MessageSquare, Settings2, FileQuestion } from 'lucide-react';
+import { LayoutDashboard, BookOpen, FolderOpen, Users, UserCircle, LogOut, ShieldCheck, Calendar, MessageSquare, Settings2, FileQuestion, Palette } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+
+import { api } from '../services/api';
 
 const Sidebar = ({ currentUser, logout, siteName, version }) => {
     const { t } = useTranslation();
     const navigate = useNavigate();
     const location = useLocation();
     const currentPath = location.pathname;
+    const [requestCount, setRequestCount] = useState(0);
+
+    useEffect(() => {
+        const fetchRequests = async () => {
+            try {
+                const requests = await api.connections.getRequests();
+                setRequestCount(requests.length);
+            } catch (e) { console.error(e); }
+        };
+        fetchRequests();
+        const interval = setInterval(fetchRequests, 60000); // Poll count
+        return () => clearInterval(interval);
+    }, []);
 
     const getMenuItems = () => {
         const role = currentUser?.role?.name || currentUser?.role;
@@ -60,7 +75,7 @@ const Sidebar = ({ currentUser, logout, siteName, version }) => {
             </div>
 
             {/* USER PROFILE SNIPPET (Denna saknades kanske innan) */}
-            <div className="p-4 mx-4 mt-4 bg-gray-50 rounded-xl border border-gray-100 flex items-center gap-3 cursor-pointer hover:bg-gray-100 transition-colors" onClick={() => navigate('/profile')}>
+            <div className="p-4 mx-4 mt-4 bg-gray-50 rounded-xl border border-gray-100 flex items-center gap-3 cursor-pointer hover:bg-gray-100 transition-colors relative" onClick={() => navigate('/profile')}>
                 <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center overflow-hidden border border-indigo-200">
                     {getProfileImage() ? (
                         <img src={getProfileImage()} alt="Profil" className="w-full h-full object-cover" />
@@ -72,6 +87,11 @@ const Sidebar = ({ currentUser, logout, siteName, version }) => {
                     <p className="text-sm font-bold text-gray-900 truncate">{currentUser?.fullName || currentUser?.username}</p>
                     <p className="text-xs text-indigo-600 font-medium truncate capitalize">{(currentUser?.role?.name || currentUser?.role || '').toLowerCase()}</p>
                 </div>
+                {requestCount > 0 && (
+                    <div className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full shadow-md border-2 border-white">
+                        {requestCount}
+                    </div>
+                )}
             </div>
 
             {/* NAVIGATION */}

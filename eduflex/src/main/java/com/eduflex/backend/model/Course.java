@@ -39,7 +39,33 @@ public class Course {
 
     private String examLink; // URL till tentarum
     private String examType; // T.ex. "ZOOM", "INSPO"
-    // ------------------------------
+
+    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
+    private java.util.List<GroupRoom> groupRooms = new java.util.ArrayList<>();
+
+    public java.util.List<GroupRoom> getGroupRooms() {
+        return groupRooms;
+    }
+
+    public void setGroupRooms(java.util.List<GroupRoom> groupRooms) {
+        this.groupRooms = groupRooms;
+        // Helper to maintain bi-directional relationship
+        if (groupRooms != null) {
+            for (GroupRoom room : groupRooms) {
+                room.setCourse(this);
+            }
+        }
+    }
+
+    public void addGroupRoom(GroupRoom room) {
+        groupRooms.add(room);
+        room.setCourse(this);
+    }
+
+    public void removeGroupRoom(GroupRoom room) {
+        groupRooms.remove(room);
+        room.setCourse(null);
+    }
 
     @Column(columnDefinition = "integer default 100")
     private Integer maxStudents = 100;

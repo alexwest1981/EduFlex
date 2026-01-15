@@ -12,6 +12,7 @@ import StudentStats from './components/student/StudentStats';
 import StudentCourseGrid from './components/student/StudentCourseGrid';
 import StudentSidebar from './components/student/StudentSidebar';
 import StudentAttendanceWidget from './widgets/StudentAttendanceWidget';
+import OnlineFriendsWidget from './widgets/OnlineFriendsWidget';
 
 // --- SHARED ---
 import { useDashboardWidgets } from '../../hooks/useDashboardWidgets';
@@ -34,14 +35,16 @@ const StudentDashboard = () => {
         stats: true,
         attendance: true,
         courses: true,
-        sidebar: true
+        sidebar: true,
+        onlineFriends: true
     });
 
     const widgetLabels = {
         stats: 'Statistik & Utmärkelser',
         attendance: 'Min Närvaro',
         courses: 'Mina Kurser',
-        sidebar: 'Sidopanel (Uppgifter & Feedback)'
+        sidebar: 'Sidopanel (Uppgifter & Feedback)',
+        onlineFriends: 'Online Vänner'
     };
 
     useEffect(() => {
@@ -184,6 +187,11 @@ const StudentDashboard = () => {
                                 navigate={navigate}
                                 currentUser={currentUser}
                             />
+                            {widgets.onlineFriends && (
+                                <div className="mt-6 h-80">
+                                    <OnlineFriendsWidget />
+                                </div>
+                            )}
                         </div>
                     )}
                 </div>

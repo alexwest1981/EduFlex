@@ -28,14 +28,16 @@ const AdminDashboard = () => {
         stats: true,
         recentUsers: true,
         recentDocs: true,
-        messages: true
+        messages: true,
+        onlineFriends: true
     });
 
     const widgetLabels = {
         stats: 'Statistik',
         recentUsers: 'Senaste Användare',
         recentDocs: 'Nyligen Uppladdat',
-        messages: 'Senaste Meddelanden'
+        messages: 'Senaste Meddelanden',
+        onlineFriends: 'Online Vänner'
     };
 
     const fetchStats = async () => {

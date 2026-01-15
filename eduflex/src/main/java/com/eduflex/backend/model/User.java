@@ -39,6 +39,12 @@ public class User implements Serializable {
     @Column(columnDefinition = "TEXT")
     private String settings; // JSON-sträng för inställningar (språk, dashboard-widgets etc)
 
+    // --- SOCIAL MEDIA ---
+    private String linkedinUrl;
+    private String instagramUrl;
+    private String facebookUrl;
+    private String twitterUrl;
+
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
@@ -187,6 +193,38 @@ public class User implements Serializable {
 
     public void setSettings(String settings) {
         this.settings = settings;
+    }
+
+    public String getLinkedinUrl() {
+        return linkedinUrl;
+    }
+
+    public void setLinkedinUrl(String linkedinUrl) {
+        this.linkedinUrl = linkedinUrl;
+    }
+
+    public String getInstagramUrl() {
+        return instagramUrl;
+    }
+
+    public void setInstagramUrl(String instagramUrl) {
+        this.instagramUrl = instagramUrl;
+    }
+
+    public String getFacebookUrl() {
+        return facebookUrl;
+    }
+
+    public void setFacebookUrl(String facebookUrl) {
+        this.facebookUrl = facebookUrl;
+    }
+
+    public String getTwitterUrl() {
+        return twitterUrl;
+    }
+
+    public void setTwitterUrl(String twitterUrl) {
+        this.twitterUrl = twitterUrl;
     }
 
     public String getPassword() {

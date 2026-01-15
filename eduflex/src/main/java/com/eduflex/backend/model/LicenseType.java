@@ -32,6 +32,7 @@ public enum LicenseType {
 
             case "GAMIFICATION":
             case "ANALYTICS":
+            case "ENTERPRISE_WHITELABEL":
                 // Only Enterprise has these
                 return false;
 

@@ -1,392 +1,555 @@
 import React, { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight, Calendar as CalIcon, Clock, Loader2, Plus, X, AlertCircle } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Calendar as CalIcon, Clock, Loader2, Plus, X, AlertCircle, Video, Users, User, ArrowLeft, ArrowRight, Check, Trash2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../../services/api';
 import { useAppContext } from '../../context/AppContext';
+import { useDesignSystem } from '../../context/DesignSystemContext';
+
+// --- UTILS ---
+function getMonday(d) {
+    d = new Date(d);
+    var day = d.getDay(),
+        diff = d.getDate() - day + (day == 0 ? -6 : 1);
+    return new Date(d.setDate(diff));
+}
+
+function addDays(d, days) {
+    var date = new Date(d.valueOf());
+    date.setDate(date.getDate() + days);
+    return date;
+}
+
+function isSameDay(d1, d2) {
+    return d1.getDate() === d2.getDate() &&
+        d1.getMonth() === d2.getMonth() &&
+        d1.getFullYear() === d2.getFullYear();
+}
+
+function getWeekNumber(d) {
+    d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+    d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
+    var yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+    var weekNo = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+    return weekNo;
+}
 
 const CalendarView = () => {
     const { t } = useTranslation();
     const navigate = useNavigate();
     const { currentUser } = useAppContext();
+    const { theme } = useDesignSystem();
 
-    // State för data
-    const [currentDate, setCurrentDate] = useState(new Date());
-    const [events, setEvents] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
+    // Auth Logic
+    const roleName = currentUser?.role?.name || currentUser?.role || '';
+    const isTeacherOrAdmin = ['ADMIN', 'TEACHER', 'MENTOR'].includes(roleName); // Added MENTOR just in case
+
+    // Data State
+    const [weekStart, setWeekStart] = useState(getMonday(new Date()));
+    const [calEvents, setCalEvents] = useState([]);
     const [courses, setCourses] = useState([]);
+    const [users, setUsers] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
 
-    // State för Modaler
-    const [showBookingModal, setShowBookingModal] = useState(false); // För att skapa
-    const [showDetailsModal, setShowDetailsModal] = useState(false); // För att visa detaljer
-    const [selectedDay, setSelectedDay] = useState(null);            // Dagen man klickat på
-
-    // Form data för bokning
+    // UI State
+    const [showBookingModal, setShowBookingModal] = useState(false);
     const [newEvent, setNewEvent] = useState({
-        title: '', description: '', date: '', startTime: '09:00', endTime: '10:00', type: 'LECTURE', courseId: ''
+        title: '', description: '', startTime: '', endTime: '', date: '',
+        type: 'MEETING', courseId: '', ownerId: '', status: 'CONFIRMED',
+        platform: 'NONE', topic: '', isMandatory: false
     });
 
-    const isTeacherOrAdmin = currentUser?.role === 'TEACHER' || currentUser?.role === 'ADMIN';
+    const isDark = theme === 'midnight' || theme === 'voltage';
 
-    // --- DATA FETCHING ---
-    useEffect(() => {
-        fetchData();
-    }, [currentUser]);
-
+    // --- FETCHING ---
     const fetchData = async () => {
         setIsLoading(true);
         try {
-            const allCourses = await api.courses.getAll();
-            setCourses(allCourses);
+            console.log("fetchData: isTeacherOrAdmin=", isTeacherOrAdmin, "currentUser.id=", currentUser?.id);
+            const [eventsRes, coursesRes, usersRes] = await Promise.all([
+                api.get('/events').catch(err => { console.error("Events fetch error", err); return []; }),
+                (!isTeacherOrAdmin && currentUser?.id)
+                    ? api.courses.getMyCourses(currentUser.id).catch(err => { console.error("My Courses fetch error", err); return []; })
+                    : api.get('/courses').catch(err => { console.error("Courses fetch error", err); return []; }),
+                (!isTeacherOrAdmin)
+                    ? api.users.getRelated().catch(err => { console.error("Related fetch error", err); return []; })
+                    : api.users.getAll().catch(err => { console.error("Users fetch error", err); return { content: [] }; })
+            ]);
 
-            // Filtrera kurser för visning
-            const myCourses = allCourses.filter(c => {
-                if (currentUser.role === 'ADMIN') return true;
-                if (currentUser.role === 'TEACHER') return c.teacher?.id === currentUser.id;
-                return c.students?.some(s => s.id === currentUser.id);
-            });
+            console.log("fetchData: coursesRes=", coursesRes);
+            setCourses(coursesRes || []);
+            // Handle both Page<User> (content) and List<User> (direct array)
+            const usersData = usersRes.content || usersRes || [];
+            setUsers(usersData);
 
-            // Hämta manuella events
-            let manualEvents = [];
-            try {
-                manualEvents = await api.events.getAll();
-            } catch (e) { console.log("Inga manuella events kunde hämtas"); }
-
-            // Hämta inlämningsuppgifter (Assignments)
-            // Detta är viktigt för att se deadlines i kalendern!
-            let assignmentEvents = [];
-            if (myCourses.length > 0) {
-                const assignPromises = myCourses.map(c =>
-                    api.assignments.getByCourse(c.id).then(assigns => assigns.map(a => ({
-                        ...a,
-                        type: 'ASSIGNMENT',
-                        date: new Date(a.dueDate),
-                        title: `Inlämning: ${a.title}`,
-                        courseId: c.id,
-                        courseName: c.name
-                    }))).catch(() => [])
-                );
-                const results = await Promise.all(assignPromises);
-                results.forEach(arr => assignmentEvents.push(...arr));
+            const eventsData = eventsRes || [];
+            if (Array.isArray(eventsData)) {
+                const mapped = eventsData.map(e => ({
+                    id: e.id,
+                    title: e.title,
+                    description: e.description,
+                    start: new Date(e.startTime),
+                    end: new Date(e.endTime),
+                    type: e.type,
+                    status: e.status,
+                    platform: e.platform,
+                    meetingLink: e.meetingLink,
+                    isMandatory: e.isMandatory,
+                    topic: e.topic,
+                    courseId: e.course?.id,
+                    ownerId: e.owner?.id,
+                    ownerName: e.owner ? `${e.owner.firstName} ${e.owner.lastName}` : 'Okänd'
+                }));
+                setCalEvents(mapped);
             }
-
-            const loadedEvents = [];
-
-            // 1. Lägg till Kursstart/Slut
-            myCourses.forEach(course => {
-                if (course.startDate) {
-                    loadedEvents.push({
-                        id: `start-${course.id}`,
-                        date: new Date(course.startDate),
-                        title: `Kursstart: ${course.name}`,
-                        type: 'course-start',
-                        courseId: course.id
-                    });
-                }
-                if (course.endDate) {
-                    loadedEvents.push({
-                        id: `end-${course.id}`,
-                        date: new Date(course.endDate),
-                        title: `Kursslut: ${course.name}`,
-                        type: 'course-end',
-                        courseId: course.id
-                    });
-                }
-            });
-
-            // 2. Lägg till manuella events
-            if(manualEvents) {
-                manualEvents.forEach(evt => {
-                    const belongsToMyCourse = myCourses.some(c => c.id === evt.course?.id);
-                    if (belongsToMyCourse) {
-                        loadedEvents.push({
-                            id: `evt-${evt.id}`,
-                            date: new Date(evt.startTime),
-                            startTime: new Date(evt.startTime),
-                            endTime: new Date(evt.endTime),
-                            title: evt.title,
-                            description: evt.description,
-                            type: evt.type,
-                            courseId: evt.course?.id
-                        });
-                    }
-                });
-            }
-
-            // 3. Lägg till Assignments
-            loadedEvents.push(...assignmentEvents);
-
-            setEvents(loadedEvents);
         } catch (error) {
-            console.error("Kunde inte hämta kalenderdata:", error);
+            console.error("Failed to load calendar data", error);
         } finally {
             setIsLoading(false);
         }
     };
 
-    // --- INTERAKTION ---
-    const handleDayClick = (date) => {
-        setSelectedDay(date);
-        setShowDetailsModal(true);
+    useEffect(() => {
+        fetchData();
+    }, [weekStart]);
+
+    // --- HANDLERS ---
+    const handlePrevWeek = () => setWeekStart(addDays(weekStart, -7));
+    const handleNextWeek = () => setWeekStart(addDays(weekStart, 7));
+
+    const handleSlotClick = (dayDate, hour) => {
+        // if (!isTeacherOrAdmin) {
+        //     // Optional: Show toast "You cannot book"
+        //     return;
+        // }
+        // Use local date formatting to avoid timezone shifts
+        const year = dayDate.getFullYear();
+        const month = String(dayDate.getMonth() + 1).padStart(2, '0');
+        const day = String(dayDate.getDate()).padStart(2, '0');
+        const dateStr = `${year}-${month}-${day}`;
+        const timeStr = `${hour.toString().padStart(2, '0')}:00`;
+        const endTimeStr = `${(hour + 1).toString().padStart(2, '0')}:00`;
+
+        setNewEvent({
+            ...newEvent,
+            date: dateStr,
+            startTime: timeStr,
+            endTime: endTimeStr,
+            type: 'MEETING',
+            ownerId: '' // Reset
+        });
+        setShowBookingModal(true);
     };
 
     const handleCreateEvent = async (e) => {
         e.preventDefault();
         try {
-            const startDateTime = `${newEvent.date}T${newEvent.startTime}:00`;
-            const endDateTime = `${newEvent.date}T${newEvent.endTime}:00`;
+            const startStr = `${newEvent.date}T${newEvent.startTime}:00`;
+            const endStr = `${newEvent.date}T${newEvent.endTime}:00`;
 
             const payload = {
-                title: newEvent.title,
+                title: newEvent.title || 'Ny händelse',
                 description: newEvent.description,
-                startTime: startDateTime,
-                endTime: endDateTime,
-                type: newEvent.type,
-                courseId: newEvent.courseId
+                startTime: startStr,
+                endTime: endStr,
+                type: isTeacherOrAdmin ? newEvent.type : 'MEETING',
+                status: isTeacherOrAdmin ? newEvent.status : 'PENDING',
+                platform: newEvent.platform,
+                topic: newEvent.topic,
+                isMandatory: isTeacherOrAdmin ? (newEvent.isMandatory || false) : false,
+                courseId: newEvent.courseId ? parseInt(newEvent.courseId) : null,
+                ownerId: newEvent.ownerId ? parseInt(newEvent.ownerId) : null
             };
 
-            await api.events.create(payload);
-            alert("Händelse bokad!");
+            console.log("Creating event with payload:", payload);
+            await api.post('/events', payload);
             setShowBookingModal(false);
-            fetchData();
+            fetchData(); // Refresh
         } catch (err) {
-            alert("Kunde inte skapa händelse.");
+            console.error("Booking error", err);
+            alert("Kunde inte boka händelsen.");
         }
     };
 
-    // --- KALENDER-HJÄLPFUNKTIONER ---
-    const getDaysInMonth = (date) => new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
-    const getFirstDayOfMonth = (date) => {
-        const day = new Date(date.getFullYear(), date.getMonth(), 1).getDay();
-        return day === 0 ? 6 : day - 1; // Måndag = 0
+    const handleDeleteEvent = async (eventId) => {
+        if (!window.confirm('Är du säker på att du vill ta bort denna bokning?')) return;
+        try {
+            await api.delete(`/events/${eventId}`);
+            fetchData(); // Refresh
+        } catch (err) {
+            console.error("Delete error", err);
+            alert("Kunde inte ta bort händelsen.");
+        }
     };
-    const changeMonth = (offset) => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + offset, 1));
-    const isSameDay = (d1, d2) => d1.getDate() === d2.getDate() && d1.getMonth() === d2.getMonth() && d1.getFullYear() === d2.getFullYear();
 
-    const monthNames = ["Januari", "Februari", "Mars", "April", "Maj", "Juni", "Juli", "Augusti", "September", "Oktober", "November", "December"];
-    const dayNames = ['Mån', 'Tis', 'Ons', 'Tor', 'Fre', 'Lör', 'Sön'];
+    const handleUpdateEventStatus = async (eventId, newStatus) => {
+        try {
+            await api.patch(`/events/${eventId}/status`, { status: newStatus });
+            fetchData(); // Refresh
+        } catch (err) {
+            console.error("Status update error", err);
+            alert("Kunde inte uppdatera status.");
+        }
+    };
 
-    const daysInMonth = getDaysInMonth(currentDate);
-    const firstDay = getFirstDayOfMonth(currentDate);
-    const today = new Date();
+    // --- RENDER HELPERS ---
+    const hours = Array.from({ length: 11 }, (_, i) => i + 8); // 08:00 - 18:00
+    const weekDays = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i)); // Mon-Sun
 
-    const currentMonthEvents = events.filter(e =>
-        e.date.getMonth() === currentDate.getMonth() &&
-        e.date.getFullYear() === currentDate.getFullYear()
-    ).sort((a, b) => a.date - b.date);
+    const getEventsForSlot = (dayDate, hour) => {
+        return calEvents.filter(e => {
+            const eDate = e.start;
+            return eDate.getDate() === dayDate.getDate() &&
+                eDate.getMonth() === dayDate.getMonth() &&
+                eDate.getHours() === hour;
+        });
+    };
 
-    // Filter events for selected day modal
-    const selectedDayEvents = selectedDay ? events.filter(e => isSameDay(e.date, selectedDay)) : [];
+    // Get all events for a specific day (for absolute positioning)
+    const getEventsForDay = (dayDate) => {
+        return calEvents.filter(e => {
+            const eDate = e.start;
+            return eDate.getDate() === dayDate.getDate() &&
+                eDate.getMonth() === dayDate.getMonth() &&
+                eDate.getFullYear() === dayDate.getFullYear();
+        });
+    };
 
-    if (isLoading) return <div className="p-20 text-center"><Loader2 className="animate-spin mx-auto text-indigo-600" size={32}/><p className="mt-4 text-gray-500">Laddar kalender...</p></div>;
+    // Calculate event position and height
+    const getEventStyle = (event) => {
+        const startHour = event.start.getHours();
+        const startMinute = event.start.getMinutes();
+        const endHour = event.end.getHours();
+        const endMinute = event.end.getMinutes();
+
+        // Calculate position from 8:00 (first hour)
+        const startOffset = (startHour - 8) + (startMinute / 60);
+        const endOffset = (endHour - 8) + (endMinute / 60);
+        const duration = endOffset - startOffset;
+
+        // Each hour block is 80px (h-20 = 5rem = 80px)
+        const hourHeight = 80;
+        const top = startOffset * hourHeight;
+        const height = Math.max(duration * hourHeight, 20); // Minimum 20px
+
+        return {
+            top: `${top}px`,
+            height: `${height}px`
+        };
+    };
+
+    const getEventTypeStyles = (type) => {
+        switch (type) {
+            case 'LESSON': return 'bg-purple-100 border-purple-300 text-purple-900 dark:bg-purple-900/40 dark:border-purple-700 dark:text-purple-100';
+            case 'EXAM': return 'bg-red-100 border-red-300 text-red-900 dark:bg-red-900/40 dark:border-red-700 dark:text-red-100';
+            case 'WORKSHOP': return 'bg-blue-100 border-blue-300 text-blue-900 dark:bg-blue-900/40 dark:border-blue-700 dark:text-blue-100';
+            case 'MEETING': return 'bg-amber-100 border-amber-300 text-amber-900 dark:bg-amber-900/40 dark:border-amber-700 dark:text-amber-100';
+            default: return 'bg-gray-100 border-gray-300 text-gray-900 dark:bg-gray-800/40 dark:border-gray-600 dark:text-gray-100';
+        }
+    };
+
+    const getEventTypeIcon = (type) => {
+        switch (type) {
+            case 'LESSON': return <Users size={14} />;
+            case 'EXAM': return <AlertCircle size={14} />;
+            case 'WORKSHOP': return <Video size={14} />;
+            case 'MEETING': return <User size={14} />;
+            default: return <Clock size={14} />;
+        }
+    };
 
     return (
-        <div className="max-w-6xl mx-auto animate-in fade-in pb-10 relative">
+        <div className="max-w-7xl mx-auto h-[calc(100vh-120px)] flex flex-col p-6">
 
-            {/* --- HEADER --- */}
-            <header className="mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            {/* Header */}
+            <div className="flex justify-between items-center mb-6 shrink-0 bg-indigo-50 dark:bg-indigo-950/30 p-6 rounded-3xl shadow-lg border border-indigo-100 dark:border-indigo-900/50">
                 <div>
-                    <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
-                        <CalIcon className="text-indigo-600" size={32}/>
-                        Kalender & Schema
+                    <h1 className="text-3xl font-black text-gray-900 dark:text-white flex items-center gap-3">
+                        <div className="p-2 bg-indigo-600 rounded-xl shadow-lg shadow-indigo-500/30">
+                            <CalIcon className="text-white" size={28} />
+                        </div>
+                        {t('sidebar.calendar')}
                     </h1>
-                    <p className="text-gray-500 dark:text-gray-400 mt-1">Översikt över kurser, föreläsningar och inlämningar.</p>
+                    <p className="text-sm text-indigo-600 dark:text-indigo-400 font-bold mt-1">Vecka {getWeekNumber(weekStart)} • {weekStart.getFullYear()}</p>
                 </div>
 
-                <div className="flex items-center gap-4">
-                    {isTeacherOrAdmin && (
-                        <button onClick={() => setShowBookingModal(true)} className="bg-indigo-600 text-white px-4 py-2 rounded-lg font-bold flex items-center gap-2 hover:bg-indigo-700 shadow-sm">
-                            <Plus size={18} /> Boka Händelse
-                        </button>
-                    )}
-
-                    <div className="flex items-center gap-2 bg-white dark:bg-[#1E1F20] p-1.5 rounded-xl shadow-sm border border-gray-200 dark:border-[#3c4043]">
-                        <button onClick={() => changeMonth(-1)} className="p-2 hover:bg-gray-100 dark:hover:bg-[#282a2c] rounded-lg"><ChevronLeft size={20}/></button>
-                        <span className="font-bold text-sm w-28 text-center text-gray-900 dark:text-white capitalize">{monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}</span>
-                        <button onClick={() => changeMonth(1)} className="p-2 hover:bg-gray-100 dark:hover:bg-[#282a2c] rounded-lg"><ChevronRight size={20}/></button>
-                    </div>
-                </div>
-            </header>
-
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-
-                {/* --- KALENDER-RUTNÄT --- */}
-                <div className="lg:col-span-2 bg-white dark:bg-[#1E1F20] rounded-2xl p-6 shadow-sm border border-gray-200 dark:border-[#3c4043]">
-                    <div className="grid grid-cols-7 mb-4">
-                        {dayNames.map(d => (
-                            <div key={d} className="text-center text-xs font-bold text-gray-400 uppercase tracking-wider py-2">{d}</div>
-                        ))}
-                    </div>
-                    <div className="grid grid-cols-7 gap-2">
-                        {Array.from({ length: firstDay }).map((_, i) => <div key={`empty-${i}`} className="aspect-square"></div>)}
-
-                        {Array.from({ length: daysInMonth }).map((_, i) => {
-                            const dayNum = i + 1;
-                            const thisDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), dayNum);
-                            const isToday = isSameDay(thisDate, today);
-                            const dayEvents = events.filter(e => isSameDay(e.date, thisDate));
-
-                            return (
-                                <div
-                                    key={dayNum}
-                                    onClick={() => handleDayClick(thisDate)}
-                                    className={`aspect-square rounded-xl border p-2 relative flex flex-col justify-between transition-all cursor-pointer group 
-                                        ${isToday ? 'bg-indigo-50 border-indigo-200 dark:bg-indigo-900/20 dark:border-indigo-800' : 'border-gray-100 dark:border-[#3c4043] bg-gray-50/30 dark:bg-[#282a2c]/50 hover:border-indigo-300 dark:hover:border-indigo-500'}
-                                    `}
-                                >
-                                    <span className={`text-sm font-bold ${isToday ? 'text-indigo-600 dark:text-indigo-400' : 'text-gray-700 dark:text-gray-300'}`}>{dayNum}</span>
-
-                                    {/* Små färgade prickar för events */}
-                                    <div className="flex gap-1 flex-wrap content-end">
-                                        {dayEvents.slice(0, 4).map((evt, idx) => {
-                                            let color = 'bg-blue-500';
-                                            if (evt.type === 'course-start') color = 'bg-green-500';
-                                            if (evt.type === 'course-end') color = 'bg-orange-500';
-                                            if (evt.type === 'LECTURE') color = 'bg-purple-500';
-                                            if (evt.type === 'EXAM') color = 'bg-orange-500';
-                                            if (evt.type === 'ASSIGNMENT') color = 'bg-red-600';
-                                            return <div key={idx} className={`w-2 h-2 rounded-full ${color}`} title={evt.title}></div>;
-                                        })}
-                                        {dayEvents.length > 4 && <span className="text-[8px] text-gray-400">+</span>}
-                                    </div>
-                                </div>
-                            );
-                        })}
+                <div className="flex items-center gap-3">
+                    <div className="flex items-center bg-white dark:bg-gray-900 rounded-xl p-1.5 shadow-md border border-gray-200 dark:border-gray-700">
+                        <button onClick={handlePrevWeek} className="p-2.5 hover:bg-indigo-50 dark:hover:bg-indigo-950 rounded-lg transition-all text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400"><ChevronLeft size={20} strokeWidth={2.5} /></button>
+                        <span className="text-sm font-bold whitespace-nowrap w-36 text-center text-gray-800 dark:text-gray-100">{weekStart.toLocaleDateString('sv-SE', { month: 'long', year: 'numeric' })}</span>
+                        <button onClick={handleNextWeek} className="p-2.5 hover:bg-indigo-50 dark:hover:bg-indigo-950 rounded-lg transition-all text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400"><ChevronRight size={20} strokeWidth={2.5} /></button>
                     </div>
 
-                    {/* Legend */}
-                    <div className="mt-6 flex gap-4 text-xs text-gray-500 justify-center flex-wrap">
-                        <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-green-500"></div> Start</div>
-                        <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-orange-500"></div> Slut</div>
-                        <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-purple-500"></div> Föreläsning</div>
-                        <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-red-600"></div> Deadline</div>
-                    </div>
-                </div>
-
-                {/* --- KOMMANDE HÄNDELSER (Sidolista) --- */}
-                <div className="bg-white dark:bg-[#1E1F20] rounded-2xl p-6 shadow-sm border border-gray-200 dark:border-[#3c4043] h-fit max-h-[600px] overflow-y-auto custom-scrollbar">
-                    <h3 className="font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                        <Clock size={20} className="text-indigo-500"/> Månadens Schema
-                    </h3>
-                    <div className="space-y-3">
-                        {currentMonthEvents.length > 0 ? currentMonthEvents.map((evt, idx) => (
-                            <div key={idx} onClick={() => navigate(`/course/${evt.courseId}`)} className="p-3 rounded-xl bg-gray-50 dark:bg-[#282a2c] border border-gray-100 dark:border-[#3c4043] hover:bg-gray-100 dark:hover:bg-[#3c4043] cursor-pointer transition-colors">
-                                <div className="flex items-center gap-3 mb-2">
-                                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded text-white ${evt.type === 'LECTURE' ? 'bg-purple-500' : evt.type === 'ASSIGNMENT' ? 'bg-red-600' : evt.type === 'course-start' ? 'bg-green-500' : 'bg-blue-500'}`}>
-                                        {evt.type === 'course-start' ? 'START' : evt.type === 'ASSIGNMENT' ? 'DEADLINE' : evt.type}
-                                    </span>
-                                    <span className="text-xs text-gray-500 font-mono">{evt.date.toLocaleDateString()}</span>
-                                </div>
-                                <h4 className="font-bold text-gray-900 dark:text-white text-sm">{evt.title}</h4>
-                            </div>
-                        )) : <p className="text-gray-500 text-sm italic text-center py-4">Inget schema denna månad.</p>}
-                    </div>
+                    <button onClick={() => setShowBookingModal(true)} className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-xl font-bold shadow-lg shadow-indigo-500/30 hover:shadow-xl hover:shadow-indigo-500/40 transition-all flex items-center gap-2">
+                        <Plus size={20} strokeWidth={3} /> Boka
+                    </button>
                 </div>
             </div>
 
-            {/* --- MODAL 1: DAGSDETALJER --- */}
-            {showDetailsModal && selectedDay && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 backdrop-blur-sm animate-in fade-in">
-                    <div className="bg-white dark:bg-[#1E1F20] w-full max-w-md rounded-2xl shadow-2xl overflow-hidden border border-gray-100 dark:border-[#3c4043] animate-in zoom-in-95">
-                        <div className="p-5 border-b border-gray-100 dark:border-[#3c4043] flex justify-between items-center bg-gray-50 dark:bg-[#282a2c]">
-                            <div>
-                                <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                                    {selectedDay.getDate()} {monthNames[selectedDay.getMonth()]}
-                                </h3>
-                                <p className="text-xs font-bold text-gray-500 uppercase">{dayNames[selectedDay.getDay() === 0 ? 6 : selectedDay.getDay() - 1]}</p>
-                            </div>
-                            <button onClick={() => setShowDetailsModal(false)} className="p-2 hover:bg-gray-200 dark:hover:bg-[#3c4043] rounded-full text-gray-500"><X size={20}/></button>
-                        </div>
+            {/* Calendar Grid */}
+            <div className="flex-1 bg-white dark:bg-[#1E1E1E] rounded-3xl shadow-xl border-2 border-gray-100 dark:border-gray-800 overflow-hidden flex flex-col">
 
-                        <div className="p-5 max-h-[60vh] overflow-y-auto">
-                            {selectedDayEvents.length > 0 ? (
-                                <div className="space-y-3">
-                                    {selectedDayEvents.map((ev, idx) => (
-                                        <div key={idx} className="flex gap-4 p-3 rounded-xl bg-gray-50 dark:bg-[#131314] border border-gray-100 dark:border-[#3c4043] hover:border-indigo-300 transition-colors cursor-pointer" onClick={() => navigate(`/course/${ev.courseId}`)}>
-                                            <div className={`p-3 rounded-lg flex items-center justify-center h-fit text-white
-                                                ${ev.type === 'ASSIGNMENT' ? 'bg-red-500' : ev.type === 'LECTURE' ? 'bg-purple-500' : 'bg-indigo-500'}
-                                            `}>
-                                                {ev.type === 'ASSIGNMENT' ? <AlertCircle size={20}/> : <Clock size={20}/>}
-                                            </div>
-                                            <div>
-                                                <h4 className="font-bold text-gray-900 dark:text-white text-sm">{ev.title}</h4>
-                                                <p className="text-xs text-gray-500">{ev.courseName || 'Kurs'}</p>
-                                                <div className="flex items-center gap-2 text-xs text-gray-400 mt-1">
-                                                    {ev.startTime && <span>{ev.startTime.getHours()}:{String(ev.startTime.getMinutes()).padStart(2,'0')} - {ev.endTime.getHours()}:{String(ev.endTime.getMinutes()).padStart(2,'0')}</span>}
-                                                    {ev.type === 'ASSIGNMENT' && <span className="text-red-500 font-bold uppercase">Deadline</span>}
+                {/* Day Headers */}
+                <div className="grid grid-cols-[60px_repeat(7,1fr)] border-b-2 border-indigo-100 dark:border-indigo-900/30 shrink-0 bg-gray-50 dark:bg-gray-900">
+                    <div className="bg-gray-100 dark:bg-[#2A2A2A] border-r-2 border-gray-200 dark:border-gray-700" /> {/* Time column header */}
+                    {weekDays.map((d, i) => (
+                        <div key={i} className={`py-5 px-2 text-center border-r border-gray-100 dark:border-gray-800 transition-all ${isSameDay(d, new Date()) ? 'bg-indigo-100 dark:bg-indigo-950/50' : ''}`}>
+                            <p className="text-[10px] text-gray-500 dark:text-gray-400 uppercase font-black tracking-[0.15em] mb-2">{d.toLocaleDateString('sv-SE', { weekday: 'short' })}</p>
+                            <div className={`text-2xl font-black inline-flex items-center justify-center w-12 h-12 rounded-2xl transition-all ${isSameDay(d, new Date()) ? 'bg-indigo-600 text-white shadow-xl shadow-indigo-500/50 scale-110' : 'text-gray-800 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800'}`}>
+                                {d.getDate()}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+
+                {/* Time Slots */}
+                <div className="flex-1 overflow-y-auto">
+                    {hours.map(hour => (
+                        <div key={hour} className="grid grid-cols-[60px_repeat(7,1fr)] h-20 border-b border-gray-100 dark:border-gray-800/50 relative hover:bg-gray-50/30 dark:hover:bg-white/[0.02] transition-colors">
+
+                            {/* Time Label */}
+                            <div className="relative text-right pr-4 pt-2 text-xs font-black text-gray-500 dark:text-gray-400 font-mono border-r-2 border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-[#2A2A2A]">
+                                {hour}:00
+                            </div>
+
+                            {/* Days Columns */}
+                            {weekDays.map((d, i) => {
+                                const dayEvents = getEventsForDay(d);
+                                return (
+                                    <div
+                                        key={i}
+                                        className="relative border-r border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors group cursor-pointer"
+                                        onClick={() => handleSlotClick(d, hour)}
+                                        title={`Klicka för att boka ${hour}:00`}
+                                    >
+                                        {/* Add Button Hint - Only show on first hour */}
+                                        {hour === 8 && dayEvents.length === 0 && (
+                                            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-200 z-0">
+                                                <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
+                                                    <Plus size={16} strokeWidth={3} />
                                                 </div>
                                             </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            ) : (
-                                <div className="text-center py-8">
-                                    <div className="w-12 h-12 bg-gray-100 dark:bg-[#282a2c] rounded-full flex items-center justify-center mx-auto mb-2 text-gray-300"><CalIcon size={24}/></div>
-                                    <p className="text-gray-500 text-sm">Inga händelser.</p>
-                                </div>
-                            )}
-                        </div>
-                        {isTeacherOrAdmin && (
-                            <div className="p-4 bg-gray-50 dark:bg-[#282a2c] border-t border-gray-100 dark:border-[#3c4043] text-center">
-                                <button onClick={() => {
-                                    setNewEvent(prev => ({ ...prev, date: selectedDay.toISOString().split('T')[0] }));
-                                    setShowDetailsModal(false);
-                                    setShowBookingModal(true);
-                                }} className="text-indigo-600 text-sm font-bold hover:underline">
-                                    + Lägg till händelse detta datum
-                                </button>
-                            </div>
-                        )}
-                    </div>
-                </div>
-            )}
+                                        )}
 
-            {/* --- MODAL 2: BOKA HÄNDELSE --- */}
-            {showBookingModal && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 backdrop-blur-sm animate-in fade-in">
-                    <div className="bg-white dark:bg-[#1E1F20] w-full max-w-md rounded-2xl shadow-2xl overflow-hidden">
-                        <div className="bg-indigo-600 p-4 flex justify-between items-center text-white">
-                            <h3 className="font-bold">Boka Händelse</h3>
-                            <button onClick={() => setShowBookingModal(false)}><X size={20}/></button>
+                                        {/* Events with absolute positioning - Only render on first hour to avoid duplicates */}
+                                        {hour === 8 && dayEvents.map(ev => {
+                                            const style = getEventStyle(ev);
+                                            const statusColor = ev.status === 'PENDING' ? 'border-l-4 border-l-yellow-500' :
+                                                ev.status === 'REJECTED' ? 'border-l-4 border-l-red-500' :
+                                                    'border-l-4 border-l-green-500';
+
+                                            return (
+                                                <div
+                                                    key={ev.id}
+                                                    className={`absolute inset-x-1 rounded-lg border text-xs px-2 py-1 overflow-hidden shadow-sm z-10 transition-all hover:shadow-md hover:z-20 group/event ${getEventTypeStyles(ev.type)} ${statusColor}`}
+                                                    style={style}
+                                                    onClick={(e) => e.stopPropagation()}
+                                                >
+                                                    <div className="font-bold truncate flex items-center gap-1.5 mb-0.5">
+                                                        {getEventTypeIcon(ev.type)}
+                                                        <span>{ev.title}</span>
+                                                    </div>
+                                                    <div className="opacity-80 text-[10px] truncate">
+                                                        {ev.start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - {ev.end.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                    </div>
+
+                                                    {/* Action Buttons */}
+                                                    <div className="absolute top-1 right-1 opacity-0 group-hover/event:opacity-100 transition-opacity flex gap-1">
+                                                        {isTeacherOrAdmin && ev.status === 'PENDING' && (
+                                                            <>
+                                                                <button
+                                                                    onClick={(e) => { e.stopPropagation(); handleUpdateEventStatus(ev.id, 'CONFIRMED'); }}
+                                                                    className="bg-green-500 hover:bg-green-600 text-white p-1 rounded shadow-sm"
+                                                                    title="Godkänn"
+                                                                >
+                                                                    <Check size={12} />
+                                                                </button>
+                                                                <button
+                                                                    onClick={(e) => { e.stopPropagation(); handleUpdateEventStatus(ev.id, 'REJECTED'); }}
+                                                                    className="bg-red-500 hover:bg-red-600 text-white p-1 rounded shadow-sm"
+                                                                    title="Avböj"
+                                                                >
+                                                                    <X size={12} />
+                                                                </button>
+                                                            </>
+                                                        )}
+                                                        {isTeacherOrAdmin && (
+                                                            <button
+                                                                onClick={(e) => { e.stopPropagation(); handleDeleteEvent(ev.id); }}
+                                                                className="bg-gray-700 hover:bg-gray-800 text-white p-1 rounded shadow-sm"
+                                                                title="Ta bort"
+                                                            >
+                                                                <Trash2 size={12} />
+                                                            </button>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                );
+                            })}
                         </div>
+                    ))}
+                </div>
+            </div>
+
+            {/* Booking Modal */}
+            {showBookingModal && (
+                <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center backdrop-blur-sm p-4">
+                    <div className="bg-white dark:bg-[#2A2A2A] w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in-95">
+                        <div className="p-6 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center">
+                            <h2 className="text-xl font-bold text-gray-900 dark:text-white">Boka Händelse</h2>
+                            <button onClick={() => setShowBookingModal(false)}><X size={20} className="text-gray-500" /></button>
+                        </div>
+
                         <form onSubmit={handleCreateEvent} className="p-6 space-y-4">
+
+                            {/* Title */}
                             <div>
-                                <label className="block text-xs font-bold text-gray-500 mb-1">Titel</label>
-                                <input className="w-full p-2 border rounded-lg dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" required value={newEvent.title} onChange={e => setNewEvent({...newEvent, title: e.target.value})} placeholder="T.ex. Föreläsning" />
+                                <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Titel</label>
+                                <input
+                                    className="w-full bg-gray-50 dark:bg-[#1E1E1E] border border-gray-200 dark:border-gray-700 rounded-lg p-3 outline-none focus:ring-2 ring-indigo-500 dark:text-white"
+                                    placeholder="Möte med..."
+                                    required
+                                    value={newEvent.title}
+                                    onChange={e => setNewEvent({ ...newEvent, title: e.target.value })}
+                                />
                             </div>
+
+                            {/* Type & Course */}
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-xs font-bold text-gray-500 mb-1">Typ</label>
-                                    <select className="w-full p-2 border rounded-lg dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" value={newEvent.type} onChange={e => setNewEvent({...newEvent, type: e.target.value})}>
-                                        <option value="LECTURE">Föreläsning</option>
-                                        <option value="EXAM">Prov / Tenta</option>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Typ</label>
+                                    <select
+                                        value={newEvent.type}
+                                        onChange={(e) => setNewEvent({ ...newEvent, type: e.target.value })}
+                                        className="w-full rounded-xl border-gray-200 dark:border-gray-700 bg-white dark:bg-[#2A2A2A] text-sm focus:ring-indigo-500 focus:border-indigo-500"
+                                    >
+                                        <option value="LESSON">Lektion</option>
+                                        <option value="MEETING">Möte / One-on-One</option>
                                         <option value="WORKSHOP">Workshop</option>
-                                        <option value="OTHER">Övrigt</option>
+                                        <option value="EXAM">Prov</option>
+                                        <option value="ASSIGNMENT">Uppgift</option>
+                                        <option value="OTHER">Annat</option>
                                     </select>
                                 </div>
+
+                                {/* Course Selection (Optional) */}
                                 <div>
-                                    <label className="block text-xs font-bold text-gray-500 mb-1">Kurs</label>
-                                    <select className="w-full p-2 border rounded-lg dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" required value={newEvent.courseId} onChange={e => setNewEvent({...newEvent, courseId: e.target.value})}>
-                                        <option value="">Välj kurs...</option>
-                                        {courses.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Kurs (Frivilligt)</label>
+                                    <select
+                                        value={newEvent.courseId || ''}
+                                        onChange={(e) => setNewEvent({ ...newEvent, courseId: e.target.value || null })}
+                                        className="w-full rounded-xl border-gray-200 dark:border-gray-700 bg-white dark:bg-[#2A2A2A] text-sm focus:ring-indigo-500 focus:border-indigo-500"
+                                    >
+                                        <option value="">Ingen kurs vald</option>
+                                        {courses.map(course => (
+                                            <option key={course.id} value={course.id}>{course.name}</option>
+                                        ))}
                                     </select>
                                 </div>
+
+                                {/* Participant Selection (Optional - for One-on-One) */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Elev / Deltagare (Frivilligt)</label>
+                                    <select
+                                        value={newEvent.ownerId || ''}
+                                        onChange={(e) => setNewEvent({ ...newEvent, ownerId: e.target.value || null })}
+                                        className="w-full rounded-xl border-gray-200 dark:border-gray-700 bg-white dark:bg-[#2A2A2A] text-sm focus:ring-indigo-500 focus:border-indigo-500"
+                                    >
+                                        <option value="">Ingen specifik deltagare (Jag bokar)</option>
+                                        {users.map(u => (
+                                            <option key={u.id} value={u.id}>{u.firstName} {u.lastName} ({u.role?.name || 'Student'})</option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                {/* ADVANCED FIELDS */}
+
+                                {/* Platform Selection (Only for Online types effectively, but show for all non-Exams maybe?) */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Plats / Plattform</label>
+                                    <select
+                                        value={newEvent.platform || 'NONE'}
+                                        onChange={(e) => setNewEvent({ ...newEvent, platform: e.target.value })}
+                                        className="w-full rounded-xl border-gray-200 dark:border-gray-700 bg-white dark:bg-[#2A2A2A] text-sm focus:ring-indigo-500 focus:border-indigo-500"
+                                    >
+                                        <option value="NONE">Fysisk / Ingen specifik</option>
+                                        <option value="ZOOM">Zoom</option>
+                                        <option value="TEAMS">Microsoft Teams</option>
+                                        <option value="MEETS">Google Meet</option>
+                                    </select>
+                                </div>
+
+                                {/* Topic */}
+                                <div className="md:col-span-2">
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Ämne / Fokus</label>
+                                    <input
+                                        type="text"
+                                        value={newEvent.topic || ''}
+                                        onChange={(e) => setNewEvent({ ...newEvent, topic: e.target.value })}
+                                        placeholder="T.ex. Genomgång av modul 3"
+                                        className="w-full rounded-xl border-gray-200 dark:border-gray-700 bg-white dark:bg-[#2A2A2A] text-sm focus:ring-indigo-500 focus:border-indigo-500"
+                                    />
+                                </div>
+
+                                {/* Mandatory Checkbox (Teacher Only) */}
+                                {isTeacherOrAdmin && (
+                                    <div className="md:col-span-2 flex items-center gap-2">
+                                        <input
+                                            type="checkbox"
+                                            id="isMandatory"
+                                            checked={newEvent.isMandatory || false}
+                                            onChange={(e) => setNewEvent({ ...newEvent, isMandatory: e.target.checked })}
+                                            className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                                        />
+                                        <label htmlFor="isMandatory" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                            Obligatorisk närvaro
+                                        </label>
+                                    </div>
+                                )}
+
+                                <div className="md:col-span-2">
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Beskrivning</label>
+                                    <textarea
+                                        value={newEvent.description}
+                                        onChange={(e) => setNewEvent({ ...newEvent, description: e.target.value })}
+                                        className="w-full rounded-xl border-gray-200 dark:border-gray-700 bg-white dark:bg-[#2A2A2A] text-sm focus:ring-indigo-500 focus:border-indigo-500"
+                                        rows="3"
+                                    />
+                                </div>    </div>
+
+                            {/* Time */}
+                            <div className="flex gap-4">
+                                <div className="flex-1">
+                                    <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Datum</label>
+                                    <input type="date" className="w-full bg-gray-50 dark:bg-[#1E1E1E] border border-gray-200 dark:border-gray-700 rounded-lg p-3 dark:text-white" required value={newEvent.date} onChange={e => setNewEvent({ ...newEvent, date: e.target.value })} />
+                                </div>
+                                <div className="w-24">
+                                    <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Start</label>
+                                    <input type="time" className="w-full bg-gray-50 dark:bg-[#1E1E1E] border border-gray-200 dark:border-gray-700 rounded-lg p-3 dark:text-white" required value={newEvent.startTime} onChange={e => setNewEvent({ ...newEvent, startTime: e.target.value })} />
+                                </div>
+                                <div className="w-24">
+                                    <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Slut</label>
+                                    <input type="time" className="w-full bg-gray-50 dark:bg-[#1E1E1E] border border-gray-200 dark:border-gray-700 rounded-lg p-3 dark:text-white" required value={newEvent.endTime} onChange={e => setNewEvent({ ...newEvent, endTime: e.target.value })} />
+                                </div>
                             </div>
-                            <div>
-                                <label className="block text-xs font-bold text-gray-500 mb-1">Datum</label>
-                                <input type="date" className="w-full p-2 border rounded-lg dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" required value={newEvent.date} onChange={e => setNewEvent({...newEvent, date: e.target.value})} />
-                            </div>
-                            <div className="grid grid-cols-2 gap-4">
-                                <div><label className="block text-xs font-bold text-gray-500 mb-1">Starttid</label><input type="time" className="w-full p-2 border rounded-lg dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" required value={newEvent.startTime} onChange={e => setNewEvent({...newEvent, startTime: e.target.value})} /></div>
-                                <div><label className="block text-xs font-bold text-gray-500 mb-1">Sluttid</label><input type="time" className="w-full p-2 border rounded-lg dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" required value={newEvent.endTime} onChange={e => setNewEvent({...newEvent, endTime: e.target.value})} /></div>
-                            </div>
-                            <button type="submit" className="w-full bg-indigo-600 text-white font-bold py-2 rounded-lg hover:bg-indigo-700">Boka</button>
+
+                            <button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl shadow-lg shadow-indigo-500/30 transition-all">
+                                Bekräfta Bokning
+                            </button>
+
                         </form>
                     </div>
                 </div>
-            )}
-        </div>
+            )
+            }
+
+        </div >
     );
 };
+
+// Utils
 
 export default CalendarView;

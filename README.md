@@ -27,6 +27,9 @@
 
 ### 🆕 Latest Updates (Jan 2026)
 
+*   **Advanced Calendar System:** Complete calendar overhaul with precise time positioning, dynamic event heights, and teacher approval workflow. Students can book meetings with teachers, who can approve/reject/delete bookings. Events display at exact times (e.g., 10:30) with accurate duration visualization.
+*   **Participant Filtering:** Students see only classmates and teachers in booking dropdowns, ensuring privacy and relevant connections.
+*   **Modern Flat Design:** Refreshed calendar UI with clean, flat design matching the EduFlex design system.
 *   **Global Dashboard Customization:** All users (Admin, Teacher, Student, Mentor) can now customize their dashboard widgets. Toggle visibility of stats, graphs, and lists via the new "Eye" icon.
 *   **Course View Refactoring:** Merged "Activity" and "Attendance" tabs for teachers to provide a consolidated view. Restricted sensitive student data visibility.
 *   **SSO Accuracy:** Fixed login tracking for Single Sign-On users. The "Studentuppföljning" now correctly reports last login times for Keycloak users.

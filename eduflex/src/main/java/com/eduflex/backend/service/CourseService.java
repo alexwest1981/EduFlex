@@ -7,13 +7,14 @@ import com.eduflex.backend.model.*;
 import com.eduflex.backend.repository.CourseApplicationRepository;
 import com.eduflex.backend.repository.CourseMaterialRepository;
 import com.eduflex.backend.repository.CourseRepository;
-import com.eduflex.backend.repository.SkolverketCourseRepository; // Added import
+import com.eduflex.backend.repository.SkolverketCourseRepository;
 
 import com.eduflex.backend.repository.UserRepository;
 import com.eduflex.backend.repository.AssignmentRepository;
 import com.eduflex.backend.repository.SubmissionRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -26,6 +27,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class CourseService {
 
     private final CourseRepository courseRepository;
@@ -33,7 +35,7 @@ public class CourseService {
     private final CourseMaterialRepository materialRepository;
     private final CourseApplicationRepository applicationRepository;
     private final com.eduflex.backend.repository.CourseEvaluationResponseRepository evaluationResponseRepository;
-    private final SkolverketCourseRepository skolverketCourseRepository; // Added field
+    private final SkolverketCourseRepository skolverketCourseRepository;
 
     private final com.eduflex.backend.repository.CourseResultRepository resultRepository;
     private final AssignmentRepository assignmentRepository;
@@ -84,16 +86,28 @@ public class CourseService {
         course.setCategory(dto.category());
         course.setDescription(dto.description());
         if (dto.startDate() != null)
-            course.setStartDate(dto.startDate().toString()); // Kept original conversion to String
+            course.setStartDate(dto.startDate().toString());
         if (dto.endDate() != null)
-            course.setEndDate(dto.endDate().toString()); // Kept original conversion to String
-        course.setColor(dto.color() != null && !dto.color().isEmpty() ? dto.color() : "bg-indigo-600"); // Kept original
-                                                                                                        // logic
-        course.setMaxStudents(dto.maxStudents() != null ? dto.maxStudents() : 30); // Modified maxStudents logic
+            course.setEndDate(dto.endDate().toString());
+        course.setColor(dto.color() != null && !dto.color().isEmpty() ? dto.color() : "bg-indigo-600");
+        course.setMaxStudents(dto.maxStudents() != null ? dto.maxStudents() : 30);
 
         // Link to Skolverket course if provided
         if (dto.skolverketCourseId() != null) {
             skolverketCourseRepository.findById(dto.skolverketCourseId()).ifPresent(course::setSkolverketCourse);
+        }
+
+        // Create Group Rooms
+        if (dto.groupRooms() != null && !dto.groupRooms().isEmpty()) {
+            for (java.util.Map<String, String> roomData : dto.groupRooms()) {
+                if (roomData.get("name") != null) { // Modified: Link optional
+                    GroupRoom room = new GroupRoom();
+                    room.setName(roomData.get("name"));
+                    room.setLink(roomData.get("link") != null ? roomData.get("link") : "");
+                    room.setType(roomData.getOrDefault("type", "ZOOM"));
+                    course.addGroupRoom(room);
+                }
+            }
         }
 
         course.setTeacher(teacher);
@@ -101,6 +115,7 @@ public class CourseService {
         return courseRepository.save(course);
     }
 
+    @Transactional
     public CourseDTO updateCourse(Long id, Map<String, Object> updates) {
         Course course = getCourseById(id);
 
@@ -130,6 +145,26 @@ public class CourseService {
             course.setExamLink((String) updates.get("examLink"));
         if (updates.containsKey("examType"))
             course.setExamType((String) updates.get("examType"));
+
+        // Handle Group Rooms Update
+        if (updates.containsKey("groupRooms")) {
+            List<Map<String, String>> roomsData = (List<Map<String, String>>) updates.get("groupRooms");
+            System.out.println("Updating group rooms for course " + id + ". Received: "
+                    + (roomsData != null ? roomsData.size() : "null"));
+
+            course.getGroupRooms().clear(); // Replace all
+            if (roomsData != null) {
+                for (Map<String, String> roomData : roomsData) {
+                    if (roomData.get("name") != null) { // Modified: Link is optional now
+                        GroupRoom room = new GroupRoom();
+                        room.setName(roomData.get("name"));
+                        room.setLink(roomData.get("link") != null ? roomData.get("link") : "");
+                        room.setType(roomData.getOrDefault("type", "ZOOM"));
+                        course.addGroupRoom(room);
+                    }
+                }
+            }
+        }
         // ------------------------------
 
         if (updates.containsKey("isOpen")) {
@@ -143,7 +178,6 @@ public class CourseService {
         return convertToDTO(courseRepository.save(course));
     }
 
-    // --- ÖVRIGA METODER (KVAR) ---
     public void deleteCourse(Long id) {
         courseRepository.deleteById(id);
     }
@@ -228,7 +262,6 @@ public class CourseService {
         if (availableFrom != null && !availableFrom.isEmpty()) {
             material.setAvailableFrom(java.time.LocalDateTime.parse(availableFrom));
         } else if (availableFrom != null && availableFrom.isEmpty()) {
-            // Om man skickar tom sträng betyder det att man vill ta bort datumet
             material.setAvailableFrom(null);
         }
         if (file != null && !file.isEmpty()) {
@@ -338,14 +371,6 @@ public class CourseService {
         setCourseResult(courseId, studentId, "PASSED");
     }
 
-    // FIX: Vi behöver AssignmentRepository och SubmissionRepository för att göra
-    // detta automatiskt.
-    // Låt oss istället göra en manuell endpoint "claimCertificate" som bara funkar
-    // om status redan är PASSED,
-    // ELLER en som läraren använder.
-    // Men användaren ville ha "när kriterier är uppfyllda".
-    // Okej, jag lägger till AssignmentRepository till CourseService.
-
     private CourseDTO convertToDTO(Course c) {
         UserSummaryDTO teacherDTO = null;
         if (c.getTeacher() != null) {
@@ -364,7 +389,8 @@ public class CourseService {
                 c.getStartDate(), c.getEndDate(), c.getColor(), teacherDTO, studentDTOs,
                 c.isOpen(), c.getEvaluation(), c.getMaxStudents(), c.getStudents().size(),
                 c.getClassroomLink(), c.getClassroomType(), c.getExamLink(), // Nya fält
-                c.getSkolverketCourse() // Include Skolverket course data
+                c.getSkolverketCourse(), // Include Skolverket course data
+                c.getGroupRooms() // Include Group Rooms
         );
     }
 }

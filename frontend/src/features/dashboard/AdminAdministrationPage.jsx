@@ -5,7 +5,7 @@ import { api } from '../../services/api';
 import AdministrationPanel from './AdministrationPanel';
 import SkolverketImport from '../admin/SkolverketImport';
 import SkolverketDataEntry from '../admin/SkolverketDataEntry';
-import SettingsTab from '../admin/SettingsTab';
+import SystemSettings from '../system/SystemSettings';
 
 const AdminAdministrationPage = () => {
     const { t } = useTranslation();
@@ -84,7 +84,7 @@ const AdminAdministrationPage = () => {
                         fetchStats={fetchStats}
                     />
                 )}
-                {activeTab === 'system' && <SettingsTab />}
+                {activeTab === 'system' && <SystemSettings asTab={true} />}
                 {activeTab === 'skolverket' && <SkolverketImport />}
                 {activeTab === 'skolverket-edit' && <SkolverketDataEntry />}
             </div>

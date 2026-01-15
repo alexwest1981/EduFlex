@@ -7,6 +7,27 @@ export default {
     darkMode: 'class',
     theme: {
         extend: {
+            borderRadius: {
+                'none': '0',
+                'sm': 'var(--radius-sm)',
+                'DEFAULT': 'var(--radius-md)',
+                'md': 'var(--radius-md)',
+                'lg': 'var(--radius-lg)',
+                'xl': 'var(--radius-xl)',
+                '2xl': 'var(--radius-2xl)',
+                '3xl': 'var(--radius-3xl)',
+                'full': 'var(--radius-full)',
+                'btn': 'var(--button-border-radius)',
+            },
+            boxShadow: {
+                'sm': 'var(--card-shadow)',
+                'DEFAULT': 'var(--card-shadow)',
+                'md': 'var(--card-shadow)',
+                'lg': 'var(--card-shadow)',
+                'xl': 'var(--card-shadow)',
+                '2xl': 'var(--card-shadow)',
+                'btn': 'var(--button-shadow)',
+            },
             colors: {
                 // Dynamic Theme Colors (Replaces default Indigo)
                 indigo: {

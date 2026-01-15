@@ -30,7 +30,8 @@ public class MessageController {
     }
 
     @PostMapping("/send")
-    public ResponseEntity<MessageDTO> sendMessage(@AuthenticationPrincipal UserDetails userDetails, @RequestBody Map<String, Object> payload) {
+    public ResponseEntity<MessageDTO> sendMessage(@AuthenticationPrincipal UserDetails userDetails,
+            @RequestBody Map<String, Object> payload) {
         User sender = userRepository.findByUsername(userDetails.getUsername()).orElseThrow();
         Long recipientId = Long.valueOf(payload.get("recipientId").toString());
         String subject = (String) payload.get("subject");
@@ -65,17 +66,24 @@ public class MessageController {
 
     // FIX: Använd HashMap istället för Map.of för att undvika Type Inference-fel
     @GetMapping("/contacts")
-    public ResponseEntity<List<Map<String, Object>>> getContacts(@AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<Map<String, List<Map<String, Object>>>> getContacts(
+            @AuthenticationPrincipal UserDetails userDetails) {
         User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow();
-        List<User> contacts = userService.getContactsForUser(user.getId());
+        Map<String, List<User>> categorized = userService.getCategorizedContacts(user.getId());
 
-        List<Map<String, Object>> result = contacts.stream().map(u -> {
-            Map<String, Object> map = new HashMap<>();
-            map.put("id", u.getId());
-            map.put("fullName", u.getFullName());
-            map.put("role", u.getRole());
-            return map;
-        }).collect(Collectors.toList());
+        Map<String, List<Map<String, Object>>> result = new HashMap<>();
+
+        categorized.forEach((category, users) -> {
+            List<Map<String, Object>> userDtos = users.stream().map(u -> {
+                Map<String, Object> map = new HashMap<>();
+                map.put("id", u.getId());
+                map.put("fullName", u.getFullName());
+                map.put("role", u.getRole().getName()); // Send Role Name string
+                map.put("profilePictureUrl", u.getProfilePictureUrl());
+                return map;
+            }).collect(Collectors.toList());
+            result.put(category, userDtos);
+        });
 
         return ResponseEntity.ok(result);
     }

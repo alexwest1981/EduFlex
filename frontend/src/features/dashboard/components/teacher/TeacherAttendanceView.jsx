@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Calendar, Plus, CheckCircle, XCircle, Users, Clock, Save, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { api } from '../../../../services/api';
 
 const TeacherAttendanceView = ({ course, currentUser, API_BASE, token }) => {
     const { t, i18n } = useTranslation();
@@ -17,9 +18,8 @@ const TeacherAttendanceView = ({ course, currentUser, API_BASE, token }) => {
     }, [course.id]);
 
     const loadEvents = () => {
-        fetch(`${API_BASE}/events/course/${course.id}`, { headers: { 'Authorization': `Bearer ${token}` } })
-            .then(res => res.json())
-            .then(data => setEvents(data))
+        api.events.getByCourse(course.id)
+            .then(data => setEvents(Array.isArray(data) ? data : []))
             .catch(err => console.error(err));
     };
 
@@ -34,11 +34,7 @@ const TeacherAttendanceView = ({ course, currentUser, API_BASE, token }) => {
                 endTime: new Date(newEvent.endTime).toISOString()
             };
 
-            await fetch(`${API_BASE}/events`, {
-                method: 'POST',
-                headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
+            await api.events.create(payload);
             setShowCreateModal(false);
             loadEvents();
         } catch (error) {
@@ -52,14 +48,13 @@ const TeacherAttendanceView = ({ course, currentUser, API_BASE, token }) => {
         setAttendanceMap({});
 
         // 1. Fetch existing attendance records
-        fetch(`${API_BASE}/attendance/event/${event.id}`, { headers: { 'Authorization': `Bearer ${token}` } })
-            .then(res => res.json())
+        api.attendance.getByEvent(event.id)
             .then(data => {
                 const map = {};
                 // Initialize with ALL students in course as "not set" or default absent?
                 // Better: Iterate students, check if in data
                 course.students.forEach(student => {
-                    const record = data.find(a => a.student.id === student.id);
+                    const record = data?.find(a => a.student.id === student.id);
                     if (record) {
                         map[student.id] = { present: record.present, note: record.note };
                     } else {
@@ -82,14 +77,10 @@ const TeacherAttendanceView = ({ course, currentUser, API_BASE, token }) => {
             // Save for each student (This could be optimized to a bulk update endpoint, but for now loop)
             const promises = course.students.map(student => {
                 const status = attendanceMap[student.id];
-                return fetch(`${API_BASE}/attendance/event/${selectedEvent.id}/mark`, {
-                    method: 'POST',
-                    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        studentId: student.id,
-                        present: status.present,
-                        note: status.note
-                    })
+                return api.attendance.mark(selectedEvent.id, {
+                    studentId: student.id,
+                    present: status.present,
+                    note: status.note
                 });
             });
 
