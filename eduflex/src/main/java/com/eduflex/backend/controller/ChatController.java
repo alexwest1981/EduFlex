@@ -26,16 +26,16 @@ public class ChatController {
     private final SimpMessagingTemplate messagingTemplate;
     private final ChatMessageRepository chatMessageRepository;
     private final NotificationRepository notificationRepository;
-    private final org.springframework.data.redis.core.RedisTemplate<String, Object> redisTemplate; // NEW
+
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    private org.springframework.data.redis.core.RedisTemplate<String, Object> redisTemplate;
 
     @Autowired
     public ChatController(SimpMessagingTemplate messagingTemplate, ChatMessageRepository chatMessageRepository,
-            NotificationRepository notificationRepository,
-            org.springframework.data.redis.core.RedisTemplate<String, Object> redisTemplate) {
+            NotificationRepository notificationRepository) {
         this.messagingTemplate = messagingTemplate;
         this.chatMessageRepository = chatMessageRepository;
         this.notificationRepository = notificationRepository;
-        this.redisTemplate = redisTemplate; // NEW
     }
 
     // --- WEBSOCKET (Realtid) ---
@@ -53,7 +53,12 @@ public class ChatController {
         // VIKTIGT: Publicera till Redis Topic istället för direkt till klient
         // Alla instanser som lyssnar på denna topic kommer att ta emot meddelandet via
         // RedisMessageSubscriber
-        redisTemplate.convertAndSend("chat.topic", saved);
+        if (redisTemplate != null) {
+            redisTemplate.convertAndSend("chat.topic", saved);
+        } else {
+            // Fallback if Redis is disabled (e.g. single instance mode)
+            messagingTemplate.convertAndSend("/topic/public", saved);
+        }
 
         // Skapa notis (så klockan i menyn också lyser upp)
         try {

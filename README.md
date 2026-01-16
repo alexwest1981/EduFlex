@@ -20,6 +20,8 @@
   <img src="https://img.shields.io/badge/Spring%20Boot-3.4-brightgreen?style=for-the-badge&logo=springboot"/>
   <img src="https://img.shields.io/badge/PostgreSQL-15-336791?style=for-the-badge&logo=postgresql&logoColor=white"/>
   <img src="https://img.shields.io/badge/Docker-Containerized-blue?style=for-the-badge&logo=docker&logoColor=white"/>
+  <img src="https://img.shields.io/badge/Kubernetes-Helm-326CE5?style=for-the-badge&logo=kubernetes&logoColor=white"/>
+  <img src="https://img.shields.io/badge/Multi--Tenant-SaaS-purple?style=for-the-badge"/>
   <img src="https://img.shields.io/badge/MinIO-S3%20Storage-c72c48?style=for-the-badge&logo=minio&logoColor=white"/>
   <img src="https://img.shields.io/badge/Redis-Cache-red?style=for-the-badge&logo=redis&logoColor=white"/>
   <img src="https://img.shields.io/badge/Keycloak-SSO-4d4d4d?style=for-the-badge&logo=keycloak&logoColor=white"/>
@@ -27,19 +29,19 @@
   <img src="https://img.shields.io/badge/License-Proprietary-orange?style=for-the-badge"/>
 </p>
 
+---
 
 ### 🆕 Latest Updates (Jan 2026)
 
-*   **Advanced Calendar System:** Complete calendar overhaul with precise time positioning, dynamic event heights, and teacher approval workflow. Students can book meetings with teachers, who can approve/reject/delete bookings. Events display at exact times (e.g., 10:30) with accurate duration visualization.
-*   **Participant Filtering:** Students see only classmates and teachers in booking dropdowns, ensuring privacy and relevant connections.
-*   **Modern Flat Design:** Refreshed calendar UI with clean, flat design matching the EduFlex design system.
-*   **Global Dashboard Customization:** All users (Admin, Teacher, Student, Mentor) can now customize their dashboard widgets. Toggle visibility of stats, graphs, and lists via the new "Eye" icon.
-*   **Course View Refactoring:** Merged "Activity" and "Attendance" tabs for teachers to provide a consolidated view. Restricted sensitive student data visibility.
-*   **SSO Accuracy:** Fixed login tracking for Single Sign-On users. The "Studentuppföljning" now correctly reports last login times for Keycloak users.
-*   **Stability:** Resolved JSON recursion bugs in User API and fixed Docker network communication for authentication services.
+*   **Multi-Tenancy Architecture:** Complete schema-based multi-tenancy implementation. Each organization gets isolated database schema with automatic Flyway migrations, role creation, and admin user provisioning.
+*   **Tenant Registration API:** Self-service organization registration via `/api/tenants` with automatic schema provisioning.
+*   **X-Tenant-ID Routing:** Request-level tenant isolation using `X-Tenant-ID` header with Hibernate multi-tenancy support.
+*   **Advanced Calendar System:** Complete calendar overhaul with precise time positioning, dynamic event heights, and teacher approval workflow.
+*   **Global Dashboard Customization:** All users can customize their dashboard widgets via the new "Eye" icon.
+*   **SSO Accuracy:** Fixed login tracking for Single Sign-On users with correct last login times for Keycloak users.
+*   **Kubernetes Ready:** Full Helm chart support for production Kubernetes deployments.
 
 ---
-
 
 <div id="-english"></div>
 
@@ -50,12 +52,19 @@
 - [Key Features](#-key-features)
 - [System Architecture](#-system-architecture)
 - [Technology Stack](#-technology-stack)
+- [Multi-Tenancy](#-multi-tenancy)
 - [Getting Started](#-getting-started)
 - [Configuration](#-configuration)
+- [Authentication Modes](#-authentication-modes)
+- [API Reference](#-api-reference)
 - [Modules Deep Dive](#-modules-deep-dive)
+- [Monitoring & Observability](#-monitoring--observability)
 - [Localization](#-localization)
+- [Deployment Options](#-deployment-options)
 - [Roadmap](#-roadmap)
 - [License](#-license)
+
+---
 
 ### 🏫 About the Project
 
@@ -63,55 +72,91 @@
 
 Whether you are a single educator, a private school, or a municipal education board, EduFlex scales to meet your needs using a microservices-ready architecture orchestrating storage, caching, and compute.
 
+**Key Differentiators:**
+- 🏢 **True Multi-Tenancy:** Schema-per-tenant isolation for complete data separation
+- 🎮 **Gamification Built-in:** Points, badges, levels, and leaderboards
+- 🇸🇪 **Skolverket Integration:** Direct integration with Swedish National Curriculum
+- 💼 **SaaS Ready:** Subscription tiers, invoicing, and payment processing
+- 🎨 **White-label Support:** 8 design systems with complete visual customization
+
+---
+
 ### 🌟 Key Features
 
 #### 🍎 Core Education
-- **Course Management:** Create comprehensive courses with rich text, video, attachments and quizzes.
-- **SCORM / xAPI Support:** Import interactive course packages from Articulate/Adobe Captivate.
-- **Assignment Engine:** Students submit files, teachers grade with feedback.
-- **Certification:** Automatically generating verifiable PDF certificates upon course completion.
+| Feature | Description |
+|---------|-------------|
+| **Course Management** | Rich courses with text, video, attachments, and quizzes |
+| **SCORM / xAPI Support** | Import packages from Articulate/Adobe Captivate |
+| **Assignment Engine** | File submissions with teacher grading and feedback |
+| **Certification** | Auto-generated verifiable PDF certificates |
+| **Lesson Progress** | Track student progress through course materials |
+| **Quiz System** | Multiple choice, open-ended, and true/false questions |
 
 #### 🎮 Gamification & Engagement
-- **Points & Levels:** Users earn XP for logging in, completing lessons, and acing quizzes.
-- **Badges:** Visual achievements using Lucide iconography.
-- **Leaderboards:** Foster healthy competition (toggleable per course).
+| Feature | Description |
+|---------|-------------|
+| **Points & Levels** | XP for logins, lessons, and quiz scores |
+| **Badges** | Visual achievements with Lucide iconography |
+| **Leaderboards** | Optional class/course rankings |
+| **Activity Tracking** | Detailed student activity logs |
 
 #### 🇸🇪 Skolverket Integration
-- **Curriculum Mapping:** Direct integration with Swedish National Agency for Education (Skolverket).
-- **Automated Import:** Python mechanisms to fetch course codes, descriptions, and grading criteria.
-- **Detailed Views:** View "Kunskapskrav" (Grading Criteria) directly within the course interface.
+| Feature | Description |
+|---------|-------------|
+| **Curriculum Mapping** | Direct Skolverket database integration |
+| **Automated Import** | Python tools for course codes and descriptions |
+| **Grading Criteria** | "Kunskapskrav" (E-A) directly in course view |
+| **CSN Reporting** | Attendance export for CSN compliance |
 
 #### 💼 Revenue & Administration
-- **SaaS Ready:** Built-in subscription tiers (Free, Pro, Enterprise).
-- **Invoicing:** Automatic PDF invoice generation for recurring payments.
-- **User Management:** Detailed profiles with avatar uploads (MinIO backed).
-- **Role-Based Access Control (RBAC):** Granular permissions for Super Admin, Admin, Teacher, and Student.
-- **Configurable Dashboards:** Admins can define specific dashboard layouts (Admin, Principal, Teacher, Student, Mentor) for any role.
-- **Enterprise Themes & Whitelabel:** Complete visual customization for Enterprise customers with 7 professional design systems:
-  - **EduFlex Classic:** Traditional sidebar layout with professional aesthetics
-  - **EduFlex Focus:** Minimalist design with left-marker navigation and floating container
-  - **EduFlex Horizon:** Top navigation with beige gradient and gold accents
-  - **EduFlex Nebula:** Glassmorphic design with purple/lavender palette
-  - **EduFlex Ember:** Card-contained sidebar with orange accents and dark green background
-  - **EduFlex Voltage:** Acid lime neon theme with integrated dark sidebar
-  - **EduFlex Midnight:** Dark mode with mint green accents and pill navigation
-  - **EduFlex Pulse:** Music player-inspired with bright red and circular navigation
-- **Theme Manager:** Real-time preview and customization of colors, typography, spacing, and layout per tenant.
+| Feature | Description |
+|---------|-------------|
+| **Subscription Tiers** | Free, Pro, Enterprise licensing |
+| **Invoicing** | Automatic PDF invoice generation |
+| **Payment Integration** | Stripe/Swish abstraction layer |
+| **User Management** | Profiles with MinIO-backed avatar uploads |
+| **RBAC** | Fine-grained permissions per role |
+| **Audit Logging** | Track all critical changes |
 
-#### 📊 Analytics & Insights (New)
-- **Principal Dashboard:** Dedicated view for school leaders with high-level metrics (Revenue, Active Users, Server Health).
-- **Risk Analysis:** AI-driven widgets identifying students at risk of failing or dropping out.
-- **CSN Reporting:** Automated export of student attendance and activity data for CSN compliance.
-- **Drill-Down:** Deep-dive into individual student history, logged hours, and activity logs.
+#### 🏢 Multi-Tenancy (NEW)
+| Feature | Description |
+|---------|-------------|
+| **Schema Isolation** | Each tenant in separate PostgreSQL schema |
+| **Automatic Provisioning** | Schema + migrations + admin user on registration |
+| **Request Routing** | `X-Tenant-ID` header for tenant selection |
+| **Tenant API** | Full CRUD for tenant management |
+
+#### 🎨 Enterprise Themes & Whitelabel
+Complete visual customization with 8 professional design systems:
+- **EduFlex Classic** – Traditional sidebar layout
+- **EduFlex Focus** – Minimalist with floating container
+- **EduFlex Horizon** – Top navigation with beige gradient
+- **EduFlex Nebula** – Glassmorphic purple/lavender
+- **EduFlex Ember** – Card sidebar with orange accents
+- **EduFlex Voltage** – Acid lime neon with dark sidebar
+- **EduFlex Midnight** – Dark mode with mint accents
+- **EduFlex Pulse** – Music player-inspired red theme
+
+#### 📊 Analytics & Insights
+| Feature | Description |
+|---------|-------------|
+| **Principal Dashboard** | High-level metrics (Revenue, Active Users, Health) |
+| **Risk Analysis** | AI-driven at-risk student identification |
+| **Student Activity Logs** | Deep-dive into individual history |
+| **Real-time Debug Terminal** | Matrix-style live log streaming |
 
 #### 🌍 Localization
-- **Multi-language Support:** Fully translated UI for minimal friction.
-- **Supported Languages:** Swedish (Primary), English, Arabic, Norwegian, Danish, Finnish, German, French, Spanish.
-
-#### 🛠 Monitoring & Maintenance (New)
-- **Real-time Debug Terminal:** "Matrix-style" live log streamer for instant backend feedback.
-- **Client Error Tracking:** Automatic capture of frontend crashes and JavaScript errors.
-- **Log Dashboard:** Searchable, color-coded view of server logs directly in the Admin UI.
+Fully translated UI supporting:
+- 🇸🇪 Swedish (Primary)
+- 🇬🇧 English
+- 🇸🇦 Arabic
+- 🇳🇴 Norwegian
+- 🇩🇰 Danish
+- 🇫🇮 Finnish
+- 🇩🇪 German
+- 🇫🇷 French
+- 🇪🇸 Spanish
 
 ---
 
@@ -133,48 +178,148 @@ Whether you are a single educator, a private school, or a municipal education bo
 
 ### 🛠 System Architecture
 
-EduFlex utilizes a containerized architecture managed by **Docker Compose**. This ensures identical environments from development to production.
+EduFlex uses a containerized architecture managed by **Docker Compose** or **Kubernetes (Helm)**.
 
 ```mermaid
 graph TD
-    User((User)) -->|Browser| Frontend[React Frontend container]
+    User((User)) -->|Browser| Frontend[React Frontend]
     
-    subgraph "Docker Network (eduflex-net)"
-        Frontend -->|API Requests| Backend[Spring Boot API container]
-        Backend -->|Audit/Logs| DB[(PostgreSQL)]
+    subgraph "Docker/K8s Network"
+        Frontend -->|API + X-Tenant-ID| Backend[Spring Boot API]
+        Backend -->|Per-Tenant Schema| DB[(PostgreSQL)]
         Backend -->|Session/Cache| Redis[(Redis)]
         Backend -->|File Storage| MinIO[(MinIO S3)]
+        Backend -->|SSO| Keycloak[Keycloak]
         
-        Prometheus[Prometheus] -->|Scrape Metrics| Backend
-        Grafana[Grafana] -->|Query Data| Prometheus
+        Prometheus[Prometheus] -->|Scrape /actuator| Backend
+        Grafana[Grafana] -->|Query| Prometheus
     end
     
     Backend -.->|External| Stripe[Stripe API]
     Backend -.->|External| Skolverket[Skolverket Web]
 ```
 
+#### Multi-Tenancy Data Flow
+
+```mermaid
+sequenceDiagram
+    participant Client
+    participant TenantFilter
+    participant TenantContext
+    participant Hibernate
+    participant PostgreSQL
+
+    Client->>TenantFilter: Request + X-Tenant-ID: "acme"
+    TenantFilter->>PostgreSQL: SELECT dbSchema FROM tenants WHERE id='acme'
+    TenantFilter->>TenantContext: Set ThreadLocal = "tenant_acme"
+    TenantFilter->>Hibernate: Continue filter chain
+    Hibernate->>PostgreSQL: SET search_path TO "tenant_acme"
+    PostgreSQL-->>Client: Data from tenant_acme schema only
+```
+
+---
+
 ### 💻 Technology Stack
 
 #### Frontend Service (`eduflex-frontend`)
-- **Core:** React 19, Vite (Build Tool)
-- **State:** Zustand (Global State), React Context
-- **Styling:** Tailwind CSS v4, Lucide React (Icons)
-- **Internationalization:** i18next
-- **Data Viz:** Recharts (Analytics)
+| Category | Technologies |
+|----------|-------------|
+| **Core** | React 19, Vite 5 |
+| **State** | Zustand, React Context |
+| **Styling** | Tailwind CSS v4, CSS Variables |
+| **Icons** | Lucide React |
+| **Charts** | Recharts |
+| **Real-time** | SockJS + STOMP (WebSockets) |
+| **i18n** | i18next (9 languages) |
+| **Rich Text** | React-Quill-new |
 
 #### Backend Service (`eduflex-backend`)
-- **Core:** Java 21, Spring Boot 3.4
-- **Security:** Spring Security 6
-- **Data:** Spring Data JPA (Hibernate), PostgreSQL Driver
-- **Caching:** Spring Data Redis
-- **Docs:** Swagger / OpenAPI 3.0
+| Category | Technologies |
+|----------|-------------|
+| **Core** | Java 21, Spring Boot 3.4 |
+| **Security** | Spring Security 6, JWT, OAuth2 |
+| **Data** | Spring Data JPA, Hibernate 6.4 |
+| **Database** | PostgreSQL 15 |
+| **Caching** | Spring Data Redis |
+| **Storage** | MinIO/S3 SDK |
+| **PDF** | OpenPDF |
+| **Migrations** | Flyway (programmatic per-tenant) |
+| **API Docs** | Swagger / OpenAPI 3.0 |
+| **Monitoring** | Micrometer + Actuator |
 
 #### Infrastructure
-- **Database:** PostgreSQL 15 (Alpine)
-- **Object Storage:** MinIO (S3 compatible)
-- **Cache:** Redis 7 (Alpine)
-- **Monitoring:** Prometheus & Grafana
-- **Backups:** Automatic daily PostgreSQL dumps
+| Component | Technology |
+|-----------|------------|
+| **Database** | PostgreSQL 15 (Alpine) |
+| **Cache** | Redis 7 (Alpine) |
+| **Object Storage** | MinIO (S3-compatible) |
+| **SSO Provider** | Keycloak 24 |
+| **Monitoring** | Prometheus + Grafana |
+| **Backups** | Daily PostgreSQL dumps |
+| **Container Runtime** | Docker 24+ |
+| **Orchestration** | Docker Compose / Kubernetes |
+
+---
+
+### 🏢 Multi-Tenancy
+
+EduFlex implements **schema-based multi-tenancy** for complete data isolation.
+
+#### Architecture
+```
+┌─────────────────────────────────────────────────────────────┐
+│                     PostgreSQL Database                      │
+├─────────────────┬─────────────────┬─────────────────────────┤
+│  public schema  │  tenant_acme    │  tenant_school2        │
+│  ───────────────│  ───────────────│  ───────────────────── │
+│  • tenants      │  • app_users    │  • app_users           │
+│  (metadata)     │  • roles        │  • roles               │
+│                 │  • courses      │  • courses             │
+│                 │  • (40+ tables) │  • (40+ tables)        │
+└─────────────────┴─────────────────┴─────────────────────────┘
+```
+
+#### Creating a Tenant
+
+**Via API:**
+```bash
+curl -X POST http://localhost:8080/api/tenants \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Acme School",
+    "domain": "acme.local",
+    "dbSchema": "tenant_acme",
+    "organizationKey": "acme",
+    "adminEmail": "admin@acme.local",
+    "adminPassword": "SecurePass123",
+    "adminFirstName": "John",
+    "adminLastName": "Admin"
+  }'
+```
+
+**What happens automatically:**
+1. ✅ Tenant metadata saved to `public.tenants`
+2. ✅ PostgreSQL schema `tenant_acme` created
+3. ✅ All 40+ tables migrated via Flyway
+4. ✅ ADMIN role created
+5. ✅ Admin user created with encrypted password
+
+#### Using X-Tenant-ID Header
+
+All API requests must include the tenant header:
+```http
+X-Tenant-ID: acme
+```
+
+#### Key Components
+| File | Purpose |
+|------|---------|
+| `TenantContext.java` | ThreadLocal tenant storage |
+| `TenantFilter.java` | Extracts and validates X-Tenant-ID |
+| `TenantIdentifierResolver.java` | Hibernate tenant resolution |
+| `SchemaMultiTenantConnectionProvider.java` | Sets PostgreSQL search_path |
+
+> 📖 **Full documentation:** [docs/TENANT_ADMIN_GUIDE.md](docs/TENANT_ADMIN_GUIDE.md)
 
 ---
 
@@ -183,71 +328,213 @@ graph TD
 #### Prerequisites
 - **Docker Desktop** (latest version)
 - **Git**
+- **Java 21** (for local backend development)
+- **Node.js 20+** (for local frontend development)
 
-#### Installation
+#### Quick Start with Docker
 
-1.  **Clone the Repository**
-    ```bash
-    git clone https://github.com/alexwest1981/EduFlex.git
-    cd EduFlex
-    ```
+1. **Clone the Repository**
+   ```bash
+   git clone https://github.com/alexwest1981/EduFlex.git
+   cd EduFlex
+   ```
 
-2.  **Start the System**
-    This command builds the images and spins up all 7 containers (DB, Redis, MinIO, Backend, Frontend, Prometheus, Grafana).
-    ```bash
-    docker compose up --build -d
-    ```
+2. **Start Everything**
+   ```bash
+   docker compose up --build -d
+   ```
 
-3.  **Access the Application**
-    - **Frontend (LMS):** [http://localhost:5173](http://localhost:5173)
-    - **Backend API:** [http://localhost:8080/api](http://localhost:8080/api)
-    - **MinIO Console:** [http://localhost:9001](http://localhost:9001) (User: `minioadmin` / Pass: `minioadmin`)
-    - **Grafana Dashboards:** [http://localhost:3000](http://localhost:3000) (User: `admin` / Pass: `admin` - Skip password change)
+3. **Access the Application**
+   | Service | URL | Credentials |
+   |---------|-----|-------------|
+   | **Frontend (LMS)** | http://localhost:5173 | – |
+   | **Backend API** | http://localhost:8080/api | – |
+   | **Swagger Docs** | http://localhost:8080/swagger-ui.html | – |
+   | **MinIO Console** | http://localhost:9001 | minioadmin / minioadmin |
+   | **Grafana** | http://localhost:3000 | admin / admin |
+   | **Keycloak** | http://localhost:8180 | admin / admin |
+   | **Prometheus** | http://localhost:9090 | – |
 
-4.  **License Key**
-    The system requires a signed license key (`eduflex.license`) to unlock Pro/Enterprise features.
+#### Local Development
+
+**Backend (Spring Boot):**
+```bash
+cd eduflex
+mvn spring-boot:run
+```
+
+**Frontend (Vite):**
+```bash
+cd frontend
+npm install
+npm run dev
+```
 
 ---
 
 ### ⚙️ Configuration
 
 #### Environment Variables
-The system is pre-configured via `docker-compose.yml`. Key variables include:
 
 | Service | Variable | Description | Default |
-|:---|:---|:---|:---|
-| **Backend** | `SPRING_DATASOURCE_URL` | DB Connection string | `jdbc:postgresql://db:5432/eduflex` |
-| **Backend** | `MINIO_URL` | Internal S3 endpoint | `http://minio:9000` |
-| **Frontend** | `VITE_API_BASE_URL` | API Endpoint | `http://localhost:8080/api` |
-| **Grafana** | `GF_AUTH_ANONYMOUS_ENABLED` | Allow viewing without login | `true` |
+|---------|----------|-------------|---------|
+| **Backend** | `SPRING_DATASOURCE_URL` | DB connection | `jdbc:postgresql://db:5432/eduflex` |
+| **Backend** | `MINIO_URL` | S3 endpoint | `http://minio:9000` |
+| **Backend** | `SPRING_REDIS_HOST` | Redis host | `redis` |
+| **Backend** | `EDUFLEX_AUTH_MODE` | Auth mode | `internal` |
+| **Frontend** | `VITE_API_BASE_URL` | API endpoint | `http://localhost:8080/api` |
 
-#### Backups
-To access the running database directly:
-```bash
-docker exec -it eduflex-db psql -U postgres -d eduflex
-```
-Backups are automatically taken daily. To force a backup:
-```bash
-docker restart eduflex-backup
+#### application.properties Key Settings
+
+```properties
+# Multi-tenancy
+spring.jpa.properties.hibernate.multiTenancy=SCHEMA
+spring.flyway.enabled=false  # Managed programmatically
+
+# SSO Mode (internal, keycloak, hybrid)
+eduflex.auth.mode=internal
+
+# License
+eduflex.license.path=eduflex.license
 ```
 
+---
+
+### 🔐 Authentication Modes
+
+EduFlex supports three authentication modes:
+
+| Mode | Description | Use Case |
+|------|-------------|----------|
+| `internal` | JWT-based local authentication | Small deployments, development |
+| `keycloak` | Full Keycloak SSO | Enterprise with existing IdP |
+| `hybrid` | Both internal and Keycloak | Migration scenarios |
+
+Configure via `eduflex.auth.mode` property.
+
+> 📖 **Keycloak Setup:** [docs/TENANT_ADMIN_GUIDE.md#keycloak-administration](docs/TENANT_ADMIN_GUIDE.md#-keycloak-administration)
+
+---
+
+### 📡 API Reference
+
+**Base URL:** `http://localhost:8080/api`
+
+All requests (except `/api/tenants`) require `X-Tenant-ID` header.
+
+#### Key Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/api/tenants` | Create new tenant |
+| `POST` | `/api/auth/login` | Authenticate user |
+| `GET` | `/api/courses` | List courses |
+| `GET` | `/api/users/me` | Current user profile |
+| `GET` | `/api/modules` | System modules |
+
+> 📖 **Full API docs:** [docs/API.md](docs/API.md) or Swagger UI
+
+---
+
+### 🎛 Modules Deep Dive
+
+EduFlex uses a **"Kernel + Extensions"** architecture. Features are toggleable:
+
+| Module | Description | License |
+|--------|-------------|---------|
+| **SCORM** | Upload/play courseware | Enterprise |
+| **REVENUE** | Subscriptions & invoicing | Pro+ |
+| **GAMIFICATION** | XP, Badges, Leaderboards | Pro+ |
+| **CHAT** | WebSocket messaging | Pro+ |
+| **SSO** | Keycloak integration | Enterprise |
+| **WHITELABEL** | Custom branding/themes | Enterprise |
+
+Toggle via `/api/modules/{key}/toggle` (Admin only).
+
+---
+
+### 📊 Monitoring & Observability
+
+#### Prometheus Metrics
+Backend exposes metrics at `/actuator/prometheus`:
+- JVM memory, GC, threads
+- HTTP request latency & counts
+- Database connection pool stats
+- Custom business metrics
+
+#### Grafana Dashboards
+Pre-configured dashboards for:
+- System Overview
+- JVM Performance
+- HTTP Request Analysis
+- Database Performance
+
+#### Real-time Debug Terminal
+Admin users can access live log streaming via the built-in "Matrix-style" debug terminal in the Admin UI.
+
+---
+
+### 🚢 Deployment Options
+
+#### Option 1: Docker Compose (Recommended for Dev/Small)
+```bash
+docker compose up -d
+```
+
+#### Option 2: Kubernetes with Helm (Production)
+```bash
+helm install eduflex ./helm/eduflex \
+  --namespace eduflex \
+  --create-namespace \
+  -f values-production.yaml
+```
+
+> 📖 **Helm documentation:** [HELM_README.md](HELM_README.md)
+
+#### Option 3: Manual Deployment
+See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for manual setup.
+
+---
+
+### 🗺 Roadmap
+
+| Feature | Status |
+|---------|--------|
+| Multi-tenancy (Schema-per-tenant) | ✅ Implemented |
+| Kubernetes Native (Helm Charts) | ✅ Implemented |
+| Keycloak SSO Integration | ✅ Implemented |
+| Prometheus/Grafana Monitoring | ✅ Implemented |
+| Gamification Engine | ✅ Implemented |
+| SCORM/xAPI Support | ✅ Implemented |
+| Microservices Split (Video/PDF) | 🔜 Q2 2026 |
+| Event Bus (Kafka/RabbitMQ) | 🔜 Q3 2026 |
+| AI-powered Quiz Generation | 🔜 Q2 2026 |
+| Mobile App (React Native) | 🔜 Q4 2026 |
+
+---
 
 ### ❓ Troubleshooting
 
 #### Common Issues
 
 **1. "Port 8080 is already in use"**
-This means another service (like Tomcat or Jenkins) is running on your machine.
-*   **Fix:** Stop the conflicting service or change the port mapping in `docker-compose.yml` (e.g., `"8081:8080"`).
+```bash
+# Find and kill process
+netstat -ano | findstr :8080
+taskkill /PID <PID> /F
+```
 
-**2. WebSocket Connection Failed (401/404)**
-If the Debug Terminal shows "OFFLINE":
-*   Ensure you are using `ws://` protocol (managed automatically by frontend).
-*   Check if `SecurityConfig` allows `/ws-log/**`.
-*   **Fix:** Run `docker compose down -v` to clear stale volumes and restart.
+**2. "Tenant not found" errors**
+- Ensure `X-Tenant-ID` header is present
+- Verify tenant exists: `curl http://localhost:8080/api/tenants`
 
-**3. Database Connection Refused**
-*   Wait 10-15 seconds after startup. The Database container needs time to initialize before the Backend can connect.
+**3. Database connection refused**
+- Wait 10-15 seconds after startup
+- Check: `docker logs eduflex-db`
+
+**4. WebSocket "OFFLINE"**
+- Hard refresh browser (Ctrl+F5)
+- Check SecurityConfig allows `/ws-log/**`
 
 ---
 
@@ -255,114 +542,76 @@ If the Debug Terminal shows "OFFLINE":
 <br />
 <div id="-svenska"></div>
 
-
 ## 🇸🇪 Svenska
 
 ### 📖 Innehållsförteckning
 - [Om Projektet](#-om-projektet)
 - [Nyckelfunktioner](#-nyckelfunktioner)
-- [Systemarkitektur](#-systemarkitektur)
-- [Teknikstack](#-teknikstack)
+- [Multi-Tenancy](#-multi-tenancy-sv)
 - [Kom igång](#-kom-igång)
 - [Konfiguration](#-konfiguration-sv)
 
+---
+
 ### 🏫 Om Projektet
 
-**EduFlex 2.0** är ett komplett, molnbaserat **Learning Management System (LMS)** designat för att skala från små utbildningsföretag till stora kommunala verksamheter. Systemet kombinerar modern pedagogik (Gamification, interaktiva element) med affärskritisk funktionalitet (fakturering, prenumerationer) i en säker, Docker-baserad mikrotjänst-arkitektur.
+**EduFlex 2.0** är ett komplett, molnbaserat **Learning Management System (LMS)** designat för att skala från små utbildningsföretag till stora kommunala verksamheter. Systemet kombinerar modern pedagogik (Gamification, interaktiva element) med affärskritisk funktionalitet (fakturering, prenumerationer) i en säker, Docker-baserad arkitektur.
+
+**Huvudsakliga fördelar:**
+- 🏢 **Äkta Multi-Tenancy:** Schema-per-organisation för komplett dataisoleringen
+- 🎮 **Inbyggd Gamification:** Poäng, utmärkelser, nivåer och topplistor
+- 🇸🇪 **Skolverket-integration:** Direkt koppling till svenska läroplanen
+- 💼 **SaaS-redo:** Prenumerationsnivåer, fakturering och betalningar
+- 🎨 **White-label:** 8 designsystem med full visuell anpassning
+
+---
 
 ### 🌟 Nyckelfunktioner
 
 #### 🍎 Utbildning (Core)
-- **Kurshantering:** Skapa rika kurser med text, video, bilagor och quiz.
-- **SCORM / xAPI:** Fullt stöd för uppladdning av paket från Articulate/Captivate.
-- **Uppgifter:** Elever lämnar in filer, lärare rättar och ger feedback.
-- **Certifikat:** Automatiska, spårbara PDF-diplom vid avklarad kurs.
+- **Kurshantering:** Rika kurser med text, video, bilagor och quiz
+- **SCORM / xAPI:** Stöd för Articulate/Captivate-paket
+- **Uppgifter:** Filinlämningar med lärarbedömning
+- **Certifikat:** Automatiska, spårbara PDF-diplom
 
 #### 🎮 Gamification
-- **Poäng & Levels:** Användare tjänar XP genom aktivitet och framsteg.
-- **Utmärkelser:** Visuella badges för prestationer.
-- **Topplistor:** Frivilliga topplistor för att öka engagemanget i klassen.
+- **Poäng & Nivåer:** XP genom aktivitet och framsteg
+- **Utmärkelser:** Visuella badges för prestationer
+- **Topplistor:** Frivilliga rankingar per klass/kurs
 
 #### 🇸🇪 Skolverket-integration
-- **Kurskoppling:** Direkt koppling till Skolverkets databas.
-- **Automatisk Import:** Python-verktyg hämtar kurskoder och beskrivningar.
-- **Kunskapskrav:** Visa betygsmatriser (E-A) direkt i kursvyn för elever och lärare.
+- **Kurskoppling:** Direkt Skolverket-databaskoppling
+- **Automatisk Import:** Python-verktyg för kurskoder
+- **Kunskapskrav:** Betygsmatriser (E-A) direkt i kursvyn
 
-#### 💼 Administration & Ekonomi
-- **SaaS-stöd:** Inbyggda prenumerationsnivåer (Free, Pro, Enterprise).
-- **Fakturering:** Automatgenerering av PDF-fakturor.
-- **Användarprofiler:** Avancerad profilhantering med bildlagring via MinIO.
-- **Rättighetsstyrning (RBAC):** Detaljerade behörigheter för Admin, Lärare och Elev.
-- **Konfigurerbara Dashboards:** Administratörer kan styra vilken dashboard-layout (Admin, Rektor, Lärare, Student, Mentor) en roll ska ha.
-- **Enterprise-teman & Whitelabel:** Komplett visuell anpassning för Enterprise-kunder med 7 professionella designsystem:
-  - **EduFlex Classic:** Traditionell sidopanel med professionell estetik
-  - **EduFlex Focus:** Minimalistisk design med vänstermarkör-navigering och flytande container
-  - **EduFlex Horizon:** Toppnavigering med beige gradient och guldaccenter
-  - **EduFlex Nebula:** Glassmorfisk design med lila/lavendel-palett
-  - **EduFlex Ember:** Kortinnesluten sidopanel med orange accenter och mörkgrön bakgrund
-  - **EduFlex Voltage:** Syra-lime neon-tema med integrerad mörk sidopanel
-  - **EduFlex Midnight:** Mörkt läge med mint-gröna accenter och pill-navigering
-  - **EduFlex Pulse:** Musikspelare-inspirerad med klarröd och cirkulär navigering
-- **Temahanterare:** Realtidsförhandsgranskning och anpassning av färger, typografi, avstånd och layout per tenant.
-
-#### 📊 Analys & Uppföljning (Nytt)
-- **Rektorspanel:** Dedikerad vy för skolledare med nyckeltal (Omsättning, Aktiva Användare, Systemhälsa).
-- **Riskanalys:** Widgets som identifierar elever i farozonen baserat på närvaro och aktivitet.
-- **CSN-rapportering:** Automatisk export av närvarodata för CSN-underlag.
-- **Djupdykning:** Detaljerad historik och aktivitetslogg på individnivå.
-
-#### 🌍 Lokalisering
-- **Flerspråksstöd:** Hela plattformen är översatt.
-- **Stödda språk:** Svenska (Primärt), Engelska, Arabiska, Norska, Danska, Finska, Tyska, Franska, Spanska.
-
-
-#### 🛠 Övervakning & Underhåll (Nytt)
-- **Real-time Debug Terminal:** "Matrix-liknande" live-strömning av loggar för direkt feedback.
-- **Klientfelspårning:** Automatisk insamling av frontend-krascher och JavaScript-fel.
-- **Log Dashboard:** Sökbar, färgkodad vy av serverloggar direkt i Admin-gränssnittet.
+#### 🏢 Multi-Tenancy (NYTT)
+- **Schema-isolering:** Varje organisation i eget PostgreSQL-schema
+- **Automatisk Provisionering:** Schema + migrationer + admin vid registrering
+- **Request-routing:** `X-Tenant-ID` header för organisation-val
 
 ---
 
-### 📸 Skärmdumpar
+### 🏢 Multi-Tenancy (Sv)
 
-| <img src="docs/ScreenGrabs/dashboard_overview.png" width="400" alt="Admin Översikt" /> | <img src="docs/ScreenGrabs/teacher_dashboard.png" width="400" alt="Lärarpanel" /> |
-|:---:|:---:|
-| **Admin Översikt** | **Lärarpanel** |
+EduFlex implementerar **schema-baserad multi-tenancy** för komplett dataisolering.
 
-| <img src="docs/ScreenGrabs/quiz_generator_ai.png" width="400" alt="AI Quiz-Generator" /> | <img src="docs/ScreenGrabs/admin_system_settings.png" width="400" alt="Systeminställningar" /> |
-|:---:|:---:|
-| **AI Quiz-Generator** | **Systeminställningar** |
+#### Skapa ny Tenant
+```bash
+curl -X POST http://localhost:8080/api/tenants \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Stockholms Tekniska Gymnasium",
+    "domain": "stg.local",
+    "dbSchema": "tenant_stg",
+    "organizationKey": "stg",
+    "adminEmail": "admin@stg.local",
+    "adminPassword": "SäkertLösen123",
+    "adminFirstName": "Anna",
+    "adminLastName": "Andersson"
+  }'
+```
 
-| <img src="docs/ScreenGrabs/admin_insights.png" width="400" alt="Analys & Insikter" /> | <img src="docs/ScreenGrabs/admin_debug_terminal.png" width="400" alt="Live Debug Terminal" /> |
-|:---:|:---:|
-| **Analys & Insikter** | **Live Debug Terminal** |
-
----
-
-### 🛠 Systemarkitektur
-
-Systemet körs i en container-miljö orkestrerad av **Docker Compose**. Detta garanterar identiska miljöer för utveckling och produktion.
-
-*(Se diagram i den engelska sektionen ovan)*
-
-### 💻 Teknikstack
-
-#### Frontend (`eduflex-frontend`)
-- **Ramverk:** React 19, Vite
-- **State Management:** Zustand
-- **Design:** Tailwind CSS v4, Lucide React
-- **Grafer:** Recharts
-
-#### Backend (`eduflex-backend`)
-- **Kärna:** Java 21, Spring Boot 3.4
-- **Säkerhet:** Spring Security 6, JWT
-- **Databas:** PostgreSQL 15, Spring Data JPA
-- **Cache:** Redis 7
-
-#### Infrastruktur
-- **Objektlagring:** MinIO (S3-kompatibel för filer/bilder)
-- **Övervakning:** Prometheus & Grafana
-- **Backups:** Dagliga automatiska backuper av PostgreSQL
+> 📖 **Full dokumentation:** [docs/TENANT_ADMIN_GUIDE.md](docs/TENANT_ADMIN_GUIDE.md)
 
 ---
 
@@ -372,56 +621,67 @@ Systemet körs i en container-miljö orkestrerad av **Docker Compose**. Detta ga
 - **Docker Desktop** (senaste versionen)
 - **Git**
 
-#### Installation
+#### Snabbstart
 
-1.  **Klona projektet**
-    ```bash
-    git clone https://github.com/alexwest1981/EduFlex.git
-    cd EduFlex
-    ```
+1. **Klona projektet**
+   ```bash
+   git clone https://github.com/alexwest1981/EduFlex.git
+   cd EduFlex
+   ```
 
-2.  **Starta systemet**
-    Detta bygger och startar alla 7 containers (DB, Redis, MinIO, Backend, Frontend, Monitorering).
-    ```bash
-    docker compose up --build -d
-    ```
+2. **Starta systemet**
+   ```bash
+   docker compose up --build -d
+   ```
 
-3.  **Öppna applikationen**
-    - **LMS (Frontend):** [http://localhost:5173](http://localhost:5173)
-    - **API Docs:** [http://localhost:8080/api](http://localhost:8080/api)
-    - **MinIO (Filer):** [http://localhost:9001](http://localhost:9001) (Anv: `minioadmin` / Lös: `minioadmin`)
-    - **Grafana (Statistik):** [http://localhost:3000](http://localhost:3000) (Anv/Lös: `admin`)
+3. **Öppna applikationen**
+   | Tjänst | URL | Inloggning |
+   |--------|-----|------------|
+   | **LMS (Frontend)** | http://localhost:5173 | – |
+   | **API Docs** | http://localhost:8080/swagger-ui.html | – |
+   | **MinIO (Filer)** | http://localhost:9001 | minioadmin / minioadmin |
+   | **Grafana** | http://localhost:3000 | admin / admin |
+   | **Keycloak** | http://localhost:8180 | admin / admin |
 
 ---
 
 ### ⚙️ Konfiguration (Sv)
 
 #### Miljövariabler
-Systemet är förkonfigurerat via `docker-compose.yml`. Viktiga variabler:
 
-| Tjänst | Variabel | Beskrivning | Standardvärde |
-|:---|:---|:---|:---|
+| Tjänst | Variabel | Beskrivning | Standard |
+|--------|----------|-------------|----------|
 | **Backend** | `SPRING_DATASOURCE_URL` | Databaslänk | `jdbc:postgresql://db:5432/eduflex` |
-| **Backend** | `MINIO_URL` | Intern S3-länk | `http://minio:9000` |
+| **Backend** | `EDUFLEX_AUTH_MODE` | Autentiseringsläge | `internal` |
 | **Frontend** | `VITE_API_BASE_URL` | API-länk | `http://localhost:8080/api` |
 
+---
 
 ### ❓ Felsökning
 
-#### Vanliga Problem
-
 **1. "Port 8080 is already in use"**
-Betyder att en annan tjänst (t.ex. en gammal Java-process eller Tomcat) körs på port 8080.
-*   **Lösning:** Stäng av den andra tjänsten eller ändra port i `docker-compose.yml` (t.ex. till `"8081:8080"`).
+- Stäng andra tjänster på port 8080
+- Eller ändra port i `docker-compose.yml`
 
-**2. Debug Terminal visar "OFFLINE"**
-Om terminalen inte kopplar upp:
-*   Webbläsaren kanske cachar gamla JS-filer. Testa "Hård uppdatering" (Ctrl+F5).
-*   Nätverksfel i Docker?
-*   **Lösning:** Kör `docker compose down -v` och sedan `up --build` igen för att rensa skräp.
+**2. "Tenant not found"**
+- Kontrollera att `X-Tenant-ID` header skickas
+- Verifiera att tenant finns: `curl http://localhost:8080/api/tenants`
 
 **3. Databasfel vid uppstart**
-*   PostgreSQL tar några sekunder på sig att vakna. Backend försöker automatiskt igen, så ha is i magen i ca 15 sekunder.
+- Vänta 10-15 sekunder (PostgreSQL startar)
+- Kolla loggar: `docker logs eduflex-db`
+
+---
+
+## 📚 Documentation
+
+| Document | Description |
+|----------|-------------|
+| [README.md](README.md) | This file - overview |
+| [HELM_README.md](HELM_README.md) | Kubernetes/Helm deployment |
+| [docs/API.md](docs/API.md) | REST API reference |
+| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | System architecture |
+| [docs/TENANT_ADMIN_GUIDE.md](docs/TENANT_ADMIN_GUIDE.md) | Multi-tenancy & Keycloak guide |
 
 ---
 
@@ -439,3 +699,7 @@ För Enterprise-frågor:
 <p align="center"> 
   <img src="docs/images/fenrir.png" width="60" alt="Fenrir Studio"/> 
 </p>
+
+---
+
+*Last updated: 2026-01-15*

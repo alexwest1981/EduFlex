@@ -11,6 +11,7 @@ import Layout from './components/Layout';
 
 // --- FEATURES ---
 import Login from './features/auth/Login';
+import RegisterOrganization from './features/auth/RegisterOrganization';
 import OAuth2Callback from './features/auth/OAuth2Callback';
 import Dashboard from './features/dashboard/Dashboard';
 import CourseDetail from './features/courses/CourseDetail';
@@ -20,6 +21,7 @@ import CalendarView from './features/calendar/CalendarView';
 import LicenseLock from './features/system/LicenseLock';
 import SystemSettings from './features/system/SystemSettings';
 import { ThemeProvider } from './context/ThemeContext';
+import { Toaster } from 'react-hot-toast';
 
 // --- DE RIKTIGA SIDORNA ---
 import UserProfile from './features/profile/UserProfile';
@@ -89,6 +91,7 @@ const AppRoutes = () => {
         <ThemeProvider currentUser={currentUser}>
             <Routes>
                 <Route path="/login" element={<Login />} />
+                <Route path="/register-org" element={<RegisterOrganization />} />
                 <Route path="/oauth2/callback" element={<OAuth2Callback />} />
 
                 <Route path="/" element={
@@ -208,6 +211,7 @@ const App = () => {
                 <DesignSystemProvider>
                     <ModuleProvider>
                         <ErrorBoundary>
+                            <Toaster position="top-right" />
                             <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
                                 <AppRoutes />
                             </Router>

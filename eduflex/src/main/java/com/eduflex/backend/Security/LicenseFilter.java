@@ -32,8 +32,18 @@ public class LicenseFilter extends OncePerRequestFilter {
         // 2. Om systemet är LÅST (ingen giltig licens)
         String path = request.getRequestURI();
 
-        // 3. Tillåt ENDAST licens-endpoints (för att kunna låsa upp) och OPTIONS
-        if (path.startsWith("/api/system/license") || path.startsWith("/api/settings")
+        // 3. Tillåt viktiga endpoints även utan licens:
+        // - Auth (login/register) - användare måste kunna logga in
+        // - License endpoints - för att kunna låsa upp
+        // - Tenants - för att kunna registrera organisation
+        // - Settings - för grundkonfiguration
+        // - OPTIONS - CORS preflight
+        if (path.startsWith("/api/auth")
+                || path.startsWith("/api/tenants")
+                || path.startsWith("/api/system/license")
+                || path.startsWith("/api/settings")
+                || path.startsWith("/api/branding")
+                || path.startsWith("/actuator")
                 || "OPTIONS".equalsIgnoreCase(request.getMethod())) {
             filterChain.doFilter(request, response);
             return;

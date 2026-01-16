@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { LayoutDashboard, ShieldCheck, Loader2, MessageSquare, Users } from 'lucide-react'; // Added Users
+import { LayoutDashboard, Loader2, MessageSquare } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { api } from '../../services/api';
 
 // --- COMPONENTS ---
 import AdminOverview from './AdminOverview';
-import SettingsTab from '../admin/SettingsTab'; // System tab
 import MessageCenter from '../messages/MessageCenter';
-import LicenseStatusCard from '../admin/LicenseStatusCard';
 
 // --- SHARED ---
 import { useDashboardWidgets } from '../../hooks/useDashboardWidgets';
@@ -90,12 +88,6 @@ const AdminDashboard = () => {
                     <LayoutDashboard size={20} /> Översikt
                 </button>
                 <button
-                    onClick={() => setActiveTab('system')}
-                    className={`pb-3 flex items-center gap-2 font-bold text-lg transition-colors border-b-2 whitespace-nowrap capitalize ${activeTab === 'system' ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200'}`}
-                >
-                    <ShieldCheck size={20} /> System
-                </button>
-                <button
                     onClick={() => setActiveTab('communication')}
                     className={`pb-3 flex items-center gap-2 font-bold text-lg transition-colors border-b-2 whitespace-nowrap capitalize ${activeTab === 'communication' ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200'}`}
                 >
@@ -117,14 +109,6 @@ const AdminDashboard = () => {
                     setActiveTab={setActiveTab}
                     widgets={widgets}
                 />
-            )}
-
-            {/* --- FLIK: SYSTEM (ENBART SETTINGS NU) --- */}
-            {activeTab === 'system' && (
-                <div className="space-y-8">
-                    <LicenseStatusCard />
-                    <SettingsTab />
-                </div>
             )}
 
             {/* --- FLIK: KOMMUNIKATION --- */}

@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Loader2, Users, Settings, Database, Edit3 } from 'lucide-react';
+import { Loader2, Users, Settings, Database, Edit3, Server } from 'lucide-react';
 import { api } from '../../services/api';
 import AdministrationPanel from './AdministrationPanel';
 import SkolverketImport from '../admin/SkolverketImport';
 import SkolverketDataEntry from '../admin/SkolverketDataEntry';
 import SystemSettings from '../system/SystemSettings';
+import TenantManagement from '../admin/TenantManagement';
 
 const AdminAdministrationPage = () => {
     const { t } = useTranslation();
@@ -13,6 +14,7 @@ const AdminAdministrationPage = () => {
 
     const tabs = [
         { id: 'administration', label: t('admin_tabs.administration'), icon: Users },
+        { id: 'tenants', label: 'Tenants', icon: Server }, // NY FLIK
         { id: 'system', label: t('admin_tabs.system_settings'), icon: Settings },
         { id: 'skolverket', label: t('admin_tabs.skolverket_import'), icon: Database },
         { id: 'skolverket-edit', label: t('admin_tabs.skolverket_data'), icon: Edit3 }
@@ -55,14 +57,14 @@ const AdminAdministrationPage = () => {
             </header>
 
             {/* Tab Navigation */}
-            <div className="flex gap-2 mb-6 border-b border-gray-200 dark:border-gray-700">
+            <div className="flex gap-2 mb-6 border-b border-gray-200 dark:border-gray-700 overflow-x-auto">
                 {tabs.map(tab => {
                     const Icon = tab.icon;
                     return (
                         <button
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}
-                            className={`flex items-center gap-2 px-4 py-2 font-medium transition-colors border-b-2 ${activeTab === tab.id
+                            className={`flex items-center gap-2 px-4 py-2 font-medium transition-colors border-b-2 whitespace-nowrap ${activeTab === tab.id
                                 ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400'
                                 : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
                                 }`}
@@ -84,6 +86,7 @@ const AdminAdministrationPage = () => {
                         fetchStats={fetchStats}
                     />
                 )}
+                {activeTab === 'tenants' && <TenantManagement />}
                 {activeTab === 'system' && <SystemSettings asTab={true} />}
                 {activeTab === 'skolverket' && <SkolverketImport />}
                 {activeTab === 'skolverket-edit' && <SkolverketDataEntry />}
