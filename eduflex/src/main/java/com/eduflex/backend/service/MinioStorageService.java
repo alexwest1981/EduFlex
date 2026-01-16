@@ -46,7 +46,8 @@ public class MinioStorageService implements FileStorageService {
             minioClient.setBucketPolicy(
                     SetBucketPolicyArgs.builder().bucket(bucketName).config(policy).build());
         } catch (Exception e) {
-            throw new RuntimeException("Could not initialize MinIO storage", e);
+            // throw new RuntimeException("Could not initialize MinIO storage", e);
+            System.err.println("WARNING: Could not initialize MinIO storage (is MinIO running?): " + e.getMessage());
         }
     }
 

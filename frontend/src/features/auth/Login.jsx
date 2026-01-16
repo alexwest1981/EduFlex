@@ -26,10 +26,27 @@ const Login = () => {
 
         try {
             // Kontrollera att API_BASE inte slutar med snedstreck för att undvika dubbla //
+            // Kontrollera att API_BASE inte slutar med snedstreck för att undvika dubbla //
             const baseUrl = API_BASE.endsWith('/') ? API_BASE.slice(0, -1) : API_BASE;
+
+            // Tenant Logic för Login
+            const getTenantId = () => {
+                const hostname = window.location.hostname;
+                const forcedTenant = localStorage.getItem('force_tenant');
+                if (forcedTenant) return forcedTenant;
+                if (hostname.endsWith('.localhost') && hostname !== 'localhost') return hostname.split('.')[0];
+                const parts = hostname.split('.');
+                if (parts.length > 2) return parts[0];
+                return null;
+            };
+
+            const headers = { 'Content-Type': 'application/json' };
+            const tenantId = getTenantId();
+            if (tenantId) headers['X-Tenant-ID'] = tenantId;
+
             const response = await fetch(`${baseUrl}/auth/login`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: headers,
                 body: JSON.stringify(formData)
             });
 

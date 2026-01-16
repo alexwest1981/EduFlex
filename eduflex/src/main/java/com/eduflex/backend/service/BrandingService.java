@@ -44,9 +44,15 @@ public class BrandingService {
     public OrganizationBranding getBranding(String organizationKey) {
         return brandingRepository.findByOrganizationKey(organizationKey)
                 .orElseGet(() -> {
-                    // Return default branding if not found
+                    // Return default branding if not found.
+                    // Failsafe: If "default" doesn't exist in DB (e.g. new tenant schema), return a
+                    // memory object.
                     return brandingRepository.findByOrganizationKey("default")
-                            .orElseThrow(() -> new RuntimeException("Default branding not found"));
+                            .orElseGet(() -> {
+                                OrganizationBranding failsafe = new OrganizationBranding("default", "EduFlex");
+                                failsafe.setFooterText("Powered by EduFlex");
+                                return failsafe;
+                            });
                 });
     }
 

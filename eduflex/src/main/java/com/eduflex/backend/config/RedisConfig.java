@@ -12,6 +12,7 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 @Configuration
 // @EnableCaching
+@org.springframework.boot.autoconfigure.condition.ConditionalOnProperty(name = "eduflex.redis.enabled", havingValue = "true")
 public class RedisConfig {
 
     // Removed @Bean to prevent conflict with WebConfig's primary ObjectMapper

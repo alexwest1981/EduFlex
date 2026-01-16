@@ -5,6 +5,7 @@ import com.eduflex.backend.security.CustomOAuth2UserService;
 import com.eduflex.backend.security.CustomUserDetailsService;
 import com.eduflex.backend.security.KeycloakJwtAuthConverter;
 import com.eduflex.backend.security.LicenseFilter;
+import com.eduflex.backend.config.tenant.TenantFilter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -37,6 +38,7 @@ public class SecurityConfig {
     private final AuthTokenFilter authTokenFilter;
     private final LicenseFilter licenseFilter;
     private final KeycloakJwtAuthConverter keycloakJwtAuthConverter;
+    private final TenantFilter tenantFilter;
 
     @Value("${eduflex.auth.mode:hybrid}")
     private String authMode;
@@ -49,6 +51,7 @@ public class SecurityConfig {
             AuthTokenFilter authTokenFilter,
             LicenseFilter licenseFilter,
             KeycloakJwtAuthConverter keycloakJwtAuthConverter,
+            TenantFilter tenantFilter,
             com.eduflex.backend.security.OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler,
             com.eduflex.backend.security.OAuth2LoginFailureHandler oAuth2LoginFailureHandler,
             com.eduflex.backend.security.CustomOidcUserService customOidcUserService) {
@@ -57,6 +60,7 @@ public class SecurityConfig {
         this.authTokenFilter = authTokenFilter;
         this.licenseFilter = licenseFilter;
         this.keycloakJwtAuthConverter = keycloakJwtAuthConverter;
+        this.tenantFilter = tenantFilter;
         this.oAuth2LoginSuccessHandler = oAuth2LoginSuccessHandler;
         this.oAuth2LoginFailureHandler = oAuth2LoginFailureHandler;
         this.customOidcUserService = customOidcUserService;
@@ -81,6 +85,11 @@ public class SecurityConfig {
     }
 
     @Bean
+    public org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer webSecurityCustomizer() {
+        return (web) -> web.ignoring().requestMatchers("/api/tenants/**");
+    }
+
+    @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
@@ -92,14 +101,22 @@ public class SecurityConfig {
 
                         // 2. Publika endpoints
                         .requestMatchers("/api/auth/**", "/api/users/register", "/api/users/generate-usernames",
-                                "/api/settings/**", "/login/**")
+                                "/api/settings/**", "/login/**", "/api/tenants/**", "/api/branding/**")
                         .permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/tenants").permitAll() // Explicitly allow POST
+                        .requestMatchers(HttpMethod.POST, "/api/tenants/**").permitAll()
+
                         .requestMatchers("/api/system/license/**", "/uploads/**", "/h2-console/**", "/ws/**",
                                 "/ws-log/**",
                                 "/actuator/**", "/lti/**", "/error",
                                 // Swagger UI and OpenAPI Documentation
                                 "/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html", "/api-docs/**")
                         .permitAll()
+
+                        // 3. KURS-REGLER
+                        // ...
+
+                        // at end of file ...
 
                         // 3. KURS-REGLER
 
@@ -141,8 +158,12 @@ public class SecurityConfig {
                                 org.springframework.http.HttpStatus.UNAUTHORIZED)));
 
         http.authenticationProvider(authenticationProvider());
+        // Register TenantFilter BEFORE Authentication to ensure schema is set
+        http.addFilterBefore(tenantFilter, UsernamePasswordAuthenticationFilter.class);
         http.addFilterBefore(authTokenFilter, UsernamePasswordAuthenticationFilter.class);
-        http.addFilterBefore(licenseFilter, UsernamePasswordAuthenticationFilter.class); // Check License first
+        // http.addFilterBefore(licenseFilter,
+        // UsernamePasswordAuthenticationFilter.class); // Check License first (DISABLED
+        // DEBUG)
 
         // OAuth2 Login (for social login and Keycloak browser-based SSO)
         http.oauth2Login(oauth2 -> oauth2
@@ -172,7 +193,7 @@ public class SecurityConfig {
         configuration.setAllowedOriginPatterns(List.of("*"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(List.of("Authorization", "Cache-Control", "Content-Type", "X-Requested-With",
-                "Accept", "Origin", "Access-Control-Request-Method", "Access-Control-Request-Headers"));
+                "Accept", "Origin", "Access-Control-Request-Method", "Access-Control-Request-Headers", "X-Tenant-ID"));
         configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

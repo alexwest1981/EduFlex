@@ -6,6 +6,7 @@ import { useModules } from '../../context/ModuleContext';
 import { useTranslation } from 'react-i18next';
 
 import ChatModule from '../../modules/chat/ChatModule';
+import GlobalSearch from '../GlobalSearch';
 
 const FloatingLayout = ({ children }) => {
     const { currentUser, logout, systemSettings, theme, toggleTheme, API_BASE } = useAppContext();
@@ -114,10 +115,8 @@ const FloatingLayout = ({ children }) => {
 
                 {/* TOP HEADER */}
                 <div className="flex items-center justify-between mb-8">
-                    {/* Search Bar */}
-                    <div className="relative w-96">
-                        <input type="text" placeholder="Search task" className="w-full bg-gray-100 dark:bg-[#282a2c] border-none rounded-2xl px-5 py-3 text-sm font-medium outline-none focus:ring-2 focus:ring-green-800/20" />
-                    </div>
+                    {/* Global Search */}
+                    <GlobalSearch />
 
                     {/* Profile */}
                     <div className="flex items-center gap-6">

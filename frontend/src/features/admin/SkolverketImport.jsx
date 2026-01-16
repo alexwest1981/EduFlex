@@ -38,12 +38,26 @@ const SkolverketImport = () => {
         const formData = new FormData();
         formData.append('file', file);
 
+        const getTenantId = () => {
+            const hostname = window.location.hostname;
+            const forcedTenant = localStorage.getItem('force_tenant');
+            if (forcedTenant) return forcedTenant;
+            if (hostname.endsWith('.localhost') && hostname !== 'localhost') return hostname.split('.')[0];
+            const parts = hostname.split('.');
+            if (parts.length > 2) return parts[0];
+            return null;
+        };
+
+        const headers = {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+        };
+        const tenantId = getTenantId();
+        if (tenantId) headers['X-Tenant-ID'] = tenantId;
+
         try {
             const response = await fetch('http://127.0.0.1:8080/api/skolverket/import', {
                 method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                },
+                headers: headers,
                 body: formData
             });
 
@@ -76,7 +90,7 @@ const SkolverketImport = () => {
                         <div className="grid grid-cols-2 gap-4">
                             <div>
                                 <p className="text-sm text-indigo-600 dark:text-indigo-400">Totalt kurser</p>
-                                <p className="text-2xl font-bold text-indigo-900 dark:text-indigo-100">{stats.totalCourses}</p>
+                                <p className="text-2xl font-bold text-indigo-900 dark:text-indigo-100">{stats.total}</p>
                             </div>
                             <div>
                                 <p className="text-sm text-indigo-600 dark:text-indigo-400">Antal ämnen</p>

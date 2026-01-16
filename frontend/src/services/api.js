@@ -1,8 +1,40 @@
 const API_BASE = 'http://127.0.0.1:8080/api';
 
+const getTenantFromUrl = () => {
+    const hostname = window.location.hostname;
+
+    // 1. Prioritera manuell override (bra för testning)
+    const forcedTenant = localStorage.getItem('force_tenant');
+    if (forcedTenant) return forcedTenant;
+
+    // 2. Hantera localhost subdomäner (t.ex. acme.localhost)
+    if (hostname.endsWith('.localhost') && hostname !== 'localhost') {
+        return hostname.split('.')[0];
+    }
+
+    // 3. Hantera produktionsdomäner (t.ex. acme.eduflex.se eller acme.eduflex.local)
+    // Antar att huvuddomänen är de två sista delarna (eduflex.se)
+    const parts = hostname.split('.');
+    if (parts.length > 2) {
+        // Returnera första delen (subdomänen)
+        return parts[0];
+    }
+
+    return null; // Ingen tenant (Public / Default)
+};
+
 const getHeaders = (contentType = 'application/json') => {
     const token = localStorage.getItem('token');
-    const headers = { 'Authorization': `Bearer ${token}` };
+    const headers = {
+        'Authorization': `Bearer ${token}`
+    };
+
+    // Lägg till Tenant ID om det finns
+    const tenantId = getTenantFromUrl();
+    if (tenantId) {
+        headers['X-Tenant-ID'] = tenantId;
+    }
+
     if (contentType) headers['Content-Type'] = contentType;
     return headers;
 };
@@ -37,6 +69,11 @@ export const api = {
     auth: {
         login: (credentials) => fetch(`${API_BASE}/auth/login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(credentials) }).then(handleResponse),
         register: (data) => fetch(`${API_BASE}/auth/register`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }).then(handleResponse),
+    },
+
+    // --- GLOBAL SÖK ---
+    search: {
+        global: (query) => fetch(`${API_BASE}/search/global?q=${encodeURIComponent(query)}`, { headers: getHeaders() }).then(handleResponse),
     },
 
     // --- MODULHANTERING ---
@@ -100,6 +137,14 @@ export const api = {
     },
 
 
+
+    tenants: {
+        getAll: () => fetch(`${API_BASE}/tenants`, { headers: getHeaders() }).then(handleResponse),
+        create: (data) => fetch(`${API_BASE}/tenants`, { method: 'POST', headers: getHeaders(), body: JSON.stringify(data) }).then(handleResponse),
+        update: (id, data) => fetch(`${API_BASE}/tenants/${id}`, { method: 'PUT', headers: getHeaders(), body: JSON.stringify(data) }).then(handleResponse),
+        delete: (id) => fetch(`${API_BASE}/tenants/${id}`, { method: 'DELETE', headers: getHeaders() }).then(handleResponse),
+        initSchema: (id) => fetch(`${API_BASE}/tenants/${id}/init-schema`, { method: 'POST', headers: getHeaders() }).then(handleResponse),
+    },
 
     roles: {
         getAll: () => fetch(`${API_BASE}/roles`, { headers: getHeaders() }).then(handleResponse),
