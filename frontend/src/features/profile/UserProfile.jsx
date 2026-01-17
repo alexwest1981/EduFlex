@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { Camera, Mail, Phone, MapPin, Save, Lock, User, AlertTriangle, Globe, Settings as SettingsIcon, Layout, Download, Shield, CreditCard, Check, X, Linkedin, Instagram, Facebook, Twitter, Search, UserPlus, UserMinus, Ban, Award } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { api } from '../../services/api.js';
@@ -217,7 +217,8 @@ const ConnectionManager = ({ currentUser, showMessage }) => {
 const UserProfile = ({ currentUser, showMessage, refreshUser }) => {
     const { t, i18n } = useTranslation();
     const { isModuleActive } = useModules();
-    const [activeTab, setActiveTab] = useState('details');
+    const [searchParams] = useSearchParams();
+    const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'details');
     const [isLoading, setIsLoading] = useState(false);
 
     const [formData, setFormData] = useState({
@@ -362,8 +363,19 @@ const UserProfile = ({ currentUser, showMessage, refreshUser }) => {
                                 if (previewImage) return <img src={previewImage} alt="Profil" className="w-full h-full object-cover" />;
                                 if (displayUser.profilePictureUrl) {
                                     let url = displayUser.profilePictureUrl;
-                                    if (url.includes('minio:9000')) url = url.replace('minio:9000', 'localhost:9000');
-                                    const finalUrl = url.startsWith('http') ? url : `http://localhost:8080${url}`;
+                                    const hostname = window.location.hostname;
+
+                                    // Replace minio container name with actual hostname
+                                    if (url.includes('minio:9000')) {
+                                        url = url.replace('minio', hostname);
+                                    }
+
+                                    // Handle relative paths or paths without protocol
+                                    let finalUrl = url;
+                                    if (!url.startsWith('http')) {
+                                        finalUrl = `http://${hostname}:8080${url}`;
+                                    }
+
                                     return <img src={finalUrl} alt="Profil" className="w-full h-full object-cover" />;
                                 }
                                 return <span className="text-4xl font-bold text-gray-400 dark:text-gray-500">{displayUser.firstName?.[0]}</span>;
