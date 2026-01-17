@@ -69,7 +69,7 @@ const NebulaLayout = ({ children }) => {
                 {/* Center Navigation - Floating Pills */}
                 <nav className="hidden lg:flex items-center gap-6">
                     {navItems.map((item) => {
-                        const isActive = location.pathname === item.path;
+                        const isActive = location.pathname === item.path || (item.path === '/admin' && location.pathname.startsWith('/enterprise'));
                         return (
                             <NavLink key={item.path} to={item.path} className={`p-3.5 rounded-2xl transition-all duration-300 group
                                 ${isActive

@@ -27,13 +27,15 @@ public class UserService {
     private final com.eduflex.backend.repository.AuditLogRepository auditLogRepository;
     private final FileStorageService fileStorageService;
     private final ConnectionRepository connectionRepository;
+    private final AchievementService achievementService;
 
     public UserService(UserRepository userRepository,
             com.eduflex.backend.repository.RoleRepository roleRepository,
             PasswordEncoder passwordEncoder, LicenseService licenseService,
             com.eduflex.backend.repository.AuditLogRepository auditLogRepository,
             FileStorageService fileStorageService,
-            ConnectionRepository connectionRepository) {
+            ConnectionRepository connectionRepository,
+            AchievementService achievementService) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
@@ -41,6 +43,7 @@ public class UserService {
         this.auditLogRepository = auditLogRepository;
         this.fileStorageService = fileStorageService;
         this.connectionRepository = connectionRepository;
+        this.achievementService = achievementService;
     }
 
     public List<User> getAllUsers() {
@@ -95,6 +98,14 @@ public class UserService {
             user.setLastLogin(LocalDateTime.now());
             user.setLoginCount(user.getLoginCount() + 1);
             userRepository.save(user);
+
+            // Check for login-related achievements
+            try {
+                achievementService.checkAndUnlock(userId, "login_count", user.getLoginCount());
+                achievementService.checkAndUnlock(userId, "login_hour", LocalDateTime.now().getHour());
+            } catch (Exception e) {
+                System.err.println("Failed to check achievements: " + e.getMessage());
+            }
         });
     }
 
@@ -251,7 +262,15 @@ public class UserService {
         if (file != null && !file.isEmpty()) {
             String path = fileStorageService.storeFile(file);
             user.setProfilePictureUrl(path);
-            return userRepository.save(user);
+            userRepository.save(user);
+
+            // Trigger Achievement
+            try {
+                achievementService.checkAndUnlock(userId, "has_avatar", 1);
+            } catch (Exception e) {
+                // ignore
+            }
+            return user;
         }
         throw new RuntimeException("Ingen fil mottagen");
     }

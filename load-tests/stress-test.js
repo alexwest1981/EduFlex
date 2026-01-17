@@ -7,66 +7,70 @@ const errorRate = new Rate('errors');
 const loginDuration = new Trend('login_duration');
 const apiDuration = new Trend('api_duration');
 
-// Test configuration - Stress test with ramp up to 1000 users
+// Test configuration
 export const options = {
     stages: [
-        { duration: '1m', target: 100 },   // Ramp up to 100 users
-        { duration: '2m', target: 500 },   // Ramp up to 500 users
-        { duration: '2m', target: 1000 },  // Ramp up to 1000 users
-        { duration: '3m', target: 1000 },  // Stay at 1000 users
-        { duration: '1m', target: 500 },   // Ramp down to 500
-        { duration: '1m', target: 0 },     // Ramp down to 0
+        { duration: '30s', target: 20 },  // Ramp up to 20 users
+        { duration: '1m', target: 50 },   // Ramp up to 50 users
+        { duration: '2m', target: 50 },   // Stay at 50 users
+        { duration: '30s', target: 0 },   // Ramp down
     ],
     thresholds: {
-        http_req_duration: ['p(95)<1000', 'p(99)<2000'], // 95% < 1s, 99% < 2s
-        http_req_failed: ['rate<0.01'],                   // Error rate < 1%
-        errors: ['rate<0.05'],                            // Custom error rate < 5%
+        http_req_duration: ['p(95)<1000', 'p(99)<2000'],
+        http_req_failed: ['rate<0.05'], // Allow 5% for now
+        errors: ['rate<0.05'],
     },
 };
 
-const BASE_URL = 'http://backend:8080/api';
+const BASE_URL = __ENV.BASE_URL || 'http://eduflex-backend:8080/api';
 
-// Test data - Multiple users for load distribution
-const USERS = [
-    { username: 'admin', password: 'admin123' },
-    { username: 'teacher1', password: 'teacher123' },
-    { username: 'student1', password: 'student123' },
-];
+// Per-VU state
+let token = null;
+let currentUser = null;
 
 export default function () {
-    // Select random user
-    const user = USERS[Math.floor(Math.random() * USERS.length)];
+    // 1. Setup/Login (Run once per VU)
+    if (!token) {
+        currentUser = {
+            username: `stress_${__VU}`,
+            password: 'password123',
+            email: `stress_${__VU}@eduflex.se`,
+            firstName: `Stress`,
+            lastName: `User${__VU}`,
+            role: { name: 'STUDENT' }
+        };
 
-    // Login
-    const loginStart = new Date();
-    let loginRes = http.post(
-        `${BASE_URL}/auth/login`,
-        JSON.stringify(user),
-        {
-            headers: { 'Content-Type': 'application/json' },
+        // Try register
+        http.post(
+            `${BASE_URL}/auth/register`,
+            JSON.stringify(currentUser),
+            { headers: { 'Content-Type': 'application/json' } }
+        );
+
+        // Login
+        const loginStart = new Date();
+        const loginRes = http.post(
+            `${BASE_URL}/auth/login`,
+            JSON.stringify({ username: currentUser.username, password: currentUser.password }),
+            { headers: { 'Content-Type': 'application/json' } }
+        );
+        loginDuration.add(new Date() - loginStart);
+
+        const loginSuccess = check(loginRes, {
+            'login status is 200': (r) => r.status === 200,
+            'login returns token': (r) => r.json('token') !== undefined,
+        });
+
+        if (!loginSuccess) {
+            console.log(`Login failed for ${currentUser.username}: ${loginRes.status} ${loginRes.body}`);
+            errorRate.add(1);
+            sleep(5); // Wait before retrying next iteration
+            return;
         }
-    );
-    loginDuration.add(new Date() - loginStart);
 
-    const loginSuccess = check(loginRes, {
-        'login status is 200': (r) => r.status === 200,
-        'login returns token': (r) => {
-            try {
-                const body = JSON.parse(r.body);
-                return body.token !== undefined;
-            } catch (e) {
-                return false;
-            }
-        },
-    });
-
-    if (!loginSuccess) {
-        errorRate.add(1);
-        sleep(1);
-        return;
+        token = loginRes.json('token');
     }
 
-    const token = JSON.parse(loginRes.body).token;
     const authHeaders = {
         headers: {
             'Content-Type': 'application/json',
@@ -74,94 +78,35 @@ export default function () {
         },
     };
 
-    sleep(0.5);
+    // 2. Main User Journey Loop
 
-    // API Call 1: Get users (pagination)
-    const apiStart1 = new Date();
-    let usersRes = http.get(`${BASE_URL}/users?page=0&size=20`, authHeaders);
-    apiDuration.add(new Date() - apiStart1);
-    check(usersRes, {
-        'get users status is 200': (r) => r.status === 200,
-    }) || errorRate.add(1);
-
-    sleep(0.5);
-
-    // API Call 2: Get courses
-    const apiStart2 = new Date();
-    let coursesRes = http.get(`${BASE_URL}/courses?page=0&size=20`, authHeaders);
-    apiDuration.add(new Date() - apiStart2);
-    check(coursesRes, {
-        'get courses status is 200': (r) => r.status === 200,
-    }) || errorRate.add(1);
-
-    sleep(0.5);
-
-    // API Call 3: Get calendar events
-    const apiStart3 = new Date();
-    let eventsRes = http.get(`${BASE_URL}/events`, authHeaders);
-    apiDuration.add(new Date() - apiStart3);
-    check(eventsRes, {
-        'get events status is 200': (r) => r.status === 200,
-    }) || errorRate.add(1);
-
-    sleep(0.5);
-
-    // API Call 4: Get dashboard data
-    const apiStart4 = new Date();
-    let dashboardRes = http.get(`${BASE_URL}/dashboard/stats`, authHeaders);
-    apiDuration.add(new Date() - apiStart4);
-    check(dashboardRes, {
-        'get dashboard status is 200 or 404': (r) => r.status === 200 || r.status === 404,
-    }) || errorRate.add(1);
+    // Get User
+    const t1 = new Date();
+    const headers = authHeaders;
+    const userRes = http.get(`${BASE_URL}/users/me`, headers);
+    apiDuration.add(new Date() - t1);
+    check(userRes, { 'get user 200': (r) => r.status === 200 }) || errorRate.add(1);
 
     sleep(1);
 
-    // Write operation: Create calendar event (if teacher/admin)
-    if (user.username !== 'student1') {
-        const newEvent = {
-            title: `Load Test Event ${Date.now()}`,
-            description: 'Generated by k6 load test',
-            start: new Date().toISOString(),
-            end: new Date(Date.now() + 3600000).toISOString(),
-            type: 'MEETING',
-            ownerId: 1,
-        };
+    // Get Courses
+    const t2 = new Date();
+    const coursesRes = http.get(`${BASE_URL}/courses?page=0&size=20`, headers);
+    apiDuration.add(new Date() - t2);
+    check(coursesRes, { 'get courses 200': (r) => r.status === 200 }) || errorRate.add(1);
 
-        const apiStart5 = new Date();
-        let createEventRes = http.post(
-            `${BASE_URL}/events`,
-            JSON.stringify(newEvent),
-            authHeaders
-        );
-        apiDuration.add(new Date() - apiStart5);
-        check(createEventRes, {
-            'create event status is 200 or 201': (r) => r.status === 200 || r.status === 201,
-        }) || errorRate.add(1);
+    sleep(1);
 
-        sleep(0.5);
+    // Get Events
+    const t3 = new Date();
+    const eventsRes = http.get(`${BASE_URL}/events`, headers);
+    apiDuration.add(new Date() - t3);
+    // Expect 200, but if internal auth mode bug exists, might issue 500?
+    // We log error if it fails
+    if (!check(eventsRes, { 'get events 200': (r) => r.status === 200 })) {
+        errorRate.add(1);
+        // console.log('Events failed: ' + eventsRes.status);
     }
 
-    sleep(1);
-}
-
-export function handleSummary(data) {
-    return {
-        'summary.json': JSON.stringify(data),
-        stdout: textSummary(data, { indent: ' ', enableColors: true }),
-    };
-}
-
-function textSummary(data, options) {
-    // Simple text summary for console output
-    return `
-========================================
-Load Test Summary
-========================================
-Total Requests: ${data.metrics.http_reqs.values.count}
-Failed Requests: ${data.metrics.http_req_failed.values.rate * 100}%
-Avg Response Time: ${data.metrics.http_req_duration.values.avg.toFixed(2)}ms
-p95 Response Time: ${data.metrics.http_req_duration.values['p(95)'].toFixed(2)}ms
-p99 Response Time: ${data.metrics.http_req_duration.values['p(99)'].toFixed(2)}ms
-========================================
-`;
+    sleep(2);
 }

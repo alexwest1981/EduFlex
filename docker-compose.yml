@@ -11,7 +11,7 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=gotland81 # Samma lösenord som du är van vid
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
@@ -99,6 +99,16 @@ services:
       - KEYCLOAK_REALM=eduflex
       - KEYCLOAK_CLIENT_ID=eduflex-app
       - KEYCLOAK_CLIENT_SECRET=eduflex-secret-key-change-in-production
+      # Override Client Provider URLs for Docker internal network
+      - SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_TOKEN_URI=http://keycloak:8080/realms/eduflex/protocol/openid-connect/token
+      - SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_USER_INFO_URI=http://keycloak:8080/realms/eduflex/protocol/openid-connect/userinfo
+      - SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_JWK_SET_URI=http://keycloak:8080/realms/eduflex/protocol/openid-connect/certs
+      # Enable Hybrid Mode for proper JWT validation
+      # Enable Hybrid Mode for proper JWT validation
+      - EDUFLEX_AUTH_MODE=internal
+      # Override Resource Server URLs for Docker internal network (Validation)
+      - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI=http://keycloak:8080/realms/eduflex/protocol/openid-connect/certs
+      - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI=http://localhost:8180/realms/eduflex
     extra_hosts:
       - "localhost:host-gateway"
     volumes:

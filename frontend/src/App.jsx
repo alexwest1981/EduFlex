@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AppProvider, useAppContext } from './context/AppContext';
 import { ModuleProvider } from './context/ModuleContext';
+import { GamificationProvider } from './context/GamificationContext';
 import { BrandingProvider } from './context/BrandingContext';
 import { DesignSystemProvider } from './context/DesignSystemContext';
 import ErrorBoundary from './components/common/ErrorBoundary';
@@ -22,6 +23,7 @@ import LicenseLock from './features/system/LicenseLock';
 import SystemSettings from './features/system/SystemSettings';
 import { ThemeProvider } from './context/ThemeContext';
 import { Toaster } from 'react-hot-toast';
+import AchievementToast from './components/gamification/AchievementToast';
 
 // --- DE RIKTIGA SIDORNA ---
 import UserProfile from './features/profile/UserProfile';
@@ -210,12 +212,15 @@ const App = () => {
             <BrandingProvider>
                 <DesignSystemProvider>
                     <ModuleProvider>
-                        <ErrorBoundary>
-                            <Toaster position="top-right" />
-                            <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-                                <AppRoutes />
-                            </Router>
-                        </ErrorBoundary>
+                        <GamificationProvider>
+                            <ErrorBoundary>
+                                <Toaster position="top-right" />
+                                <AchievementToast />
+                                <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+                                    <AppRoutes />
+                                </Router>
+                            </ErrorBoundary>
+                        </GamificationProvider>
                     </ModuleProvider>
                 </DesignSystemProvider>
             </BrandingProvider>

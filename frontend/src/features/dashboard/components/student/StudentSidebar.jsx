@@ -1,6 +1,6 @@
 import React from 'react';
 import { Clock, Calendar, CheckCircle } from 'lucide-react';
-import UpcomingAssignmentsWidget from '../../../../modules/assignments/components/UpcomingAssignmentsWidget';
+
 import StudentProgressWidget from './StudentProgressWidget';
 
 const StudentSidebar = ({ upcomingAssignments, lastGraded, isModuleActive, navigate, currentUser }) => {
@@ -8,11 +8,7 @@ const StudentSidebar = ({ upcomingAssignments, lastGraded, isModuleActive, navig
         <div className="space-y-8 animate-in slide-in-from-right-4">
 
             {/* UPCOMING ASSIGNMENTS (Återanvänder din modul) */}
-            {isModuleActive('SUBMISSIONS') && (
-                <div className="h-auto">
-                    <UpcomingAssignmentsWidget assignments={upcomingAssignments} />
-                </div>
-            )}
+
 
             {/* SENASTE FEEDBACK (NY!) */}
             {lastGraded && (

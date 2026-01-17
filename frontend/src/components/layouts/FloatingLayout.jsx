@@ -7,6 +7,8 @@ import { useTranslation } from 'react-i18next';
 
 import ChatModule from '../../modules/chat/ChatModule';
 import GlobalSearch from '../GlobalSearch';
+import NotificationBell from '../NotificationBell';
+import OnlineFriendsPanel from '../social/OnlineFriendsPanel';
 
 const FloatingLayout = ({ children }) => {
     const { currentUser, logout, systemSettings, theme, toggleTheme, API_BASE } = useAppContext();
@@ -15,6 +17,7 @@ const FloatingLayout = ({ children }) => {
     const navigate = useNavigate();
     const location = useLocation();
     const [sidebarOpen, setSidebarOpen] = React.useState(true);
+    const [friendsPanelOpen, setFriendsPanelOpen] = React.useState(false);
 
     const handleLogout = () => { logout(); navigate('/login'); };
 
@@ -35,13 +38,12 @@ const FloatingLayout = ({ children }) => {
 
     const navItems = [
         { path: '/', icon: <LayoutDashboard size={20} />, label: t('sidebar.dashboard') },
+        { path: '/documents', icon: <FileText size={20} />, label: t('sidebar.documents') },
+        { path: '/catalog', icon: <BookOpen size={20} />, label: t('sidebar.catalog') },
         { path: '/calendar', icon: <Calendar size={20} />, label: t('sidebar.calendar') || 'Kalender' },
-        ...(roleName === 'TEACHER' || roleName === 'ADMIN' ? [{ path: '/resources', icon: <BookOpen size={20} />, label: t('sidebar.resource_bank') }] : []),
+        ...(roleName === 'TEACHER' || roleName === 'ADMIN' ? [{ path: '/resources', icon: <Layers size={20} />, label: t('sidebar.resource_bank') }] : []),
         ...(roleName === 'ADMIN' ? [{ path: '/admin', icon: <Settings size={20} />, label: t('sidebar.admin') }] : []),
         ...(analyticsActive && roleName === 'ADMIN' ? [{ path: '/analytics', icon: <TrendingUp size={20} />, label: t('sidebar.analytics') }] : []),
-        { path: '/catalog', icon: <Layers size={20} />, label: t('sidebar.catalog') },
-        { path: '/documents', icon: <FileText size={20} />, label: t('sidebar.documents') },
-        { path: '/profile', icon: <User size={20} />, label: t('sidebar.my_profile') },
     ];
 
     return (
@@ -77,19 +79,26 @@ const FloatingLayout = ({ children }) => {
 
                 <nav className="flex-1 py-6 px-4 space-y-2 overflow-y-auto custom-scrollbar">
                     {navItems.map((item) => {
-                        const isActive = location.pathname === item.path;
                         return (
-                            <NavLink key={item.path} to={item.path} className={`flex items-center px-4 py-3 transition-all duration-200 group relative
-                                ${isActive ? 'text-gray-900 dark:text-white font-bold' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'}
-                            `}>
-
-                                {/* Left Marker */}
-                                {isActive && (
-                                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-6 bg-green-800 rounded-full"></div>
-                                )}
-
-                                <div className={`${!sidebarOpen && 'mx-auto'} ${isActive ? 'text-green-800 dark:text-green-400' : ''}`}>{item.icon}</div>
-                                {sidebarOpen && <span className="ml-4 font-medium text-sm">{item.label}</span>}
+                            <NavLink
+                                key={item.path}
+                                to={item.path}
+                                className={({ isActive: navActive }) => {
+                                    const isActive = navActive || (item.path === '/admin' && location.pathname.startsWith('/enterprise'));
+                                    return `flex items-center px-4 py-3 transition-all duration-200 group relative
+                                    ${isActive ? 'text-gray-900 dark:text-white font-bold' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'}
+                                    `;
+                                }}
+                            >
+                                {({ isActive: navActive }) => {
+                                    const isActive = navActive || (item.path === '/admin' && location.pathname.startsWith('/enterprise'));
+                                    return (
+                                        <>
+                                            <div className={`${!sidebarOpen && 'mx-auto'} ${isActive ? 'text-green-800 dark:text-green-400' : ''}`}>{item.icon}</div>
+                                            {sidebarOpen && <span className="ml-4 font-medium text-sm">{item.label}</span>}
+                                        </>
+                                    );
+                                }}
                             </NavLink>
                         );
                     })}
@@ -115,11 +124,27 @@ const FloatingLayout = ({ children }) => {
 
                 {/* TOP HEADER */}
                 <div className="flex items-center justify-between mb-8">
-                    {/* Global Search */}
-                    <GlobalSearch />
+                    <div className="flex items-center gap-4">
+                        <GlobalSearch
+                            inputClassName="bg-[var(--app-background)] dark:bg-[var(--app-background-dark)] shadow-inner border-none w-64 text-sm placeholder-gray-500"
+                        />
+                    </div>
 
-                    {/* Profile */}
-                    <div className="flex items-center gap-6">
+                    {/* Right Side Grouping */}
+                    <div className="flex items-center gap-4">
+                        {/* Online Friends */}
+                        <button
+                            onClick={() => setFriendsPanelOpen(!friendsPanelOpen)}
+                            className={`p-2 rounded-full transition-colors relative ${friendsPanelOpen ? 'bg-indigo-100 text-indigo-600' : 'hover:bg-gray-100 text-gray-500'}`}
+                        >
+                            <User size={20} />
+                            <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-green-500 border border-white"></span>
+                        </button>
+                        <OnlineFriendsPanel isOpen={friendsPanelOpen} onClose={() => setFriendsPanelOpen(false)} />
+
+                        {/* Notifications */}
+                        <NotificationBell />
+
                         <div className="flex flex-col text-right">
                             <span className="font-bold text-sm text-gray-900 dark:text-white">{currentUser?.fullName}</span>
                             <span className="text-xs text-gray-500">{currentUser?.email}</span>
@@ -135,16 +160,18 @@ const FloatingLayout = ({ children }) => {
                 <button onClick={() => setSidebarOpen(!sidebarOpen)} className="fixed bottom-8 right-8 p-3 bg-gray-900 text-white rounded-full shadow-lg z-50 md:hidden">
                     {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
                 </button>
-            </main>
+            </main >
 
-            {isModuleActive('CHAT') && (
-                <ChatModule
-                    currentUser={currentUser}
-                    API_BASE={API_BASE}
-                    token={token}
-                />
-            )}
-        </div>
+            {
+                isModuleActive('CHAT') && (
+                    <ChatModule
+                        currentUser={currentUser}
+                        API_BASE={API_BASE}
+                        token={token}
+                    />
+                )
+            }
+        </div >
     );
 };
 

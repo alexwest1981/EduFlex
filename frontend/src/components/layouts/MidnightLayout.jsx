@@ -7,6 +7,9 @@ import { useTranslation } from 'react-i18next';
 
 import ChatModule from '../../modules/chat/ChatModule';
 
+import GlobalSearch from '../GlobalSearch';
+import NotificationBell from '../NotificationBell';
+
 const MidnightLayout = ({ children }) => {
     const { currentUser, logout, systemSettings, theme, toggleTheme, API_BASE } = useAppContext();
     const { isModuleActive } = useModules();
@@ -29,7 +32,7 @@ const MidnightLayout = ({ children }) => {
     // Midnight Navigation - Top Pill Bar
     const navItems = [
         { path: '/', icon: <LayoutDashboard size={18} />, label: t('sidebar.dashboard') },
-        { path: '/catalog', icon: <Wallet size={18} />, label: t('sidebar.catalog') }, // Wallet for "Investment" vibe
+        { path: '/catalog', icon: <Wallet size={18} />, label: t('sidebar.catalog') },
         { path: '/documents', icon: <FileText size={18} />, label: t('sidebar.documents') },
         { path: '/calendar', icon: <Calendar size={18} />, label: t('sidebar.calendar') },
         ...(roleName === 'ADMIN' ? [{ path: '/analytics', icon: <Activity size={18} />, label: t('sidebar.analytics') }] : []),
@@ -37,100 +40,104 @@ const MidnightLayout = ({ children }) => {
     ];
 
     return (
-        <div className="flex items-center justify-center p-8 h-screen w-screen overflow-hidden text-gray-200 font-sans transition-colors duration-300" style={{ background: '#050505' }}> {/* Deep Black BG */}
+        <div className="flex items-center justify-center p-6 h-screen w-screen overflow-hidden text-zinc-300 font-sans transition-colors duration-300" style={{ background: '#09090b' }}> {/* Rich Zinc Black */}
             <style>{`
                 @media (prefers-color-scheme: dark) {
-                    .dark-mode-bg { background: #050505 !important; }
+                    .dark-mode-bg { background: #09090b !important; }
                 }
-                :root.dark body { background: #050505 !important; }
-                .app-wrapper { background: #050505; }
+                :root.dark body { background: #09090b !important; }
+                .app-wrapper { background: #09090b; }
                 .midnight-scroll::-webkit-scrollbar { width: 6px; }
-                .midnight-scroll::-webkit-scrollbar-track { background: #111; }
-                .midnight-scroll::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
+                .midnight-scroll::-webkit-scrollbar-track { background: #121212; }
+                .midnight-scroll::-webkit-scrollbar-thumb { background: #27272a; border-radius: 10px; }
+                .midnight-scroll::-webkit-scrollbar-thumb:hover { background: #3f3f46; }
             `}</style>
 
-            {/* FLOATING APP CONTAINER - Dark Mode Card */}
-            <div className="w-full h-full max-w-[1600px] bg-[#0F0F0F] rounded-[40px] shadow-2xl overflow-hidden flex flex-col border border-white/5 relative">
+            {/* FLOATING APP CONTAINER - Dark Zinc Card */}
+            <div className="w-full h-full max-w-[1700px] bg-[#121212] rounded-[32px] shadow-2xl overflow-hidden flex flex-col border border-white/10 relative">
 
                 {/* HEADER - FinPoint Style */}
-                <header className="h-24 flex items-center justify-between px-10 shrink-0 border-b border-white/5">
+                <header className="h-20 flex items-center justify-between px-8 shrink-0 border-b border-white/5 bg-[#121212]/50 backdrop-blur-md sticky top-0 z-50">
 
                     {/* Left: Brand + Nav Pills */}
-                    <div className="flex items-center gap-12">
+                    <div className="flex items-center gap-10">
                         {/* Brand */}
                         <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 bg-[#00DC82] rounded-lg flex items-center justify-center transform rotate-45">
-                                <div className="transform -rotate-45">
-                                    <Zap size={18} className="text-black fill-black" />
-                                </div>
+                            <div className="w-9 h-9 bg-gradient-to-br from-[#00DC82] to-[#00A862] rounded-xl flex items-center justify-center shadow-lg shadow-green-500/20">
+                                <Zap size={18} className="text-black fill-black" />
                             </div>
-                            <span className="font-bold text-xl tracking-wide text-white">
+                            <span className="font-bold text-lg tracking-tight text-white/90">
                                 {systemSettings?.site_name || "EduFlex"}
                             </span>
                         </div>
 
                         {/* Navigation Pills */}
-                        <nav className="hidden lg:flex items-center gap-1 bg-[#1A1A1A] p-1.5 rounded-full border border-white/5">
+                        <nav className="hidden lg:flex items-center gap-1 bg-black/20 p-1 rounded-full border border-white/5 backdrop-blur-sm">
                             {navItems.map((item) => (
                                 <NavLink
                                     key={item.path}
                                     to={item.path}
-                                    className={({ isActive }) => `px-5 py-2 rounded-full text-sm font-medium transition-all duration-300 flex items-center gap-2
-                                    ${isActive
-                                            ? 'bg-white text-black shadow-lg shadow-white/10'
-                                            : 'text-gray-400 hover:text-white hover:bg-white/5'
-                                        }`}
+                                    className={({ isActive: navActive }) => {
+                                        const isActive = navActive || (item.path === '/admin' && location.pathname.startsWith('/enterprise'));
+                                        return `px-4 py-1.5 rounded-full text-xs font-medium transition-all duration-300 flex items-center gap-2
+                                        ${isActive
+                                                ? 'bg-zinc-800 text-white shadow-sm ring-1 ring-white/10'
+                                                : 'text-zinc-500 hover:text-zinc-200 hover:bg-white/5'
+                                            }`;
+                                    }}
                                 >
-                                    {item.icon}
-                                    <span>{item.label}</span>
+                                    {({ isActive: navActive }) => {
+                                        const isActive = navActive || (item.path === '/admin' && location.pathname.startsWith('/enterprise'));
+                                        return (
+                                            <>
+                                                {isActive && <div className="w-1.5 h-1.5 bg-[#00DC82] rounded-full animate-pulse" />}
+                                                <span>{item.label}</span>
+                                            </>
+                                        );
+                                    }}
                                 </NavLink>
                             ))}
                         </nav>
                     </div>
 
                     {/* Right: Utilities */}
-                    <div className="flex items-center gap-5">
-                        <div className="relative">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
-                            <input
-                                type="text"
-                                placeholder="Search..."
-                                className="bg-[#1A1A1A] border border-white/5 rounded-full py-2.5 pl-10 pr-4 text-sm text-white placeholder-gray-600 focus:border-[#00DC82] focus:outline-none transition-colors w-64"
-                            />
+                    <div className="flex items-center gap-4">
+                        <GlobalSearch className="w-72" inputClassName="bg-zinc-900/50 text-white placeholder-zinc-600 border border-white/10 rounded-xl focus:border-[#00DC82]/50 focus:ring-1 focus:ring-[#00DC82]/20" />
+
+                        <div className="h-8 w-px bg-white/10 mx-2"></div>
+
+                        <NotificationBell />
+
+                        <div className="flex items-center gap-3 pl-2 cursor-pointer group" onClick={() => navigate('/profile')}>
+                            <div className="w-9 h-9 rounded-full overflow-hidden border border-white/10 ring-2 ring-transparent group-hover:ring-[#00DC82]/30 transition-all">
+                                {profileImgUrl ? <img src={profileImgUrl} alt="Profil" className="w-full h-full object-cover" /> : <div className="w-full h-full bg-zinc-800 flex items-center justify-center font-bold text-xs text-[#00DC82]">{currentUser?.firstName?.[0]}</div>}
+                            </div>
+                            <div className="hidden xl:block">
+                                <p className="text-xs font-semibold text-white/90 leading-tight">{currentUser?.firstName}</p>
+                                <p className="text-[10px] text-zinc-500 font-medium tracking-wide uppercase">{roleName}</p>
+                            </div>
                         </div>
 
-                        <button className="w-10 h-10 rounded-full bg-[#1A1A1A] border border-white/5 flex items-center justify-center text-gray-400 hover:text-white transition-colors relative">
-                            <Bell size={18} />
-                            <span className="absolute top-2 right-2 w-1.5 h-1.5 bg-[#00DC82] rounded-full"></span>
-                        </button>
-
-                        <div className="w-10 h-10 rounded-full overflow-hidden border border-white/10 cursor-pointer" onClick={() => navigate('/profile')}>
-                            {profileImgUrl ? <img src={profileImgUrl} alt="Profil" className="w-full h-full object-cover" /> : <div className="w-full h-full bg-[#1A1A1A] flex items-center justify-center font-bold text-xs text-[#00DC82]">{currentUser?.firstName?.[0]}</div>}
-                        </div>
-
-                        <button onClick={handleLogout} className="text-gray-500 hover:text-red-500 transition-colors">
-                            <LogOut size={20} />
+                        <button onClick={handleLogout} className="w-9 h-9 flex items-center justify-center rounded-full text-zinc-500 hover:text-red-400 hover:bg-red-500/10 transition-colors ml-1">
+                            <LogOut size={18} />
                         </button>
                     </div>
 
                 </header>
 
                 {/* MAIN CONTENT - Dark Canvas */}
-                <main className="flex-1 overflow-y-auto p-8 midnight-scroll relative">
-                    {/* Mint Gradient Glow */}
-                    <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#00DC82] opacity-[0.03] blur-[150px] pointer-events-none rounded-full" />
+                <main className="flex-1 overflow-y-auto px-8 py-6 midnight-scroll relative bg-gradient-to-b from-[#121212] to-[#0D0D0D]">
+                    {/* Subtle Glows */}
+                    <div className="absolute top-0 right-1/4 w-[600px] h-[400px] bg-[#00DC82] opacity-[0.02] blur-[120px] pointer-events-none rounded-full mix-blend-screen" />
+                    <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-blue-500 opacity-[0.02] blur-[150px] pointer-events-none rounded-full mix-blend-screen" />
 
                     {/* Content Container */}
-                    <div className="max-w-7xl mx-auto space-y-8">
-                        {/* Optional breadcrumb/header area could go here */}
-                        <div className="min-h-full">
-                            {children}
-                        </div>
+                    <div className="max-w-7xl mx-auto space-y-8 relative z-10">
+                        {children}
                     </div>
                 </main>
 
             </div>
-
             {isModuleActive('CHAT') && (
                 <ChatModule
                     currentUser={currentUser}

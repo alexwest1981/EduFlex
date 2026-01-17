@@ -6,6 +6,7 @@ import { useModules } from '../../context/ModuleContext';
 import { useTranslation } from 'react-i18next';
 
 import ChatModule from '../../modules/chat/ChatModule';
+import NotificationBell from '../NotificationBell';
 
 const HorizonLayout = ({ children }) => {
     const { currentUser, logout, systemSettings, theme, toggleTheme, API_BASE } = useAppContext();
@@ -67,7 +68,7 @@ const HorizonLayout = ({ children }) => {
                 {/* Center Navigation Pucks */}
                 <nav className="hidden lg:flex items-center gap-2 bg-white/50 dark:bg-[#1E1F20]/50 backdrop-blur-md p-1.5 rounded-full border border-white/20 dark:border-white/10 shadow-sm">
                     {navItems.map((item) => {
-                        const isActive = location.pathname === item.path;
+                        const isActive = location.pathname === item.path || (item.path === '/admin' && location.pathname.startsWith('/enterprise'));
                         return (
                             <NavLink key={item.path} to={item.path} className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all duration-200 text-sm font-medium
                                 ${isActive
@@ -85,10 +86,7 @@ const HorizonLayout = ({ children }) => {
                     <button className="p-2.5 bg-white dark:bg-[#1E1F20] rounded-full text-gray-500 hover:text-gray-900 transition-colors shadow-sm border border-gray-100 dark:border-[#3c4043]">
                         <Search size={20} />
                     </button>
-                    <button className="p-2.5 bg-white dark:bg-[#1E1F20] rounded-full text-gray-500 hover:text-gray-900 transition-colors shadow-sm border border-gray-100 dark:border-[#3c4043] relative">
-                        <Bell size={20} />
-                        <span className="absolute top-0 right-0 w-3 h-3 bg-red-500 rounded-full border-2 border-white dark:border-[#1E1F20]"></span>
-                    </button>
+                    <NotificationBell />
 
                     {/* User Profile Pill */}
                     <div className="flex items-center gap-3 pl-2 pr-2 py-1.5 bg-white dark:bg-[#1E1F20] rounded-full border border-gray-100 dark:border-[#3c4043] shadow-sm cursor-pointer hover:shadow-md transition-all" onClick={() => navigate('/profile')}>

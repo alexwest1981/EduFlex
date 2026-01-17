@@ -11,23 +11,88 @@ public class Notification {
     private Long id;
 
     private String message; // "Du har fått betyg på..."
-    private String type;    // "INFO", "SUCCESS", "WARNING"
+    private String type; // "INFO", "SUCCESS", "WARNING"
     private boolean isRead = false;
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    private Long userId; // Mottagarens ID (Vi kör enkelt ID här för att slippa komplexa relationer just nu)
+    private Long userId; // Mottagarens ID (Vi kör enkelt ID här för att slippa komplexa relationer just
+                         // nu)
+
+    // New fields for entity linking
+    private Long relatedEntityId; // ID of the related event/assignment/message
+    private String relatedEntityType; // "CALENDAR_EVENT", "CHAT_MESSAGE", "ASSIGNMENT_DEADLINE", "EMAIL"
+    private String actionUrl; // Deep link to the related entity (e.g., "/calendar?event=123")
 
     // Getters & Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-    public String getMessage() { return message; }
-    public void setMessage(String message) { this.message = message; }
-    public String getType() { return type; }
-    public void setType(String type) { this.type = type; }
-    public boolean isRead() { return isRead; }
-    public void setRead(boolean read) { isRead = read; }
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
-    public Long getUserId() { return userId; }
-    public void setUserId(Long userId) { this.userId = userId; }
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public boolean isRead() {
+        return isRead;
+    }
+
+    public void setRead(boolean read) {
+        isRead = read;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public Long getRelatedEntityId() {
+        return relatedEntityId;
+    }
+
+    public void setRelatedEntityId(Long relatedEntityId) {
+        this.relatedEntityId = relatedEntityId;
+    }
+
+    public String getRelatedEntityType() {
+        return relatedEntityType;
+    }
+
+    public void setRelatedEntityType(String relatedEntityType) {
+        this.relatedEntityType = relatedEntityType;
+    }
+
+    public String getActionUrl() {
+        return actionUrl;
+    }
+
+    public void setActionUrl(String actionUrl) {
+        this.actionUrl = actionUrl;
+    }
 }

@@ -18,7 +18,7 @@ export const options = {
     },
 };
 
-const BASE_URL = 'http://backend:8080/api';
+const BASE_URL = __ENV.BASE_URL || 'http://backend:8080/api';
 
 // Test data
 const TEST_USER = {
@@ -28,17 +28,35 @@ const TEST_USER = {
 
 export default function () {
     // Test 1: Health check
-    let healthRes = http.get(`${BASE_URL}/actuator/health`);
+    // Actuator is typically at root, not under /api
+    const rootUrl = BASE_URL.replace(/\/api\/?$/, '');
+    let healthRes = http.get(`${rootUrl}/actuator/health`);
     check(healthRes, {
         'health check status is 200': (r) => r.status === 200,
     }) || errorRate.add(1);
 
     sleep(1);
 
+    // Test 1.5: Register (if needed)
+    // We try to register a unique user for this VU to ensure it exists
+    const uniqueUser = {
+        username: `user_${__VU}_${__ITER}`,
+        password: 'password123',
+        email: `user_${__VU}_${__ITER}@eduflex.se`,
+        role: { name: 'STUDENT' } // Send object, not string
+    };
+
+    // Attempt registration (ignoring errors if user exists)
+    http.post(
+        `${BASE_URL}/auth/register`,
+        JSON.stringify(uniqueUser),
+        { headers: { 'Content-Type': 'application/json' } }
+    );
+
     // Test 2: Login
     let loginRes = http.post(
         `${BASE_URL}/auth/login`,
-        JSON.stringify(TEST_USER),
+        JSON.stringify({ username: uniqueUser.username, password: uniqueUser.password }),
         {
             headers: { 'Content-Type': 'application/json' },
         }
@@ -57,6 +75,7 @@ export default function () {
     });
 
     if (!loginSuccess) {
+        console.log(`Login failed. Status: ${loginRes.status}, Body: ${loginRes.body}`);
         errorRate.add(1);
         return; // Stop if login fails
     }
@@ -73,17 +92,19 @@ export default function () {
 
     // Test 3: Get current user
     let userRes = http.get(`${BASE_URL}/users/me`, authHeaders);
-    check(userRes, {
-        'get user status is 200': (r) => r.status === 200,
-    }) || errorRate.add(1);
+    if (!check(userRes, { 'get user status is 200': (r) => r.status === 200 })) {
+        console.log(`Get User failed: ${userRes.status} ${userRes.body}`);
+        errorRate.add(1);
+    }
 
     sleep(1);
 
     // Test 4: Get courses (with pagination)
     let coursesRes = http.get(`${BASE_URL}/courses?page=0&size=20`, authHeaders);
-    check(coursesRes, {
-        'get courses status is 200': (r) => r.status === 200,
-    }) || errorRate.add(1);
+    if (!check(coursesRes, { 'get courses status is 200': (r) => r.status === 200 })) {
+        console.log(`Get Courses failed: ${coursesRes.status} ${coursesRes.body}`);
+        errorRate.add(1);
+    }
 
     sleep(1);
 }

@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Camera, Mail, Phone, MapPin, Save, Lock, User, AlertTriangle, Globe, Settings as SettingsIcon, Layout, Download, Shield, CreditCard, Check, X, Linkedin, Instagram, Facebook, Twitter, Search, UserPlus, UserMinus, Ban } from 'lucide-react';
+import { Camera, Mail, Phone, MapPin, Save, Lock, User, AlertTriangle, Globe, Settings as SettingsIcon, Layout, Download, Shield, CreditCard, Check, X, Linkedin, Instagram, Facebook, Twitter, Search, UserPlus, UserMinus, Ban, Award } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { api } from '../../services/api.js';
 import UserBilling from '../billing/UserBilling';
 import { useModules } from '../../context/ModuleContext';
 
 import UserAvatar from '../../components/common/UserAvatar';
+import AchievementsGallery from '../../components/gamification/AchievementsGallery';
 
 const ConnectionRequests = ({ currentUser, showMessage }) => {
     const [requests, setRequests] = useState([]);
@@ -395,6 +396,10 @@ const UserProfile = ({ currentUser, showMessage, refreshUser }) => {
                             <div className="flex items-center justify-center gap-2"><User size={18} /> Relationer</div>
                         </button>
 
+                        <button onClick={() => setActiveTab('achievements')} className={`flex-1 py-4 font-bold text-sm min-w-[120px] transition-colors ${activeTab === 'achievements' ? 'bg-gray-50 dark:bg-[#282a2c] text-gray-900 dark:text-white border-b-2 border-black dark:border-white' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-[#282a2c]'}`}>
+                            <div className="flex items-center justify-center gap-2"><Award size={18} /> Prestationer</div>
+                        </button>
+
                         <button onClick={() => setActiveTab('security_privacy')} className={`flex-1 py-4 font-bold text-sm min-w-[120px] transition-colors ${activeTab === 'security_privacy' ? 'bg-gray-50 dark:bg-[#282a2c] text-gray-900 dark:text-white border-b-2 border-black dark:border-white' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-[#282a2c]'}`}>
                             <div className="flex items-center justify-center gap-2"><Shield size={18} /> Säkerhet & Integritet</div>
                         </button>
@@ -581,6 +586,10 @@ const UserProfile = ({ currentUser, showMessage, refreshUser }) => {
                                 <div className="border-t border-gray-100 dark:border-[#3c4043] my-8"></div>
                                 <ConnectionManager currentUser={currentUser} showMessage={showMessage} />
                             </div>
+                        )}
+
+                        {activeTab === 'achievements' && (
+                            <AchievementsGallery currentUser={currentUser} />
                         )}
 
 

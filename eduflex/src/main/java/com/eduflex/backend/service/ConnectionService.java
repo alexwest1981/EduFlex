@@ -20,6 +20,9 @@ public class ConnectionService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private AchievementService achievementService;
+
     public Connection sendRequest(Long requesterId, Long receiverId) {
         if (requesterId.equals(receiverId)) {
             throw new IllegalArgumentException("Cannot send connection request to yourself.");
@@ -67,7 +70,25 @@ public class ConnectionService {
         }
 
         connection.setStatus(ConnectionStatus.ACCEPTED);
-        return connectionRepository.save(connection);
+        connection.setStatus(ConnectionStatus.ACCEPTED);
+        Connection saved = connectionRepository.save(connection);
+
+        // LEADERBOARD / ACHIEVEMENT: Trigger for both users
+        try {
+            Long receiverId = saved.getReceiver().getId();
+            Long requesterId = saved.getRequester().getId();
+
+            int countReceiver = connectionRepository.findAcceptedConnections(saved.getReceiver()).size();
+            achievementService.checkAndUnlock(receiverId, "friend_count", countReceiver);
+
+            int countRequester = connectionRepository.findAcceptedConnections(saved.getRequester()).size();
+            achievementService.checkAndUnlock(requesterId, "friend_count", countRequester);
+
+        } catch (Exception e) {
+            System.err.println("Failed to trigger social achievement: " + e.getMessage());
+        }
+
+        return saved;
     }
 
     public void rejectRequest(Long connectionId, Long userId) {

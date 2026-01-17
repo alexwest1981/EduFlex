@@ -1,5 +1,6 @@
 package com.eduflex.backend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
@@ -7,6 +8,7 @@ import java.io.Serializable;
 
 @Entity
 @Table(name = "roles")
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 public class Role implements Serializable {
 
     private static final long serialVersionUID = 1L;

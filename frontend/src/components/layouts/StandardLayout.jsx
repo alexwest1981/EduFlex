@@ -1,11 +1,13 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
-import { LayoutDashboard, FileText, User, Settings, LogOut, Layers, Menu, X, Award, Zap, Moon, Sun, Calendar, BookOpen, TrendingUp } from 'lucide-react';
+import { LayoutDashboard, FileText, User, Settings, LogOut, Layers, Menu, X, Award, Zap, Moon, Sun, Calendar, BookOpen, TrendingUp, Users } from 'lucide-react';
 import { useAppContext } from '../../context/AppContext';
 import { useModules } from '../../context/ModuleContext';
 import { useTranslation } from 'react-i18next';
 
 import ChatModule from '../../modules/chat/ChatModule';
+import NotificationBell from '../NotificationBell';
+import OnlineFriendsPanel from '../social/OnlineFriendsPanel';
 
 const StandardLayout = ({ children }) => {
     const { currentUser, logout, systemSettings, theme, toggleTheme, API_BASE } = useAppContext();
@@ -13,7 +15,8 @@ const StandardLayout = ({ children }) => {
     const { t } = useTranslation();
     const navigate = useNavigate();
     const location = useLocation();
-    const [sidebarOpen, setSidebarOpen] = React.useState(true);
+    const [sidebarOpen, setSidebarOpen] = useState(true);
+    const [friendsPanelOpen, setFriendsPanelOpen] = useState(false);
 
     const handleLogout = () => { logout(); navigate('/login'); };
 
@@ -32,14 +35,42 @@ const StandardLayout = ({ children }) => {
 
     const roleName = currentUser?.role?.name || currentUser?.role;
 
+    // --- ACTIVITY TRACKING ---
+    useEffect(() => {
+        if (!currentUser) return;
+
+        const pingActivity = async () => {
+            try {
+                // Assuming api.users.ping() exists and updates lastActive
+                if (window.api?.users?.ping) {
+                    await window.api.users.ping();
+                } else {
+                    // Fallback if api is imported directly (which it is)
+                    const { api } = await import('../../services/api');
+                    await api.users.ping();
+                }
+            } catch (err) {
+                console.error("Activity ping failed", err);
+            }
+        };
+
+        // Ping immediately on mount/login
+        pingActivity();
+
+        // Ping every 5 minutes
+        const intervalId = setInterval(pingActivity, 5 * 60 * 1000);
+
+        return () => clearInterval(intervalId);
+    }, [currentUser]);
+
     const navItems = [
         { path: '/', icon: <LayoutDashboard size={20} />, label: t('sidebar.dashboard') },
         { path: '/calendar', icon: <Calendar size={20} />, label: t('sidebar.calendar') || 'Kalender' },
+        { path: '/documents', icon: <FileText size={20} />, label: t('sidebar.documents') },
+        { path: '/catalog', icon: <Layers size={20} />, label: t('sidebar.catalog') },
         ...(roleName === 'TEACHER' || roleName === 'ADMIN' ? [{ path: '/resources', icon: <BookOpen size={20} />, label: t('sidebar.resource_bank') }] : []),
         ...(roleName === 'ADMIN' ? [{ path: '/admin', icon: <Settings size={20} />, label: t('sidebar.admin') }] : []),
         ...(analyticsActive && roleName === 'ADMIN' ? [{ path: '/analytics', icon: <TrendingUp size={20} />, label: t('sidebar.analytics') }] : []),
-        { path: '/catalog', icon: <Layers size={20} />, label: t('sidebar.catalog') },
-        { path: '/documents', icon: <FileText size={20} />, label: t('sidebar.documents') },
         { path: '/profile', icon: <User size={20} />, label: t('sidebar.my_profile') },
     ];
 
@@ -82,36 +113,63 @@ const StandardLayout = ({ children }) => {
                             <span className="text-[10px] uppercase font-bold text-gray-500 dark:text-gray-400 tracking-wider">{roleName}</span>
                         </div>
                     )}
-
-                    {sidebarOpen && gamificationActive && (
-                        <div className="mt-4 w-full bg-gradient-to-r from-amber-50 to-orange-50 dark:from-[#282a2c] dark:to-[#282a2c] border border-amber-200 dark:border-[#3c4043] rounded-xl p-3 flex items-center justify-between animate-in zoom-in duration-300">
-                            <div className="flex items-center gap-2">
-                                <div className="bg-white dark:bg-[#3c4043] p-1.5 rounded-full text-amber-600 dark:text-amber-400 shadow-sm"><Award size={16} /></div>
-                                <div className="text-left">
-                                    <p className="text-[10px] font-bold text-amber-800 dark:text-amber-400 uppercase">Level {currentUser?.level || 1}</p>
-                                    <p className="text-xs font-bold text-gray-800 dark:text-gray-300">{roleName === 'STUDENT' ? t('auth.student') : roleName === 'TEACHER' ? t('auth.teacher') : t('auth.admin')}</p>
-                                </div>
-                            </div>
-                            <div className="text-amber-600 dark:text-amber-400 font-bold text-xs flex items-center gap-1">
-                                <Zap size={12} fill="currentColor" /> {currentUser?.points || 0}
-                            </div>
-                        </div>
-                    )}
                 </div>
 
-                <nav className="flex-1 py-6 px-3 space-y-1 overflow-y-auto custom-scrollbar">
-                    {navItems.map((item) => {
-                        const isActive = location.pathname === item.path;
+                <nav className="flex-1 py-6 px-3 space-y-2 overflow-y-auto custom-scrollbar">
+                    {navItems.map((item, index) => {
+                        // Fix for Enterprise/Whitelabel sub-routes keeping Admin active
+                        const isActive = location.pathname === item.path ||
+                            (item.path === '/admin' && location.pathname.startsWith('/enterprise'));
+                        const showSeparator = (
+                            (item.path === '/resources' && (roleName === 'TEACHER' || roleName === 'ADMIN')) ||
+                            (item.path === '/admin' && roleName === 'ADMIN') ||
+                            item.path === '/profile'
+                        );
+
                         return (
-                            <NavLink key={item.path} to={item.path} className={`flex items-center px-3 py-3 rounded-xl transition-all duration-200 group 
-                                ${isActive
-                                    ? 'bg-gray-900 text-white dark:bg-[#004A77] dark:text-[#c2e7ff]'
-                                    : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-[#282a2c] hover:text-gray-900 dark:hover:text-gray-200'
-                                }`}>
-                                <div className={`${!sidebarOpen && 'mx-auto'}`}>{item.icon}</div>
-                                {sidebarOpen && <span className="ml-3 font-medium text-sm">{item.label}</span>}
-                                {!sidebarOpen && <div className="absolute left-16 bg-black text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-50 pointer-events-none">{item.label}</div>}
-                            </NavLink>
+                            <React.Fragment key={item.path}>
+                                {showSeparator && (
+                                    <div className="my-3 border-t border-gray-200 dark:border-[#3c4043]"></div>
+                                )}
+                                <NavLink
+                                    to={item.path}
+                                    className={({ isActive: navActive }) => {
+                                        const isActive = navActive || (item.path === '/admin' && location.pathname.startsWith('/enterprise'));
+                                        return `relative flex items-center px-4 py-3.5 rounded-xl transition-all duration-200 group ${isActive
+                                            ? 'bg-gradient-to-r from-indigo-50 to-transparent dark:from-[#004A77] dark:to-transparent text-indigo-700 dark:text-[#c2e7ff] shadow-sm'
+                                            : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-[#282a2c] hover:text-gray-900 dark:hover:text-gray-200 hover:scale-[1.02]'
+                                            }`;
+                                    }}
+                                >
+                                    {({ isActive: navActive }) => {
+                                        const isActive = navActive || (item.path === '/admin' && location.pathname.startsWith('/enterprise'));
+                                        return (
+                                            <>
+                                                {isActive && (
+                                                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-indigo-600 dark:bg-[#c2e7ff] rounded-r-full"></div>
+                                                )}
+
+                                                <div className={`${!sidebarOpen && 'mx-auto'} ${isActive ? 'scale-110' : ''} transition-transform`}>
+                                                    {React.cloneElement(item.icon, { size: 22 })}
+                                                </div>
+
+                                                {sidebarOpen && (
+                                                    <span className={`ml-3 font-medium text-sm ${isActive ? 'font-semibold' : ''}`}>
+                                                        {item.label}
+                                                    </span>
+                                                )}
+
+                                                {!sidebarOpen && (
+                                                    <div className="absolute left-16 bg-gray-900 dark:bg-gray-800 text-white text-xs px-3 py-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-50 pointer-events-none shadow-lg">
+                                                        {item.label}
+                                                        <div className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1 w-2 h-2 bg-gray-900 dark:bg-gray-800 rotate-45"></div>
+                                                    </div>
+                                                )}
+                                            </>
+                                        );
+                                    }}
+                                </NavLink>
+                            </React.Fragment>
                         );
                     })}
                 </nav>
@@ -133,9 +191,35 @@ const StandardLayout = ({ children }) => {
 
             <main className={`flex-1 transition-all duration-300 ${sidebarOpen ? 'ml-64' : 'ml-20'} p-8 h-full overflow-y-auto bg-gray-50 dark:bg-[#131314]`}>
                 <div className="mb-6 flex items-center justify-between">
-                    <button onClick={() => setSidebarOpen(!sidebarOpen)} className="p-2 hover:bg-gray-200 dark:hover:bg-[#282a2c] rounded-lg text-gray-500 dark:text-gray-400 transition-colors">
-                        {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
-                    </button>
+                    <div className="flex items-center gap-4">
+                        <button
+                            onClick={() => setSidebarOpen(!sidebarOpen)}
+                            className="p-2 hover:bg-gray-200 dark:hover:bg-[#282a2c] rounded-lg text-gray-500 dark:text-gray-400 transition-colors"
+                            title={sidebarOpen ? "Minimera meny" : "Expandera meny"}
+                        >
+                            {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
+                        </button>
+                        {/* Duplicate greeting REMOVED here */}
+                    </div>
+
+                    <div className="flex items-center gap-2 relative">
+                        {/* Online Friends Toggle */}
+                        {/* Online Friends Toggle - Available for ALL users */}
+                        <button
+                            onClick={() => setFriendsPanelOpen(!friendsPanelOpen)}
+                            className={`relative p-2.5 rounded-full transition-colors ${friendsPanelOpen ? 'bg-indigo-100 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400' : 'hover:bg-gray-100 text-gray-500 dark:text-gray-400 dark:hover:bg-[#282a2c]'}`}
+                            title="Online Vänner"
+                        >
+                            <Users size={20} />
+                            <span className="absolute top-2 right-2 flex h-2 w-2">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                                <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                            </span>
+                        </button>
+                        <OnlineFriendsPanel isOpen={friendsPanelOpen} onClose={() => setFriendsPanelOpen(false)} />
+
+                        <NotificationBell />
+                    </div>
                 </div>
                 {children}
             </main>

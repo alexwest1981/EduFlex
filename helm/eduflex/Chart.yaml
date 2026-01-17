@@ -1,0 +1,8 @@
+apiVersion: v2
+name: eduflex
+description: A Helm chart for deploying the EduFlex Learning Management System
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
+maintainers:
+  - name: EduFlex Team

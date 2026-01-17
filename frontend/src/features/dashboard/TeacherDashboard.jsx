@@ -17,6 +17,7 @@ import TeacherStats from './components/TeacherStats'; // Keep for backward compa
 import { ActiveCoursesCard, MyStudentsCard, GradingCard, ApplicationsCard, RiskCard } from './components/TeacherWidgetComponents';
 import { UngradedTable, ApplicationsTable } from './components/TeacherTables';
 import { CreateCourseModal, EditCourseModal } from './components/TeacherModals';
+import StudentContactModal from './components/StudentContactModal';
 
 // --- SHARED ---
 import { useDashboardWidgets } from '../../hooks/useDashboardWidgets';
@@ -92,8 +93,15 @@ const TeacherDashboard = ({ currentUser }) => {
             teacherCourses.forEach(c => {
                 c.students?.forEach(s => {
                     if (!uniqueStudentsMap.has(s.id)) {
-                        const lastLogin = s.lastLogin ? new Date(s.lastLogin) : null;
-                        const daysSinceLogin = lastLogin ? Math.floor((new Date() - lastLogin) / (1000 * 60 * 60 * 24)) : 999;
+                        const lastLoginDate = s.lastLogin ? new Date(s.lastLogin) : null;
+                        const lastActiveDate = s.lastActive ? new Date(s.lastActive) : null;
+
+                        // Use the most recent of login or active
+                        const latestActivity = (lastActiveDate && lastLoginDate)
+                            ? (lastActiveDate > lastLoginDate ? lastActiveDate : lastLoginDate)
+                            : (lastActiveDate || lastLoginDate);
+
+                        const daysSinceLogin = latestActivity ? Math.floor((new Date() - latestActivity) / (1000 * 60 * 60 * 24)) : 999;
                         uniqueStudentsMap.set(s.id, { ...s, daysSinceLogin, riskLevel: daysSinceLogin > 14 ? 'HIGH' : daysSinceLogin > 7 ? 'MEDIUM' : 'LOW' });
                     }
                 });
@@ -162,13 +170,7 @@ const TeacherDashboard = ({ currentUser }) => {
                     <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{t('dashboard.teacher_panel')}</h1>
                     <p className="text-gray-500 dark:text-gray-400">{t('dashboard.overview_for', { name: currentUser.fullName })}</p>
                 </div>
-                {activeTab === 'OVERVIEW' && (
-                    <DashboardCustomizer
-                        widgets={widgets}
-                        toggleWidget={toggleWidget}
-                        widgetLabels={widgetLabels}
-                    />
-                )}
+
             </div>
 
             {/* TAB MENY */}
@@ -185,6 +187,20 @@ const TeacherDashboard = ({ currentUser }) => {
                         {tab.icon} {tab.label}
                     </button>
                 ))}
+
+                {/* Spacer to push Customizer to the right */}
+                <div className="flex-1 border-b border-gray-200 dark:border-[#3c4043]"></div>
+
+                {/* Dashboard Customizer (Eye Icon) */}
+                {activeTab === 'OVERVIEW' && (
+                    <div className="flex items-center border-b border-gray-200 dark:border-[#3c4043] pr-2">
+                        <DashboardCustomizer
+                            widgets={widgets}
+                            toggleWidget={toggleWidget}
+                            widgetLabels={widgetLabels}
+                        />
+                    </div>
+                )}
             </div>
 
             {/* --- VYER --- */}
@@ -294,7 +310,7 @@ const TeacherDashboard = ({ currentUser }) => {
                                 <tr key={student.id} className="hover:bg-gray-50 dark:hover:bg-[#282a2c]/50"><td className="p-4 font-bold">{student.fullName}</td><td className="p-4 text-gray-500">{student.daysSinceLogin === 999 ? 'Aldrig' : `${student.daysSinceLogin} dagar sedan`}</td><td className="p-4 text-right">
                                     <button onClick={() => {
                                         setMessageRecipient(student);
-                                        setActiveTab('COMMUNICATION');
+                                        // setActiveTab('COMMUNICATION'); // REMOVED: Now opens modal directly via messageRecipient state
                                     }} className="text-indigo-600 font-bold text-xs hover:underline">Kontakta</button>
                                 </td></tr>
                             ))}
@@ -307,6 +323,14 @@ const TeacherDashboard = ({ currentUser }) => {
 
             <CreateCourseModal isOpen={showCreateModal} onClose={() => setShowCreateModal(false)} onCourseCreated={loadDashboardData} currentUser={currentUser} />
             <EditCourseModal isOpen={showEditModal} onClose={() => setShowEditModal(false)} onCourseUpdated={loadDashboardData} courseToEdit={courseToEdit} />
+
+            {/* Kontakt Modal */}
+            <StudentContactModal
+                isOpen={!!messageRecipient}
+                onClose={() => setMessageRecipient(null)}
+                student={messageRecipient}
+                currentUser={currentUser}
+            />
         </div>
     );
 };

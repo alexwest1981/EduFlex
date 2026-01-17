@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Search, User, BookOpen, FileText, Calendar, X, Loader2 } from 'lucide-react';
 import { api } from '../services/api';
 
-const GlobalSearch = () => {
+const GlobalSearch = ({ className = "w-96", inputClassName = "bg-gray-100 dark:bg-[#282a2c]" }) => {
     const [query, setQuery] = useState('');
     const [results, setResults] = useState({ users: [], courses: [], documents: [], events: [] });
     const [isOpen, setIsOpen] = useState(false);
@@ -13,43 +13,42 @@ const GlobalSearch = () => {
     const dropdownRef = useRef(null);
     const navigate = useNavigate();
 
-    // Debounced search
     useEffect(() => {
-        if (query.length < 2) {
-            setResults({ users: [], courses: [], documents: [], events: [] });
-            setIsOpen(false);
-            return;
-        }
-
-        const timer = setTimeout(async () => {
-            setIsLoading(true);
-            try {
-                const searchResults = await api.search.global(query);
-                setResults(searchResults);
-                setIsOpen(true);
-            } catch (error) {
-                console.error('Search error:', error);
-            } finally {
-                setIsLoading(false);
+        const delayDebounceFn = setTimeout(async () => {
+            if (query.trim().length >= 2) {
+                setIsLoading(true);
+                try {
+                    const response = await api.search.global(query);
+                    setResults(response || { users: [], courses: [], documents: [], events: [] });
+                    setIsOpen(true);
+                } catch (error) {
+                    console.error("Search failed:", error);
+                    setResults({ users: [], courses: [], documents: [], events: [] });
+                } finally {
+                    setIsLoading(false);
+                }
+            } else {
+                setResults({ users: [], courses: [], documents: [], events: [] });
+                setIsOpen(false);
             }
         }, 300);
 
-        return () => clearTimeout(timer);
+        return () => clearTimeout(delayDebounceFn);
     }, [query]);
 
-    // Close on click outside
     useEffect(() => {
-        const handleClickOutside = (e) => {
-            if (dropdownRef.current && !dropdownRef.current.contains(e.target) &&
-                inputRef.current && !inputRef.current.contains(e.target)) {
+        const handleClickOutside = (event) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target) && !inputRef.current.contains(event.target)) {
                 setIsOpen(false);
             }
         };
+
         document.addEventListener('mousedown', handleClickOutside);
-        return () => document.removeEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
     }, []);
 
-    // Keyboard navigation
     const allResults = [
         ...results.users.map(u => ({ ...u, type: 'user' })),
         ...results.courses.map(c => ({ ...c, type: 'course' })),
@@ -57,53 +56,43 @@ const GlobalSearch = () => {
         ...results.events.map(e => ({ ...e, type: 'event' }))
     ];
 
-    const handleKeyDown = (e) => {
-        if (!isOpen) return;
+    const hasResults = allResults.length > 0;
 
+    const handleKeyDown = (e) => {
         if (e.key === 'ArrowDown') {
             e.preventDefault();
-            setActiveIndex(prev => Math.min(prev + 1, allResults.length - 1));
+            setActiveIndex(prev => (prev < allResults.length - 1 ? prev + 1 : prev));
         } else if (e.key === 'ArrowUp') {
             e.preventDefault();
-            setActiveIndex(prev => Math.max(prev - 1, 0));
-        } else if (e.key === 'Enter' && activeIndex >= 0) {
+            setActiveIndex(prev => (prev > 0 ? prev - 1 : prev));
+        } else if (e.key === 'Enter') {
             e.preventDefault();
-            handleSelect(allResults[activeIndex]);
+            if (activeIndex >= 0 && activeIndex < allResults.length) {
+                handleSelect(allResults[activeIndex]);
+            }
         } else if (e.key === 'Escape') {
             setIsOpen(false);
-            setQuery('');
+            inputRef.current?.blur();
         }
     };
 
     const handleSelect = (item) => {
+        if (item.type === 'user') navigate(`/profile/${item.id}`);
+        else if (item.type === 'course') navigate(`/courses/${item.id}`);
+        else if (item.type === 'document') window.open(item.url, '_blank');
+        else if (item.type === 'event') navigate(`/calendar?event=${item.id}`);
+
         setIsOpen(false);
         setQuery('');
-
-        switch (item.type) {
-            case 'user':
-                navigate(`/profile/${item.id}`);
-                break;
-            case 'course':
-                navigate(`/courses/${item.id}`);
-                break;
-            case 'document':
-                navigate(`/documents`);
-                break;
-            case 'event':
-                navigate(`/calendar`);
-                break;
-            default:
-                break;
-        }
     };
 
     const getIcon = (type) => {
         switch (type) {
             case 'user': return <User size={16} className="text-blue-500" />;
-            case 'course': return <BookOpen size={16} className="text-green-500" />;
-            case 'document': return <FileText size={16} className="text-orange-500" />;
+            case 'course': return <BookOpen size={16} className="text-orange-500" />;
+            case 'document': return <FileText size={16} className="text-green-500" />;
             case 'event': return <Calendar size={16} className="text-purple-500" />;
-            default: return null;
+            default: return <Search size={16} />;
         }
     };
 
@@ -113,24 +102,18 @@ const GlobalSearch = () => {
             case 'course': return 'Kurs';
             case 'document': return 'Dokument';
             case 'event': return 'Händelse';
-            default: return '';
+            default: return 'Resultat';
         }
     };
 
     const getName = (item) => {
-        if (item.type === 'user') return item.fullName || `${item.firstName} ${item.lastName}`;
-        if (item.type === 'course') return item.name;
-        if (item.type === 'document') return item.title || item.name;
-        if (item.type === 'event') return item.title;
-        return '';
+        if (item.type === 'user') return `${item.firstName} ${item.lastName}`;
+        return item.title || item.name;
     };
 
-    const hasResults = allResults.length > 0;
-
     return (
-        <div className="relative w-96">
+        <div className={`relative ${className}`}>
             <div className="relative">
-                <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
                 <input
                     ref={inputRef}
                     type="text"
@@ -138,13 +121,14 @@ const GlobalSearch = () => {
                     onChange={(e) => setQuery(e.target.value)}
                     onKeyDown={handleKeyDown}
                     onFocus={() => query.length >= 2 && hasResults && setIsOpen(true)}
-                    placeholder="Sök användare, kurser, dokument..."
-                    className="w-full bg-gray-100 dark:bg-[#282a2c] border-none rounded-2xl pl-11 pr-10 py-3 text-sm font-medium outline-none focus:ring-2 focus:ring-green-800/20 transition-all"
+                    placeholder="Sök..."
+                    className={`w-full border-none rounded-2xl pl-5 pr-14 py-3 text-sm font-medium outline-none focus:ring-2 focus:ring-opacity-20 transition-all ${inputClassName}`}
                 />
+                <Search size={18} className={`absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none ${inputClassName.includes('text-white') || inputClassName.includes('text-black') ? 'opacity-50 inherit' : 'text-gray-400'}`} />
                 {query && (
                     <button
                         onClick={() => { setQuery(''); setIsOpen(false); }}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                        className="absolute right-10 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
                     >
                         <X size={16} />
                     </button>
@@ -172,11 +156,10 @@ const GlobalSearch = () => {
                                 <button
                                     key={`${item.type}-${item.id}`}
                                     onClick={() => handleSelect(item)}
-                                    className={`w-full px-4 py-3 flex items-center gap-3 text-left transition-colors ${
-                                        index === activeIndex
-                                            ? 'bg-gray-100 dark:bg-[#282a2c]'
-                                            : 'hover:bg-gray-50 dark:hover:bg-[#282a2c]'
-                                    }`}
+                                    className={`w-full px-4 py-3 flex items-center gap-3 text-left transition-colors ${index === activeIndex
+                                        ? 'bg-gray-100 dark:bg-[#282a2c]'
+                                        : 'hover:bg-gray-50 dark:hover:bg-[#282a2c]'
+                                        }`}
                                 >
                                     <div className="w-8 h-8 rounded-lg bg-gray-100 dark:bg-[#282a2c] flex items-center justify-center">
                                         {getIcon(item.type)}

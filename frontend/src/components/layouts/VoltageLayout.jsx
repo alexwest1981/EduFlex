@@ -1,11 +1,12 @@
 import React, { useEffect } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
-import { LayoutDashboard, FileText, User, Settings, LogOut, Layers, Menu, X, Award, Zap, Moon, Sun, Calendar, BookOpen, TrendingUp, Bell, Search, Plus, HelpCircle, Shield, Folder, BarChart2, HardDrive } from 'lucide-react';
+import { LayoutDashboard, FileText, User, Settings, LogOut, Layers, Menu, X, Award, Zap, Moon, Sun, Calendar, BookOpen, TrendingUp, Bell, Search, Plus, HelpCircle, Shield, Folder, BarChart2, HardDrive, Wallet, Music, Play, Pause, Heart, Speaker } from 'lucide-react';
 import { useAppContext } from '../../context/AppContext';
 import { useModules } from '../../context/ModuleContext';
 import { useTranslation } from 'react-i18next';
-
 import ChatModule from '../../modules/chat/ChatModule';
+import GlobalSearch from '../GlobalSearch';
+import NotificationBell from '../NotificationBell';
 
 const VoltageLayout = ({ children }) => {
     const { currentUser, logout, systemSettings, theme, toggleTheme, API_BASE } = useAppContext();
@@ -72,30 +73,32 @@ const VoltageLayout = ({ children }) => {
                         </div>
                     </div>
 
-                    {/* Primary Action Button */}
+                    {/* Primary Action Button replaced with Search */}
                     <div className="px-4 lg:px-6 mb-8 mt-2">
-                        <button className="w-full aspect-square lg:aspect-auto lg:py-3 lg:px-4 bg-[#CCFF00] hover:bg-[#B3E600] text-black rounded-full font-bold shadow-[0_0_20px_rgba(204,255,0,0.3)] flex items-center justify-center gap-2 transition-all hover:scale-105 active:scale-95 group">
-                            <Plus size={24} className="group-hover:rotate-90 transition-transform" />
-                            <span className="hidden lg:inline">New Task</span>
-                        </button>
+                        <GlobalSearch className="w-full" inputClassName="bg-[#CCFF00] text-black placeholder-black/60 font-bold shadow-[0_0_20px_rgba(204,255,0,0.3)] focus:ring-[#CCFF00]/40" />
                     </div>
 
                     {/* Navigation Items */}
                     <div className="flex-1 overflow-y-auto px-4 lg:px-6 space-y-6 scrollbar-hide py-2 flex flex-col items-center lg:items-stretch">
-
                         <div className="space-y-2">
                             {mainNav.map(item => (
-                                <NavLink key={item.path} to={item.path} className={({ isActive }) => `flex items-center justify-center lg:justify-start gap-4 px-3 lg:px-4 py-3 rounded-2xl transition-all duration-200 group
-                                    ${isActive ? 'bg-[#1F1F1F] text-[#CCFF00]' : 'text-gray-400 hover:text-white hover:bg-[#1A1A1A]'}`}>
-                                    {({ isActive }) => (
-                                        <>
-                                            <div className="relative">
-                                                {item.icon}
-                                                {isActive && <div className="absolute -left-4 top-1/2 -translate-y-1/2 w-1 h-4 bg-[#CCFF00] rounded-r-full hidden lg:block"></div>}
-                                            </div>
-                                            <span className="font-medium text-sm hidden lg:block">{item.label}</span>
-                                        </>
-                                    )}
+                                <NavLink key={item.path} to={item.path} className={({ isActive: navActive }) => {
+                                    const isActive = navActive || (item.path === '/admin' && location.pathname.startsWith('/enterprise'));
+                                    return `flex items-center justify-center lg:justify-start gap-4 px-3 lg:px-4 py-3 rounded-2xl transition-all duration-200 group
+                                    ${isActive ? 'bg-[#1F1F1F] text-[#CCFF00]' : 'text-gray-400 hover:text-white hover:bg-[#1A1A1A]'}`;
+                                }}>
+                                    {({ isActive: navActive }) => {
+                                        const isActive = navActive || (item.path === '/admin' && location.pathname.startsWith('/enterprise'));
+                                        return (
+                                            <>
+                                                <div className="relative">
+                                                    {item.icon}
+                                                    {isActive && <div className="absolute -left-4 top-1/2 -translate-y-1/2 w-1 h-4 bg-[#CCFF00] rounded-r-full hidden lg:block"></div>}
+                                                </div>
+                                                <span className="font-medium text-sm hidden lg:block">{item.label}</span>
+                                            </>
+                                        );
+                                    }}
                                 </NavLink>
                             ))}
                         </div>
@@ -146,21 +149,13 @@ const VoltageLayout = ({ children }) => {
 
                         {/* Top Utilities */}
                         <div className="flex items-center gap-4">
-                            <button className="w-10 h-10 bg-white dark:bg-[#1E1E1E] rounded-full flex items-center justify-center text-gray-500 hover:text-black dark:hover:text-white shadow-sm transition-colors">
-                                <Search size={18} />
-                            </button>
-                            <button className="w-10 h-10 bg-white dark:bg-[#1E1E1E] rounded-full flex items-center justify-center text-gray-500 hover:text-black dark:hover:text-white shadow-sm transition-colors relative">
-                                <Bell size={18} />
-                                <span className="absolute top-2 right-2 w-2 h-2 bg-[#CCFF00] rounded-full border border-white"></span>
-                            </button>
+                            <NotificationBell />
                         </div>
                     </header>
 
-                    {/* Content Area - Rounded Internal Cards */}
-                    <main className="flex-1 overflow-y-auto px-8 pb-8 scrollbar-thin">
-                        <div className="bg-white dark:bg-[#1E1E1E] rounded-[30px] p-8 shadow-sm min-h-full border border-gray-100 dark:border-gray-800">
-                            {children}
-                        </div>
+                    {/* CONTENT CANVAS */}
+                    <main className="flex-1 overflow-y-auto p-4 lg:p-8 relative">
+                        {children}
                     </main>
 
                 </div>

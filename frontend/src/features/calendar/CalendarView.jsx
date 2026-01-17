@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight, Calendar as CalIcon, Clock, Loader2, Plus, X, AlertCircle, Video, Users, User, ArrowLeft, ArrowRight, Check, Trash2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Calendar as CalIcon, Clock, Loader2, Plus, X, AlertCircle, Video, Users, User, ArrowLeft, ArrowRight, Check, Trash2, TrendingUp } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../../services/api';
 import { useAppContext } from '../../context/AppContext';
 import { useDesignSystem } from '../../context/DesignSystemContext';
+import EventDetailPanel from './EventDetailPanel';
+import MiniCalendar from './components/MiniCalendar';
+import ImportantDatesWidget from './components/ImportantDatesWidget';
 
 // --- UTILS ---
 function getMonday(d) {
@@ -50,9 +53,12 @@ const CalendarView = () => {
     const [courses, setCourses] = useState([]);
     const [users, setUsers] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [stats, setStats] = useState({ totalStudents: 0, totalClasses: 0 });
 
     // UI State
     const [showBookingModal, setShowBookingModal] = useState(false);
+    const [selectedEvent, setSelectedEvent] = useState(null);
+    const [showEventDetail, setShowEventDetail] = useState(false);
     const [newEvent, setNewEvent] = useState({
         title: '', description: '', startTime: '', endTime: '', date: '',
         type: 'MEETING', courseId: '', ownerId: '', status: 'CONFIRMED',
@@ -102,6 +108,11 @@ const CalendarView = () => {
                 }));
                 setCalEvents(mapped);
             }
+
+            // Calculate statistics
+            const studentCount = usersData.filter(u => u.role?.name === 'STUDENT' || u.role === 'STUDENT').length;
+            const classCount = eventsData.filter(e => e.type === 'LESSON').length;
+            setStats({ totalStudents: studentCount, totalClasses: classCount });
         } catch (error) {
             console.error("Failed to load calendar data", error);
         } finally {
@@ -240,11 +251,11 @@ const CalendarView = () => {
 
     const getEventTypeStyles = (type) => {
         switch (type) {
-            case 'LESSON': return 'bg-purple-100 border-purple-300 text-purple-900 dark:bg-purple-900/40 dark:border-purple-700 dark:text-purple-100';
-            case 'EXAM': return 'bg-red-100 border-red-300 text-red-900 dark:bg-red-900/40 dark:border-red-700 dark:text-red-100';
-            case 'WORKSHOP': return 'bg-blue-100 border-blue-300 text-blue-900 dark:bg-blue-900/40 dark:border-blue-700 dark:text-blue-100';
-            case 'MEETING': return 'bg-amber-100 border-amber-300 text-amber-900 dark:bg-amber-900/40 dark:border-amber-700 dark:text-amber-100';
-            default: return 'bg-gray-100 border-gray-300 text-gray-900 dark:bg-gray-800/40 dark:border-gray-600 dark:text-gray-100';
+            case 'LESSON': return 'bg-orange-100/70 dark:bg-orange-900/40 text-orange-900 dark:text-orange-100';
+            case 'EXAM': return 'bg-red-100/70 dark:bg-red-900/40 text-red-900 dark:text-red-100';
+            case 'WORKSHOP': return 'bg-teal-100/70 dark:bg-teal-900/40 text-teal-900 dark:text-teal-100';
+            case 'MEETING': return 'bg-purple-100/70 dark:bg-purple-900/40 text-purple-900 dark:text-purple-100';
+            default: return 'bg-gray-100/70 dark:bg-gray-800/40 text-gray-900 dark:text-gray-100';
         }
     };
 
@@ -262,136 +273,163 @@ const CalendarView = () => {
         <div className="max-w-7xl mx-auto h-[calc(100vh-120px)] flex flex-col p-6">
 
             {/* Header */}
-            <div className="flex justify-between items-center mb-6 shrink-0 bg-indigo-50 dark:bg-indigo-950/30 p-6 rounded-3xl shadow-lg border border-indigo-100 dark:border-indigo-900/50">
+            <div className="flex justify-between items-center mb-6 shrink-0 bg-white dark:bg-[#1E1E1E] p-6 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-800">
                 <div>
-                    <h1 className="text-3xl font-black text-gray-900 dark:text-white flex items-center gap-3">
-                        <div className="p-2 bg-indigo-600 rounded-xl shadow-lg shadow-indigo-500/30">
-                            <CalIcon className="text-white" size={28} />
+                    <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Calendar</h1>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">Your Personalized Calendar: The Smart Way to Stay on Top of Things</p>
+
+                    {/* Statistics */}
+                    <div className="flex items-center gap-4 mt-4">
+                        <div className="flex items-center gap-2">
+                            <div className="flex -space-x-2">
+                                <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-900/30 border-2 border-white dark:border-[#1E1E1E] flex items-center justify-center">
+                                    <Users size={14} className="text-indigo-600 dark:text-indigo-400" />
+                                </div>
+                                <div className="w-8 h-8 rounded-full bg-purple-100 dark:bg-purple-900/30 border-2 border-white dark:border-[#1E1E1E] flex items-center justify-center">
+                                    <Users size={14} className="text-purple-600 dark:text-purple-400" />
+                                </div>
+                                <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 border-2 border-white dark:border-[#1E1E1E] flex items-center justify-center">
+                                    <Users size={14} className="text-blue-600 dark:text-blue-400" />
+                                </div>
+                            </div>
+                            <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">{stats.totalStudents} Students</span>
                         </div>
-                        {t('sidebar.calendar')}
-                    </h1>
-                    <p className="text-sm text-indigo-600 dark:text-indigo-400 font-bold mt-1">Vecka {getWeekNumber(weekStart)} • {weekStart.getFullYear()}</p>
+                        <div className="w-px h-6 bg-gray-300 dark:bg-gray-700"></div>
+                        <div className="flex items-center gap-2">
+                            <TrendingUp size={16} className="text-gray-400" />
+                            <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">{stats.totalClasses} Classes</span>
+                        </div>
+                    </div>
                 </div>
 
                 <div className="flex items-center gap-3">
-                    <div className="flex items-center bg-white dark:bg-gray-900 rounded-xl p-1.5 shadow-md border border-gray-200 dark:border-gray-700">
-                        <button onClick={handlePrevWeek} className="p-2.5 hover:bg-indigo-50 dark:hover:bg-indigo-950 rounded-lg transition-all text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400"><ChevronLeft size={20} strokeWidth={2.5} /></button>
-                        <span className="text-sm font-bold whitespace-nowrap w-36 text-center text-gray-800 dark:text-gray-100">{weekStart.toLocaleDateString('sv-SE', { month: 'long', year: 'numeric' })}</span>
-                        <button onClick={handleNextWeek} className="p-2.5 hover:bg-indigo-50 dark:hover:bg-indigo-950 rounded-lg transition-all text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400"><ChevronRight size={20} strokeWidth={2.5} /></button>
+                    {/* Month Navigation */}
+                    <div className="flex items-center gap-2">
+                        <button className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
+                            Filter
+                        </button>
+                        <div className="flex items-center bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
+                            <button onClick={handlePrevWeek} className="p-2 hover:bg-white dark:hover:bg-gray-700 rounded-md transition-colors">
+                                <ChevronLeft size={18} className="text-gray-600 dark:text-gray-400" />
+                            </button>
+                            <span className="px-4 text-sm font-semibold text-gray-700 dark:text-gray-300 min-w-[120px] text-center">
+                                {weekStart.toLocaleDateString('sv-SE', { month: 'long', year: 'numeric' })}
+                            </span>
+                            <button onClick={handleNextWeek} className="p-2 hover:bg-white dark:hover:bg-gray-700 rounded-md transition-colors">
+                                <ChevronRight size={18} className="text-gray-600 dark:text-gray-400" />
+                            </button>
+                        </div>
+                        <button
+                            onClick={() => setShowBookingModal(true)}
+                            className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg font-semibold transition-colors flex items-center gap-2"
+                        >
+                            <Plus size={18} />
+                            New Event
+                        </button>
                     </div>
-
-                    <button onClick={() => setShowBookingModal(true)} className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-xl font-bold shadow-lg shadow-indigo-500/30 hover:shadow-xl hover:shadow-indigo-500/40 transition-all flex items-center gap-2">
-                        <Plus size={20} strokeWidth={3} /> Boka
-                    </button>
                 </div>
             </div>
 
-            {/* Calendar Grid */}
-            <div className="flex-1 bg-white dark:bg-[#1E1E1E] rounded-3xl shadow-xl border-2 border-gray-100 dark:border-gray-800 overflow-hidden flex flex-col">
+            {/* Main Content Grid */}
+            <div className="flex-1 flex gap-6 overflow-hidden">
 
-                {/* Day Headers */}
-                <div className="grid grid-cols-[60px_repeat(7,1fr)] border-b-2 border-indigo-100 dark:border-indigo-900/30 shrink-0 bg-gray-50 dark:bg-gray-900">
-                    <div className="bg-gray-100 dark:bg-[#2A2A2A] border-r-2 border-gray-200 dark:border-gray-700" /> {/* Time column header */}
-                    {weekDays.map((d, i) => (
-                        <div key={i} className={`py-5 px-2 text-center border-r border-gray-100 dark:border-gray-800 transition-all ${isSameDay(d, new Date()) ? 'bg-indigo-100 dark:bg-indigo-950/50' : ''}`}>
-                            <p className="text-[10px] text-gray-500 dark:text-gray-400 uppercase font-black tracking-[0.15em] mb-2">{d.toLocaleDateString('sv-SE', { weekday: 'short' })}</p>
-                            <div className={`text-2xl font-black inline-flex items-center justify-center w-12 h-12 rounded-2xl transition-all ${isSameDay(d, new Date()) ? 'bg-indigo-600 text-white shadow-xl shadow-indigo-500/50 scale-110' : 'text-gray-800 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800'}`}>
-                                {d.getDate()}
+                {/* Calendar Grid (Flex-1) */}
+                <div className="flex-1 bg-white dark:bg-[#1E1E1E] rounded-3xl shadow-xl border-2 border-gray-100 dark:border-gray-800 overflow-hidden flex flex-col">
+
+                    {/* Day Headers */}
+                    <div className="grid grid-cols-[60px_repeat(7,1fr)] border-b-2 border-indigo-100 dark:border-indigo-900/30 shrink-0 bg-gray-50 dark:bg-gray-900">
+                        <div className="bg-gray-100 dark:bg-[#2A2A2A] border-r-2 border-gray-200 dark:border-gray-700" /> {/* Time column header */}
+                        {weekDays.map((d, i) => (
+                            <div key={i} className={`py-5 px-2 text-center border-r border-gray-100 dark:border-gray-800 transition-all ${isSameDay(d, new Date()) ? 'bg-indigo-100 dark:bg-indigo-950/50' : ''}`}>
+                                <p className="text-[10px] text-gray-500 dark:text-gray-400 uppercase font-black tracking-[0.15em] mb-2">{d.toLocaleDateString('sv-SE', { weekday: 'short' })}</p>
+                                <div className={`text-2xl font-black inline-flex items-center justify-center w-12 h-12 rounded-2xl transition-all ${isSameDay(d, new Date()) ? 'bg-indigo-600 text-white shadow-xl shadow-indigo-500/50 scale-110' : 'text-gray-800 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800'}`}>
+                                    {d.getDate()}
+                                </div>
                             </div>
-                        </div>
-                    ))}
-                </div>
+                        ))}
+                    </div>
 
-                {/* Time Slots */}
-                <div className="flex-1 overflow-y-auto">
-                    {hours.map(hour => (
-                        <div key={hour} className="grid grid-cols-[60px_repeat(7,1fr)] h-20 border-b border-gray-100 dark:border-gray-800/50 relative hover:bg-gray-50/30 dark:hover:bg-white/[0.02] transition-colors">
+                    {/* Time Slots */}
+                    <div className="flex-1 overflow-y-auto">
+                        {hours.map(hour => (
+                            <div key={hour} className="grid grid-cols-[60px_repeat(7,1fr)] h-20 border-b border-gray-100 dark:border-gray-800/50 relative hover:bg-gray-50/30 dark:hover:bg-white/[0.02] transition-colors">
 
-                            {/* Time Label */}
-                            <div className="relative text-right pr-4 pt-2 text-xs font-black text-gray-500 dark:text-gray-400 font-mono border-r-2 border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-[#2A2A2A]">
-                                {hour}:00
-                            </div>
+                                {/* Time Label */}
+                                <div className="relative text-right pr-4 pt-2 text-xs font-black text-gray-500 dark:text-gray-400 font-mono border-r-2 border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-[#2A2A2A]">
+                                    {hour}:00
+                                </div>
 
-                            {/* Days Columns */}
-                            {weekDays.map((d, i) => {
-                                const dayEvents = getEventsForDay(d);
-                                return (
-                                    <div
-                                        key={i}
-                                        className="relative border-r border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors group cursor-pointer"
-                                        onClick={() => handleSlotClick(d, hour)}
-                                        title={`Klicka för att boka ${hour}:00`}
-                                    >
-                                        {/* Add Button Hint - Only show on first hour */}
-                                        {hour === 8 && dayEvents.length === 0 && (
-                                            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-200 z-0">
-                                                <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
-                                                    <Plus size={16} strokeWidth={3} />
-                                                </div>
-                                            </div>
-                                        )}
-
-                                        {/* Events with absolute positioning - Only render on first hour to avoid duplicates */}
-                                        {hour === 8 && dayEvents.map(ev => {
-                                            const style = getEventStyle(ev);
-                                            const statusColor = ev.status === 'PENDING' ? 'border-l-4 border-l-yellow-500' :
-                                                ev.status === 'REJECTED' ? 'border-l-4 border-l-red-500' :
-                                                    'border-l-4 border-l-green-500';
-
-                                            return (
-                                                <div
-                                                    key={ev.id}
-                                                    className={`absolute inset-x-1 rounded-lg border text-xs px-2 py-1 overflow-hidden shadow-sm z-10 transition-all hover:shadow-md hover:z-20 group/event ${getEventTypeStyles(ev.type)} ${statusColor}`}
-                                                    style={style}
-                                                    onClick={(e) => e.stopPropagation()}
-                                                >
-                                                    <div className="font-bold truncate flex items-center gap-1.5 mb-0.5">
-                                                        {getEventTypeIcon(ev.type)}
-                                                        <span>{ev.title}</span>
-                                                    </div>
-                                                    <div className="opacity-80 text-[10px] truncate">
-                                                        {ev.start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - {ev.end.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                                    </div>
-
-                                                    {/* Action Buttons */}
-                                                    <div className="absolute top-1 right-1 opacity-0 group-hover/event:opacity-100 transition-opacity flex gap-1">
-                                                        {isTeacherOrAdmin && ev.status === 'PENDING' && (
-                                                            <>
-                                                                <button
-                                                                    onClick={(e) => { e.stopPropagation(); handleUpdateEventStatus(ev.id, 'CONFIRMED'); }}
-                                                                    className="bg-green-500 hover:bg-green-600 text-white p-1 rounded shadow-sm"
-                                                                    title="Godkänn"
-                                                                >
-                                                                    <Check size={12} />
-                                                                </button>
-                                                                <button
-                                                                    onClick={(e) => { e.stopPropagation(); handleUpdateEventStatus(ev.id, 'REJECTED'); }}
-                                                                    className="bg-red-500 hover:bg-red-600 text-white p-1 rounded shadow-sm"
-                                                                    title="Avböj"
-                                                                >
-                                                                    <X size={12} />
-                                                                </button>
-                                                            </>
-                                                        )}
-                                                        {isTeacherOrAdmin && (
-                                                            <button
-                                                                onClick={(e) => { e.stopPropagation(); handleDeleteEvent(ev.id); }}
-                                                                className="bg-gray-700 hover:bg-gray-800 text-white p-1 rounded shadow-sm"
-                                                                title="Ta bort"
-                                                            >
-                                                                <Trash2 size={12} />
-                                                            </button>
-                                                        )}
+                                {/* Days Columns */}
+                                {weekDays.map((d, i) => {
+                                    const dayEvents = getEventsForDay(d);
+                                    return (
+                                        <div
+                                            key={i}
+                                            className="relative border-r border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors group cursor-pointer"
+                                            onClick={() => handleSlotClick(d, hour)}
+                                            title={`Klicka för att boka ${hour}:00`}
+                                        >
+                                            {/* Add Button Hint - Only show on first hour */}
+                                            {hour === 8 && dayEvents.length === 0 && (
+                                                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-200 z-0">
+                                                    <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
+                                                        <Plus size={16} strokeWidth={3} />
                                                     </div>
                                                 </div>
-                                            );
-                                        })}
-                                    </div>
-                                );
-                            })}
-                        </div>
-                    ))}
+                                            )}
+
+                                            {/* Events with absolute positioning - Only render on first hour to avoid duplicates */}
+                                            {hour === 8 && dayEvents.map(ev => {
+                                                const style = getEventStyle(ev);
+
+                                                return (
+                                                    <div
+                                                        key={ev.id}
+                                                        className={`absolute inset-x-2 rounded-lg text-xs px-3 py-2 overflow-hidden shadow-md z-10 transition-all hover:shadow-lg hover:z-20 cursor-pointer ${getEventTypeStyles(ev.type)}`}
+                                                        style={style}
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            setSelectedEvent(ev);
+                                                            setShowEventDetail(true);
+                                                        }}
+                                                    >
+                                                        <div className="flex items-center gap-1.5 mb-1">
+                                                            <div className="flex-shrink-0">
+                                                                {getEventTypeIcon(ev.type)}
+                                                            </div>
+                                                            <div className="font-bold truncate text-sm">
+                                                                {ev.title}
+                                                            </div>
+                                                        </div>
+                                                        <div className="opacity-75 text-[11px] truncate">
+                                                            {ev.start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - {ev.end.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        ))}
+                    </div>
                 </div>
+
+                {/* Right Sidebar */}
+                <div className="w-80 shrink-0 flex flex-col gap-6">
+                    <MiniCalendar
+                        currentDate={weekStart}
+                        onDateSelect={(date) => setWeekStart(getMonday(date))}
+                    />
+                    <ImportantDatesWidget
+                        events={calEvents}
+                        onEventClick={(ev) => {
+                            setSelectedEvent(ev);
+                            setShowEventDetail(true);
+                        }}
+                    />
+                </div>
+
             </div>
 
             {/* Booking Modal */}
@@ -545,6 +583,19 @@ const CalendarView = () => {
                 </div>
             )
             }
+
+            {/* Event Detail Panel */}
+            <EventDetailPanel
+                event={selectedEvent}
+                isOpen={showEventDetail}
+                onClose={() => {
+                    setShowEventDetail(false);
+                    setSelectedEvent(null);
+                }}
+                onDelete={handleDeleteEvent}
+                onUpdateStatus={handleUpdateEventStatus}
+                isTeacherOrAdmin={isTeacherOrAdmin}
+            />
 
         </div >
     );

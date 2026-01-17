@@ -14,9 +14,10 @@ const DashboardCustomizer = ({ widgets, toggleWidget, widgetLabels }) => {
         <>
             <button
                 onClick={() => setIsOpen(true)}
-                className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-[#1E1F20] border border-gray-200 dark:border-[#3c4043] rounded-lg text-sm font-bold text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-[#282a2c]"
+                className="p-2 bg-white dark:bg-[#1E1F20] border border-gray-200 dark:border-[#3c4043] rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-[#282a2c] transition-colors"
+                title="Anpassa instrumentpanel"
             >
-                <Settings size={16} /> Anpassa
+                <Eye size={18} />
             </button>
 
             {isOpen && (
