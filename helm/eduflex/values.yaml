@@ -1,0 +1,108 @@
+global:
+  domain: eduflex.se
+  environment: production
+
+postgresql:
+  enabled: true
+  persistence:
+    size: 10Gi
+  resources:
+    requests:
+      cpu: 500m
+      memory: 1Gi
+    limits:
+      cpu: 2000m
+      memory: 4Gi
+
+redis:
+  enabled: true
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 1Gi
+
+minio:
+  enabled: true
+  persistence:
+    size: 50Gi
+  resources:
+    requests:
+      cpu: 250m
+      memory: 512Mi
+    limits:
+      cpu: 1000m
+      memory: 2Gi
+
+backend:
+  replicaCount: 3
+  image:
+    repository: eduflex/backend
+    tag: latest
+    pullPolicy: IfNotPresent
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 70
+  resources:
+    requests:
+      cpu: 500m
+      memory: 1Gi
+    limits:
+      cpu: 2000m
+      memory: 4Gi
+  authMode: "jwt-only" # Set to 'jwt-only' (no Keycloak) or 'hybrid' (with Keycloak)
+
+frontend:
+  replicaCount: 2
+  image:
+    repository: eduflex/frontend
+    tag: latest
+    pullPolicy: IfNotPresent
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 5
+    targetCPUUtilizationPercentage: 70
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+ingress:
+  enabled: true
+  className: nginx
+  hosts:
+    - host: eduflex.se
+      paths:
+        - path: /
+          pathType: Prefix
+    - host: api.eduflex.se
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    enabled: false
+    secretName: eduflex-tls
+
+monitoring:
+  enabled: true
+  prometheus:
+    enabled: true
+    persistence:
+      enabled: true
+      size: 10Gi
+      storageClass: "" # uses default if empty
+  grafana:
+    enabled: true
+    persistence:
+      enabled: true
+      size: 1Gi
+      storageClass: ""
+

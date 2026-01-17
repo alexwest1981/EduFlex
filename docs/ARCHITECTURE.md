@@ -79,9 +79,49 @@ A strict filter (`LicenseFilter`) intercepts requests.
 - **Payment Abstraction:** `PaymentService` abstracts Stripe/Swish logic.
 
 ### 🛡️ Security Layer
-- **RBAC:** `TEACHER`, `STUDENT`, `ADMIN`.
+- **RBAC:** `TEACHER`, `STUDENT`, `ADMIN`, `MENTOR`, `PRINCIPAL`.
 - **CORS:** Explicitly allowed headers for Auth/Content-Type.
 - **Audit:** EntityListeners track all critical changes (`AuditLog`).
+
+### 🏢 Multi-Tenancy (NEW)
+EduFlex supports **schema-based multi-tenancy** for complete data isolation between organizations.
+
+#### Architecture
+```
+┌─────────────────────────────────────────────────────────────┐
+│                     PostgreSQL Database                      │
+├─────────────────┬─────────────────┬─────────────────────────┤
+│  public schema  │  tenant_acme    │  tenant_school2        │
+│  ───────────────│  ───────────────│  ───────────────────── │
+│  • tenants      │  • app_users    │  • app_users           │
+│  (metadata)     │  • courses      │  • courses             │
+│                 │  • roles        │  • roles               │
+│                 │  • (40+ tables) │  • (40+ tables)        │
+└─────────────────┴─────────────────┴─────────────────────────┘
+```
+
+#### Key Components
+| Component | Role |
+|-----------|------|
+| `TenantFilter` | Extracts `X-Tenant-ID` header, validates tenant, sets context |
+| `TenantContext` | ThreadLocal storage for current tenant schema |
+| `TenantIdentifierResolver` | Tells Hibernate which tenant to use |
+| `SchemaMultiTenantConnectionProvider` | Sets PostgreSQL `search_path` per-request |
+
+#### Request Flow
+```mermaid
+sequenceDiagram
+    participant Client
+    participant TenantFilter
+    participant Hibernate
+    participant PostgreSQL
+
+    Client->>TenantFilter: Request + X-Tenant-ID: "acme"
+    TenantFilter->>PostgreSQL: Lookup tenant → dbSchema
+    TenantFilter->>Hibernate: Set tenant context
+    Hibernate->>PostgreSQL: SET search_path TO "tenant_acme"
+    PostgreSQL-->>Client: Isolated tenant data
+```
 
 ---
 
@@ -108,6 +148,13 @@ graph TD
 
 ## 6. Future Architecture (Roadmap)
 
-- **Microservices Split:** Move `VideoProcessing` and `PDFGeneration` to separate worker containers.
-- **Multi-tenancy:** Schema-per-tenant strategy for SaaS isolation.
-- **Event Bus:** RabbitMQ/Kafka for inter-module communication.
+| Feature | Status |
+|---------|--------|
+| **Multi-tenancy** (Schema-per-tenant) | ✅ Implemented |
+| **Microservices Split** (Video/PDF workers) | 🔜 Planned |
+| **Event Bus** (RabbitMQ/Kafka) | 🔜 Planned |
+| **Kubernetes Native** (Helm Charts) | ✅ Implemented |
+
+---
+
+*Updated: 2026-01-15*

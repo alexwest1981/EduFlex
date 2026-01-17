@@ -272,4 +272,36 @@ public class UserController {
             return ResponseEntity.status(500).build();
         }
     }
+
+    // --- ACTIVITY ---
+    @PostMapping("/ping")
+    public ResponseEntity<Void> ping() {
+        try {
+            String username = org.springframework.security.core.context.SecurityContextHolder.getContext()
+                    .getAuthentication().getName();
+            User user = userRepository.findByUsername(username)
+                    .orElseGet(() -> userRepository.findByEmail(username).orElse(null));
+
+            if (user != null) {
+                java.time.LocalDateTime now = java.time.LocalDateTime.now();
+                java.time.LocalDateTime lastActive = user.getLastActive();
+
+                if (lastActive != null) {
+                    long minutesDiff = java.time.Duration.between(lastActive, now).toMinutes();
+                    // Only count if diff is reasonable (less than 15 mins) to avoid counting sleep
+                    // time
+                    if (minutesDiff < 15 && minutesDiff > 0) {
+                        long currentMinutes = user.getActiveMinutes() != null ? user.getActiveMinutes() : 0L;
+                        user.setActiveMinutes(currentMinutes + minutesDiff);
+                    }
+                }
+
+                user.setLastActive(now);
+                userRepository.save(user);
+            }
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(500).build();
+        }
+    }
 }

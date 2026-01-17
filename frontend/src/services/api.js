@@ -1,4 +1,4 @@
-const API_BASE = 'http://127.0.0.1:8080/api';
+const API_BASE = 'http://localhost:8080/api';
 
 const getTenantFromUrl = () => {
     const hostname = window.location.hostname;
@@ -36,6 +36,7 @@ const getHeaders = (contentType = 'application/json') => {
     }
 
     if (contentType) headers['Content-Type'] = contentType;
+    console.log('[API DEBUG] Request Headers:', headers, 'Token:', token); // DEBUG
     return headers;
 };
 
@@ -179,6 +180,7 @@ export const api = {
             body: JSON.stringify(data)
         }).then(handleResponse),
         exportData: () => fetch(`${API_BASE}/users/me/export`, { headers: getHeaders() }).then(handleResponse),
+        ping: () => fetch(`${API_BASE}/users/ping`, { method: 'POST', headers: getHeaders() }).then(handleResponse),
     },
 
     courses: {
@@ -289,6 +291,8 @@ export const api = {
     notifications: {
         getUserNotifs: (userId) => fetch(`${API_BASE}/notifications/user/${userId}`, { headers: getHeaders() }).then(handleResponse),
         markRead: (id) => fetch(`${API_BASE}/notifications/${id}/read`, { method: 'PUT', headers: getHeaders() }),
+        getUnreadCount: (userId) => fetch(`${API_BASE}/notifications/user/${userId}/unread-count`, { headers: getHeaders() }).then(handleResponse),
+        markAllAsRead: (userId) => fetch(`${API_BASE}/notifications/user/${userId}/mark-all-read`, { method: 'PUT', headers: getHeaders() }),
     },
 
     assignments: {
@@ -432,5 +436,17 @@ export const api = {
             headers: getHeaders()
         }).then(handleResponse),
         checkAccess: () => fetch(`${API_BASE}/branding/access`, { headers: getHeaders() }).then(handleResponse),
+    },
+
+    gamification: {
+        getConfig: () => fetch(`${API_BASE}/gamification/config/system`, { headers: getHeaders() }).then(handleResponse),
+        updateConfig: (data) => fetch(`${API_BASE}/gamification/config/system`, {
+            method: 'PUT',
+            headers: getHeaders(),
+            body: JSON.stringify(data)
+        }).then(handleResponse),
+        getDailyChallenges: (userId) => fetch(`${API_BASE}/gamification/challenges/daily/${userId}`, { headers: getHeaders() }).then(handleResponse),
+        claimChallenge: (challengeId) => fetch(`${API_BASE}/gamification/challenges/${challengeId}/claim`, { method: 'POST', headers: getHeaders() }).then(handleResponse),
+        getStreak: (userId) => fetch(`${API_BASE}/gamification/streak/login/${userId}`, { headers: getHeaders() }).then(handleResponse),
     }
 };

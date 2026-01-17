@@ -1,9 +1,11 @@
 package com.eduflex.backend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 public class Assignment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,6 +28,25 @@ public class Assignment {
 
     @OneToMany(mappedBy = "assignment", cascade = CascadeType.ALL, orphanRemoval = true)
     private java.util.List<AssignmentAttachment> attachments = new java.util.ArrayList<>();
+
+    // Gamification fields
+    @Column(name = "xp_reward")
+    private Integer xpReward = 100;
+
+    @Column(name = "xp_multiplier")
+    private Double xpMultiplier = 1.0;
+
+    @Column(name = "time_bonus_minutes")
+    private Integer timeBonusMinutes;
+
+    @Column(name = "time_bonus_xp")
+    private Integer timeBonusXp;
+
+    @Column(name = "show_on_leaderboard")
+    private Boolean showOnLeaderboard = false;
+
+    @Column(name = "achievement_id")
+    private Long achievementId;
 
     // Getters & Setters
     public Long getId() {
@@ -82,5 +103,54 @@ public class Assignment {
 
     public void setAttachments(java.util.List<AssignmentAttachment> attachments) {
         this.attachments = attachments;
+    }
+
+    // Gamification getters and setters
+    public Integer getXpReward() {
+        return xpReward;
+    }
+
+    public void setXpReward(Integer xpReward) {
+        this.xpReward = xpReward;
+    }
+
+    public Double getXpMultiplier() {
+        return xpMultiplier;
+    }
+
+    public void setXpMultiplier(Double xpMultiplier) {
+        this.xpMultiplier = xpMultiplier;
+    }
+
+    public Integer getTimeBonusMinutes() {
+        return timeBonusMinutes;
+    }
+
+    public void setTimeBonusMinutes(Integer timeBonusMinutes) {
+        this.timeBonusMinutes = timeBonusMinutes;
+    }
+
+    public Integer getTimeBonusXp() {
+        return timeBonusXp;
+    }
+
+    public void setTimeBonusXp(Integer timeBonusXp) {
+        this.timeBonusXp = timeBonusXp;
+    }
+
+    public Boolean getShowOnLeaderboard() {
+        return showOnLeaderboard;
+    }
+
+    public void setShowOnLeaderboard(Boolean showOnLeaderboard) {
+        this.showOnLeaderboard = showOnLeaderboard;
+    }
+
+    public Long getAchievementId() {
+        return achievementId;
+    }
+
+    public void setAchievementId(Long achievementId) {
+        this.achievementId = achievementId;
     }
 }

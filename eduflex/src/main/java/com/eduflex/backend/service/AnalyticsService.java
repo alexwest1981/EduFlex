@@ -226,7 +226,13 @@ public class AnalyticsService {
 
                 status.put("healthScore", loginScore); // 0-100
                 status.put("riskLevel", risk); // Low, Medium, High
-                status.put("hoursLogged", student.getLoginCount() * 0.5); // Mockade timmar
+
+                // Real time calculation
+                double hours = (student.getActiveMinutes() != null ? student.getActiveMinutes() : 0) / 60.0;
+                // Round to 1 decimal
+                hours = Math.round(hours * 10.0) / 10.0;
+
+                status.put("hoursLogged", hours);
                 status.put("expectedHours", 40); // Mockat mål
 
                 return status;

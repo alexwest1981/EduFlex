@@ -33,12 +33,12 @@ public class CustomOidcUserService extends OidcUserService {
         OidcUser oidcUser = super.loadUser(userRequest);
 
         // Synchronize with local database
-        processOidcUser(oidcUser);
+        User user = processOidcUser(oidcUser);
 
-        return oidcUser;
+        return new CustomOidcUser(oidcUser, user);
     }
 
-    private void processOidcUser(OidcUser oidcUser) {
+    private User processOidcUser(OidcUser oidcUser) {
         String email = oidcUser.getAttribute("email");
         String name = oidcUser.getAttribute("name");
 
@@ -58,8 +58,9 @@ public class CustomOidcUserService extends OidcUserService {
             // Update existing user if needed (e.g. name change)
             // user.setFirstName(...);
             // userRepository.save(user);
+            return user;
         } else {
-            registerNewUser(email, name);
+            return registerNewUser(email, name);
         }
     }
 

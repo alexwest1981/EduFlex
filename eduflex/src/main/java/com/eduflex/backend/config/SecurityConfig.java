@@ -6,6 +6,7 @@ import com.eduflex.backend.security.CustomUserDetailsService;
 import com.eduflex.backend.security.KeycloakJwtAuthConverter;
 import com.eduflex.backend.security.LicenseFilter;
 import com.eduflex.backend.config.tenant.TenantFilter;
+import com.eduflex.backend.security.LoggingAuthenticationEntryPoint;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -46,6 +47,7 @@ public class SecurityConfig {
     private final com.eduflex.backend.security.OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
     private final com.eduflex.backend.security.OAuth2LoginFailureHandler oAuth2LoginFailureHandler;
     private final com.eduflex.backend.security.CustomOidcUserService customOidcUserService;
+    private final com.eduflex.backend.security.LoggingAuthenticationEntryPoint loggingAuthenticationEntryPoint;
 
     public SecurityConfig(CustomUserDetailsService userDetailsService, CustomOAuth2UserService customOAuth2UserService,
             AuthTokenFilter authTokenFilter,
@@ -54,7 +56,8 @@ public class SecurityConfig {
             TenantFilter tenantFilter,
             com.eduflex.backend.security.OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler,
             com.eduflex.backend.security.OAuth2LoginFailureHandler oAuth2LoginFailureHandler,
-            com.eduflex.backend.security.CustomOidcUserService customOidcUserService) {
+            com.eduflex.backend.security.CustomOidcUserService customOidcUserService,
+            com.eduflex.backend.security.LoggingAuthenticationEntryPoint loggingAuthenticationEntryPoint) {
         this.userDetailsService = userDetailsService;
         this.customOAuth2UserService = customOAuth2UserService;
         this.authTokenFilter = authTokenFilter;
@@ -64,6 +67,7 @@ public class SecurityConfig {
         this.oAuth2LoginSuccessHandler = oAuth2LoginSuccessHandler;
         this.oAuth2LoginFailureHandler = oAuth2LoginFailureHandler;
         this.customOidcUserService = customOidcUserService;
+        this.loggingAuthenticationEntryPoint = loggingAuthenticationEntryPoint;
     }
 
     @Bean
@@ -153,14 +157,25 @@ public class SecurityConfig {
 
                         // All other requests require authentication
                         .anyRequest().authenticated())
-                .exceptionHandling(e -> e.authenticationEntryPoint(
-                        new org.springframework.security.web.authentication.HttpStatusEntryPoint(
-                                org.springframework.http.HttpStatus.UNAUTHORIZED)));
+                .exceptionHandling(e -> e.authenticationEntryPoint(loggingAuthenticationEntryPoint));
+
+        // OAuth2 Resource Server (for validating Keycloak JWT tokens from API calls)
+        if ("keycloak".equalsIgnoreCase(authMode) || "hybrid".equalsIgnoreCase(authMode)) {
+            http.oauth2ResourceServer(oauth2 -> oauth2
+                    .jwt(jwt -> jwt.jwtAuthenticationConverter(keycloakJwtAuthConverter)));
+        }
 
         http.authenticationProvider(authenticationProvider());
         // Register TenantFilter BEFORE Authentication to ensure schema is set
         http.addFilterBefore(tenantFilter, UsernamePasswordAuthenticationFilter.class);
-        http.addFilterBefore(authTokenFilter, UsernamePasswordAuthenticationFilter.class);
+
+        if ("keycloak".equalsIgnoreCase(authMode) || "hybrid".equalsIgnoreCase(authMode)) {
+            // Runs before Resource Server filter to validate internal tokens first
+            http.addFilterBefore(authTokenFilter,
+                    org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter.class);
+        } else {
+            http.addFilterBefore(authTokenFilter, UsernamePasswordAuthenticationFilter.class);
+        }
         // http.addFilterBefore(licenseFilter,
         // UsernamePasswordAuthenticationFilter.class); // Check License first (DISABLED
         // DEBUG)
@@ -173,14 +188,6 @@ public class SecurityConfig {
                 .successHandler(oAuth2LoginSuccessHandler)
                 .failureHandler(oAuth2LoginFailureHandler));
 
-        // OAuth2 Resource Server (for validating Keycloak JWT tokens from API calls)
-        // This enables the backend to accept both internal JWT tokens and Keycloak
-        // tokens
-        if ("keycloak".equalsIgnoreCase(authMode) || "hybrid".equalsIgnoreCase(authMode)) {
-            http.oauth2ResourceServer(oauth2 -> oauth2
-                    .jwt(jwt -> jwt.jwtAuthenticationConverter(keycloakJwtAuthConverter)));
-        }
-
         // Tillåt iFrames för H2-konsolen
         http.headers(headers -> headers.frameOptions(frame -> frame.disable()));
 
@@ -190,7 +197,8 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(List.of("*"));
+        configuration.setAllowedOrigins(List.of("http://localhost:5173", "http://localhost:8080"));
+        // configuration.setAllowedOriginPatterns(List.of("*"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(List.of("Authorization", "Cache-Control", "Content-Type", "X-Requested-With",
                 "Accept", "Origin", "Access-Control-Request-Method", "Access-Control-Request-Headers", "X-Tenant-ID"));

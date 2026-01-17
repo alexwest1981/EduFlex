@@ -1,11 +1,14 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
-import { LayoutDashboard, FileText, User, Settings, LogOut, Layers, Menu, X, Award, Zap, Moon, Sun, Calendar, BookOpen, TrendingUp, Bell, Search, Plus, HelpCircle, Shield, Folder, BarChart2, HardDrive, Wallet, Music, Play, Pause, Heart, Speaker } from 'lucide-react';
+import { LayoutDashboard, FileText, User, Users, Settings, LogOut, Layers, Menu, X, Award, Zap, Moon, Sun, Calendar, BookOpen, TrendingUp, Bell, Search, Plus, HelpCircle, Shield, Folder, BarChart2, HardDrive, Wallet, Music, Play, Pause, Heart, Speaker } from 'lucide-react';
 import { useAppContext } from '../../context/AppContext';
 import { useModules } from '../../context/ModuleContext';
 import { useTranslation } from 'react-i18next';
-
 import ChatModule from '../../modules/chat/ChatModule';
+
+import GlobalSearch from '../GlobalSearch';
+import NotificationBell from '../NotificationBell';
+import OnlineFriendsPanel from '../social/OnlineFriendsPanel';
 
 const PulseLayout = ({ children }) => {
     const { currentUser, logout, systemSettings, theme, toggleTheme, API_BASE } = useAppContext();
@@ -13,6 +16,8 @@ const PulseLayout = ({ children }) => {
     const { t } = useTranslation();
     const navigate = useNavigate();
     const location = useLocation();
+
+    const [friendsPanelOpen, setFriendsPanelOpen] = useState(false);
 
     const handleLogout = () => { logout(); navigate('/login'); };
 
@@ -30,6 +35,7 @@ const PulseLayout = ({ children }) => {
     const navItems = [
         { path: '/', icon: <LayoutDashboard size={20} />, label: t('sidebar.dashboard') },
         { path: '/documents', icon: <FileText size={20} />, label: t('sidebar.documents') },
+        { path: '/catalog', icon: <BookOpen size={20} />, label: t('sidebar.courses') },
         { path: '/calendar', icon: <Calendar size={20} />, label: t('sidebar.calendar') },
         ...(roleName === 'ADMIN' ? [{ path: '/analytics', icon: <BarChart2 size={20} />, label: t('sidebar.analytics') }] : []),
         ...(roleName === 'ADMIN' ? [{ path: '/admin', icon: <Settings size={20} />, label: t('sidebar.admin') }] : []),
@@ -63,11 +69,14 @@ const PulseLayout = ({ children }) => {
                             <NavLink
                                 key={item.path}
                                 to={item.path}
-                                className={({ isActive }) => `w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300
+                                className={({ isActive: navActive }) => {
+                                    const isActive = navActive || (item.path === '/admin' && location.pathname.startsWith('/enterprise'));
+                                    return `w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300
                                 ${isActive
-                                        ? 'bg-black dark:bg-white text-white dark:text-black shadow-lg scale-110'
-                                        : 'text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 hover:bg-white dark:hover:bg-white/10'
-                                    }`}
+                                            ? 'bg-black dark:bg-white text-white dark:text-black shadow-lg scale-110'
+                                            : 'text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 hover:bg-white dark:hover:bg-white/10'
+                                        }`;
+                                }}
                                 title={item.label}
                             >
                                 {item.icon}
@@ -93,16 +102,31 @@ const PulseLayout = ({ children }) => {
                     {/* Header - Transparent & Minimal */}
                     <header className="h-24 flex items-center justify-between px-8 shrink-0">
                         <div>
-                            <h1 className="text-3xl font-black tracking-tight text-gray-900 dark:text-white">
-                                Hello, <span className="text-red-600">{currentUser?.firstName}!</span>
+                            {/* Greeting aligned with Sidebar Icon */}
+                            <h1 className="text-3xl tracking-tight">
+                                <span className="font-black text-black">Hej, </span>
+                                <span className="font-black text-red-600">{currentUser?.firstName}</span>
+                                <span className="ml-2">👋</span>
                             </h1>
                         </div>
 
-                        <div className="flex items-center gap-4">
-                            <div className="bg-white dark:bg-[#2A2A2A] rounded-full px-4 py-2 flex items-center gap-2 shadow-sm border border-gray-100 dark:border-gray-800">
-                                <Search size={16} className="text-gray-400" />
-                                <input type="text" placeholder="Search..." className="bg-transparent border-none outline-none text-sm w-48" />
-                            </div>
+                        <div className="flex items-center gap-4 relative">
+                            {/* Online Friends Toggle */}
+                            <button
+                                onClick={() => setFriendsPanelOpen(!friendsPanelOpen)}
+                                className={`relative p-2.5 rounded-full transition-colors ${friendsPanelOpen ? 'bg-indigo-100 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400' : 'hover:bg-gray-100 text-gray-500 dark:text-gray-400 dark:hover:bg-[#282a2c]'}`}
+                                title="Online Vänner"
+                            >
+                                <Users size={20} />
+                                <span className="absolute top-2 right-2 flex h-2 w-2">
+                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                                    <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                                </span>
+                            </button>
+                            <OnlineFriendsPanel isOpen={friendsPanelOpen} onClose={() => setFriendsPanelOpen(false)} />
+
+                            <GlobalSearch className="w-64" inputClassName="bg-white dark:bg-[#2A2A2A] shadow-sm border border-gray-100 dark:border-gray-800" />
+                            <NotificationBell />
                         </div>
                     </header>
 
@@ -110,8 +134,6 @@ const PulseLayout = ({ children }) => {
                     <main className="flex-1 overflow-y-auto px-8 pb-32 pulse-scroll">
                         {children}
                     </main>
-
-
 
                 </div>
 

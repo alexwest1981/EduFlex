@@ -1,37 +1,149 @@
+# ============================================
+# EduFlex .gitignore
+# ============================================
+
+# =============================================
+# UPLOADS & USER DATA
+# =============================================
 /uploads/
 /backups/
+eduflex/uploads/
+
+# =============================================
+# LICENSE FILES (PRIVATE - NEVER COMMIT)
+# =============================================
 eduflex.license
-
-# Secure License Generator (NEVER COMMIT)
-tools/secure-license-gen/
-
-# Scripts (Local only)
-scripts/
-
-# License Files (Private)
 license_history.json
 *.lic
+tools/secure-license-gen/
 
-# Local Development Logs & Debug Files
-backend_*
-frontend_*
-current_*
+# =============================================
+# SCRIPTS (Local Development Only)
+# =============================================
+scripts/
+
+# =============================================
+# DEBUG & LOG FILES
+# =============================================
+# Root level logs
 *.log
-*_logs.txt
-*_debug.txt
-*_error.txt
-debug_*.txt
-DEBUG_STATUS_AND_PLAN.md
-build_log*.txt
-mvn_log*.txt
-debug_lombok*.txt
-build_output.txt
+*.log.*
+backend_*.log
+backend_*.txt
+frontend_*.log
+frontend_*.txt
+current_*.log
+current_*.txt
+restore-output.log
 
-# IDE / Editor Settings (Local only)
+# Debug files (everywhere)
+**/debug*.log
+**/debug*.txt
+**/*_debug*.log
+**/*_debug*.txt
+DEBUG_STATUS_AND_PLAN.md
+
+# Build logs
+build_log*.txt
+build_output*.txt
+build*.log
+mvn_log*.txt
+mvn_output*.txt
+mvn_error*.log
+
+# Crash/error logs
+crash*.log
+crash*.txt
+compile_error*.log
+compile_error*.txt
+*_error*.log
+*_error*.txt
+startup*.log
+schema_errors*.log
+websec_fail*.log
+
+# Test output
+test_output*.txt
+final_test*.log
+clean_run*.log
+server_latest*.log
+purge_log*.txt
+git_history.txt
+
+# =============================================
+# TEST SCRIPTS & PAYLOADS (Local Only)
+# =============================================
+test_*.ps1
+test_*.json
+payload*.json
+
+# =============================================
+# eduflex/backend - Local dev artifacts
+# =============================================
+eduflex/*.log
+eduflex/*.txt
+eduflex/target/
+eduflex/uploads/
+
+# =============================================
+# IDE / EDITOR SETTINGS
+# =============================================
 .idea/
 .vscode/
 *.iml
+*.ipr
+*.iws
 .DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
 
-# Claude Local Settings
+# =============================================
+# CLAUDE / AI ASSISTANT LOCAL FILES
+# =============================================
 .claude/settings.local.json
+.gemini/
+
+# =============================================
+# BUILD ARTIFACTS (Should rebuild from source)
+# =============================================
+# Java/Maven
+target/
+!.mvn/wrapper/maven-wrapper.jar
+*.class
+*.jar
+*.war
+*.ear
+
+# Node.js  
+node_modules/
+frontend/node_modules/
+frontend/dist/
+.npm/
+.pnpm-store/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# =============================================
+# DOCKER & KUBERNETES LOCAL
+# =============================================
+*.env.local
+docker-compose.override.yml
+
+# =============================================
+# OS GENERATED
+# =============================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+

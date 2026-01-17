@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { FileText, Upload, CheckCircle, Clock, AlertCircle, Plus, ChevronDown, ChevronUp, Download, Trash2, Edit2, Paperclip, Link as LinkIcon, Youtube } from 'lucide-react';
+import { FileText, Upload, CheckCircle, Clock, AlertCircle, Plus, ChevronDown, ChevronUp, Download, Trash2, Edit2, Paperclip, Link as LinkIcon, Youtube, Zap, Trophy, Timer } from 'lucide-react';
 import { api } from '../../services/api';
+import { useGamification } from '../../context/GamificationContext';
+import XPBoostIndicator from '../../components/gamification/XPBoostIndicator';
 
 export const AssignmentsModuleMetadata = {
     key: 'assignments',
@@ -13,6 +15,7 @@ const AssignmentsModule = ({ courseId, currentUser, isTeacher, mode = 'COURSE' }
     const [assignments, setAssignments] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [submissionsMap, setSubmissionsMap] = useState({}); // Håller status för studentens inlämningar
+    const { isEnabled, xpMultiplierMax, isTimeBonusEnabled, isLeaderboardsEnabled } = useGamification();
 
     // UI States
     const [showCreateForm, setShowCreateForm] = useState(false);
@@ -20,7 +23,16 @@ const AssignmentsModule = ({ courseId, currentUser, isTeacher, mode = 'COURSE' }
 
     // Form Data
     const [selectedAssignmentId, setSelectedAssignmentId] = useState(null); // För editering
-    const [newAssignment, setNewAssignment] = useState({ title: '', description: '', dueDate: '' });
+    const [newAssignment, setNewAssignment] = useState({
+        title: '',
+        description: '',
+        dueDate: '',
+        xpReward: 100,
+        xpMultiplier: 1.0,
+        timeBonusMinutes: 0,
+        timeBonusXp: 0,
+        showOnLeaderboard: true
+    });
     const [attachments, setAttachments] = useState([]); // { type: 'FILE'|'LINK'|'YOUTUBE', file: File, url: '', title: '' }
 
     useEffect(() => {
@@ -90,7 +102,17 @@ const AssignmentsModule = ({ courseId, currentUser, isTeacher, mode = 'COURSE' }
             }
 
             setShowCreateForm(false);
-            setNewAssignment({ title: '', description: '', dueDate: '' });
+            setShowCreateForm(false);
+            setNewAssignment({
+                title: '',
+                description: '',
+                dueDate: '',
+                xpReward: 100,
+                xpMultiplier: 1.0,
+                timeBonusMinutes: 0,
+                timeBonusXp: 0,
+                showOnLeaderboard: true
+            });
             setAttachments([]);
             setSelectedAssignmentId(null);
             loadAssignments();
@@ -114,7 +136,12 @@ const AssignmentsModule = ({ courseId, currentUser, isTeacher, mode = 'COURSE' }
         setNewAssignment({
             title: assignment.title,
             description: assignment.description,
-            dueDate: assignment.dueDate
+            dueDate: assignment.dueDate,
+            xpReward: assignment.xpReward || 100,
+            xpMultiplier: assignment.xpMultiplier || 1.0,
+            timeBonusMinutes: assignment.timeBonusMinutes || 0,
+            timeBonusXp: assignment.timeBonusXp || 0,
+            showOnLeaderboard: assignment.showOnLeaderboard !== false
         });
         // We don't populate attachments to state for deletion yet, but keeps them in DB.
         // If we want to support deleting old attachments during edit, we need more complex logic.
@@ -137,7 +164,17 @@ const AssignmentsModule = ({ courseId, currentUser, isTeacher, mode = 'COURSE' }
                             setShowCreateForm(!showCreateForm);
                             if (!showCreateForm) {
                                 setSelectedAssignmentId(null);
-                                setNewAssignment({ title: '', description: '', dueDate: '' });
+                                setSelectedAssignmentId(null);
+                                setNewAssignment({
+                                    title: '',
+                                    description: '',
+                                    dueDate: '',
+                                    xpReward: 100,
+                                    xpMultiplier: 1.0,
+                                    timeBonusMinutes: 0,
+                                    timeBonusXp: 0,
+                                    showOnLeaderboard: true
+                                });
                                 setAttachments([]);
                             }
                         }}
@@ -176,6 +213,77 @@ const AssignmentsModule = ({ courseId, currentUser, isTeacher, mode = 'COURSE' }
                                 required
                             />
                         </div>
+
+                        {/* GAMIFICATION SETTINGS */}
+                        {isEnabled && (
+                            <div className="bg-amber-50 dark:bg-amber-900/10 p-4 rounded-lg border border-amber-100 dark:border-amber-900/30 space-y-4">
+                                <h4 className="font-bold text-sm text-amber-800 dark:text-amber-200 flex items-center gap-2">
+                                    <Zap size={16} /> Gamification-inställningar
+                                </h4>
+
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-xs font-bold text-gray-500 mb-1">XP Multiplikator</label>
+                                        <select
+                                            className="w-full p-2.5 rounded-lg border dark:bg-[#131314] dark:border-[#3c4043] dark:text-white"
+                                            value={newAssignment.xpMultiplier}
+                                            onChange={e => setNewAssignment({ ...newAssignment, xpMultiplier: parseFloat(e.target.value) })}
+                                        >
+                                            <option value="1.0">1.0x (Standard)</option>
+                                            <option value="1.5">1.5x (Boost)</option>
+                                            <option value="2.0">2.0x (Dubbel)</option>
+                                            <option value="3.0">3.0x (Super)</option>
+                                            <option value="5.0">5.0x (Ultra)</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-bold text-gray-500 mb-1">Bas XP</label>
+                                        <input
+                                            type="number"
+                                            className="w-full p-2.5 rounded-lg border dark:bg-[#131314] dark:border-[#3c4043] dark:text-white"
+                                            value={newAssignment.xpReward}
+                                            onChange={e => setNewAssignment({ ...newAssignment, xpReward: parseInt(e.target.value) })}
+                                        />
+                                    </div>
+                                </div>
+
+                                {isTimeBonusEnabled && (
+                                    <div className="grid grid-cols-2 gap-4 pt-2 border-t border-amber-100 dark:border-amber-900/30">
+                                        <div>
+                                            <label className="block text-xs font-bold text-gray-500 mb-1 flex items-center gap-1"><Timer size={12} /> Tidsbonus (minuter)</label>
+                                            <input
+                                                type="number"
+                                                placeholder="0 (inaktiverad)"
+                                                className="w-full p-2.5 rounded-lg border dark:bg-[#131314] dark:border-[#3c4043] dark:text-white"
+                                                value={newAssignment.timeBonusMinutes}
+                                                onChange={e => setNewAssignment({ ...newAssignment, timeBonusMinutes: parseInt(e.target.value) })}
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-xs font-bold text-gray-500 mb-1 flex items-center gap-1"><Zap size={12} /> Bonus XP</label>
+                                            <input
+                                                type="number"
+                                                className="w-full p-2.5 rounded-lg border dark:bg-[#131314] dark:border-[#3c4043] dark:text-white"
+                                                value={newAssignment.timeBonusXp}
+                                                onChange={e => setNewAssignment({ ...newAssignment, timeBonusXp: parseInt(e.target.value) })}
+                                            />
+                                        </div>
+                                    </div>
+                                )}
+
+                                {isLeaderboardsEnabled && (
+                                    <label className="flex items-center gap-2 cursor-pointer">
+                                        <input
+                                            type="checkbox"
+                                            checked={newAssignment.showOnLeaderboard}
+                                            onChange={e => setNewAssignment({ ...newAssignment, showOnLeaderboard: e.target.checked })}
+                                            className="rounded text-indigo-600 focus:ring-indigo-500"
+                                        />
+                                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Visa på Leaderboard</span>
+                                    </label>
+                                )}
+                            </div>
+                        )}
 
                         {/* ATTACHMENTS SECTION */}
                         <div className="bg-white dark:bg-[#1E1F20] p-4 rounded-lg border border-gray-200 dark:border-[#3c4043]">
@@ -308,6 +416,9 @@ const AssignmentCard = ({ assignment, isTeacher, currentUser, expanded, toggleEx
                         <p className={`text-xs flex items-center gap-1 mt-1 ${new Date(assignment.dueDate) < new Date() ? 'text-red-500 font-bold' : 'text-gray-500'}`}>
                             <Clock size={12} /> Deadline: {new Date(assignment.dueDate).toLocaleString()}
                         </p>
+                        <div className="mt-2">
+                            <XPBoostIndicator assignment={assignment} />
+                        </div>
                     </div>
                 </div>
                 <div className="flex items-center gap-3">

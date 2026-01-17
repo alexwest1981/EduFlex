@@ -7,18 +7,14 @@ import SkolverketImport from '../admin/SkolverketImport';
 import SkolverketDataEntry from '../admin/SkolverketDataEntry';
 import SystemSettings from '../system/SystemSettings';
 import TenantManagement from '../admin/TenantManagement';
+import AdminNavbar from './components/admin/AdminNavbar';
+import AdminHeader from './components/admin/AdminHeader';
+import { useSearchParams } from 'react-router-dom';
 
 const AdminAdministrationPage = () => {
     const { t } = useTranslation();
-    const [activeTab, setActiveTab] = useState('administration');
-
-    const tabs = [
-        { id: 'administration', label: t('admin_tabs.administration'), icon: Users },
-        { id: 'tenants', label: 'Tenants', icon: Server }, // NY FLIK
-        { id: 'system', label: t('admin_tabs.system_settings'), icon: Settings },
-        { id: 'skolverket', label: t('admin_tabs.skolverket_import'), icon: Database },
-        { id: 'skolverket-edit', label: t('admin_tabs.skolverket_data'), icon: Edit3 }
-    ];
+    const [searchParams] = useSearchParams();
+    const activeTab = searchParams.get('tab') || 'administration';
     const [users, setUsers] = useState([]);
     const [courses, setCourses] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -51,30 +47,11 @@ const AdminAdministrationPage = () => {
 
     return (
         <div className="max-w-7xl mx-auto animate-in fade-in pb-20">
-            <header className="mb-8">
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Administration</h1>
-                <p className="text-gray-500 dark:text-gray-400">Hantera användare, rättigheter och kurser.</p>
-            </header>
+            <AdminHeader />
 
             {/* Tab Navigation */}
-            <div className="flex gap-2 mb-6 border-b border-gray-200 dark:border-gray-700 overflow-x-auto">
-                {tabs.map(tab => {
-                    const Icon = tab.icon;
-                    return (
-                        <button
-                            key={tab.id}
-                            onClick={() => setActiveTab(tab.id)}
-                            className={`flex items-center gap-2 px-4 py-2 font-medium transition-colors border-b-2 whitespace-nowrap ${activeTab === tab.id
-                                ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400'
-                                : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
-                                }`}
-                        >
-                            <Icon size={20} />
-                            {tab.label}
-                        </button>
-                    );
-                })}
-            </div>
+            {/* Tab Navigation REPLACED with AdminNavbar */}
+            <AdminNavbar />
 
             {/* Tab Content */}
             <div className="flex-1">

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { LayoutDashboard, MessageSquare } from 'lucide-react';
+import { LayoutDashboard, MessageSquare, Eye, EyeOff } from 'lucide-react';
 import { api } from '../../services/api';
 import { useAppContext } from '../../context/AppContext';
 import { useModules } from '../../context/ModuleContext';
@@ -8,11 +8,12 @@ import { useTranslation } from 'react-i18next';
 import MessageCenter from '../messages/MessageCenter';
 
 // --- NYA KOMPONENTER ---
-import StudentStats from './components/student/StudentStats';
 import StudentCourseGrid from './components/student/StudentCourseGrid';
 import StudentSidebar from './components/student/StudentSidebar';
 import StudentAttendanceWidget from './widgets/StudentAttendanceWidget';
-import OnlineFriendsWidget from './widgets/OnlineFriendsWidget';
+import DailyChallengesWidget from '../../components/gamification/DailyChallengesWidget';
+import StudentScheduleAndDeadlinesWidget from './widgets/StudentScheduleAndDeadlinesWidget';
+import StudentGamificationWidget from './widgets/StudentGamificationWidget';
 
 // --- SHARED ---
 import { useDashboardWidgets } from '../../hooks/useDashboardWidgets';
@@ -29,6 +30,7 @@ const StudentDashboard = () => {
     const [lastGradedSubmission, setLastGradedSubmission] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [activeTab, setActiveTab] = useState('overview');
+    const [showGreeting, setShowGreeting] = useState(true);
 
     // Widget State via Hook
     const { widgets, toggleWidget } = useDashboardWidgets('student', {
@@ -36,19 +38,30 @@ const StudentDashboard = () => {
         attendance: true,
         courses: true,
         sidebar: true,
-        onlineFriends: true
+        dailyChallenges: true,
+        calendar: true
     });
 
     const widgetLabels = {
-        stats: 'Statistik & Utmärkelser',
+        stats: 'Gamification Status',
         attendance: 'Min Närvaro',
         courses: 'Mina Kurser',
-        sidebar: 'Sidopanel (Uppgifter & Feedback)',
-        onlineFriends: 'Online Vänner'
+        sidebar: 'Uppgifter & Feedback',
+        dailyChallenges: 'Dagens Utmaningar',
+        calendar: 'Kalender & Schema'
     };
 
     useEffect(() => {
-        if (currentUser) fetchData();
+        if (currentUser) {
+            fetchData();
+            // Ping activity every minute to stay "Online"
+            const pingInterval = setInterval(() => {
+                api.users.ping().catch(e => console.error("Ping failed", e));
+            }, 60000);
+            api.users.ping(); // Initial ping
+
+            return () => clearInterval(pingInterval);
+        }
     }, [currentUser]);
 
     const fetchData = async () => {
@@ -138,8 +151,7 @@ const StudentDashboard = () => {
         <div className="max-w-7xl mx-auto animate-in fade-in pb-20 relative">
             <div className="flex justify-between items-start mb-6">
                 <div>
-                    <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{t('dashboard.hi_student', { name: currentUser?.firstName })}</h1>
-                    <p className="text-gray-500 dark:text-gray-400">{t('dashboard.student_subtitle')}</p>
+                    {/* Greeting moved to Layout Header */}
                 </div>
                 <DashboardCustomizer
                     widgets={widgets}
@@ -159,27 +171,37 @@ const StudentDashboard = () => {
 
             {activeTab === 'overview' && (
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    {/* VÄNSTER KOLUMN (Huvudinnehåll) */}
+                    {/* VÄNSTER KOLUMN (Huvudinnehåll - 2/3 bredd) */}
                     <div className={`transition-all duration-300 ${widgets.sidebar ? 'lg:col-span-2' : 'lg:col-span-3'}`}>
-                        {/* 1. Stats & Badges */}
-                        {widgets.stats && <StudentStats currentUser={currentUser} isModuleActive={isModuleActive} />}
 
-                        {/* 2. Attendance Widget */}
+                        {/* 0. Schedule & Deadlines Widget (Combined) */}
+                        {widgets.calendar && (
+                            <StudentScheduleAndDeadlinesWidget assignments={upcomingAssignments} />
+                        )}
+
+                        {/* 1. Attendance Widget */}
                         {widgets.attendance && <StudentAttendanceWidget currentUser={currentUser} settings={{ enabled: true }} />}
 
-                        {/* 3. Mina Kurser */}
+                        {/* 2. Mina Kurser */}
                         {widgets.courses && <StudentCourseGrid courses={myCourses} navigate={navigate} />}
 
-                        {!widgets.stats && !widgets.courses && (
+                        {!widgets.stats && !widgets.courses && !widgets.calendar && !widgets.attendance && (
                             <div className="text-center p-12 text-gray-400 border-2 border-dashed border-gray-200 dark:border-[#3c4043] rounded-xl">
                                 Inga widgets aktiva. Klicka på "Anpassa" för att visa innehåll.
                             </div>
                         )}
                     </div>
 
-                    {/* HÖGER KOLUMN (Sidebar) */}
+                    {/* HÖGER KOLUMN (Sidebar - 1/3 bredd) */}
                     {widgets.sidebar && (
-                        <div className="lg:col-span-1 animate-in slide-in-from-right-4">
+                        <div className="lg:col-span-1 animate-in slide-in-from-right-4 space-y-6">
+
+                            {/* 1. Gamification Widget */}
+                            {widgets.stats && (
+                                <StudentGamificationWidget currentUser={currentUser} isModuleActive={isModuleActive} />
+                            )}
+
+                            {/* 2. Upcoming Assignments & Feedback (Existing) */}
                             <StudentSidebar
                                 upcomingAssignments={upcomingAssignments}
                                 lastGraded={lastGradedSubmission}
@@ -187,10 +209,10 @@ const StudentDashboard = () => {
                                 navigate={navigate}
                                 currentUser={currentUser}
                             />
-                            {widgets.onlineFriends && (
-                                <div className="mt-6 h-80">
-                                    <OnlineFriendsWidget />
-                                </div>
+
+                            {/* 3. Daily Challenges */}
+                            {widgets.dailyChallenges && (
+                                <DailyChallengesWidget />
                             )}
                         </div>
                     )}

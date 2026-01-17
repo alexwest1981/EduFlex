@@ -1,11 +1,12 @@
 import React, { useEffect } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
-import { LayoutDashboard, FileText, User, Settings, LogOut, Layers, Menu, X, Award, Zap, Moon, Sun, Calendar, BookOpen, TrendingUp, Bell, Search, Plus, HelpCircle, Shield } from 'lucide-react';
+import { LayoutDashboard, FileText, User, Settings, LogOut, Layers, Menu, X, Award, Zap, Moon, Sun, Calendar, BookOpen, TrendingUp, Bell, Search, Plus, HelpCircle, Shield, Folder, BarChart2, HardDrive, Wallet, Music, Play, Pause, Heart, Speaker } from 'lucide-react';
 import { useAppContext } from '../../context/AppContext';
 import { useModules } from '../../context/ModuleContext';
 import { useTranslation } from 'react-i18next';
-
 import ChatModule from '../../modules/chat/ChatModule';
+import GlobalSearch from '../GlobalSearch';
+import NotificationBell from '../NotificationBell';
 
 const EmberLayout = ({ children }) => {
     const { currentUser, logout, systemSettings, theme, toggleTheme, API_BASE } = useAppContext();
@@ -76,12 +77,9 @@ const EmberLayout = ({ children }) => {
                         </div>
                     </div>
 
-                    {/* Primary CTA */}
+                    {/* Primary CTA replaced with Search */}
                     <div className="px-6 mb-8">
-                        <button className="w-full py-3 px-4 bg-[#FF5722] hover:bg-[#F4511E] text-white rounded-full font-medium shadow-lg shadow-orange-500/20 flex items-center justify-center gap-2 transition-all hover:scale-105 active:scale-95">
-                            <Plus size={20} />
-                            <span>Quick Action</span>
-                        </button>
+                        <GlobalSearch className="w-full" inputClassName="bg-[#FF5722] text-white placeholder-white/70 shadow-lg shadow-orange-500/20 focus:ring-orange-500/40" />
                     </div>
 
                     {/* Navigation Scroll */}
@@ -92,8 +90,11 @@ const EmberLayout = ({ children }) => {
                             <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4 px-3">General</h3>
                             <div className="space-y-1">
                                 {generalNav.map(item => (
-                                    <NavLink key={item.path} to={item.path} className={({ isActive }) => `flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200
-                                        ${isActive ? 'bg-orange-50 dark:bg-orange-900/10 text-[#FF5722]' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'}`}>
+                                    <NavLink key={item.path} to={item.path} className={({ isActive: navActive }) => {
+                                        const isActive = navActive || (item.path === '/admin' && location.pathname.startsWith('/enterprise'));
+                                        return `flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200
+                                        ${isActive ? 'bg-orange-50 dark:bg-orange-900/10 text-[#FF5722]' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'}`;
+                                    }}>
                                         {item.icon}
                                         <span className="font-medium text-sm">{item.label}</span>
                                     </NavLink>
@@ -106,8 +107,11 @@ const EmberLayout = ({ children }) => {
                             <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4 px-3">Utilities</h3>
                             <div className="space-y-1">
                                 {utilityNav.map(item => (
-                                    <NavLink key={item.path} to={item.path} className={({ isActive }) => `flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200
-                                        ${isActive ? 'bg-orange-50 dark:bg-orange-900/10 text-[#FF5722]' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'}`}>
+                                    <NavLink key={item.path} to={item.path} className={({ isActive: navActive }) => {
+                                        const isActive = navActive || (item.path === '/admin' && location.pathname.startsWith('/enterprise'));
+                                        return `flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200
+                                        ${isActive ? 'bg-orange-50 dark:bg-orange-900/10 text-[#FF5722]' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'}`;
+                                    }}>
                                         {item.icon}
                                         <span className="font-medium text-sm">{item.label}</span>
                                     </NavLink>
@@ -126,8 +130,11 @@ const EmberLayout = ({ children }) => {
                                             <span className="font-medium text-sm">{item.label}</span>
                                         </button>
                                     ) : (
-                                        <NavLink key={item.path} to={item.path} className={({ isActive }) => `flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200
-                                            ${isActive ? 'bg-orange-50 dark:bg-orange-900/10 text-[#FF5722]' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'}`}>
+                                        <NavLink key={item.path} to={item.path} className={({ isActive: navActive }) => {
+                                            const isActive = navActive || (item.path === '/admin' && location.pathname.startsWith('/enterprise'));
+                                            return `flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200
+                                            ${isActive ? 'bg-orange-50 dark:bg-orange-900/10 text-[#FF5722]' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'}`;
+                                        }}>
                                             {item.icon}
                                             <span className="font-medium text-sm">{item.label}</span>
                                         </NavLink>
@@ -153,43 +160,28 @@ const EmberLayout = ({ children }) => {
 
                     {/* Header */}
                     <header className="h-24 flex items-center justify-between px-8 border-b border-gray-50 dark:border-gray-800 shrink-0">
-                        {/* Search Bar */}
-                        <div className="w-96 relative group">
-                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-orange-500 transition-colors" size={20} />
-                            <input
-                                type="text"
-                                placeholder="Search or type a command"
-                                className="w-full bg-gray-50 dark:bg-black/20 border border-transparent focus:border-orange-200 dark:focus:border-orange-900/50 rounded-2xl py-3 pl-12 pr-12 text-sm outline-none transition-all"
-                            />
-                            <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-1">
-                                <span className="bg-white dark:bg-[#333] border border-gray-200 dark:border-gray-700 rounded px-1.5 py-0.5 text-[10px] text-gray-500 font-mono">⌘F</span>
-                            </div>
-                        </div>
+                        {/* Search Bar Removed */}
+                        <div className="w-96"></div>
 
                         {/* Right Area */}
                         <div className="flex items-center gap-6">
                             <button className="text-gray-400 hover:text-gray-600 transition-colors"><HelpCircle size={20} /></button>
-                            <button className="text-gray-400 hover:text-gray-600 transition-colors relative">
-                                <Bell size={20} />
-                                <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full border border-white"></span>
-                            </button>
+                            <NotificationBell />
 
                             <div className="flex items-center gap-3 pl-4 border-l border-gray-100 dark:border-gray-800">
-                                <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-100 border border-gray-100">
-                                    {profileImgUrl ? <img src={profileImgUrl} alt="Profil" className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center font-bold text-xs">{currentUser?.firstName?.[0]}</div>}
-                                </div>
-                                <div className="hidden md:block">
+                                <div className="text-right hidden md:block">
                                     <p className="text-sm font-bold text-gray-900 dark:text-white leading-none mb-1">{currentUser?.firstName} {currentUser?.lastName}</p>
-                                    <div className="flex items-center gap-1 cursor-pointer">
-                                        <p className="text-xs text-gray-500">My Settings</p>
-                                    </div>
+                                    <p className="text-xs text-gray-500">{roleName}</p>
+                                </div>
+                                <div className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800 overflow-hidden border border-gray-100 dark:border-gray-700 cursor-pointer" onClick={() => navigate('/profile')}>
+                                    {profileImgUrl ? <img src={profileImgUrl} alt="Profil" className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center font-bold text-gray-500">{currentUser?.firstName?.[0]}</div>}
                                 </div>
                             </div>
                         </div>
                     </header>
 
-                    {/* Scrollable Content */}
-                    <main className="flex-1 overflow-y-auto p-8 relative scrollbar-thin">
+                    {/* Content */}
+                    <main className="flex-1 overflow-y-auto p-8 relative">
                         {children}
                     </main>
 

@@ -62,6 +62,9 @@ public class User implements Serializable {
     @Column(columnDefinition = "integer default 0")
     private int loginCount = 0;
 
+    @Column(name = "last_active")
+    private LocalDateTime lastActive;
+
     // NYTT: För tillväxt-graf
     @Column(updatable = false)
     private LocalDateTime createdAt;
@@ -266,6 +269,25 @@ public class User implements Serializable {
 
     public void setLoginCount(int loginCount) {
         this.loginCount = loginCount;
+    }
+
+    public LocalDateTime getLastActive() {
+        return lastActive;
+    }
+
+    public void setLastActive(LocalDateTime lastActive) {
+        this.lastActive = lastActive;
+    }
+
+    @Column(name = "active_minutes")
+    private Long activeMinutes = 0L;
+
+    public Long getActiveMinutes() {
+        return activeMinutes;
+    }
+
+    public void setActiveMinutes(Long activeMinutes) {
+        this.activeMinutes = activeMinutes;
     }
 
     public LocalDateTime getCreatedAt() {

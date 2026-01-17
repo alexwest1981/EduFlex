@@ -1,0 +1,56 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "eduflex.fullname" . }}-backend-config
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "eduflex.labels" . | nindent 4 }}
+    app: backend
+data:
+  # Database
+  SPRING_DATASOURCE_URL: "jdbc:postgresql://{{ include "eduflex.fullname" . }}-postgresql:5432/eduflex"
+  SPRING_DATASOURCE_USERNAME: "postgres"
+  
+  # Redis
+  SPRING_DATA_REDIS_HOST: "{{ include "eduflex.fullname" . }}-redis"
+  SPRING_DATA_REDIS_PORT: "6379"
+  
+  # MinIO
+  MINIO_ENDPOINT: "http://{{ include "eduflex.fullname" . }}-minio:9000"
+  MINIO_URL: "http://{{ include "eduflex.fullname" . }}-minio:9000"
+  MINIO_BUCKET: "eduflex"
+  MINIO_BUCKET_NAME: "eduflex"
+  
+  # Keycloak
+  SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_ISSUER_URI: "http://{{ .Values.global.keycloakUrl | default (printf "%s-keycloak:8080" (include "eduflex.fullname" .)) }}/realms/eduflex"
+  KEYCLOAK_AUTH_SERVER_URL: "http://{{ .Values.global.keycloakUrl | default (printf "%s-keycloak:8080" (include "eduflex.fullname" .)) }}"
+  KEYCLOAK_REALM: "eduflex"
+  KEYCLOAK_RESOURCE: "eduflex-app"
+  
+  # Application
+  SERVER_PORT: "8080"
+  EDUFLEX_AUTH_MODE: "{{ .Values.backend.authMode }}"
+  
+  # Conditional OAuth2 Disable
+  {{- if eq .Values.backend.authMode "jwt-only" }}
+  SPRING_AUTOCONFIGURE_EXCLUDE: "org.springframework.boot.autoconfigure.security.oauth2.client.servlet.OAuth2ClientAutoConfiguration"
+  {{- end }}
+  
+  # JPA/Hibernate
+  SPRING_JPA_HIBERNATE_DDL_AUTO: "update"
+  SPRING_JPA_SHOW_SQL: "false"
+  SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: "org.hibernate.dialect.PostgreSQLDialect"
+  
+  # File Uploads
+  FILE_UPLOAD_DIR: "/app/uploads"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "eduflex.fullname" . }}-frontend-config
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "eduflex.labels" . | nindent 4 }}
+    app: frontend
+data:
+  VITE_API_BASE_URL: "https://api.{{ .Values.global.domain }}"

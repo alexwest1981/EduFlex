@@ -13,7 +13,7 @@ import MidnightLayout from './layouts/MidnightLayout';
 import PulseLayout from './layouts/PulseLayout';
 
 const Layout = ({ children }) => {
-    const { systemSettings } = useAppContext();
+    const { systemSettings, currentUser } = useAppContext();
     const { branding } = useBranding();
 
     // Set Document Title
@@ -22,6 +22,29 @@ const Layout = ({ children }) => {
             document.title = systemSettings.site_name;
         }
     }, [systemSettings]);
+
+    // --- ACTIVITY TRACKING (Global) ---
+    // Works across ALL layouts
+    useEffect(() => {
+        if (!currentUser) return;
+
+        const pingActivity = async () => {
+            try {
+                // Dynamic import to avoid circular dep issues if any
+                const { api } = await import('../services/api');
+                await api.users.ping();
+            } catch (err) {
+                console.error("Activity ping failed", err);
+            }
+        };
+
+        // Ping immediately
+        pingActivity();
+        // Ping every 5 minutes
+        const intervalId = setInterval(pingActivity, 5 * 60 * 1000);
+        return () => clearInterval(intervalId);
+    }, [currentUser]);
+
 
     // Handle Legacy Name Mappings
     let targetSystemId = branding?.designSystem;

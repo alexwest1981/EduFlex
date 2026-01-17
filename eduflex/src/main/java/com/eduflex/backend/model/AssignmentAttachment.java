@@ -60,6 +60,7 @@ public class AssignmentAttachment {
         this.url = url;
     }
 
+    @JsonIgnore
     public Assignment getAssignment() {
         return assignment;
     }

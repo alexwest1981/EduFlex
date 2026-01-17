@@ -3,6 +3,8 @@ import { useBranding } from '../../context/BrandingContext';
 import { DESIGN_SYSTEMS } from '../../context/DesignSystemContext';
 import { useTheme } from '../../context/ThemeContext';
 import { Upload, Save, RotateCcw, AlertCircle, CheckCircle, Eye, EyeOff, Palette, Image, Globe, Layers, Settings, Layout, Type, Shield, LayoutDashboard, MousePointer2, Monitor } from 'lucide-react';
+import AdminNavbar from '../../features/dashboard/components/admin/AdminNavbar';
+import AdminHeader from '../../features/dashboard/components/admin/AdminHeader';
 
 const EnterpriseWhitelabel = () => {
     const { branding, hasAccess, updateBranding, uploadLogo, uploadFavicon, uploadLoginBackground, resetBranding } = useBranding();
@@ -259,541 +261,562 @@ const EnterpriseWhitelabel = () => {
         );
     }
 
+    const menuItems = [
+            {
+                category: 'Varumärke',
+                items: [
+                    { id: 'general', label: 'Allmänt', icon: Globe },
+                    { id: 'assets', label: 'Grafiska resurser', icon: Image },
+                ]
+            },
+            {
+                category: 'Utseende',
+                items: [
+                    { id: 'design', label: 'Design System', icon: Layers },
+                    { id: 'theme', label: 'Anpassat tema', icon: Palette }
+                ]
+            }
+        ];
+
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
     return (
-        <div className="p-8 max-w-6xl mx-auto">
-            {/* Header */}
-            <div className="mb-8">
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-                    Enterprise Whitelabel
-                </h1>
-                <p className="text-gray-600 dark:text-gray-400">
-                    Anpassa systemets varumärkesidentitet och utseende för din organisation
-                </p>
-            </div>
+        <div className="max-w-7xl mx-auto animate-in fade-in pb-20">
+            <AdminHeader />
 
-            {/* Message Banner */}
-            {message && (
-                <div className={`mb-6 p-4 rounded-lg flex items-center gap-3 ${message.type === 'success'
-                    ? 'bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700'
-                    : 'bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700'
-                    }`}>
-                    {message.type === 'success' ? (
-                        <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400" />
-                    ) : (
-                        <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400" />
-                    )}
-                    <span className={message.type === 'success'
-                        ? 'text-green-800 dark:text-green-300'
-                        : 'text-red-800 dark:text-red-300'
-                    }>
-                        {message.text}
-                    </span>
-                </div>
-            )}
+            {/* Admin Navigation */}
+            <AdminNavbar />
 
-            {/* Tabs */}
-            <div className="border-b border-gray-200 dark:border-gray-700 mb-6">
-                <div className="flex gap-4">
-                    {[
-                        { id: 'general', label: 'Allmänt', icon: Globe },
-                        { id: 'assets', label: 'Grafiska resurser', icon: Image },
-                        { id: 'design', label: 'Design System', icon: Layers },
-                        { id: 'theme', label: 'Anpassat tema', icon: Palette }
-                    ].map(tab => (
-                        <button
-                            key={tab.id}
-                            onClick={() => setActiveTab(tab.id)}
-                            className={`pb-3 px-4 border-b-2 transition-colors flex items-center gap-2 ${activeTab === tab.id
-                                ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400'
-                                : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400'
-                                }`}
-                        >
-                            <tab.icon className="w-4 h-4" />
-                            {tab.label}
-                        </button>
-                    ))}
-                </div>
-            </div>
+            {/* Main Content Area with Internal Sidebar */}
+            <div className="flex bg-gray-50 dark:bg-[#151718] min-h-[600px] rounded-lg border border-gray-200 dark:border-[#3c4043] overflow-hidden">
+                {/* SIDEBAR */}
+                <aside className={`bg-white dark:bg-[#1e2022] w-64 border-r border-gray-200 dark:border-[#3c4043] flex-shrink-0 flex flex-col ${mobileMenuOpen ? 'block absolute z-50 h-full' : 'hidden md:flex'}`}>
+                    <div className="p-4 border-b border-gray-200 dark:border-[#3c4043] flex items-center justify-between">
+                        <h2 className="font-bold text-lg text-gray-800 dark:text-gray-200">Whitelabel</h2>
+                        <button className="md:hidden" onClick={() => setMobileMenuOpen(false)}>X</button>
+                    </div>
 
-            {/* General Tab */}
-            {activeTab === 'general' && (
-                <div className="space-y-6">
-                    <div className="bg-white dark:bg-[#1e1f20] rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-                        <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
-                            Varumärkesinformation
-                        </h2>
-
-                        <div className="space-y-4">
-                            <div>
-                                <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                                    Varumärkesnamn
-                                </label>
-                                <input
-                                    type="text"
-                                    name="brandName"
-                                    value={formData.brandName}
-                                    onChange={handleInputChange}
-                                    className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600
-                                             bg-white dark:bg-[#282a2c] text-gray-900 dark:text-white"
-                                    placeholder="EduFlex"
-                                />
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                                    Footer-text
-                                </label>
-                                <input
-                                    type="text"
-                                    name="footerText"
-                                    value={formData.footerText}
-                                    onChange={handleInputChange}
-                                    className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600
-                                             bg-white dark:bg-[#282a2c] text-gray-900 dark:text-white"
-                                    placeholder="Powered by EduFlex"
-                                />
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                                    Välkomstmeddelande (inloggningssida)
-                                </label>
-                                <textarea
-                                    name="welcomeMessage"
-                                    value={formData.welcomeMessage}
-                                    onChange={handleInputChange}
-                                    rows={3}
-                                    className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600
-                                             bg-white dark:bg-[#282a2c] text-gray-900 dark:text-white"
-                                    placeholder="Välkommen till vårt lärandesystem..."
-                                />
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                                    Standard-tema (används om inget anpassat tema är aktivt)
-                                </label>
-                                <select
-                                    name="defaultThemeId"
-                                    value={formData.defaultThemeId}
-                                    onChange={handleInputChange}
-                                    className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600
-                                             bg-white dark:bg-[#282a2c] text-gray-900 dark:text-white"
-                                >
-                                    {themes.map(theme => (
-                                        <option key={theme.id} value={theme.id}>
-                                            {theme.name}
-                                        </option>
+                    <nav className="flex-1 overflow-y-auto p-4 space-y-6">
+                        {menuItems.map((group, idx) => (
+                            <div key={idx}>
+                                <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 px-2">
+                                    {group.category}
+                                </h3>
+                                <div className="space-y-1">
+                                    {group.items.map(item => (
+                                        <button
+                                            key={item.id}
+                                            onClick={() => { setActiveTab(item.id); setMobileMenuOpen(false); }}
+                                            className={`w-full flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors ${activeTab === item.id
+                                                ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300'
+                                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#282a2c]'
+                                                }`}
+                                        >
+                                            <item.icon size={18} />
+                                            {item.label}
+                                        </button>
                                     ))}
-                                </select>
+                                </div>
                             </div>
-                        </div>
-                    </div>
+                        ))}
+                    </nav>
+                </aside>
 
-                    <div className="bg-white dark:bg-[#1e1f20] rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-                        <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
-                            Inställningar
-                        </h2>
-
-                        <div className="space-y-4">
-                            <label className="flex items-center gap-3 cursor-pointer">
-                                <input
-                                    type="checkbox"
-                                    name="showPoweredBy"
-                                    checked={formData.showPoweredBy}
-                                    onChange={handleInputChange}
-                                    className="w-5 h-5 text-indigo-600 rounded"
-                                />
-                                <div>
-                                    <div className="font-medium text-gray-900 dark:text-white">
-                                        Visa "Powered by EduFlex"
-                                    </div>
-                                    <div className="text-sm text-gray-600 dark:text-gray-400">
-                                        Visa EduFlex-branding i footern
-                                    </div>
-                                </div>
-                            </label>
-
-                            <label className="flex items-center gap-3 cursor-pointer">
-                                <input
-                                    type="checkbox"
-                                    name="enforceOrgTheme"
-                                    checked={formData.enforceOrgTheme}
-                                    onChange={handleInputChange}
-                                    className="w-5 h-5 text-indigo-600 rounded"
-                                />
-                                <div>
-                                    <div className="font-medium text-gray-900 dark:text-white flex items-center gap-2">
-                                        Tvinga organisationens tema
-                                        {formData.enforceOrgTheme && <EyeOff className="w-4 h-4 text-yellow-500" />}
-                                    </div>
-                                    <div className="text-sm text-gray-600 dark:text-gray-400">
-                                        Användare kan inte ändra tema om aktiverat
-                                    </div>
-                                </div>
-                            </label>
-
-                            <label className="flex items-center gap-3 cursor-pointer">
-                                <input
-                                    type="checkbox"
-                                    name="customEmailTemplates"
-                                    checked={formData.customEmailTemplates}
-                                    onChange={handleInputChange}
-                                    className="w-5 h-5 text-indigo-600 rounded"
-                                />
-                                <div>
-                                    <div className="font-medium text-gray-900 dark:text-white">
-                                        Anpassade e-postmallar
-                                    </div>
-                                    <div className="text-sm text-gray-600 dark:text-gray-400">
-                                        Använd varumärkesanpassade e-postmallar (framtida funktion)
-                                    </div>
-                                </div>
-                            </label>
-                        </div>
-                    </div>
-
-                    <div className="flex gap-3">
-                        <button
-                            onClick={handleSaveGeneral}
-                            disabled={loading}
-                            className="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg
-                                     flex items-center gap-2 disabled:opacity-50"
-                        >
-                            <Save className="w-4 h-4" />
-                            Spara inställningar
-                        </button>
-                        <button
-                            onClick={handleReset}
-                            disabled={loading}
-                            className="px-6 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg
-                                     flex items-center gap-2 disabled:opacity-50"
-                        >
-                            <RotateCcw className="w-4 h-4" />
-                            Återställ allt
+                {/* MAIN CONTENT */}
+                <main className="flex-1 flex flex-col min-w-0 bg-white dark:bg-[#151718]">
+                    {/* Mobile Header */}
+                    <div className="md:hidden p-4 bg-white dark:bg-[#1e2022] border-b border-gray-200 dark:border-[#3c4043] flex justify-between items-center">
+                        <span className="font-bold">Meny</span>
+                        <button onClick={() => setMobileMenuOpen(true)} className="p-2 bg-gray-100 rounded">
+                            <Settings size={20} />
                         </button>
                     </div>
-                </div>
-            )}
 
-            {/* Assets Tab */}
-            {activeTab === 'assets' && (
-                <div className="space-y-6">
-                    <AssetUploader
-                        title="Logotyp"
-                        description="Huvudlogotyp som visas i systemet. Rekommenderad storlek: 200x50px (PNG eller SVG)"
-                        currentUrl={branding.logoUrl}
-                        onUpload={(file) => handleFileUpload('logo', file)}
-                        accept="image/*"
-                        loading={loading}
-                    />
-
-                    <AssetUploader
-                        title="Favicon"
-                        description="Ikon som visas i webbläsarfliken. Rekommenderad storlek: 32x32px (ICO, PNG eller SVG)"
-                        currentUrl={branding.faviconUrl}
-                        onUpload={(file) => handleFileUpload('favicon', file)}
-                        accept="image/*,.ico"
-                        loading={loading}
-                    />
-
-                    <AssetUploader
-                        title="Inloggningsbakgrund"
-                        description="Bakgrundsbild för inloggningssidan. Rekommenderad storlek: 1920x1080px"
-                        currentUrl={branding.loginBackgroundUrl}
-                        onUpload={(file) => handleFileUpload('background', file)}
-                        accept="image/*"
-                        loading={loading}
-                        isBackground
-                    />
-                </div>
-            )}
-
-            {/* Design System Tab */}
-            {activeTab === 'design' && (
-                <div className="space-y-6">
-                    <div className="bg-white dark:bg-[#1e1f20] rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-                        <h2 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">
-                            Välj Design System
-                        </h2>
-                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
-                            Design Systems ändrar hela UI:ts utseende - kort, knappar, skuggor och mer. Detta är en exklusiv Enterprise-feature.
-                        </p>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {Object.values(DESIGN_SYSTEMS).map((theme) => (
+                    <div className="p-8">
+                        {/* Header for content area */}
+                        <div className="mb-6 flex items-start justify-between">
+                            <div>
+                                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                                    {menuItems.flatMap(g => g.items).find(i => i.id === activeTab)?.label}
+                                </h2>
+                                <p className="text-gray-500 dark:text-gray-400">
+                                    {activeTab === 'general' && 'Hantera grundläggande varumärkesinställningar.'}
+                                    {activeTab === 'assets' && 'Ladda upp logotyper och ikoner.'}
+                                    {activeTab === 'design' && 'Välj ett globalt designsystem för hela plattformen.'}
+                                    {activeTab === 'theme' && 'Skapa eller välj färgteman.'}
+                                </p>
+                            </div>
+                            {(activeTab === 'general' || activeTab === 'design') && (
                                 <button
-                                    key={theme.id}
-                                    onClick={() => setFormData({ ...formData, designSystem: theme.id })}
-                                    className={`group relative p-6 rounded-2xl border-2 transition-all text-left overflow-hidden flex flex-col h-full ${formData.designSystem === theme.id
-                                        ? 'border-indigo-500 ring-4 ring-indigo-50 dark:ring-indigo-900/20'
-                                        : 'border-gray-200 dark:border-gray-800 hover:border-indigo-300'
-                                        }`}
-                                    style={{
-                                        // Dynamic preview background for the card container
-                                        background: formData.designSystem === theme.id
-                                            ? (localStorage.getItem('theme') === 'dark' ? theme.page.dark : theme.page.light)
-                                            : 'transparent'
-                                    }}
+                                    onClick={handleSaveGeneral}
+                                    disabled={loading}
+                                    className="p-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg disabled:opacity-50 transition-colors"
+                                    title="Spara"
                                 >
-                                    {/* Preview Mockup Area */}
-                                    <div className="relative w-full aspect-video mb-4 rounded-xl overflow-hidden border border-gray-100 dark:border-gray-700 shadow-inner"
-                                        style={{
-                                            background: localStorage.getItem('theme') === 'dark' ? theme.page.dark : theme.page.light
-                                        }}>
+                                    <Save className="w-5 h-5" />
+                                </button>
+                            )}
+                            {activeTab === 'theme' && (
+                                <button
+                                    onClick={handleSaveCustomTheme}
+                                    disabled={loading}
+                                    className="p-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg disabled:opacity-50 transition-colors"
+                                    title="Spara anpassat tema"
+                                >
+                                    <Save className="w-5 h-5" />
+                                </button>
+                            )}
+                        </div>
 
-                                        {/* Abstract Representation of the Theme */}
-                                        <div className="absolute inset-0 p-4 flex items-center justify-center">
-                                            <div
-                                                className="w-3/4 h-24 flex items-center justify-center relative transition-all"
+                        {/* General Tab */}
+                        {activeTab === 'general' && (
+                            <div className="space-y-6">
+                                <div className="bg-white dark:bg-[#1e1f20] rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+                                    <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
+                                        Varumärkesinformation
+                                    </h2>
+
+                                    <div className="space-y-4">
+                                        <div>
+                                            <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                                                Varumärkesnamn
+                                            </label>
+                                            <input
+                                                type="text"
+                                                name="brandName"
+                                                value={formData.brandName}
+                                                onChange={handleInputChange}
+                                                className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600
+                                             bg-white dark:bg-[#282a2c] text-gray-900 dark:text-white"
+                                                placeholder="EduFlex"
+                                            />
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                                                Footer-text
+                                            </label>
+                                            <input
+                                                type="text"
+                                                name="footerText"
+                                                value={formData.footerText}
+                                                onChange={handleInputChange}
+                                                className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600
+                                             bg-white dark:bg-[#282a2c] text-gray-900 dark:text-white"
+                                                placeholder="Powered by EduFlex"
+                                            />
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                                                Välkomstmeddelande (inloggningssida)
+                                            </label>
+                                            <textarea
+                                                name="welcomeMessage"
+                                                value={formData.welcomeMessage}
+                                                onChange={handleInputChange}
+                                                rows={3}
+                                                className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600
+                                             bg-white dark:bg-[#282a2c] text-gray-900 dark:text-white"
+                                                placeholder="Välkommen till vårt lärandesystem..."
+                                            />
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                                                Standard-tema (används om inget anpassat tema är aktivt)
+                                            </label>
+                                            <select
+                                                name="defaultThemeId"
+                                                value={formData.defaultThemeId}
+                                                onChange={handleInputChange}
+                                                className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600
+                                             bg-white dark:bg-[#282a2c] text-gray-900 dark:text-white"
+                                            >
+                                                {themes.map(theme => (
+                                                    <option key={theme.id} value={theme.id}>
+                                                        {theme.name}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="bg-white dark:bg-[#1e1f20] rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+                                    <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
+                                        Inställningar
+                                    </h2>
+
+                                    <div className="space-y-4">
+                                        <label className="flex items-center gap-3 cursor-pointer">
+                                            <input
+                                                type="checkbox"
+                                                name="showPoweredBy"
+                                                checked={formData.showPoweredBy}
+                                                onChange={handleInputChange}
+                                                className="w-5 h-5 text-indigo-600 rounded"
+                                            />
+                                            <div>
+                                                <div className="font-medium text-gray-900 dark:text-white">
+                                                    Visa "Powered by EduFlex"
+                                                </div>
+                                                <div className="text-sm text-gray-600 dark:text-gray-400">
+                                                    Visa EduFlex-branding i footern
+                                                </div>
+                                            </div>
+                                        </label>
+
+                                        <label className="flex items-center gap-3 cursor-pointer">
+                                            <input
+                                                type="checkbox"
+                                                name="enforceOrgTheme"
+                                                checked={formData.enforceOrgTheme}
+                                                onChange={handleInputChange}
+                                                className="w-5 h-5 text-indigo-600 rounded"
+                                            />
+                                            <div>
+                                                <div className="font-medium text-gray-900 dark:text-white flex items-center gap-2">
+                                                    Tvinga organisationens tema
+                                                    {formData.enforceOrgTheme && <EyeOff className="w-4 h-4 text-yellow-500" />}
+                                                </div>
+                                                <div className="text-sm text-gray-600 dark:text-gray-400">
+                                                    Användare kan inte ändra tema om aktiverat
+                                                </div>
+                                            </div>
+                                        </label>
+
+                                        <label className="flex items-center gap-3 cursor-pointer">
+                                            <input
+                                                type="checkbox"
+                                                name="customEmailTemplates"
+                                                checked={formData.customEmailTemplates}
+                                                onChange={handleInputChange}
+                                                className="w-5 h-5 text-indigo-600 rounded"
+                                            />
+                                            <div>
+                                                <div className="font-medium text-gray-900 dark:text-white">
+                                                    Anpassade e-postmallar
+                                                </div>
+                                                <div className="text-sm text-gray-600 dark:text-gray-400">
+                                                    Använd varumärkesanpassade e-postmallar (framtida funktion)
+                                                </div>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <button
+                                    onClick={handleReset}
+                                    disabled={loading}
+                                    className="px-6 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg
+                                     flex items-center gap-2 disabled:opacity-50"
+                                >
+                                    <RotateCcw className="w-4 h-4" />
+                                    Återställ allt
+                                </button>
+                            </div>
+                        )}
+
+                        {/* Assets Tab */}
+                        {activeTab === 'assets' && (
+                            <div className="space-y-6">
+                                <AssetUploader
+                                    title="Logotyp"
+                                    description="Huvudlogotyp som visas i systemet. Rekommenderad storlek: 200x50px (PNG eller SVG)"
+                                    currentUrl={branding.logoUrl}
+                                    onUpload={(file) => handleFileUpload('logo', file)}
+                                    accept="image/*"
+                                    loading={loading}
+                                />
+
+                                <AssetUploader
+                                    title="Favicon"
+                                    description="Ikon som visas i webbläsarfliken. Rekommenderad storlek: 32x32px (ICO, PNG eller SVG)"
+                                    currentUrl={branding.faviconUrl}
+                                    onUpload={(file) => handleFileUpload('favicon', file)}
+                                    accept="image/*,.ico"
+                                    loading={loading}
+                                />
+
+                                <AssetUploader
+                                    title="Inloggningsbakgrund"
+                                    description="Bakgrundsbild för inloggningssidan. Rekommenderad storlek: 1920x1080px"
+                                    currentUrl={branding.loginBackgroundUrl}
+                                    onUpload={(file) => handleFileUpload('background', file)}
+                                    accept="image/*"
+                                    loading={loading}
+                                    isBackground
+                                />
+                            </div>
+                        )}
+
+                        {/* Design System Tab */}
+                        {activeTab === 'design' && (
+                            <div className="space-y-6">
+                                <div className="bg-white dark:bg-[#1e1f20] rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+                                    <h2 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">
+                                        Välj Design System
+                                    </h2>
+                                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
+                                        Design Systems ändrar hela UI:ts utseende - kort, knappar, skuggor och mer. Detta är en exklusiv Enterprise-feature.
+                                    </p>
+
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                        {Object.values(DESIGN_SYSTEMS).map((theme) => (
+                                            <button
+                                                key={theme.id}
+                                                onClick={() => setFormData({ ...formData, designSystem: theme.id })}
+                                                className={`group relative p-6 rounded-2xl border-2 transition-all text-left overflow-hidden flex flex-col h-full ${formData.designSystem === theme.id
+                                                    ? 'border-indigo-500 ring-4 ring-indigo-50 dark:ring-indigo-900/20'
+                                                    : 'border-gray-200 dark:border-gray-800 hover:border-indigo-300'
+                                                    }`}
                                                 style={{
-                                                    borderRadius: theme.card.radius.xl,
-                                                    boxShadow: theme.card.shadow,
-                                                    background: localStorage.getItem('theme') === 'dark' ? theme.card.backgroundDark : theme.card.background,
-                                                    border: localStorage.getItem('theme') === 'dark' ? theme.card.borderDark : theme.card.border,
-                                                    backdropFilter: theme.card.backdrop
+                                                    // Dynamic preview background for the card container
+                                                    background: formData.designSystem === theme.id
+                                                        ? (localStorage.getItem('theme') === 'dark' ? theme.page.dark : theme.page.light)
+                                                        : 'transparent'
                                                 }}
                                             >
-                                                {/* Mini Element inside */}
-                                                <div
-                                                    className="w-12 h-12 flex items-center justify-center font-bold text-xs"
+                                                {/* Preview Mockup Area */}
+                                                <div className="relative w-full aspect-video mb-4 rounded-xl overflow-hidden border border-gray-100 dark:border-gray-700 shadow-inner"
                                                     style={{
-                                                        borderRadius: theme.button.radius,
-                                                        boxShadow: theme.button.shadow,
-                                                        background: 'rgba(99, 102, 241, 0.1)',
-                                                        color: '#6366f1'
-                                                    }}
-                                                >
-                                                    Aa
+                                                        background: localStorage.getItem('theme') === 'dark' ? theme.page.dark : theme.page.light
+                                                    }}>
+
+                                                    {/* Abstract Representation of the Theme */}
+                                                    <div className="absolute inset-0 p-4 flex items-center justify-center">
+                                                        <div
+                                                            className="w-3/4 h-24 flex items-center justify-center relative transition-all"
+                                                            style={{
+                                                                borderRadius: theme.card.radius.xl,
+                                                                boxShadow: theme.card.shadow,
+                                                                background: localStorage.getItem('theme') === 'dark' ? theme.card.backgroundDark : theme.card.background,
+                                                                border: localStorage.getItem('theme') === 'dark' ? theme.card.borderDark : theme.card.border,
+                                                                backdropFilter: theme.card.backdrop
+                                                            }}
+                                                        >
+                                                            {/* Mini Element inside */}
+                                                            <div
+                                                                className="w-12 h-12 flex items-center justify-center font-bold text-xs"
+                                                                style={{
+                                                                    borderRadius: theme.button.radius,
+                                                                    boxShadow: theme.button.shadow,
+                                                                    background: 'rgba(99, 102, 241, 0.1)',
+                                                                    color: '#6366f1'
+                                                                }}
+                                                            >
+                                                                Aa
+                                                            </div>
+
+                                                            {/* Corner indicator */}
+                                                            <div className="absolute top-2 right-2 w-2 h-2 rounded-full bg-indigo-500" />
+                                                        </div>
+                                                    </div>
                                                 </div>
 
-                                                {/* Corner indicator */}
-                                                <div className="absolute top-2 right-2 w-2 h-2 rounded-full bg-indigo-500" />
+                                                <div className="flex-1">
+                                                    <h3 className="text-lg font-bold mb-1 text-gray-900 dark:text-white flex items-center justify-between">
+                                                        {theme.name}
+                                                        {formData.designSystem === theme.id && <CheckCircle className="w-5 h-5 text-indigo-600" />}
+                                                    </h3>
+                                                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-3 min-h-[40px]">
+                                                        {theme.description}
+                                                    </p>
+                                                </div>
+
+                                                {/* Tech Specs Helpers */}
+                                                <div className="flex flex-wrap gap-2 text-xs text-gray-500 font-mono mt-auto pt-4 border-t border-gray-100 dark:border-gray-800">
+                                                    <span className="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-700">
+                                                        R: {theme.card.radius.xl}
+                                                    </span>
+                                                    {theme.card.backdrop !== 'none' && (
+                                                        <span className="px-2 py-1 bg-blue-50 dark:bg-blue-900/20 text-blue-600 rounded border border-blue-100 dark:border-blue-800">
+                                                            Blur
+                                                        </span>
+                                                    )}
+                                                    {theme.id === 'brutalist' && (
+                                                        <span className="px-2 py-1 bg-black text-white dark:bg-white dark:text-black rounded">
+                                                            BOLD
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            </button>
+                                        ))}
+                                    </div>
+
+                                    <div className="mt-8 p-4 bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-700 rounded-lg">
+                                        <h4 className="font-semibold text-indigo-900 dark:text-indigo-100 mb-2 flex items-center gap-2">
+                                            <Layers className="w-5 h-5" />
+                                            Valt Design System: {formData.designSystem}
+                                        </h4>
+                                        <p className="text-sm text-indigo-700 dark:text-indigo-300">
+                                            Design systemet påverkar alla kort, knappar och UI-element i hela applikationen. Ändringar träder i kraft direkt när du sparar.
+                                        </p>
+                                    </div>
+
+                                </div>
+                            </div >
+                        )}
+
+                        {/* Custom Theme Tab */}
+                        {
+                            activeTab === 'theme' && (
+                                <div className="space-y-6">
+                                    {/* Predefined Enterprise Themes */}
+                                    <div className="bg-white dark:bg-[#1e1f20] rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+                                        <h2 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">
+                                            Fördefinierade Enterprise-teman
+                                        </h2>
+                                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
+                                            Välj ett professionellt fördesignat tema eller skapa ett eget anpassat tema nedan.
+                                        </p>
+
+                                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                                            {enterpriseThemes.map(theme => (
+                                                <button
+                                                    key={theme.id}
+                                                    onClick={() => {
+                                                        setCustomTheme({ name: theme.name, colors: theme.colors });
+                                                    }}
+                                                    className="group relative p-4 rounded-xl border-2 border-gray-200 dark:border-gray-700
+                                             hover:border-indigo-500 dark:hover:border-indigo-500 transition-all
+                                             bg-white dark:bg-[#282a2c] text-left"
+                                                >
+                                                    {/* Color Preview */}
+                                                    <div className="flex gap-1 mb-3">
+                                                        {[500, 600, 700].map(shade => (
+                                                            <div
+                                                                key={shade}
+                                                                style={{ backgroundColor: theme.colors[shade] }}
+                                                                className="h-12 flex-1 rounded-lg shadow-sm first:rounded-l-lg last:rounded-r-lg"
+                                                            />
+                                                        ))}
+                                                    </div>
+
+                                                    {/* Theme Info */}
+                                                    <h3 className="font-semibold text-gray-900 dark:text-white mb-1">
+                                                        {theme.name}
+                                                    </h3>
+                                                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                                                        {theme.description}
+                                                    </p>
+
+                                                    {/* Hover Effect */}
+                                                    <div className="absolute inset-0 bg-indigo-500/5 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity" />
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    {/* Custom Theme Builder */}
+                                    <div className="bg-white dark:bg-[#1e1f20] rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+                                        <h2 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">
+                                            Anpassad färgpalett
+                                        </h2>
+                                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
+                                            Finjustera färgerna manuellt för att skapa ett helt unikt tema.
+                                        </p>
+
+                                        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
+                                            {Object.keys(customTheme.colors).map(shade => (
+                                                <div key={shade}>
+                                                    <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                                                        Shade {shade}
+                                                    </label>
+                                                    <div className="flex gap-2">
+                                                        <input
+                                                            type="color"
+                                                            value={customTheme.colors[shade]}
+                                                            onChange={(e) => handleColorChange(shade, e.target.value)}
+                                                            className="w-12 h-10 rounded cursor-pointer"
+                                                        />
+                                                        <input
+                                                            type="text"
+                                                            value={customTheme.colors[shade]}
+                                                            onChange={(e) => handleColorChange(shade, e.target.value)}
+                                                            className="flex-1 px-2 py-1 text-sm rounded border border-gray-300 dark:border-gray-600
+                                                     bg-white dark:bg-[#282a2c] text-gray-900 dark:text-white"
+                                                        />
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+
+                                        {/* Theme Preview */}
+                                        <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-6 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-[#131314] dark:to-[#1e1f20]">
+                                            <h3 className="text-sm font-semibold mb-4 text-gray-700 dark:text-gray-300">
+                                                Live-förhandsvisning
+                                            </h3>
+                                            <div className="space-y-4">
+                                                {/* Buttons Preview */}
+                                                <div className="flex gap-3 flex-wrap">
+                                                    <button
+                                                        style={{ backgroundColor: customTheme.colors[600] }}
+                                                        className="px-5 py-2.5 text-white rounded-lg font-medium shadow-md hover:shadow-lg transition-shadow"
+                                                    >
+                                                        Primär knapp
+                                                    </button>
+                                                    <button
+                                                        style={{
+                                                            borderColor: customTheme.colors[600],
+                                                            color: customTheme.colors[600]
+                                                        }}
+                                                        className="px-5 py-2.5 bg-transparent border-2 rounded-lg font-medium"
+                                                    >
+                                                        Sekundär knapp
+                                                    </button>
+                                                </div>
+
+                                                {/* Color Swatches */}
+                                                <div>
+                                                    <p className="text-xs text-gray-600 dark:text-gray-400 mb-2">Färgskala:</p>
+                                                    <div className="flex gap-1">
+                                                        {[50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950].map(shade => (
+                                                            <div
+                                                                key={shade}
+                                                                style={{ backgroundColor: customTheme.colors[shade] }}
+                                                                className="flex-1 h-12 rounded shadow-sm first:rounded-l-lg last:rounded-r-lg"
+                                                                title={`${shade}: ${customTheme.colors[shade]}`}
+                                                            />
+                                                        ))}
+                                                    </div>
+                                                </div>
+
+                                                {/* UI Elements Preview */}
+                                                <div className="grid grid-cols-2 gap-3">
+                                                    <div
+                                                        style={{ backgroundColor: customTheme.colors[50] }}
+                                                        className="p-3 rounded-lg"
+                                                    >
+                                                        <div
+                                                            style={{ backgroundColor: customTheme.colors[600] }}
+                                                            className="w-8 h-8 rounded-full mb-2"
+                                                        />
+                                                        <div className="h-2 bg-gray-300 dark:bg-gray-600 rounded w-3/4 mb-1" />
+                                                        <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded w-1/2" />
+                                                    </div>
+                                                    <div
+                                                        style={{
+                                                            backgroundColor: customTheme.colors[600],
+                                                            color: 'white'
+                                                        }}
+                                                        className="p-3 rounded-lg"
+                                                    >
+                                                        <div className="text-xs font-semibold mb-1">Widget</div>
+                                                        <div className="text-2xl font-bold">2,540</div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-
-                                    <div className="flex-1">
-                                        <h3 className="text-lg font-bold mb-1 text-gray-900 dark:text-white flex items-center justify-between">
-                                            {theme.name}
-                                            {formData.designSystem === theme.id && <CheckCircle className="w-5 h-5 text-indigo-600" />}
-                                        </h3>
-                                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-3 min-h-[40px]">
-                                            {theme.description}
-                                        </p>
-                                    </div>
-
-                                    {/* Tech Specs Helpers */}
-                                    <div className="flex flex-wrap gap-2 text-xs text-gray-500 font-mono mt-auto pt-4 border-t border-gray-100 dark:border-gray-800">
-                                        <span className="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-700">
-                                            R: {theme.card.radius.xl}
-                                        </span>
-                                        {theme.card.backdrop !== 'none' && (
-                                            <span className="px-2 py-1 bg-blue-50 dark:bg-blue-900/20 text-blue-600 rounded border border-blue-100 dark:border-blue-800">
-                                                Blur
-                                            </span>
-                                        )}
-                                        {theme.id === 'brutalist' && (
-                                            <span className="px-2 py-1 bg-black text-white dark:bg-white dark:text-black rounded">
-                                                BOLD
-                                            </span>
-                                        )}
-                                    </div>
-                                </button>
-                            ))}
-                        </div>
-
-                        <div className="mt-8 p-4 bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-700 rounded-lg">
-                            <h4 className="font-semibold text-indigo-900 dark:text-indigo-100 mb-2 flex items-center gap-2">
-                                <Layers className="w-5 h-5" />
-                                Valt Design System: {formData.designSystem}
-                            </h4>
-                            <p className="text-sm text-indigo-700 dark:text-indigo-300">
-                                Design systemet påverkar alla kort, knappar och UI-element i hela applikationen. Ändringar träder i kraft direkt när du sparar.
-                            </p>
-                        </div>
-
-                        <button
-                            onClick={handleSaveGeneral}
-                            disabled={loading}
-                            className="mt-6 w-full bg-indigo-600 text-white py-3 rounded-xl font-bold hover:bg-indigo-700 disabled:opacity-50 flex items-center justify-center gap-2"
-                        >
-                            {loading ? 'Sparar...' : (
-                                <>
-                                    <Save className="w-5 h-5" />
-                                    Spara Design System
-                                </>
-                            )}
-                        </button>
-                    </div >
-                </div >
-            )}
-
-            {/* Custom Theme Tab */}
-            {
-                activeTab === 'theme' && (
-                    <div className="space-y-6">
-                        {/* Predefined Enterprise Themes */}
-                        <div className="bg-white dark:bg-[#1e1f20] rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-                            <h2 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">
-                                Fördefinierade Enterprise-teman
-                            </h2>
-                            <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
-                                Välj ett professionellt fördesignat tema eller skapa ett eget anpassat tema nedan.
-                            </p>
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                                {enterpriseThemes.map(theme => (
-                                    <button
-                                        key={theme.id}
-                                        onClick={() => {
-                                            setCustomTheme({ name: theme.name, colors: theme.colors });
-                                        }}
-                                        className="group relative p-4 rounded-xl border-2 border-gray-200 dark:border-gray-700
-                                             hover:border-indigo-500 dark:hover:border-indigo-500 transition-all
-                                             bg-white dark:bg-[#282a2c] text-left"
-                                    >
-                                        {/* Color Preview */}
-                                        <div className="flex gap-1 mb-3">
-                                            {[500, 600, 700].map(shade => (
-                                                <div
-                                                    key={shade}
-                                                    style={{ backgroundColor: theme.colors[shade] }}
-                                                    className="h-12 flex-1 rounded-lg shadow-sm first:rounded-l-lg last:rounded-r-lg"
-                                                />
-                                            ))}
-                                        </div>
-
-                                        {/* Theme Info */}
-                                        <h3 className="font-semibold text-gray-900 dark:text-white mb-1">
-                                            {theme.name}
-                                        </h3>
-                                        <p className="text-xs text-gray-500 dark:text-gray-400">
-                                            {theme.description}
-                                        </p>
-
-                                        {/* Hover Effect */}
-                                        <div className="absolute inset-0 bg-indigo-500/5 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity" />
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-
-                        {/* Custom Theme Builder */}
-                        <div className="bg-white dark:bg-[#1e1f20] rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-                            <h2 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">
-                                Anpassad färgpalett
-                            </h2>
-                            <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
-                                Finjustera färgerna manuellt för att skapa ett helt unikt tema.
-                            </p>
-
-                            <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
-                                {Object.keys(customTheme.colors).map(shade => (
-                                    <div key={shade}>
-                                        <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                                            Shade {shade}
-                                        </label>
-                                        <div className="flex gap-2">
-                                            <input
-                                                type="color"
-                                                value={customTheme.colors[shade]}
-                                                onChange={(e) => handleColorChange(shade, e.target.value)}
-                                                className="w-12 h-10 rounded cursor-pointer"
-                                            />
-                                            <input
-                                                type="text"
-                                                value={customTheme.colors[shade]}
-                                                onChange={(e) => handleColorChange(shade, e.target.value)}
-                                                className="flex-1 px-2 py-1 text-sm rounded border border-gray-300 dark:border-gray-600
-                                                     bg-white dark:bg-[#282a2c] text-gray-900 dark:text-white"
-                                            />
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-
-                            {/* Theme Preview */}
-                            <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-6 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-[#131314] dark:to-[#1e1f20]">
-                                <h3 className="text-sm font-semibold mb-4 text-gray-700 dark:text-gray-300">
-                                    Live-förhandsvisning
-                                </h3>
-                                <div className="space-y-4">
-                                    {/* Buttons Preview */}
-                                    <div className="flex gap-3 flex-wrap">
-                                        <button
-                                            style={{ backgroundColor: customTheme.colors[600] }}
-                                            className="px-5 py-2.5 text-white rounded-lg font-medium shadow-md hover:shadow-lg transition-shadow"
-                                        >
-                                            Primär knapp
-                                        </button>
-                                        <button
-                                            style={{
-                                                borderColor: customTheme.colors[600],
-                                                color: customTheme.colors[600]
-                                            }}
-                                            className="px-5 py-2.5 bg-transparent border-2 rounded-lg font-medium"
-                                        >
-                                            Sekundär knapp
-                                        </button>
-                                    </div>
-
-                                    {/* Color Swatches */}
-                                    <div>
-                                        <p className="text-xs text-gray-600 dark:text-gray-400 mb-2">Färgskala:</p>
-                                        <div className="flex gap-1">
-                                            {[50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950].map(shade => (
-                                                <div
-                                                    key={shade}
-                                                    style={{ backgroundColor: customTheme.colors[shade] }}
-                                                    className="flex-1 h-12 rounded shadow-sm first:rounded-l-lg last:rounded-r-lg"
-                                                    title={`${shade}: ${customTheme.colors[shade]}`}
-                                                />
-                                            ))}
-                                        </div>
-                                    </div>
-
-                                    {/* UI Elements Preview */}
-                                    <div className="grid grid-cols-2 gap-3">
-                                        <div
-                                            style={{ backgroundColor: customTheme.colors[50] }}
-                                            className="p-3 rounded-lg"
-                                        >
-                                            <div
-                                                style={{ backgroundColor: customTheme.colors[600] }}
-                                                className="w-8 h-8 rounded-full mb-2"
-                                            />
-                                            <div className="h-2 bg-gray-300 dark:bg-gray-600 rounded w-3/4 mb-1" />
-                                            <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded w-1/2" />
-                                        </div>
-                                        <div
-                                            style={{
-                                                backgroundColor: customTheme.colors[600],
-                                                color: 'white'
-                                            }}
-                                            className="p-3 rounded-lg"
-                                        >
-                                            <div className="text-xs font-semibold mb-1">Widget</div>
-                                            <div className="text-2xl font-bold">2,540</div>
-                                        </div>
-                                    </div>
                                 </div>
-                            </div>
-                        </div>
-
-                        <button
-                            onClick={handleSaveCustomTheme}
-                            disabled={loading}
-                            className="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg
-                                 flex items-center gap-2 disabled:opacity-50"
-                        >
-                            <Save className="w-4 h-4" />
-                            Spara anpassat tema
-                        </button>
+                            )
+                        }
                     </div>
-                )
-            }
-        </div >
+                </main>
+            </div>
+        </div>
     );
 };
 
@@ -842,7 +865,7 @@ const AssetUploader = ({ title, description, currentUrl, onUpload, accept, loadi
                     className="hidden"
                 />
                 <span className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg
-                               cursor-pointer inline-flex items-center gap-2 disabled:opacity-50">
+                    cursor-pointer inline-flex items-center gap-2 disabled:opacity-50">
                     <Upload className="w-4 h-4" />
                     Ladda upp {title}
                 </span>
@@ -851,4 +874,4 @@ const AssetUploader = ({ title, description, currentUrl, onUpload, accept, loadi
     );
 };
 
-export default EnterpriseWhitelabel;
+                    export default EnterpriseWhitelabel;

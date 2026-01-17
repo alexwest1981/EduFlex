@@ -26,19 +26,13 @@ const OAuth2Callback = () => {
 
     const fetchUserInfo = async (token) => {
         try {
-            const response = await fetch('/api/users/me', {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-            if (response.ok) {
-                const userData = await response.json();
+            // Use the centralized API service to ensure consistent base URL (port 8080)
+            const userData = await import('../../services/api').then(module => module.api.get('/users/me'));
+            if (userData) {
                 login(userData, token);
                 navigate('/');
             } else {
-                const text = await response.text();
-                console.error("Failed to fetch user info:", response.status, text);
-                throw new Error(`Failed to fetch user info: ${response.status}`);
+                throw new Error("Failed to fetch user data");
             }
         } catch (error) {
             console.error(error);

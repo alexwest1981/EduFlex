@@ -28,22 +28,32 @@ public class AssignmentService {
     private final SubmissionRepository submissionRepository;
     private final CourseRepository courseRepository;
     private final UserRepository userRepository;
+    private final com.eduflex.backend.service.GamificationService gamificationService;
+    private final com.eduflex.backend.service.AchievementService achievementService;
     private final Path fileStorageLocation;
 
     public AssignmentService(AssignmentRepository assignmentRepo, SubmissionRepository submissionRepo,
-                             CourseRepository courseRepo, UserRepository userRepo) {
+            CourseRepository courseRepo, UserRepository userRepo,
+            com.eduflex.backend.service.GamificationService gamificationService,
+            com.eduflex.backend.service.AchievementService achievementService) {
         this.assignmentRepository = assignmentRepo;
         this.submissionRepository = submissionRepo;
         this.courseRepository = courseRepo;
         this.userRepository = userRepo;
+        this.gamificationService = gamificationService;
+        this.achievementService = achievementService;
 
         this.fileStorageLocation = Paths.get("uploads/submissions").toAbsolutePath().normalize();
-        try { Files.createDirectories(this.fileStorageLocation); }
-        catch (Exception ex) { throw new RuntimeException("Kunde inte skapa mapp för inlämningar.", ex); }
+        try {
+            Files.createDirectories(this.fileStorageLocation);
+        } catch (Exception ex) {
+            throw new RuntimeException("Kunde inte skapa mapp för inlämningar.", ex);
+        }
     }
 
     public Assignment createAssignment(Long courseId, String title, String description, LocalDateTime dueDate) {
-        Course course = courseRepository.findById(courseId).orElseThrow(() -> new RuntimeException("Kurs hittades inte"));
+        Course course = courseRepository.findById(courseId)
+                .orElseThrow(() -> new RuntimeException("Kurs hittades inte"));
         Assignment assignment = new Assignment();
         assignment.setTitle(title);
         assignment.setDescription(description);
@@ -52,17 +62,47 @@ public class AssignmentService {
         return assignmentRepository.save(assignment);
     }
 
+    // NY METOD: Skapa med DTO/Gamification fields
+    public Assignment createAssignment(Long courseId, Assignment assignmentData) {
+        Course course = courseRepository.findById(courseId)
+                .orElseThrow(() -> new RuntimeException("Kurs hittades inte"));
+        assignmentData.setCourse(course);
+        return assignmentRepository.save(assignmentData);
+    }
+
+    // NY METOD: Uppdatera med DTO
+    public Assignment updateAssignment(Long id, Assignment updatedData) {
+        Assignment existing = assignmentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Uppgift hittades inte"));
+        existing.setTitle(updatedData.getTitle());
+        existing.setDescription(updatedData.getDescription());
+        existing.setDueDate(updatedData.getDueDate());
+
+        // Gamification updates
+        existing.setXpReward(updatedData.getXpReward());
+        existing.setXpMultiplier(updatedData.getXpMultiplier());
+        existing.setTimeBonusMinutes(updatedData.getTimeBonusMinutes());
+        existing.setTimeBonusXp(updatedData.getTimeBonusXp());
+        existing.setShowOnLeaderboard(updatedData.getShowOnLeaderboard());
+
+        return assignmentRepository.save(existing);
+    }
+
     public List<AssignmentDTO> getAssignmentsForCourse(Long courseId) {
         return assignmentRepository.findByCourseId(courseId).stream()
                 .map(a -> new AssignmentDTO(a.getId(), a.getTitle(), a.getDescription(), a.getDueDate(), courseId))
                 .collect(Collectors.toList());
+        // Note: AssignmentDTO should ideally include gamification fields, but frontend
+        // fetches full entity often.
     }
 
     public Submission submitAssignment(Long assignmentId, Long studentId, MultipartFile file) {
-        Assignment assignment = assignmentRepository.findById(assignmentId).orElseThrow(() -> new RuntimeException("Uppgift hittades inte"));
+        Assignment assignment = assignmentRepository.findById(assignmentId)
+                .orElseThrow(() -> new RuntimeException("Uppgift hittades inte"));
         User student = userRepository.findById(studentId).orElseThrow(() -> new RuntimeException("Elev hittades inte"));
 
-        // Kolla om inlämning redan finns (vi tillåter ominlämning genom att skriva över, eller kasta fel)
+        // Kolla om inlämning redan finns (vi tillåter ominlämning genom att skriva
+        // över, eller kasta fel)
         Submission submission = submissionRepository.findByAssignmentIdAndStudentId(assignmentId, studentId)
                 .orElse(new Submission());
 
@@ -80,9 +120,21 @@ public class AssignmentService {
                 submission.setFileName(originalName);
                 submission.setFileType(file.getContentType());
                 submission.setFileUrl("/uploads/submissions/" + fileName);
-            } catch (IOException ex) { throw new RuntimeException("Kunde inte spara fil", ex); }
+            } catch (IOException ex) {
+                throw new RuntimeException("Kunde inte spara fil", ex);
+            }
         }
-        return submissionRepository.save(submission);
+        Submission saved = submissionRepository.save(submission);
+
+        // Trigger Achievement: Submission Count
+        try {
+            int count = submissionRepository.findByStudentId(studentId).size();
+            achievementService.checkAndUnlock(studentId, "submission_count", count);
+        } catch (Exception e) {
+            // ignore
+        }
+
+        return saved;
     }
 
     public List<SubmissionDTO> getSubmissionsForAssignment(Long assignmentId) {
@@ -101,9 +153,40 @@ public class AssignmentService {
     }
 
     public Submission gradeSubmission(Long submissionId, String grade, String feedback) {
-        Submission submission = submissionRepository.findById(submissionId).orElseThrow(() -> new RuntimeException("Inlämning hittades inte"));
+        Submission submission = submissionRepository.findById(submissionId)
+                .orElseThrow(() -> new RuntimeException("Inlämning hittades inte"));
+        String oldGrade = submission.getGrade();
         submission.setGrade(grade);
         submission.setFeedback(feedback);
-        return submissionRepository.save(submission);
+
+        Submission savedSubmission = submissionRepository.save(submission);
+
+        // GAMIFICATION LOGIC: Award XP if passed (G or VG) and grade wasn't already
+        // passing
+        boolean isPassing = "G".equals(grade) || "VG".equals(grade);
+        boolean wasPassing = "G".equals(oldGrade) || "VG".equals(oldGrade);
+
+        if (isPassing && !wasPassing) {
+            Assignment assignment = submission.getAssignment();
+            int baseXP = assignment.getXpReward() != null ? assignment.getXpReward() : 100;
+            double multiplier = assignment.getXpMultiplier() != null ? assignment.getXpMultiplier() : 1.0;
+
+            int totalXP = (int) (baseXP * multiplier);
+
+            // Time Bonus Check
+            if (assignment.getTimeBonusMinutes() != null && assignment.getTimeBonusMinutes() > 0
+                    && assignment.getTimeBonusXp() != null && assignment.getTimeBonusXp() > 0) {
+
+                LocalDateTime bonusDeadline = assignment.getDueDate().minusMinutes(assignment.getTimeBonusMinutes());
+                // If submitted BEFORE strict deadline minus bonus buffer
+                if (submission.getSubmittedAt().isBefore(bonusDeadline)) {
+                    totalXP += assignment.getTimeBonusXp();
+                }
+            }
+
+            gamificationService.addPoints(submission.getStudent().getId(), totalXP);
+        }
+
+        return savedSubmission;
     }
 }
