@@ -41,6 +41,8 @@
 *   **🏢 Multi-Tenancy Architecture:** Complete schema-based multi-tenancy implementation. Each organization gets isolated database schema with automatic Flyway migrations, role creation, and admin user provisioning.
 *   **📊 Student Dashboard Widgets:** New StudentGamificationWidget and StudentScheduleAndDeadlinesWidget for personalized student experience.
 *   **🔐 Enhanced SSO:** Improved OIDC support with CustomOidcUser and better authentication logging.
+*   **📱 Advanced Mobile Customization:** Dedicated mobile theme engine with separation from system themes. Includes "EduFresh", "Midnight Glass", and "Clean Light" presets with glassmorphism support.
+*   **🕷️ Bug Fixes & Stability:** Solved encoding issues (UTF-8), fixed JSX syntax crashes, and resolved localhost image loading on mobile devices.
 *   **☸️ Kubernetes Ready:** Full Helm chart support with Prometheus/Grafana monitoring stack.
 
 ---
