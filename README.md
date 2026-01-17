@@ -33,13 +33,15 @@
 
 ### 🆕 Latest Updates (Jan 2026)
 
-*   **Multi-Tenancy Architecture:** Complete schema-based multi-tenancy implementation. Each organization gets isolated database schema with automatic Flyway migrations, role creation, and admin user provisioning.
-*   **Tenant Registration API:** Self-service organization registration via `/api/tenants` with automatic schema provisioning.
-*   **X-Tenant-ID Routing:** Request-level tenant isolation using `X-Tenant-ID` header with Hibernate multi-tenancy support.
-*   **Advanced Calendar System:** Complete calendar overhaul with precise time positioning, dynamic event heights, and teacher approval workflow.
-*   **Global Dashboard Customization:** All users can customize their dashboard widgets via the new "Eye" icon.
-*   **SSO Accuracy:** Fixed login tracking for Single Sign-On users with correct last login times for Keycloak users.
-*   **Kubernetes Ready:** Full Helm chart support for production Kubernetes deployments.
+*   **🎮 Complete Gamification Engine:** Full-featured gamification system with achievements, daily challenges, XP streaks, and per-tenant configuration. Students can track progress via dashboard widgets.
+*   **🔔 Real-time Notifications:** WebSocket-powered notification system with NotificationBell component for instant alerts on assignments, achievements, and system events.
+*   **🎨 Admin UI Overhaul:** Redesigned Enterprise Whitelabel module with internal sidebar navigation, streamlined save actions (icon-based), and improved UX.
+*   **📅 Enhanced Calendar:** New EventDetailPanel, MiniCalendar widget, and ImportantDatesWidget for better schedule visibility.
+*   **👥 Social Features:** Online friends panel showing connected users in real-time.
+*   **🏢 Multi-Tenancy Architecture:** Complete schema-based multi-tenancy implementation. Each organization gets isolated database schema with automatic Flyway migrations, role creation, and admin user provisioning.
+*   **📊 Student Dashboard Widgets:** New StudentGamificationWidget and StudentScheduleAndDeadlinesWidget for personalized student experience.
+*   **🔐 Enhanced SSO:** Improved OIDC support with CustomOidcUser and better authentication logging.
+*   **☸️ Kubernetes Ready:** Full Helm chart support with Prometheus/Grafana monitoring stack.
 
 ---
 
@@ -97,9 +99,14 @@ Whether you are a single educator, a private school, or a municipal education bo
 | Feature | Description |
 |---------|-------------|
 | **Points & Levels** | XP for logins, lessons, and quiz scores |
-| **Badges** | Visual achievements with Lucide iconography |
+| **Badges & Achievements** | Visual achievements with Lucide iconography and unlock conditions |
+| **Daily Challenges** | Rotating challenges with bonus XP rewards |
+| **Streaks** | Track consecutive login days with streak bonuses |
 | **Leaderboards** | Optional class/course rankings |
 | **Activity Tracking** | Detailed student activity logs |
+| **Per-Tenant Config** | Admins can enable/disable gamification features per organization |
+| **Achievement Toast** | Real-time popups when achievements are unlocked |
+| **XP Boost Indicator** | Visual indicator for active XP multipliers |
 
 #### 🇸🇪 Skolverket Integration
 | Feature | Description |
@@ -119,13 +126,29 @@ Whether you are a single educator, a private school, or a municipal education bo
 | **RBAC** | Fine-grained permissions per role |
 | **Audit Logging** | Track all critical changes |
 
-#### 🏢 Multi-Tenancy (NEW)
+#### 🏢 Multi-Tenancy
 | Feature | Description |
 |---------|-------------|
 | **Schema Isolation** | Each tenant in separate PostgreSQL schema |
 | **Automatic Provisioning** | Schema + migrations + admin user on registration |
 | **Request Routing** | `X-Tenant-ID` header for tenant selection |
 | **Tenant API** | Full CRUD for tenant management |
+
+#### 🔔 Real-time Notifications
+| Feature | Description |
+|---------|-------------|
+| **WebSocket Push** | Instant notifications via STOMP/SockJS |
+| **Notification Bell** | Header component with unread count badge |
+| **Multiple Types** | Assignment, achievement, system, and social notifications |
+| **Read/Unread State** | Track which notifications have been seen |
+| **Notification History** | Persistent storage with pagination |
+
+#### 👥 Social Features
+| Feature | Description |
+|---------|-------------|
+| **Online Friends Panel** | See who's currently online |
+| **Student Contact Modal** | Quick contact options for teachers |
+| **Activity Feed** | Recent activity from connections |
 
 #### 🎨 Enterprise Themes & Whitelabel
 Complete visual customization with 8 professional design systems:
@@ -432,6 +455,27 @@ All requests (except `/api/tenants`) require `X-Tenant-ID` header.
 | `GET` | `/api/users/me` | Current user profile |
 | `GET` | `/api/modules` | System modules |
 
+#### Gamification Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/api/gamification/achievements` | List all achievements |
+| `GET` | `/api/gamification/achievements/user` | User's unlocked achievements |
+| `GET` | `/api/gamification/streak` | Current user's streak info |
+| `GET` | `/api/gamification/challenges/daily` | Today's daily challenges |
+| `POST` | `/api/gamification/challenges/{id}/complete` | Mark challenge as complete |
+| `GET` | `/api/gamification/config` | Tenant gamification settings |
+| `PUT` | `/api/gamification/config` | Update gamification settings (Admin) |
+
+#### Notification Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/api/notifications` | List user notifications |
+| `GET` | `/api/notifications/unread/count` | Unread notification count |
+| `PUT` | `/api/notifications/{id}/read` | Mark notification as read |
+| `PUT` | `/api/notifications/read-all` | Mark all as read |
+
 > 📖 **Full API docs:** [docs/API.md](docs/API.md) or Swagger UI
 
 ---
@@ -506,10 +550,18 @@ See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for manual setup.
 | Prometheus/Grafana Monitoring | ✅ Implemented |
 | Gamification Engine | ✅ Implemented |
 | SCORM/xAPI Support | ✅ Implemented |
+| Real-time Notifications (WebSocket) | ✅ Implemented |
+| Daily Challenges & Streaks | ✅ Implemented |
+| Achievement System | ✅ Implemented |
+| Social Features (Online Friends) | ✅ Implemented |
+| Enhanced Calendar (MiniCalendar, Events) | ✅ Implemented |
+| Admin UI Redesign (Whitelabel) | ✅ Implemented |
 | Microservices Split (Video/PDF) | 🔜 Q2 2026 |
 | Event Bus (Kafka/RabbitMQ) | 🔜 Q3 2026 |
 | AI-powered Quiz Generation | 🔜 Q2 2026 |
 | Mobile App (React Native) | 🔜 Q4 2026 |
+| Push Notifications (Mobile) | 🔜 Q4 2026 |
+| Advanced Analytics Dashboard | 🔜 Q2 2026 |
 
 ---
 
@@ -577,7 +629,19 @@ taskkill /PID <PID> /F
 #### 🎮 Gamification
 - **Poäng & Nivåer:** XP genom aktivitet och framsteg
 - **Utmärkelser:** Visuella badges för prestationer
+- **Dagliga Utmaningar:** Roterande utmaningar med bonus-XP
+- **Streaks:** Spåra konsekutiva inloggningsdagar med bonusar
 - **Topplistor:** Frivilliga rankingar per klass/kurs
+- **Achievement Toast:** Realtids-popup vid upplåsta prestationer
+
+#### 🔔 Notifikationer
+- **WebSocket Push:** Direkta notifikationer via STOMP/SockJS
+- **Notifikationsklocka:** Header-komponent med oläst-räknare
+- **Flera Typer:** Uppgifter, prestationer, system och sociala notiser
+
+#### 👥 Sociala Funktioner
+- **Online-vänner:** Se vilka som är online just nu
+- **Snabbkontakt:** Enkla kontaktalternativ för lärare
 
 #### 🇸🇪 Skolverket-integration
 - **Kurskoppling:** Direkt Skolverket-databaskoppling
@@ -702,4 +766,4 @@ För Enterprise-frågor:
 
 ---
 
-*Last updated: 2026-01-15*
+*Last updated: 2026-01-17*
