@@ -5,7 +5,7 @@ import { api } from '../../services/api';
 
 // --- METADATA ---
 export const GamificationModuleMetadata = {
-    id: 'gamification_engine',
+    id: 'GAMIFICATION',
     name: 'Gamification Engine',
     version: '1.0.0',
     description: 'Engagera studenter med poäng, levlar och utmärkelser.',
@@ -20,7 +20,7 @@ const useGamification = (userId) => {
     const [stats, setStats] = useState({ points: 0, level: 1, badges: [] });
 
     useEffect(() => {
-        if(!userId) return;
+        if (!userId) return;
         // Vi simulerar ett anrop eller hämtar från user-objektet om backend skickar det
         // Om du uppdaterat User-controllern att returnera points/badges kan du ta dem direkt.
         // Annars, gör ett fetch-anrop här:
@@ -60,7 +60,7 @@ export const LevelProgressWidget = ({ user }) => {
                 </div>
                 <div className="text-right">
                     <p className="text-2xl font-bold flex items-center justify-end gap-2">
-                        <Zap size={20} className="text-yellow-300 fill-yellow-300"/> {currentPoints}
+                        <Zap size={20} className="text-yellow-300 fill-yellow-300" /> {currentPoints}
                     </p>
                     <p className="text-xs text-indigo-200">{pointsForNextLevel - (currentPoints % 100)} {t('gamification.points_to_next')}</p>
                 </div>
@@ -92,25 +92,25 @@ export const BadgeShowcaseWidget = ({ userBadges = [] }) => {
     ];
 
     const getIcon = (key) => {
-        switch(key) {
-            case 'TROPHY': return <Trophy size={20}/>;
-            case 'FLAG': return <Star size={20}/>;
-            case 'BOOK': return <Award size={20}/>;
-            default: return <Award size={20}/>;
+        switch (key) {
+            case 'TROPHY': return <Trophy size={20} />;
+            case 'FLAG': return <Star size={20} />;
+            case 'BOOK': return <Award size={20} />;
+            default: return <Award size={20} />;
         }
     };
 
     return (
         <div className="bg-white dark:bg-[#1E1F20] rounded-xl shadow-sm border border-gray-200 dark:border-[#3c4043] p-6 animate-in fade-in">
             <h3 className="font-bold text-gray-800 dark:text-white flex items-center gap-2 mb-4">
-                <Award size={20} className="text-purple-500"/> {t('gamification.my_badges')}
+                <Award size={20} className="text-purple-500" /> {t('gamification.my_badges')}
             </h3>
 
             <div className="flex gap-4 overflow-x-auto pb-2">
                 {displayBadges.map((b, idx) => (
                     <div key={idx} className={`flex flex-col items-center min-w-[80px] group ${b.earned ? '' : 'opacity-40 grayscale'}`}>
                         <div className={`w-14 h-14 rounded-full flex items-center justify-center mb-2 shadow-sm transition-transform group-hover:scale-110 ${b.earned ? 'bg-gradient-to-br from-yellow-100 to-amber-200 text-amber-700' : 'bg-gray-100 dark:bg-[#282a2c] text-gray-400'}`}>
-                            {b.earned ? getIcon(b.icon) : <Lock size={18}/>}
+                            {b.earned ? getIcon(b.icon) : <Lock size={18} />}
                         </div>
                         <span className="text-xs font-bold text-gray-700 dark:text-gray-300 text-center leading-tight">{b.name}</span>
                     </div>

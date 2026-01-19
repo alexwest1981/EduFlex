@@ -37,7 +37,11 @@ public class StudentActivityService {
     public void logActivity(Long userId, Long courseId, Long materialId, StudentActivityLog.ActivityType type,
             String details) {
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
-        Course course = courseRepository.findById(courseId).orElseThrow(() -> new RuntimeException("Course not found"));
+
+        Course course = null;
+        if (courseId != null) {
+            course = courseRepository.findById(courseId).orElse(null);
+        }
 
         CourseMaterial material = null;
         if (materialId != null) {
@@ -58,6 +62,13 @@ public class StudentActivityService {
     @Transactional(readOnly = true)
     public List<StudentActivityLogDTO> getStudentLogs(Long courseId, Long userId) {
         return activityLogRepository.findByCourseIdAndUserIdOrderByTimestampDesc(courseId, userId).stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<StudentActivityLogDTO> getGlobalStudentLogs(Long userId) {
+        return activityLogRepository.findByUserIdOrderByTimestampDesc(userId).stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }

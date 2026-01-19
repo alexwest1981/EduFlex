@@ -18,6 +18,13 @@ public class WebConfig implements WebMvcConfigurer {
                 .addResourceLocations("file:./uploads/");
     }
 
+    // CORS hanteras nu centralt i SecurityConfig.java för att undvika konflikter
+    // och dubbla headers.
+    // @Override
+    // public void
+    // addCorsMappings(org.springframework.web.servlet.config.annotation.CorsRegistry
+    // registry) { ... }
+
     @Bean
     @Primary
     public ObjectMapper objectMapper() {

@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 import ChatModule from '../../modules/chat/ChatModule';
 import NotificationBell from '../NotificationBell';
 import OnlineFriendsPanel from '../social/OnlineFriendsPanel';
+import { MobileSidebar, MobileHeader, MobileBottomNav } from './MobileComponents';
 
 const StandardLayout = ({ children }) => {
     const { currentUser, logout, systemSettings, theme, toggleTheme, API_BASE } = useAppContext();
@@ -16,7 +17,13 @@ const StandardLayout = ({ children }) => {
     const navigate = useNavigate();
     const location = useLocation();
     const [sidebarOpen, setSidebarOpen] = useState(true);
+    const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
     const [friendsPanelOpen, setFriendsPanelOpen] = useState(false);
+
+    // Close mobile sidebar on route change
+    useEffect(() => {
+        setMobileSidebarOpen(false);
+    }, [location.pathname]);
 
     const handleLogout = () => { logout(); navigate('/login'); };
 
@@ -87,16 +94,45 @@ const StandardLayout = ({ children }) => {
             `}</style>
             <div className={`fixed inset-0 -z-10 app-wrapper transition-colors duration-300 pointer-events-none`} />
 
-            <aside className={`${sidebarOpen ? 'w-64' : 'w-20'} bg-card dark:bg-card-dark border-r border-card dark:border-card-dark transition-all duration-300 flex flex-col fixed h-full z-20 shadow-sm`} style={{ backdropFilter: 'var(--card-backdrop)' }}>
+            {/* Mobile overlay */}
+            {/* Mobile Sidebar (New Theme) */}
+            <MobileSidebar
+                isOpen={mobileSidebarOpen}
+                onClose={() => setMobileSidebarOpen(false)}
+                navItems={navItems}
+                friendsPanelOpen={friendsPanelOpen}
+                setFriendsPanelOpen={setFriendsPanelOpen}
+            />
+
+            {/* Desktop Sidebar */}
+            <aside className={`
+                hidden lg:flex
+                ${sidebarOpen ? 'w-64' : 'w-20'}
+                bg-white dark:bg-gray-900 
+                lg:bg-card lg:dark:bg-card-dark 
+                border-none
+                transition-all duration-300 flex-col fixed h-full z-40 
+                shadow-[4px_0_24px_rgba(0,0,0,0.02)] dark:shadow-[4px_0_24px_rgba(0,0,0,0.4)]
+            `} style={{ backdropFilter: 'var(--card-backdrop)' }}>
 
                 {/* LOGO AREA */}
-                <div className="h-16 flex items-center px-6 border-b border-gray-100 dark:border-[#282a2c]">
-                    <div className="w-8 h-8 bg-black dark:bg-white rounded-lg flex items-center justify-center text-white dark:text-black font-bold text-xl mr-3 shadow-sm">
-                        {systemSettings?.site_name ? systemSettings.site_name[0] : 'E'}
+                <div className="h-16 flex items-center justify-between px-6 border-b border-gray-100 dark:border-[#282a2c]">
+                    <div className="flex items-center">
+                        <div className="w-8 h-8 bg-black dark:bg-white rounded-lg flex items-center justify-center text-white dark:text-black font-bold text-xl mr-3 shadow-sm">
+                            {systemSettings?.site_name ? systemSettings.site_name[0] : 'E'}
+                        </div>
+                        {/* Show text on mobile always, on desktop only when expanded */}
+                        <span className={`font-bold text-xl tracking-tight text-gray-800 dark:text-white truncate block ${!sidebarOpen && 'lg:hidden'}`}>
+                            {systemSettings?.site_name || "EduFlex"}
+                        </span>
                     </div>
-                    {sidebarOpen && <span className="font-bold text-xl tracking-tight text-gray-800 dark:text-white truncate">
-                        {systemSettings?.site_name || "EduFlex"}
-                    </span>}
+                    {/* Close button for mobile */}
+                    <button
+                        onClick={() => setMobileSidebarOpen(false)}
+                        className="p-2 hover:bg-gray-200 dark:hover:bg-[#282a2c] rounded-lg text-gray-500 dark:text-gray-400 transition-colors lg:hidden"
+                    >
+                        <X size={20} />
+                    </button>
                 </div>
 
                 {/* PROFILE AREA (IN SIDEBAR FOR STANDARD) */}
@@ -136,7 +172,7 @@ const StandardLayout = ({ children }) => {
                                     className={({ isActive: navActive }) => {
                                         const isActive = navActive || (item.path === '/admin' && location.pathname.startsWith('/enterprise'));
                                         return `relative flex items-center px-4 py-3.5 rounded-xl transition-all duration-200 group ${isActive
-                                            ? 'bg-gradient-to-r from-indigo-50 to-transparent dark:from-[#004A77] dark:to-transparent text-indigo-700 dark:text-[#c2e7ff] shadow-sm'
+                                            ? 'bg-gradient-to-r from-indigo-50 to-transparent dark:from-[#333537] dark:to-transparent text-indigo-700 dark:text-white shadow-sm'
                                             : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-[#282a2c] hover:text-gray-900 dark:hover:text-gray-200 hover:scale-[1.02]'
                                             }`;
                                     }}
@@ -146,7 +182,7 @@ const StandardLayout = ({ children }) => {
                                         return (
                                             <>
                                                 {isActive && (
-                                                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-indigo-600 dark:bg-[#c2e7ff] rounded-r-full"></div>
+                                                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-indigo-600 dark:bg-white rounded-r-full"></div>
                                                 )}
 
                                                 <div className={`${!sidebarOpen && 'mx-auto'} ${isActive ? 'scale-110' : ''} transition-transform`}>
@@ -189,9 +225,18 @@ const StandardLayout = ({ children }) => {
                 </div>
             </aside>
 
-            <main className={`flex-1 transition-all duration-300 ${sidebarOpen ? 'ml-64' : 'ml-20'} p-8 h-full overflow-y-auto bg-gray-50 dark:bg-[#131314]`}>
-                <div className="mb-6 flex items-center justify-between">
+            {/* Main content - responsive margins */}
+            <main className={`flex-1 transition-all duration-300 ${sidebarOpen ? 'lg:ml-64' : 'lg:ml-20'} ml-0 p-0 lg:p-8 pb-20 lg:pb-8 h-full overflow-y-auto bg-gray-50 dark:bg-[#131314]`}>
+
+                <MobileHeader
+                    friendsPanelOpen={friendsPanelOpen}
+                    setFriendsPanelOpen={setFriendsPanelOpen}
+                />
+
+                {/* Desktop Header */}
+                <div className="hidden lg:flex mb-6 items-center justify-between">
                     <div className="flex items-center gap-4">
+                        {/* Desktop sidebar toggle */}
                         <button
                             onClick={() => setSidebarOpen(!sidebarOpen)}
                             className="p-2 hover:bg-gray-200 dark:hover:bg-[#282a2c] rounded-lg text-gray-500 dark:text-gray-400 transition-colors"
@@ -199,12 +244,10 @@ const StandardLayout = ({ children }) => {
                         >
                             {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
                         </button>
-                        {/* Duplicate greeting REMOVED here */}
                     </div>
 
                     <div className="flex items-center gap-2 relative">
                         {/* Online Friends Toggle */}
-                        {/* Online Friends Toggle - Available for ALL users */}
                         <button
                             onClick={() => setFriendsPanelOpen(!friendsPanelOpen)}
                             className={`relative p-2.5 rounded-full transition-colors ${friendsPanelOpen ? 'bg-indigo-100 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400' : 'hover:bg-gray-100 text-gray-500 dark:text-gray-400 dark:hover:bg-[#282a2c]'}`}
@@ -221,17 +264,25 @@ const StandardLayout = ({ children }) => {
                         <NotificationBell />
                     </div>
                 </div>
-                {children}
+
+                <div className="px-4 lg:px-0">
+                    {children}
+                </div>
             </main>
 
+            {/* Mobile Bottom Navigation */}
+            <MobileBottomNav onMenuOpen={() => setMobileSidebarOpen(true)} />
+
             {isModuleActive('CHAT') && (
-                <ChatModule
-                    currentUser={currentUser}
-                    API_BASE={API_BASE}
-                    token={token}
-                />
+                <div className="hidden lg:block">
+                    <ChatModule
+                        currentUser={currentUser}
+                        API_BASE={API_BASE}
+                        token={token}
+                    />
+                </div>
             )}
-        </div>
+        </div >
     );
 };
 

@@ -22,7 +22,8 @@ public class BrandingController {
     }
 
     /**
-     * Get branding for current organization (public endpoint for frontend to load branding)
+     * Get branding for current organization (public endpoint for frontend to load
+     * branding)
      */
     @GetMapping
     public ResponseEntity<OrganizationBranding> getBranding(
@@ -39,7 +40,7 @@ public class BrandingController {
      * Get all branding configurations (admin only, for multi-tenant management)
      */
     @GetMapping("/all")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN')")
     public ResponseEntity<List<OrganizationBranding>> getAllBrandings() {
         try {
             List<OrganizationBranding> brandings = brandingService.getAllBrandings();
@@ -53,7 +54,7 @@ public class BrandingController {
      * Update branding configuration (admin only)
      */
     @PutMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN')")
     public ResponseEntity<?> updateBranding(
             @RequestParam(defaultValue = "default") String organizationKey,
             @RequestBody OrganizationBranding updates) {
@@ -73,7 +74,7 @@ public class BrandingController {
      * Upload logo (admin only)
      */
     @PostMapping("/logo")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN')")
     public ResponseEntity<?> uploadLogo(
             @RequestParam(defaultValue = "default") String organizationKey,
             @RequestParam("file") MultipartFile file) {
@@ -98,7 +99,7 @@ public class BrandingController {
      * Upload favicon (admin only)
      */
     @PostMapping("/favicon")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN')")
     public ResponseEntity<?> uploadFavicon(
             @RequestParam(defaultValue = "default") String organizationKey,
             @RequestParam("file") MultipartFile file) {
@@ -123,7 +124,7 @@ public class BrandingController {
      * Upload login background image (admin only)
      */
     @PostMapping("/login-background")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN')")
     public ResponseEntity<?> uploadLoginBackground(
             @RequestParam(defaultValue = "default") String organizationKey,
             @RequestParam("file") MultipartFile file) {
@@ -148,7 +149,7 @@ public class BrandingController {
      * Reset branding to default (admin only)
      */
     @PostMapping("/reset")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN')")
     public ResponseEntity<?> resetBranding(
             @RequestParam(defaultValue = "default") String organizationKey) {
         try {
@@ -167,7 +168,7 @@ public class BrandingController {
      * Check if user can access whitelabeling features
      */
     @GetMapping("/access")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN')")
     public ResponseEntity<Map<String, Boolean>> checkAccess() {
         boolean hasAccess = brandingService.canAccessWhitelabeling();
         return ResponseEntity.ok(Map.of("hasAccess", hasAccess));

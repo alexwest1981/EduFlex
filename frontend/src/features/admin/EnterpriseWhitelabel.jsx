@@ -2,7 +2,7 @@
 import { useBranding } from '../../context/BrandingContext';
 import { DESIGN_SYSTEMS } from '../../context/DesignSystemContext';
 import { useTheme } from '../../context/ThemeContext';
-import { Upload, Save, RotateCcw, AlertCircle, CheckCircle, Eye, EyeOff, Palette, Image, Globe, Layers, Settings, Layout, Type, Shield, LayoutDashboard, MousePointer2, Monitor, Smartphone, ChevronDown } from 'lucide-react';
+import { Upload, Save, RotateCcw, AlertCircle, CheckCircle, Eye, EyeOff, Palette, Image, Globe, Layers, Settings, Layout, Type, Shield, LayoutDashboard, MousePointer2, Monitor, Smartphone, ChevronDown, User } from 'lucide-react';
 import AdminNavbar from '../../features/dashboard/components/admin/AdminNavbar';
 import AdminHeader from '../../features/dashboard/components/admin/AdminHeader';
 
@@ -38,7 +38,11 @@ const EnterpriseWhitelabel = () => {
             backgroundColor: '#111827', // EduFresh Navy
             activeColor: '#f59e0b',     // EduFresh Amber
             inactiveColor: '#9ca3af',   // EduFresh Gray
-            glassmorphism: false
+            glassmorphism: false,
+            borderRadius: '24px',       // EduFresh Rounded
+            animationPreset: 'bouncy',  // Playful
+            componentDepth: 'floating', // Modern
+            enabledThemes: ['finsights-dark', 'cosmic-growth', 'eduflex-fresh'] // Default enabled
         }
     });
 
@@ -139,36 +143,73 @@ const EnterpriseWhitelabel = () => {
     // Dedicated Mobile Themes
     const mobileThemes = [
         {
-            id: 'edufresh',
+            id: 'finsights-dark',
+            name: 'Finsights Dark',
+            description: 'Ultra-modern, mörk bento-grid design (High Contrast).',
+            config: {
+                backgroundColor: '#0F0F11',
+                activeColor: '#FF6D5A',
+                inactiveColor: '#333333',
+                glassmorphism: false,
+                borderRadius: '32px',
+                animationPreset: 'smooth',
+                componentDepth: 'flat'
+            }
+        },
+        {
+            id: 'eduflex-fresh',
             name: 'EduFresh',
-            description: 'Modern app-känsla med djup marinblå botten.',
+            description: 'Lekfull, studsig och modern (Bubble Pop).',
             config: {
                 backgroundColor: '#111827',
                 activeColor: '#f59e0b',
                 inactiveColor: '#9ca3af',
-                glassmorphism: false
+                glassmorphism: false,
+                borderRadius: '24px',
+                animationPreset: 'bouncy',
+                componentDepth: 'floating'
+            }
+        },
+        {
+            id: 'cosmic-growth',
+            name: 'Cosmic Growth',
+            description: 'Topografisk, rymd-inspirerad (Topographic Gradient).',
+            config: {
+                backgroundColor: '#F9F9F9',
+                activeColor: '#FF5A5F',
+                inactiveColor: '#9CA3AF',
+                glassmorphism: false,
+                borderRadius: '28px',
+                animationPreset: 'smooth',
+                componentDepth: 'shadow'
             }
         },
         {
             id: 'midnight-glass',
             name: 'Midnight Glass',
-            description: 'Elegant mörkt tema med glassmorphism.',
+            description: 'Futuristisk, mörk och elegant (Neo-Glass).',
             config: {
                 backgroundColor: '#000000',
                 activeColor: '#ffffff',
                 inactiveColor: '#6b7280',
-                glassmorphism: true
+                glassmorphism: true,
+                borderRadius: '9999px',
+                animationPreset: 'smooth',
+                componentDepth: 'glass'
             }
         },
         {
             id: 'clean-light',
             name: 'Clean Light',
-            description: 'Ljust och luftigt standardtema.',
+            description: 'Minimalistisk, snabb och skarp (Minimal).',
             config: {
                 backgroundColor: '#ffffff',
                 activeColor: '#4f46e5',
                 inactiveColor: '#6b7280',
-                glassmorphism: true
+                glassmorphism: true,
+                borderRadius: '8px',
+                animationPreset: 'minimal',
+                componentDepth: 'flat'
             }
         }
     ];
@@ -247,6 +288,30 @@ const EnterpriseWhitelabel = () => {
                 [field]: value
             }
         }));
+    };
+
+    const handleToggleTheme = (themeId) => {
+        setCustomTheme(prev => {
+            const currentEnabled = prev.mobile?.enabledThemes || [];
+            const isEnabled = currentEnabled.includes(themeId);
+
+            let newEnabled;
+            if (isEnabled) {
+                // Prevent disabling the last theme
+                if (currentEnabled.length <= 1) return prev;
+                newEnabled = currentEnabled.filter(id => id !== themeId);
+            } else {
+                newEnabled = [...currentEnabled, themeId];
+            }
+
+            return {
+                ...prev,
+                mobile: {
+                    ...prev.mobile,
+                    enabledThemes: newEnabled
+                }
+            };
+        });
     };
 
     const handleSaveGeneral = async () => {
@@ -915,37 +980,126 @@ const EnterpriseWhitelabel = () => {
 
                                             <div className="grid grid-cols-1 gap-4 mb-8">
                                                 {mobileThemes.map(theme => (
-                                                    <button
-                                                        key={theme.id}
-                                                        onClick={() => handleMobileColorChange('all', theme.config)}
-                                                        className="flex items-center gap-4 p-4 rounded-xl border-2 border-gray-200 dark:border-gray-700
-                                                        hover:border-indigo-500 dark:hover:border-indigo-500 transition-all text-left group
-                                                        bg-gray-50 dark:bg-[#282a2c]"
-                                                    >
-                                                        {/* Preview Dot */}
-                                                        <div
-                                                            className="w-12 h-12 rounded-full shadow-lg flex items-center justify-center border border-gray-200 dark:border-gray-600"
-                                                            style={{
-                                                                backgroundColor: theme.config.backgroundColor
-                                                            }}
+                                                    <div key={theme.id} className="relative group">
+                                                        <button
+                                                            onClick={() => handleMobileColorChange('all', theme.config)}
+                                                            className={`w-full flex items-center gap-4 p-4 rounded-xl border-2 transition-all text-left bg-gray-50 dark:bg-[#282a2c]
+                                                            ${(customTheme.mobile?.id === theme.id || (!customTheme.mobile?.id && theme.id === 'finsights-dark')) ? 'border-indigo-500 ring-2 ring-indigo-500/20' : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'}`}
                                                         >
-                                                            <Smartphone size={20} style={{ color: theme.config.activeColor }} />
-                                                        </div>
+                                                            {/* Preview Dot */}
+                                                            <div
+                                                                className="w-12 h-12 rounded-full shadow-lg flex items-center justify-center border border-gray-200 dark:border-gray-600"
+                                                                style={{
+                                                                    backgroundColor: theme.config.backgroundColor
+                                                                }}
+                                                            >
+                                                                <Smartphone size={20} style={{ color: theme.config.activeColor }} />
+                                                            </div>
 
-                                                        <div>
-                                                            <h3 className="font-semibold text-gray-900 dark:text-white">
-                                                                {theme.name}
-                                                            </h3>
-                                                            <p className="text-xs text-gray-500 dark:text-gray-400">
-                                                                {theme.description}
-                                                            </p>
+                                                            <div className="flex-1">
+                                                                <h3 className="font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+                                                                    {theme.name}
+                                                                    {(customTheme.mobile?.id === theme.id || (!customTheme.mobile?.id && theme.id === 'finsights-dark')) &&
+                                                                        <span className="px-2 py-0.5 bg-indigo-100 text-indigo-700 text-[10px] rounded-full uppercase tracking-wider">Aktiv</span>
+                                                                    }
+                                                                </h3>
+                                                                <p className="text-xs text-gray-500 dark:text-gray-400">
+                                                                    {theme.description}
+                                                                </p>
+                                                            </div>
+                                                        </button>
+
+                                                        {/* Enable/Disable Toggle - Top Right */}
+                                                        <div className="absolute top-4 right-4 z-10" onClick={(e) => e.stopPropagation()}>
+                                                            <label className="flex items-center gap-2 cursor-pointer bg-white dark:bg-[#1e1f20] px-2 py-1 rounded-lg border border-gray-100 dark:border-gray-600 shadow-sm">
+                                                                <span className="text-[10px] font-bold text-gray-500 uppercase">Valbar</span>
+                                                                <input
+                                                                    type="checkbox"
+                                                                    checked={(customTheme.mobile?.enabledThemes || ['finsights-dark', 'cosmic-growth', 'eduflex-fresh']).includes(theme.id)}
+                                                                    onChange={() => handleToggleTheme(theme.id)}
+                                                                    className="w-4 h-4 text-indigo-600 rounded focus:ring-indigo-500"
+                                                                />
+                                                            </label>
                                                         </div>
-                                                    </button>
+                                                    </div>
                                                 ))}
                                             </div>
 
                                             <h3 className="text-sm font-semibold mb-4 text-gray-900 dark:text-white border-t border-gray-100 dark:border-gray-700 pt-6">
-                                                Manuell anpassning
+                                                Design-fysik (Avancerat)
+                                            </h3>
+                                            <div className="space-y-4 mb-8">
+                                                {/* Hörnradie */}
+                                                <div>
+                                                    <div className="flex justify-between mb-2">
+                                                        <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Form (Hörnradie)</label>
+                                                        <span className="text-xs text-gray-500">{customTheme.mobile?.borderRadius || '24px'}</span>
+                                                    </div>
+                                                    <div className="flex gap-2">
+                                                        {['0px', '8px', '16px', '24px', '32px', '9999px'].map(radius => (
+                                                            <button
+                                                                key={radius}
+                                                                onClick={() => handleMobileColorChange('borderRadius', radius)}
+                                                                className={`h-8 flex-1 border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-[#282a2c]
+                                                                hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition-all
+                                                                ${customTheme.mobile?.borderRadius === radius ? 'ring-2 ring-indigo-500 border-transparent' : ''}`}
+                                                                style={{ borderRadius: radius === '9999px' ? '20px' : radius }}
+                                                                title={radius === '9999px' ? 'Pill' : radius}
+                                                            />
+                                                        ))}
+                                                    </div>
+                                                </div>
+
+                                                {/* Animation Preset */}
+                                                <div>
+                                                    <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">Rörelse & Känsla</label>
+                                                    <div className="grid grid-cols-3 gap-2">
+                                                        {[
+                                                            { id: 'minimal', label: 'Minimal', icon: '⚡' },
+                                                            { id: 'smooth', label: 'Mjuk', icon: '🌊' },
+                                                            { id: 'bouncy', label: 'Lekfull', icon: '🏀' }
+                                                        ].map(preset => (
+                                                            <button
+                                                                key={preset.id}
+                                                                onClick={() => handleMobileColorChange('animationPreset', preset.id)}
+                                                                className={`p-2 rounded-lg border text-sm font-medium transition-all
+                                                                ${customTheme.mobile?.animationPreset === preset.id
+                                                                        ? 'bg-indigo-600 text-white border-indigo-600'
+                                                                        : 'bg-white dark:bg-[#282a2c] border-gray-200 dark:border-gray-600 dark:text-white hover:border-gray-300'}`}
+                                                            >
+                                                                <span className="mr-1">{preset.icon}</span> {preset.label}
+                                                            </button>
+                                                        ))}
+                                                    </div>
+                                                </div>
+
+                                                {/* Component Depth */}
+                                                <div>
+                                                    <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">Djup & Skugga</label>
+                                                    <div className="grid grid-cols-3 gap-2">
+                                                        {[
+                                                            { id: 'flat', label: 'Platt' },
+                                                            { id: 'shadow', label: 'Soft' },
+                                                            { id: 'floating', label: 'Flytande' },
+                                                            { id: 'glass', label: 'Glas' }
+                                                        ].map(depth => (
+                                                            <button
+                                                                key={depth.id}
+                                                                onClick={() => handleMobileColorChange('componentDepth', depth.id)}
+                                                                className={`p-2 rounded-lg border text-sm font-medium transition-all
+                                                                ${customTheme.mobile?.componentDepth === depth.id
+                                                                        ? 'bg-indigo-600 text-white border-indigo-600'
+                                                                        : 'bg-white dark:bg-[#282a2c] border-gray-200 dark:border-gray-600 dark:text-white hover:border-gray-300'}`}
+                                                            >
+                                                                {depth.label}
+                                                            </button>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <h3 className="text-sm font-semibold mb-4 text-gray-900 dark:text-white border-t border-gray-100 dark:border-gray-700 pt-6">
+                                                Manuell anpassning (Färger)
                                             </h3>
                                             <div className="space-y-4">
                                                 <div>
@@ -1052,26 +1206,34 @@ const EnterpriseWhitelabel = () => {
 
                                                 {/* Bottom Nav Preview */}
                                                 <div
-                                                    className={`px-6 py-4 flex justify-between items-center relative z-10`}
+                                                    className={`transition-all duration-300 relative z-10 flex justify-between items-center
+                                                    ${customTheme.mobile?.componentDepth === 'floating'
+                                                            ? 'mx-4 mb-4 px-4 py-3'
+                                                            : 'px-6 py-4 border-t border-gray-200 dark:border-white/10'}`}
                                                     style={{
                                                         backgroundColor: customTheme.mobile?.glassmorphism
-                                                            ? (customTheme.mobile?.backgroundColor + 'cc') // Add transparency
+                                                            ? (customTheme.mobile?.backgroundColor + 'aa')
                                                             : customTheme.mobile?.backgroundColor,
-                                                        backdropFilter: customTheme.mobile?.glassmorphism ? 'blur(10px)' : 'none',
-                                                        borderTop: '1px solid rgba(255,255,255,0.1)'
+                                                        backdropFilter: customTheme.mobile?.glassmorphism ? 'blur(20px)' : 'none',
+                                                        borderRadius: customTheme.mobile?.componentDepth === 'floating'
+                                                            ? (customTheme.mobile?.borderRadius || '24px')
+                                                            : '0px',
+                                                        boxShadow: customTheme.mobile?.componentDepth === 'floating'
+                                                            ? '0 20px 25px -5px rgba(0, 0, 0, 0.1)'
+                                                            : '0 -4px 20px -5px rgba(0,0,0,0.1)'
                                                     }}
                                                 >
                                                     <div className="flex flex-col items-center gap-1">
                                                         <LayoutDashboard size={24} style={{ color: customTheme.mobile?.activeColor }} />
-                                                        <span style={{ color: customTheme.mobile?.activeColor }} className="text-[10px] font-bold">Hem</span>
                                                     </div>
-                                                    <div className="flex flex-col items-center gap-1">
+                                                    <div className="flex flex-col items-center gap-1 opacity-50">
                                                         <Layers size={24} style={{ color: customTheme.mobile?.inactiveColor }} />
-                                                        <span style={{ color: customTheme.mobile?.inactiveColor }} className="text-[10px] font-medium">Kurser</span>
                                                     </div>
-                                                    <div className="flex flex-col items-center gap-1">
+                                                    <div className="flex flex-col items-center gap-1 opacity-50">
                                                         <Monitor size={24} style={{ color: customTheme.mobile?.inactiveColor }} />
-                                                        <span style={{ color: customTheme.mobile?.inactiveColor }} className="text-[10px] font-medium">Admin</span>
+                                                    </div>
+                                                    <div className="flex flex-col items-center gap-1 opacity-50">
+                                                        <User size={24} style={{ color: customTheme.mobile?.inactiveColor }} />
                                                     </div>
                                                 </div>
                                             </div>

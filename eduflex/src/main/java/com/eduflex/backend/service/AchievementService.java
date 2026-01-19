@@ -1,9 +1,11 @@
 package com.eduflex.backend.service;
 
 import com.eduflex.backend.model.Achievement;
+import com.eduflex.backend.model.User;
 import com.eduflex.backend.model.UserAchievement;
 import com.eduflex.backend.repository.AchievementRepository;
 import com.eduflex.backend.repository.UserAchievementRepository;
+import com.eduflex.backend.repository.UserRepository;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
@@ -17,11 +19,14 @@ public class AchievementService {
 
     private final AchievementRepository achievementRepository;
     private final UserAchievementRepository userAchievementRepository;
+    private final UserRepository userRepository;
 
     public AchievementService(AchievementRepository achievementRepository,
-            UserAchievementRepository userAchievementRepository) {
+            UserAchievementRepository userAchievementRepository,
+            UserRepository userRepository) {
         this.achievementRepository = achievementRepository;
         this.userAchievementRepository = userAchievementRepository;
+        this.userRepository = userRepository;
     }
 
     @EventListener(ApplicationReadyEvent.class)
@@ -156,9 +161,73 @@ public class AchievementService {
             ua.unlock();
             userAchievementRepository.save(ua);
 
-            // TODO: Trigger XP reward via GamificationService (circular dep? Use event or
-            // direct call if architected well)
-            // System.out.println("Unlocked: " + achievement.getName());
+            // Award XP for unlocking achievement
+            awardXpForAchievement(userId, achievement.getXpReward());
         }
+    }
+
+    private void awardXpForAchievement(Long userId, int xpReward) {
+        User user = userRepository.findById(userId).orElse(null);
+        if (user == null || xpReward <= 0) return;
+
+        user.setPoints(user.getPoints() + xpReward);
+
+        // Level up logic: every 100 XP = 1 level
+        int newLevel = (user.getPoints() / 100) + 1;
+        if (newLevel > user.getLevel()) {
+            user.setLevel(newLevel);
+        }
+
+        userRepository.save(user);
+    }
+
+    /**
+     * Retroactively awards XP for all unlocked achievements that haven't been
+     * credited yet.
+     * This is useful for users who unlocked achievements before XP rewards were
+     * implemented.
+     */
+    @Transactional
+    public int recalculateUserXp(Long userId) {
+        List<UserAchievement> userAchievements = userAchievementRepository.findByUserId(userId);
+        User user = userRepository.findById(userId).orElse(null);
+        if (user == null)
+            return 0;
+
+        int totalXp = 0;
+        for (UserAchievement ua : userAchievements) {
+            if (ua.getUnlocked()) {
+                Achievement achievement = achievementRepository.findById(ua.getAchievementId()).orElse(null);
+                if (achievement != null) {
+                    totalXp += achievement.getXpReward();
+                }
+            }
+        }
+
+        // Set the user's points to the calculated total
+        user.setPoints(totalXp);
+
+        // Recalculate level
+        int newLevel = (totalXp / 100) + 1;
+        user.setLevel(newLevel);
+
+        userRepository.save(user);
+        return totalXp;
+    }
+
+    /**
+     * Recalculates XP for all users in the system.
+     * Admin-only operation.
+     */
+    @Transactional
+    public int recalculateAllUsersXp() {
+        List<User> allUsers = userRepository.findAll();
+        int totalUpdated = 0;
+        for (User user : allUsers) {
+            int xp = recalculateUserXp(user.getId());
+            if (xp > 0)
+                totalUpdated++;
+        }
+        return totalUpdated;
     }
 }

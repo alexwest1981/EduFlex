@@ -6,6 +6,8 @@ import com.eduflex.backend.model.User;
 import com.eduflex.backend.repository.UserRepository;
 import com.eduflex.backend.security.JwtUtils;
 import com.eduflex.backend.service.UserService;
+import com.eduflex.backend.service.StudentActivityService;
+import com.eduflex.backend.model.StudentActivityLog;
 import com.eduflex.backend.repository.SubscriptionPlanRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -30,6 +32,7 @@ public class AuthController {
     private final PasswordEncoder passwordEncoder; // Vi behöver denna för att spara säkra lösenord
     private final RateLimitingService rateLimitingService;
     private final SubscriptionPlanRepository subscriptionPlanRepository;
+    private final StudentActivityService studentActivityService;
 
     public AuthController(AuthenticationManager authenticationManager,
             UserRepository userRepository,
@@ -37,7 +40,8 @@ public class AuthController {
             JwtUtils jwtUtils,
             PasswordEncoder passwordEncoder,
             RateLimitingService rateLimitingService,
-            SubscriptionPlanRepository subscriptionPlanRepository) {
+            SubscriptionPlanRepository subscriptionPlanRepository,
+            StudentActivityService studentActivityService) {
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
         this.userService = userService;
@@ -45,42 +49,70 @@ public class AuthController {
         this.passwordEncoder = passwordEncoder;
         this.rateLimitingService = rateLimitingService;
         this.subscriptionPlanRepository = subscriptionPlanRepository;
+        this.studentActivityService = studentActivityService;
     }
 
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@RequestBody LoginRequest loginRequest,
             jakarta.servlet.http.HttpServletRequest request) {
-        // --- RATE LIMITING ---
-        Bucket bucket = rateLimitingService.resolveBucket(request.getRemoteAddr());
-        if (!bucket.tryConsume(1)) {
-            return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
-                    .body("För många inloggningsförsök. Försök igen om en minut.");
+        try {
+            System.out.println("DEBUG: Entering authenticateUser for " + loginRequest.username());
+
+            // --- RATE LIMITING ---
+            Bucket bucket = rateLimitingService.resolveBucket(request.getRemoteAddr());
+            if (!bucket.tryConsume(1)) {
+                return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
+                        .body("För många inloggningsförsök. Försök igen om en minut.");
+            }
+            // ---------------------
+
+            System.out.println("DEBUG: Rate limit check passed.");
+
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(loginRequest.username(), loginRequest.password()));
+
+            System.out.println("DEBUG: Authentication successful.");
+
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            String jwt = jwtUtils.generateJwtToken(authentication);
+
+            User user = userService.getUserByUsernameWithBadges(loginRequest.username());
+
+            try {
+                userService.updateLastLogin(user.getId());
+            } catch (Exception e) {
+                System.out.println("WARNING: Failed to update last login: " + e.getMessage());
+            }
+
+            // Logga inloggning i aktivitetshistoriken
+            try {
+                System.out.println("DEBUG: Attempting to log login activity...");
+                studentActivityService.logActivity(user.getId(), null, null, StudentActivityLog.ActivityType.LOGIN,
+                        "Inloggning via webb");
+                System.out.println("DEBUG: Login activity logged successfully.");
+            } catch (Throwable e) {
+                System.out.println("CRITICAL ERROR logging login activity: " + e.getMessage());
+                e.printStackTrace();
+            }
+
+            return ResponseEntity.ok(new JwtResponse(
+                    jwt,
+                    user.getId(),
+                    user.getUsername(),
+                    user.getFirstName(),
+                    user.getLastName(),
+                    user.getFullName(),
+                    user.getRole().getName(),
+                    user.getProfilePictureUrl(),
+                    user.getPoints(),
+                    user.getLevel(),
+                    user.getEarnedBadges()));
+        } catch (Throwable t) {
+            System.out.println("FATAL ERROR in authenticateUser: " + t.getMessage());
+            t.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Login failed due to server error: " + t.getMessage());
         }
-        // ---------------------
-
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginRequest.username(), loginRequest.password()));
-
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = jwtUtils.generateJwtToken(authentication);
-
-        User user = userRepository.findByUsername(loginRequest.username())
-                .orElseThrow(() -> new UsernameNotFoundException("Användare hittades inte"));
-
-        userService.updateLastLogin(user.getId());
-
-        return ResponseEntity.ok(new JwtResponse(
-                jwt,
-                user.getId(),
-                user.getUsername(),
-                user.getFirstName(),
-                user.getLastName(),
-                user.getFullName(),
-                user.getRole().getName(),
-                user.getProfilePictureUrl(),
-                user.getPoints(),
-                user.getLevel(),
-                user.getEarnedBadges()));
     }
 
     // --- HÄR ÄR DEN NYA METODEN SOM SAKNADES ---

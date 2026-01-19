@@ -47,4 +47,9 @@ public class StudentActivityController {
             @PathVariable Long userId) {
         return ResponseEntity.ok(activityService.getStudentLogs(courseId, userId));
     }
+
+    @GetMapping("/student/{userId}")
+    public ResponseEntity<List<StudentActivityLogDTO>> getGlobalStudentLogs(@PathVariable Long userId) {
+        return ResponseEntity.ok(activityService.getGlobalStudentLogs(userId));
+    }
 }

@@ -18,6 +18,7 @@ body {
 
 /* --- GLOBALA INPUT-REGLER --- */
 @layer base {
+
     input[type="text"],
     input[type="password"],
     input[type="email"],
@@ -54,4 +55,9 @@ html[data-use-blur="true"] .dark .dark\:bg-\[\#1e1f20\] {
 /* Brutalism Borders */
 html[data-use-blur="false"][data-use-glow="false"] {
     /* Specific overrides for Brutalism if needed */
+}
+
+/* 3D Perspective for Landing Page */
+.perspectives-1000 {
+    perspective: 1000px;
 }

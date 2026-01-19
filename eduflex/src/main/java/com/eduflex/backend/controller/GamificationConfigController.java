@@ -50,7 +50,8 @@ public class GamificationConfigController {
     public ResponseEntity<GamificationConfig> updateConfig(
             @PathVariable Long organizationId,
             @RequestBody GamificationConfig config) {
-        config.setOrganizationId(organizationId);
+        // config.setOrganizationId(organizationId); // TODO: Add organizationId field
+        // to GamificationConfig model
         GamificationConfig updated = configService.updateConfig(config);
         return ResponseEntity.ok(updated);
     }

@@ -11,7 +11,8 @@ public class StudentActivityLog {
         VIEW_LESSON,
         DOWNLOAD_FILE,
         WATCH_VIDEO,
-        COURSE_ACCESS
+        COURSE_ACCESS,
+        LOGIN
     }
 
     @Id
@@ -23,7 +24,7 @@ public class StudentActivityLog {
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "course_id", nullable = false)
+    @JoinColumn(name = "course_id", nullable = true)
     private Course course;
 
     @ManyToOne(fetch = FetchType.LAZY)

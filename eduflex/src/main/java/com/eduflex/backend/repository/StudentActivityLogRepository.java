@@ -23,4 +23,7 @@ public interface StudentActivityLogRepository extends JpaRepository<StudentActiv
 
     // Hämta loggar inom ett tidsintervall
     List<StudentActivityLog> findByCourseIdAndTimestampBetween(Long courseId, LocalDateTime start, LocalDateTime end);
+
+    // Hämta alla loggar för en student (oavsett kurs)
+    List<StudentActivityLog> findByUserIdOrderByTimestampDesc(Long userId);
 }

@@ -1,18 +1,59 @@
-import React from 'react';
-import { Zap, Award, Star, Trophy } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Zap, Award, Star } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { api } from '../../../services/api';
 
 const StudentGamificationWidget = ({ currentUser, isModuleActive }) => {
+    const navigate = useNavigate();
+    const [achievements, setAchievements] = useState([]);
+    const [userProgress, setUserProgress] = useState([]);
+    const [userData, setUserData] = useState({ points: 0, level: 1 });
+
+    useEffect(() => {
+        if (!isModuleActive('GAMIFICATION') || !currentUser?.id) return;
+
+        const fetchGamificationData = async () => {
+            try {
+                // Fetch user's current points/level
+                const user = await api.users.getById(currentUser.id);
+                setUserData({
+                    points: user?.points || 0,
+                    level: user?.level || 1
+                });
+
+                // Fetch achievements
+                const [all, my] = await Promise.all([
+                    api.get('/gamification/achievements').catch(() => []),
+                    api.get('/gamification/achievements/my').catch(() => [])
+                ]);
+                setAchievements(all || []);
+                setUserProgress(my || []);
+            } catch (e) {
+                console.error("Failed to load gamification data", e);
+            }
+        };
+
+        fetchGamificationData();
+    }, [currentUser?.id, isModuleActive]);
+
     if (!isModuleActive('GAMIFICATION')) return null;
 
     const pointsPerLevel = 100;
-    const currentPoints = currentUser?.points || 0;
-    const currentLevel = currentUser?.level || 1;
+    const currentPoints = userData.points;
+    const currentLevel = userData.level;
     const pointsInLevel = currentPoints % pointsPerLevel;
     const progressPercent = (pointsInLevel / pointsPerLevel) * 100;
     const pointsToNext = pointsPerLevel - pointsInLevel;
 
+    // Get unlocked achievements for badge display
+    const unlockedAchievements = userProgress.filter(ua => ua.unlocked);
+    const displayBadges = unlockedAchievements.slice(0, 4).map(ua => {
+        const achievement = achievements.find(a => a.id === ua.achievementId);
+        return { ...ua, achievement };
+    });
+
     return (
-        <div className="bg-gradient-to-b from-indigo-50 to-white dark:from-[#282a2c] dark:to-[#1E1F20] rounded-2xl border border-indigo-100 dark:border-[#3c4043] p-5 shadow-sm mb-6 relative overflow-hidden">
+        <div className="h-full w-full relative overflow-hidden p-5">
             {/* Decorative Background */}
             <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
                 <Zap size={80} />
@@ -46,19 +87,26 @@ const StudentGamificationWidget = ({ currentUser, isModuleActive }) => {
                 <div>
                     <h4 className="text-xs font-bold text-gray-400 uppercase mb-2">Mina Utmärkelser</h4>
                     <div className="grid grid-cols-4 gap-2">
-                        {currentUser?.earnedBadges && currentUser.earnedBadges.length > 0 ? (
-                            currentUser.earnedBadges.slice(0, 4).map((badge) => (
-                                <div key={badge.id} className="aspect-square rounded-xl bg-white dark:bg-[#3c4043] shadow-sm border border-gray-100 dark:border-gray-700 flex items-center justify-center text-indigo-500" title={badge.badge?.name}>
-                                    <Award size={20} />
-                                </div>
-                            ))
+                        {displayBadges.length > 0 ? (
+                            displayBadges.map((item) => {
+                                const achievement = item.achievement || {};
+                                return (
+                                    <div key={item.id} className="aspect-square rounded-xl bg-white dark:bg-[#3c4043] shadow-sm border border-gray-100 dark:border-gray-700 flex items-center justify-center text-indigo-500" title={achievement.name}>
+                                        {achievement.iconUrl ? (
+                                            <span className="text-xl">{achievement.iconUrl}</span>
+                                        ) : (
+                                            <Award size={20} />
+                                        )}
+                                    </div>
+                                );
+                            })
                         ) : (
                             <div className="col-span-4 text-center py-2 text-xs text-gray-400 italic bg-white/50 dark:bg-black/20 rounded-lg">
                                 Inga utmärkelser än
                             </div>
                         )}
                         {/* Placeholder slots if few badges */}
-                        {[...Array(Math.max(0, 4 - (currentUser?.earnedBadges?.length || 0)))].map((_, i) => (
+                        {displayBadges.length > 0 && [...Array(Math.max(0, 4 - displayBadges.length))].map((_, i) => (
                             <div key={`empty-${i}`} className="aspect-square rounded-xl border-2 border-dashed border-gray-200 dark:border-gray-700 flex items-center justify-center text-gray-300 dark:text-gray-600">
                                 <Star size={14} />
                             </div>
@@ -67,7 +115,10 @@ const StudentGamificationWidget = ({ currentUser, isModuleActive }) => {
                 </div>
             </div>
 
-            <button className="w-full mt-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold shadow-md shadow-indigo-200 dark:shadow-none transition-all hover:scale-[1.02]">
+            <button
+                onClick={() => navigate('/profile?tab=achievements')}
+                className="w-full mt-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold shadow-md shadow-indigo-200 dark:shadow-none transition-all hover:scale-[1.02]"
+            >
                 Visa alla framsteg
             </button>
         </div>

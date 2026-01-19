@@ -102,4 +102,44 @@ public class GamificationController {
         DailyChallenge challenge = dailyChallengeService.incrementChallengeProgress(userId, challengeType);
         return ResponseEntity.ok(challenge);
     }
+
+    // === XP Recalculation Endpoints ===
+
+    /**
+     * Recalculate XP for current user based on unlocked achievements.
+     * Useful for users who unlocked achievements before XP rewards were
+     * implemented.
+     */
+    @PostMapping("/achievements/recalculate-xp")
+    public ResponseEntity<Map<String, Object>> recalculateMyXp() {
+        String username = org.springframework.security.core.context.SecurityContextHolder.getContext()
+                .getAuthentication().getName();
+        User user = userRepository.findByUsername(username)
+                .orElseGet(() -> userRepository.findByEmail(username).orElse(null));
+
+        if (user == null) {
+            return ResponseEntity.status(404).body(Map.of("error", "User not found"));
+        }
+
+        int totalXp = achievementService.recalculateUserXp(user.getId());
+        int newLevel = (totalXp / 100) + 1;
+
+        return ResponseEntity.ok(Map.of(
+                "success", true,
+                "totalXp", totalXp,
+                "level", newLevel,
+                "message", "XP recalculated successfully"));
+    }
+
+    /**
+     * Admin endpoint: Recalculate XP for all users in the system.
+     */
+    @PostMapping("/achievements/recalculate-all")
+    public ResponseEntity<Map<String, Object>> recalculateAllXp() {
+        int usersUpdated = achievementService.recalculateAllUsersXp();
+        return ResponseEntity.ok(Map.of(
+                "success", true,
+                "usersUpdated", usersUpdated,
+                "message", "XP recalculated for all users"));
+    }
 }

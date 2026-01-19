@@ -7,7 +7,14 @@ const RegisterOrganization = () => {
         name: '',
         organizationKey: '',
         domain: '',
-        dbSchema: ''
+        dbSchema: '',
+        // Admin Details
+        adminEmail: '',
+        adminPassword: '',
+        adminFirstName: '',
+        adminLastName: '',
+        // Security
+        registrationKey: ''
     });
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(null);
@@ -46,13 +53,14 @@ const RegisterOrganization = () => {
             });
 
             if (!response.ok) {
-                throw new Error(`Error: ${response.statusText}`);
+                const errData = await response.json();
+                throw new Error(errData.error || `Error: ${response.statusText}`);
             }
 
             const data = await response.json();
-            setSuccess(`Organization "${data.name}" created successfully!`);
-            // Optional: Redirect after success
-            // setTimeout(() => navigate('/login'), 2000);
+            setSuccess(`Organization "${data.name}" created successfully! Admin login: ${formData.adminEmail}`);
+            // Redirect after success
+            setTimeout(() => navigate('/login'), 2000);
         } catch (err) {
             setError(err.message);
         } finally {
@@ -124,6 +132,42 @@ const RegisterOrganization = () => {
                             className="w-full border rounded px-3 py-2 bg-gray-50 text-gray-600 cursor-not-allowed"
                             readOnly
                         />
+                    </div>
+
+                    <div className="border-t pt-4 mt-4">
+                        <h3 className="text-lg font-semibold mb-3">Admin Account</h3>
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <label className="block text-gray-700 font-medium mb-1">First Name</label>
+                                <input type="text" name="adminFirstName" value={formData.adminFirstName} onChange={handleChange} className="w-full border rounded px-3 py-2" required />
+                            </div>
+                            <div>
+                                <label className="block text-gray-700 font-medium mb-1">Last Name</label>
+                                <input type="text" name="adminLastName" value={formData.adminLastName} onChange={handleChange} className="w-full border rounded px-3 py-2" required />
+                            </div>
+                        </div>
+                        <div className="mt-3">
+                            <label className="block text-gray-700 font-medium mb-1">Admin Email</label>
+                            <input type="email" name="adminEmail" value={formData.adminEmail} onChange={handleChange} className="w-full border rounded px-3 py-2" required />
+                        </div>
+                        <div className="mt-3">
+                            <label className="block text-gray-700 font-medium mb-1">Admin Password</label>
+                            <input type="password" name="adminPassword" value={formData.adminPassword} onChange={handleChange} className="w-full border rounded px-3 py-2" required />
+                        </div>
+                    </div>
+
+                    <div className="bg-yellow-50 p-4 rounded border border-yellow-200">
+                        <label className="block text-yellow-800 font-medium mb-1">Registration Master Key</label>
+                        <input
+                            type="password"
+                            name="registrationKey"
+                            value={formData.registrationKey}
+                            onChange={handleChange}
+                            placeholder="Enter the secret key to authorize creation"
+                            className="w-full border border-yellow-300 rounded px-3 py-2 focus:ring-yellow-500 focus:border-yellow-500"
+                            required
+                        />
+                        <p className="text-xs text-yellow-600 mt-1">Required for security purposes.</p>
                     </div>
 
                     <button

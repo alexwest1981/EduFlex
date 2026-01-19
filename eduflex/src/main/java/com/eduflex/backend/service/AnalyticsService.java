@@ -2,10 +2,14 @@ package com.eduflex.backend.service;
 
 import com.eduflex.backend.model.Assignment;
 import com.eduflex.backend.model.Course;
+import com.eduflex.backend.model.Quiz;
+import com.eduflex.backend.model.QuizResult;
 import com.eduflex.backend.model.Submission;
 import com.eduflex.backend.model.User;
 import com.eduflex.backend.repository.AssignmentRepository;
 import com.eduflex.backend.repository.CourseRepository;
+import com.eduflex.backend.repository.QuizRepository;
+import com.eduflex.backend.repository.QuizResultRepository;
 import com.eduflex.backend.repository.SubmissionRepository;
 import com.eduflex.backend.repository.UserRepository;
 import org.springframework.stereotype.Service;
@@ -23,13 +27,18 @@ public class AnalyticsService {
         private final CourseRepository courseRepository;
         private final AssignmentRepository assignmentRepository;
         private final SubmissionRepository submissionRepository;
+        private final QuizRepository quizRepository;
+        private final QuizResultRepository quizResultRepository;
 
         public AnalyticsService(UserRepository userRepository, CourseRepository courseRepository,
-                        AssignmentRepository assignmentRepository, SubmissionRepository submissionRepository) {
+                        AssignmentRepository assignmentRepository, SubmissionRepository submissionRepository,
+                        QuizRepository quizRepository, QuizResultRepository quizResultRepository) {
                 this.userRepository = userRepository;
                 this.courseRepository = courseRepository;
                 this.assignmentRepository = assignmentRepository;
                 this.submissionRepository = submissionRepository;
+                this.quizRepository = quizRepository;
+                this.quizResultRepository = quizResultRepository;
         }
 
         public Map<String, Object> getSystemOverview(String range) {
@@ -301,5 +310,177 @@ public class AnalyticsService {
 
                         return map;
                 }).collect(Collectors.toList());
+        }
+
+        public List<Map<String, Object>> getStudentCourseProgress(Long studentId) {
+                User student = userRepository.findById(studentId)
+                                .orElseThrow(() -> new RuntimeException("Student not found"));
+
+                Set<Course> courses = student.getCourses();
+                if (courses == null || courses.isEmpty()) {
+                        return new ArrayList<>();
+                }
+
+                return courses.stream().map(course -> {
+                        Map<String, Object> progress = new HashMap<>();
+                        progress.put("courseId", course.getId());
+                        progress.put("courseName", course.getName());
+
+                        // Get assignments for this course
+                        List<Assignment> courseAssignments = assignmentRepository.findAll().stream()
+                                        .filter(a -> a.getCourse() != null && a.getCourse().getId().equals(course.getId()))
+                                        .collect(Collectors.toList());
+
+                        // Get student's submissions for this course
+                        List<Submission> studentSubmissions = submissionRepository
+                                        .findByStudentIdAndAssignmentCourseId(studentId, course.getId());
+
+                        int totalAssignments = courseAssignments.size();
+                        int completedAssignments = studentSubmissions.size();
+
+                        progress.put("totalAssignments", totalAssignments);
+                        progress.put("completedAssignments", completedAssignments);
+
+                        // Get quizzes for this course
+                        List<Quiz> courseQuizzes = quizRepository.findByCourseId(course.getId());
+
+                        // Get student's quiz results for this course
+                        List<QuizResult> studentQuizResults = quizResultRepository
+                                        .findByStudentIdAndQuizCourseId(studentId, course.getId());
+
+                        int totalQuizzes = courseQuizzes.size();
+                        int completedQuizzes = studentQuizResults.size();
+
+                        progress.put("totalQuizzes", totalQuizzes);
+                        progress.put("completedQuizzes", completedQuizzes);
+
+                        // Calculate risk and estimated grade
+                        boolean isAtRisk = false;
+                        String riskReason = null;
+
+                        // Check for overdue assignments
+                        long overdueCount = courseAssignments.stream()
+                                        .filter(a -> a.getDueDate() != null && a.getDueDate().isBefore(LocalDateTime.now()))
+                                        .filter(a -> studentSubmissions.stream()
+                                                        .noneMatch(s -> s.getAssignment().getId().equals(a.getId())))
+                                        .count();
+
+                        if (overdueCount > 0) {
+                                isAtRisk = true;
+                                riskReason = overdueCount + " försenade uppgifter";
+                        } else if (totalAssignments > 0 && completedAssignments < totalAssignments * 0.5) {
+                                isAtRisk = true;
+                                riskReason = "Mindre än 50% av uppgifterna gjorda";
+                        }
+
+                        progress.put("isAtRisk", isAtRisk);
+                        progress.put("riskReason", riskReason);
+
+                        // Calculate estimated grade based on graded submissions
+                        String estimatedGrade = calculateEstimatedGrade(studentSubmissions, studentQuizResults);
+                        progress.put("estimatedGrade", estimatedGrade);
+
+                        // Get recent results (assignments and quizzes)
+                        List<Map<String, Object>> recentResults = new ArrayList<>();
+
+                        // Add graded submissions
+                        studentSubmissions.stream()
+                                        .filter(s -> s.getGrade() != null && !s.getGrade().isEmpty())
+                                        .sorted((a, b) -> {
+                                                if (a.getSubmittedAt() == null) return 1;
+                                                if (b.getSubmittedAt() == null) return -1;
+                                                return b.getSubmittedAt().compareTo(a.getSubmittedAt());
+                                        })
+                                        .limit(5)
+                                        .forEach(s -> {
+                                                Map<String, Object> result = new HashMap<>();
+                                                result.put("title", s.getAssignment().getTitle());
+                                                result.put("type", "Uppgift");
+                                                result.put("scoreOrGrade", s.getGrade());
+                                                recentResults.add(result);
+                                        });
+
+                        // Add quiz results
+                        studentQuizResults.stream()
+                                        .sorted((a, b) -> {
+                                                if (a.getDate() == null) return 1;
+                                                if (b.getDate() == null) return -1;
+                                                return b.getDate().compareTo(a.getDate());
+                                        })
+                                        .limit(5)
+                                        .forEach(qr -> {
+                                                Map<String, Object> result = new HashMap<>();
+                                                result.put("title", qr.getQuiz().getTitle());
+                                                result.put("type", "Quiz");
+                                                result.put("scoreOrGrade", qr.getScore() + "/" + qr.getMaxScore());
+                                                recentResults.add(result);
+                                        });
+
+                        progress.put("recentResults", recentResults);
+
+                        return progress;
+                }).collect(Collectors.toList());
+        }
+
+        private String calculateEstimatedGrade(List<Submission> submissions, List<QuizResult> quizResults) {
+                // Swedish grading: F, E, D, C, B, A
+                List<String> grades = submissions.stream()
+                                .map(Submission::getGrade)
+                                .filter(g -> g != null && !g.isEmpty())
+                                .collect(Collectors.toList());
+
+                if (grades.isEmpty() && quizResults.isEmpty()) {
+                        return "N/A";
+                }
+
+                // Calculate average from quiz scores
+                double quizAvg = quizResults.stream()
+                                .filter(qr -> qr.getMaxScore() > 0)
+                                .mapToDouble(qr -> (double) qr.getScore() / qr.getMaxScore() * 100)
+                                .average()
+                                .orElse(-1);
+
+                // Convert letter grades to numeric for averaging
+                double gradeAvg = grades.stream()
+                                .mapToDouble(this::gradeToNumeric)
+                                .filter(g -> g >= 0)
+                                .average()
+                                .orElse(-1);
+
+                // Combine averages
+                double combined;
+                if (quizAvg >= 0 && gradeAvg >= 0) {
+                        combined = (quizAvg + gradeAvg) / 2;
+                } else if (quizAvg >= 0) {
+                        combined = quizAvg;
+                } else if (gradeAvg >= 0) {
+                        combined = gradeAvg;
+                } else {
+                        return "N/A";
+                }
+
+                return numericToGrade(combined);
+        }
+
+        private double gradeToNumeric(String grade) {
+                if (grade == null) return -1;
+                switch (grade.toUpperCase()) {
+                        case "A": return 100;
+                        case "B": return 85;
+                        case "C": return 70;
+                        case "D": return 55;
+                        case "E": return 40;
+                        case "F": return 20;
+                        default: return -1;
+                }
+        }
+
+        private String numericToGrade(double score) {
+                if (score >= 90) return "A";
+                if (score >= 75) return "B";
+                if (score >= 60) return "C";
+                if (score >= 45) return "D";
+                if (score >= 30) return "E";
+                return "F";
         }
 }

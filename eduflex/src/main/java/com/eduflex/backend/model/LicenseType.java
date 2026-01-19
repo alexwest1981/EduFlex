@@ -22,26 +22,25 @@ public enum LicenseType {
         switch (moduleKey) {
             case "DARK_MODE":
             case "SUBMISSIONS":
+            case "QUIZ_BASIC":
                 return true; // Available for all
 
-            case "QUIZ":
+            case "QUIZ_PRO":
             case "CHAT":
             case "FORUM":
-                // Basic has NO Quiz, Chat, Forum. Pro has them.
+            case "SCORM":
+                // Basic has NO Quiz Pro, Chat, Forum. Pro has them.
                 return this == PRO;
 
             case "GAMIFICATION":
             case "ANALYTICS":
             case "ENTERPRISE_WHITELABEL":
+            case "REVENUE":
                 // Only Enterprise has these
                 return false;
 
-            case "SCORM":
-                // Pro or Enterprise
-                return this != BASIC;
-
             default:
-                return true; // Unknown modules default to allowed (or arguably restricted)
+                return true; // Unknown modules default to allowed
         }
     }
 }

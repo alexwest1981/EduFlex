@@ -109,6 +109,7 @@ services:
       # Override Resource Server URLs for Docker internal network (Validation)
       - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI=http://keycloak:8080/realms/eduflex/protocol/openid-connect/certs
       - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI=http://localhost:8180/realms/eduflex
+      - EDUFLEX_REGISTRATION_KEY=master_key_2026
     extra_hosts:
       - "localhost:host-gateway"
     volumes:
@@ -124,12 +125,16 @@ services:
 
   # --- FRONTEND (React) ---
   frontend:
-    build: ./frontend
+    build:
+      context: ./frontend
+      target: build
     container_name: eduflex-frontend
     ports:
       - "5173:5173"
     environment:
       - VITE_API_BASE_URL=http://localhost:8080/api
+      - VITE_BACKEND_URL=http://backend:8080
+    command: npm run dev -- --host
     volumes:
       - ./frontend:/app
       - /app/node_modules

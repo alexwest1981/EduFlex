@@ -5,6 +5,7 @@ import { useGamification } from '../../context/GamificationContext';
 import XPBoostIndicator from '../../components/gamification/XPBoostIndicator';
 
 export const AssignmentsModuleMetadata = {
+    id: 'SUBMISSIONS',
     key: 'assignments',
     name: 'Inlämningar',
     icon: FileText,

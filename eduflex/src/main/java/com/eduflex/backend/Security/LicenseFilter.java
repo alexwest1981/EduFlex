@@ -23,37 +23,37 @@ public class LicenseFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
-        // 1. Om systemet är upplåst -> Kör vidare
-        if (licenseService.isValid()) {
-            filterChain.doFilter(request, response);
-            return;
+        try {
+            // 1. Om systemet är upplåst -> Kör vidare
+            if (licenseService.isValid()) {
+                filterChain.doFilter(request, response);
+                return;
+            }
+
+            // 2. Om systemet är LÅST (ingen giltig licens)
+            String path = request.getRequestURI();
+            if (path.startsWith("/api/auth")
+                    || path.startsWith("/api/tenants")
+                    || path.startsWith("/api/system/license")
+                    || path.startsWith("/api/settings")
+                    || path.startsWith("/api/branding")
+                    || path.startsWith("/actuator")
+                    || "OPTIONS".equalsIgnoreCase(request.getMethod())) {
+                filterChain.doFilter(request, response);
+                return;
+            }
+
+            // 4. Blockera allt annat
+            System.out.println("⛔ BLOCKED: " + path + " (Reason: System Locked)");
+            response.setStatus(402); // Payment Required (Signal to Frontend)
+            response.setContentType("application/json");
+            response.getWriter()
+                    .write("{\"error\": \"LICENSE_REQUIRED\", \"message\": \"System is locked. Valid license required.\"}");
+        } catch (Exception e) {
+            System.err.println("❌ CRITICAL ERROR in LicenseFilter:");
+            e.printStackTrace();
+            response.setStatus(500);
+            response.getWriter().write("Internal Server Error in LicenseFilter: " + e.getMessage());
         }
-
-        // 2. Om systemet är LÅST (ingen giltig licens)
-        String path = request.getRequestURI();
-
-        // 3. Tillåt viktiga endpoints även utan licens:
-        // - Auth (login/register) - användare måste kunna logga in
-        // - License endpoints - för att kunna låsa upp
-        // - Tenants - för att kunna registrera organisation
-        // - Settings - för grundkonfiguration
-        // - OPTIONS - CORS preflight
-        if (path.startsWith("/api/auth")
-                || path.startsWith("/api/tenants")
-                || path.startsWith("/api/system/license")
-                || path.startsWith("/api/settings")
-                || path.startsWith("/api/branding")
-                || path.startsWith("/actuator")
-                || "OPTIONS".equalsIgnoreCase(request.getMethod())) {
-            filterChain.doFilter(request, response);
-            return;
-        }
-
-        // 4. Blockera allt annat
-        System.out.println("⛔ BLOCKED: " + path + " (Reason: System Locked)");
-        response.setStatus(402); // Payment Required (Signal to Frontend)
-        response.setContentType("application/json");
-        response.getWriter()
-                .write("{\"error\": \"LICENSE_REQUIRED\", \"message\": \"System is locked. Valid license required.\"}");
     }
 }

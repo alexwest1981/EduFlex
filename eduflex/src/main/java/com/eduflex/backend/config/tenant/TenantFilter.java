@@ -1,6 +1,5 @@
 package com.eduflex.backend.config.tenant;
 
-import com.eduflex.backend.repository.TenantRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -14,12 +13,14 @@ import java.io.IOException;
 @Component
 public class TenantFilter extends OncePerRequestFilter {
 
-    private final TenantRepository tenantRepository;
+    private final org.springframework.jdbc.core.JdbcTemplate jdbcTemplate;
 
     @Autowired
-    public TenantFilter(TenantRepository tenantRepository) {
-        this.tenantRepository = tenantRepository;
+    public TenantFilter(javax.sql.DataSource dataSource) {
+        this.jdbcTemplate = new org.springframework.jdbc.core.JdbcTemplate(dataSource);
     }
+
+    private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(TenantFilter.class);
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -27,32 +28,45 @@ public class TenantFilter extends OncePerRequestFilter {
 
         String tenantId = request.getHeader("X-Tenant-ID");
 
+        // Fallback to query param
+        if (tenantId == null || tenantId.isBlank()) {
+            tenantId = request.getParameter("tenantId");
+        }
+
+        // Log query string for debug if needed, but remove force-set logic
+        if (tenantId != null) {
+            logger.debug("👉 TenantFilter: Resolved tenantId: {}", tenantId);
+        }
+
         try {
             if (tenantId != null && !tenantId.isBlank()) {
-                // Lookup Tenant to get the actual DB Schema name
-                var tenantOpt = tenantRepository.findById(tenantId);
+                try {
+                    // Direct JDBC lookup to avoid Hibernate recursion/overhead
+                    String sql = "SELECT db_schema FROM public.tenants WHERE id = ?";
+                    String schema = jdbcTemplate.queryForObject(sql, String.class, tenantId);
 
-                if (tenantOpt.isPresent()) {
-                    // Store the DB Schema name (e.g., "tenant_westcode") in the context
-                    TenantContext.setCurrentTenant(tenantOpt.get().getDbSchema());
-                } else {
-                    // Invalid Tenant ID requested
+                    if (schema != null) {
+                        TenantContext.setCurrentTenant(schema);
+                        logger.debug("✅ TenantFilter: set schema to {}", schema);
+                    }
+                } catch (org.springframework.dao.EmptyResultDataAccessException e) {
+                    logger.warn("❌ TenantFilter: Tenant ID not found: {}", tenantId);
                     response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                    response.getWriter().write("Invalid Tenant ID: " + tenantId);
-                    return; // Stop processing
+                    response.getWriter().write("Invalid Tenant ID");
+                    return;
+                } catch (Exception e) {
+                    logger.error("💥 TenantFilter JDBC Error: {}", e.getMessage(), e);
+                    // Fallback or error?
+                    response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                    return;
                 }
             } else {
-                // NO X-Tenant-ID header provided - fallback to 'public' schema
-                // This allows existing users to use the system without multi-tenancy
                 TenantContext.setCurrentTenant("public");
             }
 
-            // Proceed with the chain (with or without tenant context)
             filterChain.doFilter(request, response);
 
         } finally {
-            // CRITICAL: Always clear context to prevent memory leaks or cross-request
-            // pollution
             TenantContext.clear();
         }
     }

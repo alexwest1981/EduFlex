@@ -3,7 +3,7 @@ import { MessageSquare } from 'lucide-react';
 import CourseForum from './CourseForum';
 
 export const ForumModuleMetadata = {
-    id: 'module_forum_enabled',
+    id: 'FORUM',
     name: 'EduForum',
     version: '2.0.1',
     description: 'Diskussionsforum för kurser med trådar och svar.',

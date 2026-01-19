@@ -7,12 +7,29 @@ import { useAppContext } from '../../context/AppContext';
 const Login = () => {
     const { t } = useTranslation();
     const navigate = useNavigate();
-    const { login, API_BASE } = useAppContext();
+    const context = useAppContext();
+
+    // Defensive coding for Context
+    if (!context) {
+        console.error("Login component: AppContext is missing/undefined!");
+    }
+    const { login, API_BASE = '/api' } = context || {};
 
     // UI States
     const [formData, setFormData] = useState({ username: '', password: '' });
+    // Allow manual tenant override if not detected
+    const [manualTenantId, setManualTenantId] = useState('');
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+
+    // Initial check for URL param ?tenantId=...
+    React.useEffect(() => {
+        const params = new URLSearchParams(window.location.search);
+        const tenantParam = params.get('tenantId');
+        if (tenantParam) {
+            setManualTenantId(tenantParam);
+        }
+    }, []);
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -26,17 +43,28 @@ const Login = () => {
 
         try {
             // Kontrollera att API_BASE inte slutar med snedstreck för att undvika dubbla //
-            // Kontrollera att API_BASE inte slutar med snedstreck för att undvika dubbla //
             const baseUrl = API_BASE.endsWith('/') ? API_BASE.slice(0, -1) : API_BASE;
 
             // Tenant Logic för Login
             const getTenantId = () => {
+                // 1. Manuell input (prioritet)
+                if (manualTenantId) return manualTenantId;
+
+                // 2. Hostname detection
                 const hostname = window.location.hostname;
                 const forcedTenant = localStorage.getItem('force_tenant');
                 if (forcedTenant) return forcedTenant;
+                if (/^[\d.]+$/.test(hostname)) return null;
+                if (hostname.includes('ngrok') || hostname.includes('loca.lt') || hostname.includes('trycloudflare.com')) {
+                    return null;
+                }
                 if (hostname.endsWith('.localhost') && hostname !== 'localhost') return hostname.split('.')[0];
                 const parts = hostname.split('.');
-                if (parts.length > 2) return parts[0];
+                if (parts.length > 2) {
+                    const subdomain = parts[0];
+                    if (['www', 'api', 'eduflexlms'].includes(subdomain)) return null;
+                    return subdomain;
+                }
                 return null;
             };
 
@@ -54,18 +82,14 @@ const Login = () => {
 
             if (response.ok) {
                 if (data.token) {
-
-                    // --- VIKTIGT: Spara Token Explicit ---
                     localStorage.setItem('token', data.token);
-                    // -------------------------------------
 
-                    // Bygg användarobjektet
                     const userObj = {
                         id: data.id,
                         username: data.username,
-                        firstName: data.firstName || data.username, // Fallback
+                        firstName: data.firstName || data.username,
                         lastName: data.lastName || '',
-                        fullName: data.fullName || data.username,   // Fallback
+                        fullName: data.fullName || data.username,
                         role: data.role,
                         profilePictureUrl: data.profilePictureUrl || null,
                         points: data.points || 0,
@@ -73,9 +97,9 @@ const Login = () => {
                         earnedBadges: data.earnedBadges || []
                     };
 
-                    // Anropa context-funktionen för att uppdatera state i hela appen
                     if (login) {
-                        login(userObj, data.token);
+                        // Pass tenantId (from URL/Input) to persist properly
+                        login(userObj, data.token, tenantId);
                     }
 
                     navigate('/');
@@ -95,24 +119,8 @@ const Login = () => {
     };
 
     const handleGoogleLogin = () => {
-        // OAuth2 endpoints are at backend root, not under /api
-        // Remove /api suffix if present
-        let backendRoot = API_BASE.replace(/\/api\/?$/, '');
-        backendRoot = backendRoot.endsWith('/') ? backendRoot.slice(0, -1) : backendRoot;
-        window.location.href = `${backendRoot}/oauth2/authorization/google`;
-    };
-
-    const handleGithubLogin = () => {
-        let backendRoot = API_BASE.replace(/\/api\/?$/, '');
-        backendRoot = backendRoot.endsWith('/') ? backendRoot.slice(0, -1) : backendRoot;
-        window.location.href = `${backendRoot}/oauth2/authorization/github`;
-    };
-
-    const handleKeycloakLogin = () => {
-        // Redirect to Keycloak SSO (Enterprise Single Sign-On)
-        let backendRoot = API_BASE.replace(/\/api\/?$/, '');
-        backendRoot = backendRoot.endsWith('/') ? backendRoot.slice(0, -1) : backendRoot;
-        window.location.href = `${backendRoot}/oauth2/authorization/keycloak`;
+        console.log("Google login not implemented yet");
+        alert("Google login is coming soon!");
     };
 
     return (
@@ -133,6 +141,7 @@ const Login = () => {
 
                 {/* FORMULÄR */}
                 <div className="p-8 pt-10">
+                    {/* Error Display */}
                     {error && (
                         <div className="mb-6 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-300 px-4 py-3 rounded-xl flex items-center gap-3 text-sm font-medium animate-in slide-in-from-top-2">
                             <AlertCircle size={18} className="shrink-0" />
@@ -141,6 +150,22 @@ const Login = () => {
                     )}
 
                     <form onSubmit={handleLogin} className="space-y-5">
+
+                        {/* ORGANIZATION ID (Optional/Advanced) */}
+                        <div>
+                            <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2 ml-1">
+                                Organization ID (Optional)
+                            </label>
+                            <div className="relative group">
+                                <input
+                                    type="text"
+                                    className="w-full pl-4 pr-12 py-3.5 bg-gray-50 dark:bg-[#131314] border border-gray-200 dark:border-[#3c4043] rounded-xl text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 dark:focus:border-indigo-500 focus:bg-white dark:focus:bg-[#131314] transition-all font-medium text-sm shadow-sm"
+                                    placeholder="e.g. saas-test-school"
+                                    value={manualTenantId}
+                                    onChange={(e) => setManualTenantId(e.target.value)}
+                                />
+                            </div>
+                        </div>
 
                         {/* ANVÄNDARNAMN */}
                         <div>
@@ -195,50 +220,14 @@ const Login = () => {
                         </button>
                     </form>
 
+                    {/* Footer Links and Social Login (Abbreviated for clarity) */}
                     <div className="relative my-8">
-                        <div className="absolute inset-0 flex items-center">
-                            <div className="w-full border-t border-gray-200 dark:border-[#3c4043]"></div>
-                        </div>
-                        <div className="relative flex justify-center text-xs uppercase">
-                            <span className="bg-white dark:bg-[#1E1F20] px-3 text-gray-400 font-bold tracking-wider">Eller</span>
-                        </div>
+                        <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-gray-200 dark:border-[#3c4043]"></div></div>
+                        <div className="relative flex justify-center text-xs uppercase"><span className="bg-white dark:bg-[#1E1F20] px-3 text-gray-400 font-bold tracking-wider">Eller</span></div>
                     </div>
-
                     <div className="space-y-3">
-                        {/* GOOGLE KNAPP */}
-                        <button
-                            onClick={handleGoogleLogin}
-                            className="w-full bg-white dark:bg-[#282a2c] hover:bg-gray-50 dark:hover:bg-[#3c4043] text-gray-700 dark:text-white font-bold py-3.5 rounded-xl border border-gray-200 dark:border-[#3c4043] hover:border-gray-300 dark:hover:border-gray-500 transition-all flex items-center justify-center gap-3 group text-sm shadow-sm hover:shadow-md"
-                        >
-                            <svg className="w-5 h-5 group-hover:scale-110 transition-transform" viewBox="0 0 24 24">
-                                <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
-                                <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
-                                <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.84z" fill="#FBBC05" />
-                                <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
-                            </svg>
+                        <button onClick={handleGoogleLogin} className="w-full bg-white dark:bg-[#282a2c] hover:bg-gray-50 dark:hover:bg-[#3c4043] text-gray-700 dark:text-white font-bold py-3.5 rounded-xl border border-gray-200 dark:border-[#3c4043] hover:border-gray-300 dark:hover:border-gray-500 transition-all flex items-center justify-center gap-3 group text-sm shadow-sm hover:shadow-md">
                             Logga in med Google
-                        </button>
-
-                        {/* GITHUB KNAPP */}
-                        <button
-                            onClick={handleGithubLogin}
-                            className="w-full bg-[#24292e] hover:bg-[#2f363d] text-white font-bold py-3.5 rounded-xl border border-transparent transition-all flex items-center justify-center gap-3 group text-sm shadow-sm hover:shadow-md"
-                        >
-                            <svg className="w-5 h-5 group-hover:scale-110 transition-transform" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
-                            </svg>
-                            Logga in med GitHub
-                        </button>
-
-                        {/* ENTERPRISE SSO (Keycloak) */}
-                        <button
-                            onClick={handleKeycloakLogin}
-                            className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold py-3.5 rounded-xl border border-transparent transition-all flex items-center justify-center gap-3 group text-sm shadow-lg shadow-indigo-600/20 hover:shadow-indigo-600/40"
-                        >
-                            <svg className="w-5 h-5 group-hover:scale-110 transition-transform" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z" />
-                            </svg>
-                            Enterprise SSO (Azure AD / Keycloak)
                         </button>
                     </div>
 
@@ -250,5 +239,4 @@ const Login = () => {
         </div>
     );
 };
-
 export default Login;

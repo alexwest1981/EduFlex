@@ -4,6 +4,7 @@ import com.eduflex.backend.service.AnalyticsService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -55,5 +56,11 @@ public class AnalyticsController {
     public ResponseEntity<Map<String, Object>> getMyStatus(@RequestParam Long studentId) {
         // I en riktig impl, hämta studentId från SecurityContext
         return ResponseEntity.ok(analyticsService.getStudentSelfStatus(studentId));
+    }
+
+    @GetMapping("/student/{studentId}")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<List<Map<String, Object>>> getStudentCourseProgress(@PathVariable Long studentId) {
+        return ResponseEntity.ok(analyticsService.getStudentCourseProgress(studentId));
     }
 }

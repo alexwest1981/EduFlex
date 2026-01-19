@@ -40,13 +40,14 @@ const MidnightLayout = ({ children }) => {
     ];
 
     return (
-        <div className="flex items-center justify-center p-6 h-screen w-screen overflow-hidden text-zinc-300 font-sans transition-colors duration-300" style={{ background: '#09090b' }}> {/* Rich Zinc Black */}
+        <div className="flex items-center justify-center p-6 h-screen w-screen overflow-hidden text-zinc-300 font-sans transition-colors duration-300" style={{ background: 'var(--app-background)' }}> {/* Rich Zinc Black */}
             <style>{`
                 @media (prefers-color-scheme: dark) {
-                    .dark-mode-bg { background: #09090b !important; }
+                    .dark-mode-bg { background: var(--app-background-dark) !important; }
                 }
-                :root.dark body { background: #09090b !important; }
-                .app-wrapper { background: #09090b; }
+                :root.dark body { background: var(--app-background-dark) !important; }
+                .app-wrapper { background: var(--app-background); }
+                .dark .app-wrapper { background: var(--app-background-dark); }
                 .midnight-scroll::-webkit-scrollbar { width: 6px; }
                 .midnight-scroll::-webkit-scrollbar-track { background: #121212; }
                 .midnight-scroll::-webkit-scrollbar-thumb { background: #27272a; border-radius: 10px; }
