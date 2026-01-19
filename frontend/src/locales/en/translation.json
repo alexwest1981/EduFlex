@@ -619,5 +619,139 @@
     "subscription_plans": "Subscription Plans",
     "payment_settings": "Payment Settings",
     "promo_codes": "Promo Codes"
+  },
+  "landing": {
+    "nav": {
+      "features": "Features",
+      "architecture": "Architecture",
+      "pricing": "Pricing",
+      "login": "Log In",
+      "get_started": "Get Started"
+    },
+    "hero": {
+      "badge": "v2.0 Now Available",
+      "title_start": "The LMS that ",
+      "title_highlight": "Students Love",
+      "subtitle": "EduFlex bridges the gap between enterprise-grade LMS and modern consumer apps. Gamified, fast, and beautiful learning for the next generation.",
+      "cta_trial": "Request Demo",
+      "cta_docs": "View API Docs"
+    },
+    "features": {
+      "badge": "Why EduFlex?",
+      "title": "Everything you need to run a modern school",
+      "subtitle": "From robust grading tools to addictive gamification, we've got you covered.",
+      "core_education": {
+        "title": "Core Education",
+        "desc": "Rich course management, SCORM support, assignment grading, and auto-generated certificates."
+      },
+      "gamification": {
+        "title": "Gamification",
+        "desc": "Built-in XP, badges, levels, leaderboards, and daily challenges to boost student engagement."
+      },
+      "multi_tenancy": {
+        "title": "True Multi-Tenancy",
+        "desc": "Complete data isolation with schema-per-tenant architecture. Your data is yours alone."
+      },
+      "security": {
+        "title": "Enterprise Security",
+        "desc": "Role-Based Access Control (RBAC), Audit Logging, and secure Keycloak SSO integration."
+      },
+      "analytics": {
+        "title": "Analytics & Insights",
+        "desc": "Real-time dashboards for principals and teachers. Heatmaps, dropout prediction, and more."
+      },
+      "skolverket": {
+        "title": "Skolverket Connected",
+        "desc": "Direct integration with the Swedish National Curriculum and grading criteria (E-A)."
+      }
+    },
+    "architecture": {
+      "badge": "Built for Scale",
+      "title": "Enterprise-Grade Architecture",
+      "powered_by": "Powered by Industry Standards",
+      "items": [
+        "Spring Boot 3.4 Microservices",
+        "PostgreSQL with Schema-per-Tenant",
+        "Redis Caching Layer",
+        "MinIO S3 Compatible Storage",
+        "Keycloak SSO Identity Management",
+        "Kubernetes & Helm Charts"
+      ]
+    },
+    "pricing": {
+      "title": "Simple, Transparent Pricing",
+      "subtitle": "Choose the plan that fits your school.",
+      "basic": {
+        "name": "Basic",
+        "price": "990 SEK / month",
+        "features": [
+          "Up to 100 users",
+          "Core Course Management",
+          "Basic Reporting",
+          "Community Support"
+        ],
+        "cta": "Get Started"
+      },
+      "pro": {
+        "name": "Pro",
+        "price": "2 990 SEK / month",
+        "features": [
+          "Up to 500 users",
+          "Full Gamification Suite",
+          "Skolverket Integration",
+          "CSN Export",
+          "Priority Support"
+        ],
+        "cta": "Request Demo",
+        "badge": "Most Popular"
+      },
+      "enterprise": {
+        "name": "Enterprise",
+        "price": "Contact Us",
+        "features": [
+          "Unlimited Users",
+          "White-label Branding",
+          "Keycloak SSO",
+          "SLA 99.99%",
+          "Dedicated Infrastructure"
+        ],
+        "cta": "Contact Sales"
+      }
+    },
+    "footer": {
+      "tagline": "Empowering education with modern technology. Built with ❤️ in Sweden.",
+      "product": "Product",
+      "features": "Features",
+      "pricing": "Pricing",
+      "roadmap": "Roadmap",
+      "resources": "Resources",
+      "documentation": "Documentation",
+      "api_reference": "API Reference",
+      "system_status": "System Status",
+      "connect": "Connect",
+      "contact_sales": "Contact Sales",
+      "twitter": "Twitter",
+      "github": "GitHub",
+      "copyright": "© 2026 EduFlex. All rights reserved.",
+      "developed_by": "Developed by",
+      "fenrir": "Fenrir Studio"
+    }
+  },
+  "contact": {
+    "title": "Request Demo",
+    "name": "Name",
+    "name_placeholder": "Your name",
+    "email": "Email",
+    "email_placeholder": "your@email.com",
+    "organization": "Organization",
+    "organization_placeholder": "School name",
+    "phone": "Phone",
+    "phone_placeholder": "+46 70 123 45 67",
+    "message": "Message",
+    "message_placeholder": "Tell us about your needs...",
+    "submit": "Send Request",
+    "sending": "Sending...",
+    "success_message": "Thank you! We'll contact you within 24 hours.",
+    "error_message": "Something went wrong. Please try again or email us directly."
   }
 }

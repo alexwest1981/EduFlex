@@ -475,5 +475,139 @@
     "subscription_plans": "Prenumerationsplaner",
     "payment_settings": "Betalningsinställningar",
     "promo_codes": "Kampanjkoder"
+  },
+  "landing": {
+    "nav": {
+      "features": "Funktioner",
+      "architecture": "Arkitektur",
+      "pricing": "Priser",
+      "login": "Logga in",
+      "get_started": "Kom igång"
+    },
+    "hero": {
+      "badge": "v2.0 Nu Tillgänglig",
+      "title_start": "LMS:et som ",
+      "title_highlight": "Studenter Älskar",
+      "subtitle": "EduFlex överbryggar klyftan mellan enterprise-LMS och moderna konsumentappar. Gamifierat, snabbt och vackert lärande för nästa generation.",
+      "cta_trial": "Boka Demo",
+      "cta_docs": "Visa API-dokumentation"
+    },
+    "features": {
+      "badge": "Varför EduFlex?",
+      "title": "Allt du behöver för att driva en modern skola",
+      "subtitle": "Från robusta bedömningsverktyg till beroendeframkallande gamification - vi har dig täckt.",
+      "core_education": {
+        "title": "Kärnfunktioner",
+        "desc": "Omfattande kurshantering, SCORM-stöd, uppgiftsbedömning och automatgenererade certifikat."
+      },
+      "gamification": {
+        "title": "Gamification",
+        "desc": "Inbyggd XP, utmärkelser, nivåer, topplistor och dagliga utmaningar för att öka elevengagemanget."
+      },
+      "multi_tenancy": {
+        "title": "Äkta Multi-Tenancy",
+        "desc": "Fullständig dataisolering med schema-per-tenant-arkitektur. Din data är endast din."
+      },
+      "security": {
+        "title": "Enterprise-Säkerhet",
+        "desc": "Rollbaserad åtkomstkontroll (RBAC), granskningsloggning och säker Keycloak SSO-integration."
+      },
+      "analytics": {
+        "title": "Analyser & Insikter",
+        "desc": "Realtidsdashboards för rektorer och lärare. Värmekart, avhoppsförutsägelse och mer."
+      },
+      "skolverket": {
+        "title": "Skolverket-Ansluten",
+        "desc": "Direkt integration med Skolverkets läroplan och betygskriterier (E-A)."
+      }
+    },
+    "architecture": {
+      "badge": "Byggd för Skalning",
+      "title": "Enterprise-Arkitektur",
+      "powered_by": "Drivs av Branschstandarder",
+      "items": [
+        "Spring Boot 3.4 Mikrotjänster",
+        "PostgreSQL med Schema-per-Tenant",
+        "Redis Caching-lager",
+        "MinIO S3-Kompatibel Lagring",
+        "Keycloak SSO Identitetshantering",
+        "Kubernetes & Helm Charts"
+      ]
+    },
+    "pricing": {
+      "title": "Enkel, Transparent Prissättning",
+      "subtitle": "Välj planen som passar din skola.",
+      "basic": {
+        "name": "Basic",
+        "price": "990 SEK / månad",
+        "features": [
+          "Upp till 100 användare",
+          "Grundläggande Kurshantering",
+          "Enkel Rapportering",
+          "Community Support"
+        ],
+        "cta": "Kom igång"
+      },
+      "pro": {
+        "name": "Pro",
+        "price": "2 990 SEK / månad",
+        "features": [
+          "Upp till 500 användare",
+          "Fullständig Gamification",
+          "Skolverket-Integration",
+          "CSN-Export",
+          "Prioriterad Support"
+        ],
+        "cta": "Boka Demo",
+        "badge": "Mest Populär"
+      },
+      "enterprise": {
+        "name": "Enterprise",
+        "price": "Kontakta Oss",
+        "features": [
+          "Obegränsat Antal Användare",
+          "White-label Branding",
+          "Keycloak SSO",
+          "SLA 99.99%",
+          "Dedikerad Infrastruktur"
+        ],
+        "cta": "Kontakta Försäljning"
+      }
+    },
+    "footer": {
+      "tagline": "Stärker utbildning med modern teknik. Byggd med ❤️ i Sverige.",
+      "product": "Produkt",
+      "features": "Funktioner",
+      "pricing": "Priser",
+      "roadmap": "Roadmap",
+      "resources": "Resurser",
+      "documentation": "Dokumentation",
+      "api_reference": "API-Referens",
+      "system_status": "Systemstatus",
+      "connect": "Kontakt",
+      "contact_sales": "Kontakta Försäljning",
+      "twitter": "Twitter",
+      "github": "GitHub",
+      "copyright": "© 2026 EduFlex. Alla rättigheter förbehållna.",
+      "developed_by": "Utvecklad av",
+      "fenrir": "Fenrir Studio"
+    }
+  },
+  "contact": {
+    "title": "Boka Demo",
+    "name": "Namn",
+    "name_placeholder": "Ditt namn",
+    "email": "E-post",
+    "email_placeholder": "din@email.se",
+    "organization": "Organisation",
+    "organization_placeholder": "Skolans namn",
+    "phone": "Telefon",
+    "phone_placeholder": "+46 70 123 45 67",
+    "message": "Meddelande",
+    "message_placeholder": "Berätta lite om era behov...",
+    "submit": "Skicka förfrågan",
+    "sending": "Skickar...",
+    "success_message": "Tack! Vi kontaktar dig inom 24 timmar.",
+    "error_message": "Något gick fel. Försök igen eller maila oss direkt."
   }
 }
