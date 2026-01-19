@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/images/EduFlex.png" width="900" alt="EduFlex Logo" />
+  <img src="frontend/src/assets/images/Logo_text.png" width="600" alt="EduFlex Logo" />
 </p>
 
 <h1 align="center">🎓 EduFlex LMS 2.0</h1>
