@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Loader2, AlertCircle } from 'lucide-react';
 
 // Importera vyerna.
@@ -10,7 +10,18 @@ import StudentDashboard from './StudentDashboard';
 import PrincipalDashboard from './PrincipalDashboard';
 import MentorDashboard from './MentorDashboard';
 
+// Import Mobile Gateway
+import MobileThemeResolver from '../../components/MobileThemes/MobileThemeResolver';
+
 const Dashboard = ({ currentUser, myCourses }) => {
+    // Basic mobile detection logic
+    const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
+
+    useEffect(() => {
+        const handleResize = () => setIsMobile(window.innerWidth < 1024);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     // 1. Säkerhetskoll: Om ingen användare är laddad än
     if (!currentUser) {
@@ -28,6 +39,16 @@ const Dashboard = ({ currentUser, myCourses }) => {
 
     switch (dashboardType) {
         case 'ADMIN':
+            // If on mobile, serve the specialized mobile experience via the Theme Resolver
+            if (isMobile) {
+                return (
+                    <MobileThemeResolver
+                        currentUser={currentUser}
+                        myCourses={myCourses || []} // Admin doesn't typically have myCourses, but we pass valid empty array
+                    />
+                );
+            }
+
             // VIKTIGT: Vi skickar INTE med props här längre.
             // AdminDashboard hämtar nu sin egen data (Users, Courses) från API:et.
             // Detta förhindrar att App.jsx skriver över datan med tomma arrayer.
@@ -49,6 +70,16 @@ const Dashboard = ({ currentUser, myCourses }) => {
             );
 
         case 'STUDENT':
+            // If on mobile, serve the specialized mobile experience via the Theme Resolver
+            if (isMobile) {
+                return (
+                    <MobileThemeResolver
+                        currentUser={currentUser}
+                        myCourses={myCourses || []}
+                    />
+                );
+            }
+
             // Studenter behöver sina kurser som props
             return (
                 <StudentDashboard

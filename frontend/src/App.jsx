@@ -11,6 +11,7 @@ import ErrorBoundary from './components/common/ErrorBoundary';
 import Layout from './components/Layout';
 
 // --- FEATURES ---
+import LandingPage from './features/landing/LandingPage';
 import Login from './features/auth/Login';
 import RegisterOrganization from './features/auth/RegisterOrganization';
 import OAuth2Callback from './features/auth/OAuth2Callback';
@@ -35,6 +36,7 @@ import ResourceBank from './features/resources/ResourceBank';
 import AnalyticsDashboard from './features/analytics/AnalyticsDashboard';
 import CertificateView from './features/certificates/CertificateView';
 import EnterpriseWhitelabel from './features/admin/EnterpriseWhitelabel';
+import SkolverketModule from './modules/skolverket/SkolverketModule';
 
 // --- PROTECTED ROUTE ---
 const ProtectedRoute = ({ children, roles }) => {
@@ -96,12 +98,17 @@ const AppRoutes = () => {
                 <Route path="/register-org" element={<RegisterOrganization />} />
                 <Route path="/oauth2/callback" element={<OAuth2Callback />} />
 
+                {/* ROOT ROUTE: Landing for Guests / Dashboard for Users */}
                 <Route path="/" element={
-                    <ProtectedRoute>
-                        <Layout currentUser={currentUser} handleLogout={logout}>
-                            <DashboardWrapper currentUser={currentUser} />
-                        </Layout>
-                    </ProtectedRoute>
+                    currentUser ? (
+                        <ProtectedRoute>
+                            <Layout currentUser={currentUser} handleLogout={logout}>
+                                <DashboardWrapper currentUser={currentUser} />
+                            </Layout>
+                        </ProtectedRoute>
+                    ) : (
+                        <LandingPage />
+                    )
                 } />
 
                 <Route path="/course/:id" element={
@@ -199,6 +206,8 @@ const AppRoutes = () => {
                         <CertificateView />
                     </ProtectedRoute>
                 } />
+
+
 
                 <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>

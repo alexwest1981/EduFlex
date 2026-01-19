@@ -45,11 +45,11 @@ public class ModuleService {
                 createIfNotExists("DARK_MODE", "Dark Mode Core", "Globalt mörkt tema för hela plattformen.", "2.4.0",
                                 true,
                                 false);
-                createIfNotExists("QUIZ_RUNNER_BASIC", "QuizRunner Basic", "Skapa och genomför egna quiz (Manuellt).",
+                createIfNotExists("QUIZ_BASIC", "QuizRunner Basic", "Skapa och genomför egna quiz (Manuellt).",
                                 "1.2.0",
                                 true,
                                 false);
-                createIfNotExists("QUIZ_RUNNER_PRO", "QuizRunner Pro",
+                createIfNotExists("QUIZ_PRO", "QuizRunner Pro",
                                 "Avancerad quizhantering med frågebank och AI-generering.", "2.0.0", true,
                                 true);
                 createIfNotExists("SUBMISSIONS", "Inlämningar", "Hantera inlämningsuppgifter och bedömning.", "1.0.0",
@@ -58,20 +58,17 @@ public class ModuleService {
                 createIfNotExists("FORUM", "Forum (Community)", "Gemensam diskussionsforum med trådar och inlägg.",
                                 "1.0.0", true, true);
                 createIfNotExists("CHAT", "EduChat Pro", "Realtidskommunikation via WebSockets.", "3.1.0", true, true);
-                createIfNotExists("SUBMISSIONS", "Assignment Tracker", "Inlämning av uppgifter och feedback.", "1.2.0",
-                                true, true);
-                createIfNotExists("QUIZ", "QuizRunner", "AI-drivna quizzes och frågebankshantering.", "2.0.0", true,
-                                true);
                 createIfNotExists("GAMIFICATION", "Gamification Engine",
                                 "Belöningssystem: Badges, Achievements, Leaderboards.", "1.1.0", true, false);
                 createIfNotExists("ANALYTICS", "Analytics Dashboard", "Systemanalys & datavisualisering.", "2.5.0",
                                 true, true);
                 createIfNotExists("REVENUE", "Revenue Management", "Prenumerationer, betalningar och fakturering.",
-                                "1.0.0", false, false);
+                                "1.0.0", false, true);
                 createIfNotExists("SCORM", "SCORM / xAPI Integration",
                                 "Importera och kör interaktiva kurspaket (SCORM 1.2).", "1.0.0", false, true);
                 createIfNotExists("ENTERPRISE_WHITELABEL", "Enterprise Whitelabel",
-                                "Fullt anpassningsbar branding: logotyp, färgtema, favicon och mer. Endast för ENTERPRISE-licens.", "1.0.0", true, true);
+                                "Fullt anpassningsbar branding: logotyp, färgtema, favicon och mer. Endast för ENTERPRISE-licens.",
+                                "1.0.0", true, true);
         }
 
         private void createIfNotExists(String key, String name, String desc, String ver, boolean active, boolean lic) {

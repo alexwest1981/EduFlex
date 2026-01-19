@@ -86,7 +86,7 @@ const DailyChallengesWidget = () => {
     }
 
     return (
-        <div className="bg-white dark:bg-[#1E1F20] rounded-2xl p-6 shadow-sm border border-gray-200 dark:border-gray-800">
+        <div className="h-full w-full p-6">
             <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
                     <div className="p-2 bg-gradient-to-br from-orange-500 to-pink-500 rounded-xl">
@@ -118,14 +118,14 @@ const DailyChallengesWidget = () => {
                             <div
                                 key={challenge.id}
                                 className={`relative p-4 rounded-xl border-2 transition-all ${isCompleted
-                                        ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800'
-                                        : 'bg-gray-50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 hover:border-indigo-300 dark:hover:border-indigo-700'
+                                    ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800'
+                                    : 'bg-gray-50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 hover:border-indigo-300 dark:hover:border-indigo-700'
                                     }`}
                             >
                                 <div className="flex items-start gap-3">
                                     <div className={`p-2 rounded-lg ${isCompleted
-                                            ? 'bg-green-100 dark:bg-green-900/40 text-green-600 dark:text-green-400'
-                                            : 'bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400'
+                                        ? 'bg-green-100 dark:bg-green-900/40 text-green-600 dark:text-green-400'
+                                        : 'bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400'
                                         }`}>
                                         {isCompleted ? <CheckCircle size={20} /> : getIcon(challenge.icon)}
                                     </div>
@@ -160,8 +160,8 @@ const DailyChallengesWidget = () => {
                                             <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
                                                 <div
                                                     className={`h-full transition-all duration-500 ${isCompleted
-                                                            ? 'bg-gradient-to-r from-green-500 to-emerald-500'
-                                                            : 'bg-gradient-to-r from-indigo-500 to-purple-500'
+                                                        ? 'bg-gradient-to-r from-green-500 to-emerald-500'
+                                                        : 'bg-gradient-to-r from-indigo-500 to-purple-500'
                                                         }`}
                                                     style={{ width: `${progressPercent}%` }}
                                                 />

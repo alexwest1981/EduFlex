@@ -9,7 +9,7 @@ import { QuizLibrary } from './QuizLibrary';
 import { QuestionBankManager } from './QuestionBankManager';
 
 export const QuizModuleBasicMetadata = {
-    id: 'quiz_runner_basic',
+    id: 'QUIZ_BASIC',
     name: 'QuizRunner Basic',
     version: '1.2.0',
     description: 'Skapa och genomför egna quiz (Manuellt).',
@@ -19,7 +19,7 @@ export const QuizModuleBasicMetadata = {
 };
 
 export const QuizModuleProMetadata = {
-    id: 'quiz_runner_pro',
+    id: 'QUIZ_PRO',
     name: 'QuizRunner Pro',
     version: '2.0.0',
     description: 'Avancerad quizhantering med frågebank och AI-generering.',
@@ -48,7 +48,7 @@ const QuizModule = ({ courseId, currentUser, isTeacher, mode = 'COURSE' }) => {
     const { isModuleActive } = useModules(); // <--- Access module context
 
     // Check if Pro features are valid
-    const isPro = isModuleActive('quiz_runner_pro') || isModuleActive('QUIZ_RUNNER_PRO');
+    const isPro = isModuleActive('QUIZ_PRO') || isModuleActive('quiz_runner_pro');
 
     const [quizzes, setQuizzes] = useState([]);
     const [activeQuiz, setActiveQuiz] = useState(null);

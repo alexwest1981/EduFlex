@@ -27,7 +27,7 @@ export const AppProvider = ({ children }) => {
     const [licenseStatus, setLicenseStatus] = useState('checking');
     const [licenseLocked, setLicenseLocked] = useState(false);
 
-    const API_BASE = 'http://127.0.0.1:8080/api';
+    const API_BASE = '/api';
 
     // 1. Init Effect
     useEffect(() => {
@@ -107,9 +107,13 @@ export const AppProvider = ({ children }) => {
         }
     };
 
-    const login = (user, token) => {
+    const login = (user, token, tenantId) => {
         localStorage.setItem('token', token);
         localStorage.setItem('user', JSON.stringify(user));
+        if (tenantId) {
+            // Persist tenantId for api.js to skip hostname check
+            localStorage.setItem('force_tenant', tenantId);
+        }
         setCurrentUser(user);
         loadSettings();
     };
@@ -117,6 +121,7 @@ export const AppProvider = ({ children }) => {
     const logout = () => {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
+        localStorage.removeItem('force_tenant'); // Clear tenant context
         setCurrentUser(null);
 
         const sysLang = systemSettings?.default_language || 'sv';

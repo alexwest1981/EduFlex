@@ -1,4 +1,5 @@
-const API_BASE = 'http://localhost:8080/api';
+// Use relative URL to leverage Vite's proxy for LAN access
+const API_BASE = '/api';
 
 const getTenantFromUrl = () => {
     const hostname = window.location.hostname;
@@ -12,12 +13,28 @@ const getTenantFromUrl = () => {
         return hostname.split('.')[0];
     }
 
-    // 3. Hantera produktionsdomäner (t.ex. acme.eduflex.se eller acme.eduflex.local)
+    // 3. Ignorera IP-adresser (t.ex. 192.168.x.x)
+    if (/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(hostname)) {
+        return null;
+    }
+
+    // 4. Ignorera temporära tunneling-domäner (inte produktionsdomäner via Cloudflare Tunnel)
+    if (hostname.includes('ngrok') || hostname.includes('loca.lt') || hostname.includes('trycloudflare.com')) {
+        console.log('[TENANT DEBUG] Ignoring temporary tunnel domain:', hostname);
+        return null;
+    }
+
+    // 5. Hantera produktionsdomäner (t.ex. acme.eduflex.se eller acme.eduflex.local)
     // Antar att huvuddomänen är de två sista delarna (eduflex.se)
     const parts = hostname.split('.');
     if (parts.length > 2) {
+        const subdomain = parts[0];
+        // Ignorera 'www', 'api' och andra system-subdomäner
+        if (['www', 'api', 'eduflexlms'].includes(subdomain)) {
+            return null;
+        }
         // Returnera första delen (subdomänen)
-        return parts[0];
+        return subdomain;
     }
 
     return null; // Ingen tenant (Public / Default)
@@ -394,7 +411,8 @@ export const api = {
             body: JSON.stringify(data)
         }).then(handleResponse),
         getCourseLogs: (courseId) => fetch(`${API_BASE}/activity/course/${courseId}`, { headers: getHeaders() }).then(handleResponse),
-        getStudentLogs: (courseId, userId) => fetch(`${API_BASE}/activity/course/${courseId}/student/${userId}`, { headers: getHeaders() }).then(handleResponse)
+        getStudentLogs: (courseId, userId) => fetch(`${API_BASE}/activity/course/${courseId}/student/${userId}`, { headers: getHeaders() }).then(handleResponse),
+        getGlobalStudentLogs: (userId) => fetch(`${API_BASE}/activity/student/${userId}`, { headers: getHeaders() }).then(handleResponse)
     },
 
     logs: {

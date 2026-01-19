@@ -64,8 +64,8 @@ const SkolverketCourseInfo = ({ skolverketCourse }) => {
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}
                             className={`flex items-center gap-2 px-4 py-2 font-medium transition-colors border-b-2 ${activeTab === tab.id
-                                    ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400'
-                                    : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
+                                ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400'
+                                : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
                                 }`}
                         >
                             <Icon size={18} />
@@ -156,9 +156,12 @@ const InfoItem = ({ label, value }) => (
 );
 
 const Section = ({ title, content }) => (
-    <div>
+    <div className="mb-6">
         <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">{title}</h3>
-        <p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{content}</p>
+        <div
+            className="text-gray-700 dark:text-gray-300 prose dark:prose-invert max-w-none"
+            dangerouslySetInnerHTML={{ __html: content }}
+        />
     </div>
 );
 

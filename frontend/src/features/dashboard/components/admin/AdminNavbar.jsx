@@ -17,9 +17,7 @@ const AdminNavbar = () => {
         { id: 'administration', label: t('admin_tabs.administration') || 'Administration', icon: Users, path: '/admin?tab=administration' },
         { id: 'tenants', label: 'Tenants', icon: Server, path: '/admin?tab=tenants' },
         { id: 'system', label: t('admin_tabs.system_settings') || 'Systeminställningar', icon: Settings, path: '/admin?tab=system' },
-        { id: 'skolverket', label: t('admin_tabs.skolverket_import') || 'Skolverket Import', icon: Database, path: '/admin?tab=skolverket' },
-        { id: 'skolverket-edit', label: 'Skolverket Data', icon: Edit3, path: '/admin?tab=skolverket-edit' },
-        { id: 'whitelabel', label: 'Whitelabel', icon: Globe, path: '/enterprise/whitelabel' }
+        { id: 'skolverket', label: 'Skolverket', icon: Database, path: '/admin?tab=skolverket' }
     ];
 
     const handleNavigation = (tab) => {

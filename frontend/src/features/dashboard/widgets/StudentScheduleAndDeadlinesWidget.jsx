@@ -73,7 +73,7 @@ const StudentScheduleAndDeadlinesWidget = ({ assignments = [] }) => {
     };
 
     return (
-        <div className="bg-white dark:bg-[#1E1F20] rounded-2xl border border-gray-100 dark:border-[#3c4043] shadow-sm mb-6 overflow-hidden">
+        <div className="h-full w-full overflow-hidden">
             <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-gray-100 dark:divide-[#3c4043]">
 
                 {/* COLUMN 1: DAGENS LEKTIONER */}

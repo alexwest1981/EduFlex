@@ -32,24 +32,45 @@ public class TenantController {
         return ResponseEntity.ok(tenantService.getAllTenants());
     }
 
-    @PostMapping
-    @Operation(summary = "Create a new tenant", description = "Creates a new tenant entry (schema init separate or auto).")
-    public ResponseEntity<Tenant> createTenant(@RequestBody com.eduflex.backend.dto.TenantCreationRequest request) { // Använder
-                                                                                                                     // TenantCreationRequest
-                                                                                                                     // men
-                                                                                                                     // kanske
-                                                                                                                     // behöver
-                                                                                                                     // anpassas
-        // TODO: Mappa om requesten ordentligt
-        logger.info("Received tenant creation request: {}", request.getName());
-        // Förenklad create för nu
-        // Vi måste kanske uppdatera TenantService.createTenant signaturen också
-        // För tillfället antar vi att vi vill skapa tenant-objektet
+    @org.springframework.beans.factory.annotation.Value("${eduflex.registration.key:secret_key_123}")
+    private String expectedRegistrationKey;
 
-        // Temporär fulhack för att matcha det frontend skickar (name, tenantId, schema)
-        // Vi återkommer till detta.
-        Tenant tenant = tenantService.createTenantRaw(request.getName(), request.getTenantId(), request.getSchema());
-        return ResponseEntity.ok(tenant);
+    @PostMapping
+    @Operation(summary = "Create a new tenant", description = "Creates a new tenant entry and initializes schema + admin user. Requires Registration Key.")
+    public ResponseEntity<?> createTenant(@Valid @RequestBody TenantCreationRequest request) {
+        logger.info("Received tenant creation request for: {}", request.getName());
+
+        // 1. Security Check
+        String incomingKey = request.getRegistrationKey() != null ? request.getRegistrationKey().trim() : null;
+
+        if (expectedRegistrationKey != null && !expectedRegistrationKey.equals(incomingKey)) {
+            logger.warn("Invalid registration key attempt for tenant: {}", request.getName());
+            logger.debug("Expected Key: '{}' (len={}), Received Key: '{}' (len={})",
+                    expectedRegistrationKey, expectedRegistrationKey.length(),
+                    incomingKey, incomingKey != null ? incomingKey.length() : "null");
+            return ResponseEntity.status(403).body(java.util.Map.of("error", "Invalid Registration Key"));
+        }
+
+        try {
+            // 2. Create Tenant & Admin User
+            // Note: tenantId = organizationKey from DTO logic
+            Tenant tenant = tenantService.createTenant(
+                    request.getName(),
+                    request.getDomain(),
+                    request.getDbSchema(),
+                    request.getOrganizationKey(),
+                    request.getAdminEmail(),
+                    request.getAdminPassword(),
+                    request.getAdminFirstName(),
+                    request.getAdminLastName());
+            return ResponseEntity.ok(tenant);
+
+        } catch (org.springframework.web.server.ResponseStatusException e) {
+            return ResponseEntity.status(e.getStatusCode()).body(java.util.Map.of("error", e.getReason()));
+        } catch (Exception e) {
+            logger.error("Failed to create tenant", e);
+            return ResponseEntity.status(500).body(java.util.Map.of("error", e.getMessage()));
+        }
     }
 
     @DeleteMapping("/{id}")

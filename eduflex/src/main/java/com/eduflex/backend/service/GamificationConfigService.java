@@ -50,7 +50,8 @@ public class GamificationConfigService {
      */
     private GamificationConfig createDefaultConfig(Long organizationId) {
         GamificationConfig config = new GamificationConfig();
-        config.setOrganizationId(organizationId);
+        // config.setOrganizationId(organizationId); // TODO: Add organizationId field
+        // to GamificationConfig model
         config.setEnabled(false); // Disabled by default
         config.setLeaderboardsEnabled(true);
         config.setAchievementsEnabled(true);

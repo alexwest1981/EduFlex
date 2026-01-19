@@ -46,7 +46,7 @@ const StudentAttendanceWidget = ({ currentUser, settings }) => {
     const riskColorClass = getStatusColor(status.riskLevel);
 
     return (
-        <div className="bg-white dark:bg-[#1E1F20] p-5 rounded-2xl border border-gray-200 dark:border-[#3c4043] shadow-sm">
+        <div className="h-full w-full p-5">
             <div className="flex justify-between items-start mb-4">
                 <h3 className="font-bold text-gray-900 dark:text-white flex items-center gap-2">
                     <Activity size={18} className="text-indigo-500" />

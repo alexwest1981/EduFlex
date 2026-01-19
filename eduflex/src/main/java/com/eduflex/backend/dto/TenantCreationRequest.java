@@ -21,6 +21,9 @@ public class TenantCreationRequest {
     private String tenantId;
     private String schema;
 
+    // Security
+    private String registrationKey;
+
     public String getTenantId() {
         return tenantId != null ? tenantId : organizationKey;
     }
@@ -106,5 +109,13 @@ public class TenantCreationRequest {
 
     public void setAdminLastName(String adminLastName) {
         this.adminLastName = adminLastName;
+    }
+
+    public String getRegistrationKey() {
+        return registrationKey;
+    }
+
+    public void setRegistrationKey(String registrationKey) {
+        this.registrationKey = registrationKey;
     }
 }

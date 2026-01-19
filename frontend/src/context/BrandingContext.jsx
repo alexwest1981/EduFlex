@@ -3,6 +3,19 @@ import { api } from '../services/api';
 
 const BrandingContext = createContext();
 
+// Helper to check if user is admin from localStorage
+const isUserAdmin = () => {
+  try {
+    const storedUser = localStorage.getItem('user');
+    if (!storedUser) return false;
+    const user = JSON.parse(storedUser);
+    const role = user.role?.name || user.role;
+    return role === 'ADMIN' || role === 'ROLE_ADMIN';
+  } catch {
+    return false;
+  }
+};
+
 export const useBranding = () => {
   const context = useContext(BrandingContext);
   if (!context) {
@@ -66,6 +79,11 @@ export const BrandingProvider = ({ children }) => {
   };
 
   const checkAccess = async () => {
+    // Only call API if user is admin to avoid 403 errors
+    if (!isUserAdmin()) {
+      setHasAccess(false);
+      return;
+    }
     try {
       const data = await api.branding.checkAccess();
       setHasAccess(data?.hasAccess || false);

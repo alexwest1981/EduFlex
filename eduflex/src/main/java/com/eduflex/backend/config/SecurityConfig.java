@@ -176,9 +176,7 @@ public class SecurityConfig {
         } else {
             http.addFilterBefore(authTokenFilter, UsernamePasswordAuthenticationFilter.class);
         }
-        // http.addFilterBefore(licenseFilter,
-        // UsernamePasswordAuthenticationFilter.class); // Check License first (DISABLED
-        // DEBUG)
+        http.addFilterBefore(licenseFilter, UsernamePasswordAuthenticationFilter.class);
 
         // OAuth2 Login (for social login and Keycloak browser-based SSO)
         http.oauth2Login(oauth2 -> oauth2
@@ -197,8 +195,21 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:5173", "http://localhost:8080"));
-        // configuration.setAllowedOriginPatterns(List.of("*"));
+        // Allow localhost and LAN access (any IP on common ports)
+        configuration.setAllowedOriginPatterns(List.of(
+                "http://localhost:*",
+                "http://127.0.0.1:*",
+                "http://192.168.*.*:*",
+                "http://10.*.*.*:*",
+                "http://172.16.*.*:*",
+                // Allow ngrok and other tunneling services
+                "https://*.ngrok-free.app",
+                "https://*.ngrok.io",
+                "https://*.ngrok-free.dev",
+                "https://*.loca.lt",
+                "https://*.trycloudflare.com",
+                "https://eduflexlms.se",
+                "https://www.eduflexlms.se"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(List.of("Authorization", "Cache-Control", "Content-Type", "X-Requested-With",
                 "Accept", "Origin", "Access-Control-Request-Method", "Access-Control-Request-Headers", "X-Tenant-ID"));

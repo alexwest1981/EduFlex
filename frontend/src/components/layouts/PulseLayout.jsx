@@ -42,13 +42,14 @@ const PulseLayout = ({ children }) => {
     ];
 
     return (
-        <div className="flex items-center justify-center p-8 h-screen w-screen overflow-hidden text-gray-800 font-sans transition-colors duration-300" style={{ background: '#E8E8E8' }}> {/* Soft Grey BG */}
+        <div className="flex items-center justify-center p-8 h-screen w-screen overflow-hidden text-gray-800 font-sans transition-colors duration-300" style={{ background: 'var(--app-background)' }}> {/* Soft Grey BG */}
             <style>{`
                 @media (prefers-color-scheme: dark) {
-                    .dark-mode-bg { background: #121212 !important; }
+                    .dark-mode-bg { background: var(--app-background-dark) !important; }
                 }
-                :root.dark body { background: #121212 !important; }
-                .app-wrapper { background: #E8E8E8; }
+                :root.dark body { background: var(--app-background-dark) !important; }
+                .app-wrapper { background: var(--app-background); }
+                .dark .app-wrapper { background: var(--app-background-dark); }
                 .pulse-scroll::-webkit-scrollbar { width: 0px; background: transparent; } /* Hidden scrollbar for clean look */
             `}</style>
 
@@ -104,7 +105,7 @@ const PulseLayout = ({ children }) => {
                         <div>
                             {/* Greeting aligned with Sidebar Icon */}
                             <h1 className="text-3xl tracking-tight">
-                                <span className="font-black text-black">Hej, </span>
+                                <span className="font-black text-black dark:text-white">Hej, </span>
                                 <span className="font-black text-red-600">{currentUser?.firstName}</span>
                                 <span className="ml-2">👋</span>
                             </h1>

@@ -186,9 +186,30 @@ const ChatOverlay = ({ currentUser, API_BASE, token }) => {
         } catch (err) { }
     };
 
+    // Helper to fix URLs for LAN access
+    const getSafeUrl = (url) => {
+        if (!url) return null;
+        let finalUrl = url;
+        const hostname = window.location.hostname;
+
+        if (finalUrl.includes('minio:9000')) {
+            finalUrl = finalUrl.replace('minio', hostname);
+        } else if (finalUrl.startsWith('/')) {
+            finalUrl = `http://${hostname}:8080${finalUrl}`;
+        } else if (finalUrl.includes('127.0.0.1')) {
+            finalUrl = finalUrl.replace('127.0.0.1', hostname);
+        }
+
+        // Ensure protocol
+        if (!finalUrl.startsWith('http')) {
+            finalUrl = `http://${hostname}:8080${finalUrl}`;
+        }
+        return finalUrl;
+    };
+
     if (!isOpen) {
         return (
-            <div className="fixed bottom-6 right-6 z-50 group">
+            <div className="fixed bottom-24 lg:bottom-6 right-6 z-50 group transition-all duration-300">
                 {unreadCount > 0 && (
                     <div className="absolute -top-1 -right-1 bg-red-600 text-white text-xs font-bold w-6 h-6 flex items-center justify-center rounded-full border-2 border-white shadow-lg animate-bounce z-50">{unreadCount}</div>
                 )}
@@ -203,7 +224,7 @@ const ChatOverlay = ({ currentUser, API_BASE, token }) => {
     }
 
     return (
-        <div className="fixed bottom-6 right-6 w-96 h-[500px] bg-white rounded-2xl shadow-2xl border border-gray-200 flex flex-col overflow-hidden z-50 animate-in slide-in-from-bottom-10 flex flex-col ring-1 ring-black/5">
+        <div className="fixed bottom-24 lg:bottom-6 right-6 w-96 h-[500px] bg-white rounded-2xl shadow-2xl border border-gray-200 flex flex-col overflow-hidden z-50 animate-in slide-in-from-bottom-10 flex flex-col ring-1 ring-black/5 max-w-[calc(100vw-3rem)]">
             <div className="bg-indigo-600 p-4 text-white flex justify-between items-center shrink-0 shadow-md z-10">
                 <div className="flex items-center gap-3">
                     {activeChatUser ? (
@@ -254,7 +275,7 @@ const ChatOverlay = ({ currentUser, API_BASE, token }) => {
                                     <div className="w-10 h-10 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center font-bold shrink-0 border border-indigo-50 group-hover:bg-indigo-600 group-hover:text-white transition-colors overflow-hidden">
                                         {u.profilePictureUrl ? (
                                             <img
-                                                src={u.profilePictureUrl.startsWith('http') ? u.profilePictureUrl : `${API_BASE.replace('/api', '')}${u.profilePictureUrl}`}
+                                                src={getSafeUrl(u.profilePictureUrl)}
                                                 className="w-full h-full object-cover"
                                                 onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'block'; }}
                                             />
@@ -275,7 +296,7 @@ const ChatOverlay = ({ currentUser, API_BASE, token }) => {
                                         return (
                                             <div key={idx} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
                                                 <div className={`max-w-[75%] p-3 rounded-2xl shadow-sm text-sm ${isMe ? 'bg-indigo-600 text-white rounded-br-none' : 'bg-white border text-gray-800 rounded-bl-none'}`}>
-                                                    {msg.type === 'IMAGE' ? <img src={`http://127.0.0.1:8080${msg.content}`} alt={t('chat.image')} className="rounded-lg max-w-full border border-white/20" /> : <p>{msg.content}</p>}
+                                                    {msg.type === 'IMAGE' ? <img src={getSafeUrl(msg.content)} alt={t('chat.image')} className="rounded-lg max-w-full border border-white/20" /> : <p>{msg.content}</p>}
                                                     <div className={`text-[10px] mt-1 text-right opacity-70`}>{new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
                                                 </div>
                                             </div>

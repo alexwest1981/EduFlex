@@ -172,7 +172,7 @@ const CourseCatalog = () => {
                                             {course.name}
                                         </h3>
                                         <p className="text-gray-500 dark:text-gray-400 text-sm mb-4 line-clamp-2 h-10">
-                                            {course.description || "Ingen beskrivning tillgänglig."}
+                                            {course.description ? course.description.replace(/<[^>]*>/g, '') : "Ingen beskrivning tillgänglig."}
                                         </p>
 
                                         <div className="flex items-center gap-4 text-xs text-gray-400 mb-6 border-t border-gray-100 dark:border-[#3c4043] pt-4">
@@ -241,12 +241,19 @@ const CourseCatalog = () => {
                                     <SkolverketCourseInfo skolverketCourse={selectedCourseInfo.skolverketCourse} />
                                 ) : (
                                     <div className="p-8 text-center">
-                                        <h2 className="text-2xl font-bold mb-4">{selectedCourseInfo.name}</h2>
-                                        <p className="text-gray-600 dark:text-gray-300 mb-6">{selectedCourseInfo.description}</p>
-                                        <div className="p-4 bg-yellow-50 dark:bg-yellow-900/10 border border-yellow-100 dark:border-yellow-900/30 rounded-xl text-yellow-800 dark:text-yellow-400 inline-block">
-                                            <AlertCircle className="inline-block mr-2" size={18} />
-                                            Denna kurs är inte kopplad till en officiell kursplan från Skolverket ännu.
-                                        </div>
+                                        <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">{selectedCourseInfo.name}</h2>
+                                        <div
+                                            className="text-gray-600 dark:text-gray-300 mb-6 prose dark:prose-invert max-w-none text-left"
+                                            dangerouslySetInnerHTML={{ __html: selectedCourseInfo.description }}
+                                        />
+
+                                        {/* Show warning only if NOT a Skolverket Import */}
+                                        {selectedCourseInfo.category !== 'Skolverket Import' && (
+                                            <div className="p-4 bg-yellow-50 dark:bg-yellow-900/10 border border-yellow-100 dark:border-yellow-900/30 rounded-xl text-yellow-800 dark:text-yellow-400 inline-block">
+                                                <AlertCircle className="inline-block mr-2" size={18} />
+                                                Denna kurs är inte kopplad till en officiell kursplan från Skolverket ännu.
+                                            </div>
+                                        )}
                                     </div>
                                 )}
                             </div>

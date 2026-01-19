@@ -16,21 +16,29 @@ const StudentDrillDown = ({ student, onClose }) => {
     const fetchDetails = async () => {
         try {
             // Fetch specific status (reuse my-status endpoint for now with studentId param)
-            // Note: in a real app, we might have a dedicated /admin/student/{id} endpoint
-            const status = await api.get(`/analytics/my-status?studentId=${student.id}`);
+            const statusPromise = api.get(`/analytics/my-status?studentId=${student.id}`);
+            const logsPromise = api.activity.getGlobalStudentLogs(student.id);
 
-            // Mocking activity history for the chart as we don't have an endpoint for it yet
-            const mockHistory = [
-                { day: 'Mån', hours: 2.5 },
-                { day: 'Tis', hours: 4.0 },
-                { day: 'Ons', hours: 1.5 },
-                { day: 'Tor', hours: 5.0 },
-                { day: 'Fre', hours: 3.0 },
-                { day: 'Lör', hours: 1.0 },
-                { day: 'Sön', hours: 0.5 },
-            ];
+            const [status, logs] = await Promise.all([statusPromise, logsPromise]);
 
-            setDetails({ ...status, history: mockHistory });
+            // Process logs for chart
+            const last7Days = [...Array(7)].map((_, i) => {
+                const d = new Date();
+                d.setDate(d.getDate() - (6 - i));
+                return {
+                    dateStr: d.toLocaleDateString('sv-SE'), // 2024-01-01
+                    label: d.toLocaleDateString('sv-SE', { weekday: 'short' }) // Mån
+                };
+            });
+
+            // Map logs to days (count activities as a proxy for "hours" or "activity")
+            const history = last7Days.map(({ dateStr, label }) => {
+                const count = logs ? logs.filter(l => new Date(l.timestamp).toLocaleDateString('sv-SE') === dateStr).length : 0;
+                // Assuming roughly 0.5h per activity if we want to keep "hours" scale, or just show count
+                return { day: label, hours: count * 0.5 };
+            });
+
+            setDetails({ ...status, logs: logs || [], history });
         } catch (error) {
             console.error("Failed to load student details", error);
         } finally {
@@ -111,6 +119,45 @@ const StudentDrillDown = ({ student, onClose }) => {
                                             <Bar dataKey="hours" fill="#6366f1" radius={[4, 4, 0, 0]} barSize={30} />
                                         </BarChart>
                                     </ResponsiveContainer>
+                                </div>
+                            </div>
+
+                            {/* SENASTE HÄNDELSER */}
+                            <div>
+                                <h3 className="font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                                    <Clock size={18} className="text-indigo-500" />
+                                    Senaste Händelser
+                                </h3>
+                                <div className="bg-white dark:bg-[#1E1F20] border border-gray-100 dark:border-[#3c4043] rounded-xl overflow-hidden">
+                                    {details.logs && details.logs.length > 0 ? (
+                                        <div className="divide-y divide-gray-100 dark:divide-[#3c4043]">
+                                            {details.logs.slice(0, 5).map((log, idx) => (
+                                                <div key={idx} className="p-3 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-[#282a2c]">
+                                                    <div className="flex items-center gap-3">
+                                                        <div className={`p-2 rounded-lg ${log.activityType === 'LOGIN' ? 'bg-green-100 text-green-600' :
+                                                            log.activityType === 'VIEW_LESSON' ? 'bg-blue-100 text-blue-600' :
+                                                                'bg-gray-100 text-gray-600'
+                                                            }`}>
+                                                            {log.activityType === 'LOGIN' ? <User size={16} /> : <BookOpen size={16} />}
+                                                        </div>
+                                                        <div>
+                                                            <p className="text-sm font-bold text-gray-900 dark:text-white">
+                                                                {log.activityType === 'LOGIN' ? 'Inloggning' :
+                                                                    log.activityType === 'VIEW_LESSON' ? 'Öppnade lektion' :
+                                                                        log.activityType}
+                                                            </p>
+                                                            <p className="text-xs text-gray-500">{log.details || '-'}</p>
+                                                        </div>
+                                                    </div>
+                                                    <span className="text-xs text-gray-400 font-mono">
+                                                        {new Date(log.timestamp).toLocaleDateString()} {new Date(log.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                    </span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <p className="p-4 text-sm text-gray-500 italic text-center">Ingen aktivitet registrerad än.</p>
+                                    )}
                                 </div>
                             </div>
 

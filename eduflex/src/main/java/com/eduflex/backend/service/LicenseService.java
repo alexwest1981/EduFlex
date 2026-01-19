@@ -32,6 +32,7 @@ public class LicenseService {
         // --- DEV OVERRIDE ---
         this.currentTier = LicenseType.ENTERPRISE;
         this.isValid = true;
+        this.expiryDate = LocalDate.MAX; // Fix för NPE
         System.out.println("🔧 DEV MODE: Forced License Tier to ENTERPRISE");
     }
 
@@ -163,8 +164,10 @@ public class LicenseService {
     }
 
     public long getDaysRemaining() {
-        if (expiryDate == null)
-            return 0;
+        if (expiryDate == null) {
+            // Om ingen expiryDate finns (t.ex. i dev mode), returnera ett stort tal
+            return 999;
+        }
         return java.time.temporal.ChronoUnit.DAYS.between(LocalDate.now(), expiryDate);
     }
 

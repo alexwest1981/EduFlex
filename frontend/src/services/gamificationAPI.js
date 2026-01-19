@@ -1,5 +1,5 @@
 // Gamification API methods
-const API_BASE = 'http://localhost:8080/api';
+const API_BASE = '/api';
 
 const getHeaders = () => ({
     'Content-Type': 'application/json',

@@ -14,10 +14,23 @@ import { AssignmentsModuleMetadata } from '../../modules/assignments/Assignments
 import { ForumModuleMetadata } from '../../modules/forum/ForumModule';
 import { ChatModuleMetadata } from '../../modules/chat/ChatModule';
 import { GamificationModuleMetadata } from '../../modules/gamification/GamificationModule';
+import { useModules } from '../../context/ModuleContext';
 
 const AdminPanel = ({ currentUser }) => {
     const { t } = useTranslation();
     const { systemSettings, updateSystemSetting } = useAppContext();
+    const { isModuleActive, refreshModules } = useModules();
+
+    const handleToggleModule = async (moduleId, isActive) => {
+        try {
+            await api.modules.toggle(moduleId, isActive);
+            // Wait a bit or optimistic update? Refresh modules after toggle
+            await refreshModules();
+        } catch (e) {
+            console.error("Failed to toggle module", e);
+            alert("Kunde inte ändra modulstatus");
+        }
+    };
 
     // --- DATA STATE ---
     const [users, setUsers] = useState([]);
@@ -525,7 +538,18 @@ const AdminPanel = ({ currentUser }) => {
                                         <div className="flex justify-between items-start mb-4">
                                             <div className="p-3 rounded-xl bg-gray-50 dark:bg-[#282a2c] group-hover:bg-indigo-50 dark:group-hover:bg-indigo-900/20 transition-colors">{mod.icon}</div>
                                             <label className="relative inline-flex items-center cursor-pointer">
-                                                <input type="checkbox" className="sr-only peer" checked={systemSettings[mod.id] === 'true'} onChange={(e) => updateSystemSetting(mod.id, e.target.checked ? 'true' : 'false')} />
+                                                <input
+                                                    type="checkbox"
+                                                    className="sr-only peer"
+                                                    checked={mod.isCore ? systemSettings[mod.id] === 'true' : isModuleActive(mod.id)}
+                                                    onChange={(e) => {
+                                                        if (mod.isCore) {
+                                                            updateSystemSetting(mod.id, e.target.checked ? 'true' : 'false');
+                                                        } else {
+                                                            handleToggleModule(mod.id, e.target.checked);
+                                                        }
+                                                    }}
+                                                />
                                                 <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600 dark:bg-gray-700"></div>
                                             </label>
                                         </div>
@@ -538,7 +562,10 @@ const AdminPanel = ({ currentUser }) => {
                                         </div>
                                         <div className="pt-4 border-t border-gray-100 dark:border-[#3c4043] flex justify-between items-center text-xs font-mono text-gray-400">
                                             <div className="flex items-center gap-1"><Cpu size={12} /> {mod.version}</div>
-                                            <div className="flex items-center gap-1.5"><Activity size={12} className={systemSettings[mod.id] === 'true' ? "text-green-500" : "text-gray-400"} /> {systemSettings[mod.id] === 'true' ? 'Active' : 'Disabled'}</div>
+                                            <div className="flex items-center gap-1.5">
+                                                <Activity size={12} className={(mod.isCore ? systemSettings[mod.id] === 'true' : isModuleActive(mod.id)) ? "text-green-500" : "text-gray-400"} />
+                                                {(mod.isCore ? systemSettings[mod.id] === 'true' : isModuleActive(mod.id)) ? 'Active' : 'Disabled'}
+                                            </div>
                                         </div>
                                     </div>
                                 ))}

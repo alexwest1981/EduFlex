@@ -71,8 +71,25 @@ public class UserService {
         return userRepository.findAll(pageable);
     }
 
+    @Transactional
     public User getUserById(Long id) {
-        return userRepository.findById(id).orElseThrow(() -> new RuntimeException("Användare hittades inte"));
+        User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("Användare hittades inte"));
+        // Force initialization of lazy collection for Frontend Widgets
+        if (user.getEarnedBadges() != null) {
+            user.getEarnedBadges().size();
+        }
+        return user;
+    }
+
+    @Transactional
+    public User getUserByUsernameWithBadges(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Användare hittades inte: " + username));
+        // Force initialization of lazy collection
+        if (user.getEarnedBadges() != null) {
+            user.getEarnedBadges().size();
+        }
+        return user;
     }
 
     public User registerUser(User user) {

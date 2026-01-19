@@ -206,6 +206,7 @@ const CalendarView = () => {
     // --- RENDER HELPERS ---
     const hours = Array.from({ length: 11 }, (_, i) => i + 8); // 08:00 - 18:00
     const weekDays = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i)); // Mon-Sun
+    const [selectedMobileDate, setSelectedMobileDate] = useState(new Date()); // State for mobile selection
 
     const getEventsForSlot = (dayDate, hour) => {
         return calEvents.filter(e => {
@@ -251,35 +252,56 @@ const CalendarView = () => {
 
     const getEventTypeStyles = (type) => {
         switch (type) {
-            case 'LESSON': return 'bg-orange-100/70 dark:bg-orange-900/40 text-orange-900 dark:text-orange-100';
-            case 'EXAM': return 'bg-red-100/70 dark:bg-red-900/40 text-red-900 dark:text-red-100';
-            case 'WORKSHOP': return 'bg-teal-100/70 dark:bg-teal-900/40 text-teal-900 dark:text-teal-100';
-            case 'MEETING': return 'bg-purple-100/70 dark:bg-purple-900/40 text-purple-900 dark:text-purple-100';
-            default: return 'bg-gray-100/70 dark:bg-gray-800/40 text-gray-900 dark:text-gray-100';
+            case 'LESSON': return 'bg-orange-100/70 dark:bg-orange-900/40 text-orange-900 dark:text-orange-100 border-l-4 border-orange-500';
+            case 'EXAM': return 'bg-red-100/70 dark:bg-red-900/40 text-red-900 dark:text-red-100 border-l-4 border-red-500';
+            case 'WORKSHOP': return 'bg-teal-100/70 dark:bg-teal-900/40 text-teal-900 dark:text-teal-100 border-l-4 border-teal-500';
+            case 'MEETING': return 'bg-purple-100/70 dark:bg-purple-900/40 text-purple-900 dark:text-purple-100 border-l-4 border-purple-500';
+            default: return 'bg-gray-100/70 dark:bg-gray-800/40 text-gray-900 dark:text-gray-100 border-l-4 border-gray-500';
         }
     };
 
     const getEventTypeIcon = (type) => {
         switch (type) {
-            case 'LESSON': return <Users size={14} />;
-            case 'EXAM': return <AlertCircle size={14} />;
-            case 'WORKSHOP': return <Video size={14} />;
-            case 'MEETING': return <User size={14} />;
-            default: return <Clock size={14} />;
+            case 'LESSON': return <Users size={16} />;
+            case 'EXAM': return <AlertCircle size={16} />;
+            case 'WORKSHOP': return <Video size={16} />;
+            case 'MEETING': return <User size={16} />;
+            default: return <Clock size={16} />;
         }
     };
 
+    // Mobile Event Card Render
+    const renderMobileEventCard = (event) => (
+        <div
+            key={event.id}
+            onClick={() => { setSelectedEvent(event); setShowEventDetail(true); }}
+            className={`p-4 rounded-xl shadow-sm mb-3 flex items-start gap-4 transition-transform active:scale-95 ${getEventTypeStyles(event.type)}`}
+        >
+            <div className="mt-1 p-2 rounded-full bg-white/50 dark:bg-black/20 shrink-0">
+                {getEventTypeIcon(event.type)}
+            </div>
+            <div className="flex-1 min-w-0">
+                <h3 className="font-bold text-base truncate">{event.title}</h3>
+                <p className="text-sm opacity-90 truncate">{event.description || t('calendar.no_description', 'No description')}</p>
+                <div className="flex items-center gap-3 mt-2 text-xs font-semibold opacity-75">
+                    <span className="flex items-center gap-1"><Clock size={12} /> {event.start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - {event.end.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                    {event.platform !== 'NONE' && <span className="uppercase">{event.platform}</span>}
+                </div>
+            </div>
+        </div>
+    );
+
     return (
-        <div className="max-w-7xl mx-auto h-[calc(100vh-120px)] flex flex-col p-6">
+        <div className="max-w-7xl mx-auto flex flex-col p-4 lg:p-6 h-full lg:h-[calc(100vh-120px)]">
 
             {/* Header */}
-            <div className="flex justify-between items-center mb-6 shrink-0 bg-white dark:bg-[#1E1E1E] p-6 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-800">
-                <div>
-                    <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Calendar</h1>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">Your Personalized Calendar: The Smart Way to Stay on Top of Things</p>
+            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6 shrink-0 bg-white dark:bg-[#1E1E1E] p-4 lg:p-6 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-800 w-full">
+                <div className="mb-4 lg:mb-0">
+                    <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">{t('sidebar.calendar', 'Calendar')}</h1>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 hidden lg:block">Your Personalized Calendar: The Smart Way to Stay on Top of Things</p>
 
-                    {/* Statistics */}
-                    <div className="flex items-center gap-4 mt-4">
+                    {/* Statistics - Desktop Only */}
+                    <div className="hidden lg:flex items-center gap-4 mt-4">
                         <div className="flex items-center gap-2">
                             <div className="flex -space-x-2">
                                 <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-900/30 border-2 border-white dark:border-[#1E1E1E] flex items-center justify-center">
@@ -302,36 +324,110 @@ const CalendarView = () => {
                     </div>
                 </div>
 
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 w-full lg:w-auto justify-between lg:justify-end">
                     {/* Month Navigation */}
-                    <div className="flex items-center gap-2">
-                        <button className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
-                            Filter
+                    <div className="flex items-center gap-2 bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
+                        <button onClick={handlePrevWeek} className="p-2 hover:bg-white dark:hover:bg-gray-700 rounded-md transition-colors">
+                            <ChevronLeft size={18} className="text-gray-600 dark:text-gray-400" />
                         </button>
-                        <div className="flex items-center bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
-                            <button onClick={handlePrevWeek} className="p-2 hover:bg-white dark:hover:bg-gray-700 rounded-md transition-colors">
-                                <ChevronLeft size={18} className="text-gray-600 dark:text-gray-400" />
-                            </button>
-                            <span className="px-4 text-sm font-semibold text-gray-700 dark:text-gray-300 min-w-[120px] text-center">
-                                {weekStart.toLocaleDateString('sv-SE', { month: 'long', year: 'numeric' })}
-                            </span>
-                            <button onClick={handleNextWeek} className="p-2 hover:bg-white dark:hover:bg-gray-700 rounded-md transition-colors">
-                                <ChevronRight size={18} className="text-gray-600 dark:text-gray-400" />
-                            </button>
-                        </div>
-                        <button
-                            onClick={() => setShowBookingModal(true)}
-                            className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg font-semibold transition-colors flex items-center gap-2"
-                        >
-                            <Plus size={18} />
-                            New Event
+                        <span className="px-2 lg:px-4 text-sm font-semibold text-gray-700 dark:text-gray-300 min-w-[100px] lg:min-w-[120px] text-center">
+                            {weekStart.toLocaleDateString('sv-SE', { month: 'long', year: 'numeric' })}
+                        </span>
+                        <button onClick={handleNextWeek} className="p-2 hover:bg-white dark:hover:bg-gray-700 rounded-md transition-colors">
+                            <ChevronRight size={18} className="text-gray-600 dark:text-gray-400" />
                         </button>
                     </div>
+                    <button
+                        onClick={() => setShowBookingModal(true)}
+                        className="bg-orange-500 hover:bg-orange-600 text-white w-10 h-10 lg:w-auto lg:px-4 lg:py-2 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2 shadow-sm"
+                    >
+                        <Plus size={20} />
+                        <span className="hidden lg:inline">New Event</span>
+                    </button>
                 </div>
             </div>
 
-            {/* Main Content Grid */}
-            <div className="flex-1 flex gap-6 overflow-hidden">
+            {/* MOBILE VIEW: Day Strip + List */}
+            <div className="lg:hidden flex-1 flex flex-col gap-4 overflow-hidden">
+
+                {/* Mobile Week Navigation */}
+                <div className="flex items-center justify-between bg-gray-50 dark:bg-white/5 p-2 rounded-xl mb-2">
+                    <button onClick={handlePrevWeek} className="p-2 hover:bg-white dark:hover:bg-gray-700 rounded-lg shadow-sm transition-all border border-gray-200 dark:border-gray-700">
+                        <ChevronLeft size={20} className="text-gray-600 dark:text-gray-300" />
+                    </button>
+                    <span className="text-sm font-bold text-gray-800 dark:text-gray-200">
+                        {weekStart.toLocaleDateString('sv-SE', { month: 'long', year: 'numeric' })} v.{getWeekNumber(weekStart)}
+                    </span>
+                    <button onClick={handleNextWeek} className="p-2 hover:bg-white dark:hover:bg-gray-700 rounded-lg shadow-sm transition-all border border-gray-200 dark:border-gray-700">
+                        <ChevronRight size={20} className="text-gray-600 dark:text-gray-300" />
+                    </button>
+                </div>
+
+                {/* 7-Day Grid (No Scrolling) */}
+                <div className="grid grid-cols-7 gap-1 sm:gap-2">
+                    {weekDays.map((d, i) => {
+                        const isSelected = isSameDay(d, selectedMobileDate);
+                        const isToday = isSameDay(d, new Date());
+                        const hasEvent = getEventsForDay(d).length > 0;
+
+                        return (
+                            <button
+                                key={i}
+                                onClick={() => setSelectedMobileDate(d)}
+                                className={`
+                                    flex flex-col items-center justify-center py-2 h-16 rounded-xl border transition-all relative
+                                    ${isSelected
+                                        ? 'bg-indigo-600 text-white border-indigo-600 shadow-md transform scale-105 z-10'
+                                        : hasEvent
+                                            ? 'bg-orange-50/50 dark:bg-orange-500/10 text-gray-800 dark:text-gray-200 border-orange-200 dark:border-orange-500/30'
+                                            : 'bg-white dark:bg-[#1E1E1E] text-gray-500 dark:text-gray-400 border-gray-100 dark:border-gray-800'
+                                    }
+                                    ${isToday && !isSelected ? 'ring-1 ring-indigo-400 dark:ring-indigo-500 border-transparent' : ''}
+                                `}
+                            >
+                                <span className={`text-[10px] font-bold uppercase tracking-tighter mb-0.5 ${isSelected ? 'text-indigo-200' : hasEvent ? 'text-orange-600 dark:text-orange-400' : ''}`}>
+                                    {d.toLocaleDateString('sv-SE', { weekday: 'short' }).substring(0, 2)}
+                                </span>
+                                <span className={`text-base font-black leading-none ${isSelected ? 'text-white' : 'text-gray-900 dark:text-white'}`}>
+                                    {d.getDate()}
+                                </span>
+
+                                {/* Dot indicator for events */}
+                                {hasEvent && (
+                                    <div className={`absolute bottom-1.5 w-1.5 h-1.5 rounded-full shadow-sm ${isSelected ? 'bg-white' : 'bg-orange-500'}`} />
+                                )}
+                            </button>
+                        );
+                    })}
+                </div>
+
+                {/* Vertical Event List */}
+                <div className="flex-1 overflow-y-auto pb-20">
+                    <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-3 px-1">
+                        {isSameDay(selectedMobileDate, new Date()) ? 'Idag' : selectedMobileDate.toLocaleDateString('sv-SE', { weekday: 'long', day: 'numeric', month: 'long' })}
+                    </h2>
+
+                    {getEventsForDay(selectedMobileDate).length > 0 ? (
+                        <div className="space-y-1">
+                            {getEventsForDay(selectedMobileDate)
+                                .sort((a, b) => a.start - b.start)
+                                .map(renderMobileEventCard)
+                            }
+                        </div>
+                    ) : (
+                        <div className="flex flex-col items-center justify-center py-12 text-center opacity-50">
+                            <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mb-4 text-gray-400">
+                                <CalIcon size={32} />
+                            </div>
+                            <p className="text-gray-500 font-medium">Inga händelser inbokade.</p>
+                        </div>
+                    )}
+                </div>
+            </div>
+
+
+            {/* DESKTOP VIEW: Grid */}
+            <div className="flex-1 hidden lg:flex gap-6 overflow-hidden">
 
                 {/* Calendar Grid (Flex-1) */}
                 <div className="flex-1 bg-white dark:bg-[#1E1E1E] rounded-3xl shadow-xl border-2 border-gray-100 dark:border-gray-800 overflow-hidden flex flex-col">
@@ -419,7 +515,10 @@ const CalendarView = () => {
                 <div className="w-80 shrink-0 flex flex-col gap-6">
                     <MiniCalendar
                         currentDate={weekStart}
-                        onDateSelect={(date) => setWeekStart(getMonday(date))}
+                        onDateSelect={(date) => {
+                            setWeekStart(getMonday(date));
+                            setSelectedMobileDate(date); // Also update mobile selection
+                        }}
                     />
                     <ImportantDatesWidget
                         events={calEvents}

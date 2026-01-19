@@ -20,20 +20,31 @@ public class LicenseController {
 
     @GetMapping("/status")
     public ResponseEntity<?> getStatus() {
-        Map<String, Object> response = new HashMap<>();
+        try {
+            Map<String, Object> response = new HashMap<>();
 
-        // FIX: Anropar nu isValid()
-        if (licenseService.isValid()) {
-            response.put("status", "valid");
-            response.put("tier", licenseService.getTier());
-            response.put("customer", licenseService.getCustomerName());
-            response.put("expiry", licenseService.getExpiryDate());
-            response.put("daysRemaining", licenseService.getDaysRemaining());
-            response.put("isExpiringSoon", licenseService.isExpiringSoon());
-        } else {
-            response.put("status", "locked");
+            // FIX: Anropar nu isValid()
+            System.out.println("DEBUG: Checking license status...");
+            boolean valid = licenseService.isValid();
+            System.out.println("DEBUG: License valid? " + valid);
+
+            if (valid) {
+                response.put("status", "valid");
+                response.put("tier", licenseService.getTier());
+                response.put("customer", licenseService.getCustomerName());
+                response.put("expiry", licenseService.getExpiryDate());
+                response.put("daysRemaining", licenseService.getDaysRemaining());
+                response.put("isExpiringSoon", licenseService.isExpiringSoon());
+            } else {
+                response.put("status", "locked");
+            }
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            System.err.println("❌ CRITICAL ERROR in LicenseController:");
+            e.printStackTrace();
+            return ResponseEntity.status(500).body(
+                    Map.of("error", e.getMessage() != null ? e.getMessage() : "Unknown Error", "trace", e.toString()));
         }
-        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/activate")

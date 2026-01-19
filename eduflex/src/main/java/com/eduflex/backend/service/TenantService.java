@@ -47,6 +47,18 @@ public class TenantService {
                     "Tenant with schema " + dbSchema + " already exists.");
         }
 
+        // 0. Sanitize Inputs
+        if (name != null)
+            name = name.trim();
+        if (domain != null)
+            domain = domain.trim();
+        if (dbSchema != null)
+            dbSchema = dbSchema.trim();
+
+        if (dbSchema == null || dbSchema.isEmpty()) {
+            throw new IllegalArgumentException("Database schema cannot be empty");
+        }
+
         // 1. Create Tenant Entity
         Tenant tenant = new Tenant();
         tenant.setId(organizationKey);
@@ -56,7 +68,7 @@ public class TenantService {
         tenant.setActive(true);
 
         tenant = tenantRepository.save(tenant);
-        logger.info("Saved Tenant entity: {}", tenant.getId());
+        logger.info("Saved Tenant entity: {}, Schema: '{}'", tenant.getId(), dbSchema);
 
         // 2. Create Schema
         initTenantSchema(dbSchema, name);
@@ -167,6 +179,50 @@ public class TenantService {
 
                 ps.executeUpdate();
                 logger.info("Admin user created successfully for schema: {}", schema);
+            }
+
+            // 4. Assign ALL permissions to the ADMIN role
+            StringBuilder insertPermsSql = new StringBuilder(
+                    "INSERT INTO \"" + schema + "\".role_permissions (role_id, permission) VALUES ");
+            com.eduflex.backend.model.Permission[] allPerms = com.eduflex.backend.model.Permission.values();
+
+            for (int i = 0; i < allPerms.length; i++) {
+                insertPermsSql.append("(").append(roleId).append(", '").append(allPerms[i].name()).append("')");
+                if (i < allPerms.length - 1) {
+                    insertPermsSql.append(", ");
+                }
+            }
+            insertPermsSql.append(" ON CONFLICT DO NOTHING");
+
+            try (java.sql.Statement stmt = connection.createStatement()) {
+                stmt.execute(insertPermsSql.toString());
+                logger.info("Assigned all permissions to ADMIN role for schema: {}", schema);
+            }
+
+            // 5. Populate System Modules
+            logger.info("Populating default system modules for schema: {}", schema);
+            String insertModulesSql = "INSERT INTO \"" + schema
+                    + "\".system_modules (module_key, name, description, is_active, requires_license) VALUES " +
+                    "('DARK_MODE', 'Dark Mode Core', 'Globalt mörkt tema för hela plattformen.', true, false), " +
+                    "('SUBMISSIONS', 'Inlämningar', 'Hantera inlämningsuppgifter och bedömning.', true, false), " +
+                    "('CHAT', 'EduChat Pro', 'Realtidskommunikation via WebSockets.', true, true), " +
+                    "('FORUM', 'Forum (Community)', 'Gemensam diskussionsforum med trådar och inlägg.', true, true), " +
+                    "('QUIZ_BASIC', 'QuizRunner Basic', 'Skapa och genomför egna quiz (Manuellt).', true, false), " +
+                    "('QUIZ_PRO', 'QuizRunner Pro', 'Avancerad quizhantering med frågebank och AI-generering.', true, true), "
+                    +
+                    "('GAMIFICATION', 'Gamification Engine', 'Belöningssystem: Badges, Achievements, Leaderboards.', true, true), "
+                    +
+                    "('ANALYTICS', 'Analytics Dashboard', 'Systemanalys & datavisualisering.', true, true), " +
+                    "('ENTERPRISE_WHITELABEL', 'Enterprise Whitelabel', 'Fullt anpassningsbar branding: logotyp, färgtema, favicon och mer. Endast för ENTERPRISE-licens.', true, true), "
+                    +
+                    "('SCORM', 'SCORM / xAPI Integration', 'Importera och kör interaktiva kurspaket (SCORM 1.2).', true, true), "
+                    +
+                    "('REVENUE', 'Revenue Management', 'Prenumerationer, betalningar och fakturering.', false, true) " +
+                    "ON CONFLICT (module_key) DO NOTHING";
+
+            try (java.sql.Statement stmt = connection.createStatement()) {
+                stmt.execute(insertModulesSql);
+                logger.info("Default system modules populated for schema: {}", schema);
             }
 
         } catch (Exception e) {

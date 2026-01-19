@@ -3,8 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Loader2, Users, Settings, Database, Edit3, Server } from 'lucide-react';
 import { api } from '../../services/api';
 import AdministrationPanel from './AdministrationPanel';
-import SkolverketImport from '../admin/SkolverketImport';
-import SkolverketDataEntry from '../admin/SkolverketDataEntry';
+import SkolverketManager from '../admin/SkolverketManager';
 import SystemSettings from '../system/SystemSettings';
 import TenantManagement from '../admin/TenantManagement';
 import AdminNavbar from './components/admin/AdminNavbar';
@@ -65,8 +64,7 @@ const AdminAdministrationPage = () => {
                 )}
                 {activeTab === 'tenants' && <TenantManagement />}
                 {activeTab === 'system' && <SystemSettings asTab={true} />}
-                {activeTab === 'skolverket' && <SkolverketImport />}
-                {activeTab === 'skolverket-edit' && <SkolverketDataEntry />}
+                {activeTab === 'skolverket' && <SkolverketManager />}
             </div>
         </div>
     );

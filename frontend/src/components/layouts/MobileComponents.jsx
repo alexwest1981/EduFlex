@@ -1,10 +1,13 @@
 import React from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
-import { Menu, X, Users, LogOut, Moon, Sun, LayoutDashboard, Calendar, User, Layers } from 'lucide-react';
+import { Menu, X, Users, LogOut, Moon, Sun, LayoutDashboard, Calendar, User, Layers, ShieldAlert } from 'lucide-react';
 import { useAppContext } from '../../context/AppContext';
 import NotificationBell from '../NotificationBell';
 import OnlineFriendsPanel from '../social/OnlineFriendsPanel';
 import { useTranslation } from 'react-i18next';
+// Import Branding Hook
+import { useBranding } from '../../context/BrandingContext';
+import MobileAdminControlCenter from '../../features/mobile-admin/MobileAdminControlCenter';
 
 // Helper to fix MinIO URLs for client access
 const getProfileUrl = (url) => {
@@ -33,11 +36,14 @@ export const MobileSidebar = ({ isOpen, onClose, navItems, friendsPanelOpen, set
     const navigate = useNavigate();
     const location = useLocation();
 
+    // Theme support for Sidebar
+    const { getCustomTheme } = useBranding();
+    const customTheme = getCustomTheme();
+    const mobileTheme = customTheme?.mobile || {};
+    const borderRadius = mobileTheme.borderRadius || '24px';
+
     const handleLogout = () => { logout(); navigate('/login'); };
     const profileImgUrl = getProfileUrl(currentUser?.profilePictureUrl);
-
-    // Common role/permission logic (could be passed as props, but deriving here for simplicity if context is available)
-    const roleName = currentUser?.role?.name || currentUser?.role;
 
     if (!currentUser) return null;
 
@@ -46,23 +52,29 @@ export const MobileSidebar = ({ isOpen, onClose, navItems, friendsPanelOpen, set
             {/* Backdrop with fade-in and blur */}
             {isOpen && (
                 <div
-                    className="fixed inset-0 bg-black/20 dark:bg-black/50 backdrop-blur-sm z-30 lg:hidden transition-all duration-300 animate-in fade-in"
+                    className="fixed inset-0 bg-black/40 dark:bg-black/60 backdrop-blur-sm z-30 lg:hidden transition-all duration-300 animate-in fade-in"
                     onClick={onClose}
                 />
             )}
 
             {/* Sidebar Drawer */}
-            <aside className={`
-                fixed inset-y-0 left-0 z-40 w-72 transform transition-transform duration-300 ease-in-out
-                ${isOpen ? 'translate-x-0' : '-translate-x-full'}
-                bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl
-                border-r border-white/20 dark:border-white/5
-                shadow-2xl flex flex-col lg:hidden
-            `}>
+            <aside
+                className={`
+                    fixed inset-y-0 left-0 z-40 w-72 transform transition-transform duration-300 ease-out
+                    ${isOpen ? 'translate-x-0' : '-translate-x-full'}
+                    bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl
+                    border-r border-white/20 dark:border-white/5
+                    shadow-2xl flex flex-col lg:hidden
+                `}
+                style={{
+                    borderTopRightRadius: borderRadius,
+                    borderBottomRightRadius: borderRadius,
+                }}
+            >
                 {/* Header / Logo */}
-                <div className="h-16 flex items-center justify-between px-6 border-b border-gray-100/50 dark:border-[#282a2c]/50">
+                <div className="h-20 flex items-center justify-between px-6 border-b border-gray-100/50 dark:border-[#282a2c]/50">
                     <div className="flex items-center">
-                        <div className="w-8 h-8 bg-black dark:bg-white rounded-lg flex items-center justify-center text-white dark:text-black font-bold text-xl mr-3 shadow-sm">
+                        <div className="w-10 h-10 bg-black dark:bg-white rounded-xl flex items-center justify-center text-white dark:text-black font-bold text-xl mr-3 shadow-lg shadow-black/10">
                             {systemSettings?.site_name ? systemSettings.site_name[0] : 'E'}
                         </div>
                         <span className="font-bold text-xl tracking-tight text-gray-800 dark:text-white truncate block">
@@ -71,14 +83,14 @@ export const MobileSidebar = ({ isOpen, onClose, navItems, friendsPanelOpen, set
                     </div>
                     <button
                         onClick={onClose}
-                        className="p-2 hover:bg-black/5 dark:hover:bg-white/10 rounded-lg text-gray-500 dark:text-gray-400 transition-colors"
+                        className="p-2 hover:bg-black/5 dark:hover:bg-white/10 rounded-xl text-gray-500 dark:text-gray-400 transition-colors"
                     >
                         <X size={20} />
                     </button>
                 </div>
 
                 {/* Navigation Items */}
-                <nav className="flex-1 py-6 px-3 space-y-2 overflow-y-auto custom-scrollbar">
+                <nav className="flex-1 py-6 px-4 space-y-2 overflow-y-auto custom-scrollbar">
                     {navItems.map((item) => {
                         const isActive = location.pathname === item.path ||
                             (item.path === '/admin' && location.pathname.startsWith('/enterprise'));
@@ -88,18 +100,21 @@ export const MobileSidebar = ({ isOpen, onClose, navItems, friendsPanelOpen, set
                                 key={item.path}
                                 to={item.path}
                                 onClick={onClose} // Auto-close on navigate
-                                className={`relative flex items-center px-4 py-3.5 rounded-xl transition-all duration-200 group ${isActive
-                                    ? 'bg-gradient-to-r from-indigo-50 to-transparent dark:from-[#333537] dark:to-transparent text-indigo-700 dark:text-white shadow-sm font-semibold'
+                                className={`relative flex items-center px-4 py-4 rounded-xl transition-all duration-200 group ${isActive
+                                    ? 'bg-gradient-to-r from-indigo-50 to-transparent dark:from-[#333537] dark:to-transparent text-indigo-700 dark:text-white shadow-sm font-bold'
                                     : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-[#282a2c]'
                                     }`}
+                                style={{
+                                    borderRadius: isActive ? borderRadius : '12px'
+                                }}
                             >
                                 {isActive && (
-                                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-indigo-600 dark:bg-white rounded-r-full"></div>
+                                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-10 bg-indigo-600 dark:bg-white rounded-r-full"></div>
                                 )}
                                 <div className={`${isActive ? 'scale-110' : ''} transition-transform`}>
-                                    {React.cloneElement(item.icon, { size: 22 })}
+                                    {React.cloneElement(item.icon, { size: 24 })}
                                 </div>
-                                <span className="ml-3 font-medium text-sm">
+                                <span className="ml-4 font-medium text-base">
                                     {item.label}
                                 </span>
                             </NavLink>
@@ -108,38 +123,35 @@ export const MobileSidebar = ({ isOpen, onClose, navItems, friendsPanelOpen, set
                 </nav>
 
                 {/* Footer Actions */}
-                <div className="p-4 border-t border-gray-100/50 dark:border-[#282a2c]/50 space-y-2">
-                    <button onClick={toggleTheme} className="flex items-center w-full px-4 py-3 rounded-xl transition-colors bg-gray-50/50 dark:bg-[#282a2c]/50 hover:bg-gray-100 dark:hover:bg-[#3c4043] text-gray-600 dark:text-gray-300">
+                <div className="p-6 border-t border-gray-100/50 dark:border-[#282a2c]/50 space-y-3">
+                    <button onClick={toggleTheme} className="flex items-center w-full px-4 py-3.5 rounded-xl transition-colors bg-gray-50/50 dark:bg-[#282a2c]/50 hover:bg-gray-100 dark:hover:bg-[#3c4043] text-gray-600 dark:text-gray-300">
                         {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
                         <span className="ml-3 font-medium text-sm">{theme === 'dark' ? t('common.light_mode') : t('common.dark_mode')}</span>
                     </button>
 
-                    <button onClick={handleLogout} className="flex items-center w-full px-4 py-3 rounded-xl text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/10 transition-colors">
+                    <button onClick={handleLogout} className="flex items-center w-full px-4 py-3.5 rounded-xl text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/10 transition-colors">
                         <LogOut size={20} />
                         <span className="ml-3 font-bold text-sm">{t('sidebar.logout')}</span>
                     </button>
 
-                    <div className="pt-2 flex items-center justify-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden">
+                    <div className="pt-4 flex items-center gap-4">
+                        <div className="w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden ring-2 ring-white dark:ring-gray-800">
                             {profileImgUrl ? (
                                 <img src={profileImgUrl} className="w-full h-full object-cover" alt="Profile" />
                             ) : (
                                 <div className="w-full h-full flex items-center justify-center text-xs font-bold">{currentUser.initials}</div>
                             )}
                         </div>
-                        <div className="text-xs text-gray-500 dark:text-gray-400">
-                            Inloggad som <span className="font-semibold text-gray-900 dark:text-white">{currentUser.firstName}</span>
+                        <div className="flex flex-col">
+                            <span className="text-xs text-gray-500 dark:text-gray-400">Inloggad som</span>
+                            <span className="font-bold text-gray-900 dark:text-white">{currentUser.firstName}</span>
                         </div>
                     </div>
                 </div>
             </aside>
-
         </>
     );
 };
-
-// Import Branding Hook
-import { useBranding } from '../../context/BrandingContext';
 
 /**
  * MobileBottomNav - Duolingo-style bottom navigation.
@@ -160,32 +172,97 @@ export const MobileBottomNav = ({ onMenuOpen }) => {
     const inactiveColor = mobileTheme.inactiveColor || '#9ca3af';
     const isGlass = mobileTheme.glassmorphism || false;
 
+    // New Design Tokens
+    const borderRadius = mobileTheme.borderRadius || '24px';
+    const depth = mobileTheme.componentDepth || 'floating'; // flat, shadow, floating, glass
+    const animation = mobileTheme.animationPreset || 'bouncy'; // minimal, smooth, bouncy
+
+    // Determine container styles based on depth
+    const getContainerStyles = () => {
+        const isFloating = depth === 'floating';
+        const isGlassEffect = depth === 'glass';
+        const isSoft = depth === 'shadow';
+
+        // Base transparency: Glass needs to be much more transparent to be visible
+        const bgOpacity = isGlassEffect ? 'aa' : 'ff'; // aa = ~66%, ff = 100%
+
+        const styles = {
+            backgroundColor: `${bgColor}${bgOpacity}`,
+            backdropFilter: isGlassEffect ? 'blur(20px) saturate(180%)' : 'none',
+            // If floating, use full radius. If docked, only top radius.
+            borderRadius: isFloating ? borderRadius : `${parseInt(borderRadius) > 0 ? borderRadius : '0'} ${parseInt(borderRadius) > 0 ? borderRadius : '0'} 0 0`,
+            borderTop: (isGlassEffect || depth === 'flat') ? '1px solid rgba(255,255,255,0.1)' : 'none',
+            transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)'
+        };
+
+        if (isFloating) {
+            return {
+                ...styles,
+                bottom: '24px',
+                left: '20px',
+                right: '20px',
+                boxShadow: isGlassEffect
+                    ? '0 8px 32px 0 rgba(31, 38, 135, 0.15)'
+                    : '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)', // Tailwind shadow-2xl
+                paddingBottom: '0px'
+            };
+        }
+
+        // Docked Styles
+        return {
+            ...styles,
+            boxShadow: isSoft
+                ? '0 -10px 40px -10px rgba(0,0,0,0.1)' // Strong upward shadow
+                : 'none'
+        };
+    };
+
     // Custom NavLink with "3D" button effect
     const NavItem = ({ to, icon: Icon, label }) => {
+        const getAnimationClass = (isActive) => {
+            if (animation === 'minimal') {
+                return isActive ? 'opacity-100 scale-100' : 'opacity-60 scale-100 active:opacity-40';
+            }
+            if (animation === 'bouncy') {
+                // Spring physics bezier
+                const spring = 'transition-all duration-500 ease-[cubic-bezier(0.68,-0.6,0.32,1.6)]';
+                return isActive
+                    ? `${spring} -translate-y-3 scale-110`
+                    : `${spring} hover:scale-105 active:scale-90 active:rotate-3`;
+            }
+            // Smooth / Default
+            return isActive ? 'transition-all duration-300 -translate-y-1' : 'transition-all duration-300 opacity-70 hover:opacity-100 hover:bg-black/5 dark:hover:bg-white/5';
+        };
+
         return (
             <NavLink
                 to={to}
                 className={({ isActive }) => `
-                    flex flex-col items-center justify-center w-16 h-14 rounded-xl transition-all duration-100 relative
-                    ${isActive
-                        ? `bg-transparent translate-y-1`
-                        : 'bg-transparent hover:bg-gray-100 dark:hover:bg-white/5 active:translate-y-1'
-                    }
+                    flex flex-col items-center justify-center flex-1 h-full relative cursor-pointer group
+                    ${getAnimationClass(isActive)}
                 `}
             >
                 {({ isActive }) => (
                     <>
                         <div
-                            className={`
-                                relative flex items-center justify-center w-10 h-10 rounded-xl border-2 transition-all
-                            `}
+                            className="relative flex items-center justify-center w-12 h-12 transition-all duration-300"
                             style={{
-                                borderColor: isActive ? activeColor : 'transparent',
-                                backgroundColor: isActive ? `${activeColor}20` : 'transparent', // 20 = 12% opacity
-                                color: isActive ? activeColor : inactiveColor
+                                // Item shape follows the theme radius or fully rounded for high radius themes
+                                borderRadius: borderRadius === '9999px' ? '50%' : borderRadius,
+                                backgroundColor: isActive ? `${activeColor}${isGlass ? '40' : '20'}` : 'transparent',
+                                color: isActive ? activeColor : inactiveColor,
+                                boxShadow: (isActive && (depth === 'floating' || depth === 'shadow') && animation !== 'minimal')
+                                    ? `0 10px 20px -5px ${activeColor}60` // Glow effect
+                                    : 'none',
+                                border: (isActive && animation === 'minimal') ? `2px solid ${activeColor}` : 'none'
                             }}
                         >
-                            <Icon size={26} strokeWidth={isActive ? 2.5 : 2} />
+                            <Icon size={isActive && animation === 'bouncy' ? 28 : 24} strokeWidth={isActive ? 2.5 : 2} />
+
+                            {/* Bouncy Dot Indicator */}
+                            {isActive && animation === 'bouncy' && (
+                                <span className="absolute -bottom-2 w-1.5 h-1.5 rounded-full" style={{ backgroundColor: activeColor }} />
+                            )}
                         </div>
                     </>
                 )}
@@ -195,42 +272,26 @@ export const MobileBottomNav = ({ onMenuOpen }) => {
 
     return (
         <div
-            className="lg:hidden fixed bottom-0 left-0 right-0 border-t border-gray-200 dark:border-[#202F36] pb-safe z-50 transition-colors duration-300"
-            style={{
-                backgroundColor: isGlass ? `${bgColor}dd` : bgColor, // Add transparency if glass
-                backdropFilter: isGlass ? 'blur(10px)' : 'none'
-            }}
+            className={`
+                lg:hidden fixed z-50 transition-all duration-300 
+                ${depth === 'floating' ? 'mx-4 mb-4' : 'bottom-0 left-0 right-0 pb-safe border-t border-gray-200 dark:border-[#202F36]'}
+            `}
+            style={getContainerStyles()}
         >
-            <div className="flex justify-around items-center h-[88px] pb-4 px-2">
-                <NavItem
-                    to="/"
-                    icon={LayoutDashboard}
-                    label="Home"
-                />
-                <NavItem
-                    to="/catalog"
-                    icon={Layers}
-                    label="Catalog"
-                />
-                <NavItem
-                    to="/calendar"
-                    icon={Calendar}
-                    label="Calendar"
-                />
-                <NavItem
-                    to="/profile"
-                    icon={User}
-                    label="Profile"
-                />
+            <div className={`flex justify-around items-center ${depth === 'floating' ? 'h-[72px] px-2' : 'h-[80px] px-2'}`}>
+                <NavItem to="/" icon={LayoutDashboard} label="Home" />
+                <NavItem to="/catalog" icon={Layers} label="Catalog" />
+                <NavItem to="/calendar" icon={Calendar} label="Calendar" />
+                <NavItem to="/profile" icon={User} label="Profile" />
 
-                {/* More / Menu Button - styled to match */}
+                {/* More / Menu Button */}
                 <button
                     onClick={onMenuOpen}
-                    className="flex flex-col items-center justify-center w-16 h-14 rounded-xl hover:bg-gray-100 dark:hover:bg-white/5 transition-all active:translate-y-1"
+                    className="flex flex-col items-center justify-center flex-1 h-full transition-all active:scale-90 duration-300 ease-[cubic-bezier(0.68,-0.6,0.32,1.6)]"
                     style={{ color: inactiveColor }}
                 >
-                    <div className="w-10 h-10 flex items-center justify-center">
-                        <Menu size={26} strokeWidth={2} />
+                    <div className="w-12 h-12 flex items-center justify-center rounded-2xl hover:bg-black/5 dark:hover:bg-white/10">
+                        <Menu size={24} strokeWidth={2} />
                     </div>
                 </button>
             </div>
@@ -244,6 +305,10 @@ export const MobileBottomNav = ({ onMenuOpen }) => {
 export const MobileHeader = ({ friendsPanelOpen, setFriendsPanelOpen }) => {
     const { currentUser } = useAppContext();
     const profileImgUrl = getProfileUrl(currentUser?.profilePictureUrl);
+    const [adminMenuOpen, setAdminMenuOpen] = React.useState(false);
+
+    // Check if user is admin
+    const isAdmin = currentUser?.role?.name === 'ADMIN' || currentUser?.role === 'ADMIN';
 
     return (
         <div className="sticky top-0 z-20 px-4 py-3 lg:hidden flex items-center justify-between bg-white/80 dark:bg-[#131314]/80 backdrop-blur-md border-b border-gray-200/50 dark:border-white/5 transition-all">
@@ -264,6 +329,16 @@ export const MobileHeader = ({ friendsPanelOpen, setFriendsPanelOpen }) => {
             </div>
 
             <div className="flex items-center gap-1">
+                {/* Admin Trigger (Mobile Only) */}
+                {isAdmin && (
+                    <button
+                        onClick={() => setAdminMenuOpen(true)}
+                        className="p-2 rounded-xl text-rose-600 bg-rose-50 dark:bg-rose-900/10 dark:text-rose-400 mr-1 transition-transform active:scale-90"
+                    >
+                        <ShieldAlert size={20} strokeWidth={2.5} />
+                    </button>
+                )}
+
                 <button
                     onClick={() => setFriendsPanelOpen(!friendsPanelOpen)}
                     className={`relative p-2 rounded-xl transition-colors ${friendsPanelOpen ? 'bg-indigo-50 text-indigo-600 dark:bg-white/10 dark:text-white' : 'text-gray-500 dark:text-gray-400'}`}
@@ -276,6 +351,9 @@ export const MobileHeader = ({ friendsPanelOpen, setFriendsPanelOpen }) => {
                 </button>
                 <NotificationBell />
             </div>
+
+            {/* Admin Control Center Overlay */}
+            {adminMenuOpen && <MobileAdminControlCenter isOpen={adminMenuOpen} onClose={() => setAdminMenuOpen(false)} />}
         </div>
     );
 };
