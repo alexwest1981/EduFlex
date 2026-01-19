@@ -75,7 +75,10 @@ git_history.txt
 # =============================================
 test_*.ps1
 test_*.json
+test_*.py
 payload*.json
+fix_*.sql
+*_fix.sql
 
 # =============================================
 # eduflex/backend - Local dev artifacts

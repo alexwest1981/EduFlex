@@ -33,6 +33,9 @@
 
 ### 🆕 Latest Updates (Jan 2026)
 
+*   **🌍 Multilingual Landing Page:** Complete i18n integration with Swedish/English support. Language switcher with styled SV/EN buttons, comprehensive translations for hero, features, pricing, and footer sections.
+*   **📧 Demo Request System:** New contact modal for demo requests with form validation, EmailService integration, and admin notifications. Replaced "Free Trial" CTA with "Request Demo" workflow.
+*   **🎨 Landing Page Polish:** Updated branding with Logo_top.png, added "EduFlex LMS" gradient text in navbar, refined pricing tiers (Basic/Pro/Enterprise), and improved visual hierarchy.
 *   **🎮 Complete Gamification Engine:** Full-featured gamification system with achievements, daily challenges, XP streaks, and per-tenant configuration. Students can track progress via dashboard widgets.
 *   **🔔 Real-time Notifications:** WebSocket-powered notification system with NotificationBell component for instant alerts on assignments, achievements, and system events.
 *   **🎨 Admin UI Overhaul:** Redesigned Enterprise Whitelabel module with internal sidebar navigation, streamlined save actions (icon-based), and improved UX.
