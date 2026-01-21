@@ -31,8 +31,13 @@
 
 ---
 
-### 🆕 Latest Updates (Jan 2026)
+### 🆕 Latest Updates (Jan 22, 2026)
 
+*   **💬 Messaging Enhancements:** Implemented a full-featured messaging system with support for **Rich Text (React-Quill)**, **multiple file attachments (10MB limit)**, and **clickable links**. Introduced **message threading** to group conversations hierarchically.
+*   **📂 Message Folders:** Support for custom folders and a dedicated "fel-loggar" folder for administrators to track system errors.
+*   **🧹 Infrastructure Cleanup:** Completely removed legacy `spring-boot-starter-mail` dependency and `EmailService` to improve system stability and reduce overhead.
+*   **🛠️ Workspace Reorganization:** Cleaned up the project root by moving all log files to `/logs`, scripts to categorized `/scripts` directories, and non-README documentation to `/docs/`. Added a comprehensive `ScriptDescription.md` for maintainability.
+*   **🏗️ Build & Reliability:** Resolved critical "cannot find symbol" compilation errors across core models and services. Standardized getters and setters for all gamification-related entities. Updated Docker configurations for seamless deployment.
 *   **🌍 Multilingual Landing Page:** Complete i18n integration with Swedish/English support. Language switcher with styled SV/EN buttons, comprehensive translations for hero, features, pricing, and footer sections.
 *   **📧 Demo Request System:** New contact modal for demo requests with form validation, EmailService integration, and admin notifications. Replaced "Free Trial" CTA with "Request Demo" workflow.
 *   **🎨 Landing Page Polish:** Updated branding with Logo_top.png, added "EduFlex LMS" gradient text in navbar, refined pricing tiers (Basic/Pro/Enterprise), and improved visual hierarchy.
