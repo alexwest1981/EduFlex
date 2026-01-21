@@ -1,24 +1,31 @@
 import React from 'react';
-import { Users, Briefcase, FileText, CheckCircle, XCircle, UserCheck, Shield } from 'lucide-react';
+import { Users, Briefcase, FileText, CheckCircle, XCircle, UserCheck, Shield, MessageSquare, ArrowRight } from 'lucide-react';
+import RecentMessagesWidget from '../RecentMessagesWidget';
 
-const AdminStats = ({ users, courses, documents }) => {
+const AdminStats = ({ users = [], courses = [], documents = [], onViewMessages, unreadCount = 0 }) => {
+    // --- HANTERA PAGINERAD DATA ---
+    // users kan vara en array eller ett paginerat objekt {content: [...]}
+    const userList = Array.isArray(users) ? users : (users?.content || []);
+    const courseList = Array.isArray(courses) ? courses : (courses?.content || []);
+    const docList = Array.isArray(documents) ? documents : (documents?.content || []);
+
     // --- BERÄKNA DETALJERAD DATA ---
-    const studentCount = users.filter(u => u.role === 'STUDENT').length;
-    const teacherCount = users.filter(u => u.role === 'TEACHER').length;
-    const adminCount = users.filter(u => u.role === 'ADMIN').length;
+    const studentCount = userList.filter(u => u.role === 'STUDENT' || u.role?.name === 'STUDENT').length;
+    const teacherCount = userList.filter(u => u.role === 'TEACHER' || u.role?.name === 'TEACHER').length;
+    const adminCount = userList.filter(u => u.role === 'ADMIN' || u.role?.name === 'ADMIN').length;
 
-    const openCourses = courses.filter(c => c.isOpen).length;
-    const closedCourses = courses.length - openCourses;
+    const openCourses = courseList.filter(c => c.isOpen).length;
+    const closedCourses = courseList.length - openCourses;
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 animate-in fade-in slide-in-from-bottom-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8 animate-in fade-in slide-in-from-bottom-4">
 
             {/* ANVÄNDAR-STATISTIK */}
             <div className="bg-card dark:bg-card-dark p-6 rounded-[var(--radius-xl)] border border-card dark:border-card-dark shadow-sm flex flex-col justify-between h-40" style={{ backdropFilter: 'var(--card-backdrop)' }}>
                 <div className="flex justify-between items-start">
                     <div>
                         <p className="text-gray-500 dark:text-gray-400 text-xs font-bold uppercase">Totalt Användare</p>
-                        <p className="text-4xl font-black text-gray-900 dark:text-white mt-1">{users.length}</p>
+                        <p className="text-4xl font-black text-gray-900 dark:text-white mt-1">{userList.length}</p>
                     </div>
                     <div className="bg-blue-100 dark:bg-blue-900/30 p-3 rounded-full text-blue-600 dark:text-blue-400"><Users size={24} /></div>
                 </div>
@@ -35,7 +42,7 @@ const AdminStats = ({ users, courses, documents }) => {
                 <div className="flex justify-between items-start">
                     <div>
                         <p className="text-gray-500 dark:text-gray-400 text-xs font-bold uppercase">Totalt Kurser</p>
-                        <p className="text-4xl font-black text-gray-900 dark:text-white mt-1">{courses.length}</p>
+                        <p className="text-4xl font-black text-gray-900 dark:text-white mt-1">{courseList.length}</p>
                     </div>
                     <div className="bg-indigo-100 dark:bg-indigo-900/30 p-3 rounded-full text-indigo-600 dark:text-indigo-400"><Briefcase size={24} /></div>
                 </div>
@@ -50,12 +57,31 @@ const AdminStats = ({ users, courses, documents }) => {
                 <div className="flex justify-between items-start">
                     <div>
                         <p className="text-gray-500 dark:text-gray-400 text-xs font-bold uppercase">Arkiverade Filer</p>
-                        <p className="text-4xl font-black text-gray-900 dark:text-white mt-1">{documents.length}</p>
+                        <p className="text-4xl font-black text-gray-900 dark:text-white mt-1">{docList.length}</p>
                     </div>
                     <div className="bg-orange-100 dark:bg-orange-900/30 p-3 rounded-full text-orange-600 dark:text-orange-400"><FileText size={24} /></div>
                 </div>
                 <div className="mt-4 pt-4 border-t border-gray-100 dark:border-[#3c4043]">
                     <p className="text-xs text-gray-400 italic">Data uppdateras i realtid.</p>
+                </div>
+            </div>
+
+            {/* SENASTE MEDDELANDEN (STAT CARD STYLE) */}
+            <div
+                onClick={onViewMessages}
+                className="bg-card dark:bg-card-dark p-6 rounded-[var(--radius-xl)] border border-card dark:border-card-dark shadow-sm flex flex-col justify-between h-40 cursor-pointer hover:border-indigo-400 transition-all group"
+                style={{ backdropFilter: 'var(--card-backdrop)' }}
+            >
+                <div className="flex justify-between items-start">
+                    <div>
+                        <p className="text-gray-500 dark:text-gray-400 text-xs font-bold uppercase">Nya Meddelanden</p>
+                        <p className="text-4xl font-black text-gray-900 dark:text-white mt-1">{unreadCount}</p>
+                    </div>
+                    <div className="bg-green-100 dark:bg-green-900/30 p-3 rounded-full text-green-600 dark:text-green-400 group-hover:scale-110 transition-transform"><MessageSquare size={24} /></div>
+                </div>
+                <div className="mt-4 pt-4 border-t border-gray-100 dark:border-[#3c4043] flex justify-between items-center">
+                    <p className="text-xs text-gray-500 font-bold group-hover:text-indigo-600 transition-colors">Gå till inkorgen</p>
+                    <ArrowRight size={14} className="text-gray-400 group-hover:text-indigo-600 group-hover:translate-x-1 transition-all" />
                 </div>
             </div>
         </div>
