@@ -7,7 +7,6 @@ import com.eduflex.backend.repository.CalendarEventRepository;
 import com.eduflex.backend.repository.CourseRepository;
 import com.eduflex.backend.repository.UserRepository;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
@@ -36,45 +35,31 @@ public class CalendarEventController {
     }
 
     /**
-     * Helper to get current user from Principal (supports both Jwt and UserDetails)
+     * Helper to get current user from SecurityContext
      */
-    private User getCurrentUser(Object principal) {
-        if (principal == null) {
+    private User getCurrentUser() {
+        org.springframework.security.core.Authentication auth = org.springframework.security.core.context.SecurityContextHolder
+                .getContext().getAuthentication();
+
+        if (auth == null || !auth.isAuthenticated()
+                || auth instanceof org.springframework.security.authentication.AnonymousAuthenticationToken) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication required");
         }
 
-        String username = null;
-        if (principal instanceof org.springframework.security.oauth2.jwt.Jwt jwt) {
-            username = jwt.getClaimAsString("email");
-            if (username == null) {
-                username = jwt.getClaimAsString("preferred_username");
-            }
-        } else if (principal instanceof org.springframework.security.core.userdetails.UserDetails userDetails) {
-            username = userDetails.getUsername();
-        }
-
-        if (username == null) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User identity not found in principal");
-        }
-
-        final String finalUsername = username;
-        return userRepository.findByUsername(finalUsername)
-                .orElseGet(() -> userRepository.findByEmail(finalUsername)
+        String username = auth.getName();
+        return userRepository.findByUsername(username)
+                .orElseGet(() -> userRepository.findByEmail(username)
                         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                                "User not found: " + finalUsername)));
+                                "User not found: " + username)));
     }
 
     @GetMapping
-    public List<CalendarEvent> getAllEvents(@AuthenticationPrincipal Object principal) {
+    public List<CalendarEvent> getAllEvents() {
         List<CalendarEvent> events = eventRepository.findAll();
 
-        // Privacy Filtering
-        String currentUserEmail = null;
-        if (principal instanceof org.springframework.security.oauth2.jwt.Jwt jwt) {
-            currentUserEmail = jwt.getClaimAsString("email");
-        } else if (principal instanceof org.springframework.security.core.userdetails.UserDetails userDetails) {
-            currentUserEmail = userDetails.getUsername();
-        }
+        org.springframework.security.core.Authentication auth = org.springframework.security.core.context.SecurityContextHolder
+                .getContext().getAuthentication();
+        String currentUserEmail = (auth != null) ? auth.getName() : null;
 
         return events.stream().map(event -> {
             // Check if privacy filter applies (e.g., specific types like
@@ -141,8 +126,8 @@ public class CalendarEventController {
         if (request.ownerId != null) {
             User owner = userRepository.findById(request.ownerId).orElse(null);
             event.setOwner(owner);
-        } else if (principal != null) {
-            User owner = getCurrentUser(principal);
+        } else {
+            User owner = getCurrentUser();
             event.setOwner(owner);
         }
 
@@ -156,7 +141,7 @@ public class CalendarEventController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteEvent(@PathVariable Long id, @AuthenticationPrincipal Object principal) {
+    public ResponseEntity<Void> deleteEvent(@PathVariable Long id) {
         // TODO: Add permission check (only owner or teacher can delete)
         eventRepository.deleteById(id);
         return ResponseEntity.ok().build();
@@ -192,31 +177,31 @@ public class CalendarEventController {
      * GET /api/events/filterable-users
      */
     @GetMapping("/filterable-users")
-    public ResponseEntity<List<User>> getFilterableUsers(@AuthenticationPrincipal Object principal) {
+    public ResponseEntity<List<User>> getFilterableUsers() {
         try {
-            User currentUser = getCurrentUser(principal);
+            User currentUser = getCurrentUser();
             List<User> users = calendarService.getUsersFilterableBy(currentUser);
             return ResponseEntity.ok(users);
+        } catch (org.springframework.web.server.ResponseStatusException e) {
+            throw e;
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+            throw new org.springframework.web.server.ResponseStatusException(
+                    org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR,
                     "Failed to get filterable users: " + e.getMessage());
         }
     }
 
-    /**
-     * Get events for a specific user (for filtering)
-     * GET /api/events/user/{userId}
-     */
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<CalendarEvent>> getEventsForUser(
-            @PathVariable Long userId,
-            @AuthenticationPrincipal Object principal) {
+    public ResponseEntity<List<CalendarEvent>> getEventsForUser(@PathVariable Long userId) {
         try {
-            User currentUser = getCurrentUser(principal);
+            User currentUser = getCurrentUser();
             List<CalendarEvent> events = calendarService.getEventsForUser(userId, currentUser);
             return ResponseEntity.ok(events);
+        } catch (org.springframework.web.server.ResponseStatusException e) {
+            throw e;
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+            throw new org.springframework.web.server.ResponseStatusException(
+                    org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR,
                     "Failed to get events for user: " + e.getMessage());
         }
     }
@@ -226,32 +211,32 @@ public class CalendarEventController {
      * GET /api/events/course/{courseId}
      */
     @GetMapping("/course/{courseId}")
-    public ResponseEntity<List<CalendarEvent>> getEventsForCourse(
-            @PathVariable Long courseId,
-            @AuthenticationPrincipal Object principal) {
+    public ResponseEntity<List<CalendarEvent>> getEventsForCourse(@PathVariable Long courseId) {
         try {
-            User currentUser = getCurrentUser(principal);
+            User currentUser = getCurrentUser();
             List<CalendarEvent> events = calendarService.getEventsForCourse(courseId, currentUser);
             return ResponseEntity.ok(events);
+        } catch (org.springframework.web.server.ResponseStatusException e) {
+            throw e;
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+            throw new org.springframework.web.server.ResponseStatusException(
+                    org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR,
                     "Failed to get events for course: " + e.getMessage());
         }
     }
 
-    /**
-     * Get courses taught by the current user (for teacher course filtering)
-     * GET /api/events/my-courses
-     */
     @GetMapping("/my-courses")
-    public ResponseEntity<List<Long>> getMyCourses(@AuthenticationPrincipal Object principal) {
+    public ResponseEntity<List<Long>> getMyCourses() {
         try {
-            User currentUser = getCurrentUser(principal);
+            User currentUser = getCurrentUser();
             List<Long> courseIds = calendarService.getTeacherCourseIds(currentUser.getId());
             return ResponseEntity.ok(courseIds);
+        } catch (org.springframework.web.server.ResponseStatusException e) {
+            throw e;
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
-                    "Failed to get courses: " + e.getMessage());
+            throw new org.springframework.web.server.ResponseStatusException(
+                    org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Failed to get my courses: " + e.getMessage());
         }
     }
 

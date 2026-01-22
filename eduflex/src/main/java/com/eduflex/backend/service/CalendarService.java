@@ -472,65 +472,30 @@ public class CalendarService {
         List<User> allUsers = userRepository.findAll();
         Set<User> filterableUsers = new HashSet<>();
 
-        switch (role) {
-            case "ADMIN":
-                // Can see teachers, mentors, principals, and own
-                filterableUsers.addAll(allUsers.stream()
-                        .filter(u -> u.getRole() != null &&
-                                ("TEACHER".equals(u.getRole().getName()) ||
-                                        "MENTOR".equals(u.getRole().getName())))
-                        .collect(Collectors.toList()));
-                filterableUsers.add(currentUser); // Add own
-                break;
-
-            case "PRINCIPAL":
-                // Can see teachers, mentors, and own
-                filterableUsers.addAll(allUsers.stream()
-                        .filter(u -> u.getRole() != null &&
-                                ("TEACHER".equals(u.getRole().getName()) ||
-                                        "MENTOR".equals(u.getRole().getName())))
-                        .collect(Collectors.toList()));
-                filterableUsers.add(currentUser);
-                break;
-
-            case "MENTOR":
-                // Can see assigned students + colleagues + own
-                if (mentorService != null) {
-                    filterableUsers.addAll(mentorService.getActiveStudentsForMentor(currentUser.getId()));
-                }
-                filterableUsers.addAll(allUsers.stream()
-                        .filter(u -> u.getRole() != null &&
-                                ("TEACHER".equals(u.getRole().getName()) ||
-                                        "MENTOR".equals(u.getRole().getName())))
-                        .collect(Collectors.toList()));
-                filterableUsers.add(currentUser);
-                break;
-
-            case "TEACHER":
-                // Can see colleagues and own
-                filterableUsers.addAll(allUsers.stream()
-                        .filter(u -> u.getRole() != null &&
-                                ("TEACHER".equals(u.getRole().getName()) ||
-                                        "MENTOR".equals(u.getRole().getName())))
-                        .collect(Collectors.toList()));
-                filterableUsers.add(currentUser);
-                break;
-
-            case "STUDENT":
-                // Can only see their mentor
-                if (mentorService != null) {
-                    Optional<User> mentor = mentorService.getActiveMentorForStudent(currentUser.getId());
-                    mentor.ifPresent(filterableUsers::add);
-                }
-                filterableUsers.add(currentUser);
-                break;
-
-            default:
-                filterableUsers.add(currentUser);
-                break;
+        // Non-student roles (Admin, Teacher, Mentor, Principal) can see each other
+        // (excluding Principal role as requested previously)
+        if (!"STUDENT".equals(role)) {
+            filterableUsers.addAll(allUsers.stream()
+                    .filter(u -> u.getRole() != null &&
+                            ("TEACHER".equals(u.getRole().getName()) ||
+                                    "MENTOR".equals(u.getRole().getName()) ||
+                                    "ADMIN".equals(u.getRole().getName())))
+                    .collect(Collectors.toList()));
+            filterableUsers.add(currentUser);
+        } else {
+            // Students can only see themselves and their mentor
+            if (mentorService != null) {
+                Optional<User> mentor = mentorService.getActiveMentorForStudent(currentUser.getId());
+                mentor.ifPresent(filterableUsers::add);
+            }
+            filterableUsers.add(currentUser);
         }
 
-        return new ArrayList<>(filterableUsers);
+        // Always remove Principal role users if they somehow got in (due to previous
+        // request)
+        return filterableUsers.stream()
+                .filter(u -> u.getRole() == null || !"PRINCIPAL".equals(u.getRole().getName()))
+                .collect(Collectors.toList());
     }
 
     /**
