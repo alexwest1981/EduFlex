@@ -14,6 +14,16 @@ import logoMain from '../../assets/images/Logo_top.png';
 
 // Components
 import ContactModal from '../../components/ContactModal';
+import ScreenshotSlider from '../../components/landing/ScreenshotSlider';
+
+// Feature Screenshots
+import dashboardImg from '../../assets/screenshots/feature_admin_live_dashboard.png';
+import calendarImg from '../../assets/screenshots/feature_calendar_collaboration.png';
+import catalogImg from '../../assets/screenshots/feature_course_catalog_modern.png';
+import quizImg from '../../assets/screenshots/feature_quiz_resource_bank.png';
+import settingsImg from '../../assets/screenshots/feature_platform_settings_modules.png';
+import analyticsImg from '../../assets/screenshots/feature_analytics_revenue_insights.png';
+import gamificationImg from '../../assets/screenshots/feature_gamification_achievements.png';
 
 const LandingPage = () => {
     const navigate = useNavigate();
@@ -127,6 +137,16 @@ const LandingPage = () => {
         }
     ];
 
+    const screenshotData = [
+        { src: dashboardImg, title: 'Live Systemöversikt', description: 'Realtidsdata från databasen för full kontroll över din organisation.' },
+        { src: calendarImg, title: 'Samarbetande Kalender', description: 'Planera möten och lektioner med ett intuitivt och kraftfullt kalendergränssnitt.' },
+        { src: catalogImg, title: 'Modern Kurskatalog', description: 'Utforska, filtrera och hitta nästa utmaning i en snygg och snabb miljö.' },
+        { src: quizImg, title: 'Resursbank & Quiz', description: 'Hantera prov och studiematerial samlat på ett ställe med AI-stöd.' },
+        { src: settingsImg, title: 'Systemadministration', description: 'Full kontroll över moduler, whitelabeling och licenshantering.' },
+        { src: analyticsImg, title: 'Systeminsikter', description: 'Djupgående analys av plattformens prestanda, intäkter och studenttillväxt.' },
+        { src: gamificationImg, title: 'Gamification & Achievements', description: 'Motivera elever med märken, poäng och framstegsspårning.' }
+    ];
+
     return (
         <div className="min-h-screen bg-white text-gray-900 font-sans selection:bg-blue-100 overflow-x-hidden">
             {/* Custom Styles */}
@@ -188,6 +208,7 @@ const LandingPage = () => {
                         {/* Desktop Navigation */}
                         <div className="hidden md:flex items-center space-x-8 text-sm font-medium text-gray-600">
                             <a href="#features" className="hover:text-blue-600 transition-colors duration-200">{t('landing.nav.features')}</a>
+                            <a href="#showcase" className="hover:text-blue-600 transition-colors duration-200">Showcase</a>
                             <a href="#architecture" className="hover:text-blue-600 transition-colors duration-200">{t('landing.nav.architecture')}</a>
                             <a href="#highlights" className="hover:text-blue-600 transition-colors duration-200">Teknologi</a>
                             <a href="#pricing" className="hover:text-blue-600 transition-colors duration-200">{t('landing.nav.pricing')}</a>
@@ -249,6 +270,7 @@ const LandingPage = () => {
                     }`}>
                     <div className="bg-white border-t border-gray-100 px-4 py-4 space-y-3">
                         <a href="#features" onClick={() => setIsMobileMenuOpen(false)} className="block py-2.5 px-4 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors">{t('landing.nav.features')}</a>
+                        <a href="#showcase" onClick={() => setIsMobileMenuOpen(false)} className="block py-2.5 px-4 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors">Showcase</a>
                         <a href="#architecture" onClick={() => setIsMobileMenuOpen(false)} className="block py-2.5 px-4 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors">{t('landing.nav.architecture')}</a>
                         <a href="#highlights" onClick={() => setIsMobileMenuOpen(false)} className="block py-2.5 px-4 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors">Teknologi</a>
                         <a href="#pricing" onClick={() => setIsMobileMenuOpen(false)} className="block py-2.5 px-4 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors">{t('landing.nav.pricing')}</a>
@@ -460,6 +482,23 @@ const LandingPage = () => {
                             </div>
                         ))}
                     </div>
+                </div>
+            </section>
+
+            {/* --- SCREENSHOT SHOWCASE --- */}
+            <section id="showcase" className="py-20 md:py-28 bg-white">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="text-center mb-12">
+                        <div className="inline-flex items-center px-4 py-2 rounded-full bg-blue-50 border border-blue-100 mb-4">
+                            <Play className="w-4 h-4 text-blue-600 mr-2" />
+                            <span className="text-sm font-semibold text-blue-700">Showcase</span>
+                        </div>
+                        <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-900 mb-4">
+                            Upplev EduFlex i Aktion
+                        </h2>
+                    </div>
+
+                    <ScreenshotSlider screenshots={screenshotData} />
                 </div>
             </section>
 
