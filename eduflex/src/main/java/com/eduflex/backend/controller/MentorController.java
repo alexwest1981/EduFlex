@@ -7,8 +7,6 @@ import com.eduflex.backend.service.MentorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,30 +25,23 @@ public class MentorController {
     private UserRepository userRepository;
 
     /**
-     * Helper to get current user from Principal (supports both Jwt and UserDetails)
+     * Helper to get current user from SecurityContext
      */
-    private User getCurrentUser(Object principal) {
-        if (principal == null) {
-            throw new IllegalArgumentException("Authentication required");
+    private User getCurrentUser() {
+        org.springframework.security.core.Authentication auth = org.springframework.security.core.context.SecurityContextHolder
+                .getContext().getAuthentication();
+
+        if (auth == null || !auth.isAuthenticated()
+                || auth instanceof org.springframework.security.authentication.AnonymousAuthenticationToken) {
+            throw new org.springframework.web.server.ResponseStatusException(
+                    org.springframework.http.HttpStatus.UNAUTHORIZED, "Authentication required");
         }
 
-        String username = null;
-        if (principal instanceof org.springframework.security.oauth2.jwt.Jwt jwt) {
-            username = jwt.getClaimAsString("email");
-            if (username == null) {
-                username = jwt.getClaimAsString("preferred_username");
-            }
-        } else if (principal instanceof org.springframework.security.core.userdetails.UserDetails userDetails) {
-            username = userDetails.getUsername();
-        }
-
-        if (username == null) {
-            throw new IllegalArgumentException("User identity not found in principal");
-        }
-
+        String username = auth.getName();
         return userRepository.findByUsername(username)
                 .orElseGet(() -> userRepository.findByEmail(username)
-                        .orElseThrow(() -> new IllegalArgumentException("User not found: " + username)));
+                        .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(
+                                org.springframework.http.HttpStatus.NOT_FOUND, "User not found: " + username)));
     }
 
     /**
@@ -58,11 +49,9 @@ public class MentorController {
      * POST /api/mentors/assignments
      */
     @PostMapping("/assignments")
-    public ResponseEntity<?> assignStudent(
-            @RequestBody AssignmentRequest request,
-            @AuthenticationPrincipal Object principal) {
+    public ResponseEntity<?> assignStudent(@RequestBody AssignmentRequest request) {
         try {
-            User currentUser = getCurrentUser(principal);
+            User currentUser = getCurrentUser();
             MentorAssignment assignment = mentorService.assignStudentToMentor(
                     currentUser.getId(),
                     request.getStudentId(),
@@ -70,9 +59,11 @@ public class MentorController {
             return ResponseEntity.ok(assignment);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        } catch (org.springframework.web.server.ResponseStatusException e) {
+            throw e;
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("error", "Failed to assign student: " + e.getMessage()));
+                    .body(Map.of("error", e.getMessage()));
         }
     }
 
@@ -81,11 +72,9 @@ public class MentorController {
      * POST /api/mentors/assignments/bulk
      */
     @PostMapping("/assignments/bulk")
-    public ResponseEntity<?> bulkAssignStudents(
-            @RequestBody BulkAssignmentRequest request,
-            @AuthenticationPrincipal Object principal) {
+    public ResponseEntity<?> bulkAssignStudents(@RequestBody BulkAssignmentRequest request) {
         try {
-            User currentUser = getCurrentUser(principal);
+            User currentUser = getCurrentUser();
             List<MentorAssignment> assignments = mentorService.bulkAssignStudents(
                     currentUser.getId(),
                     request.getStudentIds(),
@@ -102,9 +91,9 @@ public class MentorController {
      * GET /api/mentors/my-students
      */
     @GetMapping("/my-students")
-    public ResponseEntity<?> getMyStudents(@AuthenticationPrincipal Object principal) {
+    public ResponseEntity<?> getMyStudents() {
         try {
-            User currentUser = getCurrentUser(principal);
+            User currentUser = getCurrentUser();
             List<User> students = mentorService.getActiveStudentsForMentor(currentUser.getId());
             return ResponseEntity.ok(students);
         } catch (Exception e) {
@@ -118,9 +107,9 @@ public class MentorController {
      * GET /api/mentors/assignments
      */
     @GetMapping("/assignments")
-    public ResponseEntity<?> getMyAssignments(@AuthenticationPrincipal Object principal) {
+    public ResponseEntity<?> getMyAssignments() {
         try {
-            User currentUser = getCurrentUser(principal);
+            User currentUser = getCurrentUser();
             List<MentorAssignment> assignments = mentorService.getAllAssignmentsForMentor(currentUser.getId());
             return ResponseEntity.ok(assignments);
         } catch (Exception e) {
@@ -134,9 +123,9 @@ public class MentorController {
      * GET /api/mentors/students/count
      */
     @GetMapping("/students/count")
-    public ResponseEntity<?> getStudentCount(@AuthenticationPrincipal Object principal) {
+    public ResponseEntity<?> getStudentCount() {
         try {
-            User currentUser = getCurrentUser(principal);
+            User currentUser = getCurrentUser();
             long count = mentorService.getActiveStudentCount(currentUser.getId());
             return ResponseEntity.ok(Map.of("count", count));
         } catch (Exception e) {
@@ -150,9 +139,9 @@ public class MentorController {
      * GET /api/mentors/students/unassigned
      */
     @GetMapping("/students/unassigned")
-    public ResponseEntity<?> getUnassignedStudents(@AuthenticationPrincipal Object principal) {
+    public ResponseEntity<?> getUnassignedStudents() {
         try {
-            User currentUser = getCurrentUser(principal);
+            User currentUser = getCurrentUser();
             List<User> students = mentorService.getUnassignedStudentsForMentor(currentUser.getId());
             return ResponseEntity.ok(students);
         } catch (Exception e) {
@@ -166,11 +155,9 @@ public class MentorController {
      * DELETE /api/mentors/assignments/{studentId}
      */
     @DeleteMapping("/assignments/{studentId}")
-    public ResponseEntity<?> removeStudent(
-            @PathVariable Long studentId,
-            @AuthenticationPrincipal Object principal) {
+    public ResponseEntity<?> removeStudent(@PathVariable Long studentId) {
         try {
-            User currentUser = getCurrentUser(principal);
+            User currentUser = getCurrentUser();
             mentorService.removeStudentFromMentor(currentUser.getId(), studentId);
             return ResponseEntity.ok(Map.of("message", "Student removed successfully"));
         } catch (Exception e) {

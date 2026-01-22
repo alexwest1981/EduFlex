@@ -36,8 +36,11 @@
 
 *   **🔒 Backend Stability & Calendar Fixes (Implemented Jan 22, 2026):**
     *   **Authentication Principal Fix:** Resolved widespread 500/401 errors by updating controllers to handle both `Jwt` and `UserDetails` principals, ensuring compatibility with the `internal` authentication mode.
-    *   **Calendar Privacy:** Removed the **Principal** role from the filterable users list in the calendar for Admin, Teacher, and Mentor roles as requested.
-    *   **Diagnostic Logging:** Added enhanced logging to `BrandingController`, `TenantFilter`, and `AuthTokenFilter` for better system monitoring and troubleshooting.
+    *   **Calendar Privacy & Filtering:** 
+        *   Refined filtering logic: **Admins, Teachers, and Mentors** can now filter between each other.
+        *   **Students** are restricted to their own and their mentor's events.
+        *   **Principals** remain hidden from general visibility as requested.
+    *   **Robust Error Handling:** Controllers updated to prevent swallowing authentication errors, ensuring transparent reporting of 401/404 states instead of generic 500 errors.
 
 *   **🎫 Support Ticket System (Fully Implemented):** Complete full-stack implementation of a multi-tenant support system.
     *   **User Side:** Direct access via "Support & Kontakt" in sidebar, 15 predefined categories, automatic route-context capture, and personal ticket history.
