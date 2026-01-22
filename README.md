@@ -32,7 +32,14 @@
 ---
 
 ### 🆕 Latest Updates (Jan 22, 2026)
-*   **🎫 Support Ticket System (Refined):** Complete full-stack implementation of a multi-tenant support system.
+    *   **Mixed Content Resolved:** All file URLs (profile pictures, course materials, attachments) now use HTTPS.
+
+*   **🔒 Backend Stability & Calendar Fixes (Implemented Jan 22, 2026):**
+    *   **Authentication Principal Fix:** Resolved widespread 500/401 errors by updating controllers to handle both `Jwt` and `UserDetails` principals, ensuring compatibility with the `internal` authentication mode.
+    *   **Calendar Privacy:** Removed the **Principal** role from the filterable users list in the calendar for Admin, Teacher, and Mentor roles as requested.
+    *   **Diagnostic Logging:** Added enhanced logging to `BrandingController`, `TenantFilter`, and `AuthTokenFilter` for better system monitoring and troubleshooting.
+
+*   **🎫 Support Ticket System (Fully Implemented):** Complete full-stack implementation of a multi-tenant support system.
     *   **User Side:** Direct access via "Support & Kontakt" in sidebar, 15 predefined categories, automatic route-context capture, and personal ticket history.
     *   **Supportärendesystem (Färdigställt Jan 22, 2026)**:
         *   Fullt fungerande system för supportärenden med statusar (Görs nu/Löst) och prioritering.
@@ -420,7 +427,8 @@ npm run dev
 | Service | Variable | Description | Default |
 |---------|----------|-------------|---------|
 | **Backend** | `SPRING_DATASOURCE_URL` | DB connection | `jdbc:postgresql://db:5432/eduflex` |
-| **Backend** | `MINIO_URL` | S3 endpoint | `http://minio:9000` |
+| **Backend** | `MINIO_URL` | S3 endpoint (internal) | `http://minio:9000` |
+| **Backend** | `MINIO_PUBLIC_URL` | Public S3 URL (for clients) | `https://storage.eduflexlms.se` |
 | **Backend** | `SPRING_REDIS_HOST` | Redis host | `redis` |
 | **Backend** | `EDUFLEX_AUTH_MODE` | Auth mode | `internal` |
 | **Frontend** | `VITE_API_BASE_URL` | API endpoint | `http://localhost:8080/api` |
@@ -572,6 +580,8 @@ See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for manual setup.
 | Daily Challenges & Streaks | ✅ Implemented |
 | Achievement System | ✅ Implemented |
 | Social Features (Online Friends) | ✅ Implemented |
+| Support Ticket System | ✅ Implemented |
+| HTTPS Storage (Cloudflare Tunnel) | ✅ Implemented |
 | Enhanced Calendar (MiniCalendar, Events) | ✅ Implemented |
 | Admin UI Redesign (Whitelabel) | ✅ Implemented |
 | Microservices Split (Video/PDF) | 🔜 Q2 2026 |
@@ -784,4 +794,4 @@ För Enterprise-frågor:
 
 ---
 
-*Last updated: 2026-01-17*
+*Last updated: 2026-01-22*

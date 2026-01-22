@@ -20,14 +20,15 @@ public class MinioStorageService implements FileStorageService {
 
     private final MinioClient minioClient;
     private final String bucketName;
-    private final String minioUrl;
+    private final String publicUrl;
 
     public MinioStorageService(
             @Value("${minio.url}") String url,
+            @Value("${minio.public-url}") String publicUrl,
             @Value("${minio.access-key}") String accessKey,
             @Value("${minio.secret-key}") String secretKey,
             @Value("${minio.bucket}") String bucketName) {
-        this.minioUrl = url;
+        this.publicUrl = publicUrl;
         this.bucketName = bucketName;
         this.minioClient = MinioClient.builder()
                 .endpoint(url)
@@ -68,8 +69,8 @@ public class MinioStorageService implements FileStorageService {
                             .stream(inputStream, file.getSize(), -1)
                             .contentType(file.getContentType())
                             .build());
-            // Return full URL to the file
-            return minioUrl + "/" + bucketName + "/" + fileName;
+            // Return full public URL to the file (uses HTTPS in production)
+            return publicUrl + "/" + bucketName + "/" + fileName;
         } catch (Exception e) {
             throw new RuntimeException("Could not store file " + fileName + " in MinIO", e);
         }
