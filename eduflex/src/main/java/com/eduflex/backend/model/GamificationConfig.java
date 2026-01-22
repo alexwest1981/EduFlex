@@ -56,4 +56,68 @@ public class GamificationConfig {
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
     }
+
+    public Boolean getEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public Boolean getLeaderboardsEnabled() {
+        return leaderboardsEnabled;
+    }
+
+    public void setLeaderboardsEnabled(Boolean leaderboardsEnabled) {
+        this.leaderboardsEnabled = leaderboardsEnabled;
+    }
+
+    public Boolean getAchievementsEnabled() {
+        return achievementsEnabled;
+    }
+
+    public void setAchievementsEnabled(Boolean achievementsEnabled) {
+        this.achievementsEnabled = achievementsEnabled;
+    }
+
+    public Boolean getStreaksEnabled() {
+        return streaksEnabled;
+    }
+
+    public void setStreaksEnabled(Boolean streaksEnabled) {
+        this.streaksEnabled = streaksEnabled;
+    }
+
+    public Boolean getDailyChallengesEnabled() {
+        return dailyChallengesEnabled;
+    }
+
+    public void setDailyChallengesEnabled(Boolean dailyChallengesEnabled) {
+        this.dailyChallengesEnabled = dailyChallengesEnabled;
+    }
+
+    public Integer getXpMultiplierMax() {
+        return xpMultiplierMax;
+    }
+
+    public void setXpMultiplierMax(Integer xpMultiplierMax) {
+        this.xpMultiplierMax = xpMultiplierMax;
+    }
+
+    public Boolean getTimeBonusEnabled() {
+        return timeBonusEnabled;
+    }
+
+    public void setTimeBonusEnabled(Boolean timeBonusEnabled) {
+        this.timeBonusEnabled = timeBonusEnabled;
+    }
+
+    public Boolean getShopEnabled() {
+        return shopEnabled;
+    }
+
+    public void setShopEnabled(Boolean shopEnabled) {
+        this.shopEnabled = shopEnabled;
+    }
 }

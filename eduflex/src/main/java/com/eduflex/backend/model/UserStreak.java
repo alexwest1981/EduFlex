@@ -68,4 +68,28 @@ public class UserStreak {
             this.lastActivityDate = LocalDate.now();
         }
     }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public Integer getCurrentStreak() {
+        return currentStreak;
+    }
+
+    public LocalDate getLastActivityDate() {
+        return lastActivityDate;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public void setStreakType(String streakType) {
+        this.streakType = streakType;
+    }
 }

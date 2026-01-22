@@ -150,3 +150,13 @@ docker-compose.override.yml
 ehthumbs.db
 Thumbs.db
 
+
+# Project Specific Logs
+/logs/
+
+
+# System / Process redirection files
+nul
+start
+stop
+

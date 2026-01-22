@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap; // <--- NY IMPORT
 import java.util.List;
@@ -29,21 +30,54 @@ public class MessageController {
         this.userRepository = userRepository;
     }
 
-    @PostMapping("/send")
-    public ResponseEntity<MessageDTO> sendMessage(@AuthenticationPrincipal UserDetails userDetails,
-            @RequestBody Map<String, Object> payload) {
+    @PostMapping(value = "/send", consumes = { "multipart/form-data" })
+    public ResponseEntity<MessageDTO> sendMessage(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestParam("recipientId") Long recipientId,
+            @RequestParam("subject") String subject,
+            @RequestParam("content") String content,
+            @RequestParam(value = "folderSlug", required = false) String folderSlug,
+            @RequestParam(value = "parentId", required = false) Long parentId,
+            @RequestParam(value = "attachments", required = false) List<MultipartFile> attachments) {
         User sender = userRepository.findByUsername(userDetails.getUsername()).orElseThrow();
-        Long recipientId = Long.valueOf(payload.get("recipientId").toString());
-        String subject = (String) payload.get("subject");
-        String content = (String) payload.get("content");
-
-        return ResponseEntity.ok(messageService.sendMessage(sender.getId(), recipientId, subject, content));
+        return ResponseEntity.ok(messageService.sendMessage(sender.getId(), recipientId, subject, content, folderSlug,
+                parentId, attachments));
     }
 
     @GetMapping("/inbox")
     public ResponseEntity<List<MessageDTO>> getInbox(@AuthenticationPrincipal UserDetails userDetails) {
         User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow();
         return ResponseEntity.ok(messageService.getInbox(user.getId()));
+    }
+
+    @GetMapping("/folder/{slug}")
+    public ResponseEntity<List<MessageDTO>> getFolder(@AuthenticationPrincipal UserDetails userDetails,
+            @PathVariable String slug) {
+        User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow();
+        return ResponseEntity.ok(messageService.getFolderMessages(user.getId(), slug));
+    }
+
+    @GetMapping("/folders")
+    public ResponseEntity<List<com.eduflex.backend.model.MessageFolder>> getFolders(
+            @AuthenticationPrincipal UserDetails userDetails) {
+        User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow();
+        return ResponseEntity.ok(messageService.getFolders(user.getId()));
+    }
+
+    @PostMapping("/folders")
+    public ResponseEntity<com.eduflex.backend.model.MessageFolder> createFolder(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestBody Map<String, String> payload) {
+        User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow();
+        String name = payload.get("name");
+        return ResponseEntity.ok(messageService.createFolder(user.getId(), name));
+    }
+
+    @PutMapping("/{id}/move")
+    public ResponseEntity<Void> moveMessage(@PathVariable Long id, @RequestBody Map<String, Object> payload) {
+        Long folderId = payload.get("folderId") != null ? Long.valueOf(payload.get("folderId").toString()) : null;
+        messageService.moveMessageToFolder(id, folderId);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/sent")
@@ -62,6 +96,11 @@ public class MessageController {
     public ResponseEntity<Long> getUnreadCount(@AuthenticationPrincipal UserDetails userDetails) {
         User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow();
         return ResponseEntity.ok(messageService.getUnreadCount(user.getId()));
+    }
+
+    @GetMapping("/thread/{messageId}")
+    public ResponseEntity<List<MessageDTO>> getThread(@PathVariable Long messageId) {
+        return ResponseEntity.ok(messageService.getThread(messageId));
     }
 
     // FIX: Använd HashMap istället för Map.of för att undvika Type Inference-fel
