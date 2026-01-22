@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -23,6 +24,8 @@ public class MentorController {
 
     @Autowired
     private UserRepository userRepository;
+
+    private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(MentorController.class);
 
     /**
      * Helper to get current user from SecurityContext
@@ -49,7 +52,7 @@ public class MentorController {
      * POST /api/mentors/assignments
      */
     @PostMapping("/assignments")
-    public ResponseEntity<?> assignStudent(@RequestBody AssignmentRequest request) {
+    public ResponseEntity<?> assignStudent(@RequestBody AssignmentRequest request, HttpServletRequest requestObj) {
         try {
             User currentUser = getCurrentUser();
             MentorAssignment assignment = mentorService.assignStudentToMentor(
@@ -62,6 +65,7 @@ public class MentorController {
         } catch (org.springframework.web.server.ResponseStatusException e) {
             throw e;
         } catch (Exception e) {
+            logger.error("💥 Persistent error in {}: {}", requestObj.getRequestURI(), e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("error", e.getMessage()));
         }
@@ -72,7 +76,8 @@ public class MentorController {
      * POST /api/mentors/assignments/bulk
      */
     @PostMapping("/assignments/bulk")
-    public ResponseEntity<?> bulkAssignStudents(@RequestBody BulkAssignmentRequest request) {
+    public ResponseEntity<?> bulkAssignStudents(@RequestBody BulkAssignmentRequest request,
+            HttpServletRequest requestObj) {
         try {
             User currentUser = getCurrentUser();
             List<MentorAssignment> assignments = mentorService.bulkAssignStudents(
@@ -80,9 +85,12 @@ public class MentorController {
                     request.getStudentIds(),
                     currentUser.getId());
             return ResponseEntity.ok(assignments);
+        } catch (org.springframework.web.server.ResponseStatusException e) {
+            throw e;
         } catch (Exception e) {
+            logger.error("💥 Persistent error in {}: {}", requestObj.getRequestURI(), e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("error", "Failed to bulk assign students: " + e.getMessage()));
+                    .body(Map.of("error", e.getMessage()));
         }
     }
 
@@ -91,14 +99,17 @@ public class MentorController {
      * GET /api/mentors/my-students
      */
     @GetMapping("/my-students")
-    public ResponseEntity<?> getMyStudents() {
+    public ResponseEntity<?> getMyStudents(HttpServletRequest requestObj) {
         try {
             User currentUser = getCurrentUser();
             List<User> students = mentorService.getActiveStudentsForMentor(currentUser.getId());
             return ResponseEntity.ok(students);
+        } catch (org.springframework.web.server.ResponseStatusException e) {
+            throw e;
         } catch (Exception e) {
+            logger.error("💥 Persistent error in {}: {}", requestObj.getRequestURI(), e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("error", "Failed to get students: " + e.getMessage()));
+                    .body(Map.of("error", e.getMessage()));
         }
     }
 
@@ -107,14 +118,17 @@ public class MentorController {
      * GET /api/mentors/assignments
      */
     @GetMapping("/assignments")
-    public ResponseEntity<?> getMyAssignments() {
+    public ResponseEntity<?> getMyAssignments(HttpServletRequest requestObj) {
         try {
             User currentUser = getCurrentUser();
             List<MentorAssignment> assignments = mentorService.getAllAssignmentsForMentor(currentUser.getId());
             return ResponseEntity.ok(assignments);
+        } catch (org.springframework.web.server.ResponseStatusException e) {
+            throw e;
         } catch (Exception e) {
+            logger.error("💥 Persistent error in {}: {}", requestObj.getRequestURI(), e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("error", "Failed to get assignments: " + e.getMessage()));
+                    .body(Map.of("error", e.getMessage()));
         }
     }
 
@@ -123,14 +137,17 @@ public class MentorController {
      * GET /api/mentors/students/count
      */
     @GetMapping("/students/count")
-    public ResponseEntity<?> getStudentCount() {
+    public ResponseEntity<?> getStudentCount(HttpServletRequest requestObj) {
         try {
             User currentUser = getCurrentUser();
             long count = mentorService.getActiveStudentCount(currentUser.getId());
             return ResponseEntity.ok(Map.of("count", count));
+        } catch (org.springframework.web.server.ResponseStatusException e) {
+            throw e;
         } catch (Exception e) {
+            logger.error("💥 Persistent error in {}: {}", requestObj.getRequestURI(), e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("error", "Failed to get student count: " + e.getMessage()));
+                    .body(Map.of("error", e.getMessage()));
         }
     }
 
@@ -139,14 +156,17 @@ public class MentorController {
      * GET /api/mentors/students/unassigned
      */
     @GetMapping("/students/unassigned")
-    public ResponseEntity<?> getUnassignedStudents() {
+    public ResponseEntity<?> getUnassignedStudents(HttpServletRequest requestObj) {
         try {
             User currentUser = getCurrentUser();
             List<User> students = mentorService.getUnassignedStudentsForMentor(currentUser.getId());
             return ResponseEntity.ok(students);
+        } catch (org.springframework.web.server.ResponseStatusException e) {
+            throw e;
         } catch (Exception e) {
+            logger.error("💥 Persistent error in {}: {}", requestObj.getRequestURI(), e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("error", "Failed to get unassigned students: " + e.getMessage()));
+                    .body(Map.of("error", e.getMessage()));
         }
     }
 
@@ -155,14 +175,17 @@ public class MentorController {
      * DELETE /api/mentors/assignments/{studentId}
      */
     @DeleteMapping("/assignments/{studentId}")
-    public ResponseEntity<?> removeStudent(@PathVariable Long studentId) {
+    public ResponseEntity<?> removeStudent(@PathVariable Long studentId, HttpServletRequest requestObj) {
         try {
             User currentUser = getCurrentUser();
             mentorService.removeStudentFromMentor(currentUser.getId(), studentId);
             return ResponseEntity.ok(Map.of("message", "Student removed successfully"));
+        } catch (org.springframework.web.server.ResponseStatusException e) {
+            throw e;
         } catch (Exception e) {
+            logger.error("💥 Persistent error in {}: {}", requestObj.getRequestURI(), e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("error", "Failed to remove student: " + e.getMessage()));
+                    .body(Map.of("error", e.getMessage()));
         }
     }
 

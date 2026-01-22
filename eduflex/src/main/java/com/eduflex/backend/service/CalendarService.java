@@ -23,6 +23,7 @@ public class CalendarService {
     private final CalendarEventRepository eventRepository;
     private final CourseRepository courseRepository;
     private final UserRepository userRepository;
+    private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(CalendarService.class);
 
     @Autowired(required = false)
     private MentorService mentorService;
@@ -169,6 +170,11 @@ public class CalendarService {
             return false;
         }
 
+        if (user.getRole() == null) {
+            logger.warn("⚠️ User {} has no role! Defaulting to denied access for event {}", user.getUsername(),
+                    event.getId());
+            return false;
+        }
         String userRole = user.getRole().getName();
 
         // ADMIN can see everything
