@@ -118,9 +118,11 @@ const StandardLayout = ({ children }) => {
                 {/* LOGO AREA */}
                 <div className="h-16 flex items-center justify-between px-6 border-b border-gray-100 dark:border-[#282a2c]">
                     <div className="flex items-center">
-                        <div className="w-8 h-8 bg-black dark:bg-white rounded-lg flex items-center justify-center text-white dark:text-black font-bold text-xl mr-3 shadow-sm">
-                            {systemSettings?.site_name ? systemSettings.site_name[0] : 'E'}
-                        </div>
+                        <img
+                            src="/src/assets/images/Logo_top.png"
+                            alt="EduFlex"
+                            className="w-8 h-8 object-contain mr-3"
+                        />
                         {/* Show text on mobile always, on desktop only when expanded */}
                         <span className={`font-bold text-xl tracking-tight text-gray-800 dark:text-white truncate block ${!sidebarOpen && 'lg:hidden'}`}>
                             {systemSettings?.site_name || "EduFlex"}

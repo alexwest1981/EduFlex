@@ -71,7 +71,6 @@ const TeacherDashboard = ({ currentUser }) => {
         showRiskWidget: 'Risk Analys Widget',
         showSchedule: 'Schema & Händelser',
         showShortcuts: 'Genvägar',
-        showShortcuts: 'Genvägar',
         showMessages: 'Meddelanden',
         showOnlineFriends: 'Online Vänner'
     };

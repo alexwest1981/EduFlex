@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useBranding } from '../../context/BrandingContext';
 import { DESIGN_SYSTEMS } from '../../context/DesignSystemContext';
 import { useTheme } from '../../context/ThemeContext';
@@ -478,11 +478,11 @@ const EnterpriseWhitelabel = () => {
                                     {menuItems.flatMap(g => g.items).find(i => i.id === activeTab)?.label}
                                 </h2>
                                 <p className="text-gray-500 dark:text-gray-400">
-                                    {activeTab === 'general' && 'Hantera grundlÃ¤ggande varumÃ¤rkesinstÃ¤llningar.'}
+                                    {activeTab === 'general' && 'Hantera grundläggande varumärkesinställningar.'}
                                     {activeTab === 'assets' && 'Ladda upp logotyper och ikoner.'}
-                                    {activeTab === 'design' && 'VÃ¤lj ett globalt designsystem fÃ¶r hela plattformen.'}
-                                    {activeTab === 'theme' && 'Skapa eller vÃ¤lj fÃ¤rgteman.'}
-                                    {activeTab === 'mobile' && 'Anpassa utseendet pÃ¥ mobilappens navigeringsfÃ¤lt.'}
+                                    {activeTab === 'design' && 'Välj ett globalt designsystem för hela plattformen.'}
+                                    {activeTab === 'theme' && 'Skapa eller välj färgteman.'}
+                                    {activeTab === 'mobile' && 'Anpassa utseendet på mobilappens navigeringsfält.'}
                                 </p>
                             </div>
                             {(activeTab === 'general' || activeTab === 'design') && (
@@ -512,13 +512,13 @@ const EnterpriseWhitelabel = () => {
                             <div className="space-y-6">
                                 <div className="bg-white dark:bg-[#1e1f20] rounded-lg border border-gray-200 dark:border-gray-700 p-6">
                                     <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
-                                        VarumÃ¤rkesinformation
+                                        Varumärkesinformation
                                     </h2>
 
                                     <div className="space-y-4">
                                         <div>
                                             <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                                                VarumÃ¤rkesnamn
+                                                Varumärkesnamn
                                             </label>
                                             <input
                                                 type="text"
@@ -548,7 +548,7 @@ const EnterpriseWhitelabel = () => {
 
                                         <div>
                                             <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                                                VÃ¤lkomstmeddelande (inloggningssida)
+                                                Välkomstmeddelande (inloggningssida)
                                             </label>
                                             <textarea
                                                 name="welcomeMessage"
@@ -557,13 +557,13 @@ const EnterpriseWhitelabel = () => {
                                                 rows={3}
                                                 className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600
                                              bg-white dark:bg-[#282a2c] text-gray-900 dark:text-white"
-                                                placeholder="VÃ¤lkommen till vÃ¥rt lÃ¤randesystem..."
+                                                placeholder="Välkommen till vårt lärandesystem..."
                                             />
                                         </div>
 
                                         <div>
                                             <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                                                Standard-tema (anvÃ¤nds om inget anpassat tema Ã¤r aktivt)
+                                                Standard-tema (används om inget anpassat tema är aktivt)
                                             </label>
                                             <select
                                                 name="defaultThemeId"
@@ -584,7 +584,7 @@ const EnterpriseWhitelabel = () => {
 
                                 <div className="bg-white dark:bg-[#1e1f20] rounded-lg border border-gray-200 dark:border-gray-700 p-6">
                                     <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
-                                        InstÃ¤llningar
+                                        Inställningar
                                     </h2>
 
                                     <div className="space-y-4">
@@ -620,7 +620,7 @@ const EnterpriseWhitelabel = () => {
                                                     {formData.enforceOrgTheme && <EyeOff className="w-4 h-4 text-yellow-500" />}
                                                 </div>
                                                 <div className="text-sm text-gray-600 dark:text-gray-400">
-                                                    AnvÃ¤ndare kan inte Ã¤ndra tema om aktiverat
+                                                    Användare kan inte ändra tema om aktiverat
                                                 </div>
                                             </div>
                                         </label>
@@ -638,7 +638,7 @@ const EnterpriseWhitelabel = () => {
                                                     Anpassade e-postmallar
                                                 </div>
                                                 <div className="text-sm text-gray-600 dark:text-gray-400">
-                                                    AnvÃ¤nd varumÃ¤rkesanpassade e-postmallar (framtida funktion)
+                                                    Använd varumärkesanpassade e-postmallar (framtida funktion)
                                                 </div>
                                             </div>
                                         </label>
@@ -652,7 +652,7 @@ const EnterpriseWhitelabel = () => {
                                      flex items-center gap-2 disabled:opacity-50"
                                 >
                                     <RotateCcw className="w-4 h-4" />
-                                    Ã…terstÃ¤ll allt
+                                    Återställ allt
                                 </button>
                             </div>
                         )}
@@ -671,7 +671,7 @@ const EnterpriseWhitelabel = () => {
 
                                 <AssetUploader
                                     title="Favicon"
-                                    description="Ikon som visas i webblÃ¤sarfliken. Rekommenderad storlek: 32x32px (ICO, PNG eller SVG)"
+                                    description="Ikon som visas i webbläsarfliken. Rekommenderad storlek: 32x32px (ICO, PNG eller SVG)"
                                     currentUrl={branding.faviconUrl}
                                     onUpload={(file) => handleFileUpload('favicon', file)}
                                     accept="image/*,.ico"
@@ -680,7 +680,7 @@ const EnterpriseWhitelabel = () => {
 
                                 <AssetUploader
                                     title="Inloggningsbakgrund"
-                                    description="Bakgrundsbild fÃ¶r inloggningssidan. Rekommenderad storlek: 1920x1080px"
+                                    description="Bakgrundsbild för inloggningssidan. Rekommenderad storlek: 1920x1080px"
                                     currentUrl={branding.loginBackgroundUrl}
                                     onUpload={(file) => handleFileUpload('background', file)}
                                     accept="image/*"
@@ -695,10 +695,10 @@ const EnterpriseWhitelabel = () => {
                             <div className="space-y-6">
                                 <div className="bg-white dark:bg-[#1e1f20] rounded-lg border border-gray-200 dark:border-gray-700 p-6">
                                     <h2 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">
-                                        VÃ¤lj Design System
+                                        Välj Design System
                                     </h2>
                                     <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
-                                        Design Systems Ã¤ndrar hela UI:ts utseende - kort, knappar, skuggor och mer. Detta Ã¤r en exklusiv Enterprise-feature.
+                                        Design Systems ändrar hela UI:ts utseende - kort, knappar, skuggor och mer. Detta är en exklusiv Enterprise-feature.
                                     </p>
 
                                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -790,7 +790,7 @@ const EnterpriseWhitelabel = () => {
                                             Valt Design System: {formData.designSystem}
                                         </h4>
                                         <p className="text-sm text-indigo-700 dark:text-gray-300">
-                                            Design systemet pÃ¥verkar alla kort, knappar och UI-element i hela applikationen. Ã„ndringar trÃ¤der i kraft direkt nÃ¤r du sparar.
+                                            Design systemet påverkar alla kort, knappar och UI-element i hela applikationen. Ändringar träder i kraft direkt när du sparar.
                                         </p>
                                     </div>
 
@@ -805,10 +805,10 @@ const EnterpriseWhitelabel = () => {
                                     {/* Predefined Enterprise Themes */}
                                     <div className="bg-white dark:bg-[#1e1f20] rounded-lg border border-gray-200 dark:border-gray-700 p-6">
                                         <h2 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">
-                                            FÃ¶rdefinierade Enterprise-teman
+                                            Fördefinierade Enterprise-teman
                                         </h2>
                                         <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
-                                            VÃ¤lj ett professionellt fÃ¶rdesignat tema eller skapa ett eget anpassat tema nedan.
+                                            Välj ett professionellt fördesignat tema eller skapa ett eget anpassat tema nedan.
                                         </p>
 
                                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">

@@ -42,16 +42,22 @@ const AdminDashboard = () => {
         setIsLoading(true);
         try {
             const [uData, c, d, unread] = await Promise.all([
-                api.users.getAll(0, 1000), // Tillfällig fix: Hämta fler för korrekt statistik tills backend-stats endpoints finns
-                api.courses.getAll(),
-                api.documents.getAll(),
-                api.messages.getUnreadCount()
+                api.users.getAll(0, 1000).catch(err => { console.error("Users fetch error:", err); return []; }),
+                api.courses.getAll().catch(err => { console.error("Courses fetch error:", err); return []; }),
+                api.documents.getAll().catch(err => { console.error("Documents fetch error:", err); return []; }),
+                api.messages.getUnreadCount().catch(err => { console.error("Unread fetch error:", err); return 0; })
             ]);
             // Hantera om users är en Page (pagination) eller Array
-            setUsers(uData.content || uData || []);
-            setCourses(c);
-            setDocuments(d);
-            setUnreadCount(unread);
+            const usersArray = Array.isArray(uData) ? uData : (uData?.content || []);
+            const coursesArray = Array.isArray(c) ? c : (c?.content || []);
+            const docsArray = Array.isArray(d) ? d : (d?.content || []);
+
+            console.log('[AdminDashboard] Fetched data:', { users: usersArray.length, courses: coursesArray.length, docs: docsArray.length });
+
+            setUsers(usersArray);
+            setCourses(coursesArray);
+            setDocuments(docsArray);
+            setUnreadCount(typeof unread === 'number' ? unread : 0);
         } catch (error) {
             console.error("Kunde inte hämta dashboard-data", error);
         } finally {

@@ -30,7 +30,10 @@ const DocumentManager = () => {
             const data = currentUser.role === 'ADMIN'
                 ? await api.documents.getAll()
                 : await api.documents.getUserDocs(currentUser.id);
-            setDocuments(data || []);
+
+            // Handle both Array and Pagination object
+            const docArray = Array.isArray(data) ? data : (data?.content || []);
+            setDocuments(docArray);
         } catch (e) {
             console.error("Kunde inte hämta filer", e);
         } finally {

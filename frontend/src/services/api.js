@@ -6,6 +6,7 @@ const getTenantFromUrl = () => {
 
     // 1. Prioritera manuell override (bra för testning)
     const forcedTenant = localStorage.getItem('force_tenant');
+    if (forcedTenant === 'public') return null;
     if (forcedTenant) return forcedTenant;
 
     // 2. Hantera localhost subdomäner (t.ex. acme.localhost)
@@ -42,18 +43,25 @@ const getTenantFromUrl = () => {
 
 const getHeaders = (contentType = 'application/json') => {
     const token = localStorage.getItem('token');
-    const headers = {
-        'Authorization': `Bearer ${token}`
-    };
+    const headers = {};
 
-    // Lägg till Tenant ID om det finns
+    // 1. Lägg bara till token om den faktiskt finns och är giltig
+    if (token && token !== 'null' && token !== 'undefined') {
+        headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    // 2. Lägg till Tenant ID om det finns (Kritiskt för Multi-tenancy!)
     const tenantId = getTenantFromUrl();
     if (tenantId) {
         headers['X-Tenant-ID'] = tenantId;
     }
 
-    if (contentType) headers['Content-Type'] = contentType;
-    console.log('[API DEBUG] Request Headers:', headers, 'Token:', token); // DEBUG
+    // 3. Sätt Content-Type (om det inte är en filuppladdning)
+    if (contentType) {
+        headers['Content-Type'] = contentType;
+    }
+
+    console.log('[API DEBUG] Request Headers:', headers, 'Token:', token);
     return headers;
 };
 
@@ -85,8 +93,21 @@ export const api = {
     patch: (url, body) => fetch(`${API_BASE}${url}`, { method: 'PATCH', headers: getHeaders(), body: JSON.stringify(body) }).then(handleResponse),
 
     auth: {
-        login: (credentials) => fetch(`${API_BASE}/auth/login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(credentials) }).then(handleResponse),
-        register: (data) => fetch(`${API_BASE}/auth/register`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }).then(handleResponse),
+        login: (credentials) => {
+            // Vi använder getHeaders() här för att få med X-Tenant-ID automatiskt!
+            // Men vi måste vara noga med att INTE skicka en gammal "Bearer null"-token.
+            // Eftersom vi fixade getHeaders ovan är det nu säkert att använda den.
+            return fetch(`${API_BASE}/auth/login`, {
+                method: 'POST',
+                headers: getHeaders(), // Nu inkluderas Tenant ID här!
+                body: JSON.stringify(credentials)
+            }).then(handleResponse);
+        },
+        register: (data) => fetch(`${API_BASE}/auth/register`, {
+            method: 'POST',
+            headers: getHeaders(), // Samma här för registrering
+            body: JSON.stringify(data)
+        }).then(handleResponse),
     },
 
     // --- GLOBAL SÖK ---
@@ -148,8 +169,17 @@ export const api = {
     messages: {
         getInbox: () => fetch(`${API_BASE}/messages/inbox`, { headers: getHeaders() }).then(handleResponse),
         getSent: () => fetch(`${API_BASE}/messages/sent`, { headers: getHeaders() }).then(handleResponse),
+        getFolders: () => fetch(`${API_BASE}/messages/folders`, { headers: getHeaders() }).then(handleResponse),
+        createFolder: (name) => fetch(`${API_BASE}/messages/folders`, { method: 'POST', headers: getHeaders(), body: JSON.stringify({ name }) }).then(handleResponse),
+        moveMessage: (messageId, folderId) => fetch(`${API_BASE}/messages/${messageId}/move`, { method: 'PUT', headers: getHeaders(), body: JSON.stringify({ folderId }) }).then(handleResponse),
         getUnreadCount: () => fetch(`${API_BASE}/messages/unread`, { headers: getHeaders() }).then(handleResponse),
-        send: (data) => fetch(`${API_BASE}/messages/send`, { method: 'POST', headers: getHeaders(), body: JSON.stringify(data) }).then(handleResponse),
+        markAsRead: (messageId) => fetch(`${API_BASE}/messages/${messageId}/read`, { method: 'PUT', headers: getHeaders() }).then(handleResponse),
+        getThread: (messageId) => fetch(`${API_BASE}/messages/thread/${messageId}`, { headers: getHeaders() }).then(handleResponse),
+        send: (formData) => fetch(`${API_BASE}/messages/send`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }, // No Content-Type for FormData!
+            body: formData
+        }).then(handleResponse),
         getRecentContacts: (userId) => fetch(`${API_BASE}/messages/contacts/${userId}`, { headers: getHeaders() }).then(handleResponse).catch(() => []),
         getContacts: () => fetch(`${API_BASE}/messages/contacts`, { headers: getHeaders() }).then(handleResponse),
     },
@@ -282,6 +312,30 @@ export const api = {
         getSettings: () => api.get('/system-settings'),
         checkLicense: () => fetch(`${API_BASE}/system/license/status`).then(handleResponse),
         activateLicense: (key) => fetch(`${API_BASE}/system/license/activate`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ key }) }).then(handleResponse)
+    },
+
+    // --- BACKUP & DATABAS ---
+    admin: {
+        // Backups
+        listBackups: () => fetch(`${API_BASE}/admin/backups`, { headers: getHeaders() }).then(handleResponse),
+        getBackupStatus: () => fetch(`${API_BASE}/admin/backups/status`, { headers: getHeaders() }).then(handleResponse),
+        createBackup: () => fetch(`${API_BASE}/admin/backups/create`, { method: 'POST', headers: getHeaders() }).then(handleResponse),
+        restoreBackup: (backupId) => fetch(`${API_BASE}/admin/backups/restore/${backupId}`, { method: 'POST', headers: getHeaders() }).then(handleResponse),
+        deleteBackup: (backupId) => fetch(`${API_BASE}/admin/backups/${backupId}`, { method: 'DELETE', headers: getHeaders() }).then(handleResponse),
+        downloadBackup: (backupId) => `${API_BASE}/admin/backups/download/${backupId}`,
+
+        // Database connections
+        getDatabaseConnections: () => fetch(`${API_BASE}/admin/database/connections`, { headers: getHeaders() }).then(handleResponse),
+        switchDatabase: (connectionId, adminPassword) => fetch(`${API_BASE}/admin/database/switch/${connectionId}`, {
+            method: 'POST',
+            headers: getHeaders(),
+            body: JSON.stringify({ adminPassword })
+        }).then(handleResponse),
+        addDatabase: (data) => fetch(`${API_BASE}/admin/database/add`, {
+            method: 'POST',
+            headers: getHeaders(),
+            body: JSON.stringify(data)
+        }).then(handleResponse),
     },
 
     license: { // Keeping for backward compat if anyone calls it separately, but consolidated in system for UI

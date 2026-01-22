@@ -1,29 +1,36 @@
 import React, { useState, useEffect } from 'react';
 import {
     Mail, Send, Inbox, ChevronRight, Search,
-    Trash2, User, CheckCircle, Clock, Reply, X, ExternalLink
+    Trash2, User, CheckCircle, Clock, Reply, X, ExternalLink, Plus, FolderPlus, FolderInput
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { api } from '../../services/api';
 import { useAppContext } from '../../context/AppContext';
+import ReactQuill from 'react-quill-new';
+import 'react-quill-new/dist/quill.snow.css';
 
 const MessageCenter = ({ preSelectedRecipient = null }) => {
     const { currentUser } = useAppContext();
 
     // UI State
-    const [activeTab, setActiveTab] = useState('INBOX'); // INBOX, SENT, COMPOSE
+    const [activeTab, setActiveTab] = useState('INBOX'); // INBOX, SENT, COMPOSE, FOLDER_fel-loggar
     const [messages, setMessages] = useState([]);
     const [selectedMessage, setSelectedMessage] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
+    const [folders, setFolders] = useState([]);
 
     // Compose State
     const [recipientId, setRecipientId] = useState('');
     const [subject, setSubject] = useState('');
     const [content, setContent] = useState('');
+    const [files, setFiles] = useState([]);
     const [users, setUsers] = useState([]);
 
+    // Thread State
+    const [threadMessages, setThreadMessages] = useState([]);
+
     // NYTT: State för att hantera "Svara"-läget specifikt
-    const [replyModeUser, setReplyModeUser] = useState(null); // { id, name }
+    const [replyModeUser, setReplyModeUser] = useState(null); // { id, name, parentId }
 
     useEffect(() => {
         if (activeTab === 'COMPOSE') {
@@ -45,15 +52,52 @@ const MessageCenter = ({ preSelectedRecipient = null }) => {
             setContent('');
             loadMessages();
         }
+        loadFolders();
     }, [activeTab]);
+
+    const loadFolders = async () => {
+        try {
+            const data = await api.messages.getFolders();
+            setFolders(data || []);
+        } catch (e) {
+            console.error("Kunde inte hämta mappar", e);
+        }
+    };
+
+    const handleCreateFolder = async () => {
+        const name = prompt("Ange namn på den nya mappen:");
+        if (!name) return;
+        try {
+            await api.messages.createFolder(name);
+            loadFolders();
+        } catch (e) {
+            alert("Kunde inte skapa mappen.");
+        }
+    };
+
+    const handleMoveMessage = async (msgId, folderId) => {
+        try {
+            await api.messages.moveMessage(msgId, folderId);
+            setSelectedMessage(null);
+            loadMessages();
+        } catch (e) {
+            alert("Kunde inte flytta meddelandet.");
+        }
+    };
 
     const loadMessages = async () => {
         setIsLoading(true);
         try {
-            const data = activeTab === 'INBOX'
-                ? await api.messages.getInbox()
-                : await api.messages.getSent();
-            setMessages(data);
+            let data;
+            if (activeTab === 'INBOX') {
+                data = await api.messages.getInbox();
+            } else if (activeTab === 'SENT') {
+                data = await api.messages.getSent();
+            } else if (activeTab.startsWith('FOLDER_')) {
+                const slug = activeTab.replace('FOLDER_', '');
+                data = await api.messages.getFolder(slug);
+            }
+            setMessages(data || []);
             setSelectedMessage(null);
         } catch (e) {
             console.error("Kunde inte hämta meddelanden", e);
@@ -65,18 +109,30 @@ const MessageCenter = ({ preSelectedRecipient = null }) => {
     const loadUsers = async () => {
         try {
             const data = await api.messages.getContacts();
-            setUsers(data || []);
+            // Data är kategoriserad: { friends: [], others: [], ... }
+            const allUsers = data ? Object.values(data).flat() : [];
+            // Deduplicera baserat på ID
+            const uniqueUsers = Array.from(new Map(allUsers.map(u => [u.id, u])).values());
+            setUsers(uniqueUsers);
         } catch (e) { console.error("Kunde inte hämta mottagare", e); }
     };
 
     const handleReadMessage = async (msg) => {
         setSelectedMessage(msg);
-        if (activeTab === 'INBOX' && !msg.isRead) {
+        loadThread(msg.id);
+        if (!msg.isRead && activeTab !== 'SENT') {
             try {
                 await api.messages.markAsRead(msg.id);
                 setMessages(prev => prev.map(m => m.id === msg.id ? { ...m, isRead: true } : m));
             } catch (e) { console.error("Kunde inte markera som läst", e); }
         }
+    };
+
+    const loadThread = async (msgId) => {
+        try {
+            const data = await api.messages.getThread(msgId);
+            setThreadMessages(data || []);
+        } catch (e) { console.error("Kunde inte hämta tråd", e); }
     };
 
     const handleSend = async (e) => {
@@ -85,8 +141,20 @@ const MessageCenter = ({ preSelectedRecipient = null }) => {
 
         setIsLoading(true);
         try {
-            await api.messages.send({ recipientId, subject, content });
+            const formData = new FormData();
+            formData.append('recipientId', recipientId);
+            formData.append('subject', subject);
+            formData.append('content', content);
+            if (replyModeUser?.parentId) {
+                formData.append('parentId', replyModeUser.parentId);
+            }
+            files.forEach(file => {
+                formData.append('attachments', file);
+            });
+
+            await api.messages.send(formData);
             alert("Meddelande skickat!");
+            setFiles([]);
             setActiveTab('SENT');
         } catch (e) {
             alert("Kunde inte skicka.");
@@ -97,12 +165,14 @@ const MessageCenter = ({ preSelectedRecipient = null }) => {
 
     // FIX: Svarsfunktionen sätter nu ett låst läge
     const handleReply = () => {
-        const targetId = activeTab === 'INBOX' ? selectedMessage.senderId : selectedMessage.recipientId;
-        const targetName = activeTab === 'INBOX' ? selectedMessage.senderName : selectedMessage.recipientName;
+        const targetId = activeTab === 'INBOX' || activeTab.startsWith('FOLDER_') ? selectedMessage.senderId : selectedMessage.recipientId;
+        const targetName = activeTab === 'INBOX' || activeTab.startsWith('FOLDER_') ? selectedMessage.senderName : selectedMessage.recipientName;
+        // Trådens huvudmeddelande är antingen det vi svarar på (om det inte har en parent), eller dess parent.
+        const parentId = selectedMessage.parentId || selectedMessage.id;
 
-        setReplyModeUser({ id: targetId, name: targetName });
+        setReplyModeUser({ id: targetId, name: targetName, parentId });
         setRecipientId(targetId);
-        setSubject(`Sv: ${selectedMessage.subject}`);
+        setSubject(selectedMessage.subject.startsWith('Sv:') ? selectedMessage.subject : `Sv: ${selectedMessage.subject}`);
         setActiveTab('COMPOSE');
     };
 
@@ -112,7 +182,24 @@ const MessageCenter = ({ preSelectedRecipient = null }) => {
         setRecipientId('');
         setSubject('');
         setContent('');
+        setFiles([]);
         setActiveTab('COMPOSE');
+    };
+
+    const linkify = (text) => {
+        if (!text) return "";
+        const urlRegex = /(https?:\/\/[^\s]+)/g;
+        return text.replace(urlRegex, (url) => {
+            return `<a href="${url}" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:underline font-bold">${url}</a>`;
+        });
+    };
+
+    const quillModules = {
+        toolbar: [
+            ['bold', 'italic', 'underline', 'strike'],
+            [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+            ['link', 'clean']
+        ],
     };
 
     return (
@@ -134,6 +221,32 @@ const MessageCenter = ({ preSelectedRecipient = null }) => {
                     </button>
                     <button onClick={() => setActiveTab('SENT')} className={`w-full flex items-center justify-between px-4 py-3 text-sm font-bold rounded-lg transition-colors ${activeTab === 'SENT' ? 'bg-white dark:bg-[#1E1F20] shadow-sm text-indigo-600' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-[#282a2c]'}`}>
                         <span className="flex items-center gap-3"><Send size={18} /> Skickat</span>
+                    </button>
+
+                    {/* DYNAMISKA MAPPAR */}
+                    {folders.map(folder => (
+                        <button
+                            key={folder.id}
+                            onClick={() => setActiveTab(`FOLDER_${folder.slug}`)}
+                            className={`w-full flex items-center justify-between px-4 py-3 text-sm font-bold rounded-lg transition-colors 
+                                ${activeTab === `FOLDER_${folder.slug}`
+                                    ? folder.slug === 'fel-loggar'
+                                        ? 'bg-red-50 dark:bg-red-900/20 text-red-600'
+                                        : 'bg-white dark:bg-[#1E1F20] shadow-sm text-indigo-600'
+                                    : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-[#282a2c]'}`}
+                        >
+                            <span className="flex items-center gap-3">
+                                {folder.slug === 'fel-loggar' ? <Clock size={18} /> : <Mail size={18} />}
+                                {folder.name}
+                            </span>
+                        </button>
+                    ))}
+
+                    <button
+                        onClick={handleCreateFolder}
+                        className="w-full flex items-center gap-3 px-4 py-3 text-sm font-bold text-gray-400 hover:text-indigo-600 hover:bg-gray-100 dark:hover:bg-[#282a2c] rounded-lg transition-colors border-t border-gray-100 dark:border-[#3c4043] mt-2"
+                    >
+                        <Plus size={18} /> Skapa ny mapp
                     </button>
                 </nav>
             </div>
@@ -191,13 +304,35 @@ const MessageCenter = ({ preSelectedRecipient = null }) => {
                             </div>
                             <div>
                                 <label className="block text-xs font-bold text-gray-500 mb-1">Meddelande</label>
-                                <textarea
-                                    className="w-full p-3 bg-gray-50 dark:bg-[#131314] border border-gray-200 dark:border-[#3c4043] rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 min-h-[200px] resize-y dark:text-white"
-                                    value={content}
-                                    onChange={e => setContent(e.target.value)}
-                                    placeholder="Skriv ditt meddelande..."
-                                    required
+                                <div className="dark:bg-[#131314] rounded-xl overflow-hidden border border-gray-200 dark:border-[#3c4043]">
+                                    <ReactQuill
+                                        theme="snow"
+                                        value={content}
+                                        onChange={setContent}
+                                        modules={quillModules}
+                                        className="h-64 mb-12 dark:text-white"
+                                        placeholder="Skriv ditt meddelande..."
+                                    />
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="block text-xs font-bold text-gray-500 mb-1">Bifoga filer (max 10MB)</label>
+                                <input
+                                    type="file"
+                                    multiple
+                                    className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 dark:file:bg-indigo-900/40 dark:file:text-indigo-300"
+                                    onChange={e => setFiles(Array.from(e.target.files))}
                                 />
+                                {files.length > 0 && (
+                                    <div className="mt-2 space-y-1">
+                                        {files.map((f, i) => (
+                                            <div key={i} className="text-xs text-gray-500 flex items-center gap-2">
+                                                <Plus size={10} /> {f.name} ({(f.size / 1024 / 1024).toFixed(2)} MB)
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
                             <div className="flex justify-end gap-3">
                                 <button type="button" onClick={() => setActiveTab('INBOX')} className="px-6 py-2 font-bold text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">Avbryt</button>
@@ -261,18 +396,70 @@ const MessageCenter = ({ preSelectedRecipient = null }) => {
                                             </div>
                                         </div>
                                         <div className="flex gap-2">
-                                            {activeTab === 'INBOX' && (
-                                                <button onClick={handleReply} className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 flex items-center gap-2 font-bold text-sm shadow-md">
-                                                    <Reply size={16} /> Svara
-                                                </button>
+                                            {activeTab !== 'SENT' && (
+                                                <>
+                                                    <select
+                                                        className="px-3 py-2 bg-white dark:bg-[#1E1F20] border border-gray-200 dark:border-[#3c4043] rounded-lg text-xs font-bold outline-none focus:ring-2 focus:ring-indigo-500 dark:text-gray-300"
+                                                        value=""
+                                                        onChange={(e) => handleMoveMessage(selectedMessage.id, e.target.value || null)}
+                                                    >
+                                                        <option value="">Flytta till...</option>
+                                                        <option value="">Inkorg</option>
+                                                        {folders.map(f => (
+                                                            <option key={f.id} value={f.id}>{f.name}</option>
+                                                        ))}
+                                                    </select>
+
+                                                    {activeTab === 'INBOX' && (
+                                                        <button onClick={handleReply} className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 flex items-center gap-2 font-bold text-sm shadow-md">
+                                                            <Reply size={16} /> Svara
+                                                        </button>
+                                                    )}
+                                                </>
                                             )}
                                             <button onClick={() => setSelectedMessage(null)} className="md:hidden p-2 text-gray-500">
                                                 <ChevronRight size={20} />
                                             </button>
                                         </div>
                                     </div>
-                                    <div className="prose dark:prose-invert max-w-none text-gray-800 dark:text-gray-300 whitespace-pre-wrap leading-relaxed">
-                                        {selectedMessage.content}
+                                    <div className="prose dark:prose-invert max-w-none text-gray-800 dark:text-gray-300 break-words overflow-x-hidden leading-relaxed">
+                                        {/* TRÅD-HISTORIK */}
+                                        <div className="space-y-6">
+                                            {threadMessages.map((tMsg, idx) => (
+                                                <div key={tMsg.id} className={`p-6 rounded-2xl border ${tMsg.id === selectedMessage.id ? 'border-indigo-200 bg-indigo-50/20 dark:border-indigo-900/50 dark:bg-indigo-900/10' : 'border-gray-100 bg-white dark:border-[#3c4043] dark:bg-[#131314]'}`}>
+                                                    <div className="flex justify-between items-center mb-4">
+                                                        <div className="flex items-center gap-2">
+                                                            <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-xs font-bold text-indigo-700">
+                                                                {tMsg.senderName[0]}
+                                                            </div>
+                                                            <span className="font-bold text-sm">{tMsg.senderName}</span>
+                                                        </div>
+                                                        <span className="text-[10px] text-gray-400">{new Date(tMsg.timestamp).toLocaleString()}</span>
+                                                    </div>
+                                                    <div
+                                                        className="text-sm ql-editor !p-0"
+                                                        dangerouslySetInnerHTML={{ __html: linkify(tMsg.content) }}
+                                                    />
+
+                                                    {/* BILAGOR */}
+                                                    {tMsg.attachments && tMsg.attachments.length > 0 && (
+                                                        <div className="mt-4 pt-4 border-t border-gray-100 dark:border-[#3c4043] flex flex-wrap gap-2">
+                                                            {tMsg.attachments.map(att => (
+                                                                <a
+                                                                    key={att.id}
+                                                                    href={att.fileUrl}
+                                                                    target="_blank"
+                                                                    rel="noopener noreferrer"
+                                                                    className="flex items-center gap-2 px-3 py-1.5 bg-gray-100 dark:bg-[#282a2c] rounded-lg text-xs font-medium hover:bg-gray-200 transition-colors"
+                                                                >
+                                                                    <ExternalLink size={12} /> {att.fileName}
+                                                                </a>
+                                                            ))}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            ))}
+                                        </div>
                                     </div>
                                 </div>
                             )}

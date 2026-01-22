@@ -13,6 +13,8 @@ const AdminStats = ({ users = [], courses = [], documents = [], onViewMessages, 
     const studentCount = userList.filter(u => u.role === 'STUDENT' || u.role?.name === 'STUDENT').length;
     const teacherCount = userList.filter(u => u.role === 'TEACHER' || u.role?.name === 'TEACHER').length;
     const adminCount = userList.filter(u => u.role === 'ADMIN' || u.role?.name === 'ADMIN').length;
+    const mentorCount = userList.filter(u => u.role === 'MENTOR' || u.role?.name === 'MENTOR').length;
+    const principalCount = userList.filter(u => u.role === 'PRINCIPAL' || u.role?.name === 'PRINCIPAL').length;
 
     const openCourses = courseList.filter(c => c.isOpen).length;
     const closedCourses = courseList.length - openCourses;
@@ -21,19 +23,21 @@ const AdminStats = ({ users = [], courses = [], documents = [], onViewMessages, 
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8 animate-in fade-in slide-in-from-bottom-4">
 
             {/* ANVÄNDAR-STATISTIK */}
-            <div className="bg-card dark:bg-card-dark p-6 rounded-[var(--radius-xl)] border border-card dark:border-card-dark shadow-sm flex flex-col justify-between h-40" style={{ backdropFilter: 'var(--card-backdrop)' }}>
+            <div className="bg-card dark:bg-card-dark p-6 rounded-[var(--radius-xl)] border border-card dark:border-card-dark shadow-sm flex flex-col justify-between min-h-[160px]" style={{ backdropFilter: 'var(--card-backdrop)' }}>
                 <div className="flex justify-between items-start">
                     <div>
-                        <p className="text-gray-500 dark:text-gray-400 text-xs font-bold uppercase">Totalt Användare</p>
+                        <p className="text-gray-500 dark:text-gray-400 text-[10px] font-bold uppercase tracking-wider">Totalt Användare</p>
                         <p className="text-4xl font-black text-gray-900 dark:text-white mt-1">{userList.length}</p>
                     </div>
                     <div className="bg-blue-100 dark:bg-blue-900/30 p-3 rounded-full text-blue-600 dark:text-blue-400"><Users size={24} /></div>
                 </div>
                 {/* Detaljerad breakdown */}
-                <div className="flex gap-3 mt-4 pt-4 border-t border-gray-100 dark:border-[#3c4043]">
-                    <div className="flex items-center gap-1 text-xs font-bold text-gray-600 dark:text-gray-400"><UserCheck size={12} className="text-green-500" /> {studentCount} Stud</div>
-                    <div className="flex items-center gap-1 text-xs font-bold text-gray-600 dark:text-gray-400"><Briefcase size={12} className="text-indigo-500" /> {teacherCount} Lär</div>
-                    <div className="flex items-center gap-1 text-xs font-bold text-gray-600 dark:text-gray-400"><Shield size={12} className="text-red-500" /> {adminCount} Adm</div>
+                <div className="flex flex-wrap gap-x-3 gap-y-1 mt-4 pt-4 border-t border-gray-100 dark:border-[#3c4043]">
+                    <div className="flex items-center gap-1 text-[10px] font-bold text-gray-600 dark:text-gray-400" title="Studenter"><UserCheck size={11} className="text-green-500" /> {studentCount} S</div>
+                    <div className="flex items-center gap-1 text-[10px] font-bold text-gray-600 dark:text-gray-400" title="Lärare"><Briefcase size={11} className="text-indigo-500" /> {teacherCount} L</div>
+                    <div className="flex items-center gap-1 text-[10px] font-bold text-gray-600 dark:text-gray-400" title="Admins"><Shield size={11} className="text-red-500" /> {adminCount} A</div>
+                    <div className="flex items-center gap-1 text-[10px] font-bold text-gray-600 dark:text-gray-400" title="Mentorer"><Users size={11} className="text-orange-500" /> {mentorCount} M</div>
+                    <div className="flex items-center gap-1 text-[10px] font-bold text-gray-600 dark:text-gray-400" title="Rektorer"><Shield size={11} className="text-purple-500" /> {principalCount} R</div>
                 </div>
             </div>
 

@@ -16,6 +16,9 @@ const ResourceBank = () => {
     const [selectedCourse, setSelectedCourse] = useState('ALL');
     const [courses, setCourses] = useState([]);
 
+    // Normalisera rollnamnet (kan vara sträng eller objekt)
+    const roleName = currentUser?.role?.name || currentUser?.role;
+
     React.useEffect(() => {
         // Fetch courses for the dropdown
         import('../../services/api').then(({ api }) => {
@@ -53,7 +56,7 @@ const ResourceBank = () => {
                         className="bg-gray-50 dark:bg-[#131314] border-none text-sm font-bold text-gray-900 dark:text-white rounded-md py-1.5 pl-2 pr-8 focus:ring-2 focus:ring-indigo-500"
                     >
                         <option value="ALL">Alla Kurser (Globalt)</option>
-                        {courses.filter(c => currentUser.role === 'ADMIN' || (c.teacherId === currentUser.id || c.teacher?.id === currentUser.id)).map(course => (
+                        {courses.filter(c => roleName === 'ADMIN' || (c.teacherId === currentUser.id || c.teacher?.id === currentUser.id)).map(course => (
                             <option key={course.id} value={course.id}>{course.name}</option>
                         ))}
                     </select>
