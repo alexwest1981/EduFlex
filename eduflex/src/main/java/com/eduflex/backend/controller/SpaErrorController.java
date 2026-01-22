@@ -40,12 +40,15 @@ public class SpaErrorController implements ErrorController {
             }
         }
 
-        // If we don't handle it, let Spring Boot show the default error page (or JSON
-        // response)
-        // If we just return "error", Spring might try to find an "error" view, fail,
-        // and show Whitelabel.
-        // But for API 404s, we usually want JSON.
-        // This controller is mainly for browser navigation.
-        return "error";
+        // If it's an API request, we should return null (let Spring handle it as JSON)
+        // to avoid "Circular view path" or "View not found" errors that lead to
+        // Whitelabel pages.
+        String path = (String) request.getAttribute(RequestDispatcher.ERROR_REQUEST_URI);
+        if (path != null && path.startsWith("/api")) {
+            return null;
+        }
+
+        // For non-API 404s, we forward to the SPA root
+        return "forward:/index.html";
     }
 }

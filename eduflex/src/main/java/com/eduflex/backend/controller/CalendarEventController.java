@@ -7,11 +7,11 @@ import com.eduflex.backend.repository.CalendarEventRepository;
 import com.eduflex.backend.repository.CourseRepository;
 import com.eduflex.backend.repository.UserRepository;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.http.ResponseEntity;
+import jakarta.servlet.http.HttpServletRequest;
 
 import java.util.List;
 import java.util.Map;
@@ -25,20 +25,43 @@ public class CalendarEventController {
     private final CalendarEventRepository eventRepository;
     private final CourseRepository courseRepository;
     private final UserRepository userRepository;
+    private final com.eduflex.backend.service.CalendarService calendarService;
+    private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(CalendarEventController.class);
 
     public CalendarEventController(CalendarEventRepository eventRepository, CourseRepository courseRepository,
-            UserRepository userRepository) {
+            UserRepository userRepository, com.eduflex.backend.service.CalendarService calendarService) {
         this.eventRepository = eventRepository;
         this.courseRepository = courseRepository;
         this.userRepository = userRepository;
+        this.calendarService = calendarService;
+    }
+
+    /**
+     * Helper to get current user from SecurityContext
+     */
+    private User getCurrentUser() {
+        org.springframework.security.core.Authentication auth = org.springframework.security.core.context.SecurityContextHolder
+                .getContext().getAuthentication();
+
+        if (auth == null || !auth.isAuthenticated()
+                || auth instanceof org.springframework.security.authentication.AnonymousAuthenticationToken) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication required");
+        }
+
+        String username = auth.getName();
+        return userRepository.findByUsername(username)
+                .orElseGet(() -> userRepository.findByEmail(username)
+                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                                "User not found: " + username)));
     }
 
     @GetMapping
-    public List<CalendarEvent> getAllEvents(@AuthenticationPrincipal Jwt jwt) {
+    public List<CalendarEvent> getAllEvents() {
         List<CalendarEvent> events = eventRepository.findAll();
 
-        // Privacy Filtering
-        String currentUserEmail = (jwt != null) ? jwt.getClaimAsString("email") : null;
+        org.springframework.security.core.Authentication auth = org.springframework.security.core.context.SecurityContextHolder
+                .getContext().getAuthentication();
+        String currentUserEmail = (auth != null) ? auth.getName() : null;
 
         return events.stream().map(event -> {
             // Check if privacy filter applies (e.g., specific types like
@@ -78,7 +101,7 @@ public class CalendarEventController {
 
     @PostMapping
     public ResponseEntity<Map<String, Object>> createEvent(@RequestBody EventRequest request,
-            @AuthenticationPrincipal Jwt jwt) {
+            @AuthenticationPrincipal Object principal) {
         CalendarEvent event = new CalendarEvent();
         event.setTitle(request.title);
         event.setDescription(request.description);
@@ -105,9 +128,8 @@ public class CalendarEventController {
         if (request.ownerId != null) {
             User owner = userRepository.findById(request.ownerId).orElse(null);
             event.setOwner(owner);
-        } else if (jwt != null) {
-            String email = jwt.getClaimAsString("email");
-            User owner = userRepository.findByUsername(email).orElse(null); // Assuming username=email
+        } else {
+            User owner = getCurrentUser();
             event.setOwner(owner);
         }
 
@@ -121,7 +143,7 @@ public class CalendarEventController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteEvent(@PathVariable Long id, @AuthenticationPrincipal Jwt jwt) {
+    public ResponseEntity<Void> deleteEvent(@PathVariable Long id) {
         // TODO: Add permission check (only owner or teacher can delete)
         eventRepository.deleteById(id);
         return ResponseEntity.ok().build();
@@ -150,6 +172,78 @@ public class CalendarEventController {
         response.put("status", event.getStatus().toString());
         response.put("message", "Event status updated successfully");
         return ResponseEntity.ok(response);
+    }
+
+    /**
+     * Get users that can be filtered by the current user
+     * GET /api/events/filterable-users
+     */
+    @GetMapping("/filterable-users")
+    public ResponseEntity<List<User>> getFilterableUsers(HttpServletRequest request) {
+        try {
+            User currentUser = getCurrentUser();
+            List<User> users = calendarService.getUsersFilterableBy(currentUser);
+            return ResponseEntity.ok(users);
+        } catch (org.springframework.web.server.ResponseStatusException e) {
+            throw e;
+        } catch (Exception e) {
+            logger.error("💥 Persistent error in {}: {}", request.getRequestURI(), e.getMessage(), e);
+            throw new org.springframework.web.server.ResponseStatusException(
+                    org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+    }
+
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<CalendarEvent>> getEventsForUser(@PathVariable Long userId, HttpServletRequest request) {
+        try {
+            User currentUser = getCurrentUser();
+            List<CalendarEvent> events = calendarService.getEventsForUser(userId, currentUser);
+            return ResponseEntity.ok(events);
+        } catch (org.springframework.web.server.ResponseStatusException e) {
+            throw e;
+        } catch (Exception e) {
+            logger.error("💥 Persistent error in {}: {}", request.getRequestURI(), e.getMessage(), e);
+            throw new org.springframework.web.server.ResponseStatusException(
+                    org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR,
+                    e.getMessage());
+        }
+    }
+
+    /**
+     * Get events for a specific course (for teacher filtering)
+     * GET /api/events/course/{courseId}
+     */
+    @GetMapping("/course/{courseId}")
+    public ResponseEntity<List<CalendarEvent>> getEventsForCourse(@PathVariable Long courseId,
+            HttpServletRequest request) {
+        try {
+            User currentUser = getCurrentUser();
+            List<CalendarEvent> events = calendarService.getEventsForCourse(courseId, currentUser);
+            return ResponseEntity.ok(events);
+        } catch (org.springframework.web.server.ResponseStatusException e) {
+            throw e;
+        } catch (Exception e) {
+            logger.error("💥 Persistent error in {}: {}", request.getRequestURI(), e.getMessage(), e);
+            throw new org.springframework.web.server.ResponseStatusException(
+                    org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR,
+                    e.getMessage());
+        }
+    }
+
+    @GetMapping("/my-courses")
+    public ResponseEntity<List<Long>> getMyCourses(HttpServletRequest request) {
+        try {
+            User currentUser = getCurrentUser();
+            List<Long> courseIds = calendarService.getTeacherCourseIds(currentUser.getId());
+            return ResponseEntity.ok(courseIds);
+        } catch (org.springframework.web.server.ResponseStatusException e) {
+            throw e;
+        } catch (Exception e) {
+            logger.error("💥 Persistent error in {}: {}", request.getRequestURI(), e.getMessage(), e);
+            throw new org.springframework.web.server.ResponseStatusException(
+                    org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR,
+                    e.getMessage());
+        }
     }
 
     // DTO för inkommande data
