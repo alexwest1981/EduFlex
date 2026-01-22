@@ -3,6 +3,7 @@ import AdminStats from './components/admin/AdminStats';
 import { RecentUsersWidget, RecentUploadsWidget } from './components/admin/AdminTables';
 import RecentMessagesWidget from './components/RecentMessagesWidget';
 import OnlineFriendsWidget from './widgets/OnlineFriendsWidget';
+import AdminTicketsWidget from './widgets/AdminTicketsWidget';
 import { CreateUserModal } from './components/admin/AdminModals';
 
 import { useAppContext } from '../../context/AppContext';
@@ -16,7 +17,7 @@ const AdminOverview = ({ users, courses, documents, fetchStats, setActiveTab, wi
     const latestDocs = documents?.length > 0 ? [...documents].reverse().slice(0, 5) : [];
 
     // Count active activity widgets
-    const activeActivityCount = [widgets.recentUsers, widgets.recentDocs, widgets.onlineFriends].filter(Boolean).length;
+    const activeActivityCount = [widgets.recentUsers, widgets.recentDocs, widgets.onlineFriends, widgets.tickets].filter(Boolean).length;
 
     // Determine grid columns
     const gridColsClass = activeActivityCount === 1 ? "grid-cols-1" :
@@ -41,12 +42,16 @@ const AdminOverview = ({ users, courses, documents, fetchStats, setActiveTab, wi
                     <RecentUploadsWidget latestDocs={latestDocs} />
                 )}
 
+                {widgets.tickets && (
+                    <AdminTicketsWidget onManage={() => window.location.href = '/admin?tab=tickets'} />
+                )}
+
                 {widgets.onlineFriends && (
                     <OnlineFriendsWidget />
                 )}
 
                 {widgets.messages && (
-                    <div className="xl:col-span-3">
+                    <div className={widgets.onlineFriends ? "xl:col-span-2" : "xl:col-span-3"}>
                         <RecentMessagesWidget onViewAll={() => setActiveTab('communication')} />
                     </div>
                 )}

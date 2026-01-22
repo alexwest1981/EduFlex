@@ -47,6 +47,7 @@ public class MessageService {
                 .orElseThrow(() -> new RuntimeException("Recipient not found"));
 
         Message msg = new Message();
+        msg.setSender(sender);
         msg.setRecipient(recipient);
         msg.setSubject(subject);
         msg.setContent(content);

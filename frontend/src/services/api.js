@@ -520,5 +520,22 @@ export const api = {
         getDailyChallenges: (userId) => fetch(`${API_BASE}/gamification/challenges/daily/${userId}`, { headers: getHeaders() }).then(handleResponse),
         claimChallenge: (challengeId) => fetch(`${API_BASE}/gamification/challenges/${challengeId}/claim`, { method: 'POST', headers: getHeaders() }).then(handleResponse),
         getStreak: (userId) => fetch(`${API_BASE}/gamification/streak/login/${userId}`, { headers: getHeaders() }).then(handleResponse),
+    },
+    support: {
+        createTicket: (data) => fetch(`${API_BASE}/support/tickets`, {
+            method: 'POST',
+            headers: getHeaders(),
+            body: JSON.stringify(data)
+        }).then(handleResponse),
+        getMyTickets: (userId) => fetch(`${API_BASE}/support/tickets/my?userId=${userId}`, { headers: getHeaders() }).then(handleResponse),
+        getAllTickets: () => fetch(`${API_BASE}/support/tickets`, { headers: getHeaders() }).then(handleResponse),
+        updateStatus: (id, status) => fetch(`${API_BASE}/support/tickets/${id}/status?status=${status}`, {
+            method: 'PATCH',
+            headers: getHeaders()
+        }).then(handleResponse),
+        respond: (id, response, severity) => fetch(`${API_BASE}/support/tickets/${id}/respond?response=${encodeURIComponent(response)}&severity=${severity}`, {
+            method: 'POST',
+            headers: getHeaders()
+        }).then(handleResponse)
     }
 };

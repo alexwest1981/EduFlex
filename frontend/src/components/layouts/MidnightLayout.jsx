@@ -35,6 +35,7 @@ const MidnightLayout = ({ children }) => {
         { path: '/catalog', icon: <Wallet size={18} />, label: t('sidebar.catalog') },
         { path: '/documents', icon: <FileText size={18} />, label: t('sidebar.documents') },
         { path: '/calendar', icon: <Calendar size={18} />, label: t('sidebar.calendar') },
+        { path: '/support', icon: <HelpCircle size={18} />, label: t('sidebar.support') || 'Kontakt & Support' },
         ...(roleName === 'ADMIN' ? [{ path: '/analytics', icon: <Activity size={18} />, label: t('sidebar.analytics') }] : []),
         ...(roleName === 'ADMIN' ? [{ path: '/admin', icon: <Settings size={18} />, label: t('sidebar.admin') }] : []),
     ];

@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Users, Settings, Database, Edit3, Server, Globe } from 'lucide-react';
+import { Users, Settings, Database, Edit3, Server, Globe, MessageSquare } from 'lucide-react';
 
 const AdminNavbar = () => {
     const { t } = useTranslation();
@@ -17,7 +17,8 @@ const AdminNavbar = () => {
         { id: 'administration', label: t('admin_tabs.administration') || 'Administration', icon: Users, path: '/admin?tab=administration' },
         { id: 'tenants', label: 'Tenants', icon: Server, path: '/admin?tab=tenants' },
         { id: 'system', label: t('admin_tabs.system_settings') || 'Systeminställningar', icon: Settings, path: '/admin?tab=system' },
-        { id: 'skolverket', label: 'Skolverket', icon: Database, path: '/admin?tab=skolverket' }
+        { id: 'skolverket', label: 'Skolverket', icon: Database, path: '/admin?tab=skolverket' },
+        { id: 'tickets', label: t('admin_tabs.tickets') || 'Ärenden', icon: MessageSquare, path: '/admin?tab=tickets' }
     ];
 
     const handleNavigation = (tab) => {

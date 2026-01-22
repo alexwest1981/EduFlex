@@ -37,6 +37,7 @@ import AnalyticsDashboard from './features/analytics/AnalyticsDashboard';
 import CertificateView from './features/certificates/CertificateView';
 import EnterpriseWhitelabel from './features/admin/EnterpriseWhitelabel';
 import SkolverketModule from './modules/skolverket/SkolverketModule';
+import SupportPage from './features/support/SupportPage';
 
 // --- PROTECTED ROUTE ---
 const ProtectedRoute = ({ children, roles }) => {
@@ -204,6 +205,14 @@ const AppRoutes = () => {
                 <Route path="/certificate/:courseId" element={
                     <ProtectedRoute>
                         <CertificateView />
+                    </ProtectedRoute>
+                } />
+
+                <Route path="/support" element={
+                    <ProtectedRoute>
+                        <Layout currentUser={currentUser} handleLogout={logout}>
+                            <SupportPage currentUser={currentUser} />
+                        </Layout>
                     </ProtectedRoute>
                 } />
 

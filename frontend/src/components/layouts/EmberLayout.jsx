@@ -147,9 +147,9 @@ const EmberLayout = ({ children }) => {
 
                     {/* Bottom Helper */}
                     <div className="p-6">
-                        <div className="flex items-center gap-3 px-4 py-3 text-gray-500 hover:text-gray-900 cursor-pointer transition-colors">
+                        <div onClick={() => navigate('/support')} className="flex items-center gap-3 px-4 py-3 text-gray-500 hover:text-gray-900 cursor-pointer transition-colors">
                             <HelpCircle size={18} />
-                            <span className="font-medium text-sm">Help & Support</span>
+                            <span className="font-medium text-sm">{t('sidebar.support') || 'Help & Support'}</span>
                             <span className="ml-auto bg-[#3F51B5] text-white text-[10px] font-bold px-1.5 py-0.5 rounded-md">8</span>
                         </div>
                     </div>

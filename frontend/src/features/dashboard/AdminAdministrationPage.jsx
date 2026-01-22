@@ -8,6 +8,7 @@ import SystemSettings from '../system/SystemSettings';
 import TenantManagement from '../admin/TenantManagement';
 import AdminNavbar from './components/admin/AdminNavbar';
 import AdminHeader from './components/admin/AdminHeader';
+import AdminTicketManager from '../support/AdminTicketManager';
 import { useSearchParams } from 'react-router-dom';
 
 const AdminAdministrationPage = () => {
@@ -65,6 +66,7 @@ const AdminAdministrationPage = () => {
                 {activeTab === 'tenants' && <TenantManagement />}
                 {activeTab === 'system' && <SystemSettings asTab={true} />}
                 {activeTab === 'skolverket' && <SkolverketManager />}
+                {activeTab === 'tickets' && <AdminTicketManager />}
             </div>
         </div>
     );
