@@ -7,6 +7,7 @@ import com.eduflex.backend.model.User;
 import com.eduflex.backend.repository.CalendarEventRepository;
 import com.eduflex.backend.repository.CourseRepository;
 import com.eduflex.backend.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +23,9 @@ public class CalendarService {
     private final CalendarEventRepository eventRepository;
     private final CourseRepository courseRepository;
     private final UserRepository userRepository;
+
+    @Autowired(required = false)
+    private MentorService mentorService;
 
     public CalendarService(CalendarEventRepository eventRepository,
             CourseRepository courseRepository,
@@ -236,9 +240,24 @@ public class CalendarService {
      * Check if mentor is assigned to any of the event attendees
      */
     private boolean isUserMentorOfAttendees(User user, CalendarEvent event) {
-        // This would need to be implemented based on mentor-student relationship
-        // For now, assume mentors can see all meetings
-        return true;
+        if (mentorService == null) {
+            return false;
+        }
+
+        // Check if event owner is one of mentor's students
+        if (event.getOwner() != null) {
+            List<User> myStudents = mentorService.getActiveStudentsForMentor(user.getId());
+            if (myStudents.stream().anyMatch(s -> s.getId().equals(event.getOwner().getId()))) {
+                return true;
+            }
+        }
+
+        // Check attendees
+        return event.getAttendees().stream()
+                .anyMatch(attendee -> {
+                    List<User> myStudents = mentorService.getActiveStudentsForMentor(user.getId());
+                    return myStudents.stream().anyMatch(s -> s.getId().equals(attendee.getId()));
+                });
     }
 
     /**
@@ -314,8 +333,8 @@ public class CalendarService {
      * Works with both local JWT tokens and OAuth2/Keycloak tokens
      */
     public User getCurrentUser() {
-        org.springframework.security.core.Authentication auth =
-            org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+        org.springframework.security.core.Authentication auth = org.springframework.security.core.context.SecurityContextHolder
+                .getContext().getAuthentication();
 
         if (auth == null || !auth.isAuthenticated()) {
             return null;
@@ -431,5 +450,185 @@ public class CalendarService {
      */
     private String formatForGoogleCalendar(LocalDateTime dateTime) {
         return dateTime.format(java.time.format.DateTimeFormatter.ofPattern("yyyyMMdd'T'HHmmss"));
+    }
+
+    /**
+     * Get users that can be filtered by the current user based on role
+     * Role-based filtering rules:
+     * - ADMIN: Can see all (teachers, mentors, principals) + own (but not other
+     * admins)
+     * - PRINCIPAL: Can see teachers + mentors + own
+     * - MENTOR: Can see assigned students + colleagues (teacher/mentor/principal) +
+     * own
+     * - TEACHER: Can see colleagues (teacher/mentor/principal) + own
+     * - STUDENT: Can see only their courses and their mentor
+     */
+    public List<User> getUsersFilterableBy(User currentUser) {
+        if (currentUser == null || currentUser.getRole() == null) {
+            return new ArrayList<>();
+        }
+
+        String role = currentUser.getRole().getName();
+        List<User> allUsers = userRepository.findAll();
+        Set<User> filterableUsers = new HashSet<>();
+
+        switch (role) {
+            case "ADMIN":
+                // Can see teachers, mentors, principals, and own
+                filterableUsers.addAll(allUsers.stream()
+                        .filter(u -> u.getRole() != null &&
+                                ("TEACHER".equals(u.getRole().getName()) ||
+                                        "MENTOR".equals(u.getRole().getName())))
+                        .collect(Collectors.toList()));
+                filterableUsers.add(currentUser); // Add own
+                break;
+
+            case "PRINCIPAL":
+                // Can see teachers, mentors, and own
+                filterableUsers.addAll(allUsers.stream()
+                        .filter(u -> u.getRole() != null &&
+                                ("TEACHER".equals(u.getRole().getName()) ||
+                                        "MENTOR".equals(u.getRole().getName())))
+                        .collect(Collectors.toList()));
+                filterableUsers.add(currentUser);
+                break;
+
+            case "MENTOR":
+                // Can see assigned students + colleagues + own
+                if (mentorService != null) {
+                    filterableUsers.addAll(mentorService.getActiveStudentsForMentor(currentUser.getId()));
+                }
+                filterableUsers.addAll(allUsers.stream()
+                        .filter(u -> u.getRole() != null &&
+                                ("TEACHER".equals(u.getRole().getName()) ||
+                                        "MENTOR".equals(u.getRole().getName())))
+                        .collect(Collectors.toList()));
+                filterableUsers.add(currentUser);
+                break;
+
+            case "TEACHER":
+                // Can see colleagues and own
+                filterableUsers.addAll(allUsers.stream()
+                        .filter(u -> u.getRole() != null &&
+                                ("TEACHER".equals(u.getRole().getName()) ||
+                                        "MENTOR".equals(u.getRole().getName())))
+                        .collect(Collectors.toList()));
+                filterableUsers.add(currentUser);
+                break;
+
+            case "STUDENT":
+                // Can only see their mentor
+                if (mentorService != null) {
+                    Optional<User> mentor = mentorService.getActiveMentorForStudent(currentUser.getId());
+                    mentor.ifPresent(filterableUsers::add);
+                }
+                filterableUsers.add(currentUser);
+                break;
+
+            default:
+                filterableUsers.add(currentUser);
+                break;
+        }
+
+        return new ArrayList<>(filterableUsers);
+    }
+
+    /**
+     * Sanitize event for privacy when viewed by non-participants
+     * Shows: time, length, platform icon, status (lower opacity)
+     * Hides: title (replaced with type), description, meeting link, specific
+     * details
+     */
+    public CalendarEvent sanitizeEvent(CalendarEvent event, User viewer, boolean isAdmin) {
+        // Admin sees everything
+        if (isAdmin) {
+            return event;
+        }
+
+        // If viewer is owner or participant, show everything
+        if (isUserOwnerOfEvent(viewer, event) || isUserPartOfEvent(viewer, event)) {
+            return event;
+        }
+
+        // Create sanitized copy
+        CalendarEvent sanitized = new CalendarEvent();
+        sanitized.setId(event.getId());
+        sanitized.setStartTime(event.getStartTime());
+        sanitized.setEndTime(event.getEndTime());
+        sanitized.setType(event.getType());
+        sanitized.setStatus(event.getStatus());
+        sanitized.setPlatform(event.getPlatform());
+
+        // Replace title with generic event type
+        String genericTitle = switch (event.getType()) {
+            case LESSON -> "Lektion";
+            case EXAM -> "Tenta";
+            case MEETING -> "Möte";
+            case WORKSHOP -> "Workshop";
+            case ASSIGNMENT -> "Uppgift";
+            default -> "Upptagen";
+        };
+        sanitized.setTitle(genericTitle);
+
+        // Hide sensitive information
+        sanitized.setDescription(null);
+        sanitized.setMeetingLink(null);
+        sanitized.setTopic(null);
+        sanitized.setIsMandatory(false);
+        sanitized.setOwner(null);
+        sanitized.setCourse(null);
+
+        return sanitized;
+    }
+
+    /**
+     * Get events for a specific user (for calendar filtering)
+     */
+    public List<CalendarEvent> getEventsForUser(Long userId, User viewer) {
+        User targetUser = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        List<CalendarEvent> events = eventRepository.findAll().stream()
+                .filter(event -> isUserOwnerOfEvent(targetUser, event) ||
+                        isUserPartOfEvent(targetUser, event) ||
+                        (event.getCourse() != null && isUserTeacherOfCourseEvent(targetUser, event)))
+                .collect(Collectors.toList());
+
+        // Apply privacy filtering
+        String viewerRole = viewer.getRole() != null ? viewer.getRole().getName() : "";
+        boolean isAdmin = "ADMIN".equals(viewerRole);
+
+        return events.stream()
+                .map(event -> sanitizeEvent(event, viewer, isAdmin))
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Get events for a specific course
+     */
+    public List<CalendarEvent> getEventsForCourse(Long courseId, User viewer) {
+        List<CalendarEvent> events = eventRepository.findAll().stream()
+                .filter(event -> event.getCourse() != null &&
+                        event.getCourse().getId().equals(courseId))
+                .collect(Collectors.toList());
+
+        // Apply privacy filtering
+        String viewerRole = viewer.getRole() != null ? viewer.getRole().getName() : "";
+        boolean isAdmin = "ADMIN".equals(viewerRole);
+
+        return events.stream()
+                .map(event -> sanitizeEvent(event, viewer, isAdmin))
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Get courses that a teacher teaches
+     */
+    public List<Long> getTeacherCourseIds(Long teacherId) {
+        return courseRepository.findAll().stream()
+                .filter(course -> course.getTeacher() != null &&
+                        course.getTeacher().getId().equals(teacherId))
+                .map(course -> course.getId())
+                .collect(Collectors.toList());
     }
 }

@@ -14,6 +14,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/branding")
 public class BrandingController {
+    private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(BrandingController.class);
 
     private final BrandingService brandingService;
 
@@ -65,8 +66,9 @@ public class BrandingController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body(Map.of("error", e.getMessage()));
         } catch (Exception e) {
+            logger.error("Error updating branding for {}: {}", organizationKey, e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("error", "Ett fel uppstod vid uppdatering av branding"));
+                    .body(Map.of("error", "Ett fel uppstod vid uppdatering av branding: " + e.getMessage()));
         }
     }
 

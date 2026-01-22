@@ -61,6 +61,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                     authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
                     SecurityContextHolder.getContext().setAuthentication(authentication);
+                    logger.debug("✅ User '{}' authenticated via internal token", username);
                 }
             }
         } catch (Exception e) {

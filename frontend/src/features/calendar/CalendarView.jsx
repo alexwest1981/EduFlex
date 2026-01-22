@@ -8,6 +8,7 @@ import { useDesignSystem } from '../../context/DesignSystemContext';
 import EventDetailPanel from './EventDetailPanel';
 import MiniCalendar from './components/MiniCalendar';
 import ImportantDatesWidget from './components/ImportantDatesWidget';
+import CalendarFilter from './components/CalendarFilter';
 
 // --- UTILS ---
 function getMonday(d) {
@@ -55,6 +56,12 @@ const CalendarView = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [stats, setStats] = useState({ totalStudents: 0, totalClasses: 0 });
 
+    // Filter State
+    const [primaryFilter, setPrimaryFilter] = useState(null);
+    const [secondaryFilter, setSecondaryFilter] = useState(null);
+    const [filteredEvents, setFilteredEvents] = useState([]);
+    const [secondaryFilteredEvents, setSecondaryFilteredEvents] = useState([]);
+
     // UI State
     const [showBookingModal, setShowBookingModal] = useState(false);
     const [selectedEvent, setSelectedEvent] = useState(null);
@@ -73,7 +80,10 @@ const CalendarView = () => {
         try {
             console.log("fetchData: isTeacherOrAdmin=", isTeacherOrAdmin, "currentUser.id=", currentUser?.id);
             const [eventsRes, coursesRes, usersRes] = await Promise.all([
-                api.get('/events').catch(err => { console.error("Events fetch error", err); return []; }),
+                // Fetch only current user's events by default
+                currentUser?.id
+                    ? api.get(`/events/user/${currentUser.id}`).catch(err => { console.error("Events fetch error", err); return []; })
+                    : api.get('/events').catch(err => { console.error("Events fetch error", err); return []; }),
                 (!isTeacherOrAdmin && currentUser?.id)
                     ? api.courses.getMyCourses(currentUser.id).catch(err => { console.error("My Courses fetch error", err); return []; })
                     : api.get('/courses').catch(err => { console.error("Courses fetch error", err); return []; }),
@@ -124,6 +134,83 @@ const CalendarView = () => {
     useEffect(() => {
         fetchData();
     }, [weekStart]);
+
+    // --- FILTER HANDLERS ---
+    const fetchFilteredEvents = async (filter) => {
+        if (!filter) return [];
+        try {
+            if (filter.type === 'user') {
+                const events = await api.get(`/events/user/${filter.value.id}`);
+                return events.map(e => ({
+                    id: e.id,
+                    title: e.title,
+                    description: e.description,
+                    start: new Date(e.startTime),
+                    end: new Date(e.endTime),
+                    type: e.type,
+                    status: e.status,
+                    platform: e.platform,
+                    meetingLink: e.meetingLink,
+                    isMandatory: e.isMandatory,
+                    topic: e.topic,
+                    courseId: e.course?.id,
+                    ownerId: e.owner?.id,
+                    ownerName: e.owner ? `${e.owner.firstName} ${e.owner.lastName}` : 'Okänd',
+                    isFiltered: true
+                }));
+            } else if (filter.type === 'course') {
+                const events = await api.get(`/events/course/${filter.value.id}`);
+                return events.map(e => ({
+                    id: e.id,
+                    title: e.title,
+                    description: e.description,
+                    start: new Date(e.startTime),
+                    end: new Date(e.endTime),
+                    type: e.type,
+                    status: e.status,
+                    platform: e.platform,
+                    meetingLink: e.meetingLink,
+                    isMandatory: e.isMandatory,
+                    topic: e.topic,
+                    courseId: e.course?.id,
+                    ownerId: e.owner?.id,
+                    ownerName: e.owner ? `${e.owner.firstName} ${e.owner.lastName}` : 'Okänd',
+                    isFiltered: true
+                }));
+            }
+        } catch (error) {
+            console.error('Failed to fetch filtered events:', error);
+            return [];
+        }
+    };
+
+    const handleFilterChange = async ({ type, value, isPrimary }) => {
+        if (type === 'clear') {
+            if (isPrimary) {
+                setPrimaryFilter(null);
+                setFilteredEvents([]);
+            } else {
+                setSecondaryFilter(null);
+                setSecondaryFilteredEvents([]);
+            }
+            return;
+        }
+
+        const filter = { type, value };
+
+        if (isPrimary) {
+            setPrimaryFilter(filter);
+            const events = await fetchFilteredEvents(filter);
+            setFilteredEvents(events);
+        } else {
+            setSecondaryFilter(filter);
+            const events = await fetchFilteredEvents(filter);
+            setSecondaryFilteredEvents(events);
+        }
+    };
+
+    // Merge events: use filtered if available, otherwise use all events
+    const displayEvents = primaryFilter ? filteredEvents : calEvents;
 
     // --- HANDLERS ---
     const handlePrevWeek = () => setWeekStart(addDays(weekStart, -7));
@@ -210,7 +297,7 @@ const CalendarView = () => {
     const [selectedMobileDate, setSelectedMobileDate] = useState(new Date()); // State for mobile selection
 
     const getEventsForSlot = (dayDate, hour) => {
-        return calEvents.filter(e => {
+        return displayEvents.filter(e => {
             const eDate = e.start;
             return eDate.getDate() === dayDate.getDate() &&
                 eDate.getMonth() === dayDate.getMonth() &&
@@ -220,12 +307,22 @@ const CalendarView = () => {
 
     // Get all events for a specific day (for absolute positioning)
     const getEventsForDay = (dayDate) => {
-        return calEvents.filter(e => {
+        const primaryEvents = displayEvents.filter(e => {
             const eDate = e.start;
             return eDate.getDate() === dayDate.getDate() &&
                 eDate.getMonth() === dayDate.getMonth() &&
                 eDate.getFullYear() === dayDate.getFullYear();
         });
+
+        // Add secondary filtered events with a flag
+        const secondaryEvents = secondaryFilter ? secondaryFilteredEvents.filter(e => {
+            const eDate = e.start;
+            return eDate.getDate() === dayDate.getDate() &&
+                eDate.getMonth() === dayDate.getMonth() &&
+                eDate.getFullYear() === dayDate.getFullYear();
+        }).map(e => ({ ...e, isSecondary: true })) : [];
+
+        return [...primaryEvents, ...secondaryEvents];
     };
 
     // Calculate event position and height
@@ -251,14 +348,23 @@ const CalendarView = () => {
         };
     };
 
-    const getEventTypeStyles = (type) => {
+    const getEventTypeStyles = (type, isSecondary = false, status = 'CONFIRMED') => {
+        // Lower opacity for pending status
+        const isPending = status === 'PENDING';
+        const secondaryOpacity = isSecondary ? 'opacity-50' : '';
+        const pendingOpacity = isPending ? 'opacity-70' : '';
+
+        let baseClasses = '';
         switch (type) {
-            case 'LESSON': return 'bg-orange-100/70 dark:bg-orange-900/40 text-orange-900 dark:text-orange-100 border-l-4 border-orange-500';
-            case 'EXAM': return 'bg-red-100/70 dark:bg-red-900/40 text-red-900 dark:text-red-100 border-l-4 border-red-500';
-            case 'WORKSHOP': return 'bg-teal-100/70 dark:bg-teal-900/40 text-teal-900 dark:text-teal-100 border-l-4 border-teal-500';
-            case 'MEETING': return 'bg-purple-100/70 dark:bg-purple-900/40 text-purple-900 dark:text-purple-100 border-l-4 border-purple-500';
-            default: return 'bg-gray-100/70 dark:bg-gray-800/40 text-gray-900 dark:text-gray-100 border-l-4 border-gray-500';
+            case 'LESSON': baseClasses = 'bg-orange-500 text-white'; break;
+            case 'EXAM': baseClasses = 'bg-red-500 text-white'; break;
+            case 'WORKSHOP': baseClasses = 'bg-teal-500 text-white'; break;
+            case 'MEETING': baseClasses = 'bg-purple-500 text-white'; break;
+            case 'ASSIGNMENT': baseClasses = 'bg-yellow-500 text-white'; break;
+            default: baseClasses = 'bg-gray-500 text-white'; break;
         }
+
+        return `${baseClasses} ${secondaryOpacity} ${pendingOpacity}`;
     };
 
     const getEventTypeIcon = (type) => {
@@ -276,7 +382,7 @@ const CalendarView = () => {
         <div
             key={event.id}
             onClick={() => { setSelectedEvent(event); setShowEventDetail(true); }}
-            className={`p-4 rounded-xl shadow-sm mb-3 flex items-start gap-4 transition-transform active:scale-95 ${getEventTypeStyles(event.type)}`}
+            className={`p-4 rounded-xl shadow-sm mb-3 flex items-start gap-4 transition-transform active:scale-95 ${getEventTypeStyles(event.type, event.isSecondary, event.status)}`}
         >
             <div className="mt-1 p-2 rounded-full bg-white/50 dark:bg-black/20 shrink-0">
                 {getEventTypeIcon(event.type)}
@@ -295,52 +401,89 @@ const CalendarView = () => {
     return (
         <div className="max-w-7xl mx-auto flex flex-col p-4 lg:p-6 h-full lg:h-[calc(100vh-120px)]">
 
-            {/* Header */}
-            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6 shrink-0 bg-white dark:bg-[#1E1E1E] p-4 lg:p-6 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-800 w-full">
-                <div className="mb-4 lg:mb-0">
-                    <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">{t('sidebar.calendar', 'Calendar')}</h1>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 hidden lg:block">Your Personalized Calendar: The Smart Way to Stay on Top of Things</p>
+            {/* Header - Top Row */}
+            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-3 shrink-0 w-full">
+                <div>
+                    <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-1">Calendar</h1>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">Your Personalized Calendar: The Smart Way to Stay on Top of Things</p>
+                </div>
 
-                    {/* Statistics - Desktop Only */}
-                    <div className="hidden lg:flex items-center gap-4 mt-4">
-                        <div className="flex items-center gap-2">
-                            <div className="flex -space-x-2">
-                                <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-900/30 border-2 border-white dark:border-[#1E1E1E] flex items-center justify-center">
-                                    <Users size={14} className="text-indigo-600 dark:text-indigo-400" />
-                                </div>
-                                <div className="w-8 h-8 rounded-full bg-purple-100 dark:bg-purple-900/30 border-2 border-white dark:border-[#1E1E1E] flex items-center justify-center">
-                                    <Users size={14} className="text-purple-600 dark:text-purple-400" />
-                                </div>
-                                <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 border-2 border-white dark:border-[#1E1E1E] flex items-center justify-center">
-                                    <Users size={14} className="text-blue-600 dark:text-blue-400" />
-                                </div>
-                            </div>
-                            <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">{stats.totalStudents} Students</span>
+                <div className="flex items-center gap-2 mt-3 lg:mt-0">
+                    {/* Sync Google Calendar Button */}
+                    <button className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-sm font-medium text-gray-700 dark:text-gray-300">
+                        <CalIcon size={16} />
+                        <span className="hidden lg:inline">Sync Google Calendar</span>
+                    </button>
+
+                    {/* User Profile */}
+                    <div className="flex items-center gap-2">
+                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold">
+                            {currentUser?.firstName?.charAt(0)}{currentUser?.lastName?.charAt(0)}
                         </div>
-                        <div className="w-px h-6 bg-gray-300 dark:bg-gray-700"></div>
-                        <div className="flex items-center gap-2">
-                            <TrendingUp size={16} className="text-gray-400" />
-                            <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">{stats.totalClasses} Classes</span>
+                        <div className="hidden lg:block">
+                            <div className="text-sm font-semibold text-gray-900 dark:text-white">
+                                {currentUser?.firstName} {currentUser?.lastName}
+                            </div>
+                            <div className="text-xs text-gray-500 dark:text-gray-400">
+                                {currentUser?.email}
+                            </div>
                         </div>
                     </div>
                 </div>
+            </div>
 
+            {/* Statistics & Controls Row */}
+            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6 shrink-0 w-full gap-4">
+                {/* Statistics */}
+                <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2">
+                        <div className="flex -space-x-2">
+                            <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-900/30 border-2 border-white dark:border-[#1E1E1E] flex items-center justify-center">
+                                <Users size={14} className="text-indigo-600 dark:text-indigo-400" />
+                            </div>
+                            <div className="w-8 h-8 rounded-full bg-purple-100 dark:bg-purple-900/30 border-2 border-white dark:border-[#1E1E1E] flex items-center justify-center">
+                                <Users size={14} className="text-purple-600 dark:text-purple-400" />
+                            </div>
+                            <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 border-2 border-white dark:border-[#1E1E1E] flex items-center justify-center">
+                                <Users size={14} className="text-blue-600 dark:text-blue-400" />
+                            </div>
+                        </div>
+                        <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">{stats.totalStudents} Students</span>
+                    </div>
+                    <div className="w-px h-6 bg-gray-300 dark:bg-gray-700"></div>
+                    <div className="flex items-center gap-2">
+                        <div className="w-6 h-6 rounded-full bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center">
+                            <TrendingUp size={14} className="text-orange-600 dark:text-orange-400" />
+                        </div>
+                        <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">{stats.totalClasses} Classes</span>
+                    </div>
+                </div>
+
+                {/* Controls */}
                 <div className="flex items-center gap-3 w-full lg:w-auto justify-between lg:justify-end">
+                    {/* Calendar Filter */}
+                    <CalendarFilter
+                        onFilterChange={handleFilterChange}
+                        primaryFilter={primaryFilter}
+                        secondaryFilter={secondaryFilter}
+                    />
+
                     {/* Month Navigation */}
                     <div className="flex items-center gap-2 bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
                         <button onClick={handlePrevWeek} className="p-2 hover:bg-white dark:hover:bg-gray-700 rounded-md transition-colors">
                             <ChevronLeft size={18} className="text-gray-600 dark:text-gray-400" />
                         </button>
-                        <span className="px-2 lg:px-4 text-sm font-semibold text-gray-700 dark:text-gray-300 min-w-[100px] lg:min-w-[120px] text-center">
+                        <span className="px-2 lg:px-4 text-sm font-semibold text-gray-700 dark:text-gray-300 min-w-[100px] lg:min-w-[120px] text-center capitalize">
                             {weekStart.toLocaleDateString('sv-SE', { month: 'long', year: 'numeric' })}
                         </span>
                         <button onClick={handleNextWeek} className="p-2 hover:bg-white dark:hover:bg-gray-700 rounded-md transition-colors">
                             <ChevronRight size={18} className="text-gray-600 dark:text-gray-400" />
                         </button>
                     </div>
+
                     <button
                         onClick={() => setShowBookingModal(true)}
-                        className="bg-orange-500 hover:bg-orange-600 text-white w-10 h-10 lg:w-auto lg:px-4 lg:py-2 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2 shadow-sm"
+                        className="bg-orange-500 hover:bg-orange-600 text-white w-10 h-10 lg:w-auto lg:px-4 lg:py-2 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2 shadow-md"
                     >
                         <Plus size={20} />
                         <span className="hidden lg:inline">New Event</span>
@@ -481,8 +624,9 @@ const CalendarView = () => {
 
                                                 return (
                                                     <div
-                                                        key={ev.id}
-                                                        className={`absolute inset-x-2 rounded-lg text-xs px-3 py-2 overflow-hidden shadow-md z-10 transition-all hover:shadow-lg hover:z-20 cursor-pointer ${getEventTypeStyles(ev.type)}`}
+                                                        key={`${ev.id}-${ev.isSecondary ? 'secondary' : 'primary'}`}
+                                                        className={`absolute inset-x-2 rounded-2xl text-xs px-4 py-3 overflow-hidden shadow-lg transition-all hover:shadow-xl hover:scale-105 cursor-pointer ${getEventTypeStyles(ev.type, ev.isSecondary, ev.status)}
+                                                            ${ev.isSecondary ? 'z-5 hover:z-15' : 'z-10 hover:z-20'}`}
                                                         style={style}
                                                         onClick={(e) => {
                                                             e.stopPropagation();
@@ -490,15 +634,18 @@ const CalendarView = () => {
                                                             setShowEventDetail(true);
                                                         }}
                                                     >
-                                                        <div className="flex items-center gap-1.5 mb-1">
-                                                            <div className="flex-shrink-0">
+                                                        <div className="flex items-center gap-2 mb-1">
+                                                            <div className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
                                                                 {getEventTypeIcon(ev.type)}
                                                             </div>
-                                                            <div className="font-bold truncate text-sm">
+                                                            <div className="font-bold truncate flex-1">
                                                                 {ev.title}
                                                             </div>
+                                                            {ev.isSecondary && (
+                                                                <div className="w-2 h-2 rounded-full bg-white" title="Sekundär kalender" />
+                                                            )}
                                                         </div>
-                                                        <div className="opacity-75 text-[11px] truncate">
+                                                        <div className="opacity-90 text-[11px] truncate ml-7">
                                                             {ev.start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - {ev.end.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                                         </div>
                                                     </div>
