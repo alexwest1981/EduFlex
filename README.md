@@ -32,6 +32,14 @@
 ---
 
 ### 🆕 Latest Updates (Jan 22, 2026)
+*   **🎫 Support Ticket System (Refined):** Complete full-stack implementation of a multi-tenant support system.
+    *   **User Side:** Direct access via "Support & Kontakt" in sidebar, 15 predefined categories, automatic route-context capture, and personal ticket history.
+    *   **Supportärendesystem (Färdigställt Jan 22, 2026)**:
+        *   Fullt fungerande system för supportärenden med statusar (Görs nu/Löst) och prioritering.
+        *   Premium `Redesigned TicketWidget` på administratörens dashboard för snabb överblick.
+        *   **"Kontakt & Support" länk tillagd i samtliga dashboard-teman (`Standard`, `Floating`, `Voltage`, `Nebula`, `Pulse`, `Midnight`, `Horizon`, `Ember`) för full tillgänglighet.**
+        *   **Stabilitetsfixar:** Åtgärdat `HelpCircle` referensfel i flera layouter och fixat 500-fel vid rapportering av klient-loggar.
+    *   **Layout Optimization:** Dashboard reorganized for better focus, grouping Tickets with User/Doc activity and placing Online Friends next to the expanded Messaging panel.
 
 *   **💬 Messaging Enhancements:** Implemented a full-featured messaging system with support for **Rich Text (React-Quill)**, **multiple file attachments (10MB limit)**, and **clickable links**. Introduced **message threading** to group conversations hierarchically.
 *   **📂 Message Folders:** Support for custom folders and a dedicated "fel-loggar" folder for administrators to track system errors.

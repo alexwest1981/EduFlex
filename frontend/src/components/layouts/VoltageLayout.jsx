@@ -33,6 +33,7 @@ const VoltageLayout = ({ children }) => {
         { path: '/catalog', icon: <Folder size={20} />, label: t('sidebar.catalog') },
         { path: '/calendar', icon: <Calendar size={20} />, label: t('sidebar.calendar') },
         { path: '/documents', icon: <FileText size={20} />, label: t('sidebar.documents') },
+        { path: '/support', icon: <HelpCircle size={20} />, label: t('sidebar.support') || 'Kontakt & Support' },
         ...(roleName === 'ADMIN' ? [{ path: '/analytics', icon: <BarChart2 size={20} />, label: t('sidebar.analytics') }] : []),
         ...(roleName === 'ADMIN' ? [{ path: '/resources', icon: <HardDrive size={20} />, label: t('sidebar.resource_bank') }] : []),
     ];

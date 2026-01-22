@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
-import { LayoutDashboard, FileText, User, Settings, LogOut, Layers, Menu, X, Award, Zap, Moon, Sun, Calendar, BookOpen, TrendingUp, Bell, Search, ShoppingBag, MessageSquare, PieChart } from 'lucide-react';
+import { LayoutDashboard, FileText, User, Settings, LogOut, Layers, Menu, X, Award, Zap, Moon, Sun, Calendar, BookOpen, TrendingUp, Bell, Search, ShoppingBag, MessageSquare, PieChart, HelpCircle } from 'lucide-react';
 import { useAppContext } from '../../context/AppContext';
 import { useModules } from '../../context/ModuleContext';
 import { useTranslation } from 'react-i18next';
@@ -36,6 +36,7 @@ const NebulaLayout = ({ children }) => {
         { path: '/catalog', icon: <ShoppingBag size={20} />, label: t('sidebar.catalog') }, // Shopping Bag for Catalogue fits Bryzos vibe
         { path: '/calendar', icon: <Calendar size={20} />, label: t('sidebar.calendar') },
         { path: '/documents', icon: <FileText size={20} />, label: t('sidebar.documents') },
+        { path: '/support', icon: <HelpCircle size={20} />, label: t('sidebar.support') || 'Kontakt & Support' },
         ...(roleName === 'ADMIN' ? [{ path: '/analytics', icon: <PieChart size={20} />, label: t('sidebar.analytics') }] : []),
         ...(roleName === 'ADMIN' ? [{ path: '/admin', icon: <Settings size={20} />, label: t('sidebar.admin') }] : []),
     ];

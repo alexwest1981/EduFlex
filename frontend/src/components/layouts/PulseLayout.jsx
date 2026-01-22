@@ -37,6 +37,7 @@ const PulseLayout = ({ children }) => {
         { path: '/documents', icon: <FileText size={20} />, label: t('sidebar.documents') },
         { path: '/catalog', icon: <BookOpen size={20} />, label: t('sidebar.courses') },
         { path: '/calendar', icon: <Calendar size={20} />, label: t('sidebar.calendar') },
+        { path: '/support', icon: <HelpCircle size={20} />, label: t('sidebar.support') || 'Kontakt & Support' },
         ...(roleName === 'ADMIN' ? [{ path: '/analytics', icon: <BarChart2 size={20} />, label: t('sidebar.analytics') }] : []),
         ...(roleName === 'ADMIN' ? [{ path: '/admin', icon: <Settings size={20} />, label: t('sidebar.admin') }] : []),
     ];

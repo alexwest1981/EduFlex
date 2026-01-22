@@ -32,7 +32,8 @@
     "catalog": "Kurskatalog",
     "calendar": "Kalender",
     "resource_bank": "Resursbank",
-    "analytics": "Analyser & Insikter"
+    "analytics": "Analyser & Insikter",
+    "support": "Support & Kontakt"
   },
   "dashboard": {
     "welcome": "Välkommen tillbaka, {{name}}!",
@@ -377,7 +378,6 @@
     "revenue_title": "Intäktsanalys",
     "revenue_subtitle": "Omfattande intäkts- och betalningsinsikter",
     "loading_revenue_data": "Laddar intäktsdata...",
-    "monthly_recurring_revenue": "Månatlig Återkommande Intäkt",
     "annual_recurring_revenue": "Årlig Återkommande Intäkt",
     "payment_success_rate": "Betalningsframgång",
     "avg_payment_amount": "Genomsnittligt Betalningsbelopp",
@@ -474,7 +474,8 @@
     "invoices": "Fakturor",
     "subscription_plans": "Prenumerationsplaner",
     "payment_settings": "Betalningsinställningar",
-    "promo_codes": "Kampanjkoder"
+    "promo_codes": "Kampanjkoder",
+    "tickets": "Ärenden"
   },
   "landing": {
     "nav": {
