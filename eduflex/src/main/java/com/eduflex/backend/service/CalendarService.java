@@ -478,14 +478,11 @@ public class CalendarService {
         List<User> allUsers = userRepository.findAll();
         Set<User> filterableUsers = new HashSet<>();
 
-        // Non-student roles (Admin, Teacher, Mentor, Principal) can see each other
-        // (excluding Principal role as requested previously)
+        // All staff roles (not STUDENT) can see all users with a role, excluding
+        // PRINCIPALS
         if (!"STUDENT".equals(role)) {
             filterableUsers.addAll(allUsers.stream()
-                    .filter(u -> u.getRole() != null &&
-                            ("TEACHER".equals(u.getRole().getName()) ||
-                                    "MENTOR".equals(u.getRole().getName()) ||
-                                    "ADMIN".equals(u.getRole().getName())))
+                    .filter(u -> u.getRole() != null && !"PRINCIPAL".equals(u.getRole().getName()))
                     .collect(Collectors.toList()));
             filterableUsers.add(currentUser);
         } else {
@@ -593,7 +590,20 @@ public class CalendarService {
     }
 
     /**
-     * Get courses that a teacher teaches
+     * Get IDs of courses a student is enrolled in
+     */
+    public List<Long> getStudentCourseIds(Long studentId) {
+        User student = userRepository.findById(studentId)
+                .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(
+                        org.springframework.http.HttpStatus.NOT_FOUND, "Student not found"));
+
+        return student.getCourses().stream()
+                .map(com.eduflex.backend.model.Course::getId)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Get IDs of courses a teacher teaches
      */
     public List<Long> getTeacherCourseIds(Long teacherId) {
         return courseRepository.findAll().stream()

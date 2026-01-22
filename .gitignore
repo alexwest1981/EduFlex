@@ -18,9 +18,12 @@ license_history.json
 tools/secure-license-gen/
 
 # =============================================
-# SCRIPTS (Local Development Only)
+# SCRIPTS, TOOLS & DOCS (Local Development Only)
 # =============================================
 scripts/
+tools/
+.agent/
+.agent/workflows/
 
 # =============================================
 # DEBUG & LOG FILES
@@ -138,6 +141,7 @@ venv/
 # =============================================
 *.env.local
 docker-compose.override.yml
+cloudflared_config*.yml
 
 # =============================================
 # OS GENERATED

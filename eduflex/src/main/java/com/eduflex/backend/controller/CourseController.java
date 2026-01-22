@@ -25,10 +25,34 @@ public class CourseController {
     private final CourseRepository courseRepository;
 
     @Autowired
+    private com.eduflex.backend.repository.UserRepository userRepository;
+
+    @Autowired
     public CourseController(CourseService courseService,
             CourseRepository courseRepository) {
         this.courseService = courseService;
         this.courseRepository = courseRepository;
+    }
+
+    /**
+     * Helper to get current user from SecurityContext
+     */
+    private com.eduflex.backend.model.User getCurrentUser() {
+        org.springframework.security.core.Authentication auth = org.springframework.security.core.context.SecurityContextHolder
+                .getContext().getAuthentication();
+
+        if (auth == null || !auth.isAuthenticated()
+                || auth instanceof org.springframework.security.authentication.AnonymousAuthenticationToken) {
+            throw new org.springframework.web.server.ResponseStatusException(
+                    org.springframework.http.HttpStatus.UNAUTHORIZED, "Authentication required");
+        }
+
+        String username = auth.getName();
+        return userRepository.findByUsername(username)
+                .orElseGet(() -> userRepository.findByEmail(username)
+                        .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(
+                                org.springframework.http.HttpStatus.NOT_FOUND,
+                                "User not found: " + username)));
     }
 
     // --- GET & CRUD ---
@@ -44,6 +68,22 @@ public class CourseController {
         } catch (Exception e) {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @GetMapping("/my-courses")
+    public List<CourseDTO> getMyCourses() {
+        com.eduflex.backend.model.User currentUser = getCurrentUser();
+        String role = currentUser.getRole() != null ? currentUser.getRole().getName() : "";
+
+        if ("STUDENT".equals(role)) {
+            return courseService.getCoursesForStudent(currentUser.getId());
+        } else if ("TEACHER".equals(role)) {
+            return courseService.getCoursesForTeacher(currentUser.getId());
+        } else if ("ADMIN".equals(role)) {
+            return courseService.getAllCourseDTOs();
+        }
+
+        return new java.util.ArrayList<>();
     }
 
     @GetMapping("/student/{studentId}")
