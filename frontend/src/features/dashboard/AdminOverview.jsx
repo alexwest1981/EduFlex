@@ -7,46 +7,46 @@ import { CreateUserModal } from './components/admin/AdminModals';
 
 import { useAppContext } from '../../context/AppContext';
 
-const AdminOverview = ({ users, courses, documents, fetchStats, setActiveTab, widgets }) => {
+const AdminOverview = ({ users, courses, documents, fetchStats, setActiveTab, widgets, unreadCount }) => {
     const { currentUser } = useAppContext();
     const [showUserModal, setShowUserModal] = React.useState(false);
 
-    // Helpers
-    const latestUsers = [...users].reverse().slice(0, 5);
-    const latestDocs = [...documents].reverse().slice(0, 5);
+    // Helpers - with null safety
+    const latestUsers = users?.length > 0 ? [...users].reverse().slice(0, 5) : [];
+    const latestDocs = documents?.length > 0 ? [...documents].reverse().slice(0, 5) : [];
+
+    // Count active activity widgets
+    const activeActivityCount = [widgets.recentUsers, widgets.recentDocs, widgets.onlineFriends].filter(Boolean).length;
+
+    // Determine grid columns
+    const gridColsClass = activeActivityCount === 1 ? "grid-cols-1" :
+        activeActivityCount === 2 ? "grid-cols-1 lg:grid-cols-2" :
+            "grid-cols-1 lg:grid-cols-2 xl:grid-cols-3";
 
     return (
         <div className="space-y-8 animate-in fade-in">
-            {/* 1. Statistik */}
-            {widgets.stats && <AdminStats users={users} courses={courses} documents={documents} />}
+            {/* 1. Statistik (4 kort inkl. meddelanden) */}
+            {widgets.stats && <AdminStats users={users} courses={courses} documents={documents} unreadCount={unreadCount} onViewMessages={() => setActiveTab('communication')} />}
 
-            <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
-                {/* 2. Aktivitet (Delat i två widgets) */}
-                <div className={widgets.messages ? "xl:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-8" : "xl:col-span-3 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"}>
-                    {widgets.recentUsers && (
-                        <div className={widgets.messages ? "" : "lg:col-span-1"}>
-                            <RecentUsersWidget
-                                latestUsers={latestUsers}
-                                onNewUserClick={() => setShowUserModal(true)}
-                            />
-                        </div>
-                    )}
+            <div className={`grid ${gridColsClass} gap-8`}>
+                {/* 2. Aktivitet */}
+                {widgets.recentUsers && (
+                    <RecentUsersWidget
+                        latestUsers={latestUsers}
+                        onNewUserClick={() => setShowUserModal(true)}
+                    />
+                )}
 
-                    {widgets.recentDocs && (
-                        <div className={widgets.messages ? "" : "lg:col-span-1"}>
-                            <RecentUploadsWidget latestDocs={latestDocs} />
-                        </div>
-                    )}
-                </div>
+                {widgets.recentDocs && (
+                    <RecentUploadsWidget latestDocs={latestDocs} />
+                )}
 
-                {/* 3. Meddelanden Preview (1/3 bredd) */}
+                {widgets.onlineFriends && (
+                    <OnlineFriendsWidget />
+                )}
+
                 {widgets.messages && (
-                    <div className={(widgets.recentUsers || widgets.recentDocs) ? "xl:col-span-1 space-y-6" : "xl:col-span-3 space-y-6"}>
-                        {widgets.onlineFriends && (
-                            <div className="h-80">
-                                <OnlineFriendsWidget />
-                            </div>
-                        )}
+                    <div className="xl:col-span-3">
                         <RecentMessagesWidget onViewAll={() => setActiveTab('communication')} />
                     </div>
                 )}

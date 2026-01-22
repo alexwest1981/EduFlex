@@ -53,6 +53,7 @@ const Login = () => {
                 // 2. Hostname detection
                 const hostname = window.location.hostname;
                 const forcedTenant = localStorage.getItem('force_tenant');
+                if (forcedTenant === 'public') return null;
                 if (forcedTenant) return forcedTenant;
                 if (/^[\d.]+$/.test(hostname)) return null;
                 if (hostname.includes('ngrok') || hostname.includes('loca.lt') || hostname.includes('trycloudflare.com')) {

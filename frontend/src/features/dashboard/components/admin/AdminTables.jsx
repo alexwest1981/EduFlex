@@ -80,8 +80,8 @@ export const RecentUsersWidget = ({ latestUsers, onNewUserClick }) => (
             </button>
         </div>
         <div className="space-y-3">
-            {latestUsers?.length > 0 ? latestUsers.map(u => (
-                <div key={u.id} className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-[#131314] rounded-lg border border-gray-100 dark:border-[#3c4043] hover:border-indigo-200 transition-colors">
+            {latestUsers?.length > 0 ? latestUsers.map((u, index) => (
+                <div key={u.id ?? `user-${index}`} className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-[#131314] rounded-lg border border-gray-100 dark:border-[#3c4043] hover:border-indigo-200 transition-colors">
                     <div className="w-8 h-8 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center font-bold text-xs uppercase border border-indigo-200">
                         {u.firstName?.[0] || '?'}
                     </div>
@@ -120,9 +120,9 @@ export const RecentUploadsWidget = ({ latestDocs }) => {
                     </h3>
                 </div>
                 <div className="space-y-3 flex-1">
-                    {latestDocs?.length > 0 ? latestDocs.map(d => (
+                    {latestDocs?.length > 0 ? latestDocs.map((d, index) => (
                         <div
-                            key={d.id}
+                            key={d.id ?? `doc-${index}`}
                             onClick={() => setSelectedDoc(d)}
                             className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-[#131314] rounded-lg border border-gray-100 dark:border-[#3c4043] hover:border-blue-400 hover:shadow-sm cursor-pointer transition-all group"
                         >
@@ -130,9 +130,9 @@ export const RecentUploadsWidget = ({ latestDocs }) => {
                                 {getFileIcon(d.fileType)}
                             </div>
                             <div className="overflow-hidden flex-1">
-                                <p className="text-sm font-bold text-gray-900 dark:text-white truncate" title={d.fileName || d.title}>{d.fileName || d.title}</p>
+                                <p className="text-sm font-bold text-gray-900 dark:text-white truncate" title={d.fileName || d.title || 'Okänd fil'}>{d.fileName || d.title || 'Okänd fil'}</p>
                                 <p className="text-xs text-gray-500 dark:text-gray-400">
-                                    {(d.size / 1024).toFixed(1)} KB • {new Date(d.uploadedAt).toLocaleDateString()}
+                                    {d.size ? `${(d.size / 1024).toFixed(1)} KB` : 'Okänd storlek'} • {d.uploadedAt ? new Date(d.uploadedAt).toLocaleDateString('sv-SE') : 'Okänt datum'}
                                 </p>
                             </div>
                         </div>

@@ -7,28 +7,21 @@ export default defineConfig({
     server: {
         host: true, // Behövs för Docker
         port: 5173,
+        allowedHosts: ['www.eduflexlms.se', 'eduflexlms.se', 'localhost', '127.0.0.1'],
         watch: {
             usePolling: true // Bra för Windows/Docker fil-synk
         },
         proxy: {
             '/api': {
-                target: 'http://localhost:8080',
-                changeOrigin: true
-            },
-            '/login': {
-                target: 'http://localhost:8080',
+                target: 'http://backend:8080',
                 changeOrigin: true
             },
             '/oauth2/authorization': {
-                target: 'http://localhost:8080',
-                changeOrigin: true
-            },
-            '/login/oauth2': {
-                target: 'http://localhost:8080',
+                target: 'http://backend:8080',
                 changeOrigin: true
             },
             '/ws': {
-                target: 'http://localhost:8080',
+                target: 'http://backend:8080',
                 ws: true,
                 changeOrigin: true
             }

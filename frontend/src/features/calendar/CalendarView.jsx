@@ -85,7 +85,8 @@ const CalendarView = () => {
             console.log("fetchData: coursesRes=", coursesRes);
             setCourses(coursesRes || []);
             // Handle both Page<User> (content) and List<User> (direct array)
-            const usersData = usersRes.content || usersRes || [];
+            const rawUsersData = usersRes?.content || usersRes || [];
+            const usersData = Array.isArray(rawUsersData) ? rawUsersData : [];
             setUsers(usersData);
 
             const eventsData = eventsRes || [];
@@ -109,9 +110,9 @@ const CalendarView = () => {
                 setCalEvents(mapped);
             }
 
-            // Calculate statistics
-            const studentCount = usersData.filter(u => u.role?.name === 'STUDENT' || u.role === 'STUDENT').length;
-            const classCount = eventsData.filter(e => e.type === 'LESSON').length;
+            // Calculate statistics (with safety checks)
+            const studentCount = Array.isArray(usersData) ? usersData.filter(u => u.role?.name === 'STUDENT' || u.role === 'STUDENT').length : 0;
+            const classCount = Array.isArray(eventsData) ? eventsData.filter(e => e.type === 'LESSON').length : 0;
             setStats({ totalStudents: studentCount, totalClasses: classCount });
         } catch (error) {
             console.error("Failed to load calendar data", error);
