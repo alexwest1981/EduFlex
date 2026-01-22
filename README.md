@@ -31,45 +31,33 @@
 
 ---
 
-### 🆕 Latest Updates (Jan 22, 2026)
-    *   **Mixed Content Resolved:** All file URLs (profile pictures, course materials, attachments) now use HTTPS.
+### 🆕 Latest Updates (Jan 23, 2026)
 
-*   **🔒 Backend Stability & Calendar Fixes (Implemented Jan 22, 2026):**
-    *   **Authentication Principal Fix:** Resolved widespread 500/401 errors by updating controllers to handle both `Jwt` and `UserDetails` principals, ensuring compatibility with the `internal` authentication mode.
-    *   **Calendar Privacy & Filtering:** 
-        *   Refined filtering logic: **Admins, Teachers, and Mentors** can now filter between each other.
-        *   **Students** are restricted to their own and their mentor's events.
-        *   **Principals** remain hidden from general visibility as requested.
-    *   **Robust Error Handling:** Controllers updated to prevent swallowing authentication errors, ensuring transparent reporting of 401/404 states instead of generic 500 errors.
+*   **🛡️ System Stability & Security:**
+    *   **Whitelabel & 500 Fixes:** Resolved the circular "Whitelabel Error Page" loop and hidden NPEs. Enhanced diagnostic logging with 💥 markers for easier troubleshooting.
+    *   **Auth Principal Resolution:** Fixed 401/500 errors by supporting both `Jwt` and `UserDetails` across all core controllers.
+    *   **HTTPS Enforcement:** All mixed content resolved; file URLs (materials, avatars) now use secure HTTPS.
+    *   **Infrastructure Cleanup:** Cleaned root directory; moved scripts to `/scripts`, logs to `/logs`, and internal files to `.agent` (all now git-ignored).
 
-*   **🎫 Support Ticket System (Fully Implemented):** Complete full-stack implementation of a multi-tenant support system.
-    *   **User Side:** Direct access via "Support & Kontakt" in sidebar, 15 predefined categories, automatic route-context capture, and personal ticket history.
-    *   **Supportärendesystem (Färdigställt Jan 22, 2026)**:
-        *   Fullt fungerande system för supportärenden med statusar (Görs nu/Löst) och prioritering.
-        *   Premium `Redesigned TicketWidget` på administratörens dashboard för snabb överblick.
-        *   **"Kontakt & Support" länk tillagd i samtliga dashboard-teman (`Standard`, `Floating`, `Voltage`, `Nebula`, `Pulse`, `Midnight`, `Horizon`, `Ember`) för full tillgänglighet.**
-        *   **Stabilitetsfixar:** Åtgärdat `HelpCircle` referensfel i flera layouter och fixat 500-fel vid rapportering av klient-loggar.
-    *   **Layout Optimization:** Dashboard reorganized for better focus, grouping Tickets with User/Doc activity and placing Online Friends next to the expanded Messaging panel.
+*   **📅 Calendar & Navigation Refactor:**
+    *   **Dynamic Role-Based Filtering:** Replaced hardcoded staff roles with a dynamic "Role -> Person" two-step selection for better scalability.
+    *   **Student-Centric View:** Students now filter directly by **Course**, removing unnecessary people-lists for a cleaner experience.
+    *   **Enhanced Visibility:** Principals hidden by default; improved visibility rules for Teachers and Mentors.
 
-*   **💬 Messaging Enhancements:** Implemented a full-featured messaging system with support for **Rich Text (React-Quill)**, **multiple file attachments (10MB limit)**, and **clickable links**. Introduced **message threading** to group conversations hierarchically.
-*   **📂 Message Folders:** Support for custom folders and a dedicated "fel-loggar" folder for administrators to track system errors.
-*   **🧹 Infrastructure Cleanup:** Completely removed legacy `spring-boot-starter-mail` dependency and `EmailService` to improve system stability and reduce overhead.
-*   **🛠️ Workspace Reorganization:** Cleaned up the project root by moving all log files to `/logs`, scripts to categorized `/scripts` directories, and non-README documentation to `/docs/`. Added a comprehensive `ScriptDescription.md` for maintainability.
-*   **🏗️ Build & Reliability:** Resolved critical "cannot find symbol" compilation errors across core models and services. Standardized getters and setters for all gamification-related entities. Updated Docker configurations for seamless deployment.
-*   **🌍 Multilingual Landing Page:** Complete i18n integration with Swedish/English support. Language switcher with styled SV/EN buttons, comprehensive translations for hero, features, pricing, and footer sections.
-*   **📧 Demo Request System:** New contact modal for demo requests with form validation, EmailService integration, and admin notifications. Replaced "Free Trial" CTA with "Request Demo" workflow.
-*   **🎨 Landing Page Polish:** Updated branding with Logo_top.png, added "EduFlex LMS" gradient text in navbar, refined pricing tiers (Basic/Pro/Enterprise), and improved visual hierarchy.
-*   **🎮 Complete Gamification Engine:** Full-featured gamification system with achievements, daily challenges, XP streaks, and per-tenant configuration. Students can track progress via dashboard widgets.
-*   **🔔 Real-time Notifications:** WebSocket-powered notification system with NotificationBell component for instant alerts on assignments, achievements, and system events.
-*   **🎨 Admin UI Overhaul:** Redesigned Enterprise Whitelabel module with internal sidebar navigation, streamlined save actions (icon-based), and improved UX.
-*   **📅 Enhanced Calendar:** New EventDetailPanel, MiniCalendar widget, and ImportantDatesWidget for better schedule visibility.
-*   **👥 Social Features:** Online friends panel showing connected users in real-time.
-*   **🏢 Multi-Tenancy Architecture:** Complete schema-based multi-tenancy implementation. Each organization gets isolated database schema with automatic Flyway migrations, role creation, and admin user provisioning.
-*   **📊 Student Dashboard Widgets:** New StudentGamificationWidget and StudentScheduleAndDeadlinesWidget for personalized student experience.
-*   **🔐 Enhanced SSO:** Improved OIDC support with CustomOidcUser and better authentication logging.
-*   **📱 Advanced Mobile Customization:** Dedicated mobile theme engine with separation from system themes. Includes "EduFresh", "Midnight Glass", and "Clean Light" presets with glassmorphism support.
-*   **🕷️ Bug Fixes & Stability:** Solved encoding issues (UTF-8), fixed JSX syntax crashes, and resolved localhost image loading on mobile devices.
-*   **☸️ Kubernetes Ready:** Full Helm chart support with Prometheus/Grafana monitoring stack.
+*   **✉️ Communication & Support Tools:**
+    *   **Support Ticket System:** Full-stack multi-tenant system with priority levels (Görs nu/Löst) and high-visibility Dashboard widgets.
+    *   **Messaging 2.0:** Rich Text (Quill), message threading, and 10MB multi-file attachments. Added admin-specific "fel-loggar" folder.
+    *   **Global Access:** Integrated "Kontakt & Support" across all dashboard themes (Standard, Voltage, Nebula, Pulse, etc.).
+
+*   **⚙️ Platform Foundation & Gamification:**
+    *   **Gamification Engine:** Real-time XP, streaks, challenges, and achievements with per-tenant toggle support.
+    *   **Multi-Tenancy:** Robust schema-per-tenant isolation with automatic provisioning and OIDC/Keycloak support.
+    *   **Skolverket Integration:** Direct mapping to Swedish national curriculum standards and course codes.
+    *   **Monitoring:** Full Prometheus/Grafana stack with pre-configured dashboards and a live "Matrix-style" debug terminal.
+
+*   **🎨 UI/UX & Polish:**
+    *   **Multilingual Landing Page:** Full i18n support (Swedish/English) with a refined "Request Demo" workflow.
+    *   **Theme Engine:** 8 professional design systems with glassmorphism and advanced mobile customization tools.
 
 ---
 
@@ -797,4 +785,4 @@ För Enterprise-frågor:
 
 ---
 
-*Last updated: 2026-01-22*
+*Last updated: 2026-01-23*
