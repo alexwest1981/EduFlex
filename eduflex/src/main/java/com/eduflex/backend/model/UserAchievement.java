@@ -45,4 +45,36 @@ public class UserAchievement {
         this.unlocked = true;
         this.unlockedAt = LocalDateTime.now();
     }
+
+    public Boolean getUnlocked() {
+        return unlocked;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public Long getAchievementId() {
+        return achievementId;
+    }
+
+    public Integer getProgress() {
+        return progress;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public void setAchievementId(Long achievementId) {
+        this.achievementId = achievementId;
+    }
 }

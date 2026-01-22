@@ -58,4 +58,76 @@ public class DailyChallenge {
             this.completedAt = LocalDateTime.now();
         }
     }
+
+    public Integer getDailyScore() {
+        return currentProgress;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public Integer getCurrentProgress() {
+        return currentProgress;
+    }
+
+    public Integer getTargetValue() {
+        return targetValue;
+    }
+
+    public Boolean getCompleted() {
+        return completed;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public void setChallengeType(String challengeType) {
+        this.challengeType = challengeType;
+    }
+
+    public String getChallengeType() {
+        return challengeType;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setTargetValue(Integer targetValue) {
+        this.targetValue = targetValue;
+    }
+
+    public void setXpReward(Integer xpReward) {
+        this.xpReward = xpReward;
+    }
+
+    public void setChallengeDate(LocalDateTime challengeDate) {
+        this.challengeDate = challengeDate;
+    }
+
+    public void setCompleted(Boolean completed) {
+        this.completed = completed;
+    }
+
+    public void setCompletedAt(LocalDateTime completedAt) {
+        this.completedAt = completedAt;
+    }
+
+    public void setCurrentProgress(Integer currentProgress) {
+        this.currentProgress = currentProgress;
+    }
 }

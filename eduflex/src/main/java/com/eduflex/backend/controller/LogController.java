@@ -13,9 +13,11 @@ public class LogController {
 
     private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("ClientLogger");
     private final LogService logService;
+    private final com.eduflex.backend.service.MessageService messageService;
 
-    public LogController(LogService logService) {
+    public LogController(LogService logService, com.eduflex.backend.service.MessageService messageService) {
         this.logService = logService;
+        this.messageService = messageService;
     }
 
     @GetMapping("/files")
@@ -46,5 +48,13 @@ public class LogController {
         // Log formatted error for easy parsing
         logger.error("[CLIENT-ERROR] Msg: '{}', URL: '{}', UserAgent: '{}'. Stack: {}",
                 message, url, userAgent, stack);
+
+        // Send to admins as internal messages in "fel-loggar" folder
+        com.eduflex.backend.dto.ErrorReport report = new com.eduflex.backend.dto.ErrorReport();
+        report.setMessage(message);
+        report.setStack(stack);
+        report.setUrl(url);
+        report.setUserAgent(userAgent);
+        messageService.sendErrorReportToAdmins(report);
     }
 }
