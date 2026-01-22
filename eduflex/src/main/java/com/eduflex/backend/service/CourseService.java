@@ -300,6 +300,18 @@ public class CourseService {
         }
     }
 
+    public List<CourseDTO> getCoursesForStudent(Long studentId) {
+        return courseRepository.findByStudentsId(studentId).stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    public List<CourseDTO> getCoursesForTeacher(Long teacherId) {
+        return courseRepository.findByTeacherId(teacherId).stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
     public CourseEvaluation createEvaluation(Long courseId, CourseEvaluation evaluation) {
         Course course = getCourseById(courseId);
         evaluation.setCourse(course);

@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Filter, X, Users, User, ChevronDown, Loader2 } from 'lucide-react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { Filter, X, Users, User, ChevronDown, Loader2, ChevronLeft, BookOpen } from 'lucide-react';
 import { api } from '../../../services/api';
 import { useAppContext } from '../../../context/AppContext';
 
@@ -7,69 +7,85 @@ const CalendarFilter = ({ onFilterChange, primaryFilter, secondaryFilter }) => {
     const { currentUser } = useAppContext();
     const [isOpen, setIsOpen] = useState(false);
     const [filterableUsers, setFilterableUsers] = useState([]);
-    const [teacherCourses, setTeacherCourses] = useState([]);
+    const [availableCourses, setAvailableCourses] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
-    const [showCourseFilter, setShowCourseFilter] = useState(false);
     const [error, setError] = useState(null);
 
+    // New navigation state
+    const [filterView, setFilterView] = useState('main'); // 'main', 'roles', 'users-of-role', 'courses'
+    const [selectedRole, setSelectedRole] = useState(null);
+
     const roleName = currentUser?.role?.name || currentUser?.role || '';
-    const isTeacher = roleName === 'TEACHER';
+    const isStudent = roleName === 'STUDENT';
 
     useEffect(() => {
-        fetchFilterableUsers();
-        if (isTeacher) {
-            fetchTeacherCourses();
+        if (isOpen) {
+            if (isStudent) {
+                fetchAvailableCourses();
+            } else {
+                fetchFilterableUsers();
+            }
         }
-    }, []);
+    }, [isOpen]);
 
     const fetchFilterableUsers = async () => {
         setIsLoading(true);
         setError(null);
         try {
-            console.log('[CalendarFilter] Fetching filterable users...');
-            console.log('[CalendarFilter] Current user:', currentUser);
             const users = await api.get('/events/filterable-users');
-            console.log('[CalendarFilter] Received users:', users);
             setFilterableUsers(users || []);
             if (!users || users.length === 0) {
                 setError('Inga användare hittades för filtrering');
             }
         } catch (error) {
             console.error('[CalendarFilter] Failed to fetch filterable users:', error);
-            console.error('[CalendarFilter] Error response:', error.response);
             setError(error.message || 'Kunde inte ladda användare');
         } finally {
             setIsLoading(false);
         }
     };
 
-    const fetchTeacherCourses = async () => {
+    const fetchAvailableCourses = async () => {
+        setIsLoading(true);
+        setError(null);
         try {
-            const courseIds = await api.get('/events/my-courses');
-            // Fetch full course details
-            const courses = await api.get('/courses');
-            const myCourses = courses.filter(c => courseIds.includes(c.id));
-            setTeacherCourses(myCourses);
+            // Students use a specific endpoint for their courses
+            const endpoint = isStudent ? '/courses/my-courses' : '/courses';
+            const courses = await api.get(endpoint);
+            setAvailableCourses(courses || []);
         } catch (error) {
-            console.error('Failed to fetch teacher courses:', error);
+            console.error('Failed to fetch courses:', error);
+            setError('Kunde inte ladda kurser');
+        } finally {
+            setIsLoading(false);
         }
     };
 
+    // Derived data
+    const availableRoles = useMemo(() => {
+        if (!filterableUsers) return [];
+        const rolesMap = new Map();
+        filterableUsers.forEach(u => {
+            if (u.role && u.role.name !== 'PRINCIPAL') {
+                rolesMap.set(u.role.name, u.role);
+            }
+        });
+        return Array.from(rolesMap.values());
+    }, [filterableUsers]);
+
+    const filteredUsersByRole = useMemo(() => {
+        if (!selectedRole) return [];
+        return filterableUsers.filter(u => u.role?.name === selectedRole);
+    }, [filterableUsers, selectedRole]);
+
     const handleUserSelect = (user, isPrimary = true) => {
-        if (isPrimary) {
-            onFilterChange({
-                type: 'user',
-                value: user,
-                isPrimary: true
-            });
-        } else {
-            onFilterChange({
-                type: 'user',
-                value: user,
-                isPrimary: false
-            });
-        }
+        onFilterChange({
+            type: 'user',
+            value: user,
+            isPrimary
+        });
         setIsOpen(false);
+        resetNavigation();
     };
 
     const handleCourseSelect = (course) => {
@@ -78,8 +94,8 @@ const CalendarFilter = ({ onFilterChange, primaryFilter, secondaryFilter }) => {
             value: course,
             isPrimary: true
         });
-        setShowCourseFilter(false);
         setIsOpen(false);
+        resetNavigation();
     };
 
     const clearFilter = (isPrimary = true) => {
@@ -87,6 +103,11 @@ const CalendarFilter = ({ onFilterChange, primaryFilter, secondaryFilter }) => {
             type: 'clear',
             isPrimary
         });
+    };
+
+    const resetNavigation = () => {
+        setFilterView('main');
+        setSelectedRole(null);
     };
 
     const getRoleColor = (role) => {
@@ -111,6 +132,94 @@ const CalendarFilter = ({ onFilterChange, primaryFilter, secondaryFilter }) => {
         }
     };
 
+    const renderRolesList = () => (
+        <div className="flex-1 overflow-y-auto">
+            <button
+                onClick={() => setFilterView('main')}
+                className="w-full p-3 flex items-center gap-2 text-sm text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-800 border-b border-gray-100 dark:border-gray-800"
+            >
+                <ChevronLeft size={16} /> Tillbaka
+            </button>
+            {availableRoles.map(role => (
+                <button
+                    key={role.name}
+                    onClick={() => {
+                        setSelectedRole(role.name);
+                        setFilterView('users-of-role');
+                    }}
+                    className="w-full p-4 text-left hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors flex items-center justify-between group"
+                >
+                    <div className="flex items-center gap-3">
+                        <div className={`w-2 h-2 rounded-full ${getRoleColor(role.name).replace('text-', 'bg-')}`} />
+                        <span className="font-medium text-gray-900 dark:text-white">{getRoleLabel(role.name)}</span>
+                    </div>
+                    <ChevronDown size={16} className="text-gray-400 -rotate-90 group-hover:translate-x-1 transition-transform" />
+                </button>
+            ))}
+        </div>
+    );
+
+    const renderUsersOfRole = () => (
+        <div className="flex-1 overflow-y-auto">
+            <button
+                onClick={() => setFilterView('roles')}
+                className="w-full p-3 flex items-center gap-2 text-sm text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-800 border-b border-gray-100 dark:border-gray-800"
+            >
+                <ChevronLeft size={16} /> Tillbaka till roller
+            </button>
+            {filteredUsersByRole.map(user => (
+                <button
+                    key={user.id}
+                    onClick={() => handleUserSelect(user)}
+                    className="w-full p-4 text-left hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                >
+                    <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+                            <User size={16} className="text-gray-500" />
+                        </div>
+                        <div>
+                            <div className="text-sm font-medium text-gray-900 dark:text-white">
+                                {user.firstName} {user.lastName}
+                                {user.id === currentUser?.id && <span className="ml-2 text-xs text-indigo-500">(Du)</span>}
+                            </div>
+                            <div className="text-xs text-gray-500">{user.username}</div>
+                        </div>
+                    </div>
+                </button>
+            ))}
+        </div>
+    );
+
+    const renderCoursesList = () => (
+        <div className="flex-1 overflow-y-auto">
+            {!isStudent && (
+                <button
+                    onClick={() => setFilterView('main')}
+                    className="w-full p-3 flex items-center gap-2 text-sm text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-800 border-b border-gray-100 dark:border-gray-800"
+                >
+                    <ChevronLeft size={16} /> Tillbaka
+                </button>
+            )}
+            {availableCourses.map(course => (
+                <button
+                    key={course.id}
+                    onClick={() => handleCourseSelect(course)}
+                    className="w-full p-4 text-left hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                >
+                    <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center">
+                            <BookOpen size={16} className="text-indigo-600 dark:text-indigo-400" />
+                        </div>
+                        <div>
+                            <div className="text-sm font-medium text-gray-900 dark:text-white">{course.name}</div>
+                            <div className="text-xs text-gray-500">{course.code}</div>
+                        </div>
+                    </div>
+                </button>
+            ))}
+        </div>
+    );
+
     return (
         <div className="relative">
             {/* Filter Button */}
@@ -134,174 +243,98 @@ const CalendarFilter = ({ onFilterChange, primaryFilter, secondaryFilter }) => {
 
             {/* Dropdown */}
             {isOpen && (
-                <div className="absolute right-0 top-full mt-2 w-80 bg-white dark:bg-[#1E1E1E] rounded-xl shadow-2xl border border-gray-200 dark:border-gray-800 z-50 max-h-96 overflow-hidden flex flex-col">
+                <div className="absolute right-0 top-full mt-2 w-80 bg-white dark:bg-[#1E1E1E] rounded-xl shadow-2xl border border-gray-200 dark:border-gray-800 z-50 max-h-[500px] overflow-hidden flex flex-col">
                     {/* Header */}
                     <div className="p-4 border-b border-gray-200 dark:border-gray-700">
                         <div className="flex items-center justify-between">
-                            <h3 className="font-bold text-gray-900 dark:text-white">Filtrera Kalender</h3>
+                            <h3 className="font-bold text-gray-900 dark:text-white">
+                                {isStudent ? 'Filtrera efter kurs' : 'Filtrera Kalender'}
+                            </h3>
                             <button
-                                onClick={() => setIsOpen(false)}
-                                className="p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"
+                                onClick={() => {
+                                    setIsOpen(false);
+                                    resetNavigation();
+                                }}
+                                className="p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
                             >
                                 <X size={18} className="text-gray-500" />
                             </button>
                         </div>
-                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                            Välj upp till 2 kalendrar att visa samtidigt
-                        </p>
+                        {!isStudent && (
+                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                Välj upp till 2 kalendrar att visa samtidigt
+                            </p>
+                        )}
                     </div>
 
-                    {/* Current Filters */}
-                    {(primaryFilter || secondaryFilter) && (
-                        <div className="p-3 bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 space-y-2">
-                            {primaryFilter && (
-                                <div className="flex items-center justify-between p-2 bg-white dark:bg-[#1E1E1E] rounded-lg">
-                                    <div className="flex items-center gap-2 flex-1 min-w-0">
-                                        <div className="w-2 h-2 rounded-full bg-indigo-600" />
-                                        <span className="text-sm font-medium text-gray-900 dark:text-white truncate">
-                                            {primaryFilter.type === 'user'
-                                                ? `${primaryFilter.value.firstName} ${primaryFilter.value.lastName}`
-                                                : primaryFilter.value.name
-                                            }
-                                        </span>
-                                        {primaryFilter.type === 'user' && (
-                                            <span className={`text-xs ${getRoleColor(primaryFilter.value.role?.name)}`}>
-                                                ({getRoleLabel(primaryFilter.value.role?.name)})
-                                            </span>
-                                        )}
-                                    </div>
-                                    <button
-                                        onClick={() => clearFilter(true)}
-                                        className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
-                                    >
-                                        <X size={14} className="text-gray-500" />
-                                    </button>
+                    {/* Current Active Filter */}
+                    {primaryFilter && (
+                        <div className="p-3 bg-indigo-50 dark:bg-indigo-900/10 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+                            <div className="flex items-center gap-2 truncate">
+                                <div className="p-1 bg-white dark:bg-gray-800 rounded">
+                                    {primaryFilter.type === 'user' ? <User size={14} className="text-indigo-600" /> : <BookOpen size={14} className="text-indigo-600" />}
                                 </div>
-                            )}
-                            {secondaryFilter && (
-                                <div className="flex items-center justify-between p-2 bg-white dark:bg-[#1E1E1E] rounded-lg opacity-60">
-                                    <div className="flex items-center gap-2 flex-1 min-w-0">
-                                        <div className="w-2 h-2 rounded-full bg-purple-600" />
-                                        <span className="text-sm font-medium text-gray-900 dark:text-white truncate">
-                                            {secondaryFilter.type === 'user'
-                                                ? `${secondaryFilter.value.firstName} ${secondaryFilter.value.lastName}`
-                                                : secondaryFilter.value.name
-                                            }
-                                        </span>
-                                        {secondaryFilter.type === 'user' && (
-                                            <span className={`text-xs ${getRoleColor(secondaryFilter.value.role?.name)}`}>
-                                                ({getRoleLabel(secondaryFilter.value.role?.name)})
-                                            </span>
-                                        )}
-                                    </div>
-                                    <button
-                                        onClick={() => clearFilter(false)}
-                                        className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
-                                    >
-                                        <X size={14} className="text-gray-500" />
-                                    </button>
-                                </div>
-                            )}
+                                <span className="text-sm font-medium text-indigo-900 dark:text-indigo-200 truncate">
+                                    {primaryFilter.type === 'user' ? `${primaryFilter.value.firstName} ${primaryFilter.value.lastName}` : primaryFilter.value.name}
+                                </span>
+                            </div>
+                            <button onClick={() => clearFilter()} className="p-1 hover:bg-indigo-100 dark:hover:bg-indigo-900/30 rounded text-indigo-600">
+                                <X size={14} />
+                            </button>
                         </div>
                     )}
 
-                    {/* Teacher Course Filter Toggle */}
-                    {isTeacher && teacherCourses.length > 0 && (
-                        <button
-                            onClick={() => setShowCourseFilter(!showCourseFilter)}
-                            className="w-full p-3 text-left text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between"
-                        >
-                            <span>Filtrera efter kurs</span>
-                            <ChevronDown size={16} className={`transition-transform ${showCourseFilter ? 'rotate-180' : ''}`} />
-                        </button>
-                    )}
-
-                    {/* Course List */}
-                    {showCourseFilter && (
-                        <div className="border-b border-gray-200 dark:border-gray-700 max-h-40 overflow-y-auto">
-                            {teacherCourses.map(course => (
-                                <button
-                                    key={course.id}
-                                    onClick={() => handleCourseSelect(course)}
-                                    className="w-full p-3 text-left hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-                                >
-                                    <div className="text-sm font-medium text-gray-900 dark:text-white">
-                                        {course.name}
-                                    </div>
-                                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                                        {course.code}
-                                    </div>
-                                </button>
-                            ))}
-                        </div>
-                    )}
-
-                    {/* User List */}
-                    <div className="flex-1 overflow-y-auto">
+                    {/* Content */}
+                    <div className="flex-1 overflow-hidden flex flex-col">
                         {isLoading ? (
                             <div className="flex items-center justify-center p-8">
                                 <Loader2 size={24} className="animate-spin text-indigo-600" />
                             </div>
                         ) : error ? (
-                            <div className="flex flex-col items-center justify-center p-8 text-center">
-                                <div className="text-red-500 dark:text-red-400 mb-2">⚠️</div>
-                                <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
-                                <button
-                                    onClick={fetchFilterableUsers}
-                                    className="mt-3 text-xs text-indigo-600 dark:text-indigo-400 hover:underline"
-                                >
-                                    Försök igen
-                                </button>
-                            </div>
-                        ) : filterableUsers.length === 0 ? (
-                            <div className="flex flex-col items-center justify-center p-8 text-center">
-                                <p className="text-sm text-gray-500 dark:text-gray-400">Inga användare tillgängliga</p>
-                            </div>
+                            <p className="p-8 text-center text-sm text-red-500">{error}</p>
                         ) : (
-                            <div>
-                                {filterableUsers.map(user => (
-                                    <button
-                                        key={user.id}
-                                        onClick={() => handleUserSelect(
-                                            user,
-                                            !primaryFilter || (secondaryFilter && primaryFilter.value.id === user.id)
+                            <>
+                                {isStudent ? (
+                                    renderCoursesList()
+                                ) : (
+                                    <>
+                                        {filterView === 'main' && (
+                                            <div className="p-2 space-y-1">
+                                                <button
+                                                    onClick={() => setFilterView('roles')}
+                                                    className="w-full p-4 text-left hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-colors flex items-center justify-between group"
+                                                >
+                                                    <div className="flex items-center gap-3">
+                                                        <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
+                                                            <Users size={20} className="text-blue-600 dark:text-blue-400" />
+                                                        </div>
+                                                        <span className="font-semibold text-gray-900 dark:text-white">Filtrera efter roll</span>
+                                                    </div>
+                                                    <ChevronDown size={18} className="text-gray-400 -rotate-90 group-hover:translate-x-1 transition-transform" />
+                                                </button>
+                                                <button
+                                                    onClick={() => {
+                                                        fetchAvailableCourses();
+                                                        setFilterView('courses');
+                                                    }}
+                                                    className="w-full p-4 text-left hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-colors flex items-center justify-between group"
+                                                >
+                                                    <div className="flex items-center gap-3">
+                                                        <div className="w-10 h-10 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
+                                                            <BookOpen size={20} className="text-green-600 dark:text-green-400" />
+                                                        </div>
+                                                        <span className="font-semibold text-gray-900 dark:text-white">Filtrera efter kurs</span>
+                                                    </div>
+                                                    <ChevronDown size={18} className="text-gray-400 -rotate-90 group-hover:translate-x-1 transition-transform" />
+                                                </button>
+                                            </div>
                                         )}
-                                        className={`w-full p-3 text-left hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors border-l-2
-                                            ${primaryFilter?.value?.id === user.id ? 'border-indigo-600 bg-indigo-50 dark:bg-indigo-900/20' :
-                                              secondaryFilter?.value?.id === user.id ? 'border-purple-600 bg-purple-50 dark:bg-purple-900/20' :
-                                              'border-transparent'
-                                            }`}
-                                    >
-                                        <div className="flex items-center gap-3">
-                                            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm
-                                                ${user.role?.name === 'TEACHER' ? 'bg-blue-500' :
-                                                  user.role?.name === 'MENTOR' ? 'bg-purple-500' :
-                                                  user.role?.name === 'PRINCIPAL' ? 'bg-red-500' :
-                                                  user.role?.name === 'STUDENT' ? 'bg-green-500' :
-                                                  'bg-gray-500'
-                                                }`}
-                                            >
-                                                {user.id === currentUser?.id ? (
-                                                    <User size={16} />
-                                                ) : (
-                                                    <Users size={16} />
-                                                )}
-                                            </div>
-                                            <div className="flex-1 min-w-0">
-                                                <div className="text-sm font-medium text-gray-900 dark:text-white truncate">
-                                                    {user.firstName} {user.lastName}
-                                                    {user.id === currentUser?.id && (
-                                                        <span className="ml-2 text-xs text-indigo-600 dark:text-indigo-400">(Jag)</span>
-                                                    )}
-                                                </div>
-                                                <div className={`text-xs ${getRoleColor(user.role?.name)}`}>
-                                                    {getRoleLabel(user.role?.name)}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </button>
-                                ))}
-                            </div>
+                                        {filterView === 'roles' && renderRolesList()}
+                                        {filterView === 'users-of-role' && renderUsersOfRole()}
+                                        {filterView === 'courses' && renderCoursesList()}
+                                    </>
+                                )}
+                            </>
                         )}
                     </div>
                 </div>
