@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.http.ResponseEntity;
+import jakarta.servlet.http.HttpServletRequest;
 
 import java.util.List;
 import java.util.Map;
@@ -25,6 +26,7 @@ public class CalendarEventController {
     private final CourseRepository courseRepository;
     private final UserRepository userRepository;
     private final com.eduflex.backend.service.CalendarService calendarService;
+    private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(CalendarEventController.class);
 
     public CalendarEventController(CalendarEventRepository eventRepository, CourseRepository courseRepository,
             UserRepository userRepository, com.eduflex.backend.service.CalendarService calendarService) {
@@ -177,7 +179,7 @@ public class CalendarEventController {
      * GET /api/events/filterable-users
      */
     @GetMapping("/filterable-users")
-    public ResponseEntity<List<User>> getFilterableUsers() {
+    public ResponseEntity<List<User>> getFilterableUsers(HttpServletRequest request) {
         try {
             User currentUser = getCurrentUser();
             List<User> users = calendarService.getUsersFilterableBy(currentUser);
@@ -185,14 +187,14 @@ public class CalendarEventController {
         } catch (org.springframework.web.server.ResponseStatusException e) {
             throw e;
         } catch (Exception e) {
+            logger.error("💥 Persistent error in {}: {}", request.getRequestURI(), e.getMessage(), e);
             throw new org.springframework.web.server.ResponseStatusException(
-                    org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR,
-                    "Failed to get filterable users: " + e.getMessage());
+                    org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }
 
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<CalendarEvent>> getEventsForUser(@PathVariable Long userId) {
+    public ResponseEntity<List<CalendarEvent>> getEventsForUser(@PathVariable Long userId, HttpServletRequest request) {
         try {
             User currentUser = getCurrentUser();
             List<CalendarEvent> events = calendarService.getEventsForUser(userId, currentUser);
@@ -200,9 +202,10 @@ public class CalendarEventController {
         } catch (org.springframework.web.server.ResponseStatusException e) {
             throw e;
         } catch (Exception e) {
+            logger.error("💥 Persistent error in {}: {}", request.getRequestURI(), e.getMessage(), e);
             throw new org.springframework.web.server.ResponseStatusException(
                     org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR,
-                    "Failed to get events for user: " + e.getMessage());
+                    e.getMessage());
         }
     }
 
@@ -211,7 +214,8 @@ public class CalendarEventController {
      * GET /api/events/course/{courseId}
      */
     @GetMapping("/course/{courseId}")
-    public ResponseEntity<List<CalendarEvent>> getEventsForCourse(@PathVariable Long courseId) {
+    public ResponseEntity<List<CalendarEvent>> getEventsForCourse(@PathVariable Long courseId,
+            HttpServletRequest request) {
         try {
             User currentUser = getCurrentUser();
             List<CalendarEvent> events = calendarService.getEventsForCourse(courseId, currentUser);
@@ -219,14 +223,15 @@ public class CalendarEventController {
         } catch (org.springframework.web.server.ResponseStatusException e) {
             throw e;
         } catch (Exception e) {
+            logger.error("💥 Persistent error in {}: {}", request.getRequestURI(), e.getMessage(), e);
             throw new org.springframework.web.server.ResponseStatusException(
                     org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR,
-                    "Failed to get events for course: " + e.getMessage());
+                    e.getMessage());
         }
     }
 
     @GetMapping("/my-courses")
-    public ResponseEntity<List<Long>> getMyCourses() {
+    public ResponseEntity<List<Long>> getMyCourses(HttpServletRequest request) {
         try {
             User currentUser = getCurrentUser();
             List<Long> courseIds = calendarService.getTeacherCourseIds(currentUser.getId());
@@ -234,9 +239,10 @@ public class CalendarEventController {
         } catch (org.springframework.web.server.ResponseStatusException e) {
             throw e;
         } catch (Exception e) {
+            logger.error("💥 Persistent error in {}: {}", request.getRequestURI(), e.getMessage(), e);
             throw new org.springframework.web.server.ResponseStatusException(
                     org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR,
-                    "Failed to get my courses: " + e.getMessage());
+                    e.getMessage());
         }
     }
 
