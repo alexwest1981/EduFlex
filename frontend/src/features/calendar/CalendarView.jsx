@@ -59,6 +59,8 @@ const CalendarView = () => {
     // Filter State
     const [primaryFilter, setPrimaryFilter] = useState(null);
     const [secondaryFilter, setSecondaryFilter] = useState(null);
+    const [selectedTypes, setSelectedTypes] = useState([]);
+    const [searchQuery, setSearchQuery] = useState('');
     const [filteredEvents, setFilteredEvents] = useState([]);
     const [secondaryFilteredEvents, setSecondaryFilteredEvents] = useState([]);
 
@@ -68,7 +70,7 @@ const CalendarView = () => {
     const [showEventDetail, setShowEventDetail] = useState(false);
     const [newEvent, setNewEvent] = useState({
         title: '', description: '', startTime: '', endTime: '', date: '',
-        type: 'MEETING', courseId: '', ownerId: '', status: 'CONFIRMED',
+        type: 'MEETING', courseId: '', attendeeId: '', status: 'CONFIRMED',
         platform: 'NONE', topic: '', isMandatory: false
     });
 
@@ -78,12 +80,16 @@ const CalendarView = () => {
     const fetchData = async () => {
         setIsLoading(true);
         try {
-            console.log("fetchData: isTeacherOrAdmin=", isTeacherOrAdmin, "currentUser.id=", currentUser?.id);
+            const typesParam = selectedTypes.length > 0 ? `&types=${selectedTypes.join(',')}` : '';
+            const searchParam = searchQuery ? `&search=${encodeURIComponent(searchQuery)}` : '';
+            const queryParams = `?t=${new Date().getTime()}${typesParam}${searchParam}`;
+
+            console.log("fetchData: query=", queryParams);
             const [eventsRes, coursesRes, usersRes] = await Promise.all([
                 // Fetch only current user's events by default
                 currentUser?.id
-                    ? api.get(`/events/user/${currentUser.id}`).catch(err => { console.error("Events fetch error", err); return []; })
-                    : api.get('/events').catch(err => { console.error("Events fetch error", err); return []; }),
+                    ? api.get(`/events/user/${currentUser.id}${queryParams}`).catch(err => { console.error("Events fetch error", err); return []; })
+                    : api.get(`/events${queryParams}`).catch(err => { console.error("Events fetch error", err); return []; }),
                 (!isTeacherOrAdmin && currentUser?.id)
                     ? api.courses.getMyCourses(currentUser.id).catch(err => { console.error("My Courses fetch error", err); return []; })
                     : api.get('/courses').catch(err => { console.error("Courses fetch error", err); return []; }),
@@ -100,23 +106,35 @@ const CalendarView = () => {
             setUsers(usersData);
 
             const eventsData = eventsRes || [];
+            console.log("📥 Received events from API:", eventsData.length, "events");
+
             if (Array.isArray(eventsData)) {
-                const mapped = eventsData.map(e => ({
-                    id: e.id,
-                    title: e.title,
-                    description: e.description,
-                    start: new Date(e.startTime),
-                    end: new Date(e.endTime),
-                    type: e.type,
-                    status: e.status,
-                    platform: e.platform,
-                    meetingLink: e.meetingLink,
-                    isMandatory: e.isMandatory,
-                    topic: e.topic,
-                    courseId: e.course?.id,
-                    ownerId: e.owner?.id,
-                    ownerName: e.owner ? `${e.owner.firstName} ${e.owner.lastName}` : 'Okänd'
-                }));
+                const mapped = eventsData.map(e => {
+                    const startDate = new Date(e.startTime);
+                    const endDate = new Date(e.endTime);
+                    const durationMinutes = (endDate - startDate) / 60000;
+
+                    console.log(`📅 Event: "${e.title}" | ${e.startTime} → ${e.endTime} | Duration: ${durationMinutes}min`);
+
+                    return {
+                        id: e.id,
+                        title: e.title,
+                        description: e.description,
+                        start: startDate,
+                        end: endDate,
+                        type: e.type,
+                        status: e.status,
+                        platform: e.platform,
+                        meetingLink: e.meetingLink,
+                        isMandatory: e.isMandatory,
+                        topic: e.topic,
+                        courseId: e.course?.id,
+                        ownerId: e.owner?.id,
+                        ownerName: e.owner ? `${e.owner.firstName} ${e.owner.lastName}` : 'Okänd'
+                    };
+                });
+
+                console.log("✅ Mapped events:", mapped.length);
                 setCalEvents(mapped);
             }
 
@@ -133,14 +151,20 @@ const CalendarView = () => {
 
     useEffect(() => {
         fetchData();
-    }, [weekStart]);
+        if (primaryFilter) fetchFilteredEvents(primaryFilter).then(setFilteredEvents);
+        if (secondaryFilter) fetchFilteredEvents(secondaryFilter).then(setSecondaryFilteredEvents);
+    }, [weekStart, selectedTypes, searchQuery]);
 
     // --- FILTER HANDLERS ---
     const fetchFilteredEvents = async (filter) => {
         if (!filter) return [];
         try {
+            const typesParam = selectedTypes.length > 0 ? `&types=${selectedTypes.join(',')}` : '';
+            const searchParam = searchQuery ? `&search=${encodeURIComponent(searchQuery)}` : '';
+            const queryParams = `?t=${new Date().getTime()}${typesParam}${searchParam}`;
+
             if (filter.type === 'user') {
-                const events = await api.get(`/events/user/${filter.value.id}`);
+                const events = await api.get(`/events/user/${filter.value.id}${queryParams}`);
                 return events.map(e => ({
                     id: e.id,
                     title: e.title,
@@ -159,7 +183,7 @@ const CalendarView = () => {
                     isFiltered: true
                 }));
             } else if (filter.type === 'course') {
-                const events = await api.get(`/events/course/${filter.value.id}`);
+                const events = await api.get(`/events/course/${filter.value.id}${queryParams}`);
                 return events.map(e => ({
                     id: e.id,
                     title: e.title,
@@ -193,6 +217,21 @@ const CalendarView = () => {
                 setSecondaryFilter(null);
                 setSecondaryFilteredEvents([]);
             }
+            return;
+        }
+
+        if (type === 'clear_all') {
+            setPrimaryFilter(null);
+            setSecondaryFilter(null);
+            setSelectedTypes([]);
+            setFilteredEvents([]);
+            setSecondaryFilteredEvents([]);
+            setSearchQuery('');
+            return;
+        }
+
+        if (type === 'types') {
+            setSelectedTypes(value);
             return;
         }
 
@@ -235,7 +274,7 @@ const CalendarView = () => {
             startTime: timeStr,
             endTime: endTimeStr,
             type: 'MEETING',
-            ownerId: '' // Reset
+            attendeeId: '' // Reset
         });
         setShowBookingModal(true);
     };
@@ -257,16 +296,33 @@ const CalendarView = () => {
                 topic: newEvent.topic,
                 isMandatory: isTeacherOrAdmin ? (newEvent.isMandatory || false) : false,
                 courseId: newEvent.courseId ? parseInt(newEvent.courseId) : null,
-                ownerId: newEvent.ownerId ? parseInt(newEvent.ownerId) : null
+                // Owner is always the current user (set by backend from JWT)
+                ownerId: null,
+                // If attendeeId is selected, include it
+                attendeeIds: newEvent.attendeeId ? [parseInt(newEvent.attendeeId)] : []
             };
 
-            console.log("Creating event with payload:", payload);
-            await api.post('/events', payload);
+            console.log("📅 Creating event with payload:", JSON.stringify(payload, null, 2));
+            console.log("📅 Start time:", startStr, "End time:", endStr);
+            console.log("📅 Duration in minutes:", (new Date(endStr) - new Date(startStr)) / 60000);
+            console.log("📅 Current user ID:", currentUser?.id);
+            console.log("📅 attendeeIds in payload:", payload.attendeeIds);
+
+            const response = await api.post('/events', payload);
+            console.log("✅ Event created successfully:", response);
+
             setShowBookingModal(false);
-            fetchData(); // Refresh
+
+            // Wait a moment then refresh to ensure database has committed
+            setTimeout(async () => {
+                console.log("🔄 Refreshing calendar data...");
+                await fetchData();
+                console.log("✅ Calendar data refreshed");
+            }, 500);
         } catch (err) {
-            console.error("Booking error", err);
-            alert("Kunde inte boka händelsen.");
+            console.error("❌ Booking error:", err);
+            console.error("❌ Error details:", err.response || err);
+            alert("Kunde inte boka händelsen: " + (err.response?.data?.message || err.message || "Okänt fel"));
         }
     };
 
@@ -342,6 +398,14 @@ const CalendarView = () => {
         const top = startOffset * hourHeight;
         const height = Math.max(duration * hourHeight, 20); // Minimum 20px
 
+        // Debug logging for height calculation
+        if (duration !== 1.0) {  // Only log non-1-hour events to reduce noise
+            console.log(`📐 Event "${event.title}" style:`,
+                `${startHour}:${startMinute.toString().padStart(2, '0')} - ${endHour}:${endMinute.toString().padStart(2, '0')}`,
+                `Duration: ${duration}h`,
+                `Height: ${height}px`);
+        }
+
         return {
             top: `${top}px`,
             height: `${height}px`
@@ -405,7 +469,33 @@ const CalendarView = () => {
             <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-3 shrink-0 w-full">
                 <div>
                     <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-1">Calendar</h1>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">Your Personalized Calendar: The Smart Way to Stay on Top of Things</p>
+                    <div className="flex items-center gap-3">
+                        <p className="text-sm text-gray-500 dark:text-gray-400">Your Personalized Calendar</p>
+                        {isTeacherOrAdmin && (
+                            <div className="relative group ml-4">
+                                <span className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+                                    <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                    </svg>
+                                </span>
+                                <input
+                                    type="text"
+                                    placeholder="Sök händelser..."
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    className="bg-gray-100 dark:bg-gray-800 border-none rounded-full py-1.5 pl-10 pr-4 text-xs w-64 focus:ring-2 ring-indigo-500 transition-all dark:text-white"
+                                />
+                                {searchQuery && (
+                                    <button
+                                        onClick={() => setSearchQuery('')}
+                                        className="absolute right-3 inset-y-0 flex items-center text-gray-400 hover:text-gray-600"
+                                    >
+                                        <X size={12} />
+                                    </button>
+                                )}
+                            </div>
+                        )}
+                    </div>
                 </div>
 
                 <div className="flex items-center gap-2 mt-3 lg:mt-0">
@@ -466,6 +556,7 @@ const CalendarView = () => {
                         onFilterChange={handleFilterChange}
                         primaryFilter={primaryFilter}
                         secondaryFilter={secondaryFilter}
+                        selectedTypes={selectedTypes}
                     />
 
                     {/* Month Navigation */}
@@ -737,13 +828,13 @@ const CalendarView = () => {
 
                                 {/* Participant Selection (Optional - for One-on-One) */}
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Elev / Deltagare (Frivilligt)</label>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Mötesdeltagare (Frivilligt)</label>
                                     <select
-                                        value={newEvent.ownerId || ''}
-                                        onChange={(e) => setNewEvent({ ...newEvent, ownerId: e.target.value || null })}
+                                        value={newEvent.attendeeId || ''}
+                                        onChange={(e) => setNewEvent({ ...newEvent, attendeeId: e.target.value || null })}
                                         className="w-full rounded-xl border-gray-200 dark:border-gray-700 bg-white dark:bg-[#2A2A2A] text-sm focus:ring-indigo-500 focus:border-indigo-500"
                                     >
-                                        <option value="">Ingen specifik deltagare (Jag bokar)</option>
+                                        <option value="">Endast jag</option>
                                         {users.map(u => (
                                             <option key={u.id} value={u.id}>{u.firstName} {u.lastName} ({u.role?.name || 'Student'})</option>
                                         ))}

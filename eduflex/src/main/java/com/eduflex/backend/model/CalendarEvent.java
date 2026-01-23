@@ -57,7 +57,7 @@ public class CalendarEvent {
     private User owner;
 
     // Collaborative: People involved in this event (e.g. meeting participants)
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "calendar_event_attendees", joinColumns = @JoinColumn(name = "event_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
     private Set<User> attendees = new HashSet<>();
 

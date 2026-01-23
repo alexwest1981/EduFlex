@@ -478,27 +478,68 @@ public class CalendarService {
         List<User> allUsers = userRepository.findAll();
         Set<User> filterableUsers = new HashSet<>();
 
-        // All staff roles (not STUDENT) can see all users with a role, excluding
-        // PRINCIPALS
-        if (!"STUDENT".equals(role)) {
-            filterableUsers.addAll(allUsers.stream()
-                    .filter(u -> u.getRole() != null && !"PRINCIPAL".equals(u.getRole().getName()))
-                    .collect(Collectors.toList()));
-            filterableUsers.add(currentUser);
-        } else {
-            // Students can only see themselves and their mentor
-            if (mentorService != null) {
-                Optional<User> mentor = mentorService.getActiveMentorForStudent(currentUser.getId());
-                mentor.ifPresent(filterableUsers::add);
-            }
-            filterableUsers.add(currentUser);
+        switch (role) {
+            case "ADMIN":
+                // Can see teachers, mentors, principals, and own
+                filterableUsers.addAll(allUsers.stream()
+                        .filter(u -> u.getRole() != null &&
+                                ("TEACHER".equals(u.getRole().getName()) ||
+                                        "MENTOR".equals(u.getRole().getName()) ||
+                                        "PRINCIPAL".equals(u.getRole().getName())))
+                        .collect(Collectors.toList()));
+                filterableUsers.add(currentUser); // Add own
+                break;
+
+            case "PRINCIPAL":
+                // Can see teachers, mentors, and own
+                filterableUsers.addAll(allUsers.stream()
+                        .filter(u -> u.getRole() != null &&
+                                ("TEACHER".equals(u.getRole().getName()) ||
+                                        "MENTOR".equals(u.getRole().getName())))
+                        .collect(Collectors.toList()));
+                filterableUsers.add(currentUser);
+                break;
+
+            case "MENTOR":
+                // Can see assigned students + colleagues + own
+                if (mentorService != null) {
+                    filterableUsers.addAll(mentorService.getActiveStudentsForMentor(currentUser.getId()));
+                }
+                filterableUsers.addAll(allUsers.stream()
+                        .filter(u -> u.getRole() != null &&
+                                ("TEACHER".equals(u.getRole().getName()) ||
+                                        "MENTOR".equals(u.getRole().getName()) ||
+                                        "PRINCIPAL".equals(u.getRole().getName())))
+                        .collect(Collectors.toList()));
+                filterableUsers.add(currentUser);
+                break;
+
+            case "TEACHER":
+                // Can see colleagues and own
+                filterableUsers.addAll(allUsers.stream()
+                        .filter(u -> u.getRole() != null &&
+                                ("TEACHER".equals(u.getRole().getName()) ||
+                                        "MENTOR".equals(u.getRole().getName()) ||
+                                        "PRINCIPAL".equals(u.getRole().getName())))
+                        .collect(Collectors.toList()));
+                filterableUsers.add(currentUser);
+                break;
+
+            case "STUDENT":
+                // Can only see their mentor
+                if (mentorService != null) {
+                    Optional<User> mentor = mentorService.getActiveMentorForStudent(currentUser.getId());
+                    mentor.ifPresent(filterableUsers::add);
+                }
+                filterableUsers.add(currentUser);
+                break;
+
+            default:
+                filterableUsers.add(currentUser);
+                break;
         }
 
-        // Always remove Principal role users if they somehow got in (due to previous
-        // request)
-        return filterableUsers.stream()
-                .filter(u -> u.getRole() == null || !"PRINCIPAL".equals(u.getRole().getName()))
-                .collect(Collectors.toList());
+        return new ArrayList<>(filterableUsers);
     }
 
     /**
@@ -550,16 +591,93 @@ public class CalendarService {
     }
 
     /**
-     * Get events for a specific user (for calendar filtering)
+     * Get events for a specific user (for calendar filtering) with optional type
+     * and search filters
      */
-    public List<CalendarEvent> getEventsForUser(Long userId, User viewer) {
+    public List<CalendarEvent> getEventsForUser(Long userId, User viewer, List<CalendarEvent.EventType> types,
+            String search) {
         User targetUser = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
+        logger.info("📅 getEventsForUser: userId={}, targetUser={}, viewer={}, types={}, search={}",
+                userId, targetUser.getUsername(), viewer.getUsername(), types, search);
+
+        List<CalendarEvent> allEvents = eventRepository.findAll();
+        logger.info("📊 Total events in database: {}", allEvents.size());
+
+        List<CalendarEvent> events = allEvents.stream()
+                .filter(event -> {
+                    boolean isOwner = isUserOwnerOfEvent(targetUser, event);
+                    boolean isParticipant = isUserPartOfEvent(targetUser, event);
+                    boolean isTeacher = event.getCourse() != null && isUserTeacherOfCourseEvent(targetUser, event);
+                    boolean matchesUser = isOwner || isParticipant || isTeacher;
+
+                    if (!matchesUser)
+                        return false;
+
+                    // Filter by types if provided
+                    if (types != null && !types.isEmpty() && !types.contains(event.getType())) {
+                        return false;
+                    }
+
+                    // Filter by search query if provided
+                    if (search != null && !search.trim().isEmpty()) {
+                        String s = search.toLowerCase();
+                        boolean titleMatch = event.getTitle() != null && event.getTitle().toLowerCase().contains(s);
+                        boolean descMatch = event.getDescription() != null
+                                && event.getDescription().toLowerCase().contains(s);
+                        if (!titleMatch && !descMatch)
+                            return false;
+                    }
+
+                    return true;
+                })
+                .collect(Collectors.toList());
+
+        logger.info("🎯 Filtered events: {} events", events.size());
+
+        // Apply privacy filtering
+        String viewerRole = viewer.getRole() != null ? viewer.getRole().getName() : "";
+        boolean isAdmin = "ADMIN".equals(viewerRole);
+
+        return events.stream()
+                .map(event -> sanitizeEvent(event, viewer, isAdmin))
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Legacy method for backward compatibility
+     */
+    public List<CalendarEvent> getEventsForUser(Long userId, User viewer) {
+        return getEventsForUser(userId, viewer, null, null);
+    }
+
+    /**
+     * Get events for a specific course with optional filters
+     */
+    public List<CalendarEvent> getEventsForCourse(Long courseId, User viewer, List<CalendarEvent.EventType> types,
+            String search) {
         List<CalendarEvent> events = eventRepository.findAll().stream()
-                .filter(event -> isUserOwnerOfEvent(targetUser, event) ||
-                        isUserPartOfEvent(targetUser, event) ||
-                        (event.getCourse() != null && isUserTeacherOfCourseEvent(targetUser, event)))
+                .filter(event -> event.getCourse() != null &&
+                        event.getCourse().getId().equals(courseId))
+                .filter(event -> {
+                    // Filter by types if provided
+                    if (types != null && !types.isEmpty() && !types.contains(event.getType())) {
+                        return false;
+                    }
+
+                    // Filter by search query if provided
+                    if (search != null && !search.trim().isEmpty()) {
+                        String s = search.toLowerCase();
+                        boolean titleMatch = event.getTitle() != null && event.getTitle().toLowerCase().contains(s);
+                        boolean descMatch = event.getDescription() != null
+                                && event.getDescription().toLowerCase().contains(s);
+                        if (!titleMatch && !descMatch)
+                            return false;
+                    }
+
+                    return true;
+                })
                 .collect(Collectors.toList());
 
         // Apply privacy filtering
@@ -572,21 +690,10 @@ public class CalendarService {
     }
 
     /**
-     * Get events for a specific course
+     * Legacy method for backward compatibility
      */
     public List<CalendarEvent> getEventsForCourse(Long courseId, User viewer) {
-        List<CalendarEvent> events = eventRepository.findAll().stream()
-                .filter(event -> event.getCourse() != null &&
-                        event.getCourse().getId().equals(courseId))
-                .collect(Collectors.toList());
-
-        // Apply privacy filtering
-        String viewerRole = viewer.getRole() != null ? viewer.getRole().getName() : "";
-        boolean isAdmin = "ADMIN".equals(viewerRole);
-
-        return events.stream()
-                .map(event -> sanitizeEvent(event, viewer, isAdmin))
-                .collect(Collectors.toList());
+        return getEventsForCourse(courseId, viewer, null, null);
     }
 
     /**

@@ -31,7 +31,11 @@
 
 ---
 
-### 🆕 Latest Updates (Jan 23, 2026)
+*   **📅 Enhanced Calendar & Search Tools (Jan 23, 2026):**
+    *   **Advanced Filtering:** Added multi-select for event types (Lesson, Meeting, Workshop, etc.) in the calendar view.
+    *   **Admin Search:** Integrated a global search bar in the calendar header for administrative roles.
+    *   **Student Course Filtering:** Students can now isolate events for specific courses, just like teachers.
+    *   **Backend Support:** Updated `CalendarService` and controllers with server-side filtering and search logic.
 
 *   **🛡️ System Stability & Security:**
     *   **Whitelabel & 500 Fixes:** Resolved the circular "Whitelabel Error Page" loop and hidden NPEs. Enhanced diagnostic logging with 💥 markers for easier troubleshooting.

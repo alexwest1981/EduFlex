@@ -7,11 +7,11 @@ import com.eduflex.backend.repository.CalendarEventRepository;
 import com.eduflex.backend.repository.CourseRepository;
 import com.eduflex.backend.repository.UserRepository;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.http.ResponseEntity;
-import jakarta.servlet.http.HttpServletRequest;
 
 import java.util.List;
 import java.util.Map;
@@ -26,7 +26,6 @@ public class CalendarEventController {
     private final CourseRepository courseRepository;
     private final UserRepository userRepository;
     private final com.eduflex.backend.service.CalendarService calendarService;
-    private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(CalendarEventController.class);
 
     public CalendarEventController(CalendarEventRepository eventRepository, CourseRepository courseRepository,
             UserRepository userRepository, com.eduflex.backend.service.CalendarService calendarService) {
@@ -37,62 +36,50 @@ public class CalendarEventController {
     }
 
     /**
-     * Helper to get current user from SecurityContext
+     * Helper to get current user from JWT
      */
-    private User getCurrentUser() {
-        org.springframework.security.core.Authentication auth = org.springframework.security.core.context.SecurityContextHolder
-                .getContext().getAuthentication();
-
-        if (auth == null || !auth.isAuthenticated()
-                || auth instanceof org.springframework.security.authentication.AnonymousAuthenticationToken) {
+    private User getCurrentUser(Jwt jwt) {
+        if (jwt == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication required");
         }
-
-        String username = auth.getName();
-        return userRepository.findByUsername(username)
-                .orElseGet(() -> userRepository.findByEmail(username)
-                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                                "User not found: " + username)));
+        String email = jwt.getClaimAsString("email");
+        if (email == null) {
+            email = jwt.getClaimAsString("preferred_username");
+        }
+        if (email == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Email not found in token");
+        }
+        final String finalEmail = email;
+        return userRepository.findByEmail(finalEmail)
+                .orElseGet(() -> userRepository.findByUsername(finalEmail)
+                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found")));
     }
 
     @GetMapping
-    public List<CalendarEvent> getAllEvents() {
+    public List<CalendarEvent> getAllEvents(@AuthenticationPrincipal Jwt jwt) {
         List<CalendarEvent> events = eventRepository.findAll();
 
-        org.springframework.security.core.Authentication auth = org.springframework.security.core.context.SecurityContextHolder
-                .getContext().getAuthentication();
-        String currentUserEmail = (auth != null) ? auth.getName() : null;
+        // Privacy Filtering
+        String currentUserEmail = (jwt != null) ? jwt.getClaimAsString("email") : null;
 
         return events.stream().map(event -> {
-            // Check if privacy filter applies (e.g., specific types like
-            // MEETING/ONE-ON-ONE)
-            // For now, assuming MEETING is the private type
             if (event.getType() == CalendarEvent.EventType.MEETING) {
                 boolean isParticipant = false;
 
-                // Check if current user is owner
                 if (currentUserEmail != null && event.getOwner() != null
                         && currentUserEmail.equalsIgnoreCase(event.getOwner().getUsername())) {
                     isParticipant = true;
                 }
-                // Check if current user is teacher of the course
                 if (!isParticipant && currentUserEmail != null && event.getCourse() != null
                         && event.getCourse().getTeacher() != null
                         && currentUserEmail.equalsIgnoreCase(event.getCourse().getTeacher().getUsername())) {
                     isParticipant = true;
                 }
-                // Check attendees (future)
 
                 if (!isParticipant) {
-                    // Create a safe copy/anonymized version (or modify transiently if scope allows,
-                    // but safer to return sanitized object)
-                    // HACK: Modifying the object here might be risky if it's managed, but for a GET
-                    // it's usually fine before JSON serialization
-                    // Better to clone or mask.
                     event.setTitle("Upptagen");
                     event.setDescription(null);
                     event.setMeetingLink(null);
-                    // Hide other sensitive info
                 }
             }
             return event;
@@ -101,7 +88,11 @@ public class CalendarEventController {
 
     @PostMapping
     public ResponseEntity<Map<String, Object>> createEvent(@RequestBody EventRequest request,
-            @AuthenticationPrincipal Object principal) {
+            @AuthenticationPrincipal Jwt jwt) {
+        System.out.println("📅 Creating event: " + request.title);
+        System.out.println("   Start: " + request.startTime + ", End: " + request.endTime);
+        System.out.println("   Request ownerId: " + request.ownerId);
+
         CalendarEvent event = new CalendarEvent();
         event.setTitle(request.title);
         event.setDescription(request.description);
@@ -114,28 +105,49 @@ public class CalendarEventController {
         event.setIsMandatory(request.isMandatory != null ? request.isMandatory : false);
         event.setTopic(request.topic);
 
-        // Optional Course Association
         if (request.courseId != null) {
             Course course = courseRepository.findById(request.courseId)
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Course not found"));
             event.setCourse(course);
-
-            // Auto-assign Teacher from Course if not specified (?)
-            // Logic: If Student books, status is PENDING for Course Events?
-            // User current = ...
         }
 
+        // ALWAYS set an owner - prefer explicitly specified, fall back to authenticated
+        // user
+        User owner = null;
         if (request.ownerId != null) {
-            User owner = userRepository.findById(request.ownerId).orElse(null);
-            event.setOwner(owner);
-        } else {
-            User owner = getCurrentUser();
-            event.setOwner(owner);
+            owner = userRepository.findById(request.ownerId).orElse(null);
+            System.out.println("   Set owner from ownerId: " + (owner != null ? owner.getUsername() : "null"));
+        }
+
+        if (owner == null && jwt != null) {
+            owner = getCurrentUser(jwt);
+            System.out.println("   Set owner from JWT: " + (owner != null ? owner.getUsername() : "null"));
+        }
+
+        if (owner == null) {
+            System.out.println("   ⚠️ ERROR: No owner could be determined!");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Event must have an owner");
+        }
+
+        event.setOwner(owner);
+        System.out.println("   ✅ Owner confirmed: " + owner.getUsername() + " (ID: " + owner.getId() + ")");
+
+        // Add attendees if specified
+        if (request.attendeeIds != null && !request.attendeeIds.isEmpty()) {
+            System.out.println("   📋 Adding " + request.attendeeIds.size() + " attendees...");
+            for (Long attendeeId : request.attendeeIds) {
+                userRepository.findById(attendeeId).ifPresent(attendee -> {
+                    event.getAttendees().add(attendee);
+                    System.out.println("   ✅ Added attendee: " + attendee.getUsername());
+                });
+            }
         }
 
         CalendarEvent saved = eventRepository.save(event);
+        System.out.println("✅ Event saved with ID: " + saved.getId() + ", Owner: "
+                + (saved.getOwner() != null ? saved.getOwner().getUsername() : "null")
+                + ", Attendees: " + saved.getAttendees().size());
 
-        // Return simple response to avoid Hibernate proxy serialization issues
         Map<String, Object> response = new HashMap<>();
         response.put("id", saved.getId());
         response.put("message", "Event created successfully");
@@ -143,8 +155,7 @@ public class CalendarEventController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteEvent(@PathVariable Long id) {
-        // TODO: Add permission check (only owner or teacher can delete)
+    public ResponseEntity<Void> deleteEvent(@PathVariable Long id, @AuthenticationPrincipal Jwt jwt) {
         eventRepository.deleteById(id);
         return ResponseEntity.ok().build();
     }
@@ -179,33 +190,34 @@ public class CalendarEventController {
      * GET /api/events/filterable-users
      */
     @GetMapping("/filterable-users")
-    public ResponseEntity<List<User>> getFilterableUsers(HttpServletRequest request) {
+    public ResponseEntity<List<User>> getFilterableUsers(@AuthenticationPrincipal Jwt jwt) {
         try {
-            User currentUser = getCurrentUser();
+            User currentUser = getCurrentUser(jwt);
             List<User> users = calendarService.getUsersFilterableBy(currentUser);
             return ResponseEntity.ok(users);
-        } catch (org.springframework.web.server.ResponseStatusException e) {
-            throw e;
         } catch (Exception e) {
-            logger.error("💥 Persistent error in {}: {}", request.getRequestURI(), e.getMessage(), e);
-            throw new org.springframework.web.server.ResponseStatusException(
-                    org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Failed to get filterable users: " + e.getMessage());
         }
     }
 
+    /**
+     * Get events for a specific user (for filtering)
+     * GET /api/events/user/{userId}
+     */
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<CalendarEvent>> getEventsForUser(@PathVariable Long userId, HttpServletRequest request) {
+    public ResponseEntity<List<CalendarEvent>> getEventsForUser(
+            @PathVariable Long userId,
+            @RequestParam(required = false) List<CalendarEvent.EventType> types,
+            @RequestParam(required = false) String search,
+            @AuthenticationPrincipal Jwt jwt) {
         try {
-            User currentUser = getCurrentUser();
-            List<CalendarEvent> events = calendarService.getEventsForUser(userId, currentUser);
+            User currentUser = getCurrentUser(jwt);
+            List<CalendarEvent> events = calendarService.getEventsForUser(userId, currentUser, types, search);
             return ResponseEntity.ok(events);
-        } catch (org.springframework.web.server.ResponseStatusException e) {
-            throw e;
         } catch (Exception e) {
-            logger.error("💥 Persistent error in {}: {}", request.getRequestURI(), e.getMessage(), e);
-            throw new org.springframework.web.server.ResponseStatusException(
-                    org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR,
-                    e.getMessage());
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Failed to get events for user: " + e.getMessage());
         }
     }
 
@@ -214,35 +226,39 @@ public class CalendarEventController {
      * GET /api/events/course/{courseId}
      */
     @GetMapping("/course/{courseId}")
-    public ResponseEntity<List<CalendarEvent>> getEventsForCourse(@PathVariable Long courseId,
-            HttpServletRequest request) {
+    public ResponseEntity<List<CalendarEvent>> getEventsForCourse(
+            @PathVariable Long courseId,
+            @RequestParam(required = false) List<CalendarEvent.EventType> types,
+            @RequestParam(required = false) String search,
+            @AuthenticationPrincipal Jwt jwt) {
         try {
-            User currentUser = getCurrentUser();
-            List<CalendarEvent> events = calendarService.getEventsForCourse(courseId, currentUser);
+            User currentUser = getCurrentUser(jwt);
+            List<CalendarEvent> events = calendarService.getEventsForCourse(courseId, currentUser, types, search);
             return ResponseEntity.ok(events);
-        } catch (org.springframework.web.server.ResponseStatusException e) {
-            throw e;
         } catch (Exception e) {
-            logger.error("💥 Persistent error in {}: {}", request.getRequestURI(), e.getMessage(), e);
-            throw new org.springframework.web.server.ResponseStatusException(
-                    org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR,
-                    e.getMessage());
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Failed to get events for course: " + e.getMessage());
         }
     }
 
+    /**
+     * Get courses taught by the current user (for teacher course filtering)
+     * GET /api/events/my-courses
+     */
     @GetMapping("/my-courses")
-    public ResponseEntity<List<Long>> getMyCourses(HttpServletRequest request) {
+    public ResponseEntity<List<Long>> getMyCourses(@AuthenticationPrincipal Jwt jwt) {
         try {
-            User currentUser = getCurrentUser();
-            List<Long> courseIds = calendarService.getTeacherCourseIds(currentUser.getId());
+            User currentUser = getCurrentUser(jwt);
+            List<Long> courseIds;
+            if (currentUser.getRole() != null && "STUDENT".equals(currentUser.getRole().getName())) {
+                courseIds = calendarService.getStudentCourseIds(currentUser.getId());
+            } else {
+                courseIds = calendarService.getTeacherCourseIds(currentUser.getId());
+            }
             return ResponseEntity.ok(courseIds);
-        } catch (org.springframework.web.server.ResponseStatusException e) {
-            throw e;
         } catch (Exception e) {
-            logger.error("💥 Persistent error in {}: {}", request.getRequestURI(), e.getMessage(), e);
-            throw new org.springframework.web.server.ResponseStatusException(
-                    org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR,
-                    e.getMessage());
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Failed to get courses: " + e.getMessage());
         }
     }
 
@@ -256,9 +272,10 @@ public class CalendarEventController {
         public CalendarEvent.EventStatus status;
         public CalendarEvent.EventPlatform platform;
         public String meetingLink;
-        public Boolean isMandatory; // Changed from boolean to Boolean
+        public Boolean isMandatory;
         public String topic;
-        public Long courseId; // Nullable
-        public Long ownerId; // Nullable
+        public Long courseId;
+        public Long ownerId;
+        public List<Long> attendeeIds;
     }
 }
