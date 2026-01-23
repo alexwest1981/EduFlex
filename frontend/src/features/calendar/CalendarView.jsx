@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight, Calendar as CalIcon, Clock, Loader2, Plus, X, AlertCircle, Video, Users, User, ArrowLeft, ArrowRight, Check, Trash2, TrendingUp } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Calendar as CalIcon, Clock, Loader2, Plus, X, AlertCircle, AlertTriangle, Video, Users, User, ArrowLeft, ArrowRight, Check, Trash2, TrendingUp } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../../services/api';
@@ -46,9 +46,10 @@ const CalendarView = () => {
 
     // Auth Logic
     const roleName = currentUser?.role?.name || currentUser?.role || '';
-    const isTeacherOrAdmin = ['ADMIN', 'TEACHER', 'MENTOR'].includes(roleName); // Added MENTOR just in case
+    const isTeacherOrAdmin = ['ADMIN', 'TEACHER', 'MENTOR', 'PRINCIPAL'].includes(roleName); // Added PRINCIPAL
 
     // Data State
+    const [viewMode, setViewMode] = useState('week'); // 'day', 'week', 'month'
     const [weekStart, setWeekStart] = useState(getMonday(new Date()));
     const [calEvents, setCalEvents] = useState([]);
     const [courses, setCourses] = useState([]);
@@ -73,6 +74,8 @@ const CalendarView = () => {
         type: 'MEETING', courseId: '', attendeeId: '', status: 'CONFIRMED',
         platform: 'NONE', topic: '', isMandatory: false
     });
+    const [availabilityStatus, setAvailabilityStatus] = useState({ isBusy: false, message: '' });
+    const [isCheckingAvailability, setIsCheckingAvailability] = useState(false);
 
     const isDark = theme === 'midnight' || theme === 'voltage';
 
@@ -85,11 +88,13 @@ const CalendarView = () => {
             const queryParams = `?t=${new Date().getTime()}${typesParam}${searchParam}`;
 
             console.log("fetchData: query=", queryParams);
+            // Fetch events: Admin/Principal see all, others see their own
+            const eventsUrl = (roleName === 'ADMIN' || roleName === 'PRINCIPAL')
+                ? `/events${queryParams}`
+                : `/events/user/${currentUser.id}${queryParams}`;
+
             const [eventsRes, coursesRes, usersRes] = await Promise.all([
-                // Fetch only current user's events by default
-                currentUser?.id
-                    ? api.get(`/events/user/${currentUser.id}${queryParams}`).catch(err => { console.error("Events fetch error", err); return []; })
-                    : api.get(`/events${queryParams}`).catch(err => { console.error("Events fetch error", err); return []; }),
+                api.get(eventsUrl).catch(err => { console.error("Events fetch error", err); return []; }),
                 (!isTeacherOrAdmin && currentUser?.id)
                     ? api.courses.getMyCourses(currentUser.id).catch(err => { console.error("My Courses fetch error", err); return []; })
                     : api.get('/courses').catch(err => { console.error("Courses fetch error", err); return []; }),
@@ -248,12 +253,90 @@ const CalendarView = () => {
         }
     };
 
-    // Merge events: use filtered if available, otherwise use all events
+    // --- AVAILABILITY CHECK ---
+    const checkAvailability = async () => {
+        if (!newEvent.date || !newEvent.startTime || !newEvent.endTime) return;
+
+        setIsCheckingAvailability(true);
+        try {
+            const startStr = `${newEvent.date}T${newEvent.startTime}:00`;
+            const endStr = `${newEvent.date}T${newEvent.endTime}:00`;
+
+            console.log(`[CalendarView] Checking availability: ${startStr} - ${endStr}`);
+
+            // Check owner (current user)
+            const ownerParams = new URLSearchParams({
+                userId: currentUser.id,
+                start: startStr,
+                end: endStr
+            });
+            const ownerRes = await api.get(`/events/calendar/check-availability?${ownerParams.toString()}`);
+
+            if (!ownerRes.available) {
+                setAvailabilityStatus({ isBusy: true, message: 'Du är redan bokad under denna tid.' });
+                return;
+            }
+
+            // Check attendee if selected
+            if (newEvent.attendeeId) {
+                const attendeeParams = new URLSearchParams({
+                    userId: newEvent.attendeeId,
+                    start: startStr,
+                    end: endStr
+                });
+                const attendeeRes = await api.get(`/events/calendar/check-availability?${attendeeParams.toString()}`);
+                if (!attendeeRes.available) {
+                    const attendee = users.find(u => u.id === parseInt(newEvent.attendeeId));
+                    setAvailabilityStatus({
+                        isBusy: true,
+                        message: `${attendee?.firstName || 'Deltagaren'} är redan bokad under denna tid.`
+                    });
+                    return;
+                }
+            }
+
+            setAvailabilityStatus({ isBusy: false, message: '' });
+        } catch (error) {
+            console.error('Failed to check availability:', error);
+        } finally {
+            setIsCheckingAvailability(false);
+        }
+    };
+
+    useEffect(() => {
+        if (showBookingModal) {
+            const timer = setTimeout(() => {
+                checkAvailability();
+            }, 500);
+            return () => clearTimeout(timer);
+        }
+    }, [newEvent.date, newEvent.startTime, newEvent.endTime, newEvent.attendeeId, showBookingModal]);
+
+    // Merge events...
     const displayEvents = primaryFilter ? filteredEvents : calEvents;
 
     // --- HANDLERS ---
-    const handlePrevWeek = () => setWeekStart(addDays(weekStart, -7));
-    const handleNextWeek = () => setWeekStart(addDays(weekStart, 7));
+    const handlePrev = () => {
+        if (viewMode === 'day') setWeekStart(addDays(weekStart, -1));
+        else if (viewMode === 'week') setWeekStart(addDays(weekStart, -7));
+        else if (viewMode === 'month') {
+            const newDate = new Date(weekStart);
+            newDate.setMonth(newDate.getMonth() - 1);
+            setWeekStart(newDate); // Logic needs to ensure first day of month/grid
+        }
+    };
+    const handleNext = () => {
+        if (viewMode === 'day') setWeekStart(addDays(weekStart, 1));
+        else if (viewMode === 'week') setWeekStart(addDays(weekStart, 7));
+        else if (viewMode === 'month') {
+            const newDate = new Date(weekStart);
+            newDate.setMonth(newDate.getMonth() + 1);
+            setWeekStart(newDate);
+        }
+    };
+    // Kept for compatibility if used elsewhere, but directed to new handlers
+    const handlePrevWeek = handlePrev;
+    const handleNextWeek = handleNext;
 
     const handleSlotClick = (dayDate, hour) => {
         // if (!isTeacherOrAdmin) {
@@ -269,13 +352,20 @@ const CalendarView = () => {
         const endTimeStr = `${(hour + 1).toString().padStart(2, '0')}:00`;
 
         setNewEvent({
-            ...newEvent,
+            title: '',
+            description: '',
             date: dateStr,
             startTime: timeStr,
             endTime: endTimeStr,
             type: 'MEETING',
-            attendeeId: '' // Reset
+            courseId: '',
+            attendeeId: '',
+            status: 'CONFIRMED',
+            platform: 'NONE',
+            topic: '',
+            isMandatory: false
         });
+        setAvailabilityStatus({ isBusy: false, message: '' });
         setShowBookingModal(true);
     };
 
@@ -312,6 +402,12 @@ const CalendarView = () => {
             console.log("✅ Event created successfully:", response);
 
             setShowBookingModal(false);
+            setNewEvent({
+                title: '', description: '', startTime: '', endTime: '', date: '',
+                type: 'MEETING', courseId: '', attendeeId: '', status: 'CONFIRMED',
+                platform: 'NONE', topic: '', isMandatory: false
+            });
+            setAvailabilityStatus({ isBusy: false, message: '' });
 
             // Wait a moment then refresh to ensure database has committed
             setTimeout(async () => {
@@ -348,8 +444,36 @@ const CalendarView = () => {
     };
 
     // --- RENDER HELPERS ---
+    // --- RENDER HELPERS ---
     const hours = Array.from({ length: 11 }, (_, i) => i + 8); // 08:00 - 18:00
-    const weekDays = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i)); // Mon-Sun
+
+    // Calculate days to display based on View Mode
+    const getDaysToDisplay = () => {
+        if (viewMode === 'day') return [new Date(weekStart)]; // Just the current day
+        if (viewMode === 'week') return Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
+        // Month view uses separate logic for grid, but header needs 'Mon-Sun'
+        // We will return 7 days starting from Monday of the current week just for the header labels
+        if (viewMode === 'month') {
+            // Return a generic week (e.g. current week) just to get Mon-Sun headers
+            // The actual month grid will be generated separately
+            return Array.from({ length: 7 }, (_, i) => addDays(getMonday(new Date()), i));
+        }
+        return [];
+    }
+
+    const getMonthDays = () => {
+        const year = weekStart.getFullYear();
+        const month = weekStart.getMonth();
+        const firstDayOfMonth = new Date(year, month, 1);
+        // Get Monday of the first week (even if previous month)
+        const startDay = firstDayOfMonth.getDay();
+        const diff = firstDayOfMonth.getDate() - startDay + (startDay === 0 ? -6 : 1);
+        const startDate = new Date(firstDayOfMonth.setDate(diff));
+
+        return Array.from({ length: 42 }, (_, i) => addDays(startDate, i));
+    };
+
+    const weekDays = getDaysToDisplay();
     const [selectedMobileDate, setSelectedMobileDate] = useState(new Date()); // State for mobile selection
 
     const getEventsForSlot = (dayDate, hour) => {
@@ -559,21 +683,51 @@ const CalendarView = () => {
                         selectedTypes={selectedTypes}
                     />
 
-                    {/* Month Navigation */}
+                    {/* View Switcher */}
+                    <div className="flex bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
+                        <button
+                            onClick={() => setViewMode('day')}
+                            className={`px-3 py-1.5 text-xs font-bold rounded-md transition-all ${viewMode === 'day' ? 'bg-white dark:bg-gray-700 text-indigo-600 dark:text-white shadow-sm' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700'}`}
+                        >
+                            Dag
+                        </button>
+                        <button
+                            onClick={() => setViewMode('week')}
+                            className={`px-3 py-1.5 text-xs font-bold rounded-md transition-all ${viewMode === 'week' ? 'bg-white dark:bg-gray-700 text-indigo-600 dark:text-white shadow-sm' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700'}`}
+                        >
+                            Vecka
+                        </button>
+                        <button
+                            onClick={() => setViewMode('month')}
+                            className={`px-3 py-1.5 text-xs font-bold rounded-md transition-all ${viewMode === 'month' ? 'bg-white dark:bg-gray-700 text-indigo-600 dark:text-white shadow-sm' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700'}`}
+                        >
+                            Månad
+                        </button>
+                    </div>
+
+                    {/* Navigation */}
                     <div className="flex items-center gap-2 bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
-                        <button onClick={handlePrevWeek} className="p-2 hover:bg-white dark:hover:bg-gray-700 rounded-md transition-colors">
+                        <button onClick={handlePrev} className="p-2 hover:bg-white dark:hover:bg-gray-700 rounded-md transition-colors">
                             <ChevronLeft size={18} className="text-gray-600 dark:text-gray-400" />
                         </button>
                         <span className="px-2 lg:px-4 text-sm font-semibold text-gray-700 dark:text-gray-300 min-w-[100px] lg:min-w-[120px] text-center capitalize">
                             {weekStart.toLocaleDateString('sv-SE', { month: 'long', year: 'numeric' })}
                         </span>
-                        <button onClick={handleNextWeek} className="p-2 hover:bg-white dark:hover:bg-gray-700 rounded-md transition-colors">
+                        <button onClick={handleNext} className="p-2 hover:bg-white dark:hover:bg-gray-700 rounded-md transition-colors">
                             <ChevronRight size={18} className="text-gray-600 dark:text-gray-400" />
                         </button>
                     </div>
 
                     <button
-                        onClick={() => setShowBookingModal(true)}
+                        onClick={() => {
+                            setNewEvent({
+                                title: '', description: '', startTime: '', endTime: '', date: '',
+                                type: 'MEETING', courseId: '', attendeeId: '', status: 'CONFIRMED',
+                                platform: 'NONE', topic: '', isMandatory: false
+                            });
+                            setAvailabilityStatus({ isBusy: false, message: '' });
+                            setShowBookingModal(true);
+                        }}
                         className="bg-orange-500 hover:bg-orange-600 text-white w-10 h-10 lg:w-auto lg:px-4 lg:py-2 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2 shadow-md"
                     >
                         <Plus size={20} />
@@ -668,11 +822,11 @@ const CalendarView = () => {
                 <div className="flex-1 bg-white dark:bg-[#1E1E1E] rounded-3xl shadow-xl border-2 border-gray-100 dark:border-gray-800 overflow-hidden flex flex-col">
 
                     {/* Day Headers */}
-                    <div className="grid grid-cols-[60px_repeat(7,1fr)] border-b-2 border-indigo-100 dark:border-indigo-900/30 shrink-0 bg-gray-50 dark:bg-gray-900">
+                    <div className={`grid ${viewMode === 'day' ? 'grid-cols-[60px_1fr]' : 'grid-cols-[60px_repeat(7,1fr)]'} border-b-2 border-indigo-100 dark:border-indigo-900/30 shrink-0 bg-gray-50 dark:bg-gray-900`}>
                         <div className="bg-gray-100 dark:bg-[#2A2A2A] border-r-2 border-gray-200 dark:border-gray-700" /> {/* Time column header */}
                         {weekDays.map((d, i) => (
-                            <div key={i} className={`py-5 px-2 text-center border-r border-gray-100 dark:border-gray-800 transition-all ${isSameDay(d, new Date()) ? 'bg-indigo-100 dark:bg-indigo-950/50' : ''}`}>
-                                <p className="text-[10px] text-gray-500 dark:text-gray-400 uppercase font-black tracking-[0.15em] mb-2">{d.toLocaleDateString('sv-SE', { weekday: 'short' })}</p>
+                            <div key={i} className={`py-5 px-2 text-center border-r border-gray-100 dark:border-gray-800 transition-all ${isSameDay(d, new Date()) ? 'bg-indigo-100 dark:bg-indigo-950/50' : (d.getDay() === 0 ? 'bg-red-50 dark:bg-red-900/10' : '')}`}>
+                                <p className={`text-[10px] uppercase font-black tracking-[0.15em] mb-2 ${d.getDay() === 0 ? 'text-red-500' : 'text-gray-500 dark:text-gray-400'}`}>{d.toLocaleDateString('sv-SE', { weekday: 'short' })}</p>
                                 <div className={`text-2xl font-black inline-flex items-center justify-center w-12 h-12 rounded-2xl transition-all ${isSameDay(d, new Date()) ? 'bg-indigo-600 text-white shadow-xl shadow-indigo-500/50 scale-110' : 'text-gray-800 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800'}`}>
                                     {d.getDate()}
                                 </div>
@@ -680,74 +834,126 @@ const CalendarView = () => {
                         ))}
                     </div>
 
-                    {/* Time Slots */}
-                    <div className="flex-1 overflow-y-auto">
-                        {hours.map(hour => (
-                            <div key={hour} className="grid grid-cols-[60px_repeat(7,1fr)] h-20 border-b border-gray-100 dark:border-gray-800/50 relative hover:bg-gray-50/30 dark:hover:bg-white/[0.02] transition-colors">
-
-                                {/* Time Label */}
-                                <div className="relative text-right pr-4 pt-2 text-xs font-black text-gray-500 dark:text-gray-400 font-mono border-r-2 border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-[#2A2A2A]">
-                                    {hour}:00
-                                </div>
-
-                                {/* Days Columns */}
-                                {weekDays.map((d, i) => {
-                                    const dayEvents = getEventsForDay(d);
-                                    return (
-                                        <div
-                                            key={i}
-                                            className="relative border-r border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors group cursor-pointer"
-                                            onClick={() => handleSlotClick(d, hour)}
-                                            title={`Klicka för att boka ${hour}:00`}
-                                        >
-                                            {/* Add Button Hint - Only show on first hour */}
-                                            {hour === 8 && dayEvents.length === 0 && (
-                                                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-200 z-0">
-                                                    <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
-                                                        <Plus size={16} strokeWidth={3} />
-                                                    </div>
-                                                </div>
-                                            )}
-
-                                            {/* Events with absolute positioning - Only render on first hour to avoid duplicates */}
-                                            {hour === 8 && dayEvents.map(ev => {
-                                                const style = getEventStyle(ev);
-
-                                                return (
-                                                    <div
-                                                        key={`${ev.id}-${ev.isSecondary ? 'secondary' : 'primary'}`}
-                                                        className={`absolute inset-x-2 rounded-2xl text-xs px-4 py-3 overflow-hidden shadow-lg transition-all hover:shadow-xl hover:scale-105 cursor-pointer ${getEventTypeStyles(ev.type, ev.isSecondary, ev.status)}
-                                                            ${ev.isSecondary ? 'z-5 hover:z-15' : 'z-10 hover:z-20'}`}
-                                                        style={style}
-                                                        onClick={(e) => {
-                                                            e.stopPropagation();
-                                                            setSelectedEvent(ev);
-                                                            setShowEventDetail(true);
-                                                        }}
-                                                    >
-                                                        <div className="flex items-center gap-2 mb-1">
-                                                            <div className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
-                                                                {getEventTypeIcon(ev.type)}
-                                                            </div>
-                                                            <div className="font-bold truncate flex-1">
-                                                                {ev.title}
-                                                            </div>
-                                                            {ev.isSecondary && (
-                                                                <div className="w-2 h-2 rounded-full bg-white" title="Sekundär kalender" />
-                                                            )}
-                                                        </div>
-                                                        <div className="opacity-90 text-[11px] truncate ml-7">
-                                                            {ev.start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - {ev.end.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                                        </div>
-                                                    </div>
-                                                );
-                                            })}
+                    {/* Time Slots OR Month Grid */}
+                    {viewMode === 'month' ? (
+                        <div className="flex-1 grid grid-cols-7 grid-rows-6 h-full overflow-hidden bg-gray-50 dark:bg-gray-900 border-l border-gray-200 dark:border-gray-700">
+                            {getMonthDays().map((d, i) => {
+                                const dayEvents = getEventsForDay(d);
+                                const isCurrentMonth = d.getMonth() === weekStart.getMonth();
+                                return (
+                                    <div
+                                        key={i}
+                                        className={`border-b border-r border-gray-200 dark:border-gray-800 p-1 relative group cursor-pointer transition-colors hover:bg-white dark:hover:bg-[#252525] 
+                                            ${!isCurrentMonth ? 'bg-gray-100/50 dark:bg-gray-900/50 opacity-50 text-gray-400' : 'bg-white dark:bg-[#1E1E1E] text-gray-900 dark:text-gray-100'} 
+                                            ${d.getDay() === 0 ? 'bg-red-50/30 dark:bg-red-900/10' : ''}`}
+                                        onClick={() => {
+                                            if (!isCurrentMonth) {
+                                                setWeekStart(d);
+                                            } else {
+                                                handleSlotClick(d, 9);
+                                            }
+                                        }}
+                                    >
+                                        <div className="flex justify-between items-start">
+                                            <span className={`text-xs font-bold p-1 rounded-md mb-1 inline-block ${isSameDay(d, new Date()) ? 'bg-indigo-600 text-white' : ''} ${!isCurrentMonth ? 'text-gray-400' : ''}`}>
+                                                {d.getDate()}
+                                            </span>
+                                            <button
+                                                className="opacity-0 group-hover:opacity-100 p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-opacity"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleSlotClick(d, 9);
+                                                }}
+                                            >
+                                                <Plus size={12} className="text-gray-500" />
+                                            </button>
                                         </div>
-                                    );
-                                })}
-                            </div>
-                        ))}
-                    </div>
+
+                                        <div className="flex flex-col gap-1 overflow-y-auto max-h-[calc(100%-30px)] custom-scrollbar">
+                                            {dayEvents.map(ev => (
+                                                <div
+                                                    key={ev.id}
+                                                    className={`text-[10px] px-1.5 py-1 rounded border border-transparent hover:border-black/10 dark:hover:border-white/10 truncate font-medium transition-all ${getEventTypeStyles(ev.type, false, ev.status)}`}
+                                                    onClick={(e) => { e.stopPropagation(); setSelectedEvent(ev); setShowEventDetail(true); }}
+                                                    title={`${ev.title}`}
+                                                >
+                                                    <span className="truncate">{ev.title}</span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    ) : (
+                        <div className="flex-1 overflow-y-auto">
+                            {hours.map(hour => (
+                                <div key={hour} className={`grid ${viewMode === 'day' ? 'grid-cols-[60px_1fr]' : 'grid-cols-[60px_repeat(7,1fr)]'} h-20 border-b border-gray-100 dark:border-gray-800/50 relative hover:bg-gray-50/30 dark:hover:bg-white/[0.02] transition-colors`}>
+
+                                    {/* Time Label */}
+                                    <div className="relative text-right pr-4 pt-2 text-xs font-black text-gray-500 dark:text-gray-400 font-mono border-r-2 border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-[#2A2A2A]">
+                                        {hour}:00
+                                    </div>
+
+                                    {/* Days Columns */}
+                                    {weekDays.map((d, i) => {
+                                        const dayEvents = getEventsForDay(d);
+                                        return (
+                                            <div
+                                                key={i}
+                                                className={`relative border-r border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors group cursor-pointer ${d.getDay() === 0 ? 'bg-red-50/50 dark:bg-red-900/5' : ''}`}
+                                                onClick={() => handleSlotClick(d, hour)}
+                                                title={`Klicka för att boka ${hour}:00`}
+                                            >
+                                                {/* Add Button Hint - Only show on first hour */}
+                                                {hour === 8 && dayEvents.length === 0 && (
+                                                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-200 z-0">
+                                                        <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
+                                                            <Plus size={16} strokeWidth={3} />
+                                                        </div>
+                                                    </div>
+                                                )}
+
+                                                {/* Events with absolute positioning - Only render on first hour to avoid duplicates */}
+                                                {hour === 8 && dayEvents.map(ev => {
+                                                    const style = getEventStyle(ev);
+
+                                                    return (
+                                                        <div
+                                                            key={`${ev.id}-${ev.isSecondary ? 'secondary' : 'primary'}`}
+                                                            className={`absolute inset-x-2 rounded-2xl text-xs px-4 py-3 overflow-hidden shadow-lg transition-all hover:shadow-xl hover:scale-105 cursor-pointer ${getEventTypeStyles(ev.type, ev.isSecondary, ev.status)}
+                                                            ${ev.isSecondary ? 'z-5 hover:z-15' : 'z-10 hover:z-20'}`}
+                                                            style={style}
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                setSelectedEvent(ev);
+                                                                setShowEventDetail(true);
+                                                            }}
+                                                        >
+                                                            <div className="flex items-center gap-2 mb-1">
+                                                                <div className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
+                                                                    {getEventTypeIcon(ev.type)}
+                                                                </div>
+                                                                <div className="font-bold truncate flex-1">
+                                                                    {ev.title}
+                                                                </div>
+                                                                {ev.isSecondary && (
+                                                                    <div className="w-2 h-2 rounded-full bg-white" title="Sekundär kalender" />
+                                                                )}
+                                                            </div>
+                                                            <div className="opacity-90 text-[11px] truncate ml-7">
+                                                                {ev.start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - {ev.end.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                            </div>
+                                                        </div>
+                                                    );
+                                                })}
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            ))}
+                        </div>
+                    )}
                 </div>
 
                 {/* Right Sidebar */}
@@ -912,8 +1118,23 @@ const CalendarView = () => {
                                 </div>
                             </div>
 
-                            <button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl shadow-lg shadow-indigo-500/30 transition-all">
-                                Bekräfta Bokning
+                            {/* Availability Feedback */}
+                            {(isCheckingAvailability || availabilityStatus.message) && (
+                                <div className={`p-3 rounded-lg text-sm flex items-center gap-2 ${availabilityStatus.isBusy ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'}`}>
+                                    {isCheckingAvailability ? (
+                                        <><Loader2 size={16} className="animate-spin" /> Kollar tillgänglighet...</>
+                                    ) : (
+                                        <><AlertTriangle size={16} /> {availabilityStatus.message}</>
+                                    )}
+                                </div>
+                            )}
+
+                            <button
+                                type="submit"
+                                disabled={availabilityStatus.isBusy || isCheckingAvailability}
+                                className={`w-full font-bold py-3 rounded-xl shadow-lg transition-all ${availabilityStatus.isBusy ? 'bg-gray-400 cursor-not-allowed' : 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-indigo-500/30'}`}
+                            >
+                                {availabilityStatus.isBusy ? 'Tiden är redan bokad' : 'Bekräfta Bokning'}
                             </button>
 
                         </form>

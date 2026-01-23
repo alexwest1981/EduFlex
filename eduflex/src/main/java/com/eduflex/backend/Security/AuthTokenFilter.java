@@ -15,6 +15,11 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.stereotype.Component;
+import jakarta.servlet.http.HttpServletRequestWrapper;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.ArrayList;
 
 import java.io.IOException;
 
@@ -62,6 +67,37 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                     logger.debug("✅ User '{}' authenticated via internal token", username);
+
+                    // Successfully authenticated via internal token.
+                    // To prevent BearerTokenAuthenticationFilter from trying (and failing)
+                    // to validate this as an OAuth2 token in hybrid mode, we wrap the request
+                    // to effectively "consume" the Authorization header.
+                    HttpServletRequest wrapper = new HttpServletRequestWrapper(request) {
+                        @Override
+                        public String getHeader(String name) {
+                            if ("Authorization".equalsIgnoreCase(name)) {
+                                return null;
+                            }
+                            return super.getHeader(name);
+                        }
+
+                        @Override
+                        public Enumeration<String> getHeaderNames() {
+                            List<String> names = Collections.list(super.getHeaderNames());
+                            names.removeIf(n -> "Authorization".equalsIgnoreCase(n));
+                            return Collections.enumeration(names);
+                        }
+
+                        @Override
+                        public Enumeration<String> getHeaders(String name) {
+                            if ("Authorization".equalsIgnoreCase(name)) {
+                                return Collections.emptyEnumeration();
+                            }
+                            return super.getHeaders(name);
+                        }
+                    };
+                    filterChain.doFilter(wrapper, response);
+                    return;
                 }
             }
         } catch (Exception e) {

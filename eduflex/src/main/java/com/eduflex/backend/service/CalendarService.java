@@ -719,4 +719,62 @@ public class CalendarService {
                 .map(course -> course.getId())
                 .collect(Collectors.toList());
     }
+
+    public boolean isUserBusy(User user, LocalDateTime start, LocalDateTime end, Long excludeEventId) {
+        if (user == null || start == null || end == null)
+            return false;
+
+        logger.info("🔍 Checking if user {} (ID: {}) is busy between {} and {}. Exclude event ID: {}",
+                user.getUsername(), user.getId(), start, end, excludeEventId);
+
+        List<CalendarEvent> allEvents = eventRepository.findAll();
+        logger.info("📊 Total events to check: {}", allEvents.size());
+
+        for (CalendarEvent event : allEvents) {
+            if (excludeEventId != null && event.getId().equals(excludeEventId))
+                continue;
+            if (event.getStatus() == CalendarEvent.EventStatus.CANCELLED)
+                continue;
+
+            boolean isOwner = event.getOwner() != null && event.getOwner().getId().equals(user.getId());
+            boolean isAttendee = event.getAttendees().stream().anyMatch(a -> a.getId().equals(user.getId()));
+
+            // Teacher of the course
+            boolean isTeacher = event.getCourse() != null &&
+                    event.getCourse().getTeacher() != null &&
+                    event.getCourse().getTeacher().getId().equals(user.getId());
+
+            // Student in the course
+            boolean isStudentEnrolled = event.getCourse() != null &&
+                    event.getCourse().getStudents() != null &&
+                    event.getCourse().getStudents().stream().anyMatch(s -> s.getId().equals(user.getId()));
+
+            if (isOwner || isAttendee || isTeacher || isStudentEnrolled) {
+                boolean overlaps = start.isBefore(event.getEndTime()) && end.isAfter(event.getStartTime());
+                if (overlaps) {
+                    logger.info("🚫 CONFLICT FOUND: Event '{}' (ID: {}) overlaps. User is involved as {}.",
+                            event.getTitle(), event.getId(),
+                            isOwner ? "OWNER" : (isAttendee ? "ATTENDEE" : (isTeacher ? "TEACHER" : "STUDENT")));
+                    return true;
+                }
+            }
+        }
+
+        logger.info("✅ No conflicts found for user {}", user.getUsername());
+        return false;
+    }
+
+    public void validateEventAvailability(CalendarEvent event) {
+        if (event == null || event.getStartTime() == null || event.getEndTime() == null)
+            return;
+        if (event.getOwner() != null
+                && isUserBusy(event.getOwner(), event.getStartTime(), event.getEndTime(), event.getId())) {
+            throw new IllegalStateException("Användaren " + event.getOwner().getUsername() + " är redan bokad.");
+        }
+        for (User attendee : event.getAttendees()) {
+            if (isUserBusy(attendee, event.getStartTime(), event.getEndTime(), event.getId())) {
+                throw new IllegalStateException("Deltagaren " + attendee.getUsername() + " är redan bokad.");
+            }
+        }
+    }
 }

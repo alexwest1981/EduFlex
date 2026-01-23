@@ -105,8 +105,7 @@ services:
       - SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_USER_INFO_URI=http://keycloak:8080/realms/eduflex/protocol/openid-connect/userinfo
       - SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_JWK_SET_URI=http://keycloak:8080/realms/eduflex/protocol/openid-connect/certs
       # Enable Hybrid Mode for proper JWT validation
-      # Enable Hybrid Mode for proper JWT validation
-      - EDUFLEX_AUTH_MODE=internal
+      - EDUFLEX_AUTH_MODE=hybrid
       # Override Resource Server URLs for Docker internal network (Validation)
       - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI=http://keycloak:8080/realms/eduflex/protocol/openid-connect/certs
       - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI=http://localhost:8180/realms/eduflex

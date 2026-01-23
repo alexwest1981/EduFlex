@@ -119,6 +119,12 @@ const Login = () => {
         }
     };
 
+    const handleKeycloakLogin = () => {
+        // Redirect directly to the Spring Security OAuth2 authorization endpoint
+        const baseUrl = API_BASE.endsWith('/') ? API_BASE.slice(0, -1) : API_BASE;
+        window.location.href = `${baseUrl}/oauth2/authorization/keycloak`;
+    };
+
     const handleGoogleLogin = () => {
         console.log("Google login not implemented yet");
         alert("Google login is coming soon!");
@@ -227,7 +233,14 @@ const Login = () => {
                         <div className="relative flex justify-center text-xs uppercase"><span className="bg-white dark:bg-[#1E1F20] px-3 text-gray-400 font-bold tracking-wider">Eller</span></div>
                     </div>
                     <div className="space-y-3">
-                        <button onClick={handleGoogleLogin} className="w-full bg-white dark:bg-[#282a2c] hover:bg-gray-50 dark:hover:bg-[#3c4043] text-gray-700 dark:text-white font-bold py-3.5 rounded-xl border border-gray-200 dark:border-[#3c4043] hover:border-gray-300 dark:hover:border-gray-500 transition-all flex items-center justify-center gap-3 group text-sm shadow-sm hover:shadow-md">
+                        <button
+                            type="button"
+                            onClick={handleKeycloakLogin}
+                            className="w-full bg-indigo-50 dark:bg-indigo-900/20 hover:bg-indigo-100 dark:hover:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300 font-bold py-3.5 rounded-xl border border-indigo-200 dark:border-indigo-800 transition-all flex items-center justify-center gap-3 group text-sm shadow-sm"
+                        >
+                            Logga in med Keycloak
+                        </button>
+                        <button type="button" onClick={handleGoogleLogin} className="w-full bg-white dark:bg-[#282a2c] hover:bg-gray-50 dark:hover:bg-[#3c4043] text-gray-700 dark:text-white font-bold py-3.5 rounded-xl border border-gray-200 dark:border-[#3c4043] hover:border-gray-300 dark:hover:border-gray-500 transition-all flex items-center justify-center gap-3 group text-sm shadow-sm hover:shadow-md">
                             Logga in med Google
                         </button>
                     </div>

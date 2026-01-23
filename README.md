@@ -32,9 +32,12 @@
 ---
 
 *   **📅 Enhanced Calendar & Search Tools (Jan 23, 2026):**
+    *   **View Flexibility:** Added seamless switching between **Day, Week, and Month** views for better planning visibility.
+    *   **Visual Enhancements:** Sundays are now clearly highlighted with a red background for improved week-at-a-glance readability.
     *   **Advanced Filtering:** Added multi-select for event types (Lesson, Meeting, Workshop, etc.) in the calendar view.
     *   **Admin Search:** Integrated a global search bar in the calendar header for administrative roles.
     *   **Student Course Filtering:** Students can now isolate events for specific courses, just like teachers.
+    *   **Hybrid Authentication:** Enabled simultaneous support for Keycloak SSO and Internal Auth, fixing 401 issues in hybrid mode.
     *   **Backend Support:** Updated `CalendarService` and controllers with server-side filtering and search logic.
 
 *   **🛡️ System Stability & Security:**

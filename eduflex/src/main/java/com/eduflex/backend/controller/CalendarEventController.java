@@ -6,12 +6,15 @@ import com.eduflex.backend.model.User;
 import com.eduflex.backend.repository.CalendarEventRepository;
 import com.eduflex.backend.repository.CourseRepository;
 import com.eduflex.backend.repository.UserRepository;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
-import org.springframework.http.ResponseEntity;
+import java.time.LocalDateTime;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.util.List;
 import java.util.Map;
@@ -36,43 +39,64 @@ public class CalendarEventController {
     }
 
     /**
-     * Helper to get current user from JWT
+     * Helper to get current user from Authentication (supports both JWT and
+     * Internal)
      */
-    private User getCurrentUser(Jwt jwt) {
-        if (jwt == null) {
+    private User getCurrentUser(Authentication auth) {
+        if (auth == null || !auth.isAuthenticated()) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication required");
         }
-        String email = jwt.getClaimAsString("email");
-        if (email == null) {
-            email = jwt.getClaimAsString("preferred_username");
+
+        Object principal = auth.getPrincipal();
+        String username = null;
+
+        if (principal instanceof Jwt) {
+            Jwt jwt = (Jwt) principal;
+            username = jwt.getClaimAsString("email");
+            if (username == null) {
+                username = jwt.getClaimAsString("preferred_username");
+            }
+        } else if (principal instanceof UserDetails) {
+            username = ((UserDetails) principal).getUsername();
+        } else if (principal instanceof String) {
+            username = (String) principal;
         }
-        if (email == null) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Email not found in token");
+
+        if (username == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User identity not found in token");
         }
-        final String finalEmail = email;
-        return userRepository.findByEmail(finalEmail)
-                .orElseGet(() -> userRepository.findByUsername(finalEmail)
+
+        final String finalUsername = username;
+        return userRepository.findByEmail(finalUsername)
+                .orElseGet(() -> userRepository.findByUsername(finalUsername)
                         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found")));
     }
 
     @GetMapping
-    public List<CalendarEvent> getAllEvents(@AuthenticationPrincipal Jwt jwt) {
+    public List<CalendarEvent> getAllEvents(Authentication auth) {
         List<CalendarEvent> events = eventRepository.findAll();
 
         // Privacy Filtering
-        String currentUserEmail = (jwt != null) ? jwt.getClaimAsString("email") : null;
+        String currentUserEmail = null;
+        if (auth != null && auth.getPrincipal() instanceof Jwt) {
+            currentUserEmail = ((Jwt) auth.getPrincipal()).getClaimAsString("email");
+        } else if (auth != null && auth.getPrincipal() instanceof UserDetails) {
+            currentUserEmail = ((UserDetails) auth.getPrincipal()).getUsername();
+        }
+
+        final String finalUserEmail = currentUserEmail;
 
         return events.stream().map(event -> {
             if (event.getType() == CalendarEvent.EventType.MEETING) {
                 boolean isParticipant = false;
 
-                if (currentUserEmail != null && event.getOwner() != null
-                        && currentUserEmail.equalsIgnoreCase(event.getOwner().getUsername())) {
+                if (finalUserEmail != null && event.getOwner() != null
+                        && finalUserEmail.equalsIgnoreCase(event.getOwner().getUsername())) {
                     isParticipant = true;
                 }
-                if (!isParticipant && currentUserEmail != null && event.getCourse() != null
+                if (!isParticipant && finalUserEmail != null && event.getCourse() != null
                         && event.getCourse().getTeacher() != null
-                        && currentUserEmail.equalsIgnoreCase(event.getCourse().getTeacher().getUsername())) {
+                        && finalUserEmail.equalsIgnoreCase(event.getCourse().getTeacher().getUsername())) {
                     isParticipant = true;
                 }
 
@@ -86,9 +110,38 @@ public class CalendarEventController {
         }).toList();
     }
 
+    @GetMapping("/calendar/check-availability")
+    public ResponseEntity<Map<String, Object>> checkAvailability(
+            @RequestParam Long userId,
+            @RequestParam @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE_TIME) LocalDateTime start,
+            @RequestParam @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE_TIME) LocalDateTime end,
+            @RequestParam(required = false) Long excludeEventId) {
+        try {
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+            boolean busy = calendarService.isUserBusy(user, start, end, excludeEventId);
+            Map<String, Object> response = new HashMap<>();
+            response.put("available", !busy);
+            response.put("userId", userId);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Failed to check availability: " + e.getMessage());
+        }
+    }
+
+    public static class AvailabilityRequest {
+        public Long userId;
+        @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+        public LocalDateTime start;
+        @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+        public LocalDateTime end;
+        public Long excludeEventId;
+    }
+
     @PostMapping
     public ResponseEntity<Map<String, Object>> createEvent(@RequestBody EventRequest request,
-            @AuthenticationPrincipal Jwt jwt) {
+            Authentication auth) {
         System.out.println("📅 Creating event: " + request.title);
         System.out.println("   Start: " + request.startTime + ", End: " + request.endTime);
         System.out.println("   Request ownerId: " + request.ownerId);
@@ -119,9 +172,9 @@ public class CalendarEventController {
             System.out.println("   Set owner from ownerId: " + (owner != null ? owner.getUsername() : "null"));
         }
 
-        if (owner == null && jwt != null) {
-            owner = getCurrentUser(jwt);
-            System.out.println("   Set owner from JWT: " + (owner != null ? owner.getUsername() : "null"));
+        if (owner == null && auth != null) {
+            owner = getCurrentUser(auth);
+            System.out.println("   Set owner from Auth: " + (owner != null ? owner.getUsername() : "null"));
         }
 
         if (owner == null) {
@@ -143,6 +196,13 @@ public class CalendarEventController {
             }
         }
 
+        // Final Availability Check
+        try {
+            calendarService.validateEventAvailability(event);
+        } catch (IllegalStateException e) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
+        }
+
         CalendarEvent saved = eventRepository.save(event);
         System.out.println("✅ Event saved with ID: " + saved.getId() + ", Owner: "
                 + (saved.getOwner() != null ? saved.getOwner().getUsername() : "null")
@@ -155,7 +215,7 @@ public class CalendarEventController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteEvent(@PathVariable Long id, @AuthenticationPrincipal Jwt jwt) {
+    public ResponseEntity<Void> deleteEvent(@PathVariable Long id, Authentication auth) {
         eventRepository.deleteById(id);
         return ResponseEntity.ok().build();
     }
@@ -190,9 +250,9 @@ public class CalendarEventController {
      * GET /api/events/filterable-users
      */
     @GetMapping("/filterable-users")
-    public ResponseEntity<List<User>> getFilterableUsers(@AuthenticationPrincipal Jwt jwt) {
+    public ResponseEntity<List<User>> getFilterableUsers(Authentication auth) {
         try {
-            User currentUser = getCurrentUser(jwt);
+            User currentUser = getCurrentUser(auth);
             List<User> users = calendarService.getUsersFilterableBy(currentUser);
             return ResponseEntity.ok(users);
         } catch (Exception e) {
@@ -210,9 +270,9 @@ public class CalendarEventController {
             @PathVariable Long userId,
             @RequestParam(required = false) List<CalendarEvent.EventType> types,
             @RequestParam(required = false) String search,
-            @AuthenticationPrincipal Jwt jwt) {
+            Authentication auth) {
         try {
-            User currentUser = getCurrentUser(jwt);
+            User currentUser = getCurrentUser(auth);
             List<CalendarEvent> events = calendarService.getEventsForUser(userId, currentUser, types, search);
             return ResponseEntity.ok(events);
         } catch (Exception e) {
@@ -230,9 +290,9 @@ public class CalendarEventController {
             @PathVariable Long courseId,
             @RequestParam(required = false) List<CalendarEvent.EventType> types,
             @RequestParam(required = false) String search,
-            @AuthenticationPrincipal Jwt jwt) {
+            Authentication auth) {
         try {
-            User currentUser = getCurrentUser(jwt);
+            User currentUser = getCurrentUser(auth);
             List<CalendarEvent> events = calendarService.getEventsForCourse(courseId, currentUser, types, search);
             return ResponseEntity.ok(events);
         } catch (Exception e) {
@@ -246,9 +306,9 @@ public class CalendarEventController {
      * GET /api/events/my-courses
      */
     @GetMapping("/my-courses")
-    public ResponseEntity<List<Long>> getMyCourses(@AuthenticationPrincipal Jwt jwt) {
+    public ResponseEntity<List<Long>> getMyCourses(Authentication auth) {
         try {
-            User currentUser = getCurrentUser(jwt);
+            User currentUser = getCurrentUser(auth);
             List<Long> courseIds;
             if (currentUser.getRole() != null && "STUDENT".equals(currentUser.getRole().getName())) {
                 courseIds = calendarService.getStudentCourseIds(currentUser.getId());
