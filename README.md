@@ -31,6 +31,13 @@
 
 ---
 
+*   **🔗 LTI 1.3 Certified Integration & Admin Tools (Jan 24, 2026):**
+    *   **Secure Launch Flow:** Implemented full cryptographic verification (public key/JWKS) using Nimbus JOSE. No mocks—real OIDC authentication.
+    *   **Auto-Provisioning:** Users launching from Canvas/Moodle are automatically created/updated with correct roles (Instructor -> Teacher) and names.
+    *   **Administration UI:** Added a dedicated **"Integrationer"** tab in the Admin Dashboard to manage LTI platforms without DB access.
+    *   **Frontend Handlers:** Created specific `/lti-success` and `/lti-error` handlers for a seamless single-sign-on experience.
+    *   **Bug Fixes:** Resolved deprecated URL constructors and User model issues in the security layer.
+
 *   **📅 Enhanced Calendar & Search Tools (Jan 23, 2026):**
     *   **View Flexibility:** Added seamless switching between **Day, Week, and Month** views for better planning visibility.
     *   **Visual Enhancements:** Sundays are now clearly highlighted with a red background for improved week-at-a-glance readability.
@@ -772,6 +779,7 @@ curl -X POST http://localhost:8080/api/tenants \
 | [docs/API.md](docs/API.md) | REST API reference |
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | System architecture |
 | [docs/TENANT_ADMIN_GUIDE.md](docs/TENANT_ADMIN_GUIDE.md) | Multi-tenancy & Keycloak guide |
+| [docs/ROADMAP_TO_AAA.md](docs/ROADMAP_TO_AAA.md) | Strategic Enterprise Blueprint |
 
 ---
 
@@ -792,4 +800,4 @@ För Enterprise-frågor:
 
 ---
 
-*Last updated: 2026-01-23*
+*Last updated: 2026-01-24*

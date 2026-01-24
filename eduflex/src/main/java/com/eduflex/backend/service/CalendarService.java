@@ -764,6 +764,52 @@ public class CalendarService {
         return false;
     }
 
+    /**
+     * Get dashboard summary for a user (Today's events + Stats)
+     */
+    public Map<String, Object> getDashboardSummary(User user) {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDate today = now.toLocalDate();
+
+        // reuse getEventsForUser to respect all privacy/role rules
+        List<CalendarEvent> allUserEvents = getEventsForUser(user.getId(), user, null, null);
+
+        // 1. Today's Events
+        List<CalendarEvent> todaysEvents = allUserEvents.stream()
+                .filter(e -> e.getStartTime().toLocalDate().equals(today))
+                .sorted(Comparator.comparing(CalendarEvent::getStartTime))
+                .collect(Collectors.toList());
+
+        // 2. Stats
+        LocalDateTime startOfWeek = today
+                .with(java.time.temporal.TemporalAdjusters.previousOrSame(java.time.DayOfWeek.MONDAY)).atStartOfDay();
+        LocalDateTime endOfWeek = today
+                .with(java.time.temporal.TemporalAdjusters.nextOrSame(java.time.DayOfWeek.SUNDAY))
+                .atTime(LocalTime.MAX);
+
+        LocalDateTime startOfMonth = today.withDayOfMonth(1).atStartOfDay();
+        LocalDateTime endOfMonth = today.withDayOfMonth(today.lengthOfMonth()).atTime(LocalTime.MAX);
+
+        long countToday = todaysEvents.size();
+
+        long countWeek = allUserEvents.stream()
+                .filter(e -> !e.getStartTime().isBefore(startOfWeek) && !e.getEndTime().isAfter(endOfWeek))
+                .count();
+
+        long countMonth = allUserEvents.stream()
+                .filter(e -> !e.getStartTime().isBefore(startOfMonth) && !e.getEndTime().isAfter(endOfMonth))
+                .count();
+
+        Map<String, Object> summary = new HashMap<>();
+        summary.put("todayEvents", todaysEvents);
+        summary.put("stats", Map.of(
+                "today", countToday,
+                "week", countWeek,
+                "month", countMonth));
+
+        return summary;
+    }
+
     public void validateEventAvailability(CalendarEvent event) {
         if (event == null || event.getStartTime() == null || event.getEndTime() == null)
             return;

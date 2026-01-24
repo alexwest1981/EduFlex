@@ -18,6 +18,7 @@ const AdminNavbar = () => {
         { id: 'tenants', label: 'Tenants', icon: Server, path: '/admin?tab=tenants' },
         { id: 'system', label: t('admin_tabs.system_settings') || 'Systeminställningar', icon: Settings, path: '/admin?tab=system' },
         { id: 'skolverket', label: 'Skolverket', icon: Database, path: '/admin?tab=skolverket' },
+        { id: 'integrations', label: 'Integrationer', icon: Globe, path: '/admin?tab=integrations' },
         { id: 'tickets', label: t('admin_tabs.tickets') || 'Ärenden', icon: MessageSquare, path: '/admin?tab=tickets' }
     ];
 

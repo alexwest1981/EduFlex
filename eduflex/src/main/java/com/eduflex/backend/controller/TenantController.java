@@ -41,6 +41,14 @@ public class TenantController {
         logger.info("Received tenant creation request for: {}", request.getName());
 
         // 1. Security Check
+        String currentTenant = com.eduflex.backend.config.tenant.TenantContext.getCurrentTenant();
+        if (currentTenant != null) {
+            logger.warn("Attempt to create tenant from sub-tenant context: {}", currentTenant);
+            return ResponseEntity.status(403)
+                    .body(java.util.Map.of("error", "Tenant creation is only allowed from the main installation."));
+        }
+
+        // 2. Registration Key Check
         String incomingKey = request.getRegistrationKey() != null ? request.getRegistrationKey().trim() : null;
 
         if (expectedRegistrationKey != null && !expectedRegistrationKey.equals(incomingKey)) {
@@ -73,16 +81,26 @@ public class TenantController {
         }
     }
 
+    @GetMapping("/{id}")
+    @Operation(summary = "Get tenant by ID/Key")
+    public ResponseEntity<Tenant> getTenant(@PathVariable String id) {
+        try {
+            return ResponseEntity.ok(tenantService.getTenant(id));
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete a tenant")
-    public ResponseEntity<Void> deleteTenant(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteTenant(@PathVariable String id) {
         tenantService.deleteTenant(id);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/{id}/init-schema")
     @Operation(summary = "Initialize tenant schema")
-    public ResponseEntity<Void> initSchema(@PathVariable Long id) {
+    public ResponseEntity<Void> initSchema(@PathVariable String id) {
         tenantService.initSchema(id);
         return ResponseEntity.ok().build();
     }

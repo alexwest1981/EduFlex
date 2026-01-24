@@ -44,7 +44,7 @@ const AdminTicketsWidget = ({ onManage }) => {
     );
 
     return (
-        <div className="bg-card dark:bg-card-dark rounded-[var(--radius-xl)] border border-card dark:border-card-dark shadow-sm overflow-hidden flex flex-col h-full animate-in slide-in-from-bottom-8" style={{ backdropFilter: 'var(--card-backdrop)' }}>
+        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm overflow-hidden flex flex-col h-full animate-in slide-in-from-bottom-8">
             {/* STATS HEADER (Matches AdminStats style) */}
             <div className="p-6">
                 <div className="flex justify-between items-start">

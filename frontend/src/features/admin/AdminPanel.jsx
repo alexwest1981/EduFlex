@@ -15,6 +15,7 @@ import { ForumModuleMetadata } from '../../modules/forum/ForumModule';
 import { ChatModuleMetadata } from '../../modules/chat/ChatModule';
 import { GamificationModuleMetadata } from '../../modules/gamification/GamificationModule';
 import { useModules } from '../../context/ModuleContext';
+import UserImport from './UserImport';
 
 const AdminPanel = ({ currentUser }) => {
     const { t } = useTranslation();
@@ -52,6 +53,7 @@ const AdminPanel = ({ currentUser }) => {
     const [editingUser, setEditingUser] = useState(null);
     const [viewingUserCourses, setViewingUserCourses] = useState(null);
     const [isRegisteringUser, setIsRegisteringUser] = useState(false);
+    const [isImporting, setIsImporting] = useState(false);
 
     // FIX: Lade till ssn, phone, address i state
     const [registerForm, setRegisterForm] = useState({
@@ -316,8 +318,15 @@ const AdminPanel = ({ currentUser }) => {
                                 <select className={inputClass + " w-auto"} value={roleFilter} onChange={e => setRoleFilter(e.target.value)}><option value="ALL">Alla Roller</option><option value="STUDENT">Elever</option><option value="TEACHER">Lärare</option><option value="ADMIN">Admins</option></select>
                                 <select className={inputClass + " w-auto"} value={statusFilter} onChange={e => setStatusFilter(e.target.value)}><option value="ALL">Alla Statusar</option><option value="ACTIVE">Aktiva</option><option value="INACTIVE">Inaktiva</option></select>
                             </div>
-                            <button onClick={() => setIsRegisteringUser(!isRegisteringUser)} className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-indigo-700 flex items-center gap-2 whitespace-nowrap shadow-sm">{isRegisteringUser ? <X size={16} /> : <Plus size={16} />} {isRegisteringUser ? 'Dölj formulär' : 'Ny Användare'}</button>
+                            <div className="flex gap-2">
+                                <button onClick={() => { setIsImporting(!isImporting); setIsRegisteringUser(false); }} className="bg-white dark:bg-[#282a2c] text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-900 px-4 py-2 rounded-lg text-sm font-bold hover:bg-indigo-50 dark:hover:bg-indigo-900/20 flex items-center gap-2 shadow-sm"><Upload size={16} /> Importera (CSV)</button>
+                                <button onClick={() => { setIsRegisteringUser(!isRegisteringUser); setIsImporting(false); }} className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-indigo-700 flex items-center gap-2 whitespace-nowrap shadow-sm">{isRegisteringUser ? <X size={16} /> : <Plus size={16} />} {isRegisteringUser ? 'Dölj formulär' : 'Ny Användare'}</button>
+                            </div>
                         </div>
+
+                        {isImporting && (
+                            <UserImport onClose={() => setIsImporting(false)} onSuccess={() => { fetchUsers(0); setIsImporting(false); }} />
+                        )}
 
                         {isRegisteringUser && (
                             <div className="bg-indigo-50 dark:bg-indigo-900/10 p-6 rounded-xl border border-indigo-100 dark:border-indigo-900/30 animate-in slide-in-from-top-4">

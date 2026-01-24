@@ -22,7 +22,7 @@ export const options = {
     },
 };
 
-const BASE_URL = __ENV.BASE_URL || 'http://eduflex-backend:8080/api';
+const BASE_URL = __ENV.BASE_URL || 'http://host.docker.internal:8080/api';
 
 // Per-VU state
 let token = null;

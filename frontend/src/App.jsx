@@ -15,6 +15,7 @@ import LandingPage from './features/landing/LandingPage';
 import Login from './features/auth/Login';
 import RegisterOrganization from './features/auth/RegisterOrganization';
 import OAuth2Callback from './features/auth/OAuth2Callback';
+import LtiSuccess from './features/auth/LtiSuccess';
 import Dashboard from './features/dashboard/Dashboard';
 import CourseDetail from './features/courses/CourseDetail';
 import CalendarView from './features/calendar/CalendarView';
@@ -98,6 +99,7 @@ const AppRoutes = () => {
                 <Route path="/login" element={<Login />} />
                 <Route path="/register-org" element={<RegisterOrganization />} />
                 <Route path="/oauth2/callback" element={<OAuth2Callback />} />
+                <Route path="/lti-success" element={<LtiSuccess />} />
 
                 {/* ROOT ROUTE: Landing for Guests / Dashboard for Users */}
                 <Route path="/" element={

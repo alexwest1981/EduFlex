@@ -105,14 +105,13 @@ public class SecurityConfig {
 
                         // 2. Publika endpoints
                         .requestMatchers("/api/auth/**", "/api/users/register", "/api/users/generate-usernames",
-                                "/api/settings/**", "/login/**", "/api/tenants/**", "/api/branding/**", "/api/debug/**")
+                                "/api/settings/**", "/login/**", "/api/tenants/**", "/api/public/**",
+                                "/api/branding/**", "/api/debug/**")
                         .permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/tenants").permitAll() // Explicitly allow POST
-                        .requestMatchers(HttpMethod.POST, "/api/tenants/**").permitAll()
-
                         .requestMatchers("/api/system/license/**", "/uploads/**", "/h2-console/**", "/ws/**",
                                 "/ws-log/**",
-                                "/actuator/**", "/lti/**", "/error",
+                                "/actuator/**", "/lti/**", "/api/lti/**", "/error",
                                 // Swagger UI and OpenAPI Documentation
                                 "/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html", "/api-docs/**")
                         .permitAll()

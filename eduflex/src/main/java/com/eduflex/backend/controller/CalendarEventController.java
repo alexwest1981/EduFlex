@@ -72,6 +72,18 @@ public class CalendarEventController {
                         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found")));
     }
 
+    @GetMapping("/dashboard-summary")
+    public ResponseEntity<Map<String, Object>> getDashboardSummary(Authentication auth) {
+        try {
+            User currentUser = getCurrentUser(auth);
+            Map<String, Object> summary = calendarService.getDashboardSummary(currentUser);
+            return ResponseEntity.ok(summary);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Failed to get dashboard summary: " + e.getMessage());
+        }
+    }
+
     @GetMapping
     public List<CalendarEvent> getAllEvents(Authentication auth) {
         List<CalendarEvent> events = eventRepository.findAll();

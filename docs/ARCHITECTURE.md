@@ -1,160 +1,138 @@
-# EduFlex 2.0 – System Architecture
+# 🏛️ EduFlex 2.0 – System Architecture
+
+> **Enterprise-Grade LMS Architecture** designed for high scalability, multi-tenancy, and modularity.
 
 ---
 
-## 1. System Overview
-
-EduFlex 2.0 is an enterprise-grade **Learning Management System (LMS)** designed for high scalability and modularity.
-Unlike traditional monolithic LMSs, EduFlex uses a **"Kernel + Modules"** architecture where features like SCORM, Gamification, and Revenue Management are decoupled and toggleable.
-
----
-
-## 2. Technical Stack
-
-### Frontend
-- **Framework:** React 19 (Vite)
-- **Styling:** Tailwind CSS v4 (Dark Mode, CSS Variables)
-- **State Management:** Zustand + React Context
-- **Real-time:** SockJS + STOMP (WebSockets)
-- **Visuals:** Recharts (Analytics), Lucide React (Icons), React-Quill-new (Rich Text)
-
-### Backend
-- **Framework:** Spring Boot 3.4
-- **Database:** PostgreSQL 15 (Production) / H2 (Test)
-- **Caching:** Redis 7 (Sessions, Data)
-- **Storage:** MinIO / AWS S3 (Documents, SCORM)
-- **Security:** Spring Security 6, JWT, OAuth2 (Google/GitHub/Entra ID)
-- **PDF Generation:** OpenPDF (Certificates, Invoices)
-
-### Infrastructure
-- **Containerization:** Docker Compose / Swarm
-- **Monitoring:** Prometheus + Grafana
-- **Proxy:** Nginx (Recommended for Prod)
+## 1. Architectural Principles
+EduFlex uses a **"Kernel + Modules"** architecture.
+*   **Kernel:** Only handles critical domains: Users, Auth, Tenants, and Basic Course Logic.
+*   **Modules:** All other features (SCORM, Gamification, Revenue, Chat) are decoupled extensions controlled by feature flags.
+*   **Multi-Tenancy:** Schema-based isolation (one schema per tenant) ensures 100% data separation.
 
 ---
 
-## 3. Core Architecture
+## 2. C4 Model Diagrams
 
-### A. The Module System ("Kernel + Extensions")
-The core philosophy is that "Core" should only handle Users, Auth, and Basic Course Logic. Everything else is an extension.
+### Level 1: System Context
+Who uses the system and how it fits into the IT landscape.
 
-#### 1. SystemModules
-The feature flag engine. Controlled via `/api/modules`.
-- **SCORM:** Toggles uploading/playing courseware.
-- **REVENUE:** Toggles subscriptions and invoices.
-- **GAMIFICATION:** Toggles XP, Badges, and Leaderboards.
-- **CHAT:** Toggles WebSocket services.
+```mermaid
+C4Context
+    title System Context Diagram for EduFlex LMS
 
-#### 2. License Enforcement
-A strict filter (`LicenseFilter`) intercepts requests.
-- **BASIC:** Limited features.
-- **PRO:** Enables Gamification, Reporting.
-- **ENTERPRISE:** Enables SCORM, White-labeling, SSO.
-- **Verification:** RSA-signed license keys (`eduflex.license`).
+    Person(student, "Student", "Accesses courses, quizzes, and tracking.")
+    Person(teacher, "Teacher", "Creates content, grades assignments.")
+    Person(admin, "Tenant Admin", "Manages users, styles, and billing for their org.")
+    
+    System(eduflex, "EduFlex LMS", "The core learning platform.")
 
-### B. Data & Storage Flow
+    System_Ext(email, "SMTP Service", "Sends notifications via Mail/SendGrid.")
+    System_Ext(keycloak, "Identity Provider", "Handles SSO (OIDC/SAML).")
+    System_Ext(s3, "Object Storage", "Stores files/videos (MinIO/AWS S3).")
+    System_Ext(stripe, "Payment Gateway", "Handles subscription billing.")
 
-#### File Uploads (Hybrid Strategy)
-1. **User Upload:** File sent to `MultipartFile` endpoint.
-2. **Persistence:**
-    - **Small Files (Images/Docs):** Stored in MinIO/S3 buckets.
-    - **SCORM Packages:** Unzipped to local SSD volume (`/uploads/scorm/`) for low-latency static serving via Nginx/Spring ResourceHandler.
+    Rel(student, eduflex, "Learns via", "HTTPS")
+    Rel(teacher, eduflex, "Manages via", "HTTPS")
+    Rel(admin, eduflex, "Configures via", "HTTPS")
 
-#### Caching Strategy (Redis)
-- **Session:** User tokens and active WebSocket sessions.
-- **Data:** Frequent lookups (e.g., "Get All Modules", "Course List").
+    Rel(eduflex, email, "Sends emails", "SMTP")
+    Rel(eduflex, keycloak, "Authenticates", "OIDC")
+    Rel(eduflex, s3, "Reads/Writes assets", "S3 API")
+    Rel(eduflex, stripe, "Processes payments", "REST")
+```
+
+### Level 2: Container Diagram
+High-level technology choices and communication.
+
+```mermaid
+C4Container
+    title Container Diagram for EduFlex LMS
+
+    Person(user, "User", "Student/Teacher/Admin")
+
+    Container_Boundary(c1, "EduFlex Platform") {
+        Container(spa, "Single Page App", "React 19, Vite, Tailwind", "Provides the responsive UI for all roles.")
+        Container(api, "API Application", "Spring Boot 3.4", "Provides core logic, RBAC, and module orchestration.")
+        ContainerDb(db, "Main Database", "PostgreSQL 15", "Stores users, courses, and tenant schemas.")
+        ContainerDb(cache, "Cache", "Redis 7", "Stores sessions, feature flags, and real-time pub/sub.")
+        Container(fs, "File Storage", "MinIO (S3 Compatible)", "Stores massive media assets.")
+    }
+
+    Rel(user, spa, "Visits", "HTTPS")
+    Rel(spa, api, "API calls", "JSON/HTTPS")
+    Rel(spa, api, "Real-time updates", "WebSocket/STOMP")
+    
+    Rel(api, db, "Reads/Writes", "JDBC")
+    Rel(api, cache, "Caches data", "RESP")
+    Rel(api, fs, "Stores files", "S3 API")
+```
+
+---
+
+## 3. Technical Stack Deep Dive
+
+### Frontend ("The Face")
+*   **Framework:** React 19 (Vite) for blazing fast loads.
+*   **Styling:** Tailwind CSS v4 (Dark Mode, CSS Variables).
+*   **State:** Zustand (global state) + React Context (theme/auth).
+*   **Real-time:** SockJS + STOMP (WebSockets) for instant chat/notifications.
+
+### Backend ("The Brain")
+*   **Framework:** Spring Boot 3.4 (Java 21).
+*   **Security:** Spring Security 6 + OAuth2 Resource Server.
+*   **Database:** PostgreSQL 15 with **Schema-per-Tenant** strategy.
+*   **Observability:** Micrometer + Prometheus endpoints.
 
 ---
 
 ## 4. Key Subsystems
 
-### 🎓 SCORM / xAPI Engine
-- **Parser:** Detects `imsmanifest.xml` or `index.html`.
-- **Player:** Serves content in sandboxed iFrames.
-- **Tracking:** (Upcoming) Intercepts API calls to store CMI data (completion, score).
+### 🏢 Schema-Based Multi-Tenancy
+We typically use **One Database, Multiple Schemas**.
+1.  **Request:** Client sends `X-Tenant-ID` header.
+2.  **Filter:** `TenantFilter` intercepts request, sets `TenantContext`.
+3.  **Connection:** `SchemaMultiTenantConnectionProvider` attempts `SET search_path TO tenant_xyz`.
+4.  **Isolation:** Hibernate only sees tables in that schema. Cross-tenant data leakage is IMPOSSIBLE.
 
-### 💰 Revenue Management
-- **Subscription Wrapper:** Users have a `SubscriptionPlan`.
-- **Invoice Generator:** Cron job runs on the 25th of each month.
-- **Payment Abstraction:** `PaymentService` abstracts Stripe/Swish logic.
+### 🎓 SCORM / xAPI Player
+*   **Upload:** Zips are extracted to distinct folders.
+*   **Manifest:** `imsmanifest.xml` is parsed to build the course tree.
+*   **Sandbox:** Content plays in an `iframe` to isolate legacy JS.
+*   **Tracking:** Bridge API captures `LMSInitialize`, `LMSSetValue` calls and forwards to Spring Boot.
 
-### 🛡️ Security Layer
-- **RBAC:** `TEACHER`, `STUDENT`, `ADMIN`, `MENTOR`, `PRINCIPAL`.
-- **CORS:** Explicitly allowed headers for Auth/Content-Type.
-- **Audit:** EntityListeners track all critical changes (`AuditLog`).
-
-### 🏢 Multi-Tenancy (NEW)
-EduFlex supports **schema-based multi-tenancy** for complete data isolation between organizations.
-
-#### Architecture
-```
-┌─────────────────────────────────────────────────────────────┐
-│                     PostgreSQL Database                      │
-├─────────────────┬─────────────────┬─────────────────────────┤
-│  public schema  │  tenant_acme    │  tenant_school2        │
-│  ───────────────│  ───────────────│  ───────────────────── │
-│  • tenants      │  • app_users    │  • app_users           │
-│  (metadata)     │  • courses      │  • courses             │
-│                 │  • roles        │  • roles               │
-│                 │  • (40+ tables) │  • (40+ tables)        │
-└─────────────────┴─────────────────┴─────────────────────────┘
-```
-
-#### Key Components
-| Component | Role |
-|-----------|------|
-| `TenantFilter` | Extracts `X-Tenant-ID` header, validates tenant, sets context |
-| `TenantContext` | ThreadLocal storage for current tenant schema |
-| `TenantIdentifierResolver` | Tells Hibernate which tenant to use |
-| `SchemaMultiTenantConnectionProvider` | Sets PostgreSQL `search_path` per-request |
-
-#### Request Flow
-```mermaid
-sequenceDiagram
-    participant Client
-    participant TenantFilter
-    participant Hibernate
-    participant PostgreSQL
-
-    Client->>TenantFilter: Request + X-Tenant-ID: "acme"
-    TenantFilter->>PostgreSQL: Lookup tenant → dbSchema
-    TenantFilter->>Hibernate: Set tenant context
-    Hibernate->>PostgreSQL: SET search_path TO "tenant_acme"
-    PostgreSQL-->>Client: Isolated tenant data
-```
+### 🛡️ Access Control (RBAC)
+| Role | Responsibility |
+|------|----------------|
+| `STUDENT` | Consume content, take quizzes. |
+| `TEACHER` | Create courses, grade users. |
+| `MENTOR` | View progress of assigned students (read-only). |
+| `PRINCIPAL` | View analytics for the school. |
+| `ADMIN` | Manage tenant settings, users, and billing. |
 
 ---
 
-## 5. Deployment Model
+## 5. Deployment & Operations
 
+### Standard K8s / Docker Compose Setup
 ```mermaid
 graph TD
-    User --> Nginx[Load Balancer]
-    Nginx --> Frontend[React Container]
-    Nginx --> Backend[Spring Container]
+    Ingress[Nginx / K8s Ingress] -->|/api| Backend
+    Ingress -->|/*| Frontend
+
+    subgraph "Private Network"
+        Backend --> Postgres[(PostgreSQL)]
+        Backend --> Redis[(Redis)]
+        Backend --> MinIO[(MinIO Storage)]
+    end
     
-    Backend --> DB[(PostgreSQL)]
-    Backend --> Redis[(Redis Cache)]
-    Backend --> MinIO[(Object Storage)]
+    subgraph "Monitoring"
+        Prometheus -->|Scrapes| Backend
+        Grafana -->|Reads| Prometheus
+    end
 ```
 
-### Volume Persistence
-- `postgres_data`: Database files.
-- `minio_data`: Object storage blobs.
-- `uploads`: Unzipped SCORM / Static assets.
-- `logs`: Application logs.
-
----
-
-## 6. Future Architecture (Roadmap)
-
-| Feature | Status |
-|---------|--------|
-| **Multi-tenancy** (Schema-per-tenant) | ✅ Implemented |
-| **Microservices Split** (Video/PDF workers) | 🔜 Planned |
-| **Event Bus** (RabbitMQ/Kafka) | 🔜 Planned |
-| **Kubernetes Native** (Helm Charts) | ✅ Implemented |
-
----
-
-*Updated: 2026-01-15*
+### Volume Persistence Strategies
+*   **`postgres_data`**: Critical business data. (RPO: 5 mins)
+*   **`minio_data`**: Heavy assets. (Backup: Daily)
+*   **`uploads`**: Unzipped SCORM packages. (Can be rebuilt from MinIO if needed).

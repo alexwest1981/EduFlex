@@ -4,6 +4,7 @@ import { RecentUsersWidget, RecentUploadsWidget } from './components/admin/Admin
 import RecentMessagesWidget from './components/RecentMessagesWidget';
 import OnlineFriendsWidget from './widgets/OnlineFriendsWidget';
 import AdminTicketsWidget from './widgets/AdminTicketsWidget';
+import CalendarWidget from '../../components/dashboard/CalendarWidget';
 import { CreateUserModal } from './components/admin/AdminModals';
 
 import { useAppContext } from '../../context/AppContext';
@@ -17,7 +18,7 @@ const AdminOverview = ({ users, courses, documents, fetchStats, setActiveTab, wi
     const latestDocs = documents?.length > 0 ? [...documents].reverse().slice(0, 5) : [];
 
     // Count active activity widgets
-    const activeActivityCount = [widgets.recentUsers, widgets.recentDocs, widgets.onlineFriends, widgets.tickets].filter(Boolean).length;
+    const activeActivityCount = [widgets.calendar, widgets.recentUsers, widgets.recentDocs, widgets.onlineFriends, widgets.tickets].filter(Boolean).length;
 
     // Determine grid columns
     const gridColsClass = activeActivityCount === 1 ? "grid-cols-1" :
@@ -31,6 +32,10 @@ const AdminOverview = ({ users, courses, documents, fetchStats, setActiveTab, wi
 
             <div className={`grid ${gridColsClass} gap-8`}>
                 {/* 2. Aktivitet */}
+                {widgets.calendar && (
+                    <CalendarWidget />
+                )}
+
                 {widgets.recentUsers && (
                     <RecentUsersWidget
                         latestUsers={latestUsers}
@@ -51,9 +56,7 @@ const AdminOverview = ({ users, courses, documents, fetchStats, setActiveTab, wi
                 )}
 
                 {widgets.messages && (
-                    <div className={widgets.onlineFriends ? "xl:col-span-2" : "xl:col-span-3"}>
-                        <RecentMessagesWidget onViewAll={() => setActiveTab('communication')} />
-                    </div>
+                    <RecentMessagesWidget onViewAll={() => setActiveTab('communication')} />
                 )}
             </div>
 

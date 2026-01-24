@@ -1,100 +1,83 @@
 package com.eduflex.backend.controller;
 
-import com.eduflex.backend.model.LtiPlatform;
-import com.eduflex.backend.repository.LtiPlatformRepository;
-import jakarta.servlet.http.HttpServletRequest;
+import com.eduflex.backend.service.LtiService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.stereotype.Controller;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.ui.Model;
 
 import java.io.IOException;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.Map;
 
-@Controller // Using @Controller because we might redirect or render basic views/debug info
-@RequestMapping("/lti")
+@RestController
+@RequestMapping("/api/lti")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
+@Tag(name = "LTI 1.3 Integration", description = "Endpoints for LTI Connectivity with LMS")
 public class LtiController {
 
-    private final LtiPlatformRepository ltiPlatformRepository;
+    private static final Logger logger = LoggerFactory.getLogger(LtiController.class);
+    private final LtiService ltiService;
 
-    public LtiController(LtiPlatformRepository ltiPlatformRepository) {
-        this.ltiPlatformRepository = ltiPlatformRepository;
+    @org.springframework.beans.factory.annotation.Value("${app.frontend.url:http://localhost:5173}")
+    private String frontendUrl;
+
+    @Autowired
+    public LtiController(LtiService ltiService) {
+        this.ltiService = ltiService;
     }
 
-    /**
-     * OIDC Login Initiation Endpoint
-     * The LMS calls this to start the launch process.
-     * We need to validate the issuer and return a redirect to the LMS's
-     * Authorization URL.
-     */
+    @GetMapping("/jwks")
+    @Operation(summary = "Get JWK Set", description = "Returns the public keys for signature verification by the LMS.")
+    public ResponseEntity<Map<String, Object>> getJwkSet() {
+        return ResponseEntity.ok(ltiService.getJwkSet());
+    }
+
     @GetMapping("/login_init")
+    @Operation(summary = "OIDC Login Initiation", description = "Step 1: LMS initiates the launch flow.")
     public void loginInit(
-            @RequestParam("iss") String issuer,
+            @RequestParam("iss") String iss,
             @RequestParam("login_hint") String loginHint,
             @RequestParam("target_link_uri") String targetLinkUri,
-            @RequestParam(value = "client_id", required = false) String clientId,
+            @RequestParam(value = "lti_message_hint", required = false) String ltiMessageHint,
             HttpServletResponse response) throws IOException {
 
-        System.out.println("LTI Login Init: iss=" + issuer + ", login_hint=" + loginHint);
+        logger.info("LTI Login Init from ISS: {}", iss);
 
-        // 1. Find the platform
-        Optional<LtiPlatform> platformOpt = (clientId != null)
-                ? ltiPlatformRepository.findByIssuerAndClientId(issuer, clientId)
-                : ltiPlatformRepository.findByIssuer(issuer);
-
-        if (platformOpt.isEmpty()) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Unknown LTI Issuer: " + issuer);
-            return;
+        try {
+            String redirectUrl = ltiService.getLoginInitRedirectionUrl(iss, loginHint, targetLinkUri, ltiMessageHint);
+            response.sendRedirect(redirectUrl);
+        } catch (Exception e) {
+            logger.error("Login Init Failed", e);
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid LTI Login Init: " + e.getMessage());
         }
-
-        LtiPlatform platform = platformOpt.get();
-
-        // 2. Construct the OIDC Authorization Redirect
-        String nonce = UUID.randomUUID().toString();
-        String state = UUID.randomUUID().toString();
-
-        // In a real impl, we should store nonce/state in a cookie/session to verify
-        // later.
-
-        String redirectUrl = platform.getAuthUrl() +
-                "?scope=openid" +
-                "&response_type=id_token" +
-                "&client_id=" + platform.getClientId() +
-                "&redirect_uri=" + targetLinkUri +
-                "&login_hint=" + loginHint +
-                "&state=" + state +
-                "&response_mode=form_post" +
-                "&nonce=" + nonce +
-                "&prompt=none";
-
-        response.sendRedirect(redirectUrl);
     }
 
-    /**
-     * LTI Launch Endpoint (Resource Link Launch)
-     * The LMS POSTs the id_token here.
-     */
-    @PostMapping("/launch")
-    @ResponseBody
-    public String handleLaunch(@RequestParam("id_token") String idToken, @RequestParam("state") String state) {
-        // In a real implementation:
-        // 1. Validate JWT signature using Platform's JWKS
-        // 2. Validate nonce/state
-        // 3. Extract user info (sub, email, roles)
-        // 4. Create session/JWT for EduFlex
-        // 5. Redirect user to the frontend Dashboard
+    @PostMapping(value = "/launch", consumes = { "application/x-www-form-urlencoded" })
+    @Operation(summary = "LTI Resource Link Launch", description = "Step 2: LMS sends the id_token via POST.")
+    public void ltiLaunch(
+            @RequestParam("id_token") String idToken,
+            @RequestParam(value = "state", required = false) String state,
+            HttpServletResponse response) throws IOException {
 
-        System.out.println("LTI Launch received. Token length: " + idToken.length());
+        logger.info("LTI Launch receive. Token length: {}", idToken.length());
 
-        // For Phase 1 Verification: Just print it and acknowledge
-        return "LTI Launch Successful! Token received. (Validation pending implementation)";
-    }
+        try {
+            // Process launch and get internal JWT
+            String internalToken = ltiService.processLaunch(idToken);
+            String redirectUrl = frontendUrl + "/lti-success?token=" + internalToken;
 
-    // Helper to quick-register a platform for testing (Dev only)
-    @PostMapping("/platform/register")
-    @ResponseBody
-    public LtiPlatform registerPlatform(@RequestBody LtiPlatform platform) {
-        return ltiPlatformRepository.save(platform);
+            logger.info("LTI Launch successful. Redirecting to: {}", redirectUrl);
+            response.sendRedirect(redirectUrl);
+
+        } catch (Exception e) {
+            logger.error("LTI Launch Failed", e);
+            String errorUrl = frontendUrl + "/login?error=LTI_Launch_Failed&message="
+                    + java.net.URLEncoder.encode(e.getMessage(), java.nio.charset.StandardCharsets.UTF_8);
+            response.sendRedirect(errorUrl);
+        }
     }
 }

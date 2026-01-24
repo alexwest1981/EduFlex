@@ -32,6 +32,7 @@ public class AuthController {
     private final PasswordEncoder passwordEncoder; // Vi behöver denna för att spara säkra lösenord
     private final RateLimitingService rateLimitingService;
     private final SubscriptionPlanRepository subscriptionPlanRepository;
+    private final com.eduflex.backend.repository.RoleRepository roleRepository;
     private final StudentActivityService studentActivityService;
 
     public AuthController(AuthenticationManager authenticationManager,
@@ -41,6 +42,8 @@ public class AuthController {
             PasswordEncoder passwordEncoder,
             RateLimitingService rateLimitingService,
             SubscriptionPlanRepository subscriptionPlanRepository,
+
+            com.eduflex.backend.repository.RoleRepository roleRepository,
             StudentActivityService studentActivityService) {
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
@@ -49,6 +52,7 @@ public class AuthController {
         this.passwordEncoder = passwordEncoder;
         this.rateLimitingService = rateLimitingService;
         this.subscriptionPlanRepository = subscriptionPlanRepository;
+        this.roleRepository = roleRepository;
         this.studentActivityService = studentActivityService;
     }
 
@@ -132,7 +136,18 @@ public class AuthController {
         user.setEmail(signUpRequest.getEmail());
         user.setFirstName(signUpRequest.getFirstName());
         user.setLastName(signUpRequest.getLastName());
-        user.setRole(signUpRequest.getRole()); // Frontend skickar rollen (t.ex. STUDENT)
+
+        // Hämta roll från DB
+        String roleName = signUpRequest.getRole() != null ? signUpRequest.getRole().getName() : "STUDENT";
+        com.eduflex.backend.model.Role role = roleRepository.findByName(roleName)
+                .orElse(null);
+
+        if (role == null) {
+            // Fallback: Try with ROLE_ prefix if missing
+            role = roleRepository.findByName("ROLE_" + roleName)
+                    .orElseThrow(() -> new RuntimeException("Error: Role '" + roleName + "' is not found."));
+        }
+        user.setRole(role);
 
         // VIKTIGT: Kryptera lösenordet innan vi sparar
         user.setPassword(passwordEncoder.encode(signUpRequest.getPassword()));

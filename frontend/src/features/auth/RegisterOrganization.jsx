@@ -1,37 +1,22 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { School, User, Lock, ArrowRight, Check, AlertCircle, Loader } from 'lucide-react';
 
 const RegisterOrganization = () => {
     const navigate = useNavigate();
+    const [step, setStep] = useState(1);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+    const [successData, setSuccessData] = useState(null);
+
     const [formData, setFormData] = useState({
         name: '',
-        organizationKey: '',
-        domain: '',
-        dbSchema: '',
-        // Admin Details
-        adminEmail: '',
-        adminPassword: '',
+        domain: '', // subdomain
         adminFirstName: '',
         adminLastName: '',
-        // Security
-        registrationKey: ''
+        adminEmail: '',
+        adminPassword: ''
     });
-    const [error, setError] = useState(null);
-    const [success, setSuccess] = useState(null);
-    const [loading, setLoading] = useState(false);
-
-    // Helper to generate values from name
-    const handleNameChange = (e) => {
-        const name = e.target.value;
-        const slug = name.toLowerCase().replace(/[^a-z0-9]/g, '-');
-        setFormData({
-            ...formData,
-            name: name,
-            organizationKey: slug,
-            domain: `${slug}.local`,
-            dbSchema: `tenant_${slug.replace(/-/g, '_')}`
-        });
-    };
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -41,27 +26,35 @@ const RegisterOrganization = () => {
         e.preventDefault();
         setLoading(true);
         setError(null);
-        setSuccess(null);
+
+        // Prepare payload
+        const payload = {
+            name: formData.name,
+            domain: formData.domain.toLowerCase(),
+            adminFirstName: formData.adminFirstName,
+            adminLastName: formData.adminLastName,
+            adminEmail: formData.adminEmail,
+            adminPassword: formData.adminPassword
+        };
 
         try {
-            const response = await fetch('/api/tenants', {
+            const response = await fetch('/api/public/tenants/register', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(formData),
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
             });
 
             if (!response.ok) {
-                const errData = await response.json();
-                throw new Error(errData.error || `Error: ${response.statusText}`);
+                const err = await response.json();
+                throw new Error(err.error || 'Registreringen misslyckades.');
             }
 
             const data = await response.json();
-            setSuccess(`Organization "${data.name}" created successfully! Admin login: ${formData.adminEmail}`);
-            // Redirect after success
-            setTimeout(() => navigate('/login'), 2000);
+            setSuccessData(data);
+            setStep(3); // Success step
+
         } catch (err) {
+            console.error(err);
             setError(err.message);
         } finally {
             setLoading(false);
@@ -69,115 +62,202 @@ const RegisterOrganization = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
-            <div className="bg-white p-8 rounded shadow-md w-full max-w-lg">
-                <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">Register Organization</h2>
+        <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+            <div className="sm:mx-auto sm:w-full sm:max-w-md">
+                <div className="flex justify-center mb-6">
+                    <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center text-white shadow-lg">
+                        <School size={24} />
+                    </div>
+                </div>
+                <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+                    Registrera din Skola
+                </h2>
+                <p className="mt-2 text-center text-sm text-gray-600">
+                    Kom igång med EduFlex på mindre än 2 minuter.
+                </p>
+            </div>
 
-                {error && (
-                    <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-                        {error}
+            <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+                <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10 border border-gray-100">
+
+                    {step === 3 && successData ? (
+                        <div className="text-center animate-in fade-in zoom-in duration-300">
+                            <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-6">
+                                <Check className="h-8 w-8 text-green-600" />
+                            </div>
+                            <h3 className="text-xl font-bold text-gray-900 mb-2">Välkommen till EduFlex!</h3>
+                            <p className="text-gray-500 mb-6">
+                                Din organisation <strong>{successData.tenantId}</strong> är nu skapad.
+                            </p>
+
+                            <div className="bg-blue-50 p-4 rounded-lg text-left mb-6 border border-blue-100">
+                                <p className="text-sm font-bold text-blue-900 mb-1">Inloggningsuppgifter:</p>
+                                <p className="text-sm text-blue-800">Email: {formData.adminEmail}</p>
+                                <p className="text-sm text-blue-800">Lösenord: ******</p>
+                            </div>
+
+                            <a
+                                href={successData.loginUrl || '/login'}
+                                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                            >
+                                Gå till din Inloggning
+                            </a>
+                        </div>
+                    ) : (
+                        <form className="space-y-6" onSubmit={handleSubmit}>
+                            {error && (
+                                <div className="rounded-md bg-red-50 p-4">
+                                    <div className="flex">
+                                        <div className="flex-shrink-0">
+                                            <AlertCircle className="h-5 w-5 text-red-400" aria-hidden="true" />
+                                        </div>
+                                        <div className="ml-3">
+                                            <h3 className="text-sm font-medium text-red-800">{error}</h3>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            <div>
+                                <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+                                    Skolans Namn
+                                </label>
+                                <div className="mt-1 relative rounded-md shadow-sm">
+                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <School className="h-5 w-5 text-gray-400" />
+                                    </div>
+                                    <input
+                                        id="name"
+                                        name="name"
+                                        type="text"
+                                        required
+                                        className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-md py-2 border"
+                                        placeholder="T.ex. Centralskolan"
+                                        value={formData.name}
+                                        onChange={handleChange}
+                                    />
+                                </div>
+                            </div>
+
+                            <div>
+                                <label htmlFor="domain" className="block text-sm font-medium text-gray-700">
+                                    Önskad Subdomän
+                                </label>
+                                <div className="mt-1 relative rounded-md shadow-sm">
+                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <span className="text-gray-500 sm:text-sm">https://</span>
+                                    </div>
+                                    <input
+                                        id="domain"
+                                        name="domain"
+                                        type="text"
+                                        required
+                                        pattern="[a-zA-Z0-9-]+"
+                                        className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-16 pr-24 sm:text-sm border-gray-300 rounded-md py-2 border"
+                                        placeholder="centralskolan"
+                                        value={formData.domain}
+                                        onChange={handleChange}
+                                    />
+                                    <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                        <span className="text-gray-500 sm:text-sm">.eduflex.se</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="border-t border-gray-100 pt-4 mt-4">
+                                <h4 className="text-sm font-bold text-gray-900 mb-4">Administratörskonto</h4>
+
+                                <div className="grid grid-cols-2 gap-4 mb-4">
+                                    <div>
+                                        <label className="block text-xs font-medium text-gray-700 mb-1">Förnamn</label>
+                                        <input
+                                            name="adminFirstName"
+                                            required
+                                            className="block w-full sm:text-sm border-gray-300 rounded-md py-2 border px-3"
+                                            value={formData.adminFirstName}
+                                            onChange={handleChange}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-medium text-gray-700 mb-1">Efternamn</label>
+                                        <input
+                                            name="adminLastName"
+                                            required
+                                            className="block w-full sm:text-sm border-gray-300 rounded-md py-2 border px-3"
+                                            value={formData.adminLastName}
+                                            onChange={handleChange}
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="mb-4">
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                                    <div className="relative rounded-md shadow-sm">
+                                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <User className="h-4 w-4 text-gray-400" />
+                                        </div>
+                                        <input
+                                            name="adminEmail"
+                                            type="email"
+                                            required
+                                            className="block w-full pl-10 sm:text-sm border-gray-300 rounded-md py-2 border"
+                                            placeholder="admin@skola.se"
+                                            value={formData.adminEmail}
+                                            onChange={handleChange}
+                                        />
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Lösenord</label>
+                                    <div className="relative rounded-md shadow-sm">
+                                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <Lock className="h-4 w-4 text-gray-400" />
+                                        </div>
+                                        <input
+                                            name="adminPassword"
+                                            type="password"
+                                            required
+                                            minLength={8}
+                                            className="block w-full pl-10 sm:text-sm border-gray-300 rounded-md py-2 border"
+                                            placeholder="••••••••"
+                                            value={formData.adminPassword}
+                                            onChange={handleChange}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <button
+                                    type="submit"
+                                    disabled={loading}
+                                    className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all hover:scale-[1.02]"
+                                >
+                                    {loading ? (
+                                        <>
+                                            <Loader className="animate-spin -ml-1 mr-2 h-4 w-4" />
+                                            Skapar din miljö...
+                                        </>
+                                    ) : (
+                                        <>
+                                            Starta min 14-dagars testperiod
+                                            <ArrowRight className="ml-2 h-4 w-4" />
+                                        </>
+                                    )}
+                                </button>
+                            </div>
+                        </form>
+                    )}
+                </div>
+
+                {step !== 3 && (
+                    <div className="text-center mt-4">
+                        <button onClick={() => navigate('/')} className="text-sm text-gray-500 hover:text-gray-900">
+                            Tillbaka till startsidan
+                        </button>
                     </div>
                 )}
-
-                {success && (
-                    <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
-                        {success}
-                    </div>
-                )}
-
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    <div>
-                        <label className="block text-gray-700 font-medium mb-1">Organization Name</label>
-                        <input
-                            type="text"
-                            name="name"
-                            value={formData.name}
-                            onChange={handleNameChange}
-                            className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            required
-                        />
-                    </div>
-
-                    <div>
-                        <label className="block text-gray-700 font-medium mb-1">Organization Key (ID)</label>
-                        <input
-                            type="text"
-                            name="organizationKey"
-                            value={formData.organizationKey}
-                            onChange={handleChange}
-                            className="w-full border rounded px-3 py-2 bg-gray-50 text-gray-600 cursor-not-allowed"
-                            readOnly
-                        />
-                    </div>
-
-                    <div>
-                        <label className="block text-gray-700 font-medium mb-1">Domain</label>
-                        <input
-                            type="text"
-                            name="domain"
-                            value={formData.domain}
-                            onChange={handleChange}
-                            className="w-full border rounded px-3 py-2 bg-gray-50 text-gray-600 cursor-not-allowed"
-                            readOnly
-                        />
-                    </div>
-
-                    <div>
-                        <label className="block text-gray-700 font-medium mb-1">Database Schema</label>
-                        <input
-                            type="text"
-                            name="dbSchema"
-                            value={formData.dbSchema}
-                            onChange={handleChange}
-                            className="w-full border rounded px-3 py-2 bg-gray-50 text-gray-600 cursor-not-allowed"
-                            readOnly
-                        />
-                    </div>
-
-                    <div className="border-t pt-4 mt-4">
-                        <h3 className="text-lg font-semibold mb-3">Admin Account</h3>
-                        <div className="grid grid-cols-2 gap-4">
-                            <div>
-                                <label className="block text-gray-700 font-medium mb-1">First Name</label>
-                                <input type="text" name="adminFirstName" value={formData.adminFirstName} onChange={handleChange} className="w-full border rounded px-3 py-2" required />
-                            </div>
-                            <div>
-                                <label className="block text-gray-700 font-medium mb-1">Last Name</label>
-                                <input type="text" name="adminLastName" value={formData.adminLastName} onChange={handleChange} className="w-full border rounded px-3 py-2" required />
-                            </div>
-                        </div>
-                        <div className="mt-3">
-                            <label className="block text-gray-700 font-medium mb-1">Admin Email</label>
-                            <input type="email" name="adminEmail" value={formData.adminEmail} onChange={handleChange} className="w-full border rounded px-3 py-2" required />
-                        </div>
-                        <div className="mt-3">
-                            <label className="block text-gray-700 font-medium mb-1">Admin Password</label>
-                            <input type="password" name="adminPassword" value={formData.adminPassword} onChange={handleChange} className="w-full border rounded px-3 py-2" required />
-                        </div>
-                    </div>
-
-                    <div className="bg-yellow-50 p-4 rounded border border-yellow-200">
-                        <label className="block text-yellow-800 font-medium mb-1">Registration Master Key</label>
-                        <input
-                            type="password"
-                            name="registrationKey"
-                            value={formData.registrationKey}
-                            onChange={handleChange}
-                            placeholder="Enter the secret key to authorize creation"
-                            className="w-full border border-yellow-300 rounded px-3 py-2 focus:ring-yellow-500 focus:border-yellow-500"
-                            required
-                        />
-                        <p className="text-xs text-yellow-600 mt-1">Required for security purposes.</p>
-                    </div>
-
-                    <button
-                        type="submit"
-                        disabled={loading}
-                        className="w-full bg-blue-600 text-white font-bold py-2 px-4 rounded hover:bg-blue-700 disabled:opacity-50 transition duration-150"
-                    >
-                        {loading ? 'Registering...' : 'Register Organization'}
-                    </button>
-                </form>
             </div>
         </div>
     );

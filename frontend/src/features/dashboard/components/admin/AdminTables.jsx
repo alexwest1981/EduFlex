@@ -69,7 +69,7 @@ export const AdminCourseRegistry = ({ courses, onEdit, onManage, onNewCourse, on
 };
 
 export const RecentUsersWidget = ({ latestUsers, onNewUserClick }) => (
-    <div className="bg-card dark:bg-card-dark rounded-[var(--radius-xl)] border border-card dark:border-card-dark shadow-sm p-6 overflow-hidden animate-in slide-in-from-bottom-8 h-full" style={{ backdropFilter: 'var(--card-backdrop)' }}>
+    <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm p-6 overflow-hidden animate-in slide-in-from-bottom-8 h-full">
         <div className="flex justify-between items-center mb-4">
             <h3 className="font-bold text-gray-800 dark:text-white flex items-center gap-2">
                 <User size={18} className="text-indigo-600" />
@@ -112,7 +112,7 @@ export const RecentUploadsWidget = ({ latestDocs }) => {
 
     return (
         <>
-            <div className="bg-card dark:bg-card-dark rounded-[var(--radius-xl)] border border-card dark:border-card-dark shadow-sm p-6 overflow-hidden animate-in slide-in-from-bottom-8 h-full flex flex-col" style={{ backdropFilter: 'var(--card-backdrop)' }}>
+            <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm p-6 overflow-hidden animate-in slide-in-from-bottom-8 h-full flex flex-col">
                 <div className="flex justify-between items-center mb-4">
                     <h3 className="font-bold text-gray-800 dark:text-white flex items-center gap-2">
                         <FileIcon size={18} className="text-blue-600" />

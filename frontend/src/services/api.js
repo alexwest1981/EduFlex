@@ -336,6 +336,13 @@ export const api = {
             headers: getHeaders(),
             body: JSON.stringify(data)
         }).then(handleResponse),
+
+        // Bulk Import
+        importUsers: (formData) => fetch(`${API_BASE}/admin/import/users`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }, // No Content-Type for FormData!
+            body: formData
+        }).then(handleResponse),
     },
 
     license: { // Keeping for backward compat if anyone calls it separately, but consolidated in system for UI
@@ -537,5 +544,15 @@ export const api = {
             method: 'POST',
             headers: getHeaders()
         }).then(handleResponse)
+    },
+
+    lti: {
+        getAll: () => fetch(`${API_BASE}/lti/platforms`, { headers: getHeaders() }).then(handleResponse),
+        save: (data) => fetch(`${API_BASE}/lti/platforms`, {
+            method: 'POST',
+            headers: getHeaders(),
+            body: JSON.stringify(data)
+        }).then(handleResponse),
+        delete: (id) => fetch(`${API_BASE}/lti/platforms/${id}`, { method: 'DELETE', headers: getHeaders() }).then(handleResponse)
     }
 };

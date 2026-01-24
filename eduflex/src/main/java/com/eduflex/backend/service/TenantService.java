@@ -83,20 +83,17 @@ public class TenantService {
         return tenantRepository.findAll();
     }
 
-    public void deleteTenant(Long id) {
-        // Warning: This does not drop the schema!
-        tenantRepository.deleteById(String.valueOf(id)); // ID is String in DB? Wait, tenantRepository.existsById says
-                                                         // String
+    public Tenant getTenant(String id) {
+        return tenantRepository.findById(id).orElseThrow(() -> new RuntimeException("Tenant not found: " + id));
     }
 
-    // Override med Long för att matcha controllern om ID är long
     public void deleteTenant(String id) {
         tenantRepository.deleteById(id);
     }
 
     @Transactional
-    public void initSchema(Long id) {
-        Tenant tenant = tenantRepository.findById(String.valueOf(id)).orElseThrow();
+    public void initSchema(String id) {
+        Tenant tenant = tenantRepository.findById(id).orElseThrow();
         initTenantSchema(tenant.getDbSchema(), tenant.getName());
     }
 

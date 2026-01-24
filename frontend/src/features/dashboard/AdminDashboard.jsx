@@ -24,6 +24,7 @@ const AdminDashboard = () => {
     // Widget State via Hook
     const { widgets, toggleWidget } = useDashboardWidgets('admin', {
         stats: true,
+        calendar: true,
         recentUsers: true,
         recentDocs: true,
         messages: true,
@@ -33,6 +34,7 @@ const AdminDashboard = () => {
 
     const widgetLabels = {
         stats: 'Statistik',
+        calendar: 'Kalender & Schema',
         recentUsers: 'Senaste Användare',
         recentDocs: 'Nyligen Uppladdat',
         messages: 'Senaste Meddelanden',
