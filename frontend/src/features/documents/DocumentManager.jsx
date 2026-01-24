@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
 import {
-    Search, UploadCloud, Grid, List, HardDrive, FileCode, Share2, UserPlus, X, Download, Trash2, File, FileText, Image as ImageIcon
+    Search, UploadCloud, Grid, List, HardDrive, FileCode, Share2, UserPlus, X, Download, Trash2, File, FileText, Image as ImageIcon, Edit3
 } from 'lucide-react';
 import { api } from '../../services/api';
 import { useAppContext } from '../../context/AppContext';
+import OnlyOfficeEditor from './OnlyOfficeEditor';
 
 const DocumentManager = () => {
     const { currentUser } = useAppContext();
@@ -16,6 +16,7 @@ const DocumentManager = () => {
     const [selectedDoc, setSelectedDoc] = useState(null);
     const [allUsers, setAllUsers] = useState([]);
     const [userSearch, setUserSearch] = useState('');
+    const [editingDoc, setEditingDoc] = useState(null);
 
     // Drag & Drop State
     const [isDragging, setIsDragging] = useState(false);
@@ -153,6 +154,15 @@ const DocumentManager = () => {
         return new Date(dateArray).toLocaleString();
     };
 
+    const isEditable = (fileName) => {
+        if (!fileName) return false;
+        const parts = fileName.split('.');
+        if (parts.length < 2) return false;
+        const ext = parts.pop().toLowerCase();
+        const editableExts = ['docx', 'doc', 'odt', 'xlsx', 'xls', 'ods', 'pptx', 'ppt', 'odp', 'txt'];
+        return editableExts.includes(ext);
+    };
+
     const filteredDocs = documents.filter(doc => {
         const matchesSearch = doc.fileName.toLowerCase().includes(search.toLowerCase());
         const matchesType = filter === 'all'
@@ -255,6 +265,11 @@ const DocumentManager = () => {
 
                                     {/* Hover Actions */}
                                     <div className="absolute inset-0 bg-black/60 rounded-xl flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-sm">
+                                        {isEditable(doc.fileName) && (
+                                            <button onClick={() => setEditingDoc(doc)} className="p-2 bg-indigo-600 rounded-full text-white hover:bg-indigo-700 shadow-lg animate-in zoom-in" title="Redigera">
+                                                <Edit3 size={18} />
+                                            </button>
+                                        )}
                                         <a href={`http://127.0.0.1:8080${doc.fileUrl}`} download target="_blank" rel="noreferrer" className="p-2 bg-white rounded-full text-gray-800 hover:text-indigo-600"><Download size={18} /></a>
                                         <button onClick={() => openShareModal(doc)} className="p-2 bg-white rounded-full text-gray-800 hover:text-blue-600"><Share2 size={18} /></button>
                                         <button onClick={() => handleDelete(doc.id)} className="p-2 bg-white rounded-full text-gray-800 hover:text-red-600"><Trash2 size={18} /></button>
@@ -286,6 +301,11 @@ const DocumentManager = () => {
                                             <td className="p-4 text-sm text-gray-500 uppercase">{doc.fileType?.split('/')[1] || 'FIL'}</td>
                                             <td className="p-4 text-right">
                                                 <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                    {isEditable(doc.fileName) && (
+                                                        <button onClick={() => setEditingDoc(doc)} className="p-2 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded text-indigo-600" title="Redigera i ONLYOFFICE">
+                                                            <Edit3 size={16} />
+                                                        </button>
+                                                    )}
                                                     <a href={`http://127.0.0.1:8080${doc.fileUrl}`} download target="_blank" rel="noreferrer" className="p-2 hover:bg-gray-200 rounded text-gray-600"><Download size={16} /></a>
                                                     <button onClick={() => openShareModal(doc)} className="p-2 hover:bg-blue-100 rounded text-blue-600"><Share2 size={16} /></button>
                                                     <button onClick={() => handleDelete(doc.id)} className="p-2 hover:bg-red-100 rounded text-red-600"><Trash2 size={16} /></button>
@@ -334,6 +354,18 @@ const DocumentManager = () => {
                             </div>
                         </div>
                     </div>
+                )
+            }
+            {
+                editingDoc && (
+                    <OnlyOfficeEditor
+                        documentId={editingDoc.id}
+                        userId={currentUser.id}
+                        onClose={() => {
+                            setEditingDoc(null);
+                            loadDocuments(); // Ladda om för att visa uppdaterad storlek/datum
+                        }}
+                    />
                 )
             }
         </div >

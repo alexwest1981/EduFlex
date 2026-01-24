@@ -4,7 +4,8 @@ import {
     Settings, ToggleLeft, Package, Bell, Users, FileText,
     MessageSquare, Calendar, CreditCard, BarChart3, Briefcase,
     GraduationCap, BookOpen, Globe, Shield, Cpu, HardDrive,
-    Download, RefreshCw, Trash2, Plus, AlertTriangle, Clock, CheckCircle2
+    Download, RefreshCw, Trash2, Plus, AlertTriangle, Clock, CheckCircle2,
+    Link2
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../../context/ThemeContext';
@@ -13,6 +14,7 @@ import { useBranding } from '../../context/BrandingContext';
 import ThemeModal from './ThemeModal';
 import { useModules } from '../../context/ModuleContext';
 import { api } from '../../services/api';
+import LtiPlatformManager from '../admin/LtiPlatformManager';
 
 // Mappa modulnycklar till ikoner
 const moduleIcons = {
@@ -202,6 +204,12 @@ const SystemSettings = ({ asTab = false }) => {
             ]
         },
         {
+            category: 'Integrationer',
+            items: [
+                { id: 'lti', label: 'LTI / LMS', icon: Link2 },
+            ]
+        },
+        {
             category: 'Moduler',
             items: [
                 { id: 'modules', label: 'Systemmoduler', icon: Database },
@@ -295,11 +303,10 @@ const SystemSettings = ({ asTab = false }) => {
 
                             <button
                                 onClick={() => navigate('/enterprise/whitelabel')}
-                                className={`w-full py-3 rounded-xl font-bold shadow-lg hover:transform hover:scale-[1.02] transition-all flex items-center justify-center gap-2 ${
-                                    hasAccess
-                                        ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white'
-                                        : 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
-                                }`}
+                                className={`w-full py-3 rounded-xl font-bold shadow-lg hover:transform hover:scale-[1.02] transition-all flex items-center justify-center gap-2 ${hasAccess
+                                    ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white'
+                                    : 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
+                                    }`}
                                 disabled={!hasAccess}
                             >
                                 <Sparkles size={18} /> {hasAccess ? 'Öppna Whitelabel' : 'Uppgradera för access'}
@@ -354,11 +361,10 @@ const SystemSettings = ({ asTab = false }) => {
                                             <Package size={20} className="text-gray-400" />
                                             <span className="font-medium text-gray-600 dark:text-gray-300">Plan</span>
                                         </div>
-                                        <span className={`px-3 py-1.5 text-sm font-black uppercase rounded-lg ${
-                                            licenseInfo?.tier === 'ENTERPRISE'
-                                                ? 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400'
-                                                : 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
-                                        }`}>
+                                        <span className={`px-3 py-1.5 text-sm font-black uppercase rounded-lg ${licenseInfo?.tier === 'ENTERPRISE'
+                                            ? 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400'
+                                            : 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
+                                            }`}>
                                             {licenseInfo?.tier || 'PRO'}
                                         </span>
                                     </div>
@@ -369,11 +375,10 @@ const SystemSettings = ({ asTab = false }) => {
                                             <ToggleLeft size={20} className="text-gray-400" />
                                             <span className="font-medium text-gray-600 dark:text-gray-300">Status</span>
                                         </div>
-                                        <span className={`flex items-center gap-2 text-sm font-bold ${
-                                            licenseInfo?.status === 'valid'
-                                                ? 'text-green-600 dark:text-green-400'
-                                                : 'text-amber-600 dark:text-amber-400'
-                                        }`}>
+                                        <span className={`flex items-center gap-2 text-sm font-bold ${licenseInfo?.status === 'valid'
+                                            ? 'text-green-600 dark:text-green-400'
+                                            : 'text-amber-600 dark:text-amber-400'
+                                            }`}>
                                             {licenseInfo?.status === 'valid' ? (
                                                 <>
                                                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
@@ -396,11 +401,10 @@ const SystemSettings = ({ asTab = false }) => {
                                             <Calendar size={20} className="text-gray-400" />
                                             <span className="font-medium text-gray-600 dark:text-gray-300">Giltig till</span>
                                         </div>
-                                        <span className={`text-sm font-medium ${
-                                            licenseInfo?.isExpiringSoon
-                                                ? 'text-amber-600 dark:text-amber-400'
-                                                : 'text-gray-900 dark:text-white'
-                                        }`}>
+                                        <span className={`text-sm font-medium ${licenseInfo?.isExpiringSoon
+                                            ? 'text-amber-600 dark:text-amber-400'
+                                            : 'text-gray-900 dark:text-white'
+                                            }`}>
                                             {licenseInfo?.expiry || 'Obegränsad'}
                                             {licenseInfo?.isExpiringSoon && licenseInfo?.daysRemaining && (
                                                 <span className="ml-2 text-xs text-amber-600 dark:text-amber-400">
@@ -578,19 +582,17 @@ const SystemSettings = ({ asTab = false }) => {
                                     {dbConnections.map(conn => (
                                         <div
                                             key={conn.id}
-                                            className={`p-4 rounded-xl border-2 transition-all ${
-                                                conn.active
-                                                    ? 'bg-green-50 dark:bg-green-900/10 border-green-500'
-                                                    : 'bg-gray-50 dark:bg-[#282a2c] border-gray-200 dark:border-[#3c4043]'
-                                            }`}
+                                            className={`p-4 rounded-xl border-2 transition-all ${conn.active
+                                                ? 'bg-green-50 dark:bg-green-900/10 border-green-500'
+                                                : 'bg-gray-50 dark:bg-[#282a2c] border-gray-200 dark:border-[#3c4043]'
+                                                }`}
                                         >
                                             <div className="flex items-center justify-between">
                                                 <div className="flex items-center gap-4">
-                                                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                                                        conn.active
-                                                            ? 'bg-green-100 dark:bg-green-900/30 text-green-600'
-                                                            : 'bg-gray-200 dark:bg-gray-700 text-gray-500'
-                                                    }`}>
+                                                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${conn.active
+                                                        ? 'bg-green-100 dark:bg-green-900/30 text-green-600'
+                                                        : 'bg-gray-200 dark:bg-gray-700 text-gray-500'
+                                                        }`}>
                                                         <Server size={20} />
                                                     </div>
                                                     <div>
@@ -630,6 +632,9 @@ const SystemSettings = ({ asTab = false }) => {
                     </div>
                 );
 
+            case 'lti':
+                return <LtiPlatformManager />;
+
             case 'modules':
                 return (
                     <div className="space-y-6">
@@ -648,11 +653,10 @@ const SystemSettings = ({ asTab = false }) => {
                                     >
                                         <div className="flex items-start gap-4">
                                             {/* Module Icon */}
-                                            <div className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${
-                                                mod.active
-                                                    ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400'
-                                                    : 'bg-gray-100 dark:bg-[#282a2c] text-gray-400'
-                                            }`}>
+                                            <div className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${mod.active
+                                                ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400'
+                                                : 'bg-gray-100 dark:bg-[#282a2c] text-gray-400'
+                                                }`}>
                                                 <ModuleIcon size={24} />
                                             </div>
 
@@ -744,13 +748,12 @@ const SystemSettings = ({ asTab = false }) => {
                                                 }
                                             }}
                                             disabled={item.disabled}
-                                            className={`w-full flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
-                                                item.disabled
-                                                    ? 'text-gray-400 dark:text-gray-600 cursor-not-allowed'
-                                                    : activeTab === item.id
-                                                        ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300'
-                                                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#282a2c]'
-                                            }`}
+                                            className={`w-full flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors ${item.disabled
+                                                ? 'text-gray-400 dark:text-gray-600 cursor-not-allowed'
+                                                : activeTab === item.id
+                                                    ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300'
+                                                    : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#282a2c]'
+                                                }`}
                                         >
                                             <item.icon size={18} />
                                             {item.label}

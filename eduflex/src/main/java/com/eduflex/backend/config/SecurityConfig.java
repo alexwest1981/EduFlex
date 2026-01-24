@@ -106,7 +106,7 @@ public class SecurityConfig {
                         // 2. Publika endpoints
                         .requestMatchers("/api/auth/**", "/api/users/register", "/api/users/generate-usernames",
                                 "/api/settings/**", "/login/**", "/api/tenants/**", "/api/public/**",
-                                "/api/branding/**", "/api/debug/**")
+                                "/api/branding/**", "/api/debug/**", "/api/onlyoffice/**")
                         .permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/tenants").permitAll() // Explicitly allow POST
                         .requestMatchers("/api/system/license/**", "/uploads/**", "/h2-console/**", "/ws/**",

@@ -21,8 +21,14 @@ import io.github.bucket4j.Bucket;
 import org.springframework.http.HttpStatus;
 import jakarta.servlet.http.HttpServletRequest;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+
 @RestController
 @RequestMapping("/api/auth")
+@Tag(name = "Authentication", description = "Endpoints for user authentication and registration")
 public class AuthController {
 
     private final AuthenticationManager authenticationManager;
@@ -56,6 +62,12 @@ public class AuthController {
         this.studentActivityService = studentActivityService;
     }
 
+    @Operation(summary = "Authenticate user", description = "Authenticates a user and returns a JWT token.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully authenticated"),
+            @ApiResponse(responseCode = "429", description = "Too many login attempts"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@RequestBody LoginRequest loginRequest,
             HttpServletRequest request) {
@@ -120,6 +132,11 @@ public class AuthController {
     }
 
     // --- HÄR ÄR DEN NYA METODEN SOM SAKNADES ---
+    @Operation(summary = "Register user", description = "Registers a new user with the system.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "User registered successfully"),
+            @ApiResponse(responseCode = "400", description = "Username or email already exists")
+    })
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody User signUpRequest) {
         if (userRepository.findByUsername(signUpRequest.getUsername()).isPresent()) {

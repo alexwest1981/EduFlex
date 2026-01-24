@@ -31,6 +31,12 @@
 
 ---
 
+*   **⚡ ONLYOFFICE & API Documentation (Jan 24, 2026):**
+    *   **ONLYOFFICE Integration:** Added support for in-browser editing of Office documents (`.docx`, `.xlsx`, `.pptx`). Integrated via `onlyoffice-ds` Docker service.
+    *   **OpenAPI / Swagger:** Implemented `springdoc-openapi` for automated API documentation. Live UI available at `/swagger-ui.html`.
+    *   **Documentation Restructuring:** Cleaned up the `docs/` folder, organizing guides, architecture, and API docs into clear subdirectories.
+    *   **LTI Platform Manager:** Fully functional UI for managing LTI 1.3 integrations under "System Settings -> Integrationer".
+
 *   **🔗 LTI 1.3 Certified Integration & Admin Tools (Jan 24, 2026):**
     *   **Secure Launch Flow:** Implemented full cryptographic verification (public key/JWKS) using Nimbus JOSE. No mocks—real OIDC authentication.
     *   **Auto-Provisioning:** Users launching from Canvas/Moodle are automatically created/updated with correct roles (Instructor -> Teacher) and names.

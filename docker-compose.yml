@@ -170,6 +170,18 @@ services:
     networks:
       - eduflex-net
 
+  # --- DOCUMENT EDITING (ONLYOFFICE) ---
+  onlyoffice-ds:
+    image: onlyoffice/documentserver:latest
+    container_name: eduflex-onlyoffice
+    restart: always
+    environment:
+      - JWT_ENABLED=false # För enkel utveckling, aktiveras i produktion
+    ports:
+      - "8081:80"
+    networks:
+      - eduflex-net
+
   # --- BACKUPS ---
   db-backup:
     image: prodrigestivill/postgres-backup-local
