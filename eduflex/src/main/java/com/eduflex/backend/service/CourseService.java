@@ -244,6 +244,7 @@ public class CourseService {
             Files.createDirectories(path.getParent());
             Files.write(path, file.getBytes());
             material.setFileUrl("/uploads/" + fileName);
+            material.setFileName(file.getOriginalFilename());
         }
         return materialRepository.save(material);
     }
@@ -270,6 +271,7 @@ public class CourseService {
             Files.createDirectories(path.getParent());
             Files.write(path, file.getBytes());
             material.setFileUrl("/uploads/" + fileName);
+            material.setFileName(file.getOriginalFilename());
         }
         return materialRepository.save(material);
     }

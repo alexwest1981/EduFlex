@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { X, Save, CheckCircle, Loader2 } from 'lucide-react';
 
-const OnlyOfficeEditor = ({ documentId, userId, onClose }) => {
+const OnlyOfficeEditor = ({ entityType = 'DOCUMENT', entityId, userId, onClose }) => {
     const [isLoading, setIsLoading] = useState(true);
     const [config, setConfig] = useState(null);
+    const [ooUrl, setOoUrl] = useState(null);
 
     useEffect(() => {
         const fetchConfig = async () => {
             try {
-                const response = await fetch(`/api/onlyoffice/config/${documentId}?userId=${userId}`);
+                const response = await fetch(`/api/onlyoffice/config/${entityType}/${entityId}?userId=${userId}`);
                 if (!response.ok) throw new Error("Kunde inte hämta editor-inställningar");
                 const data = await response.json();
                 setConfig(data);
@@ -21,8 +22,25 @@ const OnlyOfficeEditor = ({ documentId, userId, onClose }) => {
             }
         };
 
+        const fetchOoUrl = async () => {
+            try {
+                const settings = await fetch('/api/settings').then(res => res.json());
+                const urlSetting = settings.find(s => s.settingKey === 'onlyoffice_url');
+                if (urlSetting) {
+                    setOoUrl(urlSetting.settingValue);
+                } else {
+                    // Fallback to default if not found
+                    setOoUrl(`http://${window.location.hostname}:8081`);
+                }
+            } catch (e) {
+                console.error("Failed to fetch ONLYOFFICE URL", e);
+                setOoUrl(`http://${window.location.hostname}:8081`);
+            }
+        };
+
         fetchConfig();
-    }, [documentId, userId, onClose]);
+        fetchOoUrl();
+    }, [entityType, entityId, userId, onClose]);
 
     useEffect(() => {
         if (!config || !window.DocsAPI) return;
@@ -60,18 +78,17 @@ const OnlyOfficeEditor = ({ documentId, userId, onClose }) => {
 
     // Load script om den inte redan finns
     useEffect(() => {
-        if (window.DocsAPI) return;
+        if (!ooUrl || window.DocsAPI) return;
 
         const script = document.createElement("script");
-        // Vi antar att ONLYOFFICE körs på port 8081 lokalt (se docker-compose)
-        script.src = `http://${window.location.hostname}:8081/web-apps/apps/api/documents/api.js`;
+        script.src = `${ooUrl}/web-apps/apps/api/documents/api.js`;
         script.async = true;
         document.body.appendChild(script);
 
         return () => {
             // Behåll scriptet i DOM för att undvika flera laddningar
         };
-    }, []);
+    }, [ooUrl]);
 
     return (
         <div className="fixed inset-0 z-[200] bg-black/80 flex flex-col animate-in fade-in overflow-hidden">

@@ -359,7 +359,8 @@ const DocumentManager = () => {
             {
                 editingDoc && (
                     <OnlyOfficeEditor
-                        documentId={editingDoc.id}
+                        entityType="DOCUMENT"
+                        entityId={editingDoc.id}
                         userId={currentUser.id}
                         onClose={() => {
                             setEditingDoc(null);

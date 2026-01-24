@@ -5,7 +5,7 @@ import {
     MessageSquare, Calendar, CreditCard, BarChart3, Briefcase,
     GraduationCap, BookOpen, Globe, Shield, Cpu, HardDrive,
     Download, RefreshCw, Trash2, Plus, AlertTriangle, Clock, CheckCircle2,
-    Link2
+    Link2, Cloud
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../../context/ThemeContext';
@@ -15,6 +15,7 @@ import ThemeModal from './ThemeModal';
 import { useModules } from '../../context/ModuleContext';
 import { api } from '../../services/api';
 import LtiPlatformManager from '../admin/LtiPlatformManager';
+import OnlyOfficeSettings from './OnlyOfficeSettings';
 
 // Mappa modulnycklar till ikoner
 const moduleIcons = {
@@ -207,6 +208,7 @@ const SystemSettings = ({ asTab = false }) => {
             category: 'Integrationer',
             items: [
                 { id: 'lti', label: 'LTI / LMS', icon: Link2 },
+                { id: 'onlyoffice', label: 'ONLYOFFICE', icon: Cloud },
             ]
         },
         {
@@ -634,6 +636,9 @@ const SystemSettings = ({ asTab = false }) => {
 
             case 'lti':
                 return <LtiPlatformManager />;
+
+            case 'onlyoffice':
+                return <OnlyOfficeSettings />;
 
             case 'modules':
                 return (

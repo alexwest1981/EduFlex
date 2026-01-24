@@ -24,6 +24,8 @@ public class SystemSettingService {
         createIfMissing("site_name", "EduFlex", "Systemets visningsnamn i menyn.");
         createIfMissing("system_version", "2.0.0", "Systemets nuvarande version.");
         createIfMissing("registration_open", "true", "Tillåter nya användare att registrera sig.");
+        createIfMissing("onlyoffice_url", "http://localhost:8080", "URL till ONLYOFFICE Document Server.");
+        createIfMissing("onlyoffice_enabled", "true", "Aktivera eller inaktivera ONLYOFFICE-integrationen globalt.");
 
         // --- TA BORT MODULERNA HÄRIFRÅN ---
         // Vi tar bort chat_enabled, gamification_enabled etc. härifrån

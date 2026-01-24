@@ -307,11 +307,14 @@ export const api = {
 
     system: {
         getModules: () => api.get('/modules'),
-        toggleModule: (key, active) => api.post(`/modules/${key}/toggle?active=${active}`),
-        updateSetting: (key, value) => api.put(`/system-settings/${key}`, { value: value }),
-        getSettings: () => api.get('/system-settings'),
+        updateSetting: (key, value) => api.put(`/settings/${key}`, { value: value }),
+        getSettings: () => api.get('/settings'),
         checkLicense: () => fetch(`${API_BASE}/system/license/status`).then(handleResponse),
         activateLicense: (key) => fetch(`${API_BASE}/system/license/activate`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ key }) }).then(handleResponse)
+    },
+
+    onlyoffice: {
+        checkHealth: () => api.get('/onlyoffice/health'),
     },
 
     // --- BACKUP & DATABAS ---

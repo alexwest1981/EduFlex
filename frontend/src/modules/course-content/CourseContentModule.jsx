@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { BookOpen, Plus, Edit2, Trash2, Save, ChevronRight, Video, Download, Paperclip, Loader2, Image as ImageIcon } from 'lucide-react';
 import { api } from '../../services/api';
+import OnlyOfficeEditor from '../../features/documents/OnlyOfficeEditor';
 
 export const CourseContentModuleMetadata = {
     key: 'material',
@@ -14,6 +15,7 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
     const [selectedLesson, setSelectedLesson] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
+    const [onlyOfficeDoc, setOnlyOfficeDoc] = useState(null);
 
     // Form data
     const [formData, setFormData] = useState({ title: '', content: '', videoUrl: '' });
@@ -162,6 +164,15 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
         const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
         const match = url.match(regExp);
         return (match && match[2].length === 11) ? `https://www.youtube.com/embed/${match[2]}` : null;
+    };
+
+    const isEditable = (url) => {
+        if (!url) return false;
+        const parts = url.split('.');
+        if (parts.length < 2) return false;
+        const ext = parts.pop().toLowerCase();
+        const editableExts = ['docx', 'doc', 'odt', 'xlsx', 'xls', 'ods', 'pptx', 'ppt', 'odp', 'txt'];
+        return editableExts.includes(ext);
     };
 
     const startEditing = (lesson) => {
@@ -405,6 +416,14 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
                                 >
                                     <Download size={16} /> Ladda ner
                                 </a>
+                                {isTeacher && isEditable(selectedLesson.fileUrl) && (
+                                    <button
+                                        onClick={() => setOnlyOfficeDoc(selectedLesson)}
+                                        className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-sm font-bold text-white rounded-lg shadow-sm border border-transparent transition-colors"
+                                    >
+                                        <Edit2 size={16} /> Redigera Inline
+                                    </button>
+                                )}
                             </div>
                         )}
 
@@ -421,6 +440,17 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
                     </div>
                 )}
             </div>
+            {onlyOfficeDoc && (
+                <OnlyOfficeEditor
+                    entityType={mode === 'COURSE' ? 'MATERIAL' : 'LESSON'}
+                    entityId={onlyOfficeDoc.id}
+                    userId={currentUser?.id}
+                    onClose={() => {
+                        setOnlyOfficeDoc(null);
+                        loadLessons();
+                    }}
+                />
+            )}
         </div>
     );
 };

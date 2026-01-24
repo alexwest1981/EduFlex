@@ -22,6 +22,7 @@ public class CourseMaterial {
 
     private String link; // För YouTube-länkar
     private String fileUrl; // För uppladdade filer/bilder
+    private String fileName; // Ursprungligt filnamn för ONLYOFFICE-stöd
 
     // NYTT: Datumstyrning
     @com.fasterxml.jackson.annotation.JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm")
@@ -111,5 +112,13 @@ public class CourseMaterial {
 
     public void setCourse(Course course) {
         this.course = course;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
     }
 }
