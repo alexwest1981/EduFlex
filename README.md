@@ -31,6 +31,29 @@
 
 ---
 
+*   **🛠️ Robust OnlyOffice DevOps & UI (Jan 25, 2026):**
+    *   **Modal Editor UI:** Refactored document editor into a responsive, centered modal window with backdrop and reliable mounting logic (Ref-based).
+    *   **Backend Static Serving:** Implemented direct serving of OnlyOffice assets (`/web-apps`) via Spring Boot to bypass Windows/Docker proxy limitations.
+    *   **Proxy Architecture:** Optimized `vite.config.js` to correctly route traffic between Host, Backend (8080), and Docker Containers (8081).
+    *   **SSRF Security:** Configured OnlyOffice to allow private IP requests for backend-to-backend communication.
+    *   **WebSocket Fix:** Enabled WebSocket proxying for seamless real-time collaboration.
+
+*   **📹 Live Video Classrooms - Jitsi Integration (Jan 24, 2026):**
+    *   **Self-hosted Video Conferencing:** Integrated Jitsi Meet for real-time live lessons directly in EduFlex.
+    *   **Teacher Controls:** Start instant lessons or schedule them for later with full host controls.
+    *   **Dashboard Widget:** Students see upcoming and live lessons on their dashboard with join buttons.
+    *   **Course Integration:** "Start Live" button in course view for teachers, auto-join for students.
+    *   **Full Features:** Screen sharing, chat, hand raising, participant list, and recording support.
+    *   **Docker Included:** Complete Jitsi stack added to docker-compose for self-hosted deployment.
+
+*   **🎬 Video Lesson Integration (Jan 24, 2026):**
+    *   **Self-hosted Video Lessons:** Teachers can upload their own video content (MP4, WebM, MOV up to 500MB) directly to courses.
+    *   **Professional Video Player:** Custom React player with chapters support, playback speed control (0.5x-2x), keyboard shortcuts, and fullscreen.
+    *   **Chapter Navigation:** Visual chapter markers on the progress bar with quick jump functionality.
+    *   **Video Metadata:** Automatic detection of video files with duration, file size, and thumbnail support.
+    *   **Student Analytics:** Track video completion and progress for student engagement insights.
+    *   **Backend API:** New `VideoController` with endpoints for upload, metadata updates, and chapter management.
+
 *   **⚡ ONLYOFFICE Expansion & System Settings (Jan 24, 2026):**
     *   **Course Material Integration:** Support for in-browser editing of course attachments for teachers.
     *   **System Settings UI:** New "ONLYOFFICE" configuration tab for administrators to manage server URLs and status.
@@ -127,6 +150,8 @@ Whether you are a single educator, a private school, or a municipal education bo
 | Feature | Description |
 |---------|-------------|
 | **Course Management** | Rich courses with text, video, attachments, and quizzes |
+| **Video Lessons** | Self-hosted video uploads with chapters, speed control, and analytics |
+| **Live Classrooms** | Jitsi-powered video conferencing with scheduling and dashboard widget |
 | **SCORM / xAPI Support** | Import packages from Articulate/Adobe Captivate |
 | **Assignment Engine** | File submissions with teacher grading and feedback |
 | **Certification** | Auto-generated verifiable PDF certificates |
@@ -597,6 +622,8 @@ See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for manual setup.
 | HTTPS Storage (Cloudflare Tunnel) | ✅ Implemented |
 | Enhanced Calendar (MiniCalendar, Events) | ✅ Implemented |
 | Admin UI Redesign (Whitelabel) | ✅ Implemented |
+| Video Lessons (Self-hosted, Chapters) | ✅ Implemented |
+| Live Classrooms (Jitsi Integration) | ✅ Implemented |
 | Microservices Split (Video/PDF) | 🔜 Q2 2026 |
 | Event Bus (Kafka/RabbitMQ) | 🔜 Q3 2026 |
 | AI-powered Quiz Generation | 🔜 Q2 2026 |
@@ -638,6 +665,29 @@ taskkill /PID <PID> /F
 ## 🇸🇪 Svenska
 
 ### ⚡ Senaste Uppdateringarna
+*   **🛠️ Robust OnlyOffice DevOps & UI (25 jan 2026):**
+    *   **Modal Editor UI:** Omarbetade dokumentredigeraren till ett responsivt modal-fönster med stabil laddningslogik.
+    *   **Backend Static Serving:** Implementerade direkt servering av OnlyOffice-tillägg via Spring Boot för att kringgå proxy-problem på Windows.
+    *   **Proxy-arkitektur:** Optimerade `vite.config.js` för att korrekt routa trafik mellan Host, Backend (8080) och Docker-containrar.
+    *   **SSRF-säkerhet:** Konfigurerade OnlyOffice för att tillåta interna IP-anrop mellan backend och dokumentserver.
+    *   **WebSocket-fix:** Aktiverade WebSocket-proxy för sömlöst samarbete i realtid.
+
+*   **📹 Live Videoklassrum - Jitsi-integration (24 jan 2026):**
+    *   **Självhostad Videokonferens:** Integrerad Jitsi Meet för live-lektioner direkt i EduFlex.
+    *   **Lärarverktyg:** Starta direktlektioner eller schemalägg med fulla värd-kontroller.
+    *   **Dashboard-widget:** Elever ser kommande och pågående lektioner med "Gå med"-knappar.
+    *   **Kursintegration:** "Starta Live"-knapp i kursvyn för lärare, auto-join för elever.
+    *   **Funktioner:** Skärmdelning, chatt, handuppräckning, deltagarlista och inspelningsstöd.
+    *   **Docker:** Komplett Jitsi-stack inkluderad i docker-compose.
+
+*   **🎬 Video-lektioner (24 jan 2026):**
+    *   **Egenuppladdade Videos:** Lärare kan ladda upp egna videor (MP4, WebM, MOV upp till 500MB) direkt till kurser.
+    *   **Professionell Videospelare:** React-baserad spelare med kapitelstöd, hastighetsval (0.5x-2x), tangentbordsgenvägar och helskärm.
+    *   **Kapitelnavigering:** Visuella kapitelmarkörer på progress-bar med snabbhopp.
+    *   **Video-metadata:** Automatisk detektering med längd, filstorlek och thumbnail-stöd.
+    *   **Elevanalys:** Spåra video-färdigställande och framsteg för engagemanginsikter.
+    *   **Backend API:** Ny `VideoController` med endpoints för uppladdning, metadata och kapitelhantering.
+
 *   **⚡ ONLYOFFICE-expansion & Systeminställningar (24 jan 2026):**
     *   **Kursmaterial-integration:** Stöd för redigering av bilagor i kurser direkt i webbläsaren för lärare.
     *   **Systeminställningar:** Ny "ONLYOFFICE"-flik för administratörer för att hantera server-URL:er och status.
@@ -815,4 +865,4 @@ För Enterprise-frågor:
 
 ---
 
-*Last updated: 2026-01-24*
+*Last updated: 2026-01-24 (Live Classrooms & Video Lessons)*

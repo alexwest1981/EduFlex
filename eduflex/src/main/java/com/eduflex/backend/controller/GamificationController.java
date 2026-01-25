@@ -50,16 +50,25 @@ public class GamificationController {
 
     @GetMapping("/achievements/my")
     public ResponseEntity<List<UserAchievement>> getMyAchievements() {
-        String username = org.springframework.security.core.context.SecurityContextHolder.getContext()
-                .getAuthentication().getName();
-        User user = userRepository.findByUsername(username)
-                .orElseGet(() -> userRepository.findByEmail(username).orElse(null));
+        try {
+            var auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+            if (auth == null || !auth.isAuthenticated() || "anonymousUser".equals(auth.getPrincipal())) {
+                return ResponseEntity.status(401).build();
+            }
 
-        if (user == null) {
-            return ResponseEntity.status(404).build();
+            String username = auth.getName();
+            User user = userRepository.findByUsername(username)
+                    .orElseGet(() -> userRepository.findByEmail(username).orElse(null));
+
+            if (user == null) {
+                return ResponseEntity.status(404).build();
+            }
+
+            return ResponseEntity.ok(achievementService.getUserAchievements(user.getId()));
+        } catch (Exception e) {
+            e.printStackTrace(); // Keep stdout for docker logs
+            return ResponseEntity.internalServerError().build();
         }
-
-        return ResponseEntity.ok(achievementService.getUserAchievements(user.getId()));
     }
 
     @PostMapping("/init")

@@ -1,9 +1,11 @@
+import React, { useState, useEffect } from 'react';
 import {
     Search, UploadCloud, Grid, List, HardDrive, FileCode, Share2, UserPlus, X, Download, Trash2, File, FileText, Image as ImageIcon, Edit3
 } from 'lucide-react';
 import { api } from '../../services/api';
 import { useAppContext } from '../../context/AppContext';
 import OnlyOfficeEditor from './OnlyOfficeEditor';
+import ErrorBoundary from '../../components/common/ErrorBoundary';
 
 const DocumentManager = () => {
     const { currentUser } = useAppContext();
@@ -20,6 +22,35 @@ const DocumentManager = () => {
 
     // Drag & Drop State
     const [isDragging, setIsDragging] = useState(false);
+
+    // DEBUG: Monitor unmounts
+    useEffect(() => {
+        console.log("DocumentManager MOUNTED");
+        return () => console.log("DocumentManager UNMOUNTED");
+    }, []);
+
+    // DEBUG: Monitor editingDoc changes
+    useEffect(() => {
+        console.log("DocumentManager editingDoc changed:", editingDoc);
+    }, [editingDoc]);
+
+    // DEBUG: Monitor unmounts & reloads
+    useEffect(() => {
+        console.log("DocumentManager MOUNTED");
+        const handleUnload = (e) => {
+            console.log("PAGE RELOAD DETECTED!", e);
+            // Trap the reload to let user see logs
+            e.preventDefault();
+            e.returnValue = 'Är du säker på att du vill lämna? Vi felsöker kraschen.';
+            return 'Är du säker på att du vill lämna? Vi felsöker kraschen.';
+        };
+        window.addEventListener('beforeunload', handleUnload);
+
+        return () => {
+            console.log("DocumentManager UNMOUNTED");
+            window.removeEventListener('beforeunload', handleUnload);
+        };
+    }, []);
 
     useEffect(() => {
         if (currentUser) loadDocuments();
@@ -255,7 +286,7 @@ const DocumentManager = () => {
                                 <div key={doc.id} className="group bg-white dark:bg-[#1E1F20] p-4 rounded-xl border border-gray-200 dark:border-[#3c4043] hover:border-indigo-400 hover:shadow-md transition-all relative flex flex-col items-center text-center">
                                     <div className="mb-3 p-4 bg-gray-50 dark:bg-[#131314] rounded-xl w-full flex justify-center h-32 items-center overflow-hidden">
                                         {doc.fileType?.startsWith('image/') ?
-                                            <img src={`http://127.0.0.1:8080${doc.fileUrl}`} alt={doc.fileName} className="h-full w-full object-cover rounded" />
+                                            <img src={`${doc.fileUrl}`} alt={doc.fileName} className="h-full w-full object-cover rounded" />
                                             : getFileIcon(doc.fileType)
                                         }
                                     </div>
@@ -270,7 +301,7 @@ const DocumentManager = () => {
                                                 <Edit3 size={18} />
                                             </button>
                                         )}
-                                        <a href={`http://127.0.0.1:8080${doc.fileUrl}`} download target="_blank" rel="noreferrer" className="p-2 bg-white rounded-full text-gray-800 hover:text-indigo-600"><Download size={18} /></a>
+                                        <a href={`${doc.fileUrl}`} download target="_blank" rel="noreferrer" className="p-2 bg-white rounded-full text-gray-800 hover:text-indigo-600"><Download size={18} /></a>
                                         <button onClick={() => openShareModal(doc)} className="p-2 bg-white rounded-full text-gray-800 hover:text-blue-600"><Share2 size={18} /></button>
                                         <button onClick={() => handleDelete(doc.id)} className="p-2 bg-white rounded-full text-gray-800 hover:text-red-600"><Trash2 size={18} /></button>
                                     </div>
@@ -306,7 +337,7 @@ const DocumentManager = () => {
                                                             <Edit3 size={16} />
                                                         </button>
                                                     )}
-                                                    <a href={`http://127.0.0.1:8080${doc.fileUrl}`} download target="_blank" rel="noreferrer" className="p-2 hover:bg-gray-200 rounded text-gray-600"><Download size={16} /></a>
+                                                    <a href={`${doc.fileUrl}`} download target="_blank" rel="noreferrer" className="p-2 hover:bg-gray-200 rounded text-gray-600"><Download size={16} /></a>
                                                     <button onClick={() => openShareModal(doc)} className="p-2 hover:bg-blue-100 rounded text-blue-600"><Share2 size={16} /></button>
                                                     <button onClick={() => handleDelete(doc.id)} className="p-2 hover:bg-red-100 rounded text-red-600"><Trash2 size={16} /></button>
                                                 </div>
@@ -358,15 +389,19 @@ const DocumentManager = () => {
             }
             {
                 editingDoc && (
-                    <OnlyOfficeEditor
-                        entityType="DOCUMENT"
-                        entityId={editingDoc.id}
-                        userId={currentUser.id}
-                        onClose={() => {
-                            setEditingDoc(null);
-                            loadDocuments(); // Ladda om för att visa uppdaterad storlek/datum
-                        }}
-                    />
+                    <div className="relative z-[99999]"> {/* Wrapper to ensure stacking context */}
+                        <ErrorBoundary>
+                            <OnlyOfficeEditor
+                                entityType="DOCUMENT"
+                                entityId={editingDoc.id}
+                                userId={currentUser.id}
+                                onClose={() => {
+                                    setEditingDoc(null);
+                                    loadDocuments();
+                                }}
+                            />
+                        </ErrorBoundary>
+                    </div>
                 )
             }
         </div >

@@ -19,9 +19,9 @@ public class UserAchievement {
     @Column(name = "achievement_id", nullable = false)
     private Long achievementId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER) // Change to EAGER to ensure data is available or use IgnoreProperties
     @JoinColumn(name = "achievement_id", insertable = false, updatable = false)
-    @com.fasterxml.jackson.annotation.JsonIgnore
+    @com.fasterxml.jackson.annotation.JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
     private Achievement achievement;
 
     @Column(name = "progress")

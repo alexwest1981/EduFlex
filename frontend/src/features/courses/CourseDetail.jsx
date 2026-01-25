@@ -21,6 +21,7 @@ import AttendanceView from '../../components/AttendanceView';
 import TeacherAttendanceView from '../dashboard/components/teacher/TeacherAttendanceView';
 import EvaluationModal from '../../components/EvaluationModal';
 import TeacherEvaluationModal from '../../components/TeacherEvaluationModal';
+import { LiveLessonButton } from '../../modules/live-lessons';
 
 const CourseDetail = ({ currentUser }) => {
     const { id } = useParams();
@@ -40,7 +41,7 @@ const CourseDetail = ({ currentUser }) => {
     const { API_BASE, token } = useAppContext();
 
     const userRole = currentUser?.role?.name || currentUser?.role;
-    const isTeacher = currentUser && (userRole === 'TEACHER' || userRole === 'ADMIN');
+    const isTeacher = currentUser && (userRole === 'TEACHER' || userRole === 'ADMIN' || userRole === 'REKTOR');
 
     // --- MODULE CONFIG ---
     const modules = [
@@ -209,6 +210,15 @@ const CourseDetail = ({ currentUser }) => {
         }
     };
 
+    const getServiceName = (type) => {
+        switch (type) {
+            case 'ZOOM': return 'Zoom';
+            case 'TEAMS': return 'Teams';
+            case 'MEET': return 'Google Meet';
+            default: return t('course.connect_classroom');
+        }
+    };
+
     // --- CERTIFICATE HANDLER ---
     const downloadCertificate = async () => {
         try {
@@ -288,15 +298,23 @@ const CourseDetail = ({ currentUser }) => {
 
                         {/* Actions that fit in sidebar */}
                         <div className="space-y-2 pt-4 border-t border-gray-100 dark:border-[#3c4043]">
-                            {/* DIGITAL CLASSROOM BUTTON (Compact) */}
+                            {/* INTERNAL LIVE LESSON (Jitsi) */}
+                            <LiveLessonButton
+                                courseId={id}
+                                currentUser={currentUser}
+                                isTeacher={isTeacher}
+                            />
+
+                            {/* EXTERNAL DIGITAL CLASSROOM (Zoom/Teams/Meet) */}
                             {course.classroomLink && (
                                 <a
                                     href={course.classroomLink}
                                     target="_blank"
                                     rel="noreferrer"
                                     className={`w-full text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center justify-center gap-2 shadow-sm transition-all hover:opacity-90 ${getServiceColor(course.classroomType)}`}
+                                    title={t('course.external_classroom_hint') || 'Externt klassrum'}
                                 >
-                                    {getServiceIcon(course.classroomType)} {t('course.connect_classroom')}
+                                    {getServiceIcon(course.classroomType)} Anslut till {getServiceName(course.classroomType)}
                                 </a>
                             )}
 

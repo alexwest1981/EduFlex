@@ -11,6 +11,10 @@ public class CourseMaterial {
         TEXT, VIDEO, FILE, LINK, LESSON, STUDY_MATERIAL, QUESTIONS
     }
 
+    public enum VideoStatus {
+        PENDING, PROCESSING, READY, FAILED
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -23,6 +27,17 @@ public class CourseMaterial {
     private String link; // För YouTube-länkar
     private String fileUrl; // För uppladdade filer/bilder
     private String fileName; // Ursprungligt filnamn för ONLYOFFICE-stöd
+
+    // Video-specific fields
+    private Integer videoDuration; // Duration in seconds
+    private String thumbnailUrl; // Auto-generated or custom thumbnail
+    private Long videoFileSize; // File size in bytes for progress tracking
+
+    @Enumerated(EnumType.STRING)
+    private VideoStatus videoStatus; // Processing status for uploaded videos
+
+    @Column(length = 2000)
+    private String videoChapters; // JSON array of {time: seconds, title: string}
 
     // NYTT: Datumstyrning
     @com.fasterxml.jackson.annotation.JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm")
@@ -120,5 +135,45 @@ public class CourseMaterial {
 
     public void setFileName(String fileName) {
         this.fileName = fileName;
+    }
+
+    public Integer getVideoDuration() {
+        return videoDuration;
+    }
+
+    public void setVideoDuration(Integer videoDuration) {
+        this.videoDuration = videoDuration;
+    }
+
+    public String getThumbnailUrl() {
+        return thumbnailUrl;
+    }
+
+    public void setThumbnailUrl(String thumbnailUrl) {
+        this.thumbnailUrl = thumbnailUrl;
+    }
+
+    public Long getVideoFileSize() {
+        return videoFileSize;
+    }
+
+    public void setVideoFileSize(Long videoFileSize) {
+        this.videoFileSize = videoFileSize;
+    }
+
+    public VideoStatus getVideoStatus() {
+        return videoStatus;
+    }
+
+    public void setVideoStatus(VideoStatus videoStatus) {
+        this.videoStatus = videoStatus;
+    }
+
+    public String getVideoChapters() {
+        return videoChapters;
+    }
+
+    public void setVideoChapters(String videoChapters) {
+        this.videoChapters = videoChapters;
     }
 }

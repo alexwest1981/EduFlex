@@ -132,8 +132,9 @@ services:
     ports:
       - "5173:5173"
     environment:
-      - VITE_API_BASE_URL=http://localhost:8080/api
+      - VITE_API_BASE_URL=/api
       - VITE_BACKEND_URL=http://backend:8080
+      - VITE_JITSI_URL=${JITSI_URL:-http://localhost:8444}
     command: npm run dev -- --host
     volumes:
       - ./frontend:/app
@@ -176,9 +177,142 @@ services:
     container_name: eduflex-onlyoffice
     restart: always
     environment:
-      - JWT_ENABLED=false # För enkel utveckling, aktiveras i produktion
+      - JWT_ENABLED=true
+      - JWT_SECRET=eduflex123
+      - JWT_HEADER=Authorization
+      - JWT_IN_BODY=true
+    # volumes:
+    #   - ./config/onlyoffice/local.json:/etc/onlyoffice/documentserver/local.json
     ports:
       - "8081:80"
+      - "8443:443"
+    networks:
+      - eduflex-net
+
+  # --- LIVE VIDEO LESSONS (Jitsi Meet) ---
+  # Self-hosted Jitsi for private video classrooms
+  # For full self-hosted setup, see: https://jitsi.github.io/handbook/docs/devops-guide/devops-guide-docker
+  jitsi-web:
+    image: jitsi/web:stable-9584
+    container_name: eduflex-jitsi
+    restart: unless-stopped
+    ports:
+      - "8444:80"
+    environment:
+      - ENABLE_AUTH=0
+      - ENABLE_GUESTS=1
+      - ENABLE_TRANSCRIPTIONS=0
+      - ENABLE_BREAKOUT_ROOMS=1
+      - ENABLE_PREJOIN_PAGE=0
+      - ENABLE_LOBBY=0
+      - ENABLE_WELCOME_PAGE=0
+      - DISABLE_HTTPS=1
+      - PUBLIC_URL=http://localhost:8444
+      - TZ=Europe/Stockholm
+      # Performance settings
+      - RESOLUTION=480
+      - RESOLUTION_MIN=180
+      - RESOLUTION_WIDTH=854
+      - RESOLUTION_WIDTH_MIN=320
+      # Jitsi internal communication
+      - XMPP_DOMAIN=meet.jitsi
+      - XMPP_SERVER=jitsi-prosody
+      - XMPP_BOSH_URL_BASE=http://jitsi-prosody:5280
+      - XMPP_MUC_DOMAIN=muc.meet.jitsi
+      - XMPP_INTERNAL_MUC_DOMAIN=internal-muc.meet.jitsi
+      - JVB_BREWERY_MUC=jvbbrewery@internal-muc.meet.jitsi
+      - JICOFO_AUTH_USER=focus
+    volumes:
+      - jitsi_web_config:/config
+      - jitsi_web_crontabs:/var/spool/cron/crontabs
+      - jitsi_transcripts:/usr/share/jitsi-meet/transcripts
+    depends_on:
+      - jitsi-prosody
+    networks:
+      - eduflex-net
+
+  jitsi-prosody:
+    image: jitsi/prosody:stable-9584
+    container_name: eduflex-jitsi-prosody
+    restart: unless-stopped
+    expose:
+      - '5222'
+      - '5347'
+      - '5280'
+    environment:
+      - PUBLIC_URL=http://localhost:8444
+      - TZ=Europe/Stockholm
+      # XMPP settings
+      - XMPP_DOMAIN=meet.jitsi
+      - XMPP_SERVER=jitsi-prosody
+      - XMPP_AUTH_DOMAIN=auth.meet.jitsi
+      - XMPP_MUC_DOMAIN=muc.meet.jitsi
+      - XMPP_INTERNAL_MUC_DOMAIN=internal-muc.meet.jitsi
+      - XMPP_GUEST_DOMAIN=guest.meet.jitsi
+      - XMPP_RECORDER_DOMAIN=recorder.meet.jitsi
+      # Component secrets (generate random for production!)
+      - JICOFO_AUTH_USER=focus
+      - JICOFO_AUTH_PASSWORD=eduflex_jicofo_secret
+      - JVB_AUTH_USER=jvb
+      - JVB_AUTH_PASSWORD=eduflex_jvb_secret
+      - JIGASI_XMPP_USER=jigasi
+      - JIGASI_XMPP_PASSWORD=eduflex_jigasi_secret
+      - JVB_BREWERY_MUC=jvbbrewery
+      - JICOFO_COMPONENT_SECRET=eduflex_focus_secret
+      - JIBRI_XMPP_USER=jibri
+      - JIBRI_XMPP_PASSWORD=eduflex_jibri_secret
+      - JIBRI_RECORDER_USER=recorder
+      - JIBRI_RECORDER_PASSWORD=eduflex_recorder_secret
+    volumes:
+      - jitsi_prosody_config:/config
+      - jitsi_prosody_plugins:/prosody-plugins-custom
+    networks:
+      - eduflex-net
+
+  jitsi-jicofo:
+    image: jitsi/jicofo:stable-9584
+    container_name: eduflex-jitsi-jicofo
+    restart: unless-stopped
+    environment:
+      - TZ=Europe/Stockholm
+      - XMPP_DOMAIN=meet.jitsi
+      - XMPP_SERVER=jitsi-prosody
+      - XMPP_AUTH_DOMAIN=auth.meet.jitsi
+      - XMPP_MUC_DOMAIN=muc.meet.jitsi
+      - XMPP_INTERNAL_MUC_DOMAIN=internal-muc.meet.jitsi
+      - JICOFO_AUTH_USER=focus
+      - JICOFO_AUTH_PASSWORD=eduflex_jicofo_secret
+      - JICOFO_COMPONENT_SECRET=eduflex_focus_secret
+      - JVB_BREWERY_MUC=jvbbrewery@internal-muc.meet.jitsi
+    volumes:
+      - jitsi_jicofo_config:/config
+    depends_on:
+      - jitsi-prosody
+    networks:
+      - eduflex-net
+
+  jitsi-jvb:
+    image: jitsi/jvb:stable-9584
+    container_name: eduflex-jitsi-jvb
+    restart: unless-stopped
+    ports:
+      - "10000:10000/udp"
+    environment:
+      - TZ=Europe/Stockholm
+      - XMPP_DOMAIN=meet.jitsi
+      - XMPP_SERVER=jitsi-prosody
+      - XMPP_AUTH_DOMAIN=auth.meet.jitsi
+      - XMPP_INTERNAL_MUC_DOMAIN=internal-muc.meet.jitsi
+      - JVB_AUTH_USER=jvb
+      - JVB_AUTH_PASSWORD=eduflex_jvb_secret
+      - JVB_BREWERY_MUC=jvbbrewery@internal-muc.meet.jitsi
+      - JVB_PORT=10000
+      - JVB_STUN_SERVERS=meet-jit-si-turnrelay.jitsi.net:443
+      - PUBLIC_URL=http://localhost:8444
+    volumes:
+      - jitsi_jvb_config:/config
+    depends_on:
+      - jitsi-prosody
     networks:
       - eduflex-net
 
@@ -209,6 +343,13 @@ volumes:
   postgres_data: # Här sparas databasen så den inte försvinner vid omstart
   redis_data:
   minio_data:
+  jitsi_web_config:
+  jitsi_web_crontabs:
+  jitsi_transcripts:
+  jitsi_prosody_config:
+  jitsi_prosody_plugins:
+  jitsi_jicofo_config:
+  jitsi_jvb_config:
 
 
 networks:

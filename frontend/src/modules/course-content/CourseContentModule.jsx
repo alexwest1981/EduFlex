@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { BookOpen, Plus, Edit2, Trash2, Save, ChevronRight, Video, Download, Paperclip, Loader2, Image as ImageIcon } from 'lucide-react';
+import { BookOpen, Plus, Edit2, Trash2, Save, ChevronRight, Video, Download, Paperclip, Loader2, Image as ImageIcon, Film } from 'lucide-react';
 import { api } from '../../services/api';
 import OnlyOfficeEditor from '../../features/documents/OnlyOfficeEditor';
+import VideoPlayer from './components/VideoPlayer';
 
 export const CourseContentModuleMetadata = {
     key: 'material',
@@ -270,6 +271,7 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
                                 onChange={e => setFormData({ ...formData, type: e.target.value })}
                             >
                                 <option value="LESSON">Lektion (Text/Video/Blandat)</option>
+                                <option value="VIDEO">Videolektion (Egen uppladdning)</option>
                                 <option value="STUDY_MATERIAL">Studiematerial (Fil/Dokument)</option>
                                 <option value="QUESTIONS">Instuderingsfrågor</option>
                                 <option value="LINK">Extern Länk</option>
@@ -294,17 +296,47 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
 
                         <div>
                             <label className="block text-xs font-bold text-gray-500 mb-1">
-                                Ladda upp fil / Bild / Video (Valfritt)
+                                {formData.type === 'VIDEO' ? (
+                                    <span className="flex items-center gap-2">
+                                        <Film size={14} className="text-indigo-500" />
+                                        Ladda upp video (MP4, WebM, MOV - Max 500MB)
+                                    </span>
+                                ) : (
+                                    'Ladda upp fil / Bild / Video (Valfritt)'
+                                )}
                             </label>
                             <input
                                 type="file"
-                                accept=".pdf,.doc,.docx,.ppt,.pptx,.zip,.mp4,.mov,.webm,.jpg,.jpeg,.png,.gif,.webp"
+                                accept={formData.type === 'VIDEO'
+                                    ? '.mp4,.mov,.webm,.avi,.mkv'
+                                    : '.pdf,.doc,.docx,.ppt,.pptx,.zip,.mp4,.mov,.webm,.jpg,.jpeg,.png,.gif,.webp'}
                                 className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
-                                onChange={e => setFile(e.target.files[0])}
+                                onChange={e => {
+                                    const selectedFile = e.target.files[0];
+                                    if (selectedFile) {
+                                        // Validate video size (500MB max)
+                                        if (formData.type === 'VIDEO' && selectedFile.size > 500 * 1024 * 1024) {
+                                            alert('Filen är för stor. Max 500MB för video.');
+                                            e.target.value = '';
+                                            return;
+                                        }
+                                        setFile(selectedFile);
+                                    }
+                                }}
                             />
+                            {file && (
+                                <p className="text-xs text-indigo-600 mt-1 flex items-center gap-1">
+                                    <Film size={12} /> {file.name} ({(file.size / 1024 / 1024).toFixed(1)} MB)
+                                </p>
+                            )}
                             {selectedLesson?.fileUrl && !file && (
                                 <p className="text-xs text-green-600 mt-1 flex items-center gap-1">
                                     <Paperclip size={12} /> Fil finns redan sparad. Ladda upp ny för att ersätta.
+                                </p>
+                            )}
+                            {formData.type === 'VIDEO' && (
+                                <p className="text-[10px] text-gray-400 mt-1">
+                                    Videor spelas upp direkt i webbläsaren med kapitel-stöd och hastighetsval.
                                 </p>
                             )}
                         </div>
@@ -354,28 +386,43 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
                                 </div>
                             )}
 
-                            {/* 2. EGEN VIDEO */}
+                            {/* 2. EGEN VIDEO - with enhanced player */}
                             {selectedLesson.fileUrl && isVideoFile(selectedLesson.fileUrl) && (
-                                <div className="rounded-xl overflow-hidden shadow-lg bg-black">
-                                    <video
-                                        controls
-                                        className="w-full max-h-[500px]"
-                                        src={`http://127.0.0.1:8080${selectedLesson.fileUrl}`}
-                                        onPlay={() => {
-                                            if (!isTeacher) {
-                                                api.activity.log({
-                                                    userId: currentUser.id,
-                                                    courseId: courseId,
-                                                    materialId: selectedLesson.id,
-                                                    type: 'WATCH_VIDEO',
-                                                    details: `Started watching: ${selectedLesson.title}`
-                                                }).catch(console.error);
-                                            }
-                                        }}
-                                    >
-                                        Din webbläsare stödjer inte videouppspelning.
-                                    </video>
-                                </div>
+                                <VideoPlayer
+                                    src={selectedLesson.fileUrl.startsWith('http')
+                                        ? selectedLesson.fileUrl
+                                        : `http://127.0.0.1:8080${selectedLesson.fileUrl}`}
+                                    title={selectedLesson.title}
+                                    chapters={selectedLesson.videoChapters ? JSON.parse(selectedLesson.videoChapters) : []}
+                                    poster={selectedLesson.thumbnailUrl}
+                                    onProgress={({ currentTime, duration }) => {
+                                        // Track progress for student analytics
+                                        if (!isTeacher && currentTime > 0 && currentTime % 30 < 1) {
+                                            // Log every ~30 seconds
+                                            const percent = Math.round((currentTime / duration) * 100);
+                                            console.log(`Video progress: ${percent}%`);
+                                        }
+                                    }}
+                                    onEnded={() => {
+                                        if (!isTeacher) {
+                                            api.activity.log({
+                                                userId: currentUser.id,
+                                                courseId: courseId,
+                                                materialId: selectedLesson.id,
+                                                type: 'COMPLETE_VIDEO',
+                                                details: `Completed: ${selectedLesson.title}`
+                                            }).catch(console.error);
+                                        }
+                                    }}
+                                    onMetadataLoaded={({ duration }) => {
+                                        // Could update backend with duration if not set
+                                        if (!selectedLesson.videoDuration && duration && isTeacher) {
+                                            api.patch(`/videos/${selectedLesson.id}/metadata`, {
+                                                duration: Math.floor(duration)
+                                            }).catch(console.error);
+                                        }
+                                    }}
+                                />
                             )}
 
                             {/* 3. BILD (NYTT!) */}

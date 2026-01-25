@@ -1,7 +1,7 @@
 // Use relative URL to leverage Vite's proxy for LAN access
 const API_BASE = '/api';
 
-const getTenantFromUrl = () => {
+export const getTenantFromUrl = () => {
     const hostname = window.location.hostname;
 
     // 1. Prioritera manuell override (bra för testning)

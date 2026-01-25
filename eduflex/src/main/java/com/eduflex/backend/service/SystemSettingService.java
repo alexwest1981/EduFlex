@@ -24,7 +24,9 @@ public class SystemSettingService {
         createIfMissing("site_name", "EduFlex", "Systemets visningsnamn i menyn.");
         createIfMissing("system_version", "2.0.0", "Systemets nuvarande version.");
         createIfMissing("registration_open", "true", "Tillåter nya användare att registrera sig.");
-        createIfMissing("onlyoffice_url", "http://localhost:8080", "URL till ONLYOFFICE Document Server.");
+        createIfMissing("onlyoffice_url", "http://localhost:8081", "URL till ONLYOFFICE tillgänglig från webbläsaren.");
+        createIfMissing("onlyoffice_internal_url", "http://onlyoffice-ds",
+                "Intern URL till ONLYOFFICE (för Docker-nätverk).");
         createIfMissing("onlyoffice_enabled", "true", "Aktivera eller inaktivera ONLYOFFICE-integrationen globalt.");
 
         // --- TA BORT MODULERNA HÄRIFRÅN ---

@@ -1,0 +1,46 @@
+{
+    "services": {
+        "CoAuthoring": {
+            "sql": {
+                "type": "postgres",
+                "dbHost": "localhost",
+                "dbPort": "5432",
+                "dbName": "onlyoffice",
+                "dbUser": "onlyoffice",
+                "dbPass": "onlyoffice"
+            },
+            "token": {
+                "enable": {
+                    "request": {
+                        "inbox": false,
+                        "outbox": false
+                    },
+                    "browser": false
+                }
+            },
+            "secret": {
+                "inbox": {
+                    "string": "secret"
+                },
+                "outbox": {
+                    "string": "secret"
+                },
+                "session": {
+                    "string": "secret"
+                }
+            },
+            "request-filtering-agent": {
+                "allowPrivateIPAddress": true,
+                "allowMetaIPAddress": true
+            }
+        }
+    },
+    "rabbitmq": {
+        "url": "amqp://guest:guest@localhost"
+    },
+    "storage": {
+        "fs": {
+            "secretString": "secret"
+        }
+    }
+}

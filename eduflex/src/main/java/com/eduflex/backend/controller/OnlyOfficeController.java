@@ -41,8 +41,11 @@ public class OnlyOfficeController {
     @Value("${file.upload-dir}")
     private String uploadDir;
 
-    @Value("${app.backend.internal-url:http://backend:8080}")
+    @Value("${app.backend.internal-url:http://eduflex-backend:8080}")
     private String internalBackendUrl;
+
+    @Value("${app.url:https://www.eduflexlms.se}")
+    private String publicAppUrl;
 
     private final DocumentRepository documentRepository;
     private final CourseMaterialRepository materialRepository;
@@ -66,9 +69,11 @@ public class OnlyOfficeController {
     public ResponseEntity<Map<String, Object>> healthCheck() {
         Map<String, Object> status = new HashMap<>();
         try {
-            String onlyOfficeUrl = settingRepository.findBySettingKey("onlyoffice_url")
+            String onlyOfficeUrl = settingRepository.findBySettingKey("onlyoffice_internal_url")
                     .map(s -> s.getSettingValue())
-                    .orElse("http://localhost:8081");
+                    .orElse(settingRepository.findBySettingKey("onlyoffice_url")
+                            .map(s -> s.getSettingValue())
+                            .orElse("http://onlyoffice-ds"));
 
             if (!onlyOfficeUrl.endsWith("/"))
                 onlyOfficeUrl += "/";
@@ -90,7 +95,17 @@ public class OnlyOfficeController {
     public ResponseEntity<Map<String, Object>> getConfig(
             @PathVariable String type,
             @PathVariable Long id,
-            @RequestParam Long userId) {
+            @RequestParam Long userId,
+            HttpServletRequest request) {
+
+        String tenantId = request.getHeader("X-Tenant-ID");
+        if (tenantId == null)
+            tenantId = request.getParameter("tenantId");
+        String tenantQuery = (tenantId != null) ? "?tenantId=" + tenantId : "";
+
+        logger.info("[ONLYOFFICE DEBUG] getConfig called for {} {} (Tenant Header: {}, Tenant QueryParam: {})",
+                type, id, request.getHeader("X-Tenant-ID"), request.getParameter("tenantId"));
+        logger.info("[ONLYOFFICE DEBUG] Tenant Resolved: {}, Final tenantQuery: {}", tenantId, tenantQuery);
 
         String fileName = "";
         String fileUrl = "";
@@ -115,6 +130,38 @@ public class OnlyOfficeController {
             key = "lesson_" + id + "_" + fileName.hashCode();
         }
 
+        // Determine Base URL for Client
+        String clientBaseUrl = publicAppUrl;
+        if (clientBaseUrl == null || clientBaseUrl.isEmpty()) {
+            // Fallback: Construct from request (Use X-Forwarded-Proto if present)
+            String scheme = request.getHeader("X-Forwarded-Proto");
+            if (scheme == null)
+                scheme = request.getScheme();
+
+            String host = request.getHeader("X-Forwarded-Host");
+            if (host == null)
+                host = request.getServerName();
+
+            // Port handling could be complex behind proxies, simplified here:
+            // If explicit host header, assume port is implied or standard.
+            // If using local dev, might need port.
+            // Better to rely on app.url for production!
+            clientBaseUrl = scheme + "://" + host;
+
+            // If running strictly local dev without proxy, append port if not 80/443
+            if ("localhost".equals(host) || "127.0.0.1".equals(host)) {
+                int port = request.getServerPort();
+                if (port != 80 && port != 443) {
+                    clientBaseUrl += ":" + port;
+                }
+            }
+        }
+
+        // Remove trailing slash if present
+        if (clientBaseUrl.endsWith("/")) {
+            clientBaseUrl = clientBaseUrl.substring(0, clientBaseUrl.length() - 1);
+        }
+
         Map<String, Object> config = new HashMap<>();
         config.put("documentType", getDocumentType(fileName));
 
@@ -122,12 +169,20 @@ public class OnlyOfficeController {
         document.put("fileType", getExtension(fileName));
         document.put("key", key);
         document.put("title", fileName);
-        document.put("url", internalBackendUrl + "/api/onlyoffice/download/" + type + "/" + id);
+
+        // VIKTIGT: För Docker-to-Docker kommunikation använder vi INTERNA URLer.
+        // OnlyOffice-containern (dockernätverk) måste nå Backend-containern.
+        // Publika URLer (https://www.eduflexlms.se) fungerar inte alltid inifrån
+        // containrar (NAT Loopback).
+        document.put("url", internalBackendUrl + "/api/onlyoffice/download/" + type + "/" + id + tenantQuery);
 
         config.put("document", document);
 
         Map<String, Object> editorConfig = new HashMap<>();
-        editorConfig.put("callbackUrl", internalBackendUrl + "/api/onlyoffice/callback/" + type + "/" + id);
+
+        // Samma för Callback - använd intern URL
+        editorConfig.put("callbackUrl",
+                internalBackendUrl + "/api/onlyoffice/callback/" + type + "/" + id + tenantQuery);
 
         Map<String, Object> user = new HashMap<>();
         user.put("id", userId.toString());
@@ -136,44 +191,64 @@ public class OnlyOfficeController {
 
         config.put("editorConfig", editorConfig);
 
+        try {
+            logger.info("[ONLYOFFICE DEBUG] Final Config: {}", objectMapper.writeValueAsString(config));
+        } catch (Exception e) {
+            logger.error("Error logging onlyoffice config", e);
+        }
+
+        logger.info("ONLYOFFICE Config generated for {} {} with tenantQuery: {}", type, id, tenantQuery);
         return ResponseEntity.ok(config);
     }
 
     @GetMapping("/download/{type}/{id}")
     public ResponseEntity<Resource> download(@PathVariable String type, @PathVariable Long id) {
-        String fileUrl = "";
-        String fileName = "";
-        String contentType = "application/octet-stream";
-
-        if ("DOCUMENT".equalsIgnoreCase(type)) {
-            Document doc = documentRepository.findById(id).orElseThrow();
-            fileUrl = doc.getFileUrl();
-            fileName = doc.getFileName();
-            contentType = doc.getFileType();
-        } else if ("MATERIAL".equalsIgnoreCase(type)) {
-            CourseMaterial mat = materialRepository.findById(id).orElseThrow();
-            fileUrl = mat.getFileUrl();
-            fileName = mat.getFileName() != null ? mat.getFileName() : mat.getTitle();
-        } else if ("LESSON".equalsIgnoreCase(type)) {
-            Lesson lesson = lessonRepository.findById(id).orElseThrow();
-            fileUrl = lesson.getAttachmentUrl();
-            fileName = lesson.getAttachmentName();
-        }
+        // Force log to stdout to ensure visibility in docker logs
+        System.out.println("🧾 ONLYOFFICE DOWNLOAD " + type + "/" + id);
 
         try {
+            String fileUrl = "";
+            String fileName = "";
+            String contentType = "application/octet-stream";
+
+            if ("DOCUMENT".equalsIgnoreCase(type)) {
+                Document doc = documentRepository.findById(id)
+                        .orElseThrow(() -> new RuntimeException("Document not found in DB"));
+                fileUrl = doc.getFileUrl();
+                fileName = doc.getFileName();
+                contentType = doc.getFileType();
+            } else if ("MATERIAL".equalsIgnoreCase(type)) {
+                CourseMaterial mat = materialRepository.findById(id)
+                        .orElseThrow(() -> new RuntimeException("Material not found in DB"));
+                fileUrl = mat.getFileUrl();
+                fileName = mat.getFileName();
+            } else if ("LESSON".equalsIgnoreCase(type)) {
+                Lesson lesson = lessonRepository.findById(id)
+                        .orElseThrow(() -> new RuntimeException("Lesson not found in DB"));
+                fileUrl = lesson.getAttachmentUrl();
+                fileName = lesson.getAttachmentName();
+            }
+
+            // Construct path (assuming fileUrl starts with /uploads/)
             String pathInUploads = fileUrl.replace("/uploads/", "");
-            Path filePath = Paths.get(uploadDir).resolve(pathInUploads).normalize();
+            Path filePath = Paths.get("/app/uploads").resolve(pathInUploads).normalize();
+
+            System.out.println("   -> File Path: " + filePath.toAbsolutePath());
+
             Resource resource = new UrlResource(filePath.toUri());
 
-            if (resource.exists()) {
+            if (resource.exists() && resource.isReadable()) {
                 return ResponseEntity.ok()
                         .contentType(MediaType.parseMediaType(contentType))
                         .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
                         .body(resource);
             } else {
+                System.err.println("❌ FILE MISSING at " + filePath);
                 return ResponseEntity.notFound().build();
             }
         } catch (Exception e) {
+            System.err.println("❌ EXCEPTION in download: " + e.getMessage());
+            e.printStackTrace();
             return ResponseEntity.internalServerError().build();
         }
     }
@@ -189,7 +264,9 @@ public class OnlyOfficeController {
             String body = scanner.hasNext() ? scanner.next() : "";
             Map<String, Object> callBackData = objectMapper.readValue(body, Map.class);
 
-            logger.info("ONLYOFFICE Callback for {} {}: status {}", type, id, callBackData.get("status"));
+            String tenant = com.eduflex.backend.config.tenant.TenantContext.getCurrentTenant();
+            logger.info("[ONLYOFFICE DEBUG] Callback for {} {}: status {} (Tenant: {})", type, id,
+                    callBackData.get("status"), tenant);
 
             if (callBackData.get("status") instanceof Integer && (Integer) callBackData.get("status") == 2) {
                 String downloadUrl = (String) callBackData.get("url");

@@ -4,7 +4,8 @@ import { api } from '../../services/api';
 
 const OnlyOfficeSettings = () => {
     const [settings, setSettings] = useState({
-        onlyoffice_url: 'http://localhost:8080',
+        onlyoffice_url: 'http://localhost:8081',
+        onlyoffice_internal_url: 'http://onlyoffice-ds',
         onlyoffice_enabled: 'true'
     });
     const [loading, setLoading] = useState(true);
@@ -22,7 +23,7 @@ const OnlyOfficeSettings = () => {
             const data = await api.system.getSettings();
             const ooSettings = {};
             data.forEach(s => {
-                if (s.settingKey === 'onlyoffice_url' || s.settingKey === 'onlyoffice_enabled') {
+                if (s.settingKey === 'onlyoffice_url' || s.settingKey === 'onlyoffice_enabled' || s.settingKey === 'onlyoffice_internal_url') {
                     ooSettings[s.settingKey] = s.settingValue;
                 }
             });
@@ -39,6 +40,7 @@ const OnlyOfficeSettings = () => {
         try {
             await Promise.all([
                 api.system.updateSetting('onlyoffice_url', settings.onlyoffice_url),
+                api.system.updateSetting('onlyoffice_internal_url', settings.onlyoffice_internal_url),
                 api.system.updateSetting('onlyoffice_enabled', settings.onlyoffice_enabled)
             ]);
             alert('Inställningar sparade!');
@@ -100,7 +102,21 @@ const OnlyOfficeSettings = () => {
                             className="w-full px-4 py-2 bg-gray-50 dark:bg-[#282a2c] border border-gray-200 dark:border-[#3c4043] rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition-all dark:text-white font-mono text-sm"
                             placeholder="https://onlyoffice.example.com"
                         />
-                        <p className="text-xs text-gray-500 mt-1">Säkerställ att servern är åtkomlig för både frontend och backend via denna URL.</p>
+                        <p className="text-xs text-gray-500 mt-1">URL som används av användarens webbläsare för att ladda editorn.</p>
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            Internal Document Server URL
+                        </label>
+                        <input
+                            type="text"
+                            value={settings.onlyoffice_internal_url}
+                            onChange={(e) => setSettings({ ...settings, onlyoffice_internal_url: e.target.value })}
+                            className="w-full px-4 py-2 bg-gray-50 dark:bg-[#282a2c] border border-gray-200 dark:border-[#3c4043] rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition-all dark:text-white font-mono text-sm"
+                            placeholder="http://onlyoffice-ds"
+                        />
+                        <p className="text-xs text-gray-500 mt-1">URL som används av backend för anslutningskontroll (Hälsokontroll).</p>
                     </div>
 
                     <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-[#282a2c] rounded-xl">
@@ -142,11 +158,11 @@ const OnlyOfficeSettings = () => {
                 </div>
 
                 {health && (
-                    <div className={`mt-6 p-4 rounded-xl flex items-start gap-3 animate-in slide-in-from-top-2 duration-300 ${health.status === 'success' ? 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 border border-green-200 dark:border-green-800' : 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-800'}`}>
-                        {health.status === 'success' ? <CheckCircle2 size={20} className="mt-0.5 flex-shrink-0" /> : <AlertTriangle size={20} className="mt-0.5 flex-shrink-0" />}
+                    <div className={`mt-6 p-4 rounded-xl flex items-start gap-3 animate-in slide-in-from-top-2 duration-300 ${(health.status === 'success' || health.status === 'UP') ? 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 border border-green-200 dark:border-green-800' : 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-800'}`}>
+                        {(health.status === 'success' || health.status === 'UP') ? <CheckCircle2 size={20} className="mt-0.5 flex-shrink-0" /> : <AlertTriangle size={20} className="mt-0.5 flex-shrink-0" />}
                         <div>
-                            <p className="font-bold">{health.status === 'success' ? 'Anslutning lyckades!' : 'Anslutning misslyckades'}</p>
-                            <p className="text-sm">{health.message || (health.status === 'success' ? 'Document Server svarar korrekt.' : 'Kunde inte nå Document Server.')}</p>
+                            <p className="font-bold">{(health.status === 'success' || health.status === 'UP') ? 'Anslutning lyckades!' : 'Anslutning misslyckades'}</p>
+                            <p className="text-sm">{health.message || ((health.status === 'success' || health.status === 'UP') ? 'Document Server svarar korrekt.' : 'Kunde inte nå Document Server.')}</p>
                             {health.version && (
                                 <div className="mt-2 flex items-center gap-2 text-xs font-mono bg-white/50 dark:bg-black/20 px-2 py-1 rounded w-fit">
                                     Version: {health.version}

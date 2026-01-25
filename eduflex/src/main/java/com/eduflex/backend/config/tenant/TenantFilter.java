@@ -49,14 +49,13 @@ public class TenantFilter extends OncePerRequestFilter {
                         TenantContext.setCurrentTenant(schema);
                         logger.debug("✅ TenantFilter: set schema to {}", schema);
                     }
-                } catch (org.springframework.dao.EmptyResultDataAccessException e) {
-                    logger.warn("❌ TenantFilter: Tenant ID not found: {}", tenantId);
-                    response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                    response.getWriter().write("Invalid Tenant ID");
-                    return;
+                } catch (org.springframework.dao.DataAccessException e) {
+                    // Handle invalid UUIDs or not found users gracefully
+                    logger.warn("❌ TenantFilter: Tenant ID lookup failed (ID: {}). fallback to public. Error: {}",
+                            tenantId, e.getMessage());
+                    TenantContext.setCurrentTenant("public");
                 } catch (Exception e) {
                     logger.error("💥 TenantFilter JDBC Error: {}", e.getMessage(), e);
-                    // Fallback or error?
                     response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                     return;
                 }
@@ -66,7 +65,9 @@ public class TenantFilter extends OncePerRequestFilter {
 
             filterChain.doFilter(request, response);
 
-        } finally {
+        } finally
+
+        {
             TenantContext.clear();
         }
     }

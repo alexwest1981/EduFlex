@@ -2,6 +2,51 @@ tunnel: eduflex
 credentials-file: C:\Users\alxpa\.cloudflared\b6f238db-50d5-4c9b-a59d-89fffa203a5c.json
 
 ingress:
+  # OnlyOffice Routing
+  - hostname: www.eduflexlms.se
+    path: /web-apps/*
+    service: http://localhost:8081
+  - hostname: eduflexlms.se
+    path: /web-apps/*
+    service: http://localhost:8081
+    
+  - hostname: www.eduflexlms.se
+    path: /7.3.3-49/*
+    service: http://localhost:8081
+  - hostname: eduflexlms.se
+    path: /7.3.3-49/*
+    service: http://localhost:8081
+
+  - hostname: www.eduflexlms.se
+    path: /cache/*
+    service: http://localhost:8081
+  - hostname: eduflexlms.se
+    path: /cache/*
+    service: http://localhost:8081
+
+  # API & Auth Routing (Direct to Backend, Bypass Vite Proxy)
+  - hostname: www.eduflexlms.se
+    path: /api/*
+    service: http://localhost:8080
+  - hostname: eduflexlms.se
+    path: /api/*
+    service: http://localhost:8080
+
+  - hostname: www.eduflexlms.se
+    path: /oauth2/*
+    service: http://localhost:8080
+  - hostname: eduflexlms.se
+    path: /oauth2/*
+    service: http://localhost:8080
+
+  - hostname: www.eduflexlms.se
+    path: /login/oauth2/*
+    service: http://localhost:8080
+  - hostname: eduflexlms.se
+    path: /login/oauth2/*
+    service: http://localhost:8080
+
+  # Main App
   - hostname: www.eduflexlms.se
     service: http://localhost:8080
   - hostname: eduflexlms.se

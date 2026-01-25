@@ -18,6 +18,7 @@ Welcome to the EduFlex documentation hub. This directory contains all technical,
 
 - **[📖 User Guides](user-guides/TENANT_ADMIN_GUIDE.md)**
   - Manuals for Tenant Admins, Teachers, and Students.
+  - [Live Lessons Guide](user-guides/LIVE_LESSONS_GUIDE.md) - Video conferencing with Jitsi
 
 - **[🗃️ Reference](reference/ROADMAP.md)**
   - Roadmaps, load test reports, and project status.

@@ -239,14 +239,35 @@ public class CourseService {
         }
         material.setCourse(course);
         if (file != null && !file.isEmpty()) {
-            String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
+            String originalFileName = file.getOriginalFilename();
+            String fileName = UUID.randomUUID() + "_" + originalFileName;
             Path path = Paths.get(uploadDir + "/" + fileName);
             Files.createDirectories(path.getParent());
             Files.write(path, file.getBytes());
             material.setFileUrl("/uploads/" + fileName);
-            material.setFileName(file.getOriginalFilename());
+            material.setFileName(originalFileName);
+
+            // Detect video files and set video-specific metadata
+            if (isVideoFile(originalFileName)) {
+                material.setType(CourseMaterial.MaterialType.VIDEO);
+                material.setVideoFileSize(file.getSize());
+                material.setVideoStatus(CourseMaterial.VideoStatus.READY);
+                // Note: Duration and thumbnail would require ffprobe/ffmpeg
+                // For now, frontend can detect duration via HTML5 video API
+            }
         }
         return materialRepository.save(material);
+    }
+
+    /**
+     * Check if a filename represents a video file
+     */
+    private boolean isVideoFile(String fileName) {
+        if (fileName == null) return false;
+        String lower = fileName.toLowerCase();
+        return lower.endsWith(".mp4") || lower.endsWith(".webm") ||
+               lower.endsWith(".mov") || lower.endsWith(".avi") ||
+               lower.endsWith(".mkv") || lower.endsWith(".ogg");
     }
 
     public CourseMaterial updateMaterial(Long id, String title, String content, String link, String availableFrom,
@@ -266,12 +287,20 @@ public class CourseService {
             material.setAvailableFrom(null);
         }
         if (file != null && !file.isEmpty()) {
-            String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
+            String originalFileName = file.getOriginalFilename();
+            String fileName = UUID.randomUUID() + "_" + originalFileName;
             Path path = Paths.get(uploadDir + "/" + fileName);
             Files.createDirectories(path.getParent());
             Files.write(path, file.getBytes());
             material.setFileUrl("/uploads/" + fileName);
-            material.setFileName(file.getOriginalFilename());
+            material.setFileName(originalFileName);
+
+            // Detect video files and set video-specific metadata
+            if (isVideoFile(originalFileName)) {
+                material.setType(CourseMaterial.MaterialType.VIDEO);
+                material.setVideoFileSize(file.getSize());
+                material.setVideoStatus(CourseMaterial.VideoStatus.READY);
+            }
         }
         return materialRepository.save(material);
     }

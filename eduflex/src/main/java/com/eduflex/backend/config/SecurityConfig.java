@@ -148,6 +148,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/courses/**").authenticated()
 
                         // 4. Övrigt
+                        .requestMatchers("/api/live-lessons/**").authenticated()
                         .requestMatchers("/api/notifications/**").authenticated()
                         .requestMatchers("/api/quizzes/**").authenticated()
                         .requestMatchers(HttpMethod.POST, "/api/logs/client").authenticated() // Allow all authenticated
