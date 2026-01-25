@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Users, Settings, Database, Edit3, Server, Globe, MessageSquare } from 'lucide-react';
+import { Users, Settings, Database, Edit3, Server, Globe, MessageSquare, Store } from 'lucide-react';
 
 const AdminNavbar = () => {
     const { t } = useTranslation();
@@ -12,6 +12,7 @@ const AdminNavbar = () => {
     const searchParams = new URLSearchParams(location.search);
     const currentTab = searchParams.get('tab') || 'administration';
     const isWhitelabel = location.pathname.startsWith('/enterprise/whitelabel');
+    const isCommunity = location.pathname === '/admin/community';
 
     const tabs = [
         { id: 'administration', label: t('admin_tabs.administration') || 'Administration', icon: Users, path: '/admin?tab=administration' },
@@ -19,7 +20,8 @@ const AdminNavbar = () => {
         { id: 'system', label: t('admin_tabs.system_settings') || 'Systeminställningar', icon: Settings, path: '/admin?tab=system' },
         { id: 'skolverket', label: 'Skolverket', icon: Database, path: '/admin?tab=skolverket' },
         { id: 'integrations', label: 'Integrationer', icon: Globe, path: '/admin?tab=integrations' },
-        { id: 'tickets', label: t('admin_tabs.tickets') || 'Ärenden', icon: MessageSquare, path: '/admin?tab=tickets' }
+        { id: 'tickets', label: t('admin_tabs.tickets') || 'Ärenden', icon: MessageSquare, path: '/admin?tab=tickets' },
+        { id: 'community', label: 'Community', icon: Store, path: '/admin/community' }
     ];
 
     const handleNavigation = (tab) => {
@@ -32,11 +34,14 @@ const AdminNavbar = () => {
                 const Icon = tab.icon;
                 // Determine active state
                 // If on whitelabel route, that tab is active
+                // If on /admin/community, that tab is active
                 // If on /admin, check query param matches tab.id
                 let isActive = false;
                 if (tab.id === 'whitelabel') {
                     isActive = isWhitelabel;
-                } else if (!isWhitelabel) {
+                } else if (tab.id === 'community') {
+                    isActive = isCommunity;
+                } else if (!isWhitelabel && !isCommunity) {
                     // Default to administration if no query param
                     isActive = currentTab === tab.id;
                     if (currentTab === 'administration' && !searchParams.get('tab') && tab.id === 'administration') {

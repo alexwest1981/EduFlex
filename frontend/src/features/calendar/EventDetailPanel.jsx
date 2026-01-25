@@ -6,11 +6,12 @@ const EventDetailPanel = ({ event, isOpen, onClose, onDelete, onUpdateStatus, is
 
     const getEventTypeColor = (type) => {
         switch (type) {
-            case 'LESSON': return 'bg-purple-500';
-            case 'EXAM': return 'bg-red-500';
-            case 'WORKSHOP': return 'bg-blue-500';
-            case 'MEETING': return 'bg-amber-500';
-            default: return 'bg-gray-500';
+            case 'LESSON': return 'bg-red-400';
+            case 'EXAM': return 'bg-purple-400';
+            case 'WORKSHOP': return 'bg-green-400';
+            case 'MEETING': return 'bg-blue-400';
+            case 'ASSIGNMENT': return 'bg-yellow-400';
+            default: return 'bg-gray-400';
         }
     };
 
@@ -73,9 +74,9 @@ const EventDetailPanel = ({ event, isOpen, onClose, onDelete, onUpdateStatus, is
             />
 
             {/* Panel */}
-            <div className="fixed right-0 top-0 h-full w-full max-w-md bg-white dark:bg-[#1E1E1E] shadow-2xl z-50 overflow-y-auto animate-in slide-in-from-right duration-300">
+            <div className="fixed right-4 top-4 bottom-4 w-full max-w-sm bg-white dark:bg-[#1E1E1E] shadow-xl z-50 overflow-y-auto rounded-2xl border border-gray-200 dark:border-gray-700 animate-in slide-in-from-right duration-300">
                 {/* Header */}
-                <div className={`${getEventTypeColor(event.type)} p-6 text-white relative`}>
+                <div className={`${getEventTypeColor(event.type)} p-5 text-white relative rounded-t-2xl`}>
                     <button
                         onClick={onClose}
                         className="absolute top-4 right-4 p-2 hover:bg-white/20 rounded-lg transition-colors"
@@ -196,6 +197,19 @@ const EventDetailPanel = ({ event, isOpen, onClose, onDelete, onUpdateStatus, is
                                     Avvisa
                                 </button>
                             </div>
+                        )}
+
+                        {/* Join Meeting Button (if has meeting link) */}
+                        {event.meetingLink && (
+                            <a
+                                href={event.meetingLink}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 rounded-xl transition-colors flex items-center justify-center gap-2 shadow-lg shadow-orange-500/20"
+                            >
+                                <Video size={18} />
+                                Gå med i möte
+                            </a>
                         )}
 
                         {/* Share Link */}

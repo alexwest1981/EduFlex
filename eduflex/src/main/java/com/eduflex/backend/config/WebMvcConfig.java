@@ -17,12 +17,18 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         exposeDirectory(uploadDir, registry);
+
+        // Serve OnlyOffice static assets
+        registry.addResourceHandler("/web-apps/**")
+                .addResourceLocations("classpath:/static/web-apps/")
+                .setCachePeriod(0);
     }
 
     private void exposeDirectory(String dirName, ResourceHandlerRegistry registry) {
         Path uploadDirPath = Paths.get(dirName);
 
-        // FIX: Använd toUri() för att skapa en korrekt fil-URL oavsett operativsystem (Windows/Mac/Linux)
+        // FIX: Använd toUri() för att skapa en korrekt fil-URL oavsett operativsystem
+        // (Windows/Mac/Linux)
         // Detta löser problemet med brutna bilder på Windows.
         String resourceLocation = uploadDirPath.toUri().toString();
 

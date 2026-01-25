@@ -39,6 +39,8 @@ import CertificateView from './features/certificates/CertificateView';
 import EnterpriseWhitelabel from './features/admin/EnterpriseWhitelabel';
 import SkolverketModule from './modules/skolverket/SkolverketModule';
 import SupportPage from './features/support/SupportPage';
+import CommunityHub from './features/community/CommunityHub';
+import CommunityAdmin from './features/community/CommunityAdmin';
 
 // --- PROTECTED ROUTE ---
 const ProtectedRoute = ({ children, roles }) => {
@@ -148,6 +150,15 @@ const AppRoutes = () => {
                     </ProtectedRoute>
                 } />
 
+                {/* COMMUNITY MODERATION (ADMIN ONLY) */}
+                <Route path="/admin/community" element={
+                    <ProtectedRoute roles={['ADMIN']}>
+                        <Layout currentUser={currentUser} handleLogout={logout}>
+                            <CommunityAdmin />
+                        </Layout>
+                    </ProtectedRoute>
+                } />
+
                 <Route path="/calendar" element={
                     <ProtectedRoute>
                         <Layout currentUser={currentUser} handleLogout={logout}>
@@ -218,7 +229,10 @@ const AppRoutes = () => {
                     </ProtectedRoute>
                 } />
 
-
+                {/* Community redirects to ResourceBank with community tab */}
+                <Route path="/community" element={
+                    <Navigate to="/resources?tab=community" replace />
+                } />
 
                 <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>

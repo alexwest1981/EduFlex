@@ -87,7 +87,7 @@ services:
       - SPRING_DATA_REDIS_HOST=redis
       - SPRING_DATA_REDIS_PORT=6379
       - MINIO_URL=http://minio:9000
-      - MINIO_PUBLIC_URL=${MINIO_PUBLIC_URL:-http://localhost:9000}
+      - MINIO_PUBLIC_URL=https://storage.eduflexlms.se
       - MINIO_ACCESS_KEY=minioadmin
       - MINIO_SECRET_KEY=minioadmin
       - MINIO_BUCKET=eduflex-storage
@@ -173,18 +173,30 @@ services:
 
   # --- DOCUMENT EDITING (ONLYOFFICE) ---
   onlyoffice-ds:
-    image: onlyoffice/documentserver:latest
+    image: onlyoffice/documentserver:8.2
     container_name: eduflex-onlyoffice
     restart: always
     environment:
       - JWT_ENABLED=true
-      - JWT_SECRET=eduflex123
+      - JWT_SECRET=eduflex_secure_secret_key_32_chars_
       - JWT_HEADER=Authorization
       - JWT_IN_BODY=true
-    # volumes:
-    #   - ./config/onlyoffice/local.json:/etc/onlyoffice/documentserver/local.json
+      # Use built-in services (no external DB needed)
+      - DB_TYPE=postgres
+      - DB_HOST=localhost
+      - DB_PORT=5432
+      - DB_NAME=onlyoffice
+      - DB_USER=onlyoffice
+      - AMQP_TYPE=rabbitmq
+      - AMQP_URI=amqp://guest:guest@localhost
+      - REDIS_SERVER_HOST=localhost
+      - REDIS_SERVER_PORT=6379
+    volumes:
+      - onlyoffice_data:/var/www/onlyoffice/Data
+      - onlyoffice_logs:/var/log/onlyoffice
     ports:
       - "8081:80"
+      - "8082:80"
       - "8443:443"
     networks:
       - eduflex-net
@@ -343,6 +355,8 @@ volumes:
   postgres_data: # Här sparas databasen så den inte försvinner vid omstart
   redis_data:
   minio_data:
+  onlyoffice_data:
+  onlyoffice_logs:
   jitsi_web_config:
   jitsi_web_crontabs:
   jitsi_transcripts:

@@ -94,6 +94,22 @@ public class SecurityConfig {
     }
 
     @Bean
+    @org.springframework.core.annotation.Order(1)
+    public SecurityFilterChain onlyOfficeFilterChain(HttpSecurity http) throws Exception {
+        http
+                .securityMatcher("/api/onlyoffice/**")
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .csrf(AbstractHttpConfigurer::disable)
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
+
+        http.headers(headers -> headers.frameOptions(frame -> frame.disable()));
+
+        return http.build();
+    }
+
+    @Bean
+    @org.springframework.core.annotation.Order(2)
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
@@ -112,6 +128,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/system/license/**", "/uploads/**", "/h2-console/**", "/ws/**",
                                 "/ws-log/**",
                                 "/actuator/**", "/lti/**", "/api/lti/**", "/error",
+                                "/web-apps/**", // Allow OnlyOffice static assets
                                 // Swagger UI and OpenAPI Documentation
                                 "/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html", "/api-docs/**")
                         .permitAll()
@@ -154,6 +171,15 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/logs/client").authenticated() // Allow all authenticated
                                                                                               // users to report errors
                         .requestMatchers("/api/logs/**").hasAnyAuthority("ADMIN", "ROLE_ADMIN")
+
+                        // 5. Community endpoints
+                        .requestMatchers(HttpMethod.GET, "/api/community/**").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/community/publish/**")
+                        .hasAnyAuthority("ADMIN", "ROLE_ADMIN", "TEACHER", "ROLE_TEACHER")
+                        .requestMatchers(HttpMethod.POST, "/api/community/items/*/install").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/community/items/*/rate").authenticated()
+                        .requestMatchers("/api/community/admin/**")
+                        .hasAnyAuthority("ADMIN", "ROLE_ADMIN")
 
                         // All other requests require authentication
                         .anyRequest().authenticated())

@@ -1,0 +1,41 @@
+{
+  "services": {
+    "CoAuthoring": {
+      "request-filtering-agent": {
+        "allowPrivateIPAddress": true,
+        "allowMetaIPAddress": true
+      },
+      "token": {
+        "enable": {
+          "browser": true,
+          "request": {
+            "inbox": true,
+            "outbox": true
+          }
+        },
+        "inbox": {
+          "header": "Authorization"
+        },
+        "outbox": {
+          "header": "Authorization"
+        }
+      },
+      "secret": {
+        "inbox": {
+          "string": "eduflex_secure_secret_key_32_chars_"
+        },
+        "outbox": {
+          "string": "eduflex_secure_secret_key_32_chars_"
+        },
+        "session": {
+          "string": "eduflex_secure_secret_key_32_chars_"
+        }
+      }
+    }
+  },
+  "storage": {
+    "fs": {
+      "secretString": "uBQoIOgXv88Q0KL9Vx6r"
+    }
+  }
+}

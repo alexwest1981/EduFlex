@@ -38,6 +38,13 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
+        // Skip filter for OnlyOffice endpoints to avoid incorrect JWT validation
+        String path = request.getRequestURI();
+        if (path.startsWith("/api/onlyoffice/")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         try {
             String headerAuth = request.getHeader("Authorization");
 

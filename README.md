@@ -31,6 +31,21 @@
 
 ---
 
+*   **🏪 EduFlex Community - Content Marketplace (Jan 25, 2026):**
+    *   **Cross-Tenant Sharing:** Teachers can publish Quiz, Assignments, and Lessons to a shared marketplace accessible across all tenants.
+    *   **Moderation Workflow:** Admin approval flow with pending/published/rejected states and rejection reasons.
+    *   **Question Bank Integration:** When installing a Quiz from Community, all questions are automatically copied to your Question Bank for reuse.
+    *   **Rich Metadata:** Subject categories (20+ subjects with icons), difficulty levels, grade levels, and tags for easy discovery.
+    *   **Ratings & Reviews:** 5-star rating system with comments to help teachers find quality content.
+    *   **ResourceBank Integration:** Community tab integrated directly in the ResourceBank with search, filter, and install functionality.
+    *   **Admin Panel:** Dedicated Community moderation page in Admin Dashboard for reviewing pending submissions.
+|
+*   **📡 Storage & OnlyOffice Stability (Jan 26, 2026):**
+    -   **MinIO Public Access:** Fixed image loading issues by ensuring `eduflex-storage` bucket has anonymous download policy.
+    -   **OnlyOffice Resolution:** Fixed "Download failed" errors by correcting internal/external hostname handling and Cloudflare routing for versioned assets.
+    -   **Infrastructure Guide:** Created a "Source of Truth" document for networking and tunnel configuration in `docs/InfrastructureGuide.md`.
+    -   **Hybrid Auth Fixes:** Improved JWT validation in hybrid mode to prevent random 401 Unauthorized errors.
+
 *   **🛠️ Robust OnlyOffice DevOps & UI (Jan 25, 2026):**
     *   **Modal Editor UI:** Refactored document editor into a responsive, centered modal window with backdrop and reliable mounting logic (Ref-based).
     *   **Backend Static Serving:** Implemented direct serving of OnlyOffice assets (`/web-apps`) via Spring Boot to bypass Windows/Docker proxy limitations.
@@ -212,6 +227,18 @@ Whether you are a single educator, a private school, or a municipal education bo
 | **Online Friends Panel** | See who's currently online |
 | **Student Contact Modal** | Quick contact options for teachers |
 | **Activity Feed** | Recent activity from connections |
+
+#### 🏪 Community Marketplace
+| Feature | Description |
+|---------|-------------|
+| **Content Sharing** | Teachers can publish Quiz, Assignments, and Lessons to a shared marketplace |
+| **Moderation Flow** | Admin approval with pending/published/rejected states |
+| **Question Bank Sync** | Quiz questions automatically copied to personal Question Bank on install |
+| **Subject Categories** | 20+ subject categories with custom icons and colors |
+| **Search & Filter** | Find content by subject, type, keywords, and ratings |
+| **Ratings & Reviews** | 5-star rating system with user comments |
+| **Download Tracking** | Track popular content with download counts |
+| **Cross-Tenant** | Content accessible across all EduFlex tenants |
 
 #### 🎨 Enterprise Themes & Whitelabel
 Complete visual customization with 8 professional design systems:
@@ -540,6 +567,24 @@ All requests (except `/api/tenants`) require `X-Tenant-ID` header.
 | `PUT` | `/api/notifications/{id}/read` | Mark notification as read |
 | `PUT` | `/api/notifications/read-all` | Mark all as read |
 
+#### Community Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/api/community/browse` | Browse published content with filters |
+| `GET` | `/api/community/search?q=` | Full-text search across content |
+| `GET` | `/api/community/items/{id}` | Get item details with ratings |
+| `GET` | `/api/community/subjects` | List all subject categories |
+| `POST` | `/api/community/publish/quiz/{id}` | Submit quiz for review (Teacher) |
+| `POST` | `/api/community/publish/assignment/{id}` | Submit assignment for review |
+| `POST` | `/api/community/publish/lesson/{id}` | Submit lesson for review |
+| `POST` | `/api/community/items/{id}/install` | Install content to local resources |
+| `POST` | `/api/community/items/{id}/rate` | Rate and review content |
+| `GET` | `/api/community/my-published` | List your submitted content |
+| `GET` | `/api/community/admin/pending` | Get pending items (Admin) |
+| `POST` | `/api/community/admin/approve/{id}` | Approve pending item (Admin) |
+| `POST` | `/api/community/admin/reject/{id}` | Reject with reason (Admin) |
+
 > 📖 **Full API docs:** [docs/API.md](docs/API.md) or Swagger UI
 
 ---
@@ -624,6 +669,8 @@ See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for manual setup.
 | Admin UI Redesign (Whitelabel) | ✅ Implemented |
 | Video Lessons (Self-hosted, Chapters) | ✅ Implemented |
 | Live Classrooms (Jitsi Integration) | ✅ Implemented |
+| Community Marketplace | ✅ Implemented |
+| Question Bank Integration | ✅ Implemented |
 | Microservices Split (Video/PDF) | 🔜 Q2 2026 |
 | Event Bus (Kafka/RabbitMQ) | 🔜 Q3 2026 |
 | AI-powered Quiz Generation | 🔜 Q2 2026 |
@@ -665,6 +712,21 @@ taskkill /PID <PID> /F
 ## 🇸🇪 Svenska
 
 ### ⚡ Senaste Uppdateringarna
+*   **🏪 EduFlex Community - Innehållsmarknadsplats (25 jan 2026):**
+    *   **Cross-Tenant Delning:** Lärare kan publicera Quiz, Uppgifter och Lektioner till en delad marknadsplats tillgänglig för alla tenants.
+    *   **Moderationsflöde:** Admin-godkännande med väntande/publicerad/avvisad status och motiveringar.
+    *   **Frågebank-integration:** När du installerar en Quiz från Community kopieras alla frågor automatiskt till din Frågebank.
+    *   **Rik Metadata:** Ämneskategorier (20+ ämnen med ikoner), svårighetsgrader, årskurser och taggar.
+    *   **Betyg & Recensioner:** 5-stjärnigt betygssystem med kommentarer.
+    *   **ResourceBank-integration:** Community-flik integrerad direkt i Resursbanken med sök, filter och installation.
+    *   **Admin-panel:** Dedikerad Community-moderationssida i Admin Dashboard.
+|
+*   **📡 Lagring & OnlyOffice Stabilitet (26 jan 2026):**
+    -   **MinIO Publik Åtkomst:** Fixat problem med bilder som inte laddades genom att sätta `eduflex-storage` till "anonymous download".
+    -   **OnlyOffice Fix:** Åtgärdat "Nedladdning misslyckades" genom att korrigera hantering av interna/externa värdnamn och Cloudflare-routing.
+    -   **Infrastrukturguide:** Skapat en "Source of Truth" för nätverk och tunnel-konfiguration i `docs/InfrastructureGuide.md`.
+    -   **Huvuddomän-optimering:** Förbättrad routing för tillgångar och API-anrop via tunneln för att minimera 401-fel.
+
 *   **🛠️ Robust OnlyOffice DevOps & UI (25 jan 2026):**
     *   **Modal Editor UI:** Omarbetade dokumentredigeraren till ett responsivt modal-fönster med stabil laddningslogik.
     *   **Backend Static Serving:** Implementerade direkt servering av OnlyOffice-tillägg via Spring Boot för att kringgå proxy-problem på Windows.
@@ -740,6 +802,14 @@ taskkill /PID <PID> /F
 #### 👥 Sociala Funktioner
 - **Online-vänner:** Se vilka som är online just nu
 - **Snabbkontakt:** Enkla kontaktalternativ för lärare
+
+#### 🏪 Community Marknadsplats
+- **Innehållsdelning:** Publicera Quiz, Uppgifter och Lektioner till en delad marknadsplats
+- **Moderation:** Admin-godkännande med väntande/publicerad/avvisad status
+- **Frågebank-sync:** Quiz-frågor kopieras automatiskt till din Frågebank vid installation
+- **20+ Ämnen:** Matematik, Svenska, Engelska, Fysik, Kemi och fler med anpassade ikoner
+- **Sök & Filter:** Hitta innehåll efter ämne, typ, nyckelord och betyg
+- **Betyg & Recensioner:** 5-stjärnigt betygssystem med användarkommentarer
 
 #### 🇸🇪 Skolverket-integration
 - **Kurskoppling:** Direkt Skolverket-databaskoppling
@@ -865,4 +935,4 @@ För Enterprise-frågor:
 
 ---
 
-*Last updated: 2026-01-24 (Live Classrooms & Video Lessons)*
+*Last updated: 2026-01-25 (Community Marketplace & Question Bank Integration)*

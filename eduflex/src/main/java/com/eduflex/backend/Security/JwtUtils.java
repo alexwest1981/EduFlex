@@ -16,10 +16,11 @@ import java.util.Date;
 public class JwtUtils {
     private static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
 
-    // I en riktig app ska denna hemlighet ligga i application.properties
-    // Exact 32 bytes (256 bits) for HmacSHA256 compliance
-    private final String jwtSecret = "12345678901234567890123456789012";
-    private final int jwtExpirationMs = 86400000; // 24 timmar
+    @org.springframework.beans.factory.annotation.Value("${eduflex.jwt.secret}")
+    private String jwtSecret;
+
+    @org.springframework.beans.factory.annotation.Value("${eduflex.jwt.expiration}")
+    private int jwtExpirationMs;
 
     public String generateJwtToken(Authentication authentication) {
         String username;
@@ -58,9 +59,23 @@ public class JwtUtils {
                 .compact();
     }
 
+    /**
+     * Generates a token specifically for OnlyOffice Document Server
+     * 
+     * @param payload The config map to sign
+     * @return Signed JWT token
+     */
+    public String generateOnlyOfficeToken(java.util.Map<String, Object> payload) {
+        return Jwts.builder()
+                .setClaims(payload)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date((new Date()).getTime() + 1000 * 60 * 60)) // 1 hour
+                .signWith(key(), SignatureAlgorithm.HS256)
+                .compact();
+    }
+
     private Key key() {
-        return new javax.crypto.spec.SecretKeySpec(jwtSecret.getBytes(java.nio.charset.StandardCharsets.UTF_8),
-                "HmacSHA256");
+        return io.jsonwebtoken.security.Keys.hmacShaKeyFor(jwtSecret.getBytes(java.nio.charset.StandardCharsets.UTF_8));
     }
 
     public String getUserNameFromJwtToken(String token) {

@@ -50,10 +50,12 @@ public class LicenseFilter extends OncePerRequestFilter {
             response.getWriter()
                     .write("{\"error\": \"LICENSE_REQUIRED\", \"message\": \"System is locked. Valid license required.\"}");
         } catch (Exception e) {
-            System.err.println("❌ CRITICAL ERROR in LicenseFilter:");
+            String path = request.getRequestURI();
+            System.err.println("❌ ERROR in LicenseFilter [" + path + "]: " + e.getMessage());
             e.printStackTrace();
-            response.setStatus(500);
-            response.getWriter().write("Internal Server Error in LicenseFilter: " + e.getMessage());
+            // Re-throw to allow Spring Security / Spring Web to handle it correctly (e.g.
+            // generate JSON 500)
+            throw new RuntimeException("LicenseFilter Error at " + path, e);
         }
     }
 }

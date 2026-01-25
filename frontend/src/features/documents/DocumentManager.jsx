@@ -19,6 +19,7 @@ const DocumentManager = () => {
     const [allUsers, setAllUsers] = useState([]);
     const [userSearch, setUserSearch] = useState('');
     const [editingDoc, setEditingDoc] = useState(null);
+    const [showEditor, setShowEditor] = useState(false);
 
     // Drag & Drop State
     const [isDragging, setIsDragging] = useState(false);
@@ -31,8 +32,13 @@ const DocumentManager = () => {
 
     // DEBUG: Monitor editingDoc changes
     useEffect(() => {
-        console.log("DocumentManager editingDoc changed:", editingDoc);
-    }, [editingDoc]);
+        console.log("DocumentManager editingDoc changed:", editingDoc, "showEditor:", showEditor);
+    }, [editingDoc, showEditor]);
+
+    const handleEditDoc = (doc) => {
+        setEditingDoc(doc);
+        setShowEditor(true);
+    };
 
     // DEBUG: Monitor unmounts & reloads
     useEffect(() => {
@@ -297,7 +303,7 @@ const DocumentManager = () => {
                                     {/* Hover Actions */}
                                     <div className="absolute inset-0 bg-black/60 rounded-xl flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-sm">
                                         {isEditable(doc.fileName) && (
-                                            <button onClick={() => setEditingDoc(doc)} className="p-2 bg-indigo-600 rounded-full text-white hover:bg-indigo-700 shadow-lg animate-in zoom-in" title="Redigera">
+                                            <button onClick={() => handleEditDoc(doc)} className="p-2 bg-indigo-600 rounded-full text-white hover:bg-indigo-700 shadow-lg animate-in zoom-in" title="Redigera">
                                                 <Edit3 size={18} />
                                             </button>
                                         )}
@@ -333,7 +339,7 @@ const DocumentManager = () => {
                                             <td className="p-4 text-right">
                                                 <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                                                     {isEditable(doc.fileName) && (
-                                                        <button onClick={() => setEditingDoc(doc)} className="p-2 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded text-indigo-600" title="Redigera i ONLYOFFICE">
+                                                        <button onClick={() => handleEditDoc(doc)} className="p-2 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded text-indigo-600" title="Redigera i ONLYOFFICE">
                                                             <Edit3 size={16} />
                                                         </button>
                                                     )}
@@ -388,14 +394,15 @@ const DocumentManager = () => {
                 )
             }
             {
-                editingDoc && (
-                    <div className="relative z-[99999]"> {/* Wrapper to ensure stacking context */}
+                showEditor && editingDoc && (
+                    <div className="onlyoffice-editor">
                         <ErrorBoundary>
                             <OnlyOfficeEditor
                                 entityType="DOCUMENT"
                                 entityId={editingDoc.id}
                                 userId={currentUser.id}
                                 onClose={() => {
+                                    setShowEditor(false);
                                     setEditingDoc(null);
                                     loadDocuments();
                                 }}

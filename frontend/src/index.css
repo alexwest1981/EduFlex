@@ -2,6 +2,39 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Fix for OnlyOffice Modal Overlap */
+.onlyoffice-editor {
+  position: fixed !important;
+  z-index: 999999 !important;
+  isolation: isolate; /* Create new stacking context */
+}
+
+/* Force OnlyOffice iframe to be visible */
+.onlyoffice-editor iframe,
+.onlyoffice-editor [id^="onlyoffice-editor-"],
+.onlyoffice-editor div[id^="onlyoffice-editor-"] iframe {
+  position: relative !important;
+  z-index: 1 !important;
+  width: 100% !important;
+  height: 100% !important;
+  border: none !important;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Ensure the placeholder takes full space */
+.onlyoffice-editor > div > div:last-child {
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 1 !important;
+}
+
+/* Hide loader when iframe is present */
+.onlyoffice-editor iframe ~ div[class*="absolute"] {
+  display: none !important;
+}
+
 /* --- GLOBALA REGLER --- */
 body {
     margin: 0;

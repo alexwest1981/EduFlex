@@ -52,17 +52,20 @@ public class OnlyOfficeController {
     private final LessonRepository lessonRepository;
     private final SystemSettingRepository settingRepository;
     private final ObjectMapper objectMapper;
+    private final com.eduflex.backend.security.JwtUtils jwtUtils;
 
     public OnlyOfficeController(DocumentRepository documentRepository,
             CourseMaterialRepository materialRepository,
             LessonRepository lessonRepository,
             SystemSettingRepository settingRepository,
-            ObjectMapper objectMapper) {
+            ObjectMapper objectMapper,
+            com.eduflex.backend.security.JwtUtils jwtUtils) {
         this.documentRepository = documentRepository;
         this.materialRepository = materialRepository;
         this.lessonRepository = lessonRepository;
         this.settingRepository = settingRepository;
         this.objectMapper = objectMapper;
+        this.jwtUtils = jwtUtils;
     }
 
     @GetMapping("/health")
@@ -95,8 +98,10 @@ public class OnlyOfficeController {
     public ResponseEntity<Map<String, Object>> getConfig(
             @PathVariable String type,
             @PathVariable Long id,
-            @RequestParam Long userId,
+            @RequestParam(required = false) Long userId,
             HttpServletRequest request) {
+
+        logger.info("[ONLYOFFICE] Config request: {} {} userId={}", type, id, userId);
 
         String tenantId = request.getHeader("X-Tenant-ID");
         if (tenantId == null)
@@ -112,22 +117,34 @@ public class OnlyOfficeController {
         String key = "";
 
         if ("DOCUMENT".equalsIgnoreCase(type)) {
-            Document doc = documentRepository.findById(id).orElseThrow();
+            Document doc = documentRepository.findById(id).orElse(null);
+            if (doc == null) {
+                logger.error("[ONLYOFFICE] Document not found: {}", id);
+                return ResponseEntity.notFound().build();
+            }
             fileName = doc.getFileName();
             fileUrl = doc.getFileUrl();
             key = "doc_" + id + "_"
                     + (doc.getUploadedAt() != null ? doc.getUploadedAt().hashCode() : System.currentTimeMillis());
         } else if ("MATERIAL".equalsIgnoreCase(type)) {
-            CourseMaterial mat = materialRepository.findById(id).orElseThrow();
+            CourseMaterial mat = materialRepository.findById(id).orElse(null);
+            if (mat == null) {
+                logger.error("[ONLYOFFICE] Material not found: {}", id);
+                return ResponseEntity.notFound().build();
+            }
             fileName = mat.getFileName() != null ? mat.getFileName() : mat.getTitle();
             fileUrl = mat.getFileUrl();
             key = "mat_" + id + "_"
                     + (mat.getAvailableFrom() != null ? mat.getAvailableFrom().hashCode() : System.currentTimeMillis());
         } else if ("LESSON".equalsIgnoreCase(type)) {
-            Lesson lesson = lessonRepository.findById(id).orElseThrow();
+            Lesson lesson = lessonRepository.findById(id).orElse(null);
+            if (lesson == null) {
+                logger.error("[ONLYOFFICE] Lesson not found: {}", id);
+                return ResponseEntity.notFound().build();
+            }
             fileName = lesson.getAttachmentName() != null ? lesson.getAttachmentName() : lesson.getTitle();
             fileUrl = lesson.getAttachmentUrl();
-            key = "lesson_" + id + "_" + fileName.hashCode();
+            key = "lesson_" + id + "_" + (fileName != null ? fileName.hashCode() : id);
         }
 
         // Determine Base URL for Client
@@ -170,10 +187,10 @@ public class OnlyOfficeController {
         document.put("key", key);
         document.put("title", fileName);
 
-        // VIKTIGT: För Docker-to-Docker kommunikation använder vi INTERNA URLer.
-        // OnlyOffice-containern (dockernätverk) måste nå Backend-containern.
-        // Publika URLer (https://www.eduflexlms.se) fungerar inte alltid inifrån
-        // containrar (NAT Loopback).
+        // VIKTIGT: Använd den INTERNA backend-URL:en för dokument och callback
+        // så att OnlyOffice-containern (i Docker-nätverket) kan nå dem direkt.
+        // Detta fixar även "token mismatch" eftersom token nyss signerats med dessa
+        // URLer.
         document.put("url", internalBackendUrl + "/api/onlyoffice/download/" + type + "/" + id + tenantQuery);
 
         config.put("document", document);
@@ -191,20 +208,37 @@ public class OnlyOfficeController {
 
         config.put("editorConfig", editorConfig);
 
+        // Use the client's base URL for the document server so the browser loads
+        // resources correctly
+        config.put("documentServerUrl", clientBaseUrl);
+
+        // --- SIGN CONFIG WITH JWT ---
+        String token = jwtUtils.generateOnlyOfficeToken(config);
+        config.put("token", token);
+        // -----------------------------
+
         try {
-            logger.info("[ONLYOFFICE DEBUG] Final Config: {}", objectMapper.writeValueAsString(config));
+            logger.info("[ONLYOFFICE DEBUG] Final Config (signed): {}", objectMapper.writeValueAsString(config));
         } catch (Exception e) {
             logger.error("Error logging onlyoffice config", e);
         }
 
-        logger.info("ONLYOFFICE Config generated for {} {} with tenantQuery: {}", type, id, tenantQuery);
+        logger.info("ONLYOFFICE Config generated for {} {} with token", type, id);
         return ResponseEntity.ok(config);
     }
 
     @GetMapping("/download/{type}/{id}")
-    public ResponseEntity<Resource> download(@PathVariable String type, @PathVariable Long id) {
+    public ResponseEntity<Resource> download(@PathVariable String type, @PathVariable Long id,
+            HttpServletRequest request) {
         // Force log to stdout to ensure visibility in docker logs
         System.out.println("🧾 ONLYOFFICE DOWNLOAD " + type + "/" + id);
+
+        // Log all headers to debug 401 issues
+        java.util.Enumeration<String> headerNames = request.getHeaderNames();
+        while (headerNames.hasMoreElements()) {
+            String name = headerNames.nextElement();
+            System.out.println("   Header " + name + ": " + request.getHeader(name));
+        }
 
         try {
             String fileUrl = "";

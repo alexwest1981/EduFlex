@@ -539,17 +539,18 @@ const CalendarView = () => {
     const getEventTypeStyles = (type, isSecondary = false, status = 'CONFIRMED') => {
         // Lower opacity for pending status
         const isPending = status === 'PENDING';
-        const secondaryOpacity = isSecondary ? 'opacity-50' : '';
+        const secondaryOpacity = isSecondary ? 'opacity-60' : '';
         const pendingOpacity = isPending ? 'opacity-70' : '';
 
+        // Softer pastel colors matching the reference design
         let baseClasses = '';
         switch (type) {
-            case 'LESSON': baseClasses = 'bg-orange-500 text-white'; break;
-            case 'EXAM': baseClasses = 'bg-red-500 text-white'; break;
-            case 'WORKSHOP': baseClasses = 'bg-teal-500 text-white'; break;
-            case 'MEETING': baseClasses = 'bg-purple-500 text-white'; break;
-            case 'ASSIGNMENT': baseClasses = 'bg-yellow-500 text-white'; break;
-            default: baseClasses = 'bg-gray-500 text-white'; break;
+            case 'LESSON': baseClasses = 'bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300 border-l-4 border-red-400'; break;
+            case 'EXAM': baseClasses = 'bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 border-l-4 border-purple-400'; break;
+            case 'WORKSHOP': baseClasses = 'bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300 border-l-4 border-green-400'; break;
+            case 'MEETING': baseClasses = 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 border-l-4 border-blue-400'; break;
+            case 'ASSIGNMENT': baseClasses = 'bg-yellow-100 dark:bg-yellow-900/40 text-yellow-700 dark:text-yellow-300 border-l-4 border-yellow-400'; break;
+            default: baseClasses = 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-l-4 border-gray-400'; break;
         }
 
         return `${baseClasses} ${secondaryOpacity} ${pendingOpacity}`;
@@ -587,7 +588,7 @@ const CalendarView = () => {
     );
 
     return (
-        <div className="max-w-7xl mx-auto flex flex-col p-4 lg:p-6 h-full lg:h-[calc(100vh-120px)]">
+        <div className="max-w-7xl mx-auto flex flex-col p-4 lg:p-6">
 
             {/* Header - Top Row */}
             <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-3 shrink-0 w-full">
@@ -816,35 +817,37 @@ const CalendarView = () => {
 
 
             {/* DESKTOP VIEW: Grid */}
-            <div className="flex-1 hidden lg:flex gap-6 overflow-hidden">
+            <div className="hidden lg:flex gap-6">
 
-                {/* Calendar Grid (Flex-1) */}
-                <div className="flex-1 bg-white dark:bg-[#1E1E1E] rounded-3xl shadow-xl border-2 border-gray-100 dark:border-gray-800 overflow-hidden flex flex-col">
+                {/* Calendar Grid */}
+                <div className="flex-1 bg-white dark:bg-[#1E1E1E] rounded-2xl shadow-sm border border-gray-200 dark:border-gray-800">
 
                     {/* Day Headers */}
-                    <div className={`grid ${viewMode === 'day' ? 'grid-cols-[60px_1fr]' : 'grid-cols-[60px_repeat(7,1fr)]'} border-b-2 border-indigo-100 dark:border-indigo-900/30 shrink-0 bg-gray-50 dark:bg-gray-900`}>
-                        <div className="bg-gray-100 dark:bg-[#2A2A2A] border-r-2 border-gray-200 dark:border-gray-700" /> {/* Time column header */}
+                    <div className={`grid ${viewMode === 'day' ? 'grid-cols-[60px_1fr]' : 'grid-cols-[60px_repeat(7,1fr)]'} border-b border-gray-200 dark:border-gray-700 shrink-0 bg-white dark:bg-[#1E1E1E]`}>
+                        <div className="border-r border-gray-200 dark:border-gray-700" /> {/* Time column header */}
                         {weekDays.map((d, i) => (
-                            <div key={i} className={`py-5 px-2 text-center border-r border-gray-100 dark:border-gray-800 transition-all ${isSameDay(d, new Date()) ? 'bg-indigo-100 dark:bg-indigo-950/50' : (d.getDay() === 0 ? 'bg-red-50 dark:bg-red-900/10' : '')}`}>
-                                <p className={`text-[10px] uppercase font-black tracking-[0.15em] mb-2 ${d.getDay() === 0 ? 'text-red-500' : 'text-gray-500 dark:text-gray-400'}`}>{d.toLocaleDateString('sv-SE', { weekday: 'short' })}</p>
-                                <div className={`text-2xl font-black inline-flex items-center justify-center w-12 h-12 rounded-2xl transition-all ${isSameDay(d, new Date()) ? 'bg-indigo-600 text-white shadow-xl shadow-indigo-500/50 scale-110' : 'text-gray-800 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800'}`}>
-                                    {d.getDate()}
-                                </div>
+                            <div key={i} className={`py-4 px-2 text-center border-r border-gray-100 dark:border-gray-800 transition-all ${d.getDay() === 0 ? 'bg-red-50/50 dark:bg-red-900/10' : ''}`}>
+                                <p className={`text-xs font-medium mb-1 ${d.getDay() === 0 ? 'text-red-500' : 'text-gray-400 dark:text-gray-500'}`}>
+                                    {d.toLocaleDateString('sv-SE', { weekday: 'short' })}, {String(d.getDate()).padStart(2, '0')}
+                                </p>
+                                {isSameDay(d, new Date()) && (
+                                    <div className="w-2 h-2 rounded-full bg-orange-500 mx-auto mt-1" />
+                                )}
                             </div>
                         ))}
                     </div>
 
                     {/* Time Slots OR Month Grid */}
                     {viewMode === 'month' ? (
-                        <div className="flex-1 grid grid-cols-7 grid-rows-6 h-full overflow-hidden bg-gray-50 dark:bg-gray-900 border-l border-gray-200 dark:border-gray-700">
+                        <div className="grid grid-cols-7 grid-rows-6 bg-gray-50 dark:bg-gray-900">
                             {getMonthDays().map((d, i) => {
                                 const dayEvents = getEventsForDay(d);
                                 const isCurrentMonth = d.getMonth() === weekStart.getMonth();
                                 return (
                                     <div
                                         key={i}
-                                        className={`border-b border-r border-gray-200 dark:border-gray-800 p-1 relative group cursor-pointer transition-colors hover:bg-white dark:hover:bg-[#252525] 
-                                            ${!isCurrentMonth ? 'bg-gray-100/50 dark:bg-gray-900/50 opacity-50 text-gray-400' : 'bg-white dark:bg-[#1E1E1E] text-gray-900 dark:text-gray-100'} 
+                                        className={`border-b border-r border-gray-200 dark:border-gray-800 p-2 min-h-[100px] relative group cursor-pointer transition-colors hover:bg-white dark:hover:bg-[#252525]
+                                            ${!isCurrentMonth ? 'bg-gray-100/50 dark:bg-gray-900/50 opacity-50 text-gray-400' : 'bg-white dark:bg-[#1E1E1E] text-gray-900 dark:text-gray-100'}
                                             ${d.getDay() === 0 ? 'bg-red-50/30 dark:bg-red-900/10' : ''}`}
                                         onClick={() => {
                                             if (!isCurrentMonth) {
@@ -869,7 +872,7 @@ const CalendarView = () => {
                                             </button>
                                         </div>
 
-                                        <div className="flex flex-col gap-1 overflow-y-auto max-h-[calc(100%-30px)] custom-scrollbar">
+                                        <div className="flex flex-col gap-1">
                                             {dayEvents.map(ev => (
                                                 <div
                                                     key={ev.id}
@@ -886,13 +889,13 @@ const CalendarView = () => {
                             })}
                         </div>
                     ) : (
-                        <div className="flex-1 overflow-y-auto">
+                        <div>
                             {hours.map(hour => (
-                                <div key={hour} className={`grid ${viewMode === 'day' ? 'grid-cols-[60px_1fr]' : 'grid-cols-[60px_repeat(7,1fr)]'} h-20 border-b border-gray-100 dark:border-gray-800/50 relative hover:bg-gray-50/30 dark:hover:bg-white/[0.02] transition-colors`}>
+                                <div key={hour} className={`grid ${viewMode === 'day' ? 'grid-cols-[60px_1fr]' : 'grid-cols-[60px_repeat(7,1fr)]'} h-20 border-b border-gray-100 dark:border-gray-800/50 relative`}>
 
                                     {/* Time Label */}
-                                    <div className="relative text-right pr-4 pt-2 text-xs font-black text-gray-500 dark:text-gray-400 font-mono border-r-2 border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-[#2A2A2A]">
-                                        {hour}:00
+                                    <div className="relative text-right pr-3 pt-1 text-[11px] font-medium text-gray-400 dark:text-gray-500 border-r border-gray-200 dark:border-gray-700">
+                                        {String(hour).padStart(2, '0')}:00
                                     </div>
 
                                     {/* Days Columns */}
@@ -901,7 +904,7 @@ const CalendarView = () => {
                                         return (
                                             <div
                                                 key={i}
-                                                className={`relative border-r border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors group cursor-pointer ${d.getDay() === 0 ? 'bg-red-50/50 dark:bg-red-900/5' : ''}`}
+                                                className={`relative border-r border-gray-100 dark:border-gray-800 hover:bg-gray-50/50 dark:hover:bg-white/[0.02] transition-colors group cursor-pointer ${d.getDay() === 0 ? 'bg-red-50/30 dark:bg-red-900/5' : ''}`}
                                                 onClick={() => handleSlotClick(d, hour)}
                                                 title={`Klicka för att boka ${hour}:00`}
                                             >
@@ -921,7 +924,7 @@ const CalendarView = () => {
                                                     return (
                                                         <div
                                                             key={`${ev.id}-${ev.isSecondary ? 'secondary' : 'primary'}`}
-                                                            className={`absolute inset-x-2 rounded-2xl text-xs px-4 py-3 overflow-hidden shadow-lg transition-all hover:shadow-xl hover:scale-105 cursor-pointer ${getEventTypeStyles(ev.type, ev.isSecondary, ev.status)}
+                                                            className={`absolute inset-x-1 rounded-xl text-xs px-3 py-2 overflow-hidden shadow-sm hover:shadow-md transition-all cursor-pointer ${getEventTypeStyles(ev.type, ev.isSecondary, ev.status)}
                                                             ${ev.isSecondary ? 'z-5 hover:z-15' : 'z-10 hover:z-20'}`}
                                                             style={style}
                                                             onClick={(e) => {
@@ -930,18 +933,10 @@ const CalendarView = () => {
                                                                 setShowEventDetail(true);
                                                             }}
                                                         >
-                                                            <div className="flex items-center gap-2 mb-1">
-                                                                <div className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
-                                                                    {getEventTypeIcon(ev.type)}
-                                                                </div>
-                                                                <div className="font-bold truncate flex-1">
-                                                                    {ev.title}
-                                                                </div>
-                                                                {ev.isSecondary && (
-                                                                    <div className="w-2 h-2 rounded-full bg-white" title="Sekundär kalender" />
-                                                                )}
+                                                            <div className="font-semibold truncate mb-0.5">
+                                                                {ev.title}
                                                             </div>
-                                                            <div className="opacity-90 text-[11px] truncate ml-7">
+                                                            <div className="opacity-75 text-[10px] truncate">
                                                                 {ev.start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - {ev.end.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                                             </div>
                                                         </div>
@@ -957,12 +952,18 @@ const CalendarView = () => {
                 </div>
 
                 {/* Right Sidebar */}
-                <div className="w-80 shrink-0 flex flex-col gap-6">
+                <div className="w-80 shrink-0 space-y-6">
                     <MiniCalendar
                         currentDate={weekStart}
                         onDateSelect={(date) => {
-                            setWeekStart(getMonday(date));
-                            setSelectedMobileDate(date); // Also update mobile selection
+                            // In day view, set directly to the selected date
+                            // In week/month view, set to the Monday of that week
+                            if (viewMode === 'day') {
+                                setWeekStart(date);
+                            } else {
+                                setWeekStart(getMonday(date));
+                            }
+                            setSelectedMobileDate(date);
                         }}
                     />
                     <ImportantDatesWidget

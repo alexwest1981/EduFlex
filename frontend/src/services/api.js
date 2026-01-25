@@ -557,5 +557,67 @@ export const api = {
             body: JSON.stringify(data)
         }).then(handleResponse),
         delete: (id) => fetch(`${API_BASE}/lti/platforms/${id}`, { method: 'DELETE', headers: getHeaders() }).then(handleResponse)
+    },
+
+    // --- EDUFLEX COMMUNITY ---
+    community: {
+        // Browse & Search
+        browse: (params = {}) => {
+            const searchParams = new URLSearchParams();
+            if (params.subject) searchParams.set('subject', params.subject);
+            if (params.type) searchParams.set('type', params.type);
+            if (params.sort) searchParams.set('sort', params.sort);
+            if (params.page !== undefined) searchParams.set('page', params.page);
+            if (params.size) searchParams.set('size', params.size);
+            return fetch(`${API_BASE}/community/browse?${searchParams}`, { headers: getHeaders() }).then(handleResponse);
+        },
+        search: (query, page = 0, size = 20) => fetch(`${API_BASE}/community/search?q=${encodeURIComponent(query)}&page=${page}&size=${size}`, { headers: getHeaders() }).then(handleResponse),
+        getSubjects: () => fetch(`${API_BASE}/community/subjects`, { headers: getHeaders() }).then(handleResponse),
+
+        // Item Details
+        getItem: (itemId) => fetch(`${API_BASE}/community/items/${itemId}`, { headers: getHeaders() }).then(handleResponse),
+
+        // Publishing
+        publishQuiz: (quizId, data) => fetch(`${API_BASE}/community/publish/quiz/${quizId}`, {
+            method: 'POST',
+            headers: getHeaders(),
+            body: JSON.stringify(data)
+        }).then(handleResponse),
+        publishAssignment: (assignmentId, data) => fetch(`${API_BASE}/community/publish/assignment/${assignmentId}`, {
+            method: 'POST',
+            headers: getHeaders(),
+            body: JSON.stringify(data)
+        }).then(handleResponse),
+        publishLesson: (lessonId, data) => fetch(`${API_BASE}/community/publish/lesson/${lessonId}`, {
+            method: 'POST',
+            headers: getHeaders(),
+            body: JSON.stringify(data)
+        }).then(handleResponse),
+
+        // Install & Rate
+        install: (itemId, courseId = null) => fetch(`${API_BASE}/community/items/${itemId}/install${courseId ? `?courseId=${courseId}` : ''}`, {
+            method: 'POST',
+            headers: getHeaders()
+        }).then(handleResponse),
+        rate: (itemId, rating, comment) => fetch(`${API_BASE}/community/items/${itemId}/rate`, {
+            method: 'POST',
+            headers: getHeaders(),
+            body: JSON.stringify({ rating, comment })
+        }).then(handleResponse),
+
+        // My Published
+        getMyPublished: () => fetch(`${API_BASE}/community/my-published`, { headers: getHeaders() }).then(handleResponse),
+
+        // Admin Moderation
+        admin: {
+            getPending: (page = 0, size = 20) => fetch(`${API_BASE}/community/admin/pending?page=${page}&size=${size}`, { headers: getHeaders() }).then(handleResponse),
+            getPendingCount: () => fetch(`${API_BASE}/community/admin/pending/count`, { headers: getHeaders() }).then(handleResponse),
+            approve: (itemId) => fetch(`${API_BASE}/community/admin/approve/${itemId}`, { method: 'POST', headers: getHeaders() }).then(handleResponse),
+            reject: (itemId, reason) => fetch(`${API_BASE}/community/admin/reject/${itemId}`, {
+                method: 'POST',
+                headers: getHeaders(),
+                body: JSON.stringify({ reason })
+            }).then(handleResponse),
+        }
     }
 };

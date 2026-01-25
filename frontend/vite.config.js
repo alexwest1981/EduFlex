@@ -35,22 +35,47 @@ export default defineConfig({
                 changeOrigin: true
             },
             '/web-apps': {
-                target: 'http://backend:8080', // Serve Static Assets from Spring Boot
+                target: 'http://onlyoffice-ds',
                 changeOrigin: true,
-                ws: true
+                ws: true,
+                secure: false
+            },
+            // Proxy uploads to backend (Profile pictures, etc.)
+            '/uploads': {
+                target: 'http://backend:8080',
+                changeOrigin: true,
+                secure: false
+            },
+            // OnlyOffice 8.x uses versioned paths like /8.2.0/ for some resources
+            // Proxy all numeric version paths to OnlyOffice
+            '^/[0-9]+\\.[0-9]+\\.[0-9]+': {
+                target: 'http://onlyoffice-ds',
+                changeOrigin: true,
+                ws: true,
+                secure: false
+            },
+            // OnlyOffice also uses /cache/files/ for document operations
+            '/cache': {
+                target: 'http://onlyoffice-ds',
+                changeOrigin: true,
+                secure: false
+            },
+            // Fonts and other resources
+            '/fonts': {
+                target: 'http://onlyoffice-ds',
+                changeOrigin: true,
+                secure: false
             },
             '/sdkjs': {
-                target: 'http://backend:8080',
-                changeOrigin: true
+                target: 'http://onlyoffice-ds',
+                changeOrigin: true,
+                secure: false
             },
-            '/api/documents': { // Some OO versions use this for commands
-                target: 'http://backend:8080',
-                changeOrigin: true
-            },
-            // Catch-all for versioned assets if possible? 
-            // Better to rely on /web-apps loading them via relative paths which Vite might try to serve as static assets.
-            // But usually resources are under /web-apps/ or root. 
-            // Let's rely on /web-apps for now. The previous config had /7.3.3-49 which is too specific.
+            '/sdkjs-plugins': {
+                target: 'http://onlyoffice-ds',
+                changeOrigin: true,
+                secure: false
+            }
         }
     }
 })
