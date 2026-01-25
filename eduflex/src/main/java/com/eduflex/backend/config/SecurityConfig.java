@@ -128,7 +128,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/system/license/**", "/uploads/**", "/h2-console/**", "/ws/**",
                                 "/ws-log/**",
                                 "/actuator/**", "/lti/**", "/api/lti/**", "/error",
-                                "/web-apps/**", // Allow OnlyOffice static assets
+                                "/web-apps/**", "/src/**", "/assets/**", // Allow OnlyOffice and Frontend assets
                                 // Swagger UI and OpenAPI Documentation
                                 "/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html", "/api-docs/**")
                         .permitAll()
