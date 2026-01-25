@@ -35,16 +35,16 @@ export default defineConfig({
                 changeOrigin: true
             },
             '/web-apps': {
-                target: 'http://localhost:8080', // Serve Static Assets from Spring Boot (src/main/resources/static)
+                target: 'http://backend:8080', // Serve Static Assets from Spring Boot
                 changeOrigin: true,
                 ws: true
             },
             '/sdkjs': {
-                target: 'http://localhost:8080',
+                target: 'http://backend:8080',
                 changeOrigin: true
             },
             '/api/documents': { // Some OO versions use this for commands
-                target: 'http://localhost:8080',
+                target: 'http://backend:8080',
                 changeOrigin: true
             },
             // Catch-all for versioned assets if possible? 
