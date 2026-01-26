@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { Camera, Mail, Phone, MapPin, Save, Lock, User, AlertTriangle, Globe, Settings as SettingsIcon, Layout, Download, Shield, CreditCard, Check, X, Linkedin, Instagram, Facebook, Twitter, Search, UserPlus, UserMinus, Ban, Award } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { api } from '../../services/api.js';
+import { api, getSafeUrl } from '../../services/api.js';
 import UserBilling from '../billing/UserBilling';
 import { useModules } from '../../context/ModuleContext';
 
@@ -298,7 +298,7 @@ const UserProfile = ({ currentUser, showMessage, refreshUser }) => {
         formDataUpload.append('file', file);
         try {
             const token = localStorage.getItem('token');
-            const res = await fetch(`http://localhost:8080/api/users/${currentUser.id}/avatar`, {
+            const res = await fetch(`${window.location.origin}/api/users/${currentUser.id}/avatar`, {
                 method: 'POST',
                 headers: { 'Authorization': `Bearer ${token}` },
                 body: formDataUpload
@@ -338,7 +338,7 @@ const UserProfile = ({ currentUser, showMessage, refreshUser }) => {
         if (passData.new !== passData.confirm) return alert(t('profile.password_mismatch'));
         try {
             const token = localStorage.getItem('token');
-            const res = await fetch(`http://localhost:8080/api/users/${currentUser.id}/password`, {
+            const res = await fetch(`${window.location.origin}/api/users/${currentUser.id}/password`, {
                 method: 'PUT',
                 headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
                 body: JSON.stringify({ currentPassword: passData.current, newPassword: passData.new })
@@ -362,21 +362,7 @@ const UserProfile = ({ currentUser, showMessage, refreshUser }) => {
                             {(() => {
                                 if (previewImage) return <img src={previewImage} alt="Profil" className="w-full h-full object-cover" />;
                                 if (displayUser.profilePictureUrl) {
-                                    let url = displayUser.profilePictureUrl;
-                                    const hostname = window.location.hostname;
-
-                                    // Replace minio container name with actual hostname
-                                    if (url.includes('minio:9000')) {
-                                        url = url.replace('minio', hostname);
-                                    }
-
-                                    // Handle relative paths or paths without protocol
-                                    let finalUrl = url;
-                                    if (!url.startsWith('http')) {
-                                        finalUrl = `http://${hostname}:8080${url}`;
-                                    }
-
-                                    return <img src={finalUrl} alt="Profil" className="w-full h-full object-cover" />;
+                                    return <img src={getSafeUrl(displayUser.profilePictureUrl)} alt="Profil" className="w-full h-full object-cover" />;
                                 }
                                 return <span className="text-4xl font-bold text-gray-400 dark:text-gray-500">{displayUser.firstName?.[0]}</span>;
                             })()}

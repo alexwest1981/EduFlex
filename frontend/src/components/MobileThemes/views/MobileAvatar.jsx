@@ -1,45 +1,12 @@
 import React, { useState } from 'react';
+import { getSafeUrl } from '../../../services/api';
 
-/**
- * MobileAvatar
- * 
- * Reusable avatar component for Mobile Themes.
- * Features:
- * - Proper URL processing for MinIO/Localhost
- * - Fallback to First + Last initial (e.g. "AW")
- * - Customizable styling
- */
 const MobileAvatar = ({ user, className = "" }) => {
     const [imgError, setImgError] = useState(false);
 
-    // 1. Process Image URL (Using same logic as MobileHeader for consistency)
-    const getProfileImage = () => {
-        if (!user?.profilePictureUrl) return null;
-        let url = user.profilePictureUrl;
-
-        // Replace MinIO internal hostname with actual client-accessible hostname
-        if (url.includes('minio:9000')) {
-            // Clean hostname from www
-            let hostname = window.location.hostname.replace('www.', '');
-            url = url.replace('minio', hostname);
-        }
-
-        // Ensure protocol
-        if (!url.startsWith('http')) {
-            const hostname = window.location.hostname;
-            // Localhost / IP -> Port 8080
-            if (hostname === 'localhost' || hostname.match(/^[\d.]+$/)) {
-                url = `http://${hostname}:8080${url}`;
-            } else {
-                // Production (Cloudflare) -> https://api.domain.com
-                // Remove www if present
-                const domain = hostname.replace('www.', '');
-                url = `https://api.${domain}${url}`;
-            }
-        }
-
-        return url;
-    };
+    // 1. Process Image URL
+    const profileImg = getSafeUrl(user?.profilePictureUrl);
+    const showImage = profileImg && !imgError;
 
     // 2. Generate Initials (Fallback)
     const getInitials = (name) => {
@@ -50,9 +17,6 @@ const MobileAvatar = ({ user, className = "" }) => {
         }
         return name.substring(0, 2).toUpperCase();
     };
-
-    const profileImg = getProfileImage();
-    const showImage = profileImg && !imgError;
 
     // 3. Render
     // Using neutral gray-200 background with gray-600 text as requested

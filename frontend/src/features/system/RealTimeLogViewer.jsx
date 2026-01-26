@@ -18,7 +18,7 @@ const RealTimeLogViewer = () => {
     useEffect(() => {
         // Init Stomp Client
         const client = new Client({
-            brokerURL: 'ws://localhost:8080/ws-log', // Direct WS connection
+            brokerURL: `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}/ws-log`, // Direct WS connection
             reconnectDelay: 5000,
             heartbeatIncoming: 4000,
             heartbeatOutgoing: 4000,

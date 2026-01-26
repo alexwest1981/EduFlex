@@ -3,12 +3,12 @@ import { MessageCircle, X, Send, Image as ImageIcon, Minus, Users, ExternalLink 
 import { Link } from 'react-router-dom';
 import SockJS from 'sockjs-client';
 import Stomp from 'stompjs';
-import { useTranslation } from 'react-i18next'; // <---
+import { useTranslation } from 'react-i18next';
+import { api, getSafeUrl } from '../../services/api';
 
 const notifySound = new Audio('https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3');
 
 const ChatOverlay = ({ currentUser, API_BASE, token }) => {
-    const { t } = useTranslation(); // <---
     const [isOpen, setIsOpen] = useState(false);
     const [activeChatUser, setActiveChatUser] = useState(null);
     const [users, setUsers] = useState([]);
@@ -40,7 +40,7 @@ const ChatOverlay = ({ currentUser, API_BASE, token }) => {
 
     useEffect(() => {
         if (!currentUser) return;
-        const socket = new SockJS('http://127.0.0.1:8080/ws');
+        const socket = new SockJS(`${window.location.origin}/ws`);
         const client = Stomp.over(socket);
         client.debug = null;
         client.connect({}, () => {
@@ -186,26 +186,6 @@ const ChatOverlay = ({ currentUser, API_BASE, token }) => {
         } catch (err) { }
     };
 
-    // Helper to fix URLs for LAN access
-    const getSafeUrl = (url) => {
-        if (!url) return null;
-        let finalUrl = url;
-        const hostname = window.location.hostname;
-
-        if (finalUrl.includes('minio:9000')) {
-            finalUrl = finalUrl.replace('minio', hostname);
-        } else if (finalUrl.startsWith('/')) {
-            finalUrl = `http://${hostname}:8080${finalUrl}`;
-        } else if (finalUrl.includes('127.0.0.1')) {
-            finalUrl = finalUrl.replace('127.0.0.1', hostname);
-        }
-
-        // Ensure protocol
-        if (!finalUrl.startsWith('http')) {
-            finalUrl = `http://${hostname}:8080${finalUrl}`;
-        }
-        return finalUrl;
-    };
 
     if (!isOpen) {
         return (

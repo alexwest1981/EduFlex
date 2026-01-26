@@ -34,6 +34,11 @@ export default defineConfig({
                 ws: true,
                 changeOrigin: true
             },
+            '/ws-log': {
+                target: 'http://backend:8080',
+                ws: true,
+                changeOrigin: true
+            },
             '/web-apps': {
                 target: 'http://onlyoffice-ds',
                 changeOrigin: true,

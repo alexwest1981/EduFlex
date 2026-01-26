@@ -8,23 +8,7 @@ import { useTranslation } from 'react-i18next';
 // Import Branding Hook
 import { useBranding } from '../../context/BrandingContext';
 import MobileAdminControlCenter from '../../features/mobile-admin/MobileAdminControlCenter';
-
-// Helper to fix MinIO URLs for client access
-const getProfileUrl = (url) => {
-    if (!url) return null;
-    let finalUrl = url;
-    if (finalUrl.includes('minio:9000')) {
-        // Replace 'minio' with actual hostname (e.g. 192.168.x.x or localhost)
-        const hostname = window.location.hostname;
-        finalUrl = finalUrl.replace('minio', hostname);
-    }
-    // Ensure protocol
-    if (!finalUrl.startsWith('http')) {
-        // Fallback to backend port 8080 if not specified
-        finalUrl = `http://${window.location.hostname}:8080${finalUrl}`;
-    }
-    return finalUrl;
-};
+import { getSafeUrl } from '../../services/api';
 
 /**
  * MobileSidebar - A hyper-modern, glassmorphic sidebar for mobile devices.
@@ -43,7 +27,7 @@ export const MobileSidebar = ({ isOpen, onClose, navItems, friendsPanelOpen, set
     const borderRadius = mobileTheme.borderRadius || '24px';
 
     const handleLogout = () => { logout(); navigate('/login'); };
-    const profileImgUrl = getProfileUrl(currentUser?.profilePictureUrl);
+    const profileImgUrl = getSafeUrl(currentUser?.profilePictureUrl);
 
     if (!currentUser) return null;
 
@@ -304,7 +288,7 @@ export const MobileBottomNav = ({ onMenuOpen }) => {
  */
 export const MobileHeader = ({ friendsPanelOpen, setFriendsPanelOpen }) => {
     const { currentUser } = useAppContext();
-    const profileImgUrl = getProfileUrl(currentUser?.profilePictureUrl);
+    const profileImgUrl = getSafeUrl(currentUser?.profilePictureUrl);
     const [adminMenuOpen, setAdminMenuOpen] = React.useState(false);
 
     // Check if user is admin

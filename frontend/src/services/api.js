@@ -626,3 +626,33 @@ export const api = {
         }
     }
 };
+
+/**
+ * Helper to ensure URLs are safe for the current environment (Local, LAN, or Public)
+ * @param {string} url - The URL to sanitise
+ * @returns {string} - The corrected URL
+ */
+export const getSafeUrl = (url) => {
+    if (!url) return null;
+    let finalUrl = url;
+    const origin = window.location.origin;
+
+    // 1. Handle MinIO internal host reference
+    if (finalUrl.includes('minio:9000')) {
+        // If we are on public domain, we should proxy MinIO or use public URL
+        // For now, assume a proxy /storage exists or fallback to origin
+        finalUrl = finalUrl.replace(/http:\/\/minio:9000/g, origin + '/storage');
+    }
+
+    // 2. Handle root-relative paths by prepending origin (Vite proxy handles the rest)
+    if (finalUrl.startsWith('/')) {
+        return `${origin}${finalUrl}`;
+    }
+
+    // 3. Handle hardcoded localhost/127.0.0.1 references
+    if (finalUrl.includes('localhost:8080') || finalUrl.includes('127.0.0.1:8080')) {
+        return finalUrl.replace(/http:\/\/(localhost|127\.0\.0\.1):8080/g, origin);
+    }
+
+    return finalUrl;
+};
