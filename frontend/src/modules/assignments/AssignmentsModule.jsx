@@ -473,7 +473,7 @@ const AssignmentCard = ({ assignment, isTeacher, currentUser, expanded, toggleEx
 
                                         <div className="flex-1 overflow-hidden">
                                             <div className="font-bold text-sm truncate">{att.name}</div>
-                                            <a href={`http://127.0.0.1:8080${att.url.startsWith('/') ? '' : '/'}${att.url}`} target="_blank" rel="noreferrer" className="text-xs text-indigo-500 hover:underline truncate block">
+                                            <a href={`${window.location.origin}${att.url.startsWith('/') ? '' : '/'}${att.url}`} target="_blank" rel="noreferrer" className="text-xs text-indigo-500 hover:underline truncate block">
                                                 {att.type === 'FILE' ? 'Ladda ner fil' : 'Öppna länk'}
                                             </a>
                                         </div>
@@ -497,7 +497,7 @@ const AssignmentCard = ({ assignment, isTeacher, currentUser, expanded, toggleEx
                                             <td className="p-4 font-medium text-gray-900 dark:text-white">{sub.student?.fullName}</td>
                                             <td className="p-4 text-gray-500">{new Date(sub.submittedAt).toLocaleDateString()}</td>
                                             <td className="p-4">
-                                                <a href={`http://127.0.0.1:8080${sub.fileUrl}`} target="_blank" rel="noreferrer" className="text-indigo-600 hover:underline flex items-center gap-2 bg-indigo-50 dark:bg-indigo-900/20 px-3 py-1.5 rounded-lg w-fit">
+                                                <a href={`${window.location.origin}${sub.fileUrl}`} target="_blank" rel="noreferrer" className="text-indigo-600 hover:underline flex items-center gap-2 bg-indigo-50 dark:bg-indigo-900/20 px-3 py-1.5 rounded-lg w-fit">
                                                     <Download size={14} /> {sub.fileName}
                                                 </a>
                                             </td>

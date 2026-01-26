@@ -40,7 +40,7 @@ const AssessmentView = ({ assignments, submissions, navigateTo, courseId }) => {
                                     <div className="flex gap-4 text-sm">
                                         <button onClick={() => navigateTo('course-detail', courseId)} className="text-indigo-600 hover:text-indigo-800 hover:underline flex items-center gap-1 font-bold bg-indigo-50 px-3 py-1.5 rounded-lg transition-colors"><ExternalLink size={14}/> {t('assessment.go_to_task')}</button>
                                         {isSubmitted && (
-                                            <a href={`http://127.0.0.1:8080${submission.fileUrl}`} target="_blank" rel="noreferrer" className="text-gray-600 hover:text-gray-900 hover:underline flex items-center gap-1 font-medium px-3 py-1.5 rounded-lg hover:bg-gray-100 transition-colors"><Download size={14}/> {t('assessment.my_file')}</a>
+                                            <a href={`${window.location.origin}${submission.fileUrl}`} target="_blank" rel="noreferrer" className="text-gray-600 hover:text-gray-900 hover:underline flex items-center gap-1 font-medium px-3 py-1.5 rounded-lg hover:bg-gray-100 transition-colors"><Download size={14}/> {t('assessment.my_file')}</a>
                                         )}
                                     </div>
                                 </div>

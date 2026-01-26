@@ -26,7 +26,7 @@ const CalendarWidget = () => {
                 // Let's try to stick to api.js pattern if possible, but for speed I'll assume 
                 // we might need to patch api.js. 
                 // Actually, let's just use the direct fetch pattern to be safe for this new endpoint.
-                const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api';
+                const BASE_URL = import.meta.env.VITE_API_BASE_URL || '${window.location.origin}/api';
                 const res = await fetch(`${BASE_URL}/events/dashboard-summary`, { headers });
 
                 if (!res.ok) throw new Error("Failed to fetch calendar summary");

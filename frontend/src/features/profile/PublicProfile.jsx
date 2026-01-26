@@ -69,7 +69,7 @@ const PublicProfile = ({ currentUser, showMessage }) => {
                                             if (!url.includes('/')) url = '/uploads/' + url;
                                             else url = '/' + url;
                                         }
-                                        return `http://localhost:8080${url}`;
+                                        return `${window.location.origin}${url}`;
                                     })()}
                                     onError={() => setImgError(true)}
                                     alt=""

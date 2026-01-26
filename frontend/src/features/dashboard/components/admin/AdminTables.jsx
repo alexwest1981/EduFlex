@@ -156,7 +156,7 @@ export const RecentUploadsWidget = ({ latestDocs }) => {
                         <div className="p-8 flex flex-col items-center text-center">
                             {selectedDoc.fileType?.startsWith('image/') ? (
                                 <img
-                                    src={`http://127.0.0.1:8080${selectedDoc.fileUrl}`}
+                                    src={`${window.location.origin}${selectedDoc.fileUrl}`}
                                     alt="Preview"
                                     className="max-h-64 rounded-lg shadow-sm mb-6 object-contain"
                                 />
@@ -178,7 +178,7 @@ export const RecentUploadsWidget = ({ latestDocs }) => {
                             </div>
 
                             <a
-                                href={`http://127.0.0.1:8080${selectedDoc.fileUrl}`}
+                                href={`${window.location.origin}${selectedDoc.fileUrl}`}
                                 download
                                 target="_blank"
                                 rel="noreferrer"

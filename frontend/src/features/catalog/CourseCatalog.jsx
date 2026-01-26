@@ -38,7 +38,7 @@ const CourseCatalog = () => {
         }
         try {
             const token = localStorage.getItem('token');
-            const res = await fetch(`http://127.0.0.1:8080/api/courses/${courseId}/apply/${currentUser.id}`, {
+            const res = await fetch(`${window.location.origin}/api/courses/${courseId}/apply/${currentUser.id}`, {
                 method: 'POST',
                 headers: { 'Authorization': `Bearer ${token}` }
             });

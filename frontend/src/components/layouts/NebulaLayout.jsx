@@ -20,7 +20,7 @@ const NebulaLayout = ({ children }) => {
         if (!currentUser?.profilePictureUrl) return null;
         let url = currentUser.profilePictureUrl;
         if (url.includes('minio:9000')) url = url.replace('minio:9000', 'localhost:9000');
-        return url.startsWith('http') ? url : `http://localhost:8080${url}`;
+        return url.startsWith('http') ? url : `${window.location.origin}${url}`;
     };
     const profileImgUrl = getProfileUrl();
 

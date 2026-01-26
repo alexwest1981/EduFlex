@@ -58,7 +58,7 @@ const Sidebar = ({ currentUser, logout, siteName, version }) => {
 
         return url.startsWith('http')
             ? url
-            : `http://localhost:8080${url}`;
+            : `${window.location.origin}${url}`;
     };
 
     return (

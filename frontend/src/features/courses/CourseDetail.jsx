@@ -222,7 +222,7 @@ const CourseDetail = ({ currentUser }) => {
     // --- CERTIFICATE HANDLER ---
     const downloadCertificate = async () => {
         try {
-            const response = await fetch(`http://127.0.0.1:8080/api/certificates/download/${id}/${currentUser.id}`, {
+            const response = await fetch(`${window.location.origin}/api/certificates/download/${id}/${currentUser.id}`, {
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
             });
 

@@ -46,10 +46,10 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
             // Refaktorerad för att använda api service eller url-switch
             // Men för att behålla befintlig struktur med fetch:
             const token = localStorage.getItem('token');
-            let url = `http://127.0.0.1:8080/api/courses/${courseId}/materials`;
+            let url = `${window.location.origin}/api/courses/${courseId}/materials`;
 
             if (mode === 'GLOBAL') {
-                url = `http://127.0.0.1:8080/api/lessons/my?userId=${currentUser?.id}`;
+                url = `${window.location.origin}/api/lessons/my?userId=${currentUser?.id}`;
             }
 
             const res = await fetch(url, {
@@ -97,16 +97,16 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
         if (file) fd.append('file', file);
 
         try {
-            let url = `http://127.0.0.1:8080/api/courses/${courseId}/materials?userId=${currentUser?.id}`;
+            let url = `${window.location.origin}/api/courses/${courseId}/materials?userId=${currentUser?.id}`;
             let method = 'POST';
 
             if (mode === 'GLOBAL') {
-                url = `http://127.0.0.1:8080/api/lessons/create?userId=${currentUser?.id}`;
+                url = `${window.location.origin}/api/lessons/create?userId=${currentUser?.id}`;
             }
 
             if (selectedLesson && selectedLesson.id) {
                 // Vid update är det samma endpoint oavsett global/course
-                url = `http://127.0.0.1:8080/api/courses/materials/${selectedLesson.id}`;
+                url = `${window.location.origin}/api/courses/materials/${selectedLesson.id}`;
                 method = 'PUT'; // LessonController har @PutMapping("/{id}") för update
             }
 
@@ -145,7 +145,7 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
         if (!window.confirm("Är du säker på att du vill radera lektionen?")) return;
         try {
             const token = localStorage.getItem('token');
-            await fetch(`http://127.0.0.1:8080/api/courses/materials/${id}`, {
+            await fetch(`${window.location.origin}/api/courses/materials/${id}`, {
                 method: 'DELETE',
                 headers: { 'Authorization': `Bearer ${token}` }
             });
@@ -391,7 +391,7 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
                                 <VideoPlayer
                                     src={selectedLesson.fileUrl.startsWith('http')
                                         ? selectedLesson.fileUrl
-                                        : `http://127.0.0.1:8080${selectedLesson.fileUrl}`}
+                                        : `${window.location.origin}${selectedLesson.fileUrl}`}
                                     title={selectedLesson.title}
                                     chapters={selectedLesson.videoChapters ? JSON.parse(selectedLesson.videoChapters) : []}
                                     poster={selectedLesson.thumbnailUrl}
@@ -428,7 +428,7 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
                             {/* 3. BILD (NYTT!) */}
                             {selectedLesson.fileUrl && isImageFile(selectedLesson.fileUrl) && (
                                 <div className="rounded-xl overflow-hidden shadow-lg border border-gray-200 dark:border-[#3c4043]">
-                                    <img src={`http://127.0.0.1:8080${selectedLesson.fileUrl}`} alt="Lektionsmaterial" className="w-full h-auto object-contain max-h-[600px] bg-gray-50 dark:bg-black/50" />
+                                    <img src={`${window.location.origin}${selectedLesson.fileUrl}`} alt="Lektionsmaterial" className="w-full h-auto object-contain max-h-[600px] bg-gray-50 dark:bg-black/50" />
                                 </div>
                             )}
                         </div>
@@ -444,7 +444,7 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
                                     </div>
                                 </div>
                                 <a
-                                    href={`http://127.0.0.1:8080${selectedLesson.fileUrl}`}
+                                    href={`${window.location.origin}${selectedLesson.fileUrl}`}
                                     download
                                     target="_blank"
                                     rel="noreferrer"

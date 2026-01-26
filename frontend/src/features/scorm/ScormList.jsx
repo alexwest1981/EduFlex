@@ -67,8 +67,8 @@ const ScormList = ({ courseId: propCourseId }) => {
         // We need the root URL + /uploads/ + pkg.directoryPath + pkg.launchFile
 
         // baseUrl logic:
-        // API_BASE is usually "http://localhost:8080/api"
-        // storageUrl seems to be "http://localhost:8080/uploads"
+        // API_BASE is usually "${window.location.origin}/api"
+        // storageUrl seems to be "${window.location.origin}/uploads"
 
         const rootUrl = API_BASE.replace('/api', '');
         const launchUrl = `${rootUrl}/uploads/${pkg.directoryPath}${pkg.launchFile}`;

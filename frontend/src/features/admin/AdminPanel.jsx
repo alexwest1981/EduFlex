@@ -202,7 +202,7 @@ const AdminPanel = ({ currentUser }) => {
         formData.append('title', title);
         try {
             const token = localStorage.getItem('token');
-            await fetch('http://127.0.0.1:8080/api/documents/upload', {
+            await fetch('${window.location.origin}/api/documents/upload', {
                 method: 'POST',
                 headers: { 'Authorization': `Bearer ${token}` },
                 body: formData
