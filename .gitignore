@@ -165,6 +165,12 @@ start
 stop
 
 # =============================================
+# LOCAL DATA & DATABASES
+# =============================================
+/data/
+/logs/
+
+# =============================================
 # ONLYOFFICE STATIC ASSETS (LOCAL ONLY)
 # =============================================
 eduflex/src/main/resources/static/web-apps/
