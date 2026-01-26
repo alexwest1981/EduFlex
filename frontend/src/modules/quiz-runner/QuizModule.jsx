@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Library, Lock, Clock, HelpCircle, Plus, Trash2, Edit, PlayCircle, Award } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Library, Lock, Clock, HelpCircle, Plus, Trash2, Edit, PlayCircle, Award, Sparkles } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { api } from '../../services/api';
 import { QuizBuilderModal, QuizRunnerModal, QuizGeneratorModal } from './QuizModals';
@@ -46,6 +47,7 @@ const QuizModule = ({ courseId, currentUser, isTeacher, mode = 'COURSE' }) => {
     const { t } = useTranslation();
     const { refreshUser } = useAppContext();
     const { isModuleActive } = useModules(); // <--- Access module context
+    const navigate = useNavigate();
 
     // Check if Pro features are valid
     const isPro = isModuleActive('QUIZ_PRO') || isModuleActive('quiz_runner_pro');
@@ -157,6 +159,11 @@ const QuizModule = ({ courseId, currentUser, isTeacher, mode = 'COURSE' }) => {
                             {isPro && (
                                 <button onClick={() => setShowGenerator(true)} className="bg-purple-600 text-white px-4 py-2 rounded-lg font-bold shadow-md hover:bg-purple-700 flex items-center gap-2 transition-colors">
                                     <Award size={18} /> Generera Quiz
+                                </button>
+                            )}
+                            {isPro && (
+                                <button onClick={() => navigate('/ai-quiz')} className="bg-gradient-to-r from-blue-600 to-cyan-500 text-white px-4 py-2 rounded-lg font-bold shadow-md hover:from-blue-700 hover:to-cyan-600 flex items-center gap-2 transition-colors">
+                                    <Sparkles size={18} /> AI Quiz
                                 </button>
                             )}
                         </div>

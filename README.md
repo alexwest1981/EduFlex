@@ -793,6 +793,9 @@ taskkill /PID <PID> /F
     -   **API-felhantering:** Förbättrad diagnostik som nu fångar och loggar HTML-svar (404/500) istället för att krascha frontend med `SyntaxError`.
     -   **Proxy-optimering:** Tog bort manuella alias i `vite.config.js` för att garantera 'Single Source of Truth' för React-versioner.
 
+*   **🧠 AI Quiz i Resursbanken (26 jan 2026):**
+    -   **Lättare åtkomst:** Lade till en direktknapp för **AI Quiz** inne på Resursbanken (under fliken "Mina Quiz") för att underlätta för lärare att hitta verktyget utan att behöva gå via systeminställningar.
+
 ### 📖 Innehållsförteckning
 - [Om Projektet](#-om-projektet)
 - [Nyckelfunktioner](#-nyckelfunktioner)
