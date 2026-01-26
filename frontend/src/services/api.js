@@ -71,6 +71,11 @@ const handleResponse = async (res) => {
             window.dispatchEvent(new Event('license-lock'));
             throw new Error("LICENSE_REQUIRED");
         }
+        if (res.status === 401) {
+            console.warn('[API] Unauthorised (401) - session likely expired. Broadcasting session-expired event.');
+            window.dispatchEvent(new Event('session-expired'));
+            throw new Error("UNAUTHORIZED");
+        }
         const errorText = await res.text();
         throw new Error(errorText || `HTTP Error: ${res.status}`);
     }

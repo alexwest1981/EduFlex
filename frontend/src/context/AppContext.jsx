@@ -51,8 +51,18 @@ export const AppProvider = ({ children }) => {
 
         // Global Event Listener for Lock
         const handleLock = () => setLicenseLocked(true);
+        const handleSessionExpired = () => {
+            console.warn('[AppContext] Detected expired session event. Performing global logout.');
+            logout();
+        };
+
         window.addEventListener('license-lock', handleLock);
-        return () => window.removeEventListener('license-lock', handleLock);
+        window.addEventListener('session-expired', handleSessionExpired);
+
+        return () => {
+            window.removeEventListener('license-lock', handleLock);
+            window.removeEventListener('session-expired', handleSessionExpired);
+        };
 
     }, []);
 
