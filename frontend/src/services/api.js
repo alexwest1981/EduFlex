@@ -66,27 +66,56 @@ const getHeaders = (contentType = 'application/json') => {
 };
 
 const handleResponse = async (res) => {
+    // Debug helper: log headers to see tokens
+    if (localStorage.getItem('debug_api')) {
+        console.log('[API DEBUG] Request Headers:', {
+            Authorization: res.headers.get('Authorization'),
+            'Content-Type': res.headers.get('Content-Type')
+        }, 'Token:', localStorage.getItem('token'));
+    }
+
     if (!res.ok) {
         if (res.status === 402) {
             window.dispatchEvent(new Event('license-lock'));
             throw new Error("LICENSE_REQUIRED");
         }
         if (res.status === 401) {
-            console.warn('[API] Unauthorised (401) - session likely expired. Broadcasting session-expired event.');
-            window.dispatchEvent(new Event('session-expired'));
+            // Only trigger session-expired if it's a genuine API call that's not the login itself
+            if (res.url.includes('/api/') && !res.url.includes('/auth/login')) {
+                console.warn('[API] Unauthorised (401) - session likely expired. Signalling logout.');
+                localStorage.setItem('eduflex_logout_signal', Date.now().toString());
+                window.dispatchEvent(new Event('session-expired'));
+            }
             throw new Error("UNAUTHORIZED");
         }
-        const errorText = await res.text();
+
+        let errorText;
+        try {
+            const data = await res.json();
+            errorText = (data && data.message) ? data.message : JSON.stringify(data);
+        } catch (e) {
+            errorText = await res.text();
+            console.error('[API ERROR] Non-JSON Error Response:', res.status, res.url, errorText.substring(0, 200));
+        }
         throw new Error(errorText || `HTTP Error: ${res.status}`);
     }
+
     // Hantera tomma svar (t.ex. 204 No Content)
     if (res.status === 204) return null;
 
-    const text = await res.text();
-    try {
-        return text ? JSON.parse(text) : null;
-    } catch {
-        return text;
+    const contentType = res.headers.get("content-type");
+    if (contentType && contentType.indexOf("application/json") !== -1) {
+        return res.json();
+    } else {
+        // Warning: Received 200 OK but not JSON. This is usually the index.html fallback for broken API paths.
+        const text = await res.text();
+        console.error('[API FATAL] Expected JSON but got other content-type:', contentType, 'for URL:', res.url);
+        // Log start of body to confirm if it is HTML
+        if (text.trim().startsWith('<')) {
+            console.error('[API FATAL] Response starts with HTML tag. Proxy is likely misconfigured or backend is returning 404 page as 200.');
+        }
+        // Force reject to prevent "Unexpected token <" usage downstream
+        throw new Error(`Invalid API Response: Expected JSON, got ${contentType}`);
     }
 };
 
@@ -127,6 +156,10 @@ export const api = {
             method: 'PUT',
             headers: getHeaders(),
             body: JSON.stringify({ active })
+        }).then(handleResponse),
+        init: () => fetch(`${API_BASE}/modules/init`, {
+            method: 'POST',
+            headers: getHeaders()
         }).then(handleResponse),
     },
 
@@ -401,6 +434,7 @@ export const api = {
 
     events: {
         getAll: () => fetch(`${API_BASE}/events`, { headers: getHeaders() }).then(handleResponse),
+        getDashboardSummary: () => fetch(`${API_BASE}/events/dashboard-summary`, { headers: getHeaders() }).then(handleResponse),
         getByCourse: (courseId) => fetch(`${API_BASE}/events/course/${courseId}`, { headers: getHeaders() }).then(handleResponse),
         create: (data) => fetch(`${API_BASE}/events`, {
             method: 'POST',

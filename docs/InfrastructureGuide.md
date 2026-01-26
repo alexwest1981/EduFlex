@@ -37,6 +37,7 @@ To prevent "White Screen" or "WebSocket connection failed":
       protocol: 'wss'
   }
   ```
+- **Dependencies**: Do NOT use `optimizeDeps` or `alias` overrides for `react`/`react-dom` unless absolutely necessary. This causes "Duplicate React Instance" errors.
 
 ## 3. OnlyOffice Integration
 
@@ -77,7 +78,20 @@ If images are not loading from `storage.eduflexlms.se`, the bucket policy might 
     2.  Check Console for red errors.
     3.  Verify `vite.config.js` HMR settings.
 
-## 5. Maintenance Scripts
+### 🎣 Invalid Hook Call / React Crashes
+-   **Symptoms**: `Error: Invalid hook call`, `TypeError: Cannot read properties of null (reading 'useState')`, often accompanied by `SyntaxError: Unexpected token '<'`.
+-   **Root Cause 1 (Common)**: API request failing (404/500) and returning HTML error page instead of JSON. The component receives "<html>..." strings, tries to parse, crashes, and React loses context.
+    -   **Fix**: Check `api.js` logs for "API FATAL". Ensure the endpoint exists and URL is constructed correctly (e.g. avoid `window.location.origin` inside Docker/Tunnel envs, use `/api` relative paths).
+-   **Root Cause 2**: Duplicate React instances due to bad `node_modules` state.
+    -   **Fix**: 
+        1. Stop server.
+        2. Delete `node_modules` AND `package-lock.json`.
+        3. Delete `node_modules/.vite` (Vite cache).
+        4. Run `npm install` and `npm run dev`.
+-   **Root Cause 3**: Bad `vite.config.js` config.
+    -   **Fix**: Remove any `resolve.alias` that manually points `react` to a specific path. Let Node standard resolution handle it.
+
+## 6. Maintenance Scripts
 Always use these scripts in `scripts/powershell/` to ensure consistency:
 -   `rebuild_all.ps1`: Full rebuild + Tunnel start.
 -   `start_app.ps1`: Quick start services + Tunnel start.

@@ -10,31 +10,10 @@ const CalendarWidget = () => {
     useEffect(() => {
         const fetchSummary = async () => {
             try {
-                // We need to add this method to api.js or call fetch directly
-                // Using direct fetch for likely un-updated api service file
-                const token = localStorage.getItem('token');
-                const tenantId = localStorage.getItem('tenantId'); // Assuming stored
-
-                // Construct Headers
-                const headers = {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                };
-                if (tenantId) headers['X-Tenant-ID'] = tenantId;
-
-                // Use api.events.getDashboardSummary if available, else fetch
-                // Let's try to stick to api.js pattern if possible, but for speed I'll assume 
-                // we might need to patch api.js. 
-                // Actually, let's just use the direct fetch pattern to be safe for this new endpoint.
-                const BASE_URL = import.meta.env.VITE_API_BASE_URL || '${window.location.origin}/api';
-                const res = await fetch(`${BASE_URL}/events/dashboard-summary`, { headers });
-
-                if (!res.ok) throw new Error("Failed to fetch calendar summary");
-
-                const data = await res.json();
+                const data = await api.events.getDashboardSummary();
                 setSummary(data);
             } catch (err) {
-                console.error(err);
+                console.error("Failed to fetch calendar summary", err);
                 setError(err.message);
             } finally {
                 setIsLoading(false);
@@ -96,8 +75,8 @@ const CalendarWidget = () => {
                                 )}
                             </div>
                             <div className={`w-1.5 rounded-full ${event.type === 'MEETING' ? 'bg-orange-400' :
-                                    event.type === 'LESSON' ? 'bg-blue-500' :
-                                        event.type === 'EXAM' ? 'bg-red-500' : 'bg-gray-400'
+                                event.type === 'LESSON' ? 'bg-blue-500' :
+                                    event.type === 'EXAM' ? 'bg-red-500' : 'bg-gray-400'
                                 }`} />
                         </div>
                     ))

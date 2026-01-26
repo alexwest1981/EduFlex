@@ -25,11 +25,22 @@
   <img src="https://img.shields.io/badge/MinIO-S3%20Storage-c72c48?style=for-the-badge&logo=minio&logoColor=white"/>
   <img src="https://img.shields.io/badge/Redis-Cache-red?style=for-the-badge&logo=redis&logoColor=white"/>
   <img src="https://img.shields.io/badge/Keycloak-SSO-4d4d4d?style=for-the-badge&logo=keycloak&logoColor=white"/>
+  <img src="https://img.shields.io/badge/Gemini-AI%20Quiz-8E75B2?style=for-the-badge&logo=google&logoColor=white"/>
   <img src="https://img.shields.io/github/actions/workflow/status/alexwest1981/EduFlex/ci.yml?style=for-the-badge&logo=github&label=CI%20Build"/>
   <img src="https://img.shields.io/badge/License-Proprietary-orange?style=for-the-badge"/>
 </p>
 
 ---
+
+*   **🤖 AI Quiz Generation with Google Gemini (Jan 26, 2026):**
+    *   **Document-to-Quiz:** Upload PDF, DOCX, DOC, TXT, RTF, or ODT files and automatically generate quiz questions using AI.
+    *   **Text Input Mode:** Paste or type text directly to generate questions without file upload.
+    *   **Gemini Integration:** Powered by Google Gemini 2.0 Flash for fast, high-quality question generation.
+    *   **Configurable Generation:** Choose number of questions (3-15), difficulty level (Easy/Medium/Hard), and language.
+    *   **Interactive Preview:** Edit generated questions, modify options, change correct answers, and remove unwanted questions before saving.
+    *   **Question Bank Integration:** Optionally add all generated questions to your Question Bank for future reuse.
+    *   **Document Parsing:** Apache Tika backend extracts text from multiple document formats with 50,000 character support.
+    *   **Teacher/Admin Only:** Accessible via sidebar "AI Quiz" menu for authorized roles.
 
 *   **🏪 EduFlex Community - Content Marketplace (Jan 25, 2026):**
     *   **Cross-Tenant Sharing:** Teachers can publish Quiz, Assignments, and Lessons to a shared marketplace accessible across all tenants.
@@ -172,6 +183,7 @@ Whether you are a single educator, a private school, or a municipal education bo
 | **Certification** | Auto-generated verifiable PDF certificates |
 | **Lesson Progress** | Track student progress through course materials |
 | **Quiz System** | Multiple choice, open-ended, and true/false questions |
+| **AI Quiz Generator** | Generate quizzes from documents using Google Gemini AI |
 
 #### 🎮 Gamification & Engagement
 | Feature | Description |
@@ -496,6 +508,7 @@ npm run dev
 | **Backend** | `MINIO_PUBLIC_URL` | Public S3 URL (for clients) | `https://storage.eduflexlms.se` |
 | **Backend** | `SPRING_REDIS_HOST` | Redis host | `redis` |
 | **Backend** | `EDUFLEX_AUTH_MODE` | Auth mode | `internal` |
+| **Backend** | `GEMINI_API_KEY` | Google Gemini API key for AI Quiz | – |
 | **Frontend** | `VITE_API_BASE_URL` | API endpoint | `http://localhost:8080/api` |
 
 #### application.properties Key Settings
@@ -566,6 +579,15 @@ All requests (except `/api/tenants`) require `X-Tenant-ID` header.
 | `GET` | `/api/notifications/unread/count` | Unread notification count |
 | `PUT` | `/api/notifications/{id}/read` | Mark notification as read |
 | `PUT` | `/api/notifications/read-all` | Mark all as read |
+
+#### AI Quiz Generation Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/api/ai/quiz/status` | Check if AI generation is available |
+| `POST` | `/api/ai/quiz/generate` | Generate quiz from uploaded document (multipart) |
+| `POST` | `/api/ai/quiz/generate-from-text` | Generate quiz from plain text |
+| `POST` | `/api/ai/quiz/save` | Save generated quiz to database |
 
 #### Community Endpoints
 
@@ -671,9 +693,9 @@ See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for manual setup.
 | Live Classrooms (Jitsi Integration) | ✅ Implemented |
 | Community Marketplace | ✅ Implemented |
 | Question Bank Integration | ✅ Implemented |
+| AI-powered Quiz Generation (Gemini) | ✅ Implemented |
 | Microservices Split (Video/PDF) | 🔜 Q2 2026 |
 | Event Bus (Kafka/RabbitMQ) | 🔜 Q3 2026 |
-| AI-powered Quiz Generation | 🔜 Q2 2026 |
 | Mobile App (React Native) | 🔜 Q4 2026 |
 | Push Notifications (Mobile) | 🔜 Q4 2026 |
 | Advanced Analytics Dashboard | 🔜 Q2 2026 |
@@ -712,6 +734,15 @@ taskkill /PID <PID> /F
 ## 🇸🇪 Svenska
 
 ### ⚡ Senaste Uppdateringarna
+*   **🤖 AI Quiz-generering med Google Gemini (26 jan 2026):**
+    *   **Dokument-till-Quiz:** Ladda upp PDF, DOCX, DOC, TXT, RTF eller ODT och generera quiz-frågor automatiskt med AI.
+    *   **Textinmatning:** Klistra in eller skriv text direkt för att generera frågor utan filuppladdning.
+    *   **Gemini-integration:** Drivs av Google Gemini 2.0 Flash för snabb, högkvalitativ frågegenerering.
+    *   **Konfigurerbar Generering:** Välj antal frågor (3-15), svårighetsgrad (Enkel/Medel/Svår) och språk.
+    *   **Interaktiv Förhandsgranskning:** Redigera genererade frågor, ändra alternativ, byt rätt svar och ta bort oönskade frågor innan sparning.
+    *   **Frågebank-integration:** Lägg till alla genererade frågor i din Frågebank för framtida återanvändning.
+    *   **Dokumentparsning:** Apache Tika extraherar text från flera dokumentformat med stöd för 50 000 tecken.
+
 *   **🏪 EduFlex Community - Innehållsmarknadsplats (25 jan 2026):**
     *   **Cross-Tenant Delning:** Lärare kan publicera Quiz, Uppgifter och Lektioner till en delad marknadsplats tillgänglig för alla tenants.
     *   **Moderationsflöde:** Admin-godkännande med väntande/publicerad/avvisad status och motiveringar.
@@ -756,12 +787,19 @@ taskkill /PID <PID> /F
     *   **Hälsokontroller:** Realtidsövervakning av anslutningen till ONLYOFFICE Document Server.
     *   **Generaliserad Arkitektur:** Ramverket för dokumentredigering stöder nu alla entiteter (Dokument, Material, Lektioner).
 
+*   **🔧 Systemstabilitet & Admin-fixar (26 jan 2026):**
+    -   **Admin Dashboard:** Åtgärdade kritiska krascher ("Invalid Hook Call") genom att rensa beroendekonflikter och optimera React-imports.
+    -   **Kalender-widget:** Fixade laddningsfel genom att implementera korrekt API-endpoint (`/api/events/dashboard-summary`) och url-hantering i frontend.
+    -   **API-felhantering:** Förbättrad diagnostik som nu fångar och loggar HTML-svar (404/500) istället för att krascha frontend med `SyntaxError`.
+    -   **Proxy-optimering:** Tog bort manuella alias i `vite.config.js` för att garantera 'Single Source of Truth' för React-versioner.
+
 ### 📖 Innehållsförteckning
 - [Om Projektet](#-om-projektet)
 - [Nyckelfunktioner](#-nyckelfunktioner)
 - [Multi-Tenancy](#-multi-tenancy-sv)
 - [Kom igång](#-kom-igång)
 - [Konfiguration](#-konfiguration-sv)
+- [Felsökning & Infrastruktur](docs/InfrastructureGuide.md)
 
 ---
 
@@ -782,6 +820,7 @@ taskkill /PID <PID> /F
 
 #### 🍎 Utbildning (Core)
 - **Kurshantering:** Rika kurser med text, video, bilagor och quiz
+- **AI Quiz-generering:** Generera quiz automatiskt från dokument med Google Gemini
 - **SCORM / xAPI:** Stöd för Articulate/Captivate-paket
 - **Uppgifter:** Filinlämningar med lärarbedömning
 - **Certifikat:** Automatiska, spårbara PDF-diplom
@@ -885,6 +924,7 @@ curl -X POST http://localhost:8080/api/tenants \
 |--------|----------|-------------|----------|
 | **Backend** | `SPRING_DATASOURCE_URL` | Databaslänk | `jdbc:postgresql://db:5432/eduflex` |
 | **Backend** | `EDUFLEX_AUTH_MODE` | Autentiseringsläge | `internal` |
+| **Backend** | `GEMINI_API_KEY` | Google Gemini API-nyckel för AI Quiz | – |
 | **Frontend** | `VITE_API_BASE_URL` | API-länk | `http://localhost:8080/api` |
 
 ---
@@ -935,4 +975,4 @@ För Enterprise-frågor:
 
 ---
 
-*Last updated: 2026-01-25 (Community Marketplace & Question Bank Integration)*
+*Last updated: 2026-01-26 (AI Quiz Generation with Google Gemini)*
