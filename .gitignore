@@ -164,3 +164,8 @@ nul
 start
 stop
 
+# =============================================
+# ONLYOFFICE STATIC ASSETS (LOCAL ONLY)
+# =============================================
+eduflex/src/main/resources/static/web-apps/
+
