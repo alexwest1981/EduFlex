@@ -32,6 +32,11 @@
 
 ---
 
+*   **🤖 AI Tutor Stability Fixes (Jan 27, 2026):**
+    *   **Compilation Fix:** Resolved a critical class mismatch (`Embedding` vs `VectorStoreEntry`) that prevented backend builds.
+    *   **Runtime Stability:** Fixed a `NullPointerException` in `AITutorService` by filtering out invalid vector embeddings during search.
+    *   **Robustness:** AI Tutor now gracefully handles missing data instead of crashing the application.
+
 *   **🔗 Friendly URLs - Course Slugs (Jan 27, 2026):**
     *   **Human-Readable Links:** Courses now use slugs (e.g., `/course/matematik-1`) instead of numeric IDs.
     *   **Automatic Generation:** Slugs are generated from course names with collision handling (e.g., `-1`, `-2`).
@@ -745,6 +750,11 @@ taskkill /PID <PID> /F
 ## 🇸🇪 Svenska
 
 ### ⚡ Senaste Uppdateringarna
+*   **🤖 AI Tutor Stabilitetsfixar (27 jan 2026):**
+    *   **Kompileringsfix:** Löste ett kritiskt fel där backend inte kunde byggas på grund av saknad `Embedding`-klass via `VectorStoreEntry`-refaktorering.
+    *   **Runtime-stabilitet:** Fixade en krasch (`NullPointerException`) i `AITutorService` genom att filtrera bort ogiltiga vektordata under sökning.
+    *   **Robusthet:** AI-tutorn hanterar nu saknad data snyggt istället för att krascha applikationen.
+
 *   **🔗 Vänliga URL:er - Kurs-Slugs (27 jan 2026):**
     *   **Läsbara Länkar:** Kurser använder nu "slugs" (t.ex. `/course/matematik-1`) istället för bara siffror.
     *   **Automatisk Generering:** Slugs skapas från kursnamnet med hantering av dubbletter.
