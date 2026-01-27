@@ -196,7 +196,7 @@ const AppRoutes = () => {
                 } />
 
                 <Route path="/analytics" element={
-                    <ProtectedRoute roles={['ADMIN']}>
+                    <ProtectedRoute roles={['ADMIN', 'TEACHER']}>
                         <Layout currentUser={currentUser} handleLogout={logout}>
                             <AnalyticsDashboard />
                         </Layout>

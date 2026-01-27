@@ -63,4 +63,22 @@ public class AnalyticsController {
     public ResponseEntity<List<Map<String, Object>>> getStudentCourseProgress(@PathVariable Long studentId) {
         return ResponseEntity.ok(analyticsService.getStudentCourseProgress(studentId));
     }
+
+    // --- NEW ENDPOINTS FOR DASHBOARD ---
+
+    @GetMapping("/activity-trend")
+    public ResponseEntity<List<Map<String, Object>>> getActivityTrend(
+            @RequestParam(required = false, defaultValue = "30d") String range) {
+        return ResponseEntity.ok(analyticsService.getActivityTrend(range));
+    }
+
+    @GetMapping("/course-performance")
+    public ResponseEntity<List<Map<String, Object>>> getCoursePerformance() {
+        return ResponseEntity.ok(analyticsService.getCoursePerformance());
+    }
+
+    @GetMapping("/at-risk-students")
+    public ResponseEntity<List<Map<String, Object>>> getAtRiskStudents() {
+        return ResponseEntity.ok(analyticsService.getAtRiskStudents());
+    }
 }

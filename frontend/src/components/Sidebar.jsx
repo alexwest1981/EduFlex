@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { LayoutDashboard, BookOpen, FolderOpen, Users, UserCircle, LogOut, ShieldCheck, Calendar, MessageSquare, Settings2, FileQuestion, Palette, Store, Sparkles } from 'lucide-react';
+import { LayoutDashboard, BookOpen, FolderOpen, Users, UserCircle, LogOut, ShieldCheck, Calendar, MessageSquare, Settings2, FileQuestion, Palette, Store, Sparkles, TrendingUp } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
@@ -50,6 +50,7 @@ const Sidebar = ({ currentUser, logout, siteName, version }) => {
         }
         if (role === 'ADMIN' || role === 'TEACHER') {
             items.push({ path: '/admin', label: t('sidebar.admin'), icon: <Users size={20} /> });
+            items.push({ path: '/analytics', label: t('sidebar.analytics') || 'Analytics', icon: <TrendingUp size={20} /> });
             items.push({ path: '/system', label: 'System', icon: <Settings2 size={20} /> });
         }
         if (role !== 'ADMIN') {

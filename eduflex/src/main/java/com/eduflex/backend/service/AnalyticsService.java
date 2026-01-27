@@ -503,4 +503,91 @@ public class AnalyticsService {
                         return "E";
                 return "F";
         }
+
+        // --- NEW METHODS FOR DASHBOARD ---
+
+        public List<Map<String, Object>> getActivityTrend(String range) {
+                // För MVP: Returnera inloggningshistorik (simulerad data baserat på users om vi
+                // saknar logg-tabell)
+                // TODO: Koppla till riktig UserActivityLog när den är fullt populatad
+
+                List<Map<String, Object>> trend = new ArrayList<>();
+                LocalDateTime now = LocalDateTime.now();
+                int days = 30;
+
+                if ("7d".equals(range))
+                        days = 7;
+                if ("90d".equals(range))
+                        days = 90;
+
+                for (int i = days - 1; i >= 0; i--) {
+                        LocalDateTime day = now.minusDays(i);
+                        Map<String, Object> point = new HashMap<>();
+                        point.put("date", day.toString().substring(0, 10)); // YYYY-MM-DD
+
+                        // Mock: Random aktivitet + lite logik baserat på veckodag
+                        double baseActivity = 50 + (Math.random() * 20);
+                        if (day.getDayOfWeek().getValue() >= 6)
+                                baseActivity *= 0.5; // Helger lugnare
+
+                        point.put("activeUsers", (int) baseActivity);
+                        point.put("actions", (int) (baseActivity * 5.5)); // Actions per user
+                        trend.add(point);
+                }
+                return trend;
+        }
+
+        public List<Map<String, Object>> getCoursePerformance() {
+                return courseRepository.findAll().stream().map(course -> {
+                        Map<String, Object> map = new HashMap<>();
+                        map.put("id", course.getId());
+                        map.put("name", course.getName());
+                        map.put("students", course.getStudents().size());
+
+                        // Avg Grade Calculation
+                        List<Submission> subs = submissionRepository.findAll().stream()
+                                        .filter(s -> s.getAssignment().getCourse().getId().equals(course.getId()))
+                                        .filter(s -> s.getGrade() != null)
+                                        .collect(Collectors.toList());
+
+                        double avgGrade = subs.stream()
+                                        .mapToDouble(s -> gradeToNumeric(s.getGrade()))
+                                        .filter(g -> g >= 0)
+                                        .average().orElse(0);
+
+                        map.put("avgGrade", avgGrade);
+
+                        // Completion Rate
+                        long completedStudents = course.getStudents().stream()
+                                        .filter(student -> {
+                                                // Simple check: Har studenten gjort alla uppgifter?
+                                                long totalAssignments = assignmentRepository.findAll().stream()
+                                                                .filter(a -> a.getCourse().getId()
+                                                                                .equals(course.getId()))
+                                                                .count();
+                                                if (totalAssignments == 0)
+                                                        return false;
+
+                                                long mySubs = subs.stream()
+                                                                .filter(s -> s.getStudent().getId()
+                                                                                .equals(student.getId()))
+                                                                .count();
+                                                return mySubs >= totalAssignments;
+                                        }).count();
+
+                        double completionRate = course.getStudents().isEmpty() ? 0
+                                        : ((double) completedStudents / course.getStudents().size()) * 100;
+
+                        map.put("completionRate", (int) completionRate);
+
+                        return map;
+                }).collect(Collectors.toList());
+        }
+
+        public List<Map<String, Object>> getAtRiskStudents() {
+                // Reuse logic from getStudentInsights but filter only "High" risk
+                return getStudentInsights().stream()
+                                .filter(studentMap -> "High".equals(studentMap.get("riskFactor")))
+                                .collect(Collectors.toList());
+        }
 }

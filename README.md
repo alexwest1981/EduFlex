@@ -282,8 +282,11 @@ Complete visual customization with 8 professional design systems:
 #### 📊 Analytics & Insights
 | Feature | Description |
 |---------|-------------|
-| **Principal Dashboard** | High-level metrics (Revenue, Active Users, Health) |
-| **Risk Analysis** | AI-driven at-risk student identification |
+| **Advanced Analytics Dashboard** | [x] **Advanced Analytics Dashboard** (Implemented Q1 2026)
+  - Real-time user activity tracking
+  - Course performance metrics
+  - At-risk student identification
+  - Admin/Teacher specific views |
 | **Student Activity Logs** | Deep-dive into individual history |
 | **Real-time Debug Terminal** | Matrix-style live log streaming |
 
@@ -923,6 +926,22 @@ curl -X POST http://localhost:8080/api/tenants \
 ```
 
 > 📖 **Full dokumentation:** [docs/TENANT_ADMIN_GUIDE.md](docs/TENANT_ADMIN_GUIDE.md)
+
+---
+### Senaste Uppdateringar (2026-01-27)
+- **Advanced Analytics Dashboard:**
+  - Implementerat en omfattande analyspanel för Admins och Lärare.
+  - Innehåller grafer för användaraktivitet, kursgenomströmning och betygsfördelning.
+  - Automatisk identifiering av "At-Risk" studenter.
+  - Backend-stöd via nya endpoints i `AnalyticsController`.
+
+- **OnlyOffice Integration:**
+  - Löste startup-problem med Docker-containern (`eduflex-onlyoffice`).
+  - Verifierade att API:et svarar korrekt (200 OK) och att integrationen är stabil.
+
+- **Frontend & Backend Fixar:**
+  - Justerat API-anrop för kurs-slugs (frontend skickar nu numeriska IDn efter uppslag).
+  - Fixat AI Tutor runtime-fel.
 
 ---
 

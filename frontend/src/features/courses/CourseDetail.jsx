@@ -167,34 +167,41 @@ const CourseDetail = ({ currentUser }) => {
     ];
 
     // --- DATA LOADING ---
+    // --- DATA LOADING ---
     useEffect(() => {
+        const loadResult = async (numericCourseId) => {
+            try {
+                const res = await api.courses.getResult(numericCourseId, currentUser.id);
+                setMyResult(res);
+
+                // Om ej klar, kolla om vi KAN bli klara
+                if (!res || res.status !== 'PASSED') {
+                    const completed = await api.courses.checkCompletion(numericCourseId, currentUser.id);
+                    setCanClaim(completed);
+                }
+            } catch (e) { /* ignore */ }
+        };
+
         const loadCourseData = async () => {
             setIsLoading(true);
             try {
+                // Hämta kurs (kan vara via slug eller ID)
                 const courseData = await api.courses.getOne(id);
                 setCourse(courseData);
+
+                // När vi har kursen, använd dess RIKTIGA ID för att hämta resultat
+                if (courseData && courseData.id && !isTeacher) {
+                    loadResult(courseData.id);
+                }
             } catch (e) {
                 console.error(e);
             } finally {
                 setIsLoading(false);
             }
         };
-        const loadResult = async () => {
-            try {
-                const res = await api.courses.getResult(id, currentUser.id);
-                setMyResult(res);
-
-                // Om ej klar, kolla om vi KAN bli klara
-                if (!res || res.status !== 'PASSED') {
-                    const completed = await api.courses.checkCompletion(id, currentUser.id);
-                    setCanClaim(completed);
-                }
-            } catch (e) { /* ignore */ }
-        };
 
         if (id) {
             loadCourseData();
-            if (!isTeacher) loadResult();
         }
     }, [id, currentUser, isTeacher]);
 
@@ -234,9 +241,11 @@ const CourseDetail = ({ currentUser }) => {
     };
 
     // --- CERTIFICATE HANDLER ---
+    // --- CERTIFICATE HANDLER ---
     const downloadCertificate = async () => {
+        if (!course || !course.id) return;
         try {
-            const response = await fetch(`${window.location.origin}/api/certificates/download/${id}/${currentUser.id}`, {
+            const response = await fetch(`${window.location.origin}/api/certificates/download/${course.id}/${currentUser.id}`, {
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
             });
 
@@ -260,9 +269,10 @@ const CourseDetail = ({ currentUser }) => {
 
     // --- TEACHER EVALUATION HANDLER ---
     const handleSaveEvaluation = async (evaluationData) => {
+        if (!course || !course.id) return;
         setIsSavingEvaluation(true);
         try {
-            const res = await fetch(`${API_BASE}/courses/${id}/evaluation`, {
+            const res = await fetch(`${API_BASE}/courses/${course.id}/evaluation`, {
                 method: 'POST',
                 headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
                 body: JSON.stringify(evaluationData)
@@ -314,7 +324,7 @@ const CourseDetail = ({ currentUser }) => {
                         <div className="space-y-2 pt-4 border-t border-gray-100 dark:border-[#3c4043]">
                             {/* INTERNAL LIVE LESSON (Jitsi) */}
                             <LiveLessonButton
-                                courseId={id}
+                                courseId={course.id}
                                 currentUser={currentUser}
                                 isTeacher={isTeacher}
                             />
@@ -399,14 +409,14 @@ const CourseDetail = ({ currentUser }) => {
                                     onClick={async () => {
                                         if (myResult?.status !== 'PASSED') {
                                             try {
-                                                await api.courses.claimCertificate(id, currentUser.id);
+                                                await api.courses.claimCertificate(course.id, currentUser.id);
                                                 setMyResult({ ...myResult, status: 'PASSED' });
                                             } catch (e) {
                                                 alert("Kunde inte utfärda certifikat.");
                                                 return;
                                             }
                                         }
-                                        navigate(`/certificate/${id}`);
+                                        navigate(`/certificate/${course.id}`);
                                     }}
                                     className="bg-gradient-to-r from-amber-200 to-yellow-400 text-amber-900 border border-amber-300 px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 hover:from-amber-300 hover:to-yellow-500 transition-all shadow-sm"
                                 >
@@ -435,7 +445,7 @@ const CourseDetail = ({ currentUser }) => {
                         </h2>
                         {modules.map(mod => (
                             activeTab === mod.key && mod.enabled && (
-                                <mod.comp key={mod.key} courseId={id} currentUser={currentUser} isTeacher={isTeacher} course={course} />
+                                <mod.comp key={mod.key} courseId={course.id} currentUser={currentUser} isTeacher={isTeacher} course={course} />
                             )
                         ))}
                     </div>
@@ -473,7 +483,7 @@ const CourseDetail = ({ currentUser }) => {
             )}
 
             {/* AI Tutor Widget */}
-            <AITutorWidget courseId={id} />
+            <AITutorWidget courseId={course.id} />
         </div>
     );
 };

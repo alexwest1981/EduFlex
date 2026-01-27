@@ -190,7 +190,11 @@ export const api = {
 
     analytics: {
         getOverview: () => fetch(`${API_BASE}/analytics/overview`, { headers: getHeaders() }).then(handleResponse),
-        getStudentProgress: (studentId) => fetch(`${API_BASE}/analytics/student/${studentId}`, { headers: getHeaders() }).then(handleResponse)
+        getStudentProgress: (studentId) => fetch(`${API_BASE}/analytics/student/${studentId}`, { headers: getHeaders() }).then(handleResponse),
+        // NEW DASHBOARD ENDPOINTS
+        getActivityTrend: (range) => fetch(`${API_BASE}/analytics/activity-trend?range=${range || '30d'}`, { headers: getHeaders() }).then(handleResponse),
+        getCoursePerformance: () => fetch(`${API_BASE}/analytics/course-performance`, { headers: getHeaders() }).then(handleResponse),
+        getAtRiskStudents: () => fetch(`${API_BASE}/analytics/at-risk-students`, { headers: getHeaders() }).then(handleResponse),
     },
 
     skolverket: {
