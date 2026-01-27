@@ -34,6 +34,7 @@ public class CommunityService {
     private final LessonRepository lessonRepository;
     private final TenantRepository tenantRepository;
     private final QuestionBankRepository questionBankRepository;
+    private final SocialIntegrationService socialService;
     private final ObjectMapper objectMapper;
 
     public CommunityService(
@@ -45,8 +46,8 @@ public class CommunityService {
             LessonRepository lessonRepository,
             TenantRepository tenantRepository,
             QuestionBankRepository questionBankRepository,
-            ObjectMapper objectMapper
-    ) {
+            SocialIntegrationService socialService,
+            ObjectMapper objectMapper) {
         this.itemRepository = itemRepository;
         this.ratingRepository = ratingRepository;
         this.downloadRepository = downloadRepository;
@@ -55,6 +56,7 @@ public class CommunityService {
         this.lessonRepository = lessonRepository;
         this.tenantRepository = tenantRepository;
         this.questionBankRepository = questionBankRepository;
+        this.socialService = socialService;
         this.objectMapper = objectMapper;
     }
 
@@ -107,7 +109,8 @@ public class CommunityService {
         CommunityItem item = new CommunityItem();
         item.setContentType(ContentType.ASSIGNMENT);
         item.setTitle(assignment.getTitle());
-        item.setDescription(request.publicDescription() != null ? request.publicDescription() : assignment.getDescription());
+        item.setDescription(
+                request.publicDescription() != null ? request.publicDescription() : assignment.getDescription());
         item.setContentJson(serializeAssignment(assignment));
         item.setSubject(parseSubject(request.subject()));
         item.setDifficulty(request.difficulty());
@@ -139,7 +142,8 @@ public class CommunityService {
         CommunityItem item = new CommunityItem();
         item.setContentType(ContentType.LESSON);
         item.setTitle(lesson.getTitle());
-        item.setDescription(request.publicDescription() != null ? request.publicDescription() : truncate(lesson.getContent(), 500));
+        item.setDescription(
+                request.publicDescription() != null ? request.publicDescription() : truncate(lesson.getContent(), 500));
         item.setContentJson(serializeLesson(lesson));
         item.setSubject(parseSubject(request.subject()));
         item.setDifficulty(request.difficulty());
@@ -166,8 +170,7 @@ public class CommunityService {
             String subject,
             ContentType contentType,
             String sortBy,
-            Pageable pageable
-    ) {
+            Pageable pageable) {
         Page<CommunityItem> items;
         PublishStatus status = PublishStatus.PUBLISHED;
         CommunitySubject subjectEnum = parseSubject(subject);
@@ -175,21 +178,29 @@ public class CommunityService {
         // Build query based on filters
         if (subjectEnum != null && contentType != null) {
             items = switch (sortBy) {
-                case "popular" -> itemRepository.findByStatusAndSubjectAndContentTypeOrderByDownloadCountDesc(status, subjectEnum, contentType, pageable);
-                case "rating" -> itemRepository.findByStatusAndSubjectAndContentTypeOrderByAverageRatingDesc(status, subjectEnum, contentType, pageable);
-                default -> itemRepository.findByStatusAndSubjectAndContentTypeOrderByPublishedAtDesc(status, subjectEnum, contentType, pageable);
+                case "popular" -> itemRepository.findByStatusAndSubjectAndContentTypeOrderByDownloadCountDesc(status,
+                        subjectEnum, contentType, pageable);
+                case "rating" -> itemRepository.findByStatusAndSubjectAndContentTypeOrderByAverageRatingDesc(status,
+                        subjectEnum, contentType, pageable);
+                default -> itemRepository.findByStatusAndSubjectAndContentTypeOrderByPublishedAtDesc(status,
+                        subjectEnum, contentType, pageable);
             };
         } else if (subjectEnum != null) {
             items = switch (sortBy) {
-                case "popular" -> itemRepository.findByStatusAndSubjectOrderByDownloadCountDesc(status, subjectEnum, pageable);
-                case "rating" -> itemRepository.findByStatusAndSubjectOrderByAverageRatingDesc(status, subjectEnum, pageable);
+                case "popular" ->
+                    itemRepository.findByStatusAndSubjectOrderByDownloadCountDesc(status, subjectEnum, pageable);
+                case "rating" ->
+                    itemRepository.findByStatusAndSubjectOrderByAverageRatingDesc(status, subjectEnum, pageable);
                 default -> itemRepository.findByStatusAndSubjectOrderByPublishedAtDesc(status, subjectEnum, pageable);
             };
         } else if (contentType != null) {
             items = switch (sortBy) {
-                case "popular" -> itemRepository.findByStatusAndContentTypeOrderByDownloadCountDesc(status, contentType, pageable);
-                case "rating" -> itemRepository.findByStatusAndContentTypeOrderByAverageRatingDesc(status, contentType, pageable);
-                default -> itemRepository.findByStatusAndContentTypeOrderByPublishedAtDesc(status, contentType, pageable);
+                case "popular" ->
+                    itemRepository.findByStatusAndContentTypeOrderByDownloadCountDesc(status, contentType, pageable);
+                case "rating" ->
+                    itemRepository.findByStatusAndContentTypeOrderByAverageRatingDesc(status, contentType, pageable);
+                default ->
+                    itemRepository.findByStatusAndContentTypeOrderByPublishedAtDesc(status, contentType, pageable);
             };
         } else {
             items = switch (sortBy) {
@@ -218,7 +229,8 @@ public class CommunityService {
                 .map(CommunityRatingDTO::fromEntity)
                 .toList();
 
-        boolean alreadyInstalled = downloadRepository.existsByCommunityItemIdAndUserIdAndTenantId(itemId, userId, tenantId);
+        boolean alreadyInstalled = downloadRepository.existsByCommunityItemIdAndUserIdAndTenantId(itemId, userId,
+                tenantId);
 
         return CommunityItemDetailDTO.fromEntity(item, parseMetadata(item.getMetadata()), ratingDTOs, alreadyInstalled);
     }
@@ -268,7 +280,8 @@ public class CommunityService {
 
     private Long installQuiz(CommunityItem item, User currentUser, Long courseId) {
         try {
-            Map<String, Object> data = objectMapper.readValue(item.getContentJson(), new TypeReference<>() {});
+            Map<String, Object> data = objectMapper.readValue(item.getContentJson(), new TypeReference<>() {
+            });
 
             Quiz quiz = new Quiz();
             quiz.setTitle((String) data.get("title") + " (Community)");
@@ -344,7 +357,8 @@ public class CommunityService {
     }
 
     private QuestionBankItem.Difficulty parseDifficulty(String difficulty) {
-        if (difficulty == null) return QuestionBankItem.Difficulty.MEDIUM;
+        if (difficulty == null)
+            return QuestionBankItem.Difficulty.MEDIUM;
         return switch (difficulty.toUpperCase()) {
             case "EASY", "LÄTT" -> QuestionBankItem.Difficulty.EASY;
             case "HARD", "SVÅR" -> QuestionBankItem.Difficulty.HARD;
@@ -354,7 +368,8 @@ public class CommunityService {
 
     private Long installAssignment(CommunityItem item, User currentUser, Long courseId) {
         try {
-            Map<String, Object> data = objectMapper.readValue(item.getContentJson(), new TypeReference<>() {});
+            Map<String, Object> data = objectMapper.readValue(item.getContentJson(), new TypeReference<>() {
+            });
 
             Assignment assignment = new Assignment();
             assignment.setTitle((String) data.get("title") + " (Community)");
@@ -374,7 +389,8 @@ public class CommunityService {
 
     private Long installLesson(CommunityItem item, User currentUser, Long courseId) {
         try {
-            Map<String, Object> data = objectMapper.readValue(item.getContentJson(), new TypeReference<>() {});
+            Map<String, Object> data = objectMapper.readValue(item.getContentJson(), new TypeReference<>() {
+            });
 
             Lesson lesson = new Lesson();
             lesson.setTitle((String) data.get("title") + " (Community)");
@@ -436,7 +452,8 @@ public class CommunityService {
     // ==================== MY PUBLISHED ====================
 
     public List<CommunityItemDTO> getMyPublished(Long userId, String tenantId) {
-        List<CommunityItem> items = itemRepository.findByAuthorUserIdAndAuthorTenantIdOrderByCreatedAtDesc(userId, tenantId);
+        List<CommunityItem> items = itemRepository.findByAuthorUserIdAndAuthorTenantIdOrderByCreatedAtDesc(userId,
+                tenantId);
         return items.stream()
                 .map(item -> CommunityItemDTO.fromEntity(item, parseMetadata(item.getMetadata())))
                 .toList();
@@ -462,7 +479,11 @@ public class CommunityService {
         item.setPublishedAt(LocalDateTime.now());
         item.setRejectionReason(null);
 
-        logger.info("Community item {} approved", itemId);
+        // Social Integration: Notify external channels (Slack/Teams/Recent Activity)
+        socialService.notifyNewContent(item.getTitle(), item.getAuthorName(),
+                item.getContentType().name(), "/community/items/" + item.getId());
+
+        logger.info("Community item {} approved and social broadcast sent", itemId);
         return itemRepository.save(item);
     }
 
@@ -519,9 +540,7 @@ public class CommunityService {
 
         // Get tenant name
         if (tenantId != null && !"public".equals(tenantId)) {
-            tenantRepository.findById(tenantId).ifPresent(tenant ->
-                item.setAuthorTenantName(tenant.getName())
-            );
+            tenantRepository.findById(tenantId).ifPresent(tenant -> item.setAuthorTenantName(tenant.getName()));
         }
         if (item.getAuthorTenantName() == null) {
             item.setAuthorTenantName("EduFlex");
@@ -581,14 +600,17 @@ public class CommunityService {
     }
 
     private int calculateEstimatedTime(Quiz quiz) {
-        if (quiz.getQuestions() == null) return 5;
+        if (quiz.getQuestions() == null)
+            return 5;
         // Estimate 1 minute per question
         return Math.max(5, quiz.getQuestions().size());
     }
 
     private String truncate(String text, int maxLength) {
-        if (text == null) return null;
-        if (text.length() <= maxLength) return text;
+        if (text == null)
+            return null;
+        if (text.length() <= maxLength)
+            return text;
         return text.substring(0, maxLength) + "...";
     }
 
@@ -606,7 +628,8 @@ public class CommunityService {
             return new HashMap<>();
         }
         try {
-            return objectMapper.readValue(json, new TypeReference<>() {});
+            return objectMapper.readValue(json, new TypeReference<>() {
+            });
         } catch (JsonProcessingException e) {
             logger.error("Failed to parse metadata JSON", e);
             return new HashMap<>();

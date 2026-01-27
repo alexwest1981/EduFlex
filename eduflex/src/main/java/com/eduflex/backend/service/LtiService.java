@@ -82,6 +82,10 @@ public class LtiService {
         return jwkSet.toJSONObject();
     }
 
+    public RSAKey getRsaKey() {
+        return rsaKey;
+    }
+
     public String getLoginInitRedirectionUrl(String iss, String login_hint, String target_link_uri,
             String lti_message_hint) {
 
@@ -125,8 +129,38 @@ public class LtiService {
             JWTClaimsSet claims = signedJWT.getJWTClaimsSet();
             verifyClaims(claims, platform.getClientId());
 
-            // 5. User Provisioning
-            return provisionUserAndGenerateToken(claims);
+            // 5. User Provisioning & Mode Check
+            String messageType = (String) claims.getClaim("https://purl.imsglobal.org/spec/lti/claim/message_type");
+
+            if ("LtiDeepLinkingRequest".equals(messageType)) {
+                // Deep Linking Launch
+                Map<String, Object> settings = (Map<String, Object>) claims
+                        .getClaim("https://purl.imsglobal.org/spec/lti-dl/claim/deep_linking_settings");
+                String deploymentId = (String) claims
+                        .getClaim("https://purl.imsglobal.org/spec/lti/claim/deployment_id");
+
+                // Generate a temporary JWT for the frontend to use when submitting selections
+                // We reuse existing User provisioning because we need to know WHO is selecting
+                String userToken = provisionUserAndGenerateToken(claims);
+
+                // We pack the Deep Linking context into a separate "context token" or just
+                // return it structure
+                // For simplicity, we return a prefix "DEEP_LINK:" + userToken + "::" +
+                // Base64(settings)
+                // In a real app, we should store this state in DB or signed JWT.
+                // Let's rely on the frontend to pass the simple user token, and we assume we
+                // can regenerate the response from the settings.
+                // Actually, the frontend needs the 'deep_link_return_url' found in settings.
+
+                String settingsJson = new com.fasterxml.jackson.databind.ObjectMapper().writeValueAsString(settings);
+                String settingsB64 = Base64.getEncoder().encodeToString(settingsJson.getBytes());
+
+                return "DEEP_LINK:" + userToken + ":" + settingsB64 + ":" + deploymentId + ":" + issuer;
+
+            } else {
+                // Standard Resource Link Launch
+                return "TOKEN:" + provisionUserAndGenerateToken(claims);
+            }
 
         } catch (Exception e) {
             logger.error("LTI Launch Failed", e);
@@ -212,5 +246,47 @@ public class LtiService {
 
         // Generate App Token
         return jwtUtils.generateJwtToken(user.getUsername());
+    }
+
+    // Generate Deep Linking Response JWT
+    public String createDeepLinkingResponse(String platformIssuer, String deploymentId, String data,
+            List<Map<String, Object>> contentItems) throws Exception {
+
+        LtiPlatform platform = platformRepository.findByIssuer(platformIssuer)
+                .orElseThrow(() -> new IllegalArgumentException("Unknown Platform Issuer: " + platformIssuer));
+
+        // Create Header
+        JWSHeader header = new JWSHeader.Builder(JWSAlgorithm.RS256)
+                .keyID(rsaKey.getKeyID())
+                .type(new com.nimbusds.jose.JOSEObjectType("JWT"))
+                .build();
+
+        // Create Payload
+        Date now = new Date();
+        Date exp = new Date(now.getTime() + 300 * 1000); // 5 min expiration
+
+        JWTClaimsSet.Builder claimsBuilder = new JWTClaimsSet.Builder()
+                .issuer(platform.getClientId()) // We are the Issuer (Tool's Client ID)
+                .audience(platform.getIssuer()) // The Platform is the Audience
+                .issueTime(now)
+                .expirationTime(exp)
+                .jwtID(UUID.randomUUID().toString())
+                .claim("https://purl.imsglobal.org/spec/lti/claim/message_type", "LtiDeepLinkingResponse")
+                .claim("https://purl.imsglobal.org/spec/lti/claim/version", "1.3.0")
+                .claim("https://purl.imsglobal.org/spec/lti/claim/deployment_id", deploymentId)
+                .claim("https://purl.imsglobal.org/spec/lti-dl/claim/content_items", contentItems);
+
+        // 'data' must be returned if present in request
+        if (data != null) {
+            claimsBuilder.claim("https://purl.imsglobal.org/spec/lti-dl/claim/data", data);
+        }
+
+        SignedJWT signedJWT = new SignedJWT(header, claimsBuilder.build());
+
+        // Sign
+        com.nimbusds.jose.JWSSigner signer = new com.nimbusds.jose.crypto.RSASSASigner(rsaKey);
+        signedJWT.sign(signer);
+
+        return signedJWT.serialize();
     }
 }

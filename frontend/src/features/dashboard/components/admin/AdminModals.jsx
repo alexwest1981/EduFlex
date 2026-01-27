@@ -5,6 +5,17 @@ import SkolverketCourseSelector from '../../../../components/SkolverketCourseSel
 
 import { COURSE_CATEGORIES } from '../../../../constants/courseCategories';
 
+const COURSE_COLORS = [
+    { value: 'bg-indigo-600', label: 'Indigo' },
+    { value: 'bg-blue-600', label: 'Blue' },
+    { value: 'bg-green-600', label: 'Green' },
+    { value: 'bg-red-600', label: 'Red' },
+    { value: 'bg-yellow-500', label: 'Yellow' },
+    { value: 'bg-purple-600', label: 'Purple' },
+    { value: 'bg-pink-600', label: 'Pink' },
+    { value: 'bg-gray-800', label: 'Black' }
+];
+
 // --- CREATE USER ---
 export const CreateUserModal = ({ isOpen, onClose, onUserCreated }) => {
     const [formData, setFormData] = useState({ firstName: '', lastName: '', email: '', username: '', password: '', role: 'STUDENT' });
@@ -151,12 +162,11 @@ export const EditUserModal = ({ isOpen, onClose, onUserUpdated, userToEdit }) =>
 
 // --- CREATE COURSE ---
 export const CreateCourseModal = ({ isOpen, onClose, onCourseCreated, teachers }) => {
-    const [formData, setFormData] = useState({ name: '', courseCode: '', description: '', category: 'Övrigt', teacherId: '', startDate: '', endDate: '', color: 'bg-indigo-600', maxStudents: 30 });
+    const [formData, setFormData] = useState({ name: '', courseCode: '', description: '', category: 'Övrigt', tags: '', teacherId: '', startDate: '', endDate: '', color: 'bg-indigo-600', maxStudents: 30 });
     const [loading, setLoading] = useState(false);
     const [useSkolverket, setUseSkolverket] = useState(false);
     const [showSkolverketSelector, setShowSkolverketSelector] = useState(false);
     const [selectedSkolverketCourse, setSelectedSkolverketCourse] = useState(null);
-    const colors = [{ name: 'Indigo', value: 'bg-indigo-600' }, { name: 'Röd', value: 'bg-red-600' }, { name: 'Grön', value: 'bg-emerald-600' }, { name: 'Blå', value: 'bg-blue-600' }, { name: 'Orange', value: 'bg-orange-500' }, { name: 'Lila', value: 'bg-purple-600' }, { name: 'Rosa', value: 'bg-pink-600' }, { name: 'Svart', value: 'bg-gray-800' }];
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -229,6 +239,8 @@ export const CreateCourseModal = ({ isOpen, onClose, onCourseCreated, teachers }
                         </div>
                         <input type="number" className="w-full p-2 border rounded dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" placeholder="Max platser" value={formData.maxStudents} onChange={e => setFormData({ ...formData, maxStudents: e.target.value })} />
 
+                        <input className="w-full p-2 border rounded dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" value={formData.tags} onChange={e => setFormData({ ...formData, tags: e.target.value })} placeholder="Taggar (comma-separated, t.ex. Math, Algebra)" />
+
                         {/* DIGITAL CLASSROOM SETTINGS */}
                         <div className="p-4 bg-gray-50 dark:bg-[#131314] border border-gray-100 dark:border-[#3c4043] rounded-lg space-y-3">
                             <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider">Digitalt Klassrum (Frivilligt)</h4>
@@ -243,7 +255,23 @@ export const CreateCourseModal = ({ isOpen, onClose, onCourseCreated, teachers }
                                 <input className="w-full p-2 text-sm border rounded dark:bg-[#1E1F20] dark:border-[#3c4043] dark:text-white" placeholder="Klistra in länk..." value={formData.classroomLink || ''} onChange={e => setFormData({ ...formData, classroomLink: e.target.value })} />
                             </div>
                         </div>
-                        <div className="flex gap-2 flex-wrap">{colors.map((c) => (<button key={c.value} type="button" onClick={() => setFormData({ ...formData, color: c.value })} className={`w-6 h-6 rounded-full ${c.value} transition-transform hover:scale-110 ${formData.color === c.value ? 'ring-2 ring-offset-2 ring-gray-400' : ''}`} />))}</div>
+
+                        {/* COLORS */}
+                        <div>
+                            <label className="text-xs font-bold text-gray-500 mb-2 block">Kursfärg</label>
+                            <div className="flex gap-2 flex-wrap">
+                                {COURSE_COLORS.map(c => (
+                                    <button
+                                        key={c.value}
+                                        type="button"
+                                        onClick={() => setFormData({ ...formData, color: c.value })}
+                                        className={`w-8 h-8 rounded-full ${c.value} ${formData.color === c.value ? 'ring-2 ring-offset-2 ring-gray-400' : 'opacity-70 hover:opacity-100'}`}
+                                        title={c.label}
+                                    />
+                                ))}
+                            </div>
+                        </div>
+
                         <select className="w-full p-2 border rounded dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" value={formData.teacherId} onChange={e => setFormData({ ...formData, teacherId: e.target.value })}><option value="">Välj lärare...</option>{teachers.map(t => (<option key={t.id} value={t.id}>{t.fullName} ({t.email})</option>))}</select>
                         <textarea className="w-full p-2 border rounded dark:bg-[#131314] dark:border-[#3c4043] dark:text-white h-20 resize-none" placeholder="Beskrivning" value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })} />
                         <button disabled={loading} type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 rounded-lg mt-2">{loading ? 'Skapar...' : 'Skapa Kurs'}</button>
@@ -258,14 +286,14 @@ export const CreateCourseModal = ({ isOpen, onClose, onCourseCreated, teachers }
 // --- EDIT COURSE ---
 export const EditCourseModal = ({ isOpen, onClose, onCourseUpdated, teachers, courseToEdit }) => {
     if (!isOpen || !courseToEdit) return null;
-    const [formData, setFormData] = useState({ name: '', courseCode: '', category: '', description: '', teacherId: '', startDate: '', endDate: '', color: '', maxStudents: 30 });
+    const [formData, setFormData] = useState({ name: '', courseCode: '', category: '', description: '', tags: '', teacherId: '', startDate: '', endDate: '', color: '', maxStudents: 30 });
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         if (courseToEdit) {
             setFormData({
                 name: courseToEdit.name || '', courseCode: courseToEdit.courseCode || '', category: courseToEdit.category || 'Övrigt',
-                description: courseToEdit.description || '', teacherId: courseToEdit.teacher?.id || '', startDate: courseToEdit.startDate || '',
+                description: courseToEdit.description || '', tags: courseToEdit.tags || '', teacherId: courseToEdit.teacher?.id || '', startDate: courseToEdit.startDate || '',
                 endDate: courseToEdit.endDate || '', color: courseToEdit.color || 'bg-indigo-600', maxStudents: courseToEdit.maxStudents || 30,
                 classroomType: courseToEdit.classroomType || '', classroomLink: courseToEdit.classroomLink || ''
             });
@@ -298,6 +326,8 @@ export const EditCourseModal = ({ isOpen, onClose, onCourseUpdated, teachers, co
                     </div>
                     <input className="w-full p-2 border rounded dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" type="number" value={formData.maxStudents} onChange={e => setFormData({ ...formData, maxStudents: e.target.value })} />
 
+                    <input className="w-full p-2 border rounded dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" value={formData.tags} onChange={e => setFormData({ ...formData, tags: e.target.value })} placeholder="Taggar (separera med komma, t.ex. AI, Matematik)" />
+
                     {/* DIGITAL CLASSROOM SETTINGS */}
                     <div className="p-4 bg-gray-50 dark:bg-[#131314] border border-gray-100 dark:border-[#3c4043] rounded-lg space-y-3">
                         <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider">Digitalt Klassrum (Frivilligt)</h4>
@@ -312,7 +342,24 @@ export const EditCourseModal = ({ isOpen, onClose, onCourseUpdated, teachers, co
                             <input className="w-full p-2 text-sm border rounded dark:bg-[#1E1F20] dark:border-[#3c4043] dark:text-white" placeholder="Klistra in länk..." value={formData.classroomLink || ''} onChange={e => setFormData({ ...formData, classroomLink: e.target.value })} />
                         </div>
                     </div>
-                    <select className="w-full p-2 border rounded dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" value={formData.teacherId} onChange={e => setFormData({ ...formData, teacherId: e.target.value })}><option value="">Välj lärare...</option>{teachers.map(t => (<option key={t.id} value={t.id}>{t.fullName} ({t.email})</option>))}</select>
+
+                    {/* COLORS */}
+                    <div>
+                        <label className="text-xs font-bold text-gray-500 mb-2 block">Kursfärg</label>
+                        <div className="flex gap-2 flex-wrap">
+                            {COURSE_COLORS.map(c => (
+                                <button
+                                    key={c.value}
+                                    type="button"
+                                    onClick={() => setFormData({ ...formData, color: c.value })}
+                                    className={`w-8 h-8 rounded-full ${c.value} ${formData.color === c.value ? 'ring-2 ring-offset-2 ring-gray-400' : 'opacity-70 hover:opacity-100'}`}
+                                    title={c.label}
+                                />
+                            ))}
+                        </div>
+                    </div>
+
+                    <select className="w-full p-2 border rounded dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" value={formData.teacherId} onChange={e => setFormData({ ...formData, teacherId: e.target.value })}><option value="">Välj lärare...</option>{teachers?.map(t => (<option key={t.id} value={t.id}>{t.fullName} ({t.email})</option>))}</select>
                     <button disabled={loading} type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 rounded-lg mt-2">Spara</button>
                 </form>
             </div>

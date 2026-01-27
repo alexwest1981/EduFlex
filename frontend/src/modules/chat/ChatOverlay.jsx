@@ -1,14 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { MessageCircle, X, Send, Image as ImageIcon, Minus, Users, ExternalLink } from 'lucide-react';
+import { Send, X, MessageCircle, Paperclip, Minimize2, MoreVertical, Users, ExternalLink, Image as ImageIcon, Minus } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import SockJS from 'sockjs-client';
 import Stomp from 'stompjs';
 import { useTranslation } from 'react-i18next';
-import { api, getSafeUrl } from '../../services/api';
+import { api } from '../../services/api';
+import { useAppContext } from '../../context/AppContext';
 
 const notifySound = new Audio('https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3');
 
-const ChatOverlay = ({ currentUser, API_BASE, token }) => {
+const ChatOverlay = () => {
+    const { t } = useTranslation();
+    const { currentUser } = useAppContext();
     const [isOpen, setIsOpen] = useState(false);
     const [activeChatUser, setActiveChatUser] = useState(null);
     const [users, setUsers] = useState([]);
@@ -141,21 +144,18 @@ const ChatOverlay = ({ currentUser, API_BASE, token }) => {
 
     const fetchUsers = async () => {
         try {
-            const res = await fetch(`${API_BASE}/messages/contacts`, { headers: { 'Authorization': `Bearer ${token}` } });
-            if (res.ok) {
-                const data = await res.json();
-                // Data is now Map: { friends: [], classmates: [], administration: [] }
-                setCategories({
-                    friends: data.friends || [],
-                    classmates: data.classmates || [],
-                    administration: data.administration || [],
-                    others: data.others || []
-                });
-                // Default to friends if exists, else first available
-                if (data.friends?.length > 0) setActiveCategory('friends');
-                else if (data.classmates?.length > 0) setActiveCategory('classmates');
-                else setActiveCategory('administration');
-            }
+            const data = await api.messages.getContacts();
+            // Data is now Map: { friends: [], classmates: [], administration: [] }
+            setCategories({
+                friends: data.friends || [],
+                classmates: data.classmates || [],
+                administration: data.administration || [],
+                others: data.others || []
+            });
+            // Default to friends if exists, else first available
+            if (data.friends?.length > 0) setActiveCategory('friends');
+            else if (data.classmates?.length > 0) setActiveCategory('classmates');
+            else setActiveCategory('administration');
         } catch (e) { console.error(e); }
     };
 
@@ -181,8 +181,8 @@ const ChatOverlay = ({ currentUser, API_BASE, token }) => {
         formData.append("title", "Chat Image");
         formData.append("type", "IMAGE");
         try {
-            const res = await fetch(`${API_BASE}/documents/user/${currentUser.id}`, { method: 'POST', headers: { 'Authorization': `Bearer ${token}` }, body: formData });
-            if (res.ok) { const data = await res.json(); if (data.fileUrl) sendMessage(data.fileUrl, 'IMAGE'); }
+            const data = await api.documents.upload(currentUser.id, formData);
+            if (data && data.fileUrl) sendMessage(data.fileUrl, 'IMAGE');
         } catch (err) { }
     };
 

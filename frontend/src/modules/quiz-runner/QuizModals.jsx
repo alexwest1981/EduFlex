@@ -368,6 +368,20 @@ export const QuizRunnerModal = ({ quiz, onClose, onSubmit }) => {
     const [submitted, setSubmitted] = useState(false);
     const [score, setScore] = useState(0);
 
+    // Normalize quiz data to ensure options have IDs (AI generated quizzes might interpret options as strings)
+    const normalizedQuestions = React.useMemo(() => {
+        return quiz.questions.map((q, qIdx) => ({
+            ...q,
+            id: q.id || `q-${qIdx}`,
+            options: q.options.map((opt, oIdx) => {
+                if (typeof opt === 'string') {
+                    return { id: `opt-${qIdx}-${oIdx}`, text: opt, isCorrect: oIdx === q.correctIndex };
+                }
+                return { ...opt, id: opt.id || `opt-${qIdx}-${oIdx}` }; // Ensure ID exists
+            })
+        }));
+    }, [quiz]);
+
     const handleSelect = (qId, optionId) => {
         if (submitted) return;
         setAnswers({ ...answers, [qId]: optionId });
@@ -375,7 +389,7 @@ export const QuizRunnerModal = ({ quiz, onClose, onSubmit }) => {
 
     const finishQuiz = () => {
         let correctCount = 0;
-        quiz.questions.forEach(q => {
+        normalizedQuestions.forEach(q => {
             const selectedOptionId = answers[q.id];
             const correctOpt = q.options.find(o => o.isCorrect);
             if (selectedOptionId && correctOpt && selectedOptionId === correctOpt.id) {
@@ -384,7 +398,7 @@ export const QuizRunnerModal = ({ quiz, onClose, onSubmit }) => {
         });
         setScore(correctCount);
         setSubmitted(true);
-        if (onSubmit) onSubmit(quiz.id, correctCount, quiz.questions.length);
+        if (onSubmit) onSubmit(quiz.id, correctCount, normalizedQuestions.length);
     };
 
     return (
@@ -397,11 +411,11 @@ export const QuizRunnerModal = ({ quiz, onClose, onSubmit }) => {
                 <div className="p-8 overflow-y-auto bg-gray-50 dark:bg-[#131314] flex-1">
                     {submitted && (
                         <div className="bg-green-100 dark:bg-green-900/30 border border-green-300 dark:border-green-900 text-green-800 dark:text-green-300 p-6 rounded-xl text-center mb-8">
-                            <Award size={48} className="mx-auto mb-3" /><h3 className="text-2xl font-bold">Resultat: {score} / {quiz.questions.length}</h3>
+                            <Award size={48} className="mx-auto mb-3" /><h3 className="text-2xl font-bold">Resultat: {score} / {normalizedQuestions.length}</h3>
                         </div>
                     )}
                     <div className="space-y-8">
-                        {quiz.questions.map((q, idx) => {
+                        {normalizedQuestions.map((q, idx) => {
                             const selectedOptId = answers[q.id];
                             const isCorrect = submitted && selectedOptId && q.options.find(o => o.id === selectedOptId)?.isCorrect;
                             return (
@@ -426,6 +440,11 @@ export const QuizRunnerModal = ({ quiz, onClose, onSubmit }) => {
                                             );
                                         })}
                                     </div>
+                                    {submitted && q.options.find(o => o.isCorrect)?.explanation && (
+                                        <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 text-blue-800 dark:text-blue-200 rounded-lg text-sm">
+                                            <span className="font-bold">Förklaring:</span> {q.options.find(o => o.isCorrect).explanation}
+                                        </div>
+                                    )}
                                 </div>
                             );
                         })}
@@ -434,7 +453,7 @@ export const QuizRunnerModal = ({ quiz, onClose, onSubmit }) => {
                 {!submitted ? (
                     <div className="p-6 border-t border-gray-100 dark:border-[#3c4043] bg-white dark:bg-[#1E1F20] flex justify-end gap-3">
                         <button onClick={onClose} className="text-gray-500 dark:text-gray-400 font-bold px-4">Avbryt</button>
-                        <button onClick={finishQuiz} disabled={Object.keys(answers).length < quiz.questions.length} className="bg-indigo-600 text-white font-bold py-3 px-8 rounded-xl hover:bg-indigo-700 shadow-lg disabled:opacity-50">Lämna in Quiz</button>
+                        <button onClick={finishQuiz} disabled={Object.keys(answers).length < normalizedQuestions.length} className="bg-indigo-600 text-white font-bold py-3 px-8 rounded-xl hover:bg-indigo-700 shadow-lg disabled:opacity-50">Lämna in Quiz</button>
                     </div>
                 ) : (
                     <div className="p-6 border-t border-gray-100 dark:border-[#3c4043] bg-white dark:bg-[#1E1F20] flex justify-end"><button onClick={onClose} className="bg-gray-900 dark:bg-white text-white dark:text-black font-bold py-3 px-8 rounded-xl">Stäng</button></div>

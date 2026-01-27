@@ -1,9 +1,13 @@
 package com.eduflex.backend.service;
 
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
+
 import com.eduflex.backend.dto.CourseDTO;
 import com.eduflex.backend.dto.CreateCourseDTO;
 import com.eduflex.backend.dto.UserSummaryDTO;
 import com.eduflex.backend.model.*;
+import com.eduflex.backend.model.CourseApplication;
 import com.eduflex.backend.repository.CourseApplicationRepository;
 import com.eduflex.backend.repository.CourseMaterialRepository;
 import com.eduflex.backend.repository.CourseRepository;
@@ -64,6 +68,11 @@ public class CourseService {
         this.skolverketCourseRepository = skolverketCourseRepository;
     }
 
+    @EventListener(ApplicationReadyEvent.class)
+    public void onApplicationReady() {
+        backfillSlugs();
+    }
+
     public List<CourseDTO> getAllCourseDTOs() {
         return courseRepository.findAll().stream().map(this::convertToDTO).collect(Collectors.toList());
     }
@@ -112,7 +121,50 @@ public class CourseService {
 
         course.setTeacher(teacher);
         course.setOpen(true);
+
+        // Generate slug
+        course.setSlug(generateUniqueSlug(course.getName()));
+
         return courseRepository.save(course);
+    }
+
+    private String generateUniqueSlug(String name) {
+        if (name == null || name.isBlank()) {
+            return UUID.randomUUID().toString().substring(0, 8);
+        }
+
+        String baseSlug = name.toLowerCase()
+                .replaceAll("[^a-z0-9\\s]", "")
+                .replaceAll("\\s+", "-")
+                .replaceAll("-+", "-")
+                .replaceAll("^-|-$", "");
+
+        if (baseSlug.isBlank()) {
+            return UUID.randomUUID().toString().substring(0, 8);
+        }
+
+        String slug = baseSlug;
+        int count = 1;
+        while (courseRepository.findBySlug(slug).isPresent()) {
+            slug = baseSlug + "-" + count++;
+        }
+        return slug;
+    }
+
+    @Transactional
+    public void backfillSlugs() {
+        List<Course> courses = courseRepository.findAll();
+        boolean changed = false;
+        for (Course course : courses) {
+            if (course.getSlug() == null || course.getSlug().isBlank()) {
+                course.setSlug(generateUniqueSlug(course.getName()));
+                courseRepository.save(course);
+                changed = true;
+            }
+        }
+        if (changed) {
+            System.out.println("Backfilled slugs for existing courses.");
+        }
     }
 
     @Transactional
@@ -173,6 +225,12 @@ public class CourseService {
                 course.setOpen((Boolean) openVal);
             else if (openVal instanceof String)
                 course.setOpen(Boolean.parseBoolean((String) openVal));
+        }
+
+        // Rename slug if name changed? Usually better to keep it, but if explicitly
+        // requested:
+        if (updates.containsKey("slug")) {
+            course.setSlug((String) updates.get("slug"));
         }
 
         return convertToDTO(courseRepository.save(course));
@@ -263,11 +321,12 @@ public class CourseService {
      * Check if a filename represents a video file
      */
     private boolean isVideoFile(String fileName) {
-        if (fileName == null) return false;
+        if (fileName == null)
+            return false;
         String lower = fileName.toLowerCase();
         return lower.endsWith(".mp4") || lower.endsWith(".webm") ||
-               lower.endsWith(".mov") || lower.endsWith(".avi") ||
-               lower.endsWith(".mkv") || lower.endsWith(".ogg");
+                lower.endsWith(".mov") || lower.endsWith(".avi") ||
+                lower.endsWith(".mkv") || lower.endsWith(".ogg");
     }
 
     public CourseMaterial updateMaterial(Long id, String title, String content, String link, String availableFrom,
@@ -393,6 +452,10 @@ public class CourseService {
         return resultRepository.findByCourseIdAndStudentId(courseId, studentId).orElse(null);
     }
 
+    public List<CourseResult> getStudentResults(Long studentId) {
+        return resultRepository.findByStudentId(studentId);
+    }
+
     public boolean validateCompletion(Long courseId, Long studentId) {
         List<Assignment> assignments = assignmentRepository.findByCourseId(courseId);
         if (assignments.isEmpty())
@@ -432,6 +495,7 @@ public class CourseService {
                 c.getStartDate(), c.getEndDate(), c.getColor(), teacherDTO, studentDTOs,
                 c.isOpen(), c.getEvaluation(), c.getMaxStudents(), c.getStudents().size(),
                 c.getClassroomLink(), c.getClassroomType(), c.getExamLink(), // Nya fält
+                c.getSlug(), // New slug field
                 c.getSkolverketCourse(), // Include Skolverket course data
                 c.getGroupRooms() // Include Group Rooms
         );

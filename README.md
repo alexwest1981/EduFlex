@@ -32,6 +32,17 @@
 
 ---
 
+*   **🔗 Friendly URLs - Course Slugs (Jan 27, 2026):**
+    *   **Human-Readable Links:** Courses now use slugs (e.g., `/course/matematik-1`) instead of numeric IDs.
+    *   **Automatic Generation:** Slugs are generated from course names with collision handling (e.g., `-1`, `-2`).
+    *   **Automated Backfill:** Existing courses are automatically migrated to use slugs on system startup.
+    *   **Dual Lookup:** Backward compatibility ensures numeric ID links still function perfectly.
+
+*   **🤖 AI Tutor UI Polish & Chat Fix (Jan 27, 2026):**
+    *   **Fixed Height Window:** The AI Tutor chat now maintains a stable 500px/80vh height regardless of message count.
+    *   **Optimized Scrolling:** Message area now uses independent scrolling, keeping header and input fixed.
+    *   **Layout Stability:** Prevented UI stretching and "close button" disappearance.
+
 *   **🤖 AI Quiz Generation with Google Gemini (Jan 26, 2026):**
     *   **Document-to-Quiz:** Upload PDF, DOCX, DOC, TXT, RTF, or ODT files and automatically generate quiz questions using AI.
     *   **Text Input Mode:** Paste or type text directly to generate questions without file upload.
@@ -45,7 +56,7 @@
 *   **🏪 EduFlex Community - Content Marketplace (Jan 25, 2026):**
     *   **Cross-Tenant Sharing:** Teachers can publish Quiz, Assignments, and Lessons to a shared marketplace accessible across all tenants.
     *   **Moderation Workflow:** Admin approval flow with pending/published/rejected states and rejection reasons.
-    *   **Question Bank Integration:** When installing a Quiz from Community, all questions are automatically copied to your Question Bank for reuse.
+    *   **Question Bank Integration:** When installing a Quiz from Community, all questions are automatically copied to your Question Bank for future reuse.
     *   **Rich Metadata:** Subject categories (20+ subjects with icons), difficulty levels, grade levels, and tags for easy discovery.
     *   **Ratings & Reviews:** 5-star rating system with comments to help teachers find quality content.
     *   **ResourceBank Integration:** Community tab integrated directly in the ResourceBank with search, filter, and install functionality.
@@ -734,6 +745,16 @@ taskkill /PID <PID> /F
 ## 🇸🇪 Svenska
 
 ### ⚡ Senaste Uppdateringarna
+*   **🔗 Vänliga URL:er - Kurs-Slugs (27 jan 2026):**
+    *   **Läsbara Länkar:** Kurser använder nu "slugs" (t.ex. `/course/matematik-1`) istället för bara siffror.
+    *   **Automatisk Generering:** Slugs skapas från kursnamnet med hantering av dubbletter.
+    *   **Automatisk Migrering:** Alla befintliga kurser tilldelas slugs automatiskt vid serverstart.
+    *   **Dual Lookup:** Gamla siffer-baserade länkar fungerar fortfarande för bakåtkompatibilitet.
+
+*   **🤖 AI Tutor UI-förbättringar (27 jan 2026):**
+    *   **Stabil Fönsterstorlek:** Chatten har nu en fast höjd (500px/80vh) för att förhindra att den växer utanför skärmen.
+    *   **Sömlös Scroll:** Meddelandeområdet har oberoende scrollning, vilket håller header och inmatningsfält fasta.
+
 *   **🤖 AI Quiz-generering med Google Gemini (26 jan 2026):**
     *   **Dokument-till-Quiz:** Ladda upp PDF, DOCX, DOC, TXT, RTF eller ODT och generera quiz-frågor automatiskt med AI.
     *   **Textinmatning:** Klistra in eller skriv text direkt för att generera frågor utan filuppladdning.
@@ -795,6 +816,12 @@ taskkill /PID <PID> /F
 
 *   **🧠 AI Quiz i Resursbanken (26 jan 2026):**
     -   **Lättare åtkomst:** Lade till en direktknapp för **AI Quiz** inne på Resursbanken (under fliken "Mina Quiz") för att underlätta för lärare att hitta verktyget utan att behöva gå via systeminställningar.
+    -   **Lättare åtkomst:** Lade till en direktknapp för **AI Quiz** inne på Resursbanken (under fliken "Mina Quiz") för att underlätta för lärare att hitta verktyget utan att behöva gå via systeminställningar.
+
+*   **🚀 EduFlex 2026 Roadmap-implementering (26 jan 2026):**
+    -   **Agentic AI (MCP Server):** Implementerade en separat MCP-server (`eduflex-mcp-server`) i Node.js. Detta möjliggör för externa AI-agenter (t.ex. Claude, Gemini) att säkert hämta kurser, söka innehåll och kontrollera systemstatus via standardiserade verktyg.
+    -   **LTI 1.3 Advantage (Deep Linking):** Lade till fullt stöd för "Deep Linking". Lärare kan nu välja EduFlex-quiz inifrån Canvas/Moodle via ett nytt urvalsgränssnitt (`/lti/deep-link`) och systemet genererar korrekt signerade JWT-svar.
+    -   **Compliance (cmi5 & xAPI):** Implementerade `Cmi5Controller` och en mottagande LRS-endpoint (`/xapi/statements`). Frontend har nu en `Cmi5Player`-komponent som kan lansera moderna utbildningspaket och spåra aktiviteter.
 
 ### 📖 Innehållsförteckning
 - [Om Projektet](#-om-projektet)
@@ -978,4 +1005,4 @@ För Enterprise-frågor:
 
 ---
 
-*Last updated: 2026-01-26 (AI Quiz Generation with Google Gemini)*
+*Last updated: 2026-01-27 (Friendly URLs & AI Tutor UI Fix)*

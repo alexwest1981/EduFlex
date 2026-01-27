@@ -28,7 +28,7 @@ const StudentSidebar = ({ upcomingAssignments, lastGraded, isModuleActive, navig
                         </div>
                     </div>
                     <button
-                        onClick={() => navigate(`/course/${lastGraded.courseId}`)}
+                        onClick={() => navigate(`/course/${lastGraded.courseSlug || lastGraded.courseId}`)}
                         className="w-full mt-4 text-xs font-bold text-indigo-600 hover:text-indigo-700 hover:underline"
                     >
                         Visa detaljer

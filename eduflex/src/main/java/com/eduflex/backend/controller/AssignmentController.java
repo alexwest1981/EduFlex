@@ -161,4 +161,9 @@ public class AssignmentController {
         sub.setFeedback(feedback);
         return submissionRepo.save(sub);
     }
+
+    @GetMapping("/submissions/student/{studentId}/course/{courseId}")
+    public List<Submission> getCourseSubmissionsForStudent(@PathVariable Long studentId, @PathVariable Long courseId) {
+        return submissionRepo.findByStudentIdAndAssignmentCourseId(studentId, courseId);
+    }
 }

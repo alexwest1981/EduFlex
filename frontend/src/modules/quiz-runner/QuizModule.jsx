@@ -4,6 +4,7 @@ import { Library, Lock, Clock, HelpCircle, Plus, Trash2, Edit, PlayCircle, Award
 import { useTranslation } from 'react-i18next';
 import { api } from '../../services/api';
 import { QuizBuilderModal, QuizRunnerModal, QuizGeneratorModal } from './QuizModals';
+import PracticeQuizSetupModal from '../../features/ai/PracticeQuizSetupModal';
 import { useAppContext } from '../../context/AppContext';
 import { useModules } from '../../context/ModuleContext';
 import { QuizLibrary } from './QuizLibrary';
@@ -57,6 +58,7 @@ const QuizModule = ({ courseId, currentUser, isTeacher, mode = 'COURSE' }) => {
     const [editingQuiz, setEditingQuiz] = useState(null);
     const [showBuilder, setShowBuilder] = useState(false);
     const [showGenerator, setShowGenerator] = useState(false);
+    const [showPracticeSetup, setShowPracticeSetup] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
 
     // Tab State for Teachers
@@ -116,9 +118,20 @@ const QuizModule = ({ courseId, currentUser, isTeacher, mode = 'COURSE' }) => {
 
     const handleSubmitResult = async (quizId, score, maxScore) => {
         try {
-            await api.quiz.submit(quizId, { studentId: currentUser.id, score, maxScore });
-            loadQuizzes();
-            if (refreshUser) await refreshUser();
+            if (!quizId) {
+                // Handle Practice Quiz submission (no persistent ID)
+                await api.ai.completePractice({
+                    userId: currentUser.id,
+                    courseId,
+                    score,
+                    maxScore,
+                    difficulty: 3 // Default if not provided
+                });
+                // Do NOT refresh user here for practice quizzes to prevent re-renders that might close the modal
+            } else {
+                await api.quiz.submit(quizId, { studentId: currentUser.id, score, maxScore });
+                if (refreshUser) await refreshUser();
+            }
         } catch (e) {
             console.error(e);
         }
@@ -136,6 +149,13 @@ const QuizModule = ({ courseId, currentUser, isTeacher, mode = 'COURSE' }) => {
                     </p>
                 </div>
                 <div className="flex gap-2">
+                    {/* Student Practice Button */}
+                    {!isTeacher && isPro && (
+                        <button onClick={() => setShowPracticeSetup(true)} className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-4 py-2 rounded-lg font-bold shadow-md hover:from-indigo-600 hover:to-purple-700 flex items-center gap-2 transition-colors animate-in fade-in slide-in-from-right-4">
+                            <Sparkles size={18} /> Öva med AI
+                        </button>
+                    )}
+
                     {/* Library Tab only for PRO */}
                     {isTeacher && isPro && (
                         <div className="flex bg-white dark:bg-[#1E1F20] rounded-lg p-1 border border-indigo-100 dark:border-indigo-900/30 mr-4">
@@ -233,6 +253,7 @@ const QuizModule = ({ courseId, currentUser, isTeacher, mode = 'COURSE' }) => {
             {showBuilder && <QuizBuilderModal onClose={() => { setShowBuilder(false); setEditingQuiz(null); }} onSubmit={handleSave} courseId={courseId} initialData={editingQuiz} isPro={isPro} />}
             {showGenerator && <QuizGeneratorModal onClose={() => setShowGenerator(false)} onSubmit={handleSave} />}
             {activeQuiz && <QuizRunnerModal quiz={activeQuiz} onClose={() => setActiveQuiz(null)} onSubmit={handleSubmitResult} />}
+            {showPracticeSetup && <PracticeQuizSetupModal course={{ id: courseId, name: t('quiz.course_quiz') }} currentUser={currentUser} onClose={() => setShowPracticeSetup(false)} onStartQuiz={(generatedQuiz) => { setShowPracticeSetup(false); setActiveQuiz(generatedQuiz); }} />}
         </div>
     );
 };

@@ -21,7 +21,7 @@ export const getTenantFromUrl = () => {
 
     // 4. Ignorera temporära tunneling-domäner (inte produktionsdomäner via Cloudflare Tunnel)
     if (hostname.includes('ngrok') || hostname.includes('loca.lt') || hostname.includes('trycloudflare.com')) {
-        console.log('[TENANT DEBUG] Ignoring temporary tunnel domain:', hostname);
+        // console.log('[TENANT DEBUG] Ignoring temporary tunnel domain:', hostname);
         return null;
     }
 
@@ -61,17 +61,14 @@ const getHeaders = (contentType = 'application/json') => {
         headers['Content-Type'] = contentType;
     }
 
-    console.log('[API DEBUG] Request Headers:', headers, 'Token:', token);
+    // console.log('[API DEBUG] Request Headers:', headers, 'Token:', token);
     return headers;
 };
 
 const handleResponse = async (res) => {
-    // Debug helper: log headers to see tokens
+    // Debug helper
     if (localStorage.getItem('debug_api')) {
-        console.log('[API DEBUG] Request Headers:', {
-            Authorization: res.headers.get('Authorization'),
-            'Content-Type': res.headers.get('Content-Type')
-        }, 'Token:', localStorage.getItem('token'));
+        console.log('[API DEBUG]', res.status, res.url);
     }
 
     if (!res.ok) {
@@ -80,43 +77,43 @@ const handleResponse = async (res) => {
             throw new Error("LICENSE_REQUIRED");
         }
         if (res.status === 401) {
-            // Only trigger session-expired if it's a genuine API call that's not the login itself
             if (res.url.includes('/api/') && !res.url.includes('/auth/login')) {
-                console.warn('[API] Unauthorised (401) - session likely expired. Signalling logout.');
+                console.warn('[API] Unauthorised (401). Signalling logout.');
                 localStorage.setItem('eduflex_logout_signal', Date.now().toString());
                 window.dispatchEvent(new Event('session-expired'));
             }
             throw new Error("UNAUTHORIZED");
         }
 
-        let errorText;
+        // CLONE the response before reading body to avoid "stream already read"
+        let errorText = "";
         try {
-            const data = await res.json();
-            errorText = (data && data.message) ? data.message : JSON.stringify(data);
+            const clonedRes = res.clone();
+            const text = await clonedRes.text();
+
+            try {
+                const data = JSON.parse(text);
+                errorText = (data && data.message) ? data.message : JSON.stringify(data);
+            } catch (e) {
+                errorText = text;
+            }
         } catch (e) {
-            errorText = await res.text();
-            console.error('[API ERROR] Non-JSON Error Response:', res.status, res.url, errorText.substring(0, 200));
+            console.error('[API] Failed to read error body', e);
         }
+
+        console.error('[API ERROR]', res.status, errorText.substring(0, 200));
         throw new Error(errorText || `HTTP Error: ${res.status}`);
     }
 
-    // Hantera tomma svar (t.ex. 204 No Content)
     if (res.status === 204) return null;
 
     const contentType = res.headers.get("content-type");
-    if (contentType && contentType.indexOf("application/json") !== -1) {
+    if (contentType && contentType.includes("application/json")) {
         return res.json();
-    } else {
-        // Warning: Received 200 OK but not JSON. This is usually the index.html fallback for broken API paths.
-        const text = await res.text();
-        console.error('[API FATAL] Expected JSON but got other content-type:', contentType, 'for URL:', res.url);
-        // Log start of body to confirm if it is HTML
-        if (text.trim().startsWith('<')) {
-            console.error('[API FATAL] Response starts with HTML tag. Proxy is likely misconfigured or backend is returning 404 page as 200.');
-        }
-        // Force reject to prevent "Unexpected token <" usage downstream
-        throw new Error(`Invalid API Response: Expected JSON, got ${contentType}`);
     }
+
+    // Fallback for non-JSON success responses (rare but possible)
+    return res.text();
 };
 
 export const api = {
@@ -298,6 +295,7 @@ export const api = {
             body: JSON.stringify({ status })
         }).then(handleResponse),
         getResult: (courseId, studentId) => fetch(`${API_BASE}/courses/${courseId}/result/${studentId}`, { headers: getHeaders() }).then(handleResponse),
+        getMyResults: (studentId) => fetch(`${API_BASE}/courses/results/student/${studentId}`, { headers: getHeaders() }).then(handleResponse),
         getOptions: (userId, role) => fetch(`${API_BASE}/courses/options?userId=${userId}&role=${role}`, { headers: getHeaders() }).then(handleResponse),
     },
 
@@ -598,6 +596,49 @@ export const api = {
         delete: (id) => fetch(`${API_BASE}/lti/platforms/${id}`, { method: 'DELETE', headers: getHeaders() }).then(handleResponse)
     },
 
+    ai: {
+        generatePractice: (data) => fetch(`${API_BASE}/ai/quiz/practice/generate`, {
+            method: 'POST',
+            headers: getHeaders(),
+            body: JSON.stringify(data)
+        }).then(handleResponse),
+        status: () => fetch(`${API_BASE}/ai/quiz/status`, { headers: getHeaders() }).then(handleResponse),
+        generateFromText: (data) => fetch(`${API_BASE}/ai/quiz/generate-from-text`, {
+            method: 'POST',
+            headers: getHeaders(),
+            body: JSON.stringify(data)
+        }).then(handleResponse),
+        save: (data) => fetch(`${API_BASE}/ai/quiz/save`, {
+            method: 'POST',
+            headers: getHeaders(),
+            body: JSON.stringify(data)
+        }).then(handleResponse),
+        completePractice: (data) => fetch(`${API_BASE}/ai/quiz/practice/complete`, {
+            method: 'POST',
+            headers: getHeaders(),
+            body: JSON.stringify(data)
+        }).then(handleResponse),
+
+        // AI Tutor (RAG)
+        tutor: {
+            chat: (courseId, question) => fetch(`${API_BASE}/ai/tutor/chat`, {
+                method: 'POST',
+                headers: getHeaders(),
+                body: JSON.stringify({ courseId, question })
+            }).then(handleResponse),
+            ingest: (courseId, documentId) => fetch(`${API_BASE}/ai/tutor/ingest`, {
+                method: 'POST',
+                headers: getHeaders(),
+                body: JSON.stringify({ courseId, documentId })
+            }).then(handleResponse),
+            ingestCourse: (courseId) => fetch(`${API_BASE}/ai/tutor/ingest-course`, {
+                method: 'POST',
+                headers: getHeaders(),
+                body: JSON.stringify({ courseId })
+            }).then(handleResponse),
+        }
+    },
+
     // --- EDUFLEX COMMUNITY ---
     community: {
         // Browse & Search
@@ -683,9 +724,10 @@ export const getSafeUrl = (url) => {
         return `${origin}${finalUrl}`;
     }
 
-    // 3. Handle hardcoded localhost/127.0.0.1 references
-    if (finalUrl.includes('localhost:8080') || finalUrl.includes('127.0.0.1:8080')) {
-        return finalUrl.replace(/http:\/\/(localhost|127\.0\.0\.1):8080/g, origin);
+    // 3. Handle any MinIO localhost/IP/Internal references (9000 is MinIO port)
+    // We regex match anything that looks like :9000 and replace with /storage proxy
+    if (finalUrl.includes(':9000')) {
+        return finalUrl.replace(/^http:\/\/[^/]+:9000/g, origin + '/storage');
     }
 
     return finalUrl;

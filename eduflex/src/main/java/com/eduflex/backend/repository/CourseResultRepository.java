@@ -9,4 +9,6 @@ public interface CourseResultRepository extends JpaRepository<CourseResult, Long
     Optional<CourseResult> findByCourseIdAndStudentId(Long courseId, Long studentId);
 
     List<CourseResult> findByCourseId(Long courseId);
+
+    List<CourseResult> findByStudentId(Long studentId);
 }

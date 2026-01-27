@@ -28,7 +28,10 @@ const TeacherDashboard = ({ currentUser }) => {
     const navigate = useNavigate();
 
     // --- STATE ---
-    const [activeTab, setActiveTab] = useState('OVERVIEW');
+    // Handle tab deep linking from URL (e.g. /?tab=COURSES)
+    const query = new URLSearchParams(window.location.search);
+    const initialTab = query.get('tab') || 'OVERVIEW';
+    const [activeTab, setActiveTab] = useState(initialTab);
     const [isLoading, setIsLoading] = useState(true);
 
     // Data
@@ -287,7 +290,7 @@ const TeacherDashboard = ({ currentUser }) => {
                                     <div className="flex items-center gap-4 text-xs text-gray-400 font-mono"><span>{course.courseCode}</span><span>•</span><span>{course.students?.length}/{course.maxStudents} stud</span></div>
                                 </div>
                                 <div className="flex gap-2">
-                                    <button onClick={() => navigate(`/course/${course.id}`)} className="px-4 py-2 bg-gray-100 dark:bg-[#282a2c] hover:bg-gray-200 text-gray-700 dark:text-white rounded-lg font-bold text-sm">Gå till kurs</button>
+                                    <button onClick={() => navigate(`/course/${course.slug || course.id}`)} className="px-4 py-2 bg-gray-100 dark:bg-[#282a2c] hover:bg-gray-200 text-gray-700 dark:text-white rounded-lg font-bold text-sm">Gå till kurs</button>
                                     <button onClick={() => { setCourseToEdit(course); setShowEditModal(true); }} className="px-4 py-2 bg-indigo-50 text-indigo-700 rounded-lg font-bold text-sm hover:bg-indigo-100 flex items-center gap-2"><Edit2 size={16} /> Redigera</button>
                                 </div>
                             </div>

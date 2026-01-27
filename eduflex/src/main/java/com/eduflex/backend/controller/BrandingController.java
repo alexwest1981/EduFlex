@@ -33,6 +33,7 @@ public class BrandingController {
             OrganizationBranding branding = brandingService.getBranding(organizationKey);
             return ResponseEntity.ok(branding);
         } catch (Exception e) {
+            logger.error("Error fetching branding for {}: {}", organizationKey, e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -47,6 +48,7 @@ public class BrandingController {
             List<OrganizationBranding> brandings = brandingService.getAllBrandings();
             return ResponseEntity.ok(brandings);
         } catch (Exception e) {
+            logger.error("Error fetching all brandings: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }

@@ -3,12 +3,16 @@ package com.eduflex.backend.service;
 import com.eduflex.backend.model.SystemModule;
 import com.eduflex.backend.repository.ModuleRepository;
 import jakarta.annotation.PostConstruct;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 public class ModuleService {
+
+        private static final Logger logger = LoggerFactory.getLogger(ModuleService.class);
 
         private final ModuleRepository moduleRepository;
         private final LicenseService licenseService;
@@ -38,6 +42,8 @@ public class ModuleService {
 
         @PostConstruct
         public void initModules() {
+                logger.info("=== ModuleService: Initializing system modules ===");
+
                 // Ta bort gamla moduler som inte längre används
                 moduleRepository.findByModuleKey("QUIZ").ifPresent(moduleRepository::delete);
 
@@ -69,11 +75,20 @@ public class ModuleService {
                 createIfNotExists("ENTERPRISE_WHITELABEL", "Enterprise Whitelabel",
                                 "Fullt anpassningsbar branding: logotyp, färgtema, favicon och mer. Endast för ENTERPRISE-licens.",
                                 "1.0.0", true, true);
+                createIfNotExists("AI_QUIZ", "AI Quiz Generator",
+                                "Generera quiz-frågor automatiskt från dokument med Google Gemini AI. Kräver PRO eller ENTERPRISE.",
+                                "1.0.0", false, true);
+
+                logger.info("=== ModuleService: Module initialization complete. Total modules: {} ===",
+                                moduleRepository.count());
         }
 
         private void createIfNotExists(String key, String name, String desc, String ver, boolean active, boolean lic) {
                 if (moduleRepository.findByModuleKey(key).isEmpty()) {
+                        logger.info("Creating new module: {}", key);
                         moduleRepository.save(new SystemModule(key, name, desc, ver, active, lic));
+                } else {
+                        logger.debug("Module already exists: {}", key);
                 }
         }
 }

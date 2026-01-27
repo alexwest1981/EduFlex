@@ -75,4 +75,31 @@ public class MinioStorageService implements FileStorageService {
             throw new RuntimeException("Could not store file " + fileName + " in MinIO", e);
         }
     }
+
+    @Override
+    public java.io.InputStream getFileStream(String path) {
+        try {
+            // Extract object name from URL
+            // Path is usually publicUrl/bucketName/fileName
+            // Or just fileName if simplistic logic used somewhere else.
+
+            String objectName = path;
+
+            // Try 1: After last slash
+            if (path.contains("/")) {
+                objectName = path.substring(path.lastIndexOf("/") + 1);
+            }
+
+            // Try 2: If we want to be stricter, verify bucket name in path?
+            // But UUID filenames are unique enough usually.
+
+            return minioClient.getObject(
+                    io.minio.GetObjectArgs.builder()
+                            .bucket(bucketName)
+                            .object(objectName)
+                            .build());
+        } catch (Exception e) {
+            throw new RuntimeException("Could not read file from MinIO: " + path, e);
+        }
+    }
 }

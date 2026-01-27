@@ -29,7 +29,8 @@ public enum LicenseType {
             case "CHAT":
             case "FORUM":
             case "SCORM":
-                // Basic has NO Quiz Pro, Chat, Forum. Pro has them.
+            case "AI_QUIZ":
+                // Basic has NO these modules. Pro and Enterprise have them.
                 return this == PRO;
 
             case "GAMIFICATION":

@@ -21,6 +21,11 @@ const AdminDashboard = () => {
 
     const [unreadCount, setUnreadCount] = useState(0);
 
+    // Guard: Prevent hook call if React environment is unstable (although this typically means bundle issues)
+    if (typeof window !== 'undefined' && !window.React && process.env.NODE_ENV === 'development') {
+        console.warn("React global not found, but continuing in dev mode");
+    }
+
     // Widget State via Hook
     const { widgets, toggleWidget } = useDashboardWidgets('admin', {
         stats: true,

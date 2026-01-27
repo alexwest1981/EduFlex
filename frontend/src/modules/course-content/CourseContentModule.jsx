@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { BookOpen, Plus, Edit2, Trash2, Save, ChevronRight, Video, Download, Paperclip, Loader2, Image as ImageIcon, Film } from 'lucide-react';
-import { api } from '../../services/api';
+import { QuizRunnerModal } from '../quiz-runner/QuizModals';
+import { BookOpen, Plus, Edit2, Trash2, Save, ChevronRight, Video, Download, Paperclip, Loader2, Image as ImageIcon, Film, HelpCircle, Trophy, PlayCircle, Sparkles } from 'lucide-react';
+import { api, getSafeUrl } from '../../services/api';
 import OnlyOfficeEditor from '../../features/documents/OnlyOfficeEditor';
 import VideoPlayer from './components/VideoPlayer';
 
@@ -13,7 +14,10 @@ export const CourseContentModuleMetadata = {
 
 const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE' }) => {
     const [lessons, setLessons] = useState([]);
+    const [quizzes, setQuizzes] = useState([]); // New Quiz State
     const [selectedLesson, setSelectedLesson] = useState(null);
+    const [selectedQuiz, setSelectedQuiz] = useState(null); // New Quiz Selection
+    const [activeQuizRunner, setActiveQuizRunner] = useState(null); // For Modal
     const [isEditing, setIsEditing] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
     const [onlyOfficeDoc, setOnlyOfficeDoc] = useState(null);
@@ -43,27 +47,36 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
 
     const loadLessons = async () => {
         try {
-            // Refaktorerad för att använda api service eller url-switch
-            // Men för att behålla befintlig struktur med fetch:
             const token = localStorage.getItem('token');
             let url = `${window.location.origin}/api/courses/${courseId}/materials`;
+            let quizUrl = `${window.location.origin}/api/quizzes/course/${courseId}`;
 
             if (mode === 'GLOBAL') {
                 url = `${window.location.origin}/api/lessons/my?userId=${currentUser?.id}`;
+                quizUrl = `${window.location.origin}/api/quizzes/my?userId=${currentUser?.id}`;
             }
 
-            const res = await fetch(url, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            if (res.ok) {
-                const data = await res.json();
+            const [resLessons, resQuizzes] = await Promise.all([
+                fetch(url, { headers: { 'Authorization': `Bearer ${token}` } }),
+                fetch(quizUrl, { headers: { 'Authorization': `Bearer ${token}` } })
+            ]);
+
+            if (resLessons.ok) {
+                const data = await resLessons.json();
                 setLessons(data);
-                if (data.length > 0 && !selectedLesson) {
+                // Select first item if nothing selected
+                if (data.length > 0 && !selectedLesson && !selectedQuiz) {
                     setSelectedLesson(data[0]);
                 }
             }
+
+            if (resQuizzes.ok) {
+                const qData = await resQuizzes.json();
+                setQuizzes(qData);
+            }
+
         } catch (e) {
-            console.error("Failed to load lessons", e);
+            console.error("Failed to load content", e);
         }
     };
 
@@ -71,6 +84,7 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
         setFormData({ title: 'Nytt Innehåll', content: '', videoUrl: '', type: 'LESSON', availableFrom: '' });
         setFile(null);
         setSelectedLesson(null);
+        setSelectedQuiz(null);
         setIsEditing(true);
     };
 
@@ -186,7 +200,20 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
         });
         setFile(null);
         setSelectedLesson(lesson);
+        setSelectedQuiz(null);
         setIsEditing(true);
+    };
+
+    const handleQuizSubmit = async (quizId, score, maxScore) => {
+        try {
+            await api.quiz.submit(quizId, { studentId: currentUser.id, score, maxScore });
+            setActiveQuizRunner(null);
+            alert("Bra jobbat! Ditt resultat är sparat.");
+            // Optionally reload to update specific stats if we had them
+        } catch (e) {
+            console.error(e);
+            alert("Kunde inte spara resultatet.");
+        }
     };
 
     return (
@@ -199,17 +226,20 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
                     {isTeacher && <button onClick={handleCreateClick} className="p-2 bg-indigo-600 text-white hover:bg-indigo-700 rounded-lg transition-colors flex items-center justify-center shadow-sm" title="Lägg till nytt material"><Plus size={20} /></button>}
                 </div>
                 <div className="flex-1 overflow-y-auto p-2 space-y-1 custom-scrollbar">
-                    {lessons.length === 0 && <p className="text-sm text-gray-400 text-center py-10">Inga lektioner än.</p>}
+                    {lessons.length === 0 && quizzes.length === 0 && <p className="text-sm text-gray-400 text-center py-10">Inget innehåll än.</p>}
+
+                    {/* LESSONS LIST */}
                     {lessons.map((lesson, idx) => {
                         const isLocked = !isTeacher && lesson.availableFrom && new Date(lesson.availableFrom) > new Date();
                         const isScheduled = isTeacher && lesson.availableFrom && new Date(lesson.availableFrom) > new Date();
 
                         return (
                             <div
-                                key={lesson.id}
+                                key={`lesson-${lesson.id}`}
                                 onClick={() => {
                                     if (!isLocked) {
                                         setSelectedLesson(lesson);
+                                        setSelectedQuiz(null);
                                         setIsEditing(false);
                                     }
                                 }}
@@ -236,6 +266,41 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
                                     </div>
                                 </div>
                                 {selectedLesson?.id === lesson.id && <ChevronRight size={14} />}
+                            </div>
+                        );
+                    })}
+
+                    {/* QUIZZES LIST */}
+                    {quizzes.length > 0 && <div className="px-3 pt-4 pb-1 text-xs font-bold text-gray-400 uppercase tracking-wider">Quiz & Förhör</div>}
+                    {quizzes.map((quiz, idx) => {
+                        const isLocked = !isTeacher && quiz.availableFrom && new Date(quiz.availableFrom) > new Date();
+
+                        return (
+                            <div
+                                key={`quiz-${quiz.id}`}
+                                onClick={() => {
+                                    if (!isLocked) {
+                                        setSelectedQuiz(quiz);
+                                        setSelectedLesson(null);
+                                        setIsEditing(false);
+                                    }
+                                }}
+                                className={`p-3 rounded-lg cursor-pointer text-sm flex items-center justify-between group transition-colors ${selectedQuiz?.id === quiz.id ? 'bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 font-bold' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-[#282a2c]'} ${isLocked ? 'opacity-60 cursor-not-allowed' : ''}`}
+                            >
+                                <div className="flex items-center gap-3 truncate">
+                                    <span className="flex-shrink-0 flex items-center justify-center w-5 h-5 rounded-full bg-purple-100 dark:bg-purple-900/50 text-purple-600 dark:text-purple-300 text-xs">
+                                        <HelpCircle size={12} />
+                                    </span>
+                                    <div className="truncate">
+                                        <span className="truncate block font-medium">
+                                            {quiz.title}
+                                        </span>
+                                        <span className="text-[10px] uppercase font-bold text-gray-400">
+                                            {quiz.questions?.length || 0} Frågor
+                                        </span>
+                                    </div>
+                                </div>
+                                {selectedQuiz?.id === quiz.id && <ChevronRight size={14} />}
                             </div>
                         );
                     })}
@@ -351,6 +416,46 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
                             <button onClick={() => { setIsEditing(false); if (!selectedLesson && lessons.length > 0) setSelectedLesson(lessons[0]); }} disabled={isSaving} className="bg-gray-100 dark:bg-[#3c4043] text-gray-700 dark:text-white px-6 py-2.5 rounded-lg font-bold">Avbryt</button>
                         </div>
                     </div>
+                ) : selectedQuiz ? (
+                    /* QUIZ VIEW MODE */
+                    <div className="flex flex-col h-full animate-in fade-in">
+                        <div className="flex justify-between items-start mb-6">
+                            <div>
+                                <span className="text-xs font-bold text-purple-600 bg-purple-100 px-2 py-1 rounded mb-2 inline-block">QUIZ</span>
+                                <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">{selectedQuiz.title}</h2>
+                                <div className="h-1 w-20 bg-purple-500 rounded-full"></div>
+                            </div>
+                        </div>
+
+                        <div className="bg-white dark:bg-[#131314] rounded-xl border border-gray-100 dark:border-[#3c4043] p-8 text-center max-w-2xl mx-auto shadow-sm mt-8">
+                            <div className="w-20 h-20 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center mx-auto mb-6 text-purple-600 dark:text-purple-400">
+                                <HelpCircle size={40} />
+                            </div>
+
+                            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Dags för {selectedQuiz.title}</h3>
+                            <p className="text-gray-500 dark:text-gray-400 mb-8 max-w-lg mx-auto leading-relaxed">
+                                {selectedQuiz.description || 'Detta quiz testar dina kunskaper på området. Lycka till!'}
+                            </p>
+
+                            <div className="grid grid-cols-2 gap-4 max-w-md mx-auto mb-8">
+                                <div className="bg-gray-50 dark:bg-[#1E1F20] p-4 rounded-xl">
+                                    <p className="text-xs text-gray-400 uppercase font-bold mb-1">Frågor</p>
+                                    <p className="text-xl font-bold text-gray-900 dark:text-white">{selectedQuiz.questions?.length || 0} st</p>
+                                </div>
+                                <div className="bg-gray-50 dark:bg-[#1E1F20] p-4 rounded-xl">
+                                    <p className="text-xs text-gray-400 uppercase font-bold mb-1">Tidsgräns</p>
+                                    <p className="text-xl font-bold text-gray-900 dark:text-white">Ingen</p>
+                                </div>
+                            </div>
+
+                            <button
+                                onClick={() => setActiveQuizRunner(selectedQuiz)}
+                                className="w-full max-w-xs mx-auto bg-purple-600 text-white py-4 rounded-xl font-bold text-lg hover:bg-purple-700 shadow-lg shadow-purple-200 dark:shadow-none flex items-center justify-center gap-3 transition-transform hover:-translate-y-1"
+                            >
+                                <PlayCircle size={24} /> Starta Quiz
+                            </button>
+                        </div>
+                    </div>
                 ) : selectedLesson ? (
                     /* VIEW MODE */
                     <div className="flex flex-col h-full animate-in fade-in">
@@ -389,12 +494,10 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
                             {/* 2. EGEN VIDEO - with enhanced player */}
                             {selectedLesson.fileUrl && isVideoFile(selectedLesson.fileUrl) && (
                                 <VideoPlayer
-                                    src={selectedLesson.fileUrl.startsWith('http')
-                                        ? selectedLesson.fileUrl
-                                        : `${window.location.origin}${selectedLesson.fileUrl}`}
+                                    src={getSafeUrl(selectedLesson.fileUrl)}
                                     title={selectedLesson.title}
                                     chapters={selectedLesson.videoChapters ? JSON.parse(selectedLesson.videoChapters) : []}
-                                    poster={selectedLesson.thumbnailUrl}
+                                    poster={getSafeUrl(selectedLesson.thumbnailUrl)}
                                     onProgress={({ currentTime, duration }) => {
                                         // Track progress for student analytics
                                         if (!isTeacher && currentTime > 0 && currentTime % 30 < 1) {
@@ -428,7 +531,7 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
                             {/* 3. BILD (NYTT!) */}
                             {selectedLesson.fileUrl && isImageFile(selectedLesson.fileUrl) && (
                                 <div className="rounded-xl overflow-hidden shadow-lg border border-gray-200 dark:border-[#3c4043]">
-                                    <img src={`${window.location.origin}${selectedLesson.fileUrl}`} alt="Lektionsmaterial" className="w-full h-auto object-contain max-h-[600px] bg-gray-50 dark:bg-black/50" />
+                                    <img src={getSafeUrl(selectedLesson.fileUrl)} alt="Lektionsmaterial" className="w-full h-auto object-contain max-h-[600px] bg-gray-50 dark:bg-black/50" />
                                 </div>
                             )}
                         </div>
@@ -444,7 +547,7 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
                                     </div>
                                 </div>
                                 <a
-                                    href={`${window.location.origin}${selectedLesson.fileUrl}`}
+                                    href={getSafeUrl(selectedLesson.fileUrl)}
                                     download
                                     target="_blank"
                                     rel="noreferrer"
@@ -469,6 +572,24 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
                                         className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-sm font-bold text-white rounded-lg shadow-sm border border-transparent transition-colors"
                                     >
                                         <Edit2 size={16} /> Redigera Inline
+                                    </button>
+                                )}
+                                {isTeacher && (
+                                    <button
+                                        onClick={async () => {
+                                            if (!confirm("Vill du indexera detta dokument för AI-tutorn?")) return;
+                                            try {
+                                                await api.ai.tutor.ingest(courseId, selectedLesson.id);
+                                                alert("Dokumentet har indexerats!");
+                                            } catch (e) {
+                                                console.error(e);
+                                                alert("Kunde inte indexera dokumentet.");
+                                            }
+                                        }}
+                                        className="flex items-center gap-2 px-4 py-2 bg-purple-100 hover:bg-purple-200 text-sm font-bold text-purple-700 rounded-lg shadow-sm border border-transparent transition-colors"
+                                        title="Indexera för AI-tutor"
+                                    >
+                                        <Sparkles size={16} /> Indexera
                                     </button>
                                 )}
                             </div>
@@ -496,6 +617,14 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
                         setOnlyOfficeDoc(null);
                         loadLessons();
                     }}
+                />
+            )}
+
+            {activeQuizRunner && (
+                <QuizRunnerModal
+                    quiz={activeQuizRunner}
+                    onClose={() => setActiveQuizRunner(null)}
+                    onSubmit={handleQuizSubmit}
                 />
             )}
         </div>

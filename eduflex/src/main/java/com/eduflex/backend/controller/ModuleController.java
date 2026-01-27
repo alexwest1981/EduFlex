@@ -11,6 +11,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/modules")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class ModuleController {
 
     private final ModuleService moduleService;
@@ -30,5 +31,22 @@ public class ModuleController {
             @RequestBody Map<String, Boolean> payload) {
         // Vi hämtar "active" från JSON-payloaden
         return ResponseEntity.ok(moduleService.toggleModule(key, payload.get("active")));
+    }
+
+    /**
+     * Manually trigger module initialization (creates missing modules).
+     * Useful if @PostConstruct didn't run properly.
+     */
+    @PostMapping("/init")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN')")
+    public ResponseEntity<Map<String, Object>> initializeModules() {
+        moduleService.initModules();
+        List<SystemModule> modules = moduleService.getAllModules();
+        return ResponseEntity.ok(Map.of(
+                "success", true,
+                "message", "Modules initialized successfully",
+                "moduleCount", modules.size(),
+                "modules", modules.stream().map(SystemModule::getModuleKey).toList()
+        ));
     }
 }

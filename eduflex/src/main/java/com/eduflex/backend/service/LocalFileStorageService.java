@@ -51,4 +51,21 @@ public class LocalFileStorageService implements FileStorageService {
             throw new RuntimeException("Kunde inte spara filen " + fileName + ". Försök igen!", ex);
         }
     }
+
+    @Override
+    public java.io.InputStream getFileStream(String path) {
+        try {
+            // Remove /uploads/ prefix if present
+            String fileName = path.replace("/uploads/", "").replace("/", "");
+            Path filePath = this.fileStorageLocation.resolve(fileName).normalize();
+
+            if (!Files.exists(filePath)) {
+                throw new java.io.FileNotFoundException("File not found: " + filePath);
+            }
+
+            return Files.newInputStream(filePath);
+        } catch (Exception e) {
+            throw new RuntimeException("Could not read file: " + path, e);
+        }
+    }
 }

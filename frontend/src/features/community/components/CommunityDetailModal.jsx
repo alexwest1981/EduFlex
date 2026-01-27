@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {
     X, Download, Star, Clock, FileQuestion, GraduationCap,
-    School, CheckCircle, Loader2, Send
+    School, CheckCircle, Loader2, Send, Share2, MessageSquare, ExternalLink
 } from 'lucide-react';
 import { api } from '../../../services/api';
 import SubjectIcon from './SubjectIcon';
@@ -251,16 +251,45 @@ const CommunityDetailModal = ({ itemId, onClose, onInstall }) => {
                         </div>
                     </div>
 
+                    {/* Social Learning Flow Section */}
+                    <div className="mb-6 p-4 bg-indigo-50 dark:bg-indigo-900/10 rounded-xl border border-indigo-100 dark:border-indigo-900/30">
+                        <div className="flex items-center justify-between mb-3">
+                            <h3 className="font-bold text-indigo-900 dark:text-indigo-200 flex items-center gap-2">
+                                <Share2 size={18} />
+                                Learning Flow Integration
+                            </h3>
+                            <span className="text-[10px] uppercase font-bold text-indigo-500 bg-indigo-100 dark:bg-indigo-800/40 px-2 py-0.5 rounded">Social</span>
+                        </div>
+                        <p className="text-xs text-indigo-600 dark:text-indigo-400 mb-4">
+                            Dela detta material till dina sociala lärokanaler för att uppmuntra till kollegialt lärande.
+                        </p>
+                        <div className="flex gap-2">
+                            <button
+                                onClick={() => alert('Dela till Slack (Webhook konfigureras i Admin)')}
+                                className="flex-1 py-2 px-3 bg-[#4A154B] text-white rounded-lg hover:bg-[#3d113e] transition-colors flex items-center justify-center gap-2 text-sm font-medium"
+                            >
+                                <MessageSquare size={16} />
+                                Slack
+                            </button>
+                            <button
+                                onClick={() => alert('Dela till Teams (Webhook konfigureras i Admin)')}
+                                className="flex-1 py-2 px-3 bg-[#444791] text-white rounded-lg hover:bg-[#373a76] transition-colors flex items-center justify-center gap-2 text-sm font-medium"
+                            >
+                                <ExternalLink size={16} />
+                                Teams
+                            </button>
+                        </div>
+                    </div>
+
                     {/* Install Button */}
                     <div className="sticky bottom-0 bg-white dark:bg-[#1E1F20] pt-4 border-t border-gray-200 dark:border-[#3c4043]">
                         <button
                             onClick={handleInstall}
                             disabled={installing || item.alreadyInstalled}
-                            className={`w-full py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-colors ${
-                                item.alreadyInstalled
-                                    ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 cursor-default'
-                                    : 'bg-indigo-600 text-white hover:bg-indigo-700 disabled:bg-gray-300'
-                            }`}
+                            className={`w-full py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-colors ${item.alreadyInstalled
+                                ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 cursor-default'
+                                : 'bg-indigo-600 text-white hover:bg-indigo-700 disabled:bg-gray-300'
+                                }`}
                         >
                             {installing ? (
                                 <>

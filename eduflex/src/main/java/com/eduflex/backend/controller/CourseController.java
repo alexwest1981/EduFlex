@@ -61,10 +61,19 @@ public class CourseController {
         return courseService.getAllCourseDTOs();
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<CourseDTO> getCourse(@PathVariable Long id) {
+    @GetMapping("/{idOrSlug}")
+    public ResponseEntity<CourseDTO> getCourse(@PathVariable String idOrSlug) {
         try {
-            return ResponseEntity.ok(courseService.getCourseDTOById(id));
+            // Try ID first
+            try {
+                Long id = Long.parseLong(idOrSlug);
+                return ResponseEntity.ok(courseService.getCourseDTOById(id));
+            } catch (NumberFormatException e) {
+                // Not a number, try Slug
+                Course course = courseRepository.findBySlug(idOrSlug)
+                        .orElseThrow(() -> new RuntimeException("Kurs ej funnen"));
+                return ResponseEntity.ok(courseService.getCourseDTOById(course.getId()));
+            }
         } catch (Exception e) {
             return ResponseEntity.notFound().build();
         }
@@ -165,6 +174,12 @@ public class CourseController {
         }
     }
 
+    @PostMapping("/backfill-slugs")
+    public ResponseEntity<String> backfillSlugs() {
+        courseService.backfillSlugs();
+        return ResponseEntity.ok("Slugs backfilled");
+    }
+
     @PostMapping("/{courseId}/enroll/{studentId}")
     public ResponseEntity<Void> enrollStudent(@PathVariable Long courseId, @PathVariable Long studentId) {
         courseService.addStudentToCourse(courseId, studentId);
@@ -238,6 +253,12 @@ public class CourseController {
     public ResponseEntity<com.eduflex.backend.model.CourseResult> getCourseResult(@PathVariable Long id,
             @PathVariable Long studentId) {
         return ResponseEntity.ok(courseService.getCourseResult(id, studentId));
+    }
+
+    @GetMapping("/results/student/{studentId}")
+    public ResponseEntity<List<com.eduflex.backend.model.CourseResult>> getStudentResults(
+            @PathVariable Long studentId) {
+        return ResponseEntity.ok(courseService.getStudentResults(studentId));
     }
 
     @GetMapping("/{id}/check-completion/{studentId}")

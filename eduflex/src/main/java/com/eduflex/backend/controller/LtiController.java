@@ -66,18 +66,58 @@ public class LtiController {
         logger.info("LTI Launch receive. Token length: {}", idToken.length());
 
         try {
-            // Process launch and get internal JWT
-            String internalToken = ltiService.processLaunch(idToken);
-            String redirectUrl = frontendUrl + "/lti-success?token=" + internalToken;
+            // Process launch and get internal result
+            String result = ltiService.processLaunch(idToken);
 
-            logger.info("LTI Launch successful. Redirecting to: {}", redirectUrl);
-            response.sendRedirect(redirectUrl);
+            if (result.startsWith("DEEP_LINK:")) {
+                String[] parts = result.split(":", 5); // DEEP_LINK : token : settingsB64 : deploymentId : issuer
+                String token = parts[1];
+                String settings = parts[2];
+                String deploymentId = parts[3];
+                String issuer = parts[4];
+
+                String deepLinkUrl = frontendUrl + "/lti/deep-link?token=" + token +
+                        "&settings=" + java.net.URLEncoder.encode(settings, java.nio.charset.StandardCharsets.UTF_8) +
+                        "&deploy=" + deploymentId +
+                        "&iss=" + java.net.URLEncoder.encode(issuer, java.nio.charset.StandardCharsets.UTF_8);
+
+                logger.info("Deep Linking Launch. Redirecting to: {}", deepLinkUrl);
+                response.sendRedirect(deepLinkUrl);
+
+            } else {
+                // Standard Launch (TOKEN:...)
+                String token = result.substring(6); // Remove TOKEN:
+                String redirectUrl = frontendUrl + "/lti-success?token=" + token;
+
+                logger.info("LTI Launch successful. Redirecting to: {}", redirectUrl);
+                response.sendRedirect(redirectUrl);
+            }
 
         } catch (Exception e) {
             logger.error("LTI Launch Failed", e);
             String errorUrl = frontendUrl + "/login?error=LTI_Launch_Failed&message="
                     + java.net.URLEncoder.encode(e.getMessage(), java.nio.charset.StandardCharsets.UTF_8);
             response.sendRedirect(errorUrl);
+        }
+    }
+
+    @PostMapping("/deep_link_response")
+    @Operation(summary = "Generate Deep Linking Response JWT", description = "Generates the signed JWT to send back to LMS.")
+    public ResponseEntity<Map<String, String>> generateDeepLinkResponse(
+            @RequestBody Map<String, Object> request) {
+        try {
+            String issuer = (String) request.get("iss");
+            String deploymentId = (String) request.get("deploy");
+            String data = (String) request.get("data");
+            java.util.List<Map<String, Object>> contentItems = (java.util.List<Map<String, Object>>) request
+                    .get("contentItems");
+
+            String jwt = ltiService.createDeepLinkingResponse(issuer, deploymentId, data, contentItems);
+
+            return ResponseEntity.ok(Map.of("jwt", jwt));
+        } catch (Exception e) {
+            logger.error("Failed to generate Deep Link Response", e);
+            return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
         }
     }
 }

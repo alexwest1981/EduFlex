@@ -5,7 +5,7 @@ import {
     MessageSquare, Calendar, CreditCard, BarChart3, Briefcase,
     GraduationCap, BookOpen, Globe, Shield, Cpu, HardDrive,
     Download, RefreshCw, Trash2, Plus, AlertTriangle, Clock, CheckCircle2,
-    Link2, Cloud
+    Link2, Cloud, Eye, EyeOff, Key, Save
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../../context/ThemeContext';
@@ -14,8 +14,6 @@ import { useBranding } from '../../context/BrandingContext';
 import ThemeModal from './ThemeModal';
 import { useModules } from '../../context/ModuleContext';
 import { api } from '../../services/api';
-import LtiPlatformManager from '../admin/LtiPlatformManager';
-import OnlyOfficeSettings from './OnlyOfficeSettings';
 
 // Mappa modulnycklar till ikoner
 const moduleIcons = {
@@ -34,6 +32,7 @@ const moduleIcons = {
     'API': Cpu,
     'ENTERPRISE': Briefcase,
     'EDUCATION': GraduationCap,
+    'AI_QUIZ': Sparkles,
     // Fallback
     'DEFAULT': Package
 };
@@ -65,6 +64,13 @@ const SystemSettings = ({ asTab = false }) => {
     const [showAddDbModal, setShowAddDbModal] = useState(false);
     const [switchingDb, setSwitchingDb] = useState(null);
 
+    // AI Quiz state
+    const [aiStatus, setAiStatus] = useState(null);
+    const [aiLoading, setAiLoading] = useState(true);
+    const [apiKeyInput, setApiKeyInput] = useState('');
+    const [savingApiKey, setSavingApiKey] = useState(false);
+    const [showApiKey, setShowApiKey] = useState(false);
+
     const currentTheme = themes.find(t => t.id === themeId) || themes[0];
     const isAdmin = currentUser?.role?.name === 'ADMIN' || currentUser?.role === 'ADMIN';
 
@@ -85,6 +91,50 @@ const SystemSettings = ({ asTab = false }) => {
             fetchDatabaseConnections();
         }
     }, [activeTab, isAdmin]);
+
+    // Hämta AI-status när AI-tabben är aktiv
+    useEffect(() => {
+        if (activeTab === 'ai') {
+            fetchAiStatus();
+        }
+    }, [activeTab]);
+
+    const fetchAiStatus = async () => {
+        setAiLoading(true);
+        try {
+            const status = await api.get('/ai/quiz/status');
+            setAiStatus(status);
+        } catch (e) {
+            console.error('Failed to fetch AI status:', e);
+            setAiStatus({ available: false, moduleEnabled: false, apiConfigured: false, message: 'Kunde inte hämta AI-status' });
+        } finally {
+            setAiLoading(false);
+        }
+    };
+
+    const handleSaveApiKey = async () => {
+        if (!apiKeyInput.trim()) {
+            alert('Ange en API-nyckel');
+            return;
+        }
+        setSavingApiKey(true);
+        try {
+            const response = await api.post('/ai/quiz/config/api-key', { apiKey: apiKeyInput });
+            if (response.success) {
+                setApiKeyInput('');
+                setShowApiKey(false);
+                await fetchAiStatus();
+                alert('API-nyckel sparad!');
+            } else {
+                alert(response.message || 'Kunde inte spara API-nyckel');
+            }
+        } catch (e) {
+            console.error('Failed to save API key:', e);
+            alert('Kunde inte spara API-nyckel: ' + (e.message || 'Okänt fel'));
+        } finally {
+            setSavingApiKey(false);
+        }
+    };
 
     const fetchBackupData = async () => {
         setBackupLoading(true);
@@ -205,10 +255,9 @@ const SystemSettings = ({ asTab = false }) => {
             ]
         },
         {
-            category: 'Integrationer',
+            category: 'AI & Automation',
             items: [
-                { id: 'lti', label: 'LTI / LMS', icon: Link2 },
-                { id: 'onlyoffice', label: 'ONLYOFFICE', icon: Cloud },
+                { id: 'ai', label: 'AI Quiz', icon: Sparkles },
             ]
         },
         {
@@ -634,82 +683,384 @@ const SystemSettings = ({ asTab = false }) => {
                     </div>
                 );
 
-            case 'lti':
-                return <LtiPlatformManager />;
 
-            case 'onlyoffice':
-                return <OnlyOfficeSettings />;
-
-            case 'modules':
+            case 'ai':
+                const aiModule = modules.find(m => m.moduleKey === 'AI_QUIZ');
                 return (
                     <div className="space-y-6">
                         <div>
-                            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Systemmoduler</h2>
-                            <p className="text-gray-500 dark:text-gray-400">Aktivera eller inaktivera funktioner globalt. Vissa moduler kräver högre licens.</p>
+                            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">AI Quiz-generering</h2>
+                            <p className="text-gray-500 dark:text-gray-400">Generera quiz-frågor automatiskt från dokument med Google Gemini AI.</p>
                         </div>
 
-                        <div className="space-y-4">
-                            {modules.map(mod => {
-                                const ModuleIcon = getModuleIcon(mod.moduleKey);
-                                return (
-                                    <div
-                                        key={mod.moduleKey}
-                                        className={`bg-white dark:bg-[#1E1F20] border ${mod.active ? 'border-indigo-500 dark:border-indigo-500 ring-1 ring-indigo-500' : 'border-gray-200 dark:border-[#3c4043]'} p-5 rounded-2xl shadow-sm transition-all hover:shadow-md`}
-                                    >
-                                        <div className="flex items-start gap-4">
-                                            {/* Module Icon */}
-                                            <div className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${mod.active
-                                                ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400'
-                                                : 'bg-gray-100 dark:bg-[#282a2c] text-gray-400'
-                                                }`}>
-                                                <ModuleIcon size={24} />
-                                            </div>
+                        {/* Status Card */}
+                        <div className="bg-white dark:bg-[#1E1F20] rounded-2xl p-6 border border-gray-200 dark:border-[#3c4043] shadow-sm">
+                            <div className="flex items-center gap-4 mb-6">
+                                <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${aiStatus?.available
+                                    ? 'bg-green-50 dark:bg-green-900/20 text-green-600'
+                                    : 'bg-amber-50 dark:bg-amber-900/20 text-amber-600'
+                                    }`}>
+                                    <Sparkles size={24} />
+                                </div>
+                                <div>
+                                    <h3 className="font-bold text-gray-900 dark:text-white">AI-status</h3>
+                                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                                        {aiLoading ? 'Kontrollerar...' : aiStatus?.message}
+                                    </p>
+                                </div>
+                            </div>
 
-                                            {/* Module Info */}
-                                            <div className="flex-1 min-w-0">
-                                                <div className="flex items-center gap-2 mb-1">
-                                                    <h3 className="font-bold text-gray-900 dark:text-white">{mod.name}</h3>
-                                                    {mod.requiresLicense && (
-                                                        <span className="text-[10px] bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 px-1.5 py-0.5 rounded font-bold border border-amber-200 dark:border-amber-800">PRO</span>
-                                                    )}
-                                                </div>
-                                                <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">Version {mod.version}</p>
-                                                <p className="text-sm text-gray-600 dark:text-gray-300">{mod.description}</p>
-                                            </div>
-
-                                            {/* Toggle */}
-                                            <div className="flex-shrink-0">
-                                                <div className="relative inline-block w-14 h-8 align-middle select-none">
-                                                    <input
-                                                        type="checkbox"
-                                                        name={mod.moduleKey}
-                                                        id={mod.moduleKey}
-                                                        className="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer top-1 left-1 transition-transform duration-200 ease-in-out shadow-sm"
-                                                        style={{ transform: mod.active ? 'translateX(24px)' : 'translateX(0)' }}
-                                                        checked={mod.active}
-                                                        onChange={() => handleToggleModule(mod.moduleKey, mod.active)}
-                                                        disabled={toggling === mod.moduleKey}
-                                                    />
-                                                    <label
-                                                        htmlFor={mod.moduleKey}
-                                                        className={`toggle-label block overflow-hidden h-8 rounded-full cursor-pointer transition-colors duration-200 ${mod.active ? 'bg-indigo-500' : 'bg-gray-300 dark:bg-gray-600'}`}
-                                                    ></label>
-                                                </div>
-                                            </div>
+                            {aiLoading ? (
+                                <div className="animate-pulse space-y-4">
+                                    <div className="h-16 bg-gray-200 dark:bg-gray-700 rounded-xl"></div>
+                                    <div className="h-16 bg-gray-200 dark:bg-gray-700 rounded-xl"></div>
+                                </div>
+                            ) : (
+                                <div className="space-y-4">
+                                    {/* Module Status */}
+                                    <div className="flex justify-between items-center p-4 bg-gray-50 dark:bg-[#282a2c] rounded-xl">
+                                        <div className="flex items-center gap-3">
+                                            <Package size={20} className="text-gray-400" />
+                                            <span className="font-medium text-gray-600 dark:text-gray-300">Modul</span>
                                         </div>
-
-                                        {/* Status indicator */}
-                                        <div className="mt-4 pt-4 border-t border-gray-100 dark:border-[#3c4043] flex items-center justify-between">
-                                            <span className={`text-xs font-bold uppercase tracking-wider ${mod.active ? 'text-green-600 dark:text-green-400' : 'text-gray-400'}`}>
-                                                {mod.active ? '● Aktiv' : '○ Inaktiv'}
-                                            </span>
-                                            {toggling === mod.moduleKey && (
-                                                <span className="text-xs text-gray-400 animate-pulse">Uppdaterar...</span>
+                                        <div className="flex items-center gap-2">
+                                            {aiStatus?.moduleEnabled ? (
+                                                <span className="flex items-center gap-2 text-sm font-bold text-green-600 dark:text-green-400">
+                                                    <CheckCircle2 size={16} />
+                                                    Aktiverad
+                                                </span>
+                                            ) : (
+                                                <span className="flex items-center gap-2 text-sm font-bold text-amber-600 dark:text-amber-400">
+                                                    <AlertTriangle size={16} />
+                                                    Inaktiverad
+                                                </span>
                                             )}
                                         </div>
                                     </div>
-                                );
-                            })}
+
+                                    {/* API Status */}
+                                    <div className="flex justify-between items-center p-4 bg-gray-50 dark:bg-[#282a2c] rounded-xl">
+                                        <div className="flex items-center gap-3">
+                                            <Cpu size={20} className="text-gray-400" />
+                                            <span className="font-medium text-gray-600 dark:text-gray-300">Gemini API</span>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            {aiStatus?.apiConfigured ? (
+                                                <span className="flex items-center gap-2 text-sm font-bold text-green-600 dark:text-green-400">
+                                                    <CheckCircle2 size={16} />
+                                                    Konfigurerad
+                                                </span>
+                                            ) : (
+                                                <span className="flex items-center gap-2 text-sm font-bold text-red-600 dark:text-red-400">
+                                                    <AlertTriangle size={16} />
+                                                    Ej konfigurerad
+                                                </span>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    {/* License Requirement */}
+                                    <div className="flex justify-between items-center p-4 bg-gray-50 dark:bg-[#282a2c] rounded-xl">
+                                        <div className="flex items-center gap-3">
+                                            <ShieldCheck size={20} className="text-gray-400" />
+                                            <span className="font-medium text-gray-600 dark:text-gray-300">Licenskrav</span>
+                                        </div>
+                                        <span className="px-3 py-1 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 text-xs font-bold rounded-lg">
+                                            PRO / ENTERPRISE
+                                        </span>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* API Key Configuration Card */}
+                        <div className="bg-white dark:bg-[#1E1F20] rounded-2xl p-6 border border-gray-200 dark:border-[#3c4043] shadow-sm">
+                            <div className="flex items-center gap-4 mb-6">
+                                <div className="w-12 h-12 bg-purple-50 dark:bg-purple-900/20 rounded-xl flex items-center justify-center text-purple-600">
+                                    <Key size={24} />
+                                </div>
+                                <div>
+                                    <h3 className="font-bold text-gray-900 dark:text-white">API-konfiguration</h3>
+                                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                                        Konfigurera Google Gemini API-nyckel
+                                    </p>
+                                </div>
+                            </div>
+
+                            {/* Current Key Status */}
+                            {aiStatus?.maskedApiKey && (
+                                <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-[#282a2c] rounded-xl mb-4">
+                                    <div className="flex items-center gap-3">
+                                        <CheckCircle2 size={20} className="text-green-500" />
+                                        <div>
+                                            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Nuvarande nyckel: </span>
+                                            <code className="text-sm font-mono bg-gray-200 dark:bg-gray-700 px-2 py-0.5 rounded">
+                                                {aiStatus.maskedApiKey}
+                                            </code>
+                                        </div>
+                                    </div>
+                                    <span className={`text-xs px-2 py-1 rounded-lg font-medium ${aiStatus.keySource === 'database'
+                                        ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400'
+                                        : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
+                                        }`}>
+                                        {aiStatus.keySource === 'database' ? 'Databas' : 'Miljövariabel'}
+                                    </span>
+                                </div>
+                            )}
+
+                            {/* API Key Input */}
+                            <div className="space-y-3">
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    {aiStatus?.apiConfigured ? 'Uppdatera API-nyckel' : 'Ange Gemini API-nyckel'}
+                                </label>
+                                <div className="relative">
+                                    <input
+                                        type={showApiKey ? 'text' : 'password'}
+                                        value={apiKeyInput}
+                                        onChange={(e) => setApiKeyInput(e.target.value)}
+                                        placeholder="AIzaSy..."
+                                        className="w-full px-4 py-3 pr-24 border border-gray-200 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-[#282a2c] text-gray-900 dark:text-white font-mono text-sm"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowApiKey(!showApiKey)}
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                                    >
+                                        {showApiKey ? <EyeOff size={18} /> : <Eye size={18} />}
+                                    </button>
+                                </div>
+                                <button
+                                    onClick={handleSaveApiKey}
+                                    disabled={savingApiKey || !apiKeyInput.trim()}
+                                    className="w-full flex items-center justify-center gap-2 py-3 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-300 dark:disabled:bg-gray-700 text-white disabled:text-gray-500 rounded-xl font-medium transition-colors"
+                                >
+                                    {savingApiKey ? (
+                                        <RefreshCw size={18} className="animate-spin" />
+                                    ) : (
+                                        <Save size={18} />
+                                    )}
+                                    {savingApiKey ? 'Sparar...' : 'Spara API-nyckel'}
+                                </button>
+                                <p className="text-xs text-gray-500 dark:text-gray-400">
+                                    Skapa en API-nyckel på <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Google AI Studio</a>
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* Actions Card */}
+                        <div className="bg-white dark:bg-[#1E1F20] rounded-2xl p-6 border border-gray-200 dark:border-[#3c4043] shadow-sm">
+                            <h3 className="font-bold text-gray-900 dark:text-white mb-4">Åtgärder</h3>
+
+                            <div className="space-y-3">
+                                {/* Toggle Module */}
+                                {aiModule && (
+                                    <button
+                                        onClick={() => handleToggleModule('AI_QUIZ', aiModule.active)}
+                                        disabled={toggling === 'AI_QUIZ'}
+                                        className={`w-full flex items-center justify-between p-4 rounded-xl border transition-colors ${aiModule.active
+                                            ? 'bg-red-50 dark:bg-red-900/10 border-red-200 dark:border-red-800 hover:bg-red-100 dark:hover:bg-red-900/20'
+                                            : 'bg-green-50 dark:bg-green-900/10 border-green-200 dark:border-green-800 hover:bg-green-100 dark:hover:bg-green-900/20'
+                                            }`}
+                                    >
+                                        <div className="flex items-center gap-3">
+                                            <ToggleLeft size={20} className={aiModule.active ? 'text-red-600' : 'text-green-600'} />
+                                            <span className={`font-medium ${aiModule.active ? 'text-red-700 dark:text-red-400' : 'text-green-700 dark:text-green-400'}`}>
+                                                {aiModule.active ? 'Inaktivera AI Quiz-modul' : 'Aktivera AI Quiz-modul'}
+                                            </span>
+                                        </div>
+                                        {toggling === 'AI_QUIZ' && (
+                                            <RefreshCw size={18} className="animate-spin text-gray-400" />
+                                        )}
+                                    </button>
+                                )}
+
+                                {/* Open AI Quiz Generator */}
+                                <button
+                                    onClick={() => navigate('/ai-quiz')}
+                                    disabled={!aiStatus?.available}
+                                    className={`w-full flex items-center justify-center gap-3 py-4 rounded-xl font-bold transition-all ${aiStatus?.available
+                                        ? 'bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white shadow-lg hover:shadow-xl hover:scale-[1.02]'
+                                        : 'bg-gray-200 dark:bg-gray-700 text-gray-400 cursor-not-allowed'
+                                        }`}
+                                >
+                                    <Sparkles size={20} />
+                                    Öppna AI Quiz-generatorn
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Info Card */}
+                        <div className="bg-blue-50 dark:bg-blue-900/20 rounded-2xl p-6 border border-blue-200 dark:border-blue-800">
+                            <h3 className="font-bold text-blue-800 dark:text-blue-300 mb-3 flex items-center gap-2">
+                                <FileText size={18} />
+                                Så fungerar AI Quiz
+                            </h3>
+                            <ul className="space-y-2 text-sm text-blue-700 dark:text-blue-400">
+                                <li className="flex items-start gap-2">
+                                    <span className="font-bold">1.</span>
+                                    <span>Ladda upp ett dokument (PDF, DOCX, TXT) eller klistra in text</span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <span className="font-bold">2.</span>
+                                    <span>Välj antal frågor (3-15) och svårighetsgrad</span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <span className="font-bold">3.</span>
+                                    <span>AI:n genererar relevanta flervalsfrågor baserat på innehållet</span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <span className="font-bold">4.</span>
+                                    <span>Redigera, justera och spara som ett quiz i din kurs</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                );
+
+            case 'modules':
+                // Group modules by category
+                const moduleCategories = {
+                    'Utbildning': ['QUIZ_BASIC', 'QUIZ_PRO', 'AI_QUIZ', 'SUBMISSIONS', 'SCORM'],
+                    'Kommunikation': ['CHAT', 'FORUM'],
+                    'Gamification': ['GAMIFICATION'],
+                    'Analys & Rapporter': ['ANALYTICS'],
+                    'Utseende': ['DARK_MODE', 'ENTERPRISE_WHITELABEL'],
+                    'Övrigt': ['REVENUE']
+                };
+
+                // Sort modules into categories
+                const categorizedModules = {};
+                const usedKeys = new Set();
+
+                Object.entries(moduleCategories).forEach(([category, keys]) => {
+                    const categoryModules = keys
+                        .map(key => modules.find(m => m.moduleKey === key))
+                        .filter(Boolean);
+                    if (categoryModules.length > 0) {
+                        categorizedModules[category] = categoryModules;
+                        categoryModules.forEach(m => usedKeys.add(m.moduleKey));
+                    }
+                });
+
+                // Add any uncategorized modules to "Övrigt"
+                const uncategorized = modules.filter(m => !usedKeys.has(m.moduleKey));
+                if (uncategorized.length > 0) {
+                    categorizedModules['Övrigt'] = [...(categorizedModules['Övrigt'] || []), ...uncategorized];
+                }
+
+                const handleSyncModules = async () => {
+                    try {
+                        setToggling('__sync__');
+                        const result = await api.modules.init();
+                        if (result.success) {
+                            await refreshModules();
+                            alert(`Moduler synkroniserade! ${result.moduleCount} moduler totalt.`);
+                        }
+                    } catch (e) {
+                        alert('Kunde inte synkronisera moduler: ' + e.message);
+                    } finally {
+                        setToggling(null);
+                    }
+                };
+
+                return (
+                    <div className="space-y-6">
+                        <div className="flex items-start justify-between">
+                            <div>
+                                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Systemmoduler</h2>
+                                <p className="text-gray-500 dark:text-gray-400">Aktivera eller inaktivera funktioner globalt. Vissa moduler kräver PRO/ENTERPRISE-licens.</p>
+                            </div>
+                            <button
+                                onClick={handleSyncModules}
+                                disabled={toggling === '__sync__'}
+                                className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-medium transition-colors disabled:opacity-50"
+                            >
+                                <RefreshCw size={16} className={toggling === '__sync__' ? 'animate-spin' : ''} />
+                                {toggling === '__sync__' ? 'Synkar...' : 'Synka moduler'}
+                            </button>
+                        </div>
+
+                        {Object.entries(categorizedModules).map(([category, categoryModules]) => (
+                            <div key={category} className="bg-white dark:bg-[#1E1F20] rounded-2xl border border-gray-200 dark:border-[#3c4043] overflow-hidden">
+                                {/* Category Header */}
+                                <div className="px-5 py-3 bg-gray-50 dark:bg-[#282a2c] border-b border-gray-200 dark:border-[#3c4043]">
+                                    <h3 className="text-sm font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">{category}</h3>
+                                </div>
+
+                                {/* Modules Grid */}
+                                <div className="divide-y divide-gray-100 dark:divide-[#3c4043]">
+                                    {categoryModules.map(mod => {
+                                        const ModuleIcon = getModuleIcon(mod.moduleKey);
+                                        return (
+                                            <div
+                                                key={mod.moduleKey}
+                                                className="flex items-center gap-4 px-5 py-4 hover:bg-gray-50 dark:hover:bg-[#282a2c]/50 transition-colors"
+                                            >
+                                                {/* Module Icon */}
+                                                <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${mod.active
+                                                    ? 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400'
+                                                    : 'bg-gray-100 dark:bg-[#333] text-gray-400'
+                                                    }`}>
+                                                    <ModuleIcon size={20} />
+                                                </div>
+
+                                                {/* Module Info */}
+                                                <div className="flex-1 min-w-0">
+                                                    <div className="flex items-center gap-2">
+                                                        <h4 className="font-semibold text-gray-900 dark:text-white text-sm">{mod.name}</h4>
+                                                        {mod.requiresLicense && (
+                                                            <span className="text-[9px] bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 px-1.5 py-0.5 rounded font-bold">PRO</span>
+                                                        )}
+                                                        <span className="text-[10px] text-gray-400 dark:text-gray-500">v{mod.version}</span>
+                                                    </div>
+                                                    <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-1">{mod.description}</p>
+                                                </div>
+
+                                                {/* Status Badge */}
+                                                <div className="flex-shrink-0 hidden sm:block">
+                                                    <span className={`text-[10px] font-bold px-2 py-1 rounded-full ${mod.active
+                                                        ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
+                                                        : 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-500'
+                                                        }`}>
+                                                        {mod.active ? 'AKTIV' : 'INAKTIV'}
+                                                    </span>
+                                                </div>
+
+                                                {/* Toggle Switch */}
+                                                <div className="flex-shrink-0">
+                                                    <button
+                                                        onClick={() => handleToggleModule(mod.moduleKey, mod.active)}
+                                                        disabled={toggling === mod.moduleKey}
+                                                        className={`relative w-11 h-6 rounded-full transition-colors duration-200 ${mod.active
+                                                            ? 'bg-indigo-500'
+                                                            : 'bg-gray-300 dark:bg-gray-600'
+                                                            } ${toggling === mod.moduleKey ? 'opacity-50' : ''}`}
+                                                    >
+                                                        <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform duration-200 ${mod.active ? 'translate-x-5' : 'translate-x-0'
+                                                            }`}>
+                                                            {toggling === mod.moduleKey && (
+                                                                <RefreshCw size={12} className="absolute inset-0 m-auto animate-spin text-gray-400" />
+                                                            )}
+                                                        </span>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        ))}
+
+                        {/* Legend */}
+                        <div className="flex items-center gap-4 text-xs text-gray-500 dark:text-gray-400 pt-2">
+                            <div className="flex items-center gap-1.5">
+                                <span className="w-2 h-2 rounded-full bg-green-500"></span>
+                                <span>Aktiv modul</span>
+                            </div>
+                            <div className="flex items-center gap-1.5">
+                                <span className="px-1.5 py-0.5 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 rounded text-[9px] font-bold">PRO</span>
+                                <span>Kräver PRO/ENTERPRISE-licens</span>
+                            </div>
                         </div>
                     </div>
                 );

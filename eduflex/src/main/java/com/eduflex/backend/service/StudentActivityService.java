@@ -22,15 +22,18 @@ public class StudentActivityService {
     private final UserRepository userRepository;
     private final CourseRepository courseRepository;
     private final CourseMaterialRepository materialRepository;
+    private final com.eduflex.backend.repository.StudentQuizLogRepository studentQuizLogRepository;
 
     public StudentActivityService(StudentActivityLogRepository activityLogRepository,
             UserRepository userRepository,
             CourseRepository courseRepository,
-            CourseMaterialRepository materialRepository) {
+            CourseMaterialRepository materialRepository,
+            com.eduflex.backend.repository.StudentQuizLogRepository studentQuizLogRepository) {
         this.activityLogRepository = activityLogRepository;
         this.userRepository = userRepository;
         this.courseRepository = courseRepository;
         this.materialRepository = materialRepository;
+        this.studentQuizLogRepository = studentQuizLogRepository;
     }
 
     @Transactional
@@ -54,23 +57,51 @@ public class StudentActivityService {
 
     @Transactional(readOnly = true)
     public List<StudentActivityLogDTO> getCourseLogs(Long courseId) {
-        return activityLogRepository.findByCourseIdOrderByTimestampDesc(courseId).stream()
+        List<StudentActivityLogDTO> activityLogs = activityLogRepository.findByCourseIdOrderByTimestampDesc(courseId)
+                .stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
+
+        List<StudentActivityLogDTO> quizLogs = studentQuizLogRepository.findByCourseId(courseId).stream()
+                .map(this::convertQuizToDTO)
+                .collect(Collectors.toList());
+
+        activityLogs.addAll(quizLogs);
+        activityLogs.sort((a, b) -> b.timestamp().compareTo(a.timestamp()));
+        return activityLogs;
     }
 
     @Transactional(readOnly = true)
     public List<StudentActivityLogDTO> getStudentLogs(Long courseId, Long userId) {
-        return activityLogRepository.findByCourseIdAndUserIdOrderByTimestampDesc(courseId, userId).stream()
+        List<StudentActivityLogDTO> activityLogs = activityLogRepository
+                .findByCourseIdAndUserIdOrderByTimestampDesc(courseId, userId).stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
+
+        List<StudentActivityLogDTO> quizLogs = studentQuizLogRepository.findByCourseIdAndStudentId(courseId, userId)
+                .stream()
+                .map(this::convertQuizToDTO)
+                .collect(Collectors.toList());
+
+        activityLogs.addAll(quizLogs);
+        activityLogs.sort((a, b) -> b.timestamp().compareTo(a.timestamp()));
+        return activityLogs;
     }
 
     @Transactional(readOnly = true)
     public List<StudentActivityLogDTO> getGlobalStudentLogs(Long userId) {
-        return activityLogRepository.findByUserIdOrderByTimestampDesc(userId).stream()
+        List<StudentActivityLogDTO> activityLogs = activityLogRepository.findByUserIdOrderByTimestampDesc(userId)
+                .stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
+
+        List<StudentActivityLogDTO> quizLogs = studentQuizLogRepository.findByStudentId(userId).stream()
+                .map(this::convertQuizToDTO)
+                .collect(Collectors.toList());
+
+        activityLogs.addAll(quizLogs);
+        activityLogs.sort((a, b) -> b.timestamp().compareTo(a.timestamp()));
+        return activityLogs;
     }
 
     private StudentActivityLogDTO convertToDTO(StudentActivityLog log) {
@@ -82,5 +113,19 @@ public class StudentActivityService {
                 log.getDetails(),
                 log.getTimestamp(),
                 log.getMaterial() != null ? log.getMaterial().getTitle() : null);
+    }
+
+    private StudentActivityLogDTO convertQuizToDTO(com.eduflex.backend.model.StudentQuizLog log) {
+        String details = String.format("Resultat: %d/%d (Svårighetsgrad: %d)",
+                log.getScore(), log.getMaxScore(), log.getDifficulty());
+
+        return new StudentActivityLogDTO(
+                log.getId(),
+                log.getStudent().getId(),
+                log.getStudent().getFirstName() + " " + log.getStudent().getLastName(),
+                "PRACTICE_QUIZ",
+                details,
+                log.getTimestamp(),
+                "Övningsquiz: " + log.getTopic());
     }
 }

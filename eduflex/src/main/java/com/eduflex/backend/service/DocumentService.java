@@ -4,7 +4,10 @@ import com.eduflex.backend.model.Document;
 import com.eduflex.backend.model.User;
 import com.eduflex.backend.repository.DocumentRepository;
 import com.eduflex.backend.repository.UserRepository;
+import com.eduflex.backend.config.KafkaConfig;
+import com.eduflex.backend.event.DocumentUploadedEvent;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,6 +21,9 @@ public class DocumentService {
 
     private final DocumentRepository documentRepository;
     private final UserRepository userRepository;
+
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    private KafkaTemplate<String, Object> kafkaTemplate;
 
     @Value("${file.upload-dir}")
     private String uploadDir;
@@ -44,7 +50,25 @@ public class DocumentService {
                 "/uploads/" + uniqueName,
                 file.getSize(),
                 user);
-        return documentRepository.save(doc);
+
+        doc = documentRepository.save(doc);
+
+        // Skicka Kafka-event för asynkron processering (AI, Media, etc)
+        if (kafkaTemplate != null) {
+            try {
+                kafkaTemplate.send(KafkaConfig.DOCUMENT_UPLOADED_TOPIC, new DocumentUploadedEvent(
+                        doc.getId(),
+                        doc.getFileName(),
+                        doc.getFileUrl(),
+                        doc.getFileType(),
+                        doc.getSize(),
+                        user.getId()));
+            } catch (Exception e) {
+                System.err.println("⚠ Failed to send Kafka event (Kafka might be down or disabled): " + e.getMessage());
+            }
+        }
+
+        return doc;
     }
 
     public List<Document> getAllDocuments() {
@@ -80,5 +104,19 @@ public class DocumentService {
 
             documentRepository.delete(doc);
         });
+    }
+
+    public java.io.InputStream getFileStream(Long documentId) throws IOException {
+        Document doc = documentRepository.findById(documentId)
+                .orElseThrow(() -> new RuntimeException("Document not found"));
+
+        // Extract filename from URL (remove /uploads/ prefix if present)
+        String fileName = doc.getFileUrl();
+        if (fileName.startsWith("/uploads/")) {
+            fileName = fileName.substring("/uploads/".length());
+        }
+
+        Path path = Paths.get(uploadDir + "/" + fileName);
+        return Files.newInputStream(path);
     }
 }

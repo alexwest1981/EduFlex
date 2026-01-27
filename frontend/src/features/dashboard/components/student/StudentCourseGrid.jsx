@@ -16,7 +16,7 @@ const StudentCourseGrid = ({ courses, navigate }) => {
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 animate-in slide-in-from-bottom-6">
                     {courses.map(course => (
-                        <div key={course.id} onClick={() => navigate(`/course/${course.id}`)} className="bg-white dark:bg-[#1E1F20] p-5 rounded-xl border border-gray-200 dark:border-[#3c4043] shadow-sm hover:shadow-md hover:border-indigo-300 dark:hover:border-indigo-700 transition-all cursor-pointer group flex flex-col justify-between h-full">
+                        <div key={course.id} onClick={() => navigate(`/course/${course.slug || course.id}`)} className="bg-white dark:bg-[#1E1F20] p-5 rounded-xl border border-gray-200 dark:border-[#3c4043] shadow-sm hover:shadow-md hover:border-indigo-300 dark:hover:border-indigo-700 transition-all cursor-pointer group flex flex-col justify-between h-full">
                             <div>
                                 <div className="flex justify-between items-start mb-3">
                                     <div className={`px-2 py-1 rounded text-xs font-bold uppercase ${course.isOpen ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-300' : 'bg-red-50 text-red-600'}`}>

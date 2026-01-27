@@ -29,6 +29,7 @@ const StudentActivityBoard = ({ courseId }) => {
             case 'VIEW_LESSON': return <Eye size={16} className="text-blue-500" />;
             case 'DOWNLOAD_FILE': return <Download size={16} className="text-green-500" />;
             case 'WATCH_VIDEO': return <Video size={16} className="text-red-500" />;
+            case 'PRACTICE_QUIZ': return <span className="text-purple-500 font-bold text-xs border border-purple-200 bg-purple-50 px-1 rounded">AI</span>;
             default: return <Calendar size={16} className="text-gray-500" />;
         }
     };
@@ -39,6 +40,7 @@ const StudentActivityBoard = ({ courseId }) => {
             case 'DOWNLOAD_FILE': return 'Laddat ner fil';
             case 'WATCH_VIDEO': return 'Tittat på video';
             case 'COURSE_ACCESS': return 'Gått in i kursen';
+            case 'PRACTICE_QUIZ': return 'Övningsquiz (AI)';
             default: return type;
         }
     };
@@ -85,6 +87,7 @@ const StudentActivityBoard = ({ courseId }) => {
                         <option value="VIEW_LESSON">Öppnat Lektion</option>
                         <option value="DOWNLOAD_FILE">Laddat ner Fil</option>
                         <option value="WATCH_VIDEO">Tittat på Video</option>
+                        <option value="PRACTICE_QUIZ">Övningsquiz (AI)</option>
                     </select>
                 </div>
             </div>

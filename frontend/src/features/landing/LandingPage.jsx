@@ -134,6 +134,18 @@ const LandingPage = () => {
             title: 'Enterprise SSO',
             description: 'Keycloak-integration med OAuth2/OIDC. Stöd för internal, keycloak eller hybrid autentiseringsläge.',
             gradient: 'from-red-500 to-orange-500'
+        },
+        {
+            icon: <Zap className="w-6 h-6" />,
+            title: 'Friendly URLs (Slugs)',
+            description: 'Sökmotorvänliga och läsbara adresser för alla kurser. Navigera via namn istället för dunkla siffer-ID:n.',
+            gradient: 'from-cyan-400 to-blue-500'
+        },
+        {
+            icon: <Sparkles className="w-6 h-6" />,
+            title: 'AI-Tutor & Copilot',
+            description: 'En intelligent handledare som kan svara på frågor baserat på kursmaterialet, tillgänglig dygnet runt.',
+            gradient: 'from-purple-600 to-pink-600'
         }
     ];
 

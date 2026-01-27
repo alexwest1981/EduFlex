@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { LayoutDashboard, BookOpen, FolderOpen, Users, UserCircle, LogOut, ShieldCheck, Calendar, MessageSquare, Settings2, FileQuestion, Palette, Store } from 'lucide-react';
+import { LayoutDashboard, BookOpen, FolderOpen, Users, UserCircle, LogOut, ShieldCheck, Calendar, MessageSquare, Settings2, FileQuestion, Palette, Store, Sparkles } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
 import { api } from '../services/api';
+import { useModules } from '../context/ModuleContext';
 
 const Sidebar = ({ currentUser, logout, siteName, version }) => {
     const { t } = useTranslation();
@@ -11,6 +12,7 @@ const Sidebar = ({ currentUser, logout, siteName, version }) => {
     const location = useLocation();
     const currentPath = location.pathname;
     const [requestCount, setRequestCount] = useState(0);
+    const { isModuleActive } = useModules();
 
     useEffect(() => {
         const fetchRequests = async () => {
@@ -30,14 +32,23 @@ const Sidebar = ({ currentUser, logout, siteName, version }) => {
             { path: '/', label: t('sidebar.dashboard'), icon: <LayoutDashboard size={20} /> }
         ];
 
-        if (role === 'TEACHER' || role === 'ADMIN' || true) { // DEBUG: Force show
+        if (role === 'TEACHER' || role === 'ADMIN') {
             items.push({ path: '/resources', label: t('sidebar.resource_bank'), icon: <BookOpen size={20} /> });
+            // Direct link to My Courses for Teachers
+            if (role === 'TEACHER') {
+                items.push({ path: '/?tab=COURSES', label: 'Mina kurser', icon: <BookOpen size={20} /> });
+            }
+            // Only show AI Quiz if module is active
+            if (isModuleActive('AI_QUIZ')) {
+                items.push({ path: '/ai-quiz', label: 'AI Quiz', icon: <Sparkles size={20} /> });
+            }
         }
 
         if (role === 'STUDENT') {
+            items.push({ path: '/my-courses', label: 'Mina kurser', icon: <BookOpen size={20} /> });
             items.push({ path: '/catalog', label: t('sidebar.catalog'), icon: <BookOpen size={20} /> });
         }
-        if (role === 'ADMIN' || role === 'TEACHER') { // TODO: Restrict to Admin in Prod
+        if (role === 'ADMIN' || role === 'TEACHER') {
             items.push({ path: '/admin', label: t('sidebar.admin'), icon: <Users size={20} /> });
             items.push({ path: '/system', label: 'System', icon: <Settings2 size={20} /> });
         }
@@ -47,6 +58,8 @@ const Sidebar = ({ currentUser, logout, siteName, version }) => {
         items.push({ path: '/calendar', label: t('sidebar.calendar'), icon: <Calendar size={20} /> });
         items.push({ path: '/support', label: t('sidebar.support'), icon: <FileQuestion size={20} /> });
 
+        console.log('Sidebar Role:', role);
+        console.log('Sidebar Items:', items);
         return items;
     };
 

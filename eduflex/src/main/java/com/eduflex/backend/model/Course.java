@@ -21,6 +21,9 @@ public class Course {
     @Column(unique = true)
     private String courseCode;
 
+    @Column(unique = true)
+    private String slug;
+
     private String category;
 
     @Column(length = 5000)
@@ -39,6 +42,9 @@ public class Course {
 
     private String examLink; // URL till tentarum
     private String examType; // T.ex. "ZOOM", "INSPO"
+
+    @Column(columnDefinition = "TEXT")
+    private String tags; // Comma-separated tags for AI context (e.g. "Math, Algebra, Linear Equations")
 
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
     private java.util.List<GroupRoom> groupRooms = new java.util.ArrayList<>();
@@ -112,6 +118,14 @@ public class Course {
 
     public void setCourseCode(String courseCode) {
         this.courseCode = courseCode;
+    }
+
+    public String getSlug() {
+        return slug;
+    }
+
+    public void setSlug(String slug) {
+        this.slug = slug;
     }
 
     public String getCategory() {
@@ -192,6 +206,14 @@ public class Course {
 
     public void setExamType(String examType) {
         this.examType = examType;
+    }
+
+    public String getTags() {
+        return tags;
+    }
+
+    public void setTags(String tags) {
+        this.tags = tags;
     }
 
     public Integer getMaxStudents() {

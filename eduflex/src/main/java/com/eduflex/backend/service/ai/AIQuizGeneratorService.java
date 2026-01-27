@@ -23,66 +23,71 @@ import java.util.List;
 
 /**
  * Service that orchestrates AI-powered quiz generation.
- * Combines document parsing with OpenAI to generate quizzes from uploaded content.
+ * Combines document parsing with Gemini to generate quizzes from uploaded
+ * content.
  */
 @Service
-@ConditionalOnBean(OpenAIService.class)
+@ConditionalOnBean(GeminiService.class)
 public class AIQuizGeneratorService {
 
     private static final Logger logger = LoggerFactory.getLogger(AIQuizGeneratorService.class);
 
     private final DocumentParserService documentParserService;
-    private final OpenAIService openAIService;
+    private final GeminiService geminiService;
     private final QuizRepository quizRepository;
     private final QuestionBankRepository questionBankRepository;
+    private final com.eduflex.backend.repository.StudentQuizLogRepository studentQuizLogRepository;
     private final ObjectMapper objectMapper;
 
     @Autowired
     public AIQuizGeneratorService(DocumentParserService documentParserService,
-                                   OpenAIService openAIService,
-                                   QuizRepository quizRepository,
-                                   QuestionBankRepository questionBankRepository,
-                                   ObjectMapper objectMapper) {
+            GeminiService geminiService,
+            QuizRepository quizRepository,
+            QuestionBankRepository questionBankRepository,
+            com.eduflex.backend.repository.StudentQuizLogRepository studentQuizLogRepository,
+            ObjectMapper objectMapper) {
         this.documentParserService = documentParserService;
-        this.openAIService = openAIService;
+        this.geminiService = geminiService;
         this.quizRepository = quizRepository;
         this.questionBankRepository = questionBankRepository;
+        this.studentQuizLogRepository = studentQuizLogRepository;
         this.objectMapper = objectMapper;
     }
 
     /**
      * Generates quiz questions from an uploaded document file.
      *
-     * @param file          The uploaded PDF/DOCX file
-     * @param request       Generation parameters (questionCount, difficulty, etc.)
+     * @param file    The uploaded PDF/DOCX file
+     * @param request Generation parameters (questionCount, difficulty, etc.)
      * @return AIQuizGenerationResponse containing generated questions
      * @throws IOException If file cannot be parsed
      */
     public AIQuizGenerationResponse generateFromFile(MultipartFile file,
-                                                      AIQuizGenerationRequest request) throws IOException {
+            AIQuizGenerationRequest request) throws IOException {
         long startTime = System.currentTimeMillis();
 
         // Validate file type
         if (!documentParserService.isSupportedFileType(file)) {
-            throw new IllegalArgumentException("Unsupported file type. Please upload PDF, DOCX, DOC, TXT, RTF, or ODT.");
+            throw new IllegalArgumentException(
+                    "Unsupported file type. Please upload PDF, DOCX, DOC, TXT, RTF, or ODT.");
         }
 
         // Extract text from document
         String documentText = documentParserService.extractText(file);
 
         if (documentText.isBlank()) {
-            throw new IllegalArgumentException("Could not extract text from the document. The file may be empty or corrupted.");
+            throw new IllegalArgumentException(
+                    "Could not extract text from the document. The file may be empty or corrupted.");
         }
 
         logger.info("Extracted {} characters from document", documentText.length());
 
-        // Generate questions using OpenAI
-        String jsonResponse = openAIService.generateQuizQuestions(
+        // Generate questions using Gemini
+        String jsonResponse = geminiService.generateQuizQuestions(
                 documentText,
                 request.getQuestionCount(),
                 request.getDifficulty(),
-                request.getLanguage()
-        );
+                request.getLanguage());
 
         // Parse the response
         List<GeneratedQuestionDTO> questions = parseGeneratedQuestions(jsonResponse);
@@ -102,12 +107,12 @@ public class AIQuizGeneratorService {
     /**
      * Generates quiz questions from plain text content.
      *
-     * @param textContent   The source text to generate questions from
-     * @param request       Generation parameters
+     * @param textContent The source text to generate questions from
+     * @param request     Generation parameters
      * @return AIQuizGenerationResponse containing generated questions
      */
     public AIQuizGenerationResponse generateFromText(String textContent,
-                                                      AIQuizGenerationRequest request) {
+            AIQuizGenerationRequest request) {
         long startTime = System.currentTimeMillis();
 
         if (textContent == null || textContent.isBlank()) {
@@ -120,13 +125,12 @@ public class AIQuizGeneratorService {
             textContent = textContent.substring(0, maxChars);
         }
 
-        // Generate questions using OpenAI
-        String jsonResponse = openAIService.generateQuizQuestions(
+        // Generate questions using Gemini
+        String jsonResponse = geminiService.generateQuizQuestions(
                 textContent,
                 request.getQuestionCount(),
                 request.getDifficulty(),
-                request.getLanguage()
-        );
+                request.getLanguage());
 
         List<GeneratedQuestionDTO> questions = parseGeneratedQuestions(jsonResponse);
 
@@ -144,15 +148,15 @@ public class AIQuizGeneratorService {
     /**
      * Saves generated questions as a new Quiz entity.
      *
-     * @param response      The generation response containing questions
-     * @param author        The user creating the quiz
-     * @param course        Optional course to associate with the quiz
-     * @param addToBank     Whether to also add questions to the question bank
+     * @param response  The generation response containing questions
+     * @param author    The user creating the quiz
+     * @param course    Optional course to associate with the quiz
+     * @param addToBank Whether to also add questions to the question bank
      * @return The saved Quiz entity
      */
     @Transactional
     public Quiz saveAsQuiz(AIQuizGenerationResponse response, User author,
-                           Course course, boolean addToBank) {
+            Course course, boolean addToBank) {
         logger.info("Saving AI-generated quiz with {} questions", response.getQuestions().size());
 
         Quiz quiz = new Quiz();
@@ -208,7 +212,7 @@ public class AIQuizGeneratorService {
     }
 
     /**
-     * Parses the JSON response from OpenAI into GeneratedQuestionDTO objects.
+     * Parses the JSON response from Gemini into GeneratedQuestionDTO objects.
      */
     private List<GeneratedQuestionDTO> parseGeneratedQuestions(String jsonResponse) {
         List<GeneratedQuestionDTO> questions = new ArrayList<>();
@@ -250,9 +254,67 @@ public class AIQuizGeneratorService {
     }
 
     /**
+     * Generates a temporary practice quiz for a student based on a course.
+     */
+    public AIQuizGenerationResponse generatePracticeQuiz(Course course, int difficulty, int questionCount) {
+        long startTime = System.currentTimeMillis();
+
+        // 1. Construct topic context from Course
+        StringBuilder topicBuilder = new StringBuilder();
+        topicBuilder.append("Kurs: ").append(course.getName());
+        if (course.getDescription() != null) {
+            topicBuilder.append(". Beskrivning: ").append(course.getDescription());
+        }
+        if (course.getTags() != null && !course.getTags().isBlank()) {
+            topicBuilder.append(". Nyckelord/Taggar: ").append(course.getTags());
+        }
+
+        String topic = topicBuilder.toString();
+        logger.info("Generating practice quiz for topic: {}", topic);
+
+        // 2. Call Gemini
+        String jsonResponse = geminiService.generateQuizQuestionsFromTopic(
+                topic,
+                questionCount,
+                difficulty,
+                "sv" // Default to Swedish for now as per requirements
+        );
+
+        // 3. Parse response
+        List<GeneratedQuestionDTO> questions = parseGeneratedQuestions(jsonResponse);
+
+        long processingTime = System.currentTimeMillis() - startTime;
+
+        return AIQuizGenerationResponse.builder()
+                .success(true)
+                .title("Övningsquiz: " + course.getName())
+                .questions(questions)
+                .processingTimeMs(processingTime)
+                .build();
+    }
+
+    /**
+     * Logs the completion of a practice quiz.
+     */
+    @Transactional
+    public void logPracticeQuizCompletion(User student, Course course, int score, int maxScore, int difficulty) {
+        StudentQuizLog log = new StudentQuizLog();
+        log.setStudent(student);
+        log.setCourse(course);
+        log.setScore(score);
+        log.setMaxScore(maxScore);
+        log.setDifficulty(difficulty);
+        log.setTopic(course.getName()); // Or use specific topic if we allow custom topic input later
+        log.setTimestamp(LocalDateTime.now());
+
+        studentQuizLogRepository.save(log);
+        logger.info("Logged practice quiz for user {} on course {}", student.getId(), course.getId());
+    }
+
+    /**
      * Checks if AI quiz generation is available.
      */
     public boolean isAvailable() {
-        return openAIService != null && openAIService.isAvailable();
+        return geminiService != null && geminiService.isAvailable();
     }
 }

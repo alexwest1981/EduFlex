@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Loader2, Download, BookOpen, MessageSquare, FileText, Users, HelpCircle, Video, Monitor, Camera, Calendar, Package, Activity } from 'lucide-react';
+import {
+    ArrowLeft, Loader2, Download, BookOpen, MessageSquare,
+    FileText, Users, HelpCircle, Video, Monitor, Camera,
+    Calendar, Package, Activity, LayoutDashboard as SummaryIcon, Sparkles
+} from 'lucide-react';
 import StudentActivityBoard from '../../components/StudentActivityBoard';
 import ScormList from '../scorm/ScormList';
 import { useTranslation } from 'react-i18next';
@@ -12,6 +16,7 @@ import { useAppContext } from '../../context/AppContext';
 import { useModules } from '../../context/ModuleContext';
 
 // --- MODULER ---
+import SummaryModule from '../../modules/course-content/SummaryModule';
 import CourseContentModule, { CourseContentModuleMetadata } from '../../modules/course-content/CourseContentModule';
 import QuizModule, { QuizModuleMetadata } from '../../modules/quiz-runner/QuizModule';
 import AssignmentsModule, { AssignmentsModuleMetadata } from '../../modules/assignments/AssignmentsModule';
@@ -22,6 +27,7 @@ import TeacherAttendanceView from '../dashboard/components/teacher/TeacherAttend
 import EvaluationModal from '../../components/EvaluationModal';
 import TeacherEvaluationModal from '../../components/TeacherEvaluationModal';
 import { LiveLessonButton } from '../../modules/live-lessons';
+import AITutorWidget from '../ai/components/AITutorWidget';
 
 const CourseDetail = ({ currentUser }) => {
     const { id } = useParams();
@@ -31,7 +37,7 @@ const CourseDetail = ({ currentUser }) => {
 
     // Core State
     const [course, setCourse] = useState(null);
-    const [activeTab, setActiveTab] = useState('material');
+    const [activeTab, setActiveTab] = useState('summary');
     const [isLoading, setIsLoading] = useState(true);
     const [showEvaluationModal, setShowEvaluationModal] = useState(false);
     const [showTeacherEvaluationModal, setShowTeacherEvaluationModal] = useState(false); // New state
@@ -46,6 +52,14 @@ const CourseDetail = ({ currentUser }) => {
     // --- MODULE CONFIG ---
     const modules = [
         {
+            key: 'summary',
+            comp: SummaryModule,
+            meta: { name: 'Sammanfattning' },
+            icon: <SummaryIcon size={18} />,
+            enabled: true,
+            visibleFor: 'ALL'
+        },
+        {
             key: 'material',
             comp: CourseContentModule,
             meta: CourseContentModuleMetadata,
@@ -54,19 +68,19 @@ const CourseDetail = ({ currentUser }) => {
             visibleFor: 'ALL'
         },
         {
+            key: 'quiz',
+            comp: QuizModule,
+            meta: QuizModuleMetadata,
+            icon: <HelpCircle size={18} />,
+            enabled: isModuleActive('QUIZ_BASIC') || isModuleActive('QUIZ_PRO') || isModuleActive('QUIZ'),
+            visibleFor: 'ALL'
+        },
+        {
             key: 'assignments',
             comp: AssignmentsModule,
             meta: AssignmentsModuleMetadata,
             icon: <FileText size={18} />,
             enabled: isModuleActive('SUBMISSIONS'),
-            visibleFor: 'ALL'
-        },
-        {
-            key: 'quiz',
-            comp: QuizModule,
-            meta: QuizModuleMetadata,
-            icon: <HelpCircle size={18} />,
-            enabled: isModuleActive('QUIZ'),
             visibleFor: 'ALL'
         },
         {
@@ -320,12 +334,30 @@ const CourseDetail = ({ currentUser }) => {
 
                             {/* TEACHER: MANAGE EVALUATION BUTTON (Sidebar) */}
                             {isTeacher && (
-                                <button
-                                    onClick={() => setShowTeacherEvaluationModal(true)}
-                                    className="w-full bg-white dark:bg-[#282a2c] border border-gray-200 dark:border-[#3c4043] text-gray-700 dark:text-gray-300 px-4 py-2 rounded-lg text-sm font-bold flex items-center justify-center gap-2 hover:bg-gray-50 dark:hover:bg-[#303336] transition-colors shadow-sm"
-                                >
-                                    <MessageSquare size={16} /> {t('evaluation.manage_btn') || 'Hantera Utvärdering'}
-                                </button>
+                                <>
+                                    <button
+                                        onClick={() => setShowTeacherEvaluationModal(true)}
+                                        className="w-full bg-white dark:bg-[#282a2c] border border-gray-200 dark:border-[#3c4043] text-gray-700 dark:text-gray-300 px-4 py-2 rounded-lg text-sm font-bold flex items-center justify-center gap-2 hover:bg-gray-50 dark:hover:bg-[#303336] transition-colors shadow-sm mb-2"
+                                    >
+                                        <MessageSquare size={16} /> {t('evaluation.manage_btn') || 'Hantera Utvärdering'}
+                                    </button>
+
+                                    <button
+                                        onClick={async () => {
+                                            if (!confirm("Vill du indexera allt material i kursen för AI-tutorn? Detta kan ta en stund.")) return;
+                                            try {
+                                                await api.ai.tutor.ingestCourse(course.id);
+                                                alert("Indexering startad i bakgrunden. Du kan fortsätta arbeta.");
+                                            } catch (e) {
+                                                console.error(e);
+                                                alert("Kunde inte starta indexering.");
+                                            }
+                                        }}
+                                        className="w-full bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 px-4 py-2 rounded-lg text-sm font-bold flex items-center justify-center gap-2 hover:bg-indigo-100 dark:hover:bg-indigo-900/40 transition-colors shadow-sm"
+                                    >
+                                        <Sparkles size={16} /> Indexera för AI
+                                    </button>
+                                </>
                             )}
                         </div>
                     </div>
@@ -439,6 +471,9 @@ const CourseDetail = ({ currentUser }) => {
                     isLoading={isSavingEvaluation}
                 />
             )}
+
+            {/* AI Tutor Widget */}
+            <AITutorWidget courseId={id} />
         </div>
     );
 };

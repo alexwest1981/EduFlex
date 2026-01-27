@@ -16,8 +16,10 @@ import Login from './features/auth/Login';
 import RegisterOrganization from './features/auth/RegisterOrganization';
 import OAuth2Callback from './features/auth/OAuth2Callback';
 import LtiSuccess from './features/auth/LtiSuccess';
+import LtiDeepLinking from './features/nav/LtiDeepLinking';
 import Dashboard from './features/dashboard/Dashboard';
 import CourseDetail from './features/courses/CourseDetail';
+import StudentCoursesPage from './features/courses/StudentCoursesPage';
 import CalendarView from './features/calendar/CalendarView';
 
 // --- SYSTEM ---
@@ -41,6 +43,7 @@ import SkolverketModule from './modules/skolverket/SkolverketModule';
 import SupportPage from './features/support/SupportPage';
 import CommunityHub from './features/community/CommunityHub';
 import CommunityAdmin from './features/community/CommunityAdmin';
+import AIQuizGenerator from './features/ai/AIQuizGenerator';
 
 // --- PROTECTED ROUTE ---
 const ProtectedRoute = ({ children, roles }) => {
@@ -102,6 +105,7 @@ const AppRoutes = () => {
                 <Route path="/register-org" element={<RegisterOrganization />} />
                 <Route path="/oauth2/callback" element={<OAuth2Callback />} />
                 <Route path="/lti-success" element={<LtiSuccess />} />
+                <Route path="/lti/deep-link" element={<LtiDeepLinking />} />
 
                 {/* ROOT ROUTE: Landing for Guests / Dashboard for Users */}
                 <Route path="/" element={
@@ -175,6 +179,14 @@ const AppRoutes = () => {
                     </ProtectedRoute>
                 } />
 
+                <Route path="/my-courses" element={
+                    <ProtectedRoute>
+                        <Layout currentUser={currentUser} handleLogout={logout}>
+                            <StudentCoursesPage />
+                        </Layout>
+                    </ProtectedRoute>
+                } />
+
                 <Route path="/documents" element={
                     <ProtectedRoute>
                         <Layout currentUser={currentUser} handleLogout={logout}>
@@ -195,6 +207,15 @@ const AppRoutes = () => {
                     <ProtectedRoute roles={['TEACHER', 'ADMIN']}>
                         <Layout currentUser={currentUser} handleLogout={logout}>
                             <ResourceBank />
+                        </Layout>
+                    </ProtectedRoute>
+                } />
+
+                {/* AI Quiz Generator (TEACHER/ADMIN ONLY) */}
+                <Route path="/ai-quiz" element={
+                    <ProtectedRoute roles={['TEACHER', 'ADMIN']}>
+                        <Layout currentUser={currentUser} handleLogout={logout}>
+                            <AIQuizGenerator />
                         </Layout>
                     </ProtectedRoute>
                 } />

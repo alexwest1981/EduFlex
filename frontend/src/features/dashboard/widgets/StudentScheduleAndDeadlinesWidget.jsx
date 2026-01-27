@@ -14,41 +14,60 @@ const StudentScheduleAndDeadlinesWidget = ({ assignments = [] }) => {
         const fetchEvents = async () => {
             try {
                 const allEvents = await api.events.getAll();
-                // Filter for TODAY
+
+                // Calculate date range (Today + 7 days)
                 const today = new Date();
-                const todayStr = today.toISOString().split('T')[0];
+                today.setHours(0, 0, 0, 0);
+                const nextWeek = new Date(today);
+                nextWeek.setDate(today.getDate() + 7);
 
-                const todaysLessons = allEvents.filter(event => {
+                const upcomingLessons = allEvents.filter(event => {
                     if (!event.startTime) return false;
-                    let eventDateStr = '';
+
+                    let eventDate = null;
                     if (Array.isArray(event.startTime)) {
-                        const d = new Date(event.startTime[0], event.startTime[1] - 1, event.startTime[2]);
-                        eventDateStr = d.toISOString().split('T')[0];
+                        eventDate = new Date(event.startTime[0], event.startTime[1] - 1, event.startTime[2]);
                     } else {
-                        eventDateStr = event.startTime.split('T')[0];
+                        eventDate = new Date(event.startTime);
                     }
-                    return eventDateStr === todayStr;
+
+                    // Normalize to start of day for comparison
+                    eventDate.setHours(0, 0, 0, 0);
+
+                    return eventDate >= today && eventDate <= nextWeek;
                 }).map(event => {
-                    // Normalize time format
-                    let startTimeStr = '';
-                    let endTimeStr = '';
+                    // Helper to format date array or string to JS Date
+                    const getJsDate = (dateVal) => {
+                        if (Array.isArray(dateVal)) return new Date(dateVal[0], dateVal[1] - 1, dateVal[2], dateVal[3], dateVal[4]);
+                        return new Date(dateVal);
+                    };
 
-                    if (Array.isArray(event.startTime)) {
-                        startTimeStr = `${String(event.startTime[3]).padStart(2, '0')}:${String(event.startTime[4]).padStart(2, '0')}`;
-                    } else {
-                        startTimeStr = new Date(event.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                    }
+                    const start = getJsDate(event.startTime);
+                    const end = getJsDate(event.endTime);
 
-                    if (Array.isArray(event.endTime)) {
-                        endTimeStr = `${String(event.endTime[3]).padStart(2, '0')}:${String(event.endTime[4]).padStart(2, '0')}`;
-                    } else {
-                        endTimeStr = new Date(event.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                    }
+                    const startTimeStr = start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    const endTimeStr = end.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+                    // Determine "Today", "Tomorrow" or specific date name
+                    const eventDateNormal = new Date(start);
+                    eventDateNormal.setHours(0, 0, 0, 0);
+
+                    let dayLabel = start.toLocaleDateString('sv-SE', { weekday: 'long' });
+                    // Capitalize
+                    dayLabel = dayLabel.charAt(0).toUpperCase() + dayLabel.slice(1);
+
+                    const diffTime = eventDateNormal - today;
+                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+                    if (diffDays === 0) dayLabel = "Idag";
+                    else if (diffDays === 1) dayLabel = "Imorgon";
 
                     return {
                         id: event.id,
                         subject: event.title,
                         time: `${startTimeStr} - ${endTimeStr}`,
+                        dayLabel: dayLabel,
+                        rawDate: start,
                         type: event.type === 'LECTURE' || event.meetingLink ? 'online' : 'campus',
                         platform: event.platform || (event.meetingLink ? 'Zoom' : null),
                         link: event.meetingLink,
@@ -56,7 +75,10 @@ const StudentScheduleAndDeadlinesWidget = ({ assignments = [] }) => {
                     };
                 });
 
-                setLessons(todaysLessons);
+                // Sort by date then time
+                upcomingLessons.sort((a, b) => a.rawDate - b.rawDate);
+
+                setLessons(upcomingLessons);
             } catch (error) {
                 console.error("Failed to fetch calendar events", error);
             } finally {
@@ -80,7 +102,7 @@ const StudentScheduleAndDeadlinesWidget = ({ assignments = [] }) => {
                 <div className="p-5">
                     <h3 className="font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
                         <Calendar className="text-indigo-500" size={20} />
-                        Dagens Lektioner
+                        Dagens & Veckans Schema
                     </h3>
 
                     <div className="space-y-3 min-h-[150px]">
@@ -90,9 +112,12 @@ const StudentScheduleAndDeadlinesWidget = ({ assignments = [] }) => {
                             lessons.map((lesson) => (
                                 <div key={lesson.id} className="relative pl-4 border-l-2 border-indigo-100 dark:border-indigo-900/50 py-1">
                                     <div className="flex justify-between items-start mb-1">
-                                        <span className="text-xs font-bold text-gray-500 dark:text-gray-400 flex items-center gap-1">
-                                            <Clock size={10} /> {lesson.time}
-                                        </span>
+                                        <div className="flex flex-col">
+                                            <span className="text-[10px] font-black uppercase text-indigo-600 dark:text-indigo-400">{lesson.dayLabel}</span>
+                                            <span className="text-xs font-bold text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                                                <Clock size={10} /> {lesson.time}
+                                            </span>
+                                        </div>
                                         {lesson.type === 'online' ? (
                                             <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold ${lesson.platform === 'Zoom' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300' :
                                                 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300'

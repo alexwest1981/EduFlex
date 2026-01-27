@@ -129,6 +129,7 @@ public class SecurityConfig {
                                 "/ws-log/**",
                                 "/actuator/**", "/lti/**", "/api/lti/**", "/error",
                                 "/web-apps/**", "/src/**", "/assets/**", // Allow OnlyOffice and Frontend assets
+                                "/@vite/**", "/@fs/**", "/@id/**", "/node_modules/**", // Vite Dev Mode assets
                                 // Swagger UI and OpenAPI Documentation
                                 "/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html", "/api-docs/**")
                         .permitAll()
@@ -179,6 +180,22 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/community/items/*/install").authenticated()
                         .requestMatchers(HttpMethod.POST, "/api/community/items/*/rate").authenticated()
                         .requestMatchers("/api/community/admin/**")
+                        .hasAnyAuthority("ADMIN", "ROLE_ADMIN")
+
+                        // 6. AI Quiz Generation endpoints
+                        .requestMatchers(HttpMethod.POST, "/api/ai/quiz/practice/**").authenticated() // Allow students
+                                                                                                      // to generate
+                                                                                                      // practice
+                                                                                                      // quizzes
+                        .requestMatchers(HttpMethod.GET, "/api/ai/quiz/status").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/ai/quiz/**")
+                        .hasAnyAuthority("ADMIN", "ROLE_ADMIN", "TEACHER", "ROLE_TEACHER")
+
+                        // 7. Module management endpoints
+                        .requestMatchers(HttpMethod.GET, "/api/modules").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/api/modules/**")
+                        .hasAnyAuthority("ADMIN", "ROLE_ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/modules/**")
                         .hasAnyAuthority("ADMIN", "ROLE_ADMIN")
 
                         // All other requests require authentication

@@ -325,10 +325,12 @@ public class AnalyticsService {
                         Map<String, Object> progress = new HashMap<>();
                         progress.put("courseId", course.getId());
                         progress.put("courseName", course.getName());
+                        progress.put("courseSlug", course.getSlug());
 
                         // Get assignments for this course
                         List<Assignment> courseAssignments = assignmentRepository.findAll().stream()
-                                        .filter(a -> a.getCourse() != null && a.getCourse().getId().equals(course.getId()))
+                                        .filter(a -> a.getCourse() != null
+                                                        && a.getCourse().getId().equals(course.getId()))
                                         .collect(Collectors.toList());
 
                         // Get student's submissions for this course
@@ -360,7 +362,8 @@ public class AnalyticsService {
 
                         // Check for overdue assignments
                         long overdueCount = courseAssignments.stream()
-                                        .filter(a -> a.getDueDate() != null && a.getDueDate().isBefore(LocalDateTime.now()))
+                                        .filter(a -> a.getDueDate() != null
+                                                        && a.getDueDate().isBefore(LocalDateTime.now()))
                                         .filter(a -> studentSubmissions.stream()
                                                         .noneMatch(s -> s.getAssignment().getId().equals(a.getId())))
                                         .count();
@@ -387,8 +390,10 @@ public class AnalyticsService {
                         studentSubmissions.stream()
                                         .filter(s -> s.getGrade() != null && !s.getGrade().isEmpty())
                                         .sorted((a, b) -> {
-                                                if (a.getSubmittedAt() == null) return 1;
-                                                if (b.getSubmittedAt() == null) return -1;
+                                                if (a.getSubmittedAt() == null)
+                                                        return 1;
+                                                if (b.getSubmittedAt() == null)
+                                                        return -1;
                                                 return b.getSubmittedAt().compareTo(a.getSubmittedAt());
                                         })
                                         .limit(5)
@@ -403,8 +408,10 @@ public class AnalyticsService {
                         // Add quiz results
                         studentQuizResults.stream()
                                         .sorted((a, b) -> {
-                                                if (a.getDate() == null) return 1;
-                                                if (b.getDate() == null) return -1;
+                                                if (a.getDate() == null)
+                                                        return 1;
+                                                if (b.getDate() == null)
+                                                        return -1;
                                                 return b.getDate().compareTo(a.getDate());
                                         })
                                         .limit(5)
@@ -463,24 +470,37 @@ public class AnalyticsService {
         }
 
         private double gradeToNumeric(String grade) {
-                if (grade == null) return -1;
+                if (grade == null)
+                        return -1;
                 switch (grade.toUpperCase()) {
-                        case "A": return 100;
-                        case "B": return 85;
-                        case "C": return 70;
-                        case "D": return 55;
-                        case "E": return 40;
-                        case "F": return 20;
-                        default: return -1;
+                        case "A":
+                                return 100;
+                        case "B":
+                                return 85;
+                        case "C":
+                                return 70;
+                        case "D":
+                                return 55;
+                        case "E":
+                                return 40;
+                        case "F":
+                                return 20;
+                        default:
+                                return -1;
                 }
         }
 
         private String numericToGrade(double score) {
-                if (score >= 90) return "A";
-                if (score >= 75) return "B";
-                if (score >= 60) return "C";
-                if (score >= 45) return "D";
-                if (score >= 30) return "E";
+                if (score >= 90)
+                        return "A";
+                if (score >= 75)
+                        return "B";
+                if (score >= 60)
+                        return "C";
+                if (score >= 45)
+                        return "D";
+                if (score >= 30)
+                        return "E";
                 return "F";
         }
 }

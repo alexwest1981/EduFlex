@@ -2,9 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { User, FileText, File as FileIcon, Search, Plus, Edit2, Trash2, FileCode, Image } from 'lucide-react';
 import { api } from '../../../../services/api';
 // ... (skip down to AdminCourseRegistry signature)
+import Pagination from '../../../../components/common/Pagination';
+
 export const AdminCourseRegistry = ({ courses, onEdit, onManage, onNewCourse, onDelete }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [filterStatus, setFilterStatus] = useState('ALL');
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 10;
 
     const formatDate = (dateStr) => {
         if (!dateStr) return '';
@@ -17,9 +21,13 @@ export const AdminCourseRegistry = ({ courses, onEdit, onManage, onNewCourse, on
         return matchesSearch && matchesStatus;
     }) || [];
 
+    // Pagination Logic
+    const totalPages = Math.ceil(filteredCourses.length / itemsPerPage);
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const currentItems = filteredCourses.slice(startIndex, startIndex + itemsPerPage);
+
     return (
         <div className="bg-card dark:bg-card-dark rounded-[var(--radius-xl)] border border-card dark:border-card-dark shadow-sm overflow-hidden animate-in slide-in-from-bottom-8" style={{ backdropFilter: 'var(--card-backdrop)' }}>
-            {/* ... (keep header) ... */}
             <div className="p-6 border-b border-card dark:border-card-dark flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-gray-50/50 dark:bg-[#131314]/50">
                 <div className="flex items-center gap-4">
                     <h3 className="font-bold text-gray-800 dark:text-white">Kursregister</h3>
@@ -28,22 +36,23 @@ export const AdminCourseRegistry = ({ courses, onEdit, onManage, onNewCourse, on
                 <div className="flex gap-2 w-full md:w-auto">
                     <div className="relative flex-1 md:flex-none">
                         <Search className="absolute left-3 top-2.5 text-gray-400" size={16} />
-                        <input className="w-full pl-9 pr-4 py-2 border rounded-lg text-sm dark:bg-[#1E1F20] dark:text-white dark:border-[#3c4043]" placeholder="Sök kurs..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
+                        <input className="w-full pl-9 pr-4 py-2 border rounded-lg text-sm dark:bg-[#1E1F20] dark:text-white dark:border-[#3c4043]" placeholder="Sök kurs..." value={searchTerm} onChange={e => { setSearchTerm(e.target.value); setCurrentPage(1); }} />
                     </div>
-                    <select className="border dark:border-[#3c4043] rounded-lg px-3 py-2 text-sm bg-white dark:bg-[#1E1F20] text-gray-900 dark:text-white" value={filterStatus} onChange={e => setFilterStatus(e.target.value)}>
+                    <select className="border dark:border-[#3c4043] rounded-lg px-3 py-2 text-sm bg-white dark:bg-[#1E1F20] text-gray-900 dark:text-white" value={filterStatus} onChange={e => { setFilterStatus(e.target.value); setCurrentPage(1); }}>
                         <option value="ALL">Alla Statusar</option>
                         <option value="OPEN">Öppna</option>
                         <option value="CLOSED">Stängda</option>
                     </select>
                 </div>
             </div>
-            <div className="max-h-[400px] overflow-y-auto custom-scrollbar">
+            {/* Removed max-h-[400px] & overflow-y-auto */}
+            <div className="overflow-x-auto">
                 <table className="w-full text-left text-sm">
                     <thead className="bg-gray-50 dark:bg-[#282a2c] text-gray-500 dark:text-gray-400 border-b dark:border-[#3c4043]">
                         <tr><th className="p-4">Status</th><th className="p-4">Kod</th><th className="p-4">Namn</th><th className="p-4">Datum</th><th className="p-4 text-right">Åtgärd</th></tr>
                     </thead>
                     <tbody className="divide-y divide-gray-100 dark:divide-[#3c4043]">
-                        {filteredCourses.map(c => (
+                        {currentItems.map(c => (
                             <tr key={c.id} className="hover:bg-gray-50 dark:hover:bg-[#282a2c]">
                                 <td className="p-4">
                                     <div className="flex items-center gap-3">
@@ -64,6 +73,7 @@ export const AdminCourseRegistry = ({ courses, onEdit, onManage, onNewCourse, on
                     </tbody>
                 </table>
             </div>
+            <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
         </div>
     );
 };
@@ -199,6 +209,8 @@ export const AdminUserTable = ({ users, onNewUser, onEdit, onDelete }) => {
     const [searchTerm, setSearchTerm] = React.useState('');
     const [filterRole, setFilterRole] = React.useState('ALL');
     const [availableRoles, setAvailableRoles] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 10;
 
     useEffect(() => {
         api.roles.getAll().then(setAvailableRoles).catch(console.error);
@@ -209,6 +221,11 @@ export const AdminUserTable = ({ users, onNewUser, onEdit, onDelete }) => {
         const matchesRole = filterRole === 'ALL' || (u.role?.name || u.role) === filterRole;
         return matchesSearch && matchesRole;
     }) || [];
+
+    // Pagination Logic
+    const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const currentItems = filteredUsers.slice(startIndex, startIndex + itemsPerPage);
 
     return (
         <div className="bg-card dark:bg-card-dark rounded-[var(--radius-xl)] border border-card dark:border-card-dark shadow-sm overflow-hidden animate-in slide-in-from-bottom-8" style={{ backdropFilter: 'var(--card-backdrop)' }}>
@@ -226,13 +243,13 @@ export const AdminUserTable = ({ users, onNewUser, onEdit, onDelete }) => {
                             className="w-full pl-9 pr-4 py-2 border rounded-lg text-sm dark:bg-[#1E1F20] dark:text-white dark:border-[#3c4043]"
                             placeholder="Sök användare..."
                             value={searchTerm}
-                            onChange={e => setSearchTerm(e.target.value)}
+                            onChange={e => { setSearchTerm(e.target.value); setCurrentPage(1); }}
                         />
                     </div>
                     <select
                         className="border dark:border-[#3c4043] rounded-lg px-3 py-2 text-sm bg-white dark:bg-[#1E1F20] text-gray-900 dark:text-white"
                         value={filterRole}
-                        onChange={e => setFilterRole(e.target.value)}
+                        onChange={e => { setFilterRole(e.target.value); setCurrentPage(1); }}
                     >
                         <option value="ALL">Alla Roller</option>
                         {availableRoles && availableRoles.length > 0 ? (
@@ -249,7 +266,8 @@ export const AdminUserTable = ({ users, onNewUser, onEdit, onDelete }) => {
                     </select>
                 </div>
             </div>
-            <div className="max-h-[500px] overflow-y-auto custom-scrollbar">
+            {/* Removed max-h-[500px] & overflow-y-auto */}
+            <div className="overflow-x-auto">
                 <table className="w-full text-left text-sm">
                     <thead className="bg-gray-50 dark:bg-[#282a2c] text-gray-500 dark:text-gray-400 border-b dark:border-[#3c4043]">
                         <tr>
@@ -261,7 +279,7 @@ export const AdminUserTable = ({ users, onNewUser, onEdit, onDelete }) => {
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-100 dark:divide-[#3c4043]">
-                        {filteredUsers.map(u => (
+                        {currentItems.map(u => (
                             <tr key={u.id} className="hover:bg-gray-50 dark:hover:bg-[#282a2c]">
                                 <td className="p-4 flex items-center gap-3">
                                     <div className="w-8 h-8 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center font-bold text-xs uppercase">
@@ -298,6 +316,7 @@ export const AdminUserTable = ({ users, onNewUser, onEdit, onDelete }) => {
                     </tbody>
                 </table>
             </div>
+            <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
         </div>
     );
 };

@@ -110,7 +110,7 @@ const StudentProgressWidget = ({ currentUser }) => {
                         </div>
 
                         <button
-                            onClick={() => navigate(`/course/${selectedCourse.courseId}`)}
+                            onClick={() => navigate(`/course/${selectedCourse.courseSlug || selectedCourse.courseId}`)}
                             className="w-full mt-6 bg-indigo-600 text-white font-bold py-3 rounded-xl hover:bg-indigo-700 flex items-center justify-center gap-2"
                         >
                             Gå till kursen <ChevronRight size={16} />

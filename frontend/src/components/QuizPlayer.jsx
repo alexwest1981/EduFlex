@@ -3,41 +3,66 @@ import { CheckCircle, XCircle, ChevronRight, AlertTriangle } from 'lucide-react'
 import { api } from '../services/api';
 import { useTranslation } from 'react-i18next';
 
-const QuizPlayer = ({ quiz, currentUser, onClose }) => {
+const QuizPlayer = ({ quiz, currentUser, onClose, isPractice = false }) => {
     const { t } = useTranslation();
-    const [answers, setAnswers] = useState({}); // { questionId: optionId }
+    const [answers, setAnswers] = useState({}); // { questionId: optionIdOrIndex }
     const [submitted, setSubmitted] = useState(false);
     const [result, setResult] = useState(null);
 
-    const handleSelect = (questionId, optionId) => {
+    // Helper: Get robust ID for question
+    const getQId = (q, idx) => isPractice ? `q-${idx}` : q.id;
+
+    const handleSelect = (qId, val) => {
         if (submitted) return;
-        setAnswers({ ...answers, [questionId]: optionId });
+        setAnswers({ ...answers, [qId]: val });
+    };
+
+    const calculateScore = () => {
+        let score = 0;
+        quiz.questions.forEach((q, idx) => {
+            const qId = getQId(q, idx);
+            const selectedVal = answers[qId];
+
+            if (isPractice) {
+                // For AI quiz: options are strings. Answer is index.
+                if (selectedVal !== undefined && selectedVal === q.correctIndex) {
+                    score++;
+                }
+            } else {
+                // For standard quiz
+                const correctOpt = q.options.find(o => o.isCorrect);
+                if (selectedVal && correctOpt && selectedVal === correctOpt.id) {
+                    score++;
+                }
+            }
+        });
+        return score;
     };
 
     const handleSubmit = async () => {
-        // --- RÄTTNINGSLOGIK (Client-side för att matcha din nuvarande backend) ---
-        let score = 0;
-        let maxScore = quiz.questions.length;
-
-        quiz.questions.forEach(q => {
-            const selectedOptId = answers[q.id];
-            const correctOpt = q.options.find(o => o.isCorrect);
-
-            // Om eleven valt rätt alternativ (och alternativet finns)
-            if (selectedOptId && correctOpt && selectedOptId === correctOpt.id) {
-                score++;
-            }
-        });
-
-        // Förbered payload enligt din QuizController
-        const payload = {
-            studentId: currentUser.id,
-            score: score,
-            maxScore: maxScore
-        };
+        const score = calculateScore();
+        const maxScore = quiz.questions.length;
 
         try {
-            await api.quiz.submit(quiz.id, payload);
+            if (isPractice) {
+                // Log practice quiz if logged in
+                if (currentUser && quiz.courseId) {
+                    await api.ai.logPractice({
+                        userId: currentUser.id,
+                        courseId: quiz.courseId,
+                        score,
+                        maxScore,
+                        difficulty: quiz.difficulty || 3
+                    });
+                }
+            } else {
+                const payload = {
+                    studentId: currentUser.id,
+                    score: score,
+                    maxScore: maxScore
+                };
+                await api.quiz.submit(quiz.id, payload);
+            }
             setResult({ score, maxScore });
             setSubmitted(true);
         } catch (e) {
@@ -52,63 +77,97 @@ const QuizPlayer = ({ quiz, currentUser, onClose }) => {
 
                 {/* Header */}
                 <div className="p-8 border-b border-gray-100 dark:border-[#3c4043] bg-indigo-600 text-white">
-                    <h2 className="text-2xl font-bold">{quiz.title}</h2>
-                    <p className="text-indigo-100 mt-2">{quiz.description}</p>
+                    <div className="flex justify-between items-start">
+                        <div>
+                            <h2 className="text-2xl font-bold">{quiz.title}</h2>
+                            <p className="text-indigo-100 mt-2">{quiz.description}</p>
+                            {isPractice && <span className="inline-block mt-2 px-2 py-0.5 bg-white/20 rounded text-xs">AI Practice Mode</span>}
+                        </div>
+                    </div>
                 </div>
 
                 {/* Questions List */}
                 <div className="flex-1 overflow-y-auto p-8 space-y-8 bg-gray-50 dark:bg-[#131314]">
-                    {quiz.questions.map((q, index) => (
-                        <div key={q.id} className="bg-white dark:bg-[#1E1F20] p-6 rounded-xl border border-gray-200 dark:border-[#3c4043] shadow-sm">
-                            <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-4 flex gap-3">
-                                <span className="bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300 w-8 h-8 rounded-lg flex items-center justify-center text-sm">{index + 1}</span>
-                                {q.text}
-                            </h3>
+                    {quiz.questions.map((q, qIndex) => {
+                        const qId = getQId(q, qIndex);
 
-                            <div className="space-y-3 pl-11">
-                                {q.options.map(opt => {
-                                    const isSelected = answers[q.id] === opt.id;
-                                    const isCorrect = opt.isCorrect;
+                        return (
+                            <div key={qId} className="bg-white dark:bg-[#1E1F20] p-6 rounded-xl border border-gray-200 dark:border-[#3c4043] shadow-sm">
+                                <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-4 flex gap-3">
+                                    <span className="bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300 w-8 h-8 rounded-lg flex items-center justify-center text-sm">{qIndex + 1}</span>
+                                    {q.text}
+                                </h3>
 
-                                    let optionStyle = "border-gray-200 hover:bg-gray-50 dark:border-[#3c4043] dark:hover:bg-[#282a2c]";
+                                <div className="space-y-3 pl-11">
+                                    {q.options.map((opt, oIndex) => {
+                                        const optValue = isPractice ? oIndex : opt.id;
+                                        const optText = isPractice ? opt : opt.text;
 
-                                    if (submitted) {
-                                        if (isCorrect) optionStyle = "bg-green-50 border-green-500 text-green-700 dark:bg-green-900/20 dark:text-green-400";
-                                        else if (isSelected && !isCorrect) optionStyle = "bg-red-50 border-red-500 text-red-700 dark:bg-red-900/20 dark:text-red-400";
-                                    } else if (isSelected) {
-                                        optionStyle = "border-indigo-600 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300 ring-1 ring-indigo-600";
-                                    }
+                                        const isSelected = answers[qId] === optValue;
 
-                                    return (
-                                        <div
-                                            key={opt.id}
-                                            onClick={() => handleSelect(q.id, opt.id)}
-                                            className={`p-4 rounded-lg border cursor-pointer transition-all flex justify-between items-center ${optionStyle}`}
-                                        >
-                                            <span className="font-medium dark:text-gray-300">{opt.text}</span>
-                                            {submitted && isCorrect && <CheckCircle size={20} className="text-green-600"/>}
-                                            {submitted && isSelected && !isCorrect && <XCircle size={20} className="text-red-600"/>}
-                                        </div>
-                                    );
-                                })}
+                                        // Determine correctness for styling
+                                        let isCorrect = false;
+                                        if (isPractice) {
+                                            isCorrect = (oIndex === q.correctIndex);
+                                        } else {
+                                            isCorrect = opt.isCorrect;
+                                        }
+
+                                        let optionStyle = "border-gray-200 hover:bg-gray-50 dark:border-[#3c4043] dark:hover:bg-[#282a2c]";
+
+                                        if (submitted) {
+                                            if (isCorrect) optionStyle = "bg-green-50 border-green-500 text-green-700 dark:bg-green-900/20 dark:text-green-400";
+                                            else if (isSelected && !isCorrect) optionStyle = "bg-red-50 border-red-500 text-red-700 dark:bg-red-900/20 dark:text-red-400";
+                                        } else if (isSelected) {
+                                            optionStyle = "border-indigo-600 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300 ring-1 ring-indigo-600";
+                                        }
+
+                                        return (
+                                            <div
+                                                key={isPractice ? oIndex : opt.id}
+                                                onClick={() => handleSelect(qId, optValue)}
+                                                className={`p-4 rounded-lg border cursor-pointer transition-all flex justify-between items-center ${optionStyle}`}
+                                            >
+                                                <span className="font-medium dark:text-gray-300">{optText}</span>
+                                                {submitted && isCorrect && <CheckCircle size={20} className="text-green-600" />}
+                                                {submitted && isSelected && !isCorrect && <XCircle size={20} className="text-red-600" />}
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+
+                                {submitted && isPractice && q.explanation && (
+                                    <div className="mt-4 ml-11 p-3 bg-blue-50 dark:bg-blue-900/20 text-blue-800 dark:text-blue-200 rounded-lg text-sm">
+                                        <strong>Förklaring:</strong> {q.explanation}
+                                    </div>
+                                )}
                             </div>
-                        </div>
-                    ))}
+                        );
+                    })}
                 </div>
 
                 {/* Footer */}
                 <div className="p-6 border-t border-gray-100 dark:border-[#3c4043] bg-white dark:bg-[#1E1F20] flex justify-between items-center">
                     {submitted ? (
-                        <div className="flex items-center gap-4">
-                            <div className="text-right">
-                                <p className="text-sm text-gray-500 dark:text-gray-400 uppercase font-bold">Ditt Resultat</p>
-                                <p className="text-3xl font-bold text-gray-900 dark:text-white">
-                                    {result.score} <span className="text-lg text-gray-400">/ {result.maxScore}</span>
-                                </p>
+                        <div className="flex items-center gap-4 w-full justify-between">
+                            <div className="flex items-center gap-4">
+                                <div className="text-right">
+                                    <p className="text-sm text-gray-500 dark:text-gray-400 uppercase font-bold">Ditt Resultat</p>
+                                    <p className="text-3xl font-bold text-gray-900 dark:text-white">
+                                        {result.score} <span className="text-lg text-gray-400">/ {result.maxScore}</span>
+                                    </p>
+                                </div>
                             </div>
-                            <button onClick={onClose} className="px-6 py-3 bg-gray-900 dark:bg-white text-white dark:text-black font-bold rounded-xl">
-                                Stäng
-                            </button>
+                            <div className="flex gap-3">
+                                {isPractice && (
+                                    <button onClick={() => { setSubmitted(false); setAnswers({}); setResult(null); onClose(); }} className="px-6 py-3 bg-indigo-100 text-indigo-700 hover:bg-indigo-200 font-bold rounded-xl transition-colors">
+                                        Öva igen
+                                    </button>
+                                )}
+                                <button onClick={onClose} className="px-6 py-3 bg-gray-900 dark:bg-white text-white dark:text-black font-bold rounded-xl">
+                                    Stäng
+                                </button>
+                            </div>
                         </div>
                     ) : (
                         <>
@@ -118,7 +177,7 @@ const QuizPlayer = ({ quiz, currentUser, onClose }) => {
                                 disabled={Object.keys(answers).length < quiz.questions.length}
                                 className="px-8 py-3 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                             >
-                                {t('quiz.submit_btn')} <ChevronRight size={18}/>
+                                {t('quiz.submit_btn')} <ChevronRight size={18} />
                             </button>
                         </>
                     )}

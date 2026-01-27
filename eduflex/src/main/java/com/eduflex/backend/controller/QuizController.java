@@ -203,4 +203,9 @@ public class QuizController {
         quizRepository.deleteById(id);
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping("/results/student/{studentId}/course/{courseId}")
+    public List<QuizResult> getCourseQuizResultsForStudent(@PathVariable Long studentId, @PathVariable Long courseId) {
+        return resultRepository.findByStudentIdAndQuizCourseId(studentId, courseId);
+    }
 }

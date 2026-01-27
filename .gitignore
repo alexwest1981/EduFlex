@@ -139,6 +139,7 @@ venv/
 # =============================================
 # DOCKER & KUBERNETES LOCAL
 # =============================================
+.env
 *.env.local
 docker-compose.override.yml
 cloudflared_config*.yml
