@@ -1,17 +1,19 @@
 import React from 'react';
 import { BookOpen, ChevronRight } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const StudentCourseGrid = ({ courses, navigate }) => {
+    const { t } = useTranslation();
     return (
         <div>
             <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                <BookOpen className="text-indigo-600" /> Mina Kurser
+                <BookOpen className="text-indigo-600" /> {t('dashboard.my_courses')}
             </h3>
 
             {courses.length === 0 ? (
                 <div className="text-center py-10 bg-white dark:bg-[#1E1F20] rounded-xl border border-dashed border-gray-300 dark:border-[#3c4043]">
                     <BookOpen size={40} className="mx-auto text-gray-300 mb-2" />
-                    <p className="text-gray-500">Du är inte registrerad på några kurser.</p>
+                    <p className="text-gray-500">{t('dashboard.not_registered')}</p>
                 </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 animate-in slide-in-from-bottom-6">
@@ -20,7 +22,7 @@ const StudentCourseGrid = ({ courses, navigate }) => {
                             <div>
                                 <div className="flex justify-between items-start mb-3">
                                     <div className={`px-2 py-1 rounded text-xs font-bold uppercase ${course.isOpen ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-300' : 'bg-red-50 text-red-600'}`}>
-                                        {course.courseCode || 'Kurs'}
+                                        {course.courseCode || t('admin.table.course')}
                                     </div>
                                     <ChevronRight size={18} className="text-gray-300 group-hover:text-indigo-500 transition-colors" />
                                 </div>
@@ -38,7 +40,7 @@ const StudentCourseGrid = ({ courses, navigate }) => {
                                     <div className="w-6 h-6 rounded-full bg-gray-200 dark:bg-[#3c4043] flex items-center justify-center text-[10px] font-bold text-gray-600 dark:text-gray-300">
                                         {course.teacher?.firstName?.charAt(0) || 'L'}
                                     </div>
-                                    <span className="text-xs text-gray-600 dark:text-gray-400 font-medium">{course.teacher?.fullName || 'Okänd lärare'}</span>
+                                    <span className="text-xs text-gray-600 dark:text-gray-400 font-medium">{course.teacher?.fullName || t('common.unknown')}</span>
                                 </div>
                             </div>
                         </div>

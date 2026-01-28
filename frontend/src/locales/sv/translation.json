@@ -43,7 +43,10 @@
     "library": "Bibliotek",
     "analytics": "Analyser & Insikter",
     "support": "Support & Kontakt",
-    "my_courses": "Mina kurser"
+    "my_courses": "Mina kurser",
+    "ebooks": "E-böcker",
+    "system": "System",
+    "ai_quiz": "AI Quiz"
   },
   "library": {
     "title": "Bibliotek",
@@ -90,7 +93,21 @@
       "recent_docs": "Nyligen Uppladdat",
       "messages": "Senaste Meddelanden",
       "online_friends": "Online Vänner",
-      "tickets": "Supportärenden"
+      "tickets": "Supportärenden",
+      "gamification": "Gamification Status",
+      "attendance": "Min Närvaro",
+      "my_courses": "Mina Kurser",
+      "tasks": "Uppgifter & Feedback",
+      "daily_challenges": "Dagens Utmaningar",
+      "achievements": "Mina Prestationer",
+      "daily_challenges_widget": {
+        "title": "Dagens Utmaningar",
+        "subtitle": "Slutför för att tjäna XP",
+        "days": "{{count}} dagar",
+        "empty": "Inga utmaningar tillgängliga än",
+        "completed": "✓ Klar",
+        "reset_in": "Nya utmaningar om {{hours}}h {{minutes}}m"
+      }
     },
     "my_courses": "Mina Kurser",
     "files": "Filer",
@@ -181,7 +198,13 @@
     "all_roles": "Alla Roller",
     "active": "Aktiv",
     "edit_user": "Redigera användare",
-    "delete_user": "Ta bort användare"
+    "delete_user": "Ta bort användare",
+    "feedback": {
+      "new": "Ny Feedback",
+      "course": "Kurs: {{name}}",
+      "praise": "Bra jobbat!",
+      "details": "Visa detaljer"
+    }
   },
   "attendance": {
     "title": "Närvarorapport",

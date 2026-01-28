@@ -755,10 +755,12 @@ taskkill /PID <PID> /F
 ### ⚡ Senaste Uppdateringarna
 *   **🌍 Frontend-lokalisering & Lärarpanel (28 jan 2026):**
     *   **Lärarpanel:** Fullständig översättning av alla widgets, tabeller och modaler för lärare till svenska och engelska.
+    *   **Elevpanel:** Fullständig översättning av alla widgets (Närvaro, Schema, Gamification, Framsteg) till svenska och engelska.
     *   **E-boksförbättringar:** Implementerat uppladdningsindikator med procentvisare för bättre användarupplevelse vid stora filer.
     *   **Auto-omslag:** Automatiskt generering av bokomslag direkt från EPUB-filer om ingen bild laddas upp manuellt.
     *   **Utökade Gränser:** Höjt gränsen för filuppladdning till 500MB för att stödja tunga e-böcker och videofiler.
-    *   **Bugfixar:** Åtgärdat krasch i mobilvyn (`t is not defined`) och rensat upp markdown-formatering i komponenter.
+    *   **Bugfixar:** Åtgärdat "Invalid hook call"-krasch i Adminpanelen, krasch i mobilvyn ('t is not defined') och rensat upp markdown-formatering.
+
 
 *   **🤖 AI Tutor Stabilitetsfixar (27 jan 2026):**
     *   **Kompileringsfix:** Löste ett kritiskt fel där backend inte kunde byggas på grund av saknad `Embedding`-klass via `VectorStoreEntry`-refaktorering.

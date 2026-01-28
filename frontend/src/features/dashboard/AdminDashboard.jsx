@@ -13,6 +13,7 @@ import DashboardCustomizer from '../../components/dashboard/DashboardCustomizer'
 
 const AdminDashboard = () => {
     const { t } = useTranslation();
+
     const [activeTab, setActiveTab] = useState('overview');
     const [users, setUsers] = useState([]);
     const [courses, setCourses] = useState([]);

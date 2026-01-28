@@ -40,7 +40,10 @@
     "resource_bank": "Resource Bank",
     "library": "Library",
     "analytics": "Analytics & Insights",
-    "my_courses": "My Courses"
+    "my_courses": "My Courses",
+    "ebooks": "E-books",
+    "system": "System",
+    "ai_quiz": "AI Quiz"
   },
   "library": {
     "title": "Library",
@@ -87,7 +90,21 @@
       "recent_docs": "Recently Uploaded",
       "messages": "Recent Messages",
       "online_friends": "Online Friends",
-      "tickets": "Support Tickets"
+      "tickets": "Support Tickets",
+      "gamification": "Gamification Status",
+      "attendance": "My Attendance",
+      "my_courses": "My Courses",
+      "tasks": "Assignments & Feedback",
+      "daily_challenges": "Daily Challenges",
+      "achievements": "My Achievements",
+      "daily_challenges_widget": {
+        "title": "Daily Challenges",
+        "subtitle": "Complete to earn XP",
+        "days": "{{count}} days",
+        "empty": "No challenges available yet",
+        "completed": "✓ Done",
+        "reset_in": "New challenges in {{hours}}h {{minutes}}m"
+      }
     },
     "my_courses": "My Courses",
     "files": "Files",
@@ -178,7 +195,13 @@
     "all_roles": "All Roles",
     "active": "Active",
     "edit_user": "Edit User",
-    "delete_user": "Delete User"
+    "delete_user": "Delete User",
+    "feedback": {
+      "new": "New Feedback",
+      "course": "Course: {{name}}",
+      "praise": "Well done!",
+      "details": "View details"
+    }
   },
   "chat": {
     "title": "Chat & Support",

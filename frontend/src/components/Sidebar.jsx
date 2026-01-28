@@ -36,27 +36,27 @@ const Sidebar = ({ currentUser, logout, siteName, version }) => {
             items.push({ path: '/resources', label: t('sidebar.resource_bank'), icon: <BookOpen size={20} /> });
             // Direct link to My Courses for Teachers
             if (role === 'TEACHER') {
-                items.push({ path: '/?tab=COURSES', label: 'Mina kurser', icon: <BookOpen size={20} /> });
+                items.push({ path: '/?tab=COURSES', label: t('sidebar.my_courses'), icon: <BookOpen size={20} /> });
             }
             // Only show AI Quiz if module is active
             if (isModuleActive('AI_QUIZ')) {
-                items.push({ path: '/ai-quiz', label: 'AI Quiz', icon: <Sparkles size={20} /> });
+                items.push({ path: '/ai-quiz', label: t('sidebar.ai_quiz') || 'AI Quiz', icon: <Sparkles size={20} /> });
             }
         }
 
         if (role === 'STUDENT') {
-            items.push({ path: '/my-courses', label: 'Mina kurser', icon: <BookOpen size={20} /> });
+            items.push({ path: '/my-courses', label: t('sidebar.my_courses'), icon: <BookOpen size={20} /> });
             items.push({ path: '/catalog', label: t('sidebar.catalog'), icon: <BookOpen size={20} /> });
         }
         if (role === 'ADMIN' || role === 'TEACHER') {
             items.push({ path: '/admin', label: t('sidebar.admin'), icon: <Users size={20} /> });
-            items.push({ path: '/analytics', label: t('sidebar.analytics') || 'Analytics', icon: <TrendingUp size={20} /> });
-            items.push({ path: '/system', label: 'System', icon: <Settings2 size={20} /> });
+            items.push({ path: '/analytics', label: t('sidebar.analytics'), icon: <TrendingUp size={20} /> });
+            items.push({ path: '/system', label: t('sidebar.system') || 'System', icon: <Settings2 size={20} /> });
         }
         if (role !== 'ADMIN') {
             items.push({ path: '/documents', label: t('sidebar.documents'), icon: <FolderOpen size={20} /> });
         }
-        items.push({ path: '/ebooks', label: 'E-böcker', icon: <Book size={20} /> });
+        items.push({ path: '/ebooks', label: t('sidebar.ebooks') || 'E-books', icon: <BookOpen size={20} /> });
         items.push({ path: '/calendar', label: t('sidebar.calendar'), icon: <Calendar size={20} /> });
         items.push({ path: '/support', label: t('sidebar.support'), icon: <FileQuestion size={20} /> });
 

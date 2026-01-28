@@ -3,8 +3,10 @@ import { Target, Flame, Trophy, CheckCircle, Clock, TrendingUp } from 'lucide-re
 import { gamificationAPI } from '../../services/gamificationAPI';
 import { useAppContext } from '../../context/AppContext';
 import { useGamification } from '../../context/GamificationContext';
+import { useTranslation } from 'react-i18next';
 
 const DailyChallengesWidget = () => {
+    const { t } = useTranslation();
     const { currentUser } = useAppContext();
     const { isEnabled, isDailyChallengesEnabled } = useGamification();
     const [challenges, setChallenges] = useState([]);
@@ -93,21 +95,21 @@ const DailyChallengesWidget = () => {
                         <Target className="text-white" size={24} />
                     </div>
                     <div>
-                        <h3 className="text-lg font-bold text-gray-900 dark:text-white">Dagens Utmaningar</h3>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">Slutför för att tjäna XP</p>
+                        <h3 className="text-lg font-bold text-gray-900 dark:text-white">{t('dashboard.widgets.daily_challenges_widget.title')}</h3>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">{t('dashboard.widgets.daily_challenges_widget.subtitle')}</p>
                     </div>
                 </div>
 
                 <div className="flex items-center gap-2 bg-orange-50 dark:bg-orange-900/20 px-3 py-2 rounded-xl">
                     <Flame className="text-orange-500" size={20} />
-                    <span className="font-bold text-orange-600 dark:text-orange-400">{streak} dagar</span>
+                    <span className="font-bold text-orange-600 dark:text-orange-400">{t('dashboard.widgets.daily_challenges_widget.days', { count: streak })}</span>
                 </div>
             </div>
 
             <div className="space-y-3">
                 {challenges.length === 0 ? (
                     <div className="text-center py-8 text-gray-400">
-                        <p>Inga utmaningar tillgängliga än</p>
+                        <p>{t('dashboard.widgets.daily_challenges_widget.empty')}</p>
                     </div>
                 ) : (
                     challenges.map((challenge) => {
@@ -173,7 +175,7 @@ const DailyChallengesWidget = () => {
                                 {isCompleted && (
                                     <div className="absolute top-2 right-2">
                                         <div className="bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full">
-                                            ✓ Klar
+                                            {t('dashboard.widgets.daily_challenges_widget.completed')}
                                         </div>
                                     </div>
                                 )}
@@ -186,7 +188,7 @@ const DailyChallengesWidget = () => {
             <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
                 <div className="flex items-center justify-center gap-2 text-sm text-gray-500 dark:text-gray-400">
                     <Clock size={16} />
-                    <span>Nya utmaningar om {24 - new Date().getHours()}h {60 - new Date().getMinutes()}m</span>
+                    <span>{t('dashboard.widgets.daily_challenges_widget.reset_in', { hours: 24 - new Date().getHours(), minutes: 60 - new Date().getMinutes() })}</span>
                 </div>
             </div>
         </div>

@@ -46,13 +46,13 @@ const StudentDashboard = ({ currentUser }) => {
     });
 
     const widgetLabels = {
-        stats: 'Gamification Status',
-        attendance: 'Min Närvaro',
-        courses: 'Mina Kurser',
-        sidebar: 'Uppgifter & Feedback',
-        dailyChallenges: 'Dagens Utmaningar',
-        calendar: 'Kalender & Schema',
-        achievements: 'Mina Prestationer'
+        stats: t('dashboard.widgets.gamification'),
+        attendance: t('dashboard.widgets.attendance'),
+        courses: t('dashboard.widgets.my_courses'),
+        sidebar: t('dashboard.widgets.tasks'),
+        dailyChallenges: t('dashboard.widgets.daily_challenges'),
+        calendar: t('dashboard.widgets.calendar'),
+        achievements: t('dashboard.widgets.achievements')
     };
 
     useEffect(() => {

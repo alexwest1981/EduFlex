@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from 'react';
 import { User, FileText, File as FileIcon, Search, Plus, Edit2, Trash2, FileCode, Image } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { api } from '../../../../services/api';
@@ -79,36 +80,41 @@ export const AdminCourseRegistry = ({ courses, onEdit, onManage, onNewCourse, on
     );
 };
 
-export const RecentUsersWidget = ({ latestUsers, onNewUserClick }) => (
-    <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm p-6 overflow-hidden animate-in slide-in-from-bottom-8 h-full">
-        <div className="flex justify-between items-center mb-4">
-            <h3 className="font-bold text-gray-800 dark:text-white flex items-center gap-2">
-                <User size={18} className="text-indigo-600" />
-                {t('dashboard.recent_users')}
-            </h3>
-            <button onClick={onNewUserClick} className="text-xs bg-indigo-600 text-white px-3 py-1.5 rounded-lg font-bold hover:bg-indigo-700 flex items-center gap-1">
-                <Plus size={12} /> {t('dashboard.new')}
-            </button>
-        </div>
-        <div className="space-y-3">
-            {latestUsers?.length > 0 ? latestUsers.map((u, index) => (
-                <div key={u.id ?? `user-${index}`} className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-[#131314] rounded-lg border border-gray-100 dark:border-[#3c4043] hover:border-indigo-200 transition-colors">
-                    <div className="w-8 h-8 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center font-bold text-xs uppercase border border-indigo-200">
-                        {u.firstName?.[0] || '?'}
+export const RecentUsersWidget = ({ latestUsers, onNewUserClick }) => {
+    const { t } = useTranslation();
+    return (
+
+        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm p-6 overflow-hidden animate-in slide-in-from-bottom-8 h-full">
+            <div className="flex justify-between items-center mb-4">
+                <h3 className="font-bold text-gray-800 dark:text-white flex items-center gap-2">
+                    <User size={18} className="text-indigo-600" />
+                    {t('dashboard.recent_users')}
+                </h3>
+                <button onClick={onNewUserClick} className="text-xs bg-indigo-600 text-white px-3 py-1.5 rounded-lg font-bold hover:bg-indigo-700 flex items-center gap-1">
+                    <Plus size={12} /> {t('dashboard.new')}
+                </button>
+            </div>
+            <div className="space-y-3">
+                {latestUsers?.length > 0 ? latestUsers.map((u, index) => (
+                    <div key={u.id ?? `user-${index}`} className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-[#131314] rounded-lg border border-gray-100 dark:border-[#3c4043] hover:border-indigo-200 transition-colors">
+                        <div className="w-8 h-8 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center font-bold text-xs uppercase border border-indigo-200">
+                            {u.firstName?.[0] || '?'}
+                        </div>
+                        <div className="overflow-hidden">
+                            <p className="text-sm font-bold text-gray-900 dark:text-white truncate">{u.firstName} {u.lastName}</p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400 font-mono capitalize">{(u.role?.name || u.role || '').toLowerCase()}</p>
+                        </div>
                     </div>
-                    <div className="overflow-hidden">
-                        <p className="text-sm font-bold text-gray-900 dark:text-white truncate">{u.firstName} {u.lastName}</p>
-                        <p className="text-xs text-gray-500 dark:text-gray-400 font-mono capitalize">{(u.role?.name || u.role || '').toLowerCase()}</p>
-                    </div>
-                </div>
-            )) : (
-                <p className="text-sm text-gray-400 italic">{t('dashboard.no_new_users')}</p>
-            )}
+                )) : (
+                    <p className="text-sm text-gray-400 italic">{t('dashboard.no_new_users')}</p>
+                )}
+            </div>
         </div>
-    </div>
-);
+    );
+};
 
 export const RecentUploadsWidget = ({ latestDocs }) => {
+    const { t } = useTranslation();
     const [selectedDoc, setSelectedDoc] = useState(null);
 
     const getFileIcon = (mimeType) => {

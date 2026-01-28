@@ -75,7 +75,7 @@ const StandardLayout = ({ children }) => {
         { path: '/calendar', icon: <Calendar size={20} />, label: t('sidebar.calendar') },
         { path: '/documents', icon: <FileText size={20} />, label: t('sidebar.documents') },
         { path: '/catalog', icon: <Layers size={20} />, label: t('sidebar.catalog') },
-        { path: '/ebooks', icon: <Library size={20} />, label: t('sidebar.library') },
+        { path: '/ebooks', icon: <Library size={20} />, label: t('sidebar.ebooks') },
         ...(roleName === 'TEACHER' || roleName === 'ADMIN' ? [{ path: '/resources', icon: <BookOpen size={20} />, label: t('sidebar.resource_bank') }] : []),
         ...(roleName === 'TEACHER' ? [{ path: '/?tab=COURSES', icon: <BookOpen size={20} />, label: t('sidebar.my_courses') || 'Mina kurser' }] : []),
         ...(roleName === 'STUDENT' ? [{ path: '/my-courses', icon: <BookOpen size={20} />, label: t('sidebar.my_courses') || 'Mina kurser' }] : []),
