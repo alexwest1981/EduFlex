@@ -47,7 +47,7 @@ export default defineConfig(({ mode }) => {
                     changeOrigin: true
                 },
                 '/web-apps': {
-                    target: 'http://localhost:8000',
+                    target: 'http://localhost:8081',
                     changeOrigin: true,
                     ws: true,
                     secure: false
@@ -59,32 +59,32 @@ export default defineConfig(({ mode }) => {
                     secure: false
                 },
                 // OnlyOffice 8.x uses versioned paths like /8.2.0/ for some resources
-                // Proxy all numeric version paths to OnlyOffice (localhost:8000 or Docker onlyoffice-ds)
+                // Proxy all numeric version paths to OnlyOffice (localhost:8081 or Docker onlyoffice-ds)
                 '^/[0-9]+\\.[0-9]+\\.[0-9]+': {
-                    target: 'http://localhost:8000',
+                    target: 'http://localhost:8081',
                     changeOrigin: true,
                     ws: true,
                     secure: false
                 },
                 // OnlyOffice also uses /cache/files/ for document operations
                 '/cache': {
-                    target: 'http://localhost:8000',
+                    target: 'http://localhost:8081',
                     changeOrigin: true,
                     secure: false
                 },
                 // Fonts and other resources
                 '/fonts': {
-                    target: 'http://localhost:8000',
+                    target: 'http://localhost:8081',
                     changeOrigin: true,
                     secure: false
                 },
                 '/sdkjs': {
-                    target: 'http://localhost:8000',
+                    target: 'http://localhost:8081',
                     changeOrigin: true,
                     secure: false
                 },
                 '/sdkjs-plugins': {
-                    target: 'http://localhost:8000',
+                    target: 'http://localhost:8081',
                     changeOrigin: true,
                     secure: false
                 }

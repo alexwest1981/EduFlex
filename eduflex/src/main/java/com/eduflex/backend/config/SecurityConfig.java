@@ -90,14 +90,31 @@ public class SecurityConfig {
 
     @Bean
     public org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer webSecurityCustomizer() {
-        return (web) -> web.ignoring().requestMatchers("/api/tenants/**");
+        return (web) -> web.ignoring().requestMatchers("/uploads/**");
     }
 
     @Bean
     @org.springframework.core.annotation.Order(1)
-    public SecurityFilterChain onlyOfficeFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain staticResourcesFilterChain(HttpSecurity http) throws Exception {
         http
-                .securityMatcher("/api/onlyoffice/**")
+                .securityMatcher(request -> {
+                    // Combine AntPath and Regex matching logic
+                    String path = request.getRequestURI();
+                    // AntPath style checks
+                    if (path.startsWith("/uploads/") ||
+                            path.startsWith("/web-apps/") ||
+                            path.startsWith("/sdkjs/") ||
+                            path.startsWith("/sdkjs-plugins/") ||
+                            path.startsWith("/fonts/") ||
+                            path.startsWith("/cache/") ||
+                            path.startsWith("/api/public/") ||
+                            path.startsWith("/api/onlyoffice/") ||
+                            path.startsWith("/api/tenants/")) {
+                        return true;
+                    }
+                    // Regex check for OnlyOffice version numbers (e.g. /8.2.0/...)
+                    return path.matches("^/[0-9]+\\.[0-9]+\\.[0-9]+/.*");
+                })
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -273,7 +290,7 @@ public class SecurityConfig {
                     org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry registry) {
                 // Map /uploads/** URL to file system location
                 registry.addResourceHandler("/uploads/**")
-                        .addResourceLocations("file:uploads/");
+                        .addResourceLocations("file:///E:/Projekt/EduFlex/uploads/");
             }
         };
     }

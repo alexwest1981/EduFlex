@@ -308,17 +308,25 @@ Fully translated UI supporting:
 
 ### 📸 Screenshots
 
-| <img src="docs/ScreenGrabs/dashboard_overview.png" width="400" alt="Admin Dashboard" /> | <img src="docs/ScreenGrabs/teacher_dashboard.png" width="400" alt="Teacher Dashboard" /> |
+| <img src="assets/ScreenGrabs/admin_dashboard.png" width="400" alt="Admin Dashboard" /> | <img src="assets/ScreenGrabs/teacher_dashboard.png" width="400" alt="Teacher Dashboard" /> |
 |:---:|:---:|
 | **Admin Dashboard** | **Teacher Dashboard** |
 
-| <img src="docs/ScreenGrabs/quiz_generator_ai.png" width="400" alt="AI Quiz Generator" /> | <img src="docs/ScreenGrabs/admin_system_settings.png" width="400" alt="System Settings" /> |
+| <img src="assets/ScreenGrabs/AIQuizGenerator.png" width="400" alt="AI Quiz Generator" /> | <img src="assets/ScreenGrabs/SystemSettings.png" width="400" alt="System Settings" /> |
 |:---:|:---:|
 | **AI Quiz Generator** | **System Settings** |
 
-| <img src="docs/ScreenGrabs/admin_insights.png" width="400" alt="Analytics" /> | <img src="docs/ScreenGrabs/admin_debug_terminal.png" width="400" alt="Live Debug Terminal" /> |
+| <img src="assets/ScreenGrabs/Analytics.png" width="400" alt="Analytics" /> | <img src="assets/ScreenGrabs/LiveDebugTerminal.png" width="400" alt="Live Debug Terminal" /> |
 |:---:|:---:|
 | **Analytics & Insights** | **Live Debug Terminal** |
+
+| <img src="assets/ScreenGrabs/Library.png" width="400" alt="E-book Library" /> | <img src="assets/ScreenGrabs/Kurskatalog.png" width="400" alt="Course Catalog" /> |
+|:---:|:---:|
+| **E-book Library** | **Course Catalog** |
+
+| <img src="assets/ScreenGrabs/Resursbank.png" width="400" alt="Resource Bank" /> | |
+|:---:|:---:|
+| **Resource Bank / Community** | |
 
 ---
 

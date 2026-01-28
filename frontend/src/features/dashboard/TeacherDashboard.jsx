@@ -120,7 +120,7 @@ const TeacherDashboard = ({ currentUser }) => {
                     if (start <= now && (!end || end > now)) {
                         events.push({ date: start, title: `${course.name}`, type: 'ONGOING' });
                     } else if (start > now) {
-                        events.push({ date: start, title: `Kursstart: ${course.name}`, type: 'UPCOMING' });
+                        events.push({ date: start, title: t('teacher_dashboard.course_start', { name: course.name }), type: 'UPCOMING' });
                     }
                 }
             }

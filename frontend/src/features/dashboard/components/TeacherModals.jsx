@@ -66,7 +66,7 @@ export const CreateCourseModal = ({ isOpen, onClose, onCourseCreated, currentUse
 
                     {/* GROUP ROOMS */}
                     <div className="bg-gray-50 dark:bg-[#282a2c] p-4 rounded-xl space-y-3">
-                        <label className="text-sm font-bold text-gray-700 dark:text-gray-300">Grupprum</label>
+                        <label className="text-sm font-bold text-gray-700 dark:text-gray-300">{t('teacher_modals.group_rooms')}</label>
                         {groupRooms.map((room, index) => (
                             <div key={index} className="flex gap-2 items-center">
                                 <input className="w-1/3 p-2 border rounded text-sm dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" placeholder={t('teacher_modals.room_name_placeholder')} value={room.name} onChange={e => updateGroupRoom(index, 'name', e.target.value)} />
@@ -177,7 +177,7 @@ export const EditCourseModal = ({ isOpen, onClose, onCourseUpdated, courseToEdit
 
                     {/* GROUP ROOMS */}
                     <div className="bg-gray-50 dark:bg-[#282a2c] p-4 rounded-xl space-y-3">
-                        <label className="text-sm font-bold text-gray-700 dark:text-gray-300">Grupprum</label>
+                        <label className="text-sm font-bold text-gray-700 dark:text-gray-300">{t('teacher_modals.group_rooms')}</label>
                         {groupRooms.map((room, index) => (
                             <div key={index} className="flex gap-2 items-center">
                                 <input className="w-1/3 p-2 border rounded text-sm dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" placeholder={t('teacher_modals.room_name_placeholder')} value={room.name} onChange={e => updateGroupRoom(index, 'name', e.target.value)} />

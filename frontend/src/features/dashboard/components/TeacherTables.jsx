@@ -64,7 +64,7 @@ export const ApplicationsTable = ({ applications, onHandleApplication }) => {
                 <tbody className="divide-y divide-gray-100 dark:divide-[#3c4043]">
                     {applications.map(app => (
                         <tr key={app.id}>
-                            <td className="p-4 font-bold text-gray-900 dark:text-white">{app.student?.fullName || 'Okänd'}</td>
+                            <td className="p-4 font-bold text-gray-900 dark:text-white">{app.student?.fullName || t('common.unknown')}</td>
                             <td className="p-4 text-indigo-600">{app.course?.name}</td>
                             <td className="p-4 text-gray-500">{new Date(app.appliedAt).toLocaleDateString()}</td>
                             <td className="p-4 text-right flex justify-end gap-2">

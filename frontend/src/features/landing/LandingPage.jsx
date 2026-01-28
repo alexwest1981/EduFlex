@@ -16,14 +16,17 @@ import logoMain from '../../assets/images/Logo_top.png';
 import ContactModal from '../../components/ContactModal';
 import ScreenshotSlider from '../../components/landing/ScreenshotSlider';
 
-// Feature Screenshots
-import dashboardImg from '../../assets/screenshots/feature_admin_live_dashboard.png';
-import calendarImg from '../../assets/screenshots/feature_calendar_collaboration.png';
-import catalogImg from '../../assets/screenshots/feature_course_catalog_modern.png';
-import quizImg from '../../assets/screenshots/feature_quiz_resource_bank.png';
-import settingsImg from '../../assets/screenshots/feature_platform_settings_modules.png';
-import analyticsImg from '../../assets/screenshots/feature_analytics_revenue_insights.png';
-import gamificationImg from '../../assets/screenshots/feature_gamification_achievements.png';
+// Feature Screenshots - New
+import adminDashboardImg from '../../assets/screenshots/admin_dashboard.png';
+import teacherDashboardImg from '../../assets/screenshots/teacher_dashboard.png';
+import aiQuizImg from '../../assets/screenshots/AIQuizGenerator.png';
+import analyticsNewImg from '../../assets/screenshots/Analytics.png';
+import catalogNewImg from '../../assets/screenshots/Kurskatalog.png';
+import libraryImg from '../../assets/screenshots/Library.png';
+import debugImg from '../../assets/screenshots/LiveDebugTerminal.png';
+import resourceImg from '../../assets/screenshots/Resursbank.png';
+import settingsNewImg from '../../assets/screenshots/SystemSettings.png';
+
 
 const LandingPage = () => {
     const navigate = useNavigate();
@@ -143,20 +146,34 @@ const LandingPage = () => {
         },
         {
             icon: <Sparkles className="w-6 h-6" />,
-            title: 'AI-Tutor & Copilot',
-            description: 'En intelligent handledare som kan svara på frågor baserat på kursmaterialet, tillgänglig dygnet runt.',
+            title: 'AI Quiz Generator',
+            description: 'Generera automatiskt quiz från dokument (PDF/Word) eller text med hjälp av Gemini AI. Exportera direkt till frågebanken.',
             gradient: 'from-purple-600 to-pink-600'
+        },
+        {
+            icon: <BookOpen className="w-6 h-6" />,
+            title: 'E-bok & Bibliotek',
+            description: 'Fristående e-boksbibliotek med kategorifiltrering och inbyggd EPUB/PDF-läsare. Stöd för stora filer och auto-omslag.',
+            gradient: 'from-teal-500 to-cyan-600'
+        },
+        {
+            icon: <Globe className="w-6 h-6" />,
+            title: 'LTI 1.3 Certifierad',
+            description: 'Sömlös integration med Canvas, Moodle och Blackboard. Automatisk provisioning av användare och kurser.',
+            gradient: 'from-blue-600 to-indigo-600'
         }
     ];
 
     const screenshotData = [
-        { src: dashboardImg, title: 'Live Systemöversikt', description: 'Realtidsdata från databasen för full kontroll över din organisation.' },
-        { src: calendarImg, title: 'Samarbetande Kalender', description: 'Planera möten och lektioner med ett intuitivt och kraftfullt kalendergränssnitt.' },
-        { src: catalogImg, title: 'Modern Kurskatalog', description: 'Utforska, filtrera och hitta nästa utmaning i en snygg och snabb miljö.' },
-        { src: quizImg, title: 'Resursbank & Quiz', description: 'Hantera prov och studiematerial samlat på ett ställe med AI-stöd.' },
-        { src: settingsImg, title: 'Systemadministration', description: 'Full kontroll över moduler, whitelabeling och licenshantering.' },
-        { src: analyticsImg, title: 'Systeminsikter', description: 'Djupgående analys av plattformens prestanda, intäkter och studenttillväxt.' },
-        { src: gamificationImg, title: 'Gamification & Achievements', description: 'Motivera elever med märken, poäng och framstegsspårning.' }
+        { src: adminDashboardImg, title: 'Admin Dashboard 2.0', description: 'Total kontroll över organisationen med live-data och widgets.' },
+        { src: teacherDashboardImg, title: 'Lärarpanelen', description: 'Effektiv översikt av elevers närvaro, framsteg och inlämningar.' },
+        { src: aiQuizImg, title: 'AI Quiz Generator', description: 'Ladda upp dokument och låt AI skapa provfrågor på sekunder.' },
+        { src: libraryImg, title: 'E-boksbibliotek', description: 'Ett centralt bibliotek för litteratur med inbyggd läsare.' },
+        { src: catalogNewImg, title: 'Kurskatalog', description: 'Visuell och filtrerbar katalog för elever att hitta nya kurser.' },
+        { src: resourceImg, title: 'Resursbank & Community', description: 'Dela och hämta material från ett gemensamt Community-bibliotek.' },
+        { src: analyticsNewImg, title: 'Djupgående Statistik', description: 'Analysera intäkter, användarengagemang och kursresultat.' },
+        { src: settingsNewImg, title: 'Systeminställningar', description: 'Hantera LTI, moduler, tema och lagringsbackends.' },
+        { src: debugImg, title: 'Live Debug Terminal', description: 'Matrix-inspirerad loggvisning för teknisk felsökning i realtid.' }
     ];
 
     return (
