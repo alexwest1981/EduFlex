@@ -27,6 +27,7 @@
   <img src="https://img.shields.io/badge/Keycloak-SSO-4d4d4d?style=for-the-badge&logo=keycloak&logoColor=white"/>
   <img src="https://img.shields.io/badge/Gemini-AI%20Quiz-8E75B2?style=for-the-badge&logo=google&logoColor=white"/>
   <img src="https://img.shields.io/github/actions/workflow/status/alexwest1981/EduFlex/ci.yml?style=for-the-badge&logo=github&label=CI%20Build"/>
+  <img src="https://img.shields.io/badge/EPUB-Reader-orange?style=for-the-badge&logo=book&logoColor=white"/>
   <img src="https://img.shields.io/badge/License-Proprietary-orange?style=for-the-badge"/>
 </p>
 
@@ -200,6 +201,7 @@ Whether you are a single educator, a private school, or a municipal education bo
 | **Lesson Progress** | Track student progress through course materials |
 | **Quiz System** | Multiple choice, open-ended, and true/false questions |
 | **AI Quiz Generator** | Generate quizzes from documents using Google Gemini AI |
+| **E-book Library** | Standalone library for EPUB/PDF with categorized browsing |
 
 #### 🎮 Gamification & Engagement
 | Feature | Description |
@@ -891,6 +893,7 @@ taskkill /PID <PID> /F
 - **SCORM / xAPI:** Stöd för Articulate/Captivate-paket
 - **Uppgifter:** Filinlämningar med lärarbedömning
 - **Certifikat:** Automatiska, spårbara PDF-diplom
+- **E-boksbibliotek:** Fristående bibliotek för EPUB/PDF med kategorier
 
 #### 🎮 Gamification
 - **Poäng & Nivåer:** XP genom aktivitet och framsteg
@@ -1058,4 +1061,4 @@ För Enterprise-frågor:
 
 ---
 
-*Last updated: 2026-01-27 (Friendly URLs & AI Tutor UI Fix)*
+*Last updated: 2026-01-28 (Student Dashboard Localization, E-book Library & Admin Fixes)*
