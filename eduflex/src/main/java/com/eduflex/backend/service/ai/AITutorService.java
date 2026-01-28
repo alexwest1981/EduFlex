@@ -5,7 +5,7 @@ import com.eduflex.backend.model.VectorStoreEntry;
 import com.eduflex.backend.repository.CourseMaterialRepository;
 import com.eduflex.backend.repository.EmbeddingRepository;
 import com.eduflex.backend.service.FileStorageService;
-import lombok.RequiredArgsConstructor;
+
 import org.apache.tika.Tika;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +17,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 public class AITutorService {
 
     private static final Logger logger = LoggerFactory.getLogger(AITutorService.class);
@@ -26,6 +25,16 @@ public class AITutorService {
     private final CourseMaterialRepository materialRepository;
     private final FileStorageService fileStorageService;
     private final Tika tika = new Tika();
+
+    public AITutorService(GeminiService geminiService,
+            EmbeddingRepository embeddingRepository,
+            CourseMaterialRepository materialRepository,
+            FileStorageService fileStorageService) {
+        this.geminiService = geminiService;
+        this.embeddingRepository = embeddingRepository;
+        this.materialRepository = materialRepository;
+        this.fileStorageService = fileStorageService;
+    }
 
     private static final int CHUNK_SIZE = 1000;
     private static final int OVERLAP = 100;

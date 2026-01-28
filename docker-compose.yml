@@ -157,6 +157,42 @@ services:
     networks:
       - eduflex-net
 
+  # --- VIDEO MICROSERVICE ---
+  eduflex-video:
+    build: ./eduflex-video
+    container_name: eduflex-video
+    depends_on:
+      - redis
+      - backend
+    environment:
+      - REDIS_HOST=eduflex-redis
+      - CORE_URL=http://eduflex-backend:8080
+    ports:
+      - "8083:8081"
+    volumes:
+      - ./uploads:/app/uploads
+    networks:
+      - eduflex-net
+    restart: always
+
+  # --- PDF MICROSERVICE ---
+  eduflex-pdf:
+    build: ./eduflex-pdf
+    container_name: eduflex-pdf
+    depends_on:
+      - redis
+      - backend
+    environment:
+      - REDIS_HOST=eduflex-redis
+      - CORE_URL=http://eduflex-backend:8080
+    ports:
+      - "8082:8082"
+    volumes:
+      - ./uploads:/app/uploads
+    networks:
+      - eduflex-net
+    restart: always
+
   # --- FRONTEND (React) ---
   frontend:
     build:

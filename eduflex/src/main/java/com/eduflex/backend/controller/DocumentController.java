@@ -14,9 +14,15 @@ import java.util.List;
 public class DocumentController {
 
     private final DocumentService documentService;
+    private final org.springframework.data.redis.core.StringRedisTemplate redisTemplate;
+    private final com.fasterxml.jackson.databind.ObjectMapper objectMapper;
 
-    public DocumentController(DocumentService documentService) {
+    public DocumentController(DocumentService documentService,
+            org.springframework.data.redis.core.StringRedisTemplate redisTemplate,
+            com.fasterxml.jackson.databind.ObjectMapper objectMapper) {
         this.documentService = documentService;
+        this.redisTemplate = redisTemplate;
+        this.objectMapper = objectMapper;
     }
 
     @GetMapping("/all")
@@ -32,7 +38,24 @@ public class DocumentController {
     @PostMapping("/user/{userId}")
     public ResponseEntity<Document> upload(@PathVariable Long userId, @RequestParam("file") MultipartFile file) {
         try {
-            return ResponseEntity.ok(documentService.uploadFile(userId, file));
+            Document saved = documentService.uploadFile(userId, file);
+
+            // Publish PDF Event if PDF
+            if ("application/pdf".equals(file.getContentType())) {
+                try {
+                    java.util.Map<String, String> event = new java.util.HashMap<>();
+                    event.put("action", "PROCESS_PDF");
+                    event.put("fileId", saved.getId().toString());
+                    event.put("path", saved.getFileUrl());
+
+                    String message = objectMapper.writeValueAsString(event);
+                    redisTemplate.convertAndSend("pdf.upload", message);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+
+            return ResponseEntity.ok(saved);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
         }

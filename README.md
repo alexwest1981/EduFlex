@@ -758,11 +758,23 @@ taskkill /PID <PID> /F
     *   **Runtime-stabilitet:** Fixade en krasch (`NullPointerException`) i `AITutorService` genom att filtrera bort ogiltiga vektordata under sökning.
     *   **Robusthet:** AI-tutorn hanterar nu saknad data snyggt istället för att krascha applikationen.
 
+*   **📹 Videouppladdning & MinIO-fixar (28 jan 2026):**
+    *   **Backend Proxy via API:** Implementerade en `FileController` som strömmar filer från MinIO genom backenden. Detta löser "Mixed Content"-varningar och 401 Unauthorized-fel vid uppspelning på externa domäner.
+    *   **Korrekt Filhantering:** Uppladdade videor behåller nu sina ursprungliga filändelser (.mp4, .mov, etc) för korrekt igenkänning av webbläsaren.
+    *   **Refaktorerad Lagring:** Flyttat all filhantering i `CourseService` till ett abstrakt lagringslager (`FileStorageService`), vilket möjliggör sömlös växling mellan lokal lagring och MinIO/S3.
+    *   **Byggstabilitet:** Åtgärdat beroendekonflikter i `CourseService` som tidigare blockerade produktion-byggen.
+
 *   **🔗 Vänliga URL:er - Kurs-Slugs (27 jan 2026):**
     *   **Läsbara Länkar:** Kurser använder nu "slugs" (t.ex. `/course/matematik-1`) istället för bara siffror.
     *   **Automatisk Generering:** Slugs skapas från kursnamnet med hantering av dubbletter.
     *   **Automatisk Migrering:** Alla befintliga kurser tilldelas slugs automatiskt vid serverstart.
     *   **Dual Lookup:** Gamla siffer-baserade länkar fungerar fortfarande för bakåtkompatibilitet.
+
+*   **📹 Videouppladdning & MinIO-fixar (28 jan 2026):**
+    *   **Backend Proxy via API:** Implementerade en `FileController` som strömmar filer från MinIO genom backenden. Detta löser "Mixed Content"-varningar och 401 Unauthorized-fel vid uppspelning på externa domäner som `eduflexlms.se`.
+    *   **Korrekt Filhantering:** Uppladdade videor behåller nu sina ursprungliga filändelser (.mp4, .mov, etc) för korrekt igenkänning av webbläsaren.
+    *   **Refaktorerad Lagring:** Flyttat all filhantering i `CourseService` till ett abstrakt lagringslager (`FileStorageService`), vilket möjliggör sömlös växling mellan lokal lagring och MinIO/S3.
+    *   **Byggstabilitet:** Åtgärdat beroendekonflikter i `CourseService` som tidigare blockerade produktion-byggen.
 
 *   **🤖 AI Tutor UI-förbättringar (27 jan 2026):**
     *   **Stabil Fönsterstorlek:** Chatten har nu en fast höjd (500px/80vh) för att förhindra att den växer utanför skärmen.

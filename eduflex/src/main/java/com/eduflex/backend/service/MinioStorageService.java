@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.InputStream;
 import java.util.UUID;
 
@@ -36,30 +35,23 @@ public class MinioStorageService implements FileStorageService {
                 .build();
 
         try {
-            boolean found = minioClient.bucketExists(BucketExistsArgs.builder().bucket(bucketName).build());
-            if (!found) {
+            // Simplified init for now
+            if (!minioClient.bucketExists(BucketExistsArgs.builder().bucket(bucketName).build())) {
                 minioClient.makeBucket(MakeBucketArgs.builder().bucket(bucketName).build());
             }
-
-            // Always set public read policy
-            String policy = "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"AWS\":[\"*\"]},\"Action\":[\"s3:GetObject\"],\"Resource\":[\"arn:aws:s3:::"
-                    + bucketName + "/*\"]}]}";
-            minioClient.setBucketPolicy(
-                    SetBucketPolicyArgs.builder().bucket(bucketName).config(policy).build());
         } catch (Exception e) {
-            // throw new RuntimeException("Could not initialize MinIO storage", e);
-            System.err.println("WARNING: Could not initialize MinIO storage (is MinIO running?): " + e.getMessage());
+            System.err.println("MinIO Init Error: " + e.getMessage());
         }
     }
 
     @Override
     public String storeFile(MultipartFile file) {
         String originalFileName = file.getOriginalFilename();
-        String fileExtension = "";
+        String extension = "";
         if (originalFileName != null && originalFileName.contains(".")) {
-            fileExtension = originalFileName.substring(originalFileName.lastIndexOf("."));
+            extension = originalFileName.substring(originalFileName.lastIndexOf("."));
         }
-        String fileName = UUID.randomUUID().toString() + fileExtension;
+        String fileName = UUID.randomUUID().toString() + extension;
 
         try (InputStream inputStream = file.getInputStream()) {
             minioClient.putObject(
@@ -69,37 +61,28 @@ public class MinioStorageService implements FileStorageService {
                             .stream(inputStream, file.getSize(), -1)
                             .contentType(file.getContentType())
                             .build());
-            // Return full public URL to the file (uses HTTPS in production)
-            return publicUrl + "/" + bucketName + "/" + fileName;
+
+            // Return relative URL for the proxy controller
+            return "/api/files/" + fileName;
         } catch (Exception e) {
-            throw new RuntimeException("Could not store file " + fileName + " in MinIO", e);
+            throw new RuntimeException("Store failed", e);
         }
     }
 
     @Override
     public java.io.InputStream getFileStream(String path) {
         try {
-            // Extract object name from URL
-            // Path is usually publicUrl/bucketName/fileName
-            // Or just fileName if simplistic logic used somewhere else.
-
             String objectName = path;
-
-            // Try 1: After last slash
             if (path.contains("/")) {
                 objectName = path.substring(path.lastIndexOf("/") + 1);
             }
-
-            // Try 2: If we want to be stricter, verify bucket name in path?
-            // But UUID filenames are unique enough usually.
-
             return minioClient.getObject(
                     io.minio.GetObjectArgs.builder()
                             .bucket(bucketName)
                             .object(objectName)
                             .build());
         } catch (Exception e) {
-            throw new RuntimeException("Could not read file from MinIO: " + path, e);
+            throw new RuntimeException("Read failed", e);
         }
     }
 }

@@ -3,8 +3,10 @@ package com.eduflex.backend.controller;
 import com.eduflex.backend.model.CourseMaterial;
 import com.eduflex.backend.repository.CourseMaterialRepository;
 import com.eduflex.backend.service.FileStorageService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,6 +25,9 @@ public class VideoController {
     private final CourseMaterialRepository materialRepository;
     private final FileStorageService fileStorageService;
 
+    private final StringRedisTemplate redisTemplate;
+    private final ObjectMapper objectMapper;
+
     @Value("${file.upload-dir}")
     private String uploadDir;
 
@@ -30,9 +35,13 @@ public class VideoController {
     private static final long MAX_VIDEO_SIZE = 500 * 1024 * 1024;
 
     public VideoController(CourseMaterialRepository materialRepository,
-                          FileStorageService fileStorageService) {
+            FileStorageService fileStorageService,
+            StringRedisTemplate redisTemplate,
+            ObjectMapper objectMapper) {
         this.materialRepository = materialRepository;
         this.fileStorageService = fileStorageService;
+        this.redisTemplate = redisTemplate;
+        this.objectMapper = objectMapper;
     }
 
     /**
@@ -54,10 +63,9 @@ public class VideoController {
 
             if (file.getSize() > MAX_VIDEO_SIZE) {
                 return ResponseEntity.badRequest().body(Map.of(
-                    "error", "File too large",
-                    "maxSize", MAX_VIDEO_SIZE,
-                    "actualSize", file.getSize()
-                ));
+                        "error", "File too large",
+                        "maxSize", MAX_VIDEO_SIZE,
+                        "actualSize", file.getSize()));
             }
 
             String contentType = file.getContentType();
@@ -77,9 +85,22 @@ public class VideoController {
             material.setFileName(file.getOriginalFilename());
             material.setType(CourseMaterial.MaterialType.VIDEO);
             material.setVideoFileSize(file.getSize());
-            material.setVideoStatus(CourseMaterial.VideoStatus.READY);
+            material.setVideoStatus(CourseMaterial.VideoStatus.PROCESSING); // New status
 
             CourseMaterial saved = materialRepository.save(material);
+
+            // Publish Event to Redis
+            try {
+                Map<String, String> event = new HashMap<>();
+                event.put("action", "PROCESS_VIDEO");
+                event.put("fileId", saved.getId().toString());
+                event.put("path", fileUrl);
+
+                String message = objectMapper.writeValueAsString(event);
+                redisTemplate.convertAndSend("video.upload", message);
+            } catch (Exception e) {
+                e.printStackTrace(); // Log but don't fail the request
+            }
 
             Map<String, Object> response = new HashMap<>();
             response.put("id", saved.getId());
@@ -87,15 +108,14 @@ public class VideoController {
             response.put("fileName", saved.getFileName());
             response.put("fileSize", saved.getVideoFileSize());
             response.put("status", saved.getVideoStatus());
-            response.put("message", "Video uploaded successfully");
+            response.put("message", "Video uploading and processing started");
 
             return ResponseEntity.ok(response);
 
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.internalServerError().body(Map.of(
-                "error", "Failed to upload video: " + e.getMessage()
-            ));
+                    "error", "Failed to upload video: " + e.getMessage()));
         }
     }
 
@@ -130,12 +150,11 @@ public class VideoController {
             CourseMaterial saved = materialRepository.save(material);
 
             return ResponseEntity.ok(Map.of(
-                "id", saved.getId(),
-                "duration", saved.getVideoDuration() != null ? saved.getVideoDuration() : 0,
-                "thumbnailUrl", saved.getThumbnailUrl() != null ? saved.getThumbnailUrl() : "",
-                "chapters", saved.getVideoChapters() != null ? saved.getVideoChapters() : "[]",
-                "message", "Metadata updated"
-            ));
+                    "id", saved.getId(),
+                    "duration", saved.getVideoDuration() != null ? saved.getVideoDuration() : 0,
+                    "thumbnailUrl", saved.getThumbnailUrl() != null ? saved.getThumbnailUrl() : "",
+                    "chapters", saved.getVideoChapters() != null ? saved.getVideoChapters() : "[]",
+                    "message", "Metadata updated"));
 
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
@@ -193,10 +212,9 @@ public class VideoController {
             materialRepository.save(material);
 
             return ResponseEntity.ok(Map.of(
-                "id", materialId,
-                "chapters", request.chapters,
-                "message", "Chapters updated"
-            ));
+                    "id", materialId,
+                    "chapters", request.chapters,
+                    "message", "Chapters updated"));
 
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));

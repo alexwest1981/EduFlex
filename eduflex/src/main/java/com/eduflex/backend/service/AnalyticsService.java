@@ -16,6 +16,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.Month;
+import com.eduflex.backend.model.StudentActivityLog;
+import com.eduflex.backend.repository.StudentActivityLogRepository;
 import java.time.format.TextStyle;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -29,16 +31,19 @@ public class AnalyticsService {
         private final SubmissionRepository submissionRepository;
         private final QuizRepository quizRepository;
         private final QuizResultRepository quizResultRepository;
+        private final StudentActivityLogRepository activityLogRepository;
 
         public AnalyticsService(UserRepository userRepository, CourseRepository courseRepository,
                         AssignmentRepository assignmentRepository, SubmissionRepository submissionRepository,
-                        QuizRepository quizRepository, QuizResultRepository quizResultRepository) {
+                        QuizRepository quizRepository, QuizResultRepository quizResultRepository,
+                        StudentActivityLogRepository activityLogRepository) {
                 this.userRepository = userRepository;
                 this.courseRepository = courseRepository;
                 this.assignmentRepository = assignmentRepository;
                 this.submissionRepository = submissionRepository;
                 this.quizRepository = quizRepository;
                 this.quizResultRepository = quizResultRepository;
+                this.activityLogRepository = activityLogRepository;
         }
 
         public Map<String, Object> getSystemOverview(String range) {
@@ -507,10 +512,6 @@ public class AnalyticsService {
         // --- NEW METHODS FOR DASHBOARD ---
 
         public List<Map<String, Object>> getActivityTrend(String range) {
-                // För MVP: Returnera inloggningshistorik (simulerad data baserat på users om vi
-                // saknar logg-tabell)
-                // TODO: Koppla till riktig UserActivityLog när den är fullt populatad
-
                 List<Map<String, Object>> trend = new ArrayList<>();
                 LocalDateTime now = LocalDateTime.now();
                 int days = 30;
@@ -520,18 +521,32 @@ public class AnalyticsService {
                 if ("90d".equals(range))
                         days = 90;
 
+                // Hämtar alla loggar för perioden (effektivare vore att gruppera i SQL, men
+                // detta är OK för MVP)
+                LocalDateTime startDate = now.minusDays(days);
+                List<StudentActivityLog> logs = activityLogRepository.findAllSince(startDate);
+
                 for (int i = days - 1; i >= 0; i--) {
-                        LocalDateTime day = now.minusDays(i);
+                        LocalDateTime dayStart = now.minusDays(i).toLocalDate().atStartOfDay();
+                        LocalDateTime dayEnd = dayStart.plusDays(1);
+
+                        // Filtrera loggar för denna dag
+                        List<StudentActivityLog> dayLogs = logs.stream()
+                                        .filter(l -> l.getTimestamp().isAfter(dayStart)
+                                                        && l.getTimestamp().isBefore(dayEnd))
+                                        .collect(Collectors.toList());
+
                         Map<String, Object> point = new HashMap<>();
-                        point.put("date", day.toString().substring(0, 10)); // YYYY-MM-DD
+                        point.put("date", dayStart.toLocalDate().toString()); // YYYY-MM-DD
 
-                        // Mock: Random aktivitet + lite logik baserat på veckodag
-                        double baseActivity = 50 + (Math.random() * 20);
-                        if (day.getDayOfWeek().getValue() >= 6)
-                                baseActivity *= 0.5; // Helger lugnare
+                        long actions = dayLogs.size();
+                        long activeUsers = dayLogs.stream()
+                                        .map(l -> l.getUser().getId())
+                                        .distinct()
+                                        .count();
 
-                        point.put("activeUsers", (int) baseActivity);
-                        point.put("actions", (int) (baseActivity * 5.5)); // Actions per user
+                        point.put("activeUsers", activeUsers);
+                        point.put("actions", actions);
                         trend.add(point);
                 }
                 return trend;

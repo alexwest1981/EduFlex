@@ -25,5 +25,10 @@ public interface StudentActivityLogRepository extends JpaRepository<StudentActiv
     List<StudentActivityLog> findByCourseIdAndTimestampBetween(Long courseId, LocalDateTime start, LocalDateTime end);
 
     // Hämta alla loggar för en student (oavsett kurs)
+    // Hämta alla loggar för en student (oavsett kurs)
     List<StudentActivityLog> findByUserIdOrderByTimestampDesc(Long userId);
+
+    @org.springframework.data.jpa.repository.Query("SELECT s FROM StudentActivityLog s WHERE s.timestamp >= :startDate")
+    List<StudentActivityLog> findAllSince(
+            @org.springframework.data.repository.query.Param("startDate") LocalDateTime startDate);
 }

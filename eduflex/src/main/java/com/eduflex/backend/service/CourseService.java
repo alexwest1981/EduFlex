@@ -22,9 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -48,6 +45,8 @@ public class CourseService {
     @Value("${file.upload-dir}")
     private String uploadDir;
 
+    private final FileStorageService fileStorageService;
+
     public CourseService(CourseRepository courseRepository,
             UserRepository userRepository,
             CourseMaterialRepository materialRepository,
@@ -56,7 +55,8 @@ public class CourseService {
             com.eduflex.backend.repository.CourseResultRepository resultRepository,
             AssignmentRepository assignmentRepository,
             SubmissionRepository submissionRepository,
-            SkolverketCourseRepository skolverketCourseRepository) {
+            SkolverketCourseRepository skolverketCourseRepository,
+            FileStorageService fileStorageService) {
         this.courseRepository = courseRepository;
         this.userRepository = userRepository;
         this.materialRepository = materialRepository;
@@ -66,6 +66,7 @@ public class CourseService {
         this.assignmentRepository = assignmentRepository;
         this.submissionRepository = submissionRepository;
         this.skolverketCourseRepository = skolverketCourseRepository;
+        this.fileStorageService = fileStorageService;
     }
 
     @EventListener(ApplicationReadyEvent.class)
@@ -297,21 +298,15 @@ public class CourseService {
         }
         material.setCourse(course);
         if (file != null && !file.isEmpty()) {
-            String originalFileName = file.getOriginalFilename();
-            String fileName = UUID.randomUUID() + "_" + originalFileName;
-            Path path = Paths.get(uploadDir + "/" + fileName);
-            Files.createDirectories(path.getParent());
-            Files.write(path, file.getBytes());
-            material.setFileUrl("/uploads/" + fileName);
-            material.setFileName(originalFileName);
+            String fileUrl = fileStorageService.storeFile(file);
+            material.setFileUrl(fileUrl);
+            material.setFileName(file.getOriginalFilename());
 
             // Detect video files and set video-specific metadata
-            if (isVideoFile(originalFileName)) {
+            if (isVideoFile(file.getOriginalFilename())) {
                 material.setType(CourseMaterial.MaterialType.VIDEO);
                 material.setVideoFileSize(file.getSize());
                 material.setVideoStatus(CourseMaterial.VideoStatus.READY);
-                // Note: Duration and thumbnail would require ffprobe/ffmpeg
-                // For now, frontend can detect duration via HTML5 video API
             }
         }
         return materialRepository.save(material);
@@ -346,16 +341,12 @@ public class CourseService {
             material.setAvailableFrom(null);
         }
         if (file != null && !file.isEmpty()) {
-            String originalFileName = file.getOriginalFilename();
-            String fileName = UUID.randomUUID() + "_" + originalFileName;
-            Path path = Paths.get(uploadDir + "/" + fileName);
-            Files.createDirectories(path.getParent());
-            Files.write(path, file.getBytes());
-            material.setFileUrl("/uploads/" + fileName);
-            material.setFileName(originalFileName);
+            String fileUrl = fileStorageService.storeFile(file);
+            material.setFileUrl(fileUrl);
+            material.setFileName(file.getOriginalFilename());
 
             // Detect video files and set video-specific metadata
-            if (isVideoFile(originalFileName)) {
+            if (isVideoFile(file.getOriginalFilename())) {
                 material.setType(CourseMaterial.MaterialType.VIDEO);
                 material.setVideoFileSize(file.getSize());
                 material.setVideoStatus(CourseMaterial.VideoStatus.READY);

@@ -1,7 +1,7 @@
 package com.eduflex.backend.controller;
 
 import com.eduflex.backend.service.ai.AITutorService;
-import lombok.RequiredArgsConstructor;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -9,11 +9,14 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/ai/tutor")
-@RequiredArgsConstructor
+@RequestMapping("/api/ai-tutor")
 public class AITutorController {
 
     private final AITutorService aiTutorService;
+
+    public AITutorController(AITutorService aiTutorService) {
+        this.aiTutorService = aiTutorService;
+    }
 
     /**
      * Ingest a document (CourseMaterial) for RAG.
