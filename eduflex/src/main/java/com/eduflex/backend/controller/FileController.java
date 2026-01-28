@@ -30,7 +30,13 @@ public class FileController {
 
             String contentType = URLConnection.guessContentTypeFromName(fileName);
             if (contentType == null) {
-                contentType = "application/octet-stream";
+                if (fileName.toLowerCase().endsWith(".epub")) {
+                    contentType = "application/epub+zip";
+                } else if (fileName.toLowerCase().endsWith(".pdf")) {
+                    contentType = "application/pdf";
+                } else {
+                    contentType = "application/octet-stream";
+                }
             }
 
             return ResponseEntity.ok()

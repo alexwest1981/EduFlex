@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import { Zap, Award, Star } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { api } from '../../../services/api';
 
 const StudentGamificationWidget = ({ currentUser, isModuleActive }) => {
+    const { t } = useTranslation();
     const navigate = useNavigate();
     const [achievements, setAchievements] = useState([]);
     const [userProgress, setUserProgress] = useState([]);
@@ -62,10 +64,10 @@ const StudentGamificationWidget = ({ currentUser, isModuleActive }) => {
             <div className="relative z-10">
                 <div className="flex justify-between items-center mb-4">
                     <div>
-                        <p className="text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">Nuvarande Nivå</p>
+                        <p className="text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">{t('gamification.level_title')}</p>
                         <h2 className="text-4xl font-black text-gray-900 dark:text-white flex items-center gap-2">
                             {currentLevel}
-                            <span className="text-sm font-medium text-gray-400 bg-white dark:bg-[#3c4043] px-2 py-0.5 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700">Student</span>
+                            <span className="text-sm font-medium text-gray-400 bg-white dark:bg-[#3c4043] px-2 py-0.5 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700">{t('gamification.student_rank')}</span>
                         </h2>
                     </div>
                 </div>
@@ -73,7 +75,7 @@ const StudentGamificationWidget = ({ currentUser, isModuleActive }) => {
                 <div className="mb-4">
                     <div className="flex justify-between text-xs font-bold mb-1">
                         <span className="text-gray-500 dark:text-gray-400">{currentPoints} XP</span>
-                        <span className="text-indigo-600 dark:text-indigo-400">{pointsToNext} XP till nästa</span>
+                        <span className="text-indigo-600 dark:text-indigo-400">{t('gamification.points_to_next', { count: pointsToNext })}</span>
                     </div>
                     <div className="w-full bg-gray-200 dark:bg-black/40 h-2.5 rounded-full overflow-hidden">
                         <div
@@ -85,7 +87,7 @@ const StudentGamificationWidget = ({ currentUser, isModuleActive }) => {
 
                 {/* Mini Badge Gallery */}
                 <div>
-                    <h4 className="text-xs font-bold text-gray-400 uppercase mb-2">Mina Utmärkelser</h4>
+                    <h4 className="text-xs font-bold text-gray-400 uppercase mb-2">{t('gamification.my_badges')}</h4>
                     <div className="grid grid-cols-4 gap-2">
                         {displayBadges.length > 0 ? (
                             displayBadges.map((item) => {
@@ -102,7 +104,7 @@ const StudentGamificationWidget = ({ currentUser, isModuleActive }) => {
                             })
                         ) : (
                             <div className="col-span-4 text-center py-2 text-xs text-gray-400 italic bg-white/50 dark:bg-black/20 rounded-lg">
-                                Inga utmärkelser än
+                                {t('gamification.no_awards')}
                             </div>
                         )}
                         {/* Placeholder slots if few badges */}
@@ -119,7 +121,7 @@ const StudentGamificationWidget = ({ currentUser, isModuleActive }) => {
                 onClick={() => navigate('/profile?tab=achievements')}
                 className="w-full mt-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold shadow-md shadow-indigo-200 dark:shadow-none transition-all hover:scale-[1.02]"
             >
-                Visa alla framsteg
+                {t('gamification.view_all')}
             </button>
         </div>
     );

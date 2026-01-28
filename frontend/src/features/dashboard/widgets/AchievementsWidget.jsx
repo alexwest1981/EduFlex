@@ -38,7 +38,7 @@ const AchievementsWidget = ({ currentUser }) => {
                 <div className="mb-6 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 p-4 rounded-xl">
                     <div className="flex justify-between items-end mb-2">
                         <div>
-                            <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Nuvarande Nivå</span>
+                            <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">{t('gamification.level_title')}</span>
                             <div className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">
                                 {level}
                             </div>
@@ -82,7 +82,7 @@ const AchievementsWidget = ({ currentUser }) => {
                         ))
                     ) : (
                         <div className="col-span-3 text-center py-4 text-gray-400 text-sm">
-                            Inga märken ännu. Kämpa på!
+                            {t('gamification.no_badges')}
                         </div>
                     )}
 
@@ -92,7 +92,7 @@ const AchievementsWidget = ({ currentUser }) => {
                             <div className="mb-2 p-2 text-gray-300 dark:text-gray-600">
                                 <Lock size={20} />
                             </div>
-                            <span className="text-xs text-gray-400">Låst</span>
+                            <span className="text-xs text-gray-400">{t('gamification.locked')}</span>
                         </div>
                     ))}
                 </div>

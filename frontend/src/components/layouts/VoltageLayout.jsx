@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
-import { LayoutDashboard, FileText, User, Settings, LogOut, Layers, Menu, X, Award, Zap, Moon, Sun, Calendar, BookOpen, TrendingUp, Bell, Search, Plus, HelpCircle, Shield, Folder, BarChart2, HardDrive, Wallet, Music, Play, Pause, Heart, Speaker, Store } from 'lucide-react';
+import { LayoutDashboard, FileText, User, Settings, LogOut, Layers, Menu, X, Award, Zap, Moon, Sun, Calendar, BookOpen, TrendingUp, Bell, Search, Plus, HelpCircle, Shield, Folder, BarChart2, HardDrive, Wallet, Music, Play, Pause, Heart, Speaker, Store, Library } from 'lucide-react';
 import { useAppContext } from '../../context/AppContext';
 import { useModules } from '../../context/ModuleContext';
 import { useTranslation } from 'react-i18next';
@@ -21,7 +21,7 @@ const VoltageLayout = ({ children }) => {
         if (!currentUser?.profilePictureUrl) return null;
         let url = currentUser.profilePictureUrl;
         if (url.includes('minio:9000')) url = url.replace('minio:9000', 'localhost:9000');
-        return url.startsWith('http') ? url : `${window.location.origin}${url}`;
+        return url.startsWith('http') ? url : `${window.location.origin}${url} `;
     };
     const profileImgUrl = getProfileUrl();
     const token = localStorage.getItem('token');
@@ -30,12 +30,12 @@ const VoltageLayout = ({ children }) => {
     // Voltage Navigation - Optimized for the "Console" look
     const mainNav = [
         { path: '/', icon: <LayoutDashboard size={20} />, label: t('sidebar.dashboard') },
-        { path: '/catalog', icon: <Folder size={20} />, label: t('sidebar.catalog') },
-        { path: '/calendar', icon: <Calendar size={20} />, label: t('sidebar.calendar') },
-        { path: '/documents', icon: <FileText size={20} />, label: t('sidebar.documents') },
+        { path: '/catalog', icon: <Layers size={18} />, label: t('sidebar.catalog') },
+        { path: '/ebooks', icon: <Library size={18} />, label: t('sidebar.library') || 'Bibliotek' },
+        { path: '/calendar', icon: <Calendar size={18} />, label: t('sidebar.calendar') || 'Kalender' },
+        ...(roleName === 'TEACHER' || roleName === 'ADMIN' ? [{ path: '/resources', icon: <BookOpen size={18} />, label: t('sidebar.resource_bank') }] : []),
         { path: '/support', icon: <HelpCircle size={20} />, label: t('sidebar.support') || 'Kontakt & Support' },
         ...(roleName === 'ADMIN' ? [{ path: '/analytics', icon: <BarChart2 size={20} />, label: t('sidebar.analytics') }] : []),
-        ...(roleName === 'ADMIN' ? [{ path: '/resources', icon: <HardDrive size={20} />, label: t('sidebar.resource_bank') }] : []),
     ];
 
     const bottomNav = [
@@ -47,14 +47,14 @@ const VoltageLayout = ({ children }) => {
     return (
         <div className="flex items-center justify-center p-8 h-screen w-screen overflow-hidden text-[#1E1E1E] font-sans transition-colors duration-300" style={{ background: 'var(--app-background)' }}>
             <style>{`
-                @media (prefers-color-scheme: dark) {
-                    .dark-mode-bg { background: var(--app-background-dark) !important; }
-                }
-                :root.dark body { background: var(--app-background-dark) !important; }
-                .app-wrapper { background: var(--app-background); }
-                .dark .app-wrapper { background: var(--app-background-dark); }
-            `}</style>
-            <div className={`fixed inset-0 -z-10 app-wrapper transition-colors duration-300 pointer-events-none`} />
+@media(prefers - color - scheme: dark) {
+                    .dark - mode - bg { background: var(--app - background - dark)!important; }
+}
+                : root.dark body { background: var(--app - background - dark)!important; }
+                .app - wrapper { background: var(--app - background); }
+                .dark.app - wrapper { background: var(--app - background - dark); }
+`}</style>
+            <div className={`fixed inset - 0 - z - 10 app - wrapper transition - colors duration - 300 pointer - events - none`} />
 
             {/* CONSOLE CONTAINER - High Contrast */}
             <div className="w-full h-full max-w-[1600px] bg-[#F2F3F5] dark:bg-[#121212] rounded-[40px] shadow-2xl overflow-hidden flex flex-row relative ring-4 ring-black/5 dark:ring-white/5">
@@ -85,8 +85,8 @@ const VoltageLayout = ({ children }) => {
                             {mainNav.map(item => (
                                 <NavLink key={item.path} to={item.path} className={({ isActive: navActive }) => {
                                     const isActive = navActive || (item.path === '/admin' && location.pathname.startsWith('/enterprise'));
-                                    return `flex items-center justify-center lg:justify-start gap-4 px-3 lg:px-4 py-3 rounded-2xl transition-all duration-200 group
-                                    ${isActive ? 'bg-[#1F1F1F] text-[#CCFF00]' : 'text-gray-400 hover:text-white hover:bg-[#1A1A1A]'}`;
+                                    return `flex items - center justify - center lg: justify - start gap - 4 px - 3 lg: px - 4 py - 3 rounded - 2xl transition - all duration - 200 group
+                                    ${isActive ? 'bg-[#1F1F1F] text-[#CCFF00]' : 'text-gray-400 hover:text-white hover:bg-[#1A1A1A]'} `;
                                 }}>
                                     {({ isActive: navActive }) => {
                                         const isActive = navActive || (item.path === '/admin' && location.pathname.startsWith('/enterprise'));
@@ -112,8 +112,8 @@ const VoltageLayout = ({ children }) => {
                                         <span className="font-medium text-sm hidden lg:block">{item.label}</span>
                                     </button>
                                 ) : (
-                                    <NavLink key={item.path} to={item.path} className={({ isActive }) => `flex items-center justify-center lg:justify-start gap-4 px-3 lg:px-4 py-3 rounded-2xl transition-all duration-200
-                                        ${isActive ? 'bg-[#1F1F1F] text-[#CCFF00]' : 'text-gray-400 hover:text-white hover:bg-[#1A1A1A]'}`}>
+                                    <NavLink key={item.path} to={item.path} className={({ isActive }) => `flex items - center justify - center lg: justify - start gap - 4 px - 3 lg: px - 4 py - 3 rounded - 2xl transition - all duration - 200
+                                        ${isActive ? 'bg-[#1F1F1F] text-[#CCFF00]' : 'text-gray-400 hover:text-white hover:bg-[#1A1A1A]'} `}>
                                         {item.icon}
                                         <span className="font-medium text-sm hidden lg:block">{item.label}</span>
                                     </NavLink>

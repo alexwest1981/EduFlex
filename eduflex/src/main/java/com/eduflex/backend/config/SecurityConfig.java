@@ -125,7 +125,8 @@ public class SecurityConfig {
                                 "/api/branding/**", "/api/debug/**", "/api/onlyoffice/**")
                         .permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/tenants").permitAll() // Explicitly allow POST
-                        .requestMatchers("/api/system/license/**", "/uploads/**", "/api/files/**", "/h2-console/**",
+                        .requestMatchers("/api/system/license/**", "/uploads/**", "/api/files/**", "/api/ebooks/**",
+                                "/h2-console/**",
                                 "/ws/**",
                                 "/ws-log/**",
                                 "/actuator/**", "/lti/**", "/api/lti/**", "/error",

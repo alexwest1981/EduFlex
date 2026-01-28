@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { AlertCircle, ArrowRight, Ban, User } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { api } from '../../../services/api';
 
 const TeacherAtRiskWidget = ({ currentUser, settings }) => {
+    const { t } = useTranslation();
     const [students, setStudents] = useState([]);
     const [loading, setLoading] = useState(true);
 
@@ -34,17 +36,17 @@ const TeacherAtRiskWidget = ({ currentUser, settings }) => {
             <div className="flex justify-between items-center mb-4">
                 <h3 className="font-bold text-gray-900 dark:text-white flex items-center gap-2">
                     <AlertCircle size={18} className="text-red-500" />
-                    Elever i Farozonen
+                    {t('teacher_widgets.at_risk_title')}
                 </h3>
                 <span className="text-xs bg-red-100 text-red-700 px-2 py-1 rounded-full font-bold">
-                    {students.length} st
+                    {t('teacher_widgets.students_count', { count: students.length })}
                 </span>
             </div>
 
             <div className="space-y-3">
                 {students.length === 0 ? (
                     <div className="text-center py-6 text-gray-400 text-sm">
-                        Inga elever i riskzonen just nu. 👍
+                        {t('teacher_widgets.no_at_risk')}
                     </div>
                 ) : (
                     students.map(student => (
@@ -56,7 +58,7 @@ const TeacherAtRiskWidget = ({ currentUser, settings }) => {
                                 <div className="overflow-hidden">
                                     <p className="text-sm font-bold text-gray-900 dark:text-white truncate">{student.name}</p>
                                     <p className="text-xs text-gray-500 flex items-center gap-1">
-                                        <Ban size={10} /> {student.completionRate} slutfört
+                                        <Ban size={10} /> {student.completionRate} {t('teacher_widgets.completion_prefix')}
                                     </p>
                                 </div>
                             </div>
@@ -68,7 +70,7 @@ const TeacherAtRiskWidget = ({ currentUser, settings }) => {
 
             {students.length > 0 && (
                 <button className="w-full mt-4 py-2 text-xs font-bold text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-900/30 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-colors">
-                    Visa alla risk-elever
+                    {t('teacher_widgets.view_all_risk')}
                 </button>
             )}
         </div>

@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { X, Send, AlertTriangle, FileText, User } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { api } from '../../../services/api';
 
 const StudentContactModal = ({ isOpen, onClose, student, currentUser }) => {
+    const { t } = useTranslation();
     const [subject, setSubject] = useState('');
     const [messageBody, setMessageBody] = useState('');
     const [teacherNotes, setTeacherNotes] = useState('');
@@ -15,26 +17,26 @@ const StudentContactModal = ({ isOpen, onClose, student, currentUser }) => {
     }, [isOpen, student]);
 
     const generateTemplate = () => {
-        let generatedSubject = "Uppföljning av dina studier";
+        let generatedSubject = t('student_contact.templates.follow_up_subject');
         let generatedBody = `Hej ${student.firstName},\n\n`;
 
         // Logic to determine risk reason
         // Currently based on daysSinceLogin from TeacherDashboard logic (999 = never logged in)
         if (student.daysSinceLogin === 999) {
-            generatedSubject = "Viktigt: Du har inte loggat in ännu";
-            generatedBody += `Jag ser att du ännu inte har loggat in på EduFlex. För att kunna tillgodogöra dig kursen är det viktigt att du kommer igång snart.\n\n`;
-            generatedBody += "Behöver du hjälp med inloggningen eller att hitta rätt material?\n";
+            generatedSubject = t('student_contact.templates.no_login_subject');
+            generatedBody += t('student_contact.templates.no_login_body') + "\n\n";
+            generatedBody += t('student_contact.templates.need_help_login') + "\n";
         } else if (student.daysSinceLogin > 14) {
-            generatedSubject = "Varning: Hög frånvaro och inaktivitet";
-            generatedBody += `Jag ser att du inte har varit aktiv på EduFlex på ${student.daysSinceLogin} dagar. Detta är oroande och påverkar dina studier negativt.\n\n`;
-            generatedBody += "Vi behöver se över din studieplan för att säkerställa att du hinner med alla moment.\n";
+            generatedSubject = t('student_contact.templates.warning_inactivity_subject');
+            generatedBody += t('student_contact.templates.warning_inactivity_body', { count: student.daysSinceLogin }) + "\n\n";
+            generatedBody += t('student_contact.templates.review_plan') + "\n";
         } else if (student.daysSinceLogin > 7) {
-            generatedSubject = "Uppföljning: Frånvaro";
-            generatedBody += `Jag noterade att det var ${student.daysSinceLogin} dagar sedan du senast var aktiv.\n`;
-            generatedBody += "Hör av dig om du behöver hjälp med något specifikt moment.\n";
+            generatedSubject = t('student_contact.templates.follow_up_absence_subject');
+            generatedBody += t('student_contact.templates.follow_up_absence_body', { count: student.daysSinceLogin }) + "\n";
+            generatedBody += t('student_contact.templates.reach_out') + "\n";
         } else {
             // Default / Generic
-            generatedBody += "Jag vill stämma av hur det går för dig i kursen.\n";
+            generatedBody += t('student_contact.templates.generic_body') + "\n";
         }
 
         setSubject(generatedSubject);
@@ -45,7 +47,7 @@ const StudentContactModal = ({ isOpen, onClose, student, currentUser }) => {
     const handleSend = async () => {
         setIsSending(true);
         try {
-            const finalMessage = `${messageBody}\n\n---\nLärarens kommentar:\n${teacherNotes}\n\nMed vänlig hälsning,\n${currentUser.fullName}`;
+            const finalMessage = `${messageBody}\n\n---\n${t('student_contact.divider')}\n${teacherNotes}\n\n${t('student_contact.regards')}\n${currentUser.fullName}`;
 
             await api.messages.send({
                 receiverId: student.id,
@@ -56,11 +58,11 @@ const StudentContactModal = ({ isOpen, onClose, student, currentUser }) => {
             // Log activity or "report" the student if needed
             // Could call an endpoint to log this intervention
 
-            alert("Meddelande skickat!");
+            alert(t('student_contact.sent_success'));
             onClose();
         } catch (error) {
             console.error("Failed to send message", error);
-            alert("Kunde inte skicka meddelandet.");
+            alert(t('student_contact.send_error'));
         } finally {
             setIsSending(false);
         }
@@ -77,10 +79,10 @@ const StudentContactModal = ({ isOpen, onClose, student, currentUser }) => {
                     <div>
                         <h2 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
                             <User size={24} className="text-indigo-600" />
-                            Kontakta Student
+                            {t('student_contact.title')}
                         </h2>
                         <p className="text-sm text-gray-500 dark:text-gray-400">
-                            Rapportera och följ upp med {student.fullName}
+                            {t('student_contact.subtitle', { name: student.fullName })}
                         </p>
                     </div>
                     <button onClick={onClose} className="p-2 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full transition-colors">
@@ -95,20 +97,20 @@ const StudentContactModal = ({ isOpen, onClose, student, currentUser }) => {
                     <div className="bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800 rounded-xl p-4 flex gap-4">
                         <AlertTriangle className="text-amber-600 dark:text-amber-500 shrink-0" size={24} />
                         <div>
-                            <h4 className="font-bold text-amber-800 dark:text-amber-400 text-sm uppercase mb-1">Identifierad Riskfaktor</h4>
+                            <h4 className="font-bold text-amber-800 dark:text-amber-400 text-sm uppercase mb-1">{t('student_contact.risk_factor')}</h4>
                             <p className="text-amber-700 dark:text-amber-300 text-sm">
                                 {student.daysSinceLogin === 999
-                                    ? "Studenten har aldrig loggat in på plattformen."
+                                    ? t('student_contact.never_logged_in')
                                     : student.daysSinceLogin > 7
-                                        ? `Studenten har varit inaktiv i ${student.daysSinceLogin} dagar.`
-                                        : "Ingen kritisk risk identifierad för tillfället, men uppföljning rekommenderas."}
+                                        ? t('student_contact.inactive_days', { count: student.daysSinceLogin })
+                                        : t('student_contact.no_risk')}
                             </p>
                         </div>
                     </div>
 
                     {/* Subject Line */}
                     <div>
-                        <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Ämne (Baserat på risk)</label>
+                        <label className="block text-xs font-bold text-gray-500 uppercase mb-1">{t('student_contact.subject_label')}</label>
                         <input
                             type="text"
                             value={subject}
@@ -121,25 +123,25 @@ const StudentContactModal = ({ isOpen, onClose, student, currentUser }) => {
                     <div>
                         <label className="block text-xs font-bold text-gray-500 uppercase mb-1 flex items-center gap-2">
                             <FileText size={14} />
-                            Automatiskt Genererat Underlag
+                            {t('student_contact.auto_generated_label')}
                         </label>
                         <textarea
                             value={messageBody}
                             readOnly
                             className="w-full bg-gray-100 dark:bg-[#252525] border border-gray-200 dark:border-gray-700 rounded-lg p-4 text-sm text-gray-600 dark:text-gray-400 focus:outline-none resize-none h-32 cursor-not-allowed"
                         />
-                        <p className="text-xs text-gray-400 mt-1">Detta underlag baseras på systemets data och skickas med i mailet.</p>
+                        <p className="text-xs text-gray-400 mt-1">{t('student_contact.auto_generated_desc')}</p>
                     </div>
 
                     {/* Teacher Notes */}
                     <div>
                         <label className="block text-xs font-bold text-gray-900 dark:text-white uppercase mb-2">
-                            Dina kommentarer / Åtgärdsplan
+                            {t('student_contact.teacher_notes_label')}
                         </label>
                         <textarea
                             value={teacherNotes}
                             onChange={(e) => setTeacherNotes(e.target.value)}
-                            placeholder="Skriv ett personligt meddelande, instruktioner eller specifika åtgärder som studenten behöver göra..."
+                            placeholder={t('student_contact.teacher_notes_placeholder')}
                             className="w-full bg-white dark:bg-[#2A2A2A] border-2 border-indigo-100 dark:border-indigo-900/30 rounded-xl p-4 text-sm focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all h-32 shadow-sm"
                             autoFocus
                         />
@@ -153,14 +155,14 @@ const StudentContactModal = ({ isOpen, onClose, student, currentUser }) => {
                         onClick={onClose}
                         className="px-6 py-2.5 rounded-xl font-bold text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
                     >
-                        Avbryt
+                        {t('common.cancel')}
                     </button>
                     <button
                         onClick={handleSend}
                         disabled={isSending || !teacherNotes.trim()}
                         className={`px-6 py-2.5 rounded-xl font-bold text-white flex items-center gap-2 shadow-lg shadow-indigo-500/20 transition-all ${isSending || !teacherNotes.trim() ? 'bg-indigo-400 cursor-not-allowed' : 'bg-indigo-600 hover:bg-indigo-700 hover:scale-105'}`}
                     >
-                        {isSending ? 'Skickar...' : <> <Send size={18} /> Rapportera & Skicka </>}
+                        {isSending ? t('student_contact.sending') : <> <Send size={18} /> {t('student_contact.report_and_send')} </>}
                     </button>
                 </div>
 

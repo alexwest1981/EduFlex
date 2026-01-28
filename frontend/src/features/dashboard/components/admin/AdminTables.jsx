@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
 import { User, FileText, File as FileIcon, Search, Plus, Edit2, Trash2, FileCode, Image } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { api } from '../../../../services/api';
 // ... (skip down to AdminCourseRegistry signature)
 import Pagination from '../../../../components/common/Pagination';
 
 export const AdminCourseRegistry = ({ courses, onEdit, onManage, onNewCourse, onDelete }) => {
+    const { t } = useTranslation();
     const [searchTerm, setSearchTerm] = useState('');
     const [filterStatus, setFilterStatus] = useState('ALL');
     const [currentPage, setCurrentPage] = useState(1);
@@ -30,18 +31,18 @@ export const AdminCourseRegistry = ({ courses, onEdit, onManage, onNewCourse, on
         <div className="bg-card dark:bg-card-dark rounded-[var(--radius-xl)] border border-card dark:border-card-dark shadow-sm overflow-hidden animate-in slide-in-from-bottom-8" style={{ backdropFilter: 'var(--card-backdrop)' }}>
             <div className="p-6 border-b border-card dark:border-card-dark flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-gray-50/50 dark:bg-[#131314]/50">
                 <div className="flex items-center gap-4">
-                    <h3 className="font-bold text-gray-800 dark:text-white">Kursregister</h3>
-                    <button onClick={onNewCourse} className="text-xs bg-indigo-600 text-white px-3 py-1.5 rounded-lg font-bold hover:bg-indigo-700 flex items-center gap-1"><Plus size={14} /> Ny Kurs</button>
+                    <h3 className="font-bold text-gray-800 dark:text-white">{t('dashboard.course_registry')}</h3>
+                    <button onClick={onNewCourse} className="text-xs bg-indigo-600 text-white px-3 py-1.5 rounded-lg font-bold hover:bg-indigo-700 flex items-center gap-1"><Plus size={14} /> {t('dashboard.new_course')}</button>
                 </div>
                 <div className="flex gap-2 w-full md:w-auto">
                     <div className="relative flex-1 md:flex-none">
                         <Search className="absolute left-3 top-2.5 text-gray-400" size={16} />
-                        <input className="w-full pl-9 pr-4 py-2 border rounded-lg text-sm dark:bg-[#1E1F20] dark:text-white dark:border-[#3c4043]" placeholder="Sök kurs..." value={searchTerm} onChange={e => { setSearchTerm(e.target.value); setCurrentPage(1); }} />
+                        <input className="w-full pl-9 pr-4 py-2 border rounded-lg text-sm dark:bg-[#1E1F20] dark:text-white dark:border-[#3c4043]" placeholder={t('dashboard.search_course')} value={searchTerm} onChange={e => { setSearchTerm(e.target.value); setCurrentPage(1); }} />
                     </div>
                     <select className="border dark:border-[#3c4043] rounded-lg px-3 py-2 text-sm bg-white dark:bg-[#1E1F20] text-gray-900 dark:text-white" value={filterStatus} onChange={e => { setFilterStatus(e.target.value); setCurrentPage(1); }}>
-                        <option value="ALL">Alla Statusar</option>
-                        <option value="OPEN">Öppna</option>
-                        <option value="CLOSED">Stängda</option>
+                        <option value="ALL">{t('dashboard.all_statuses')}</option>
+                        <option value="OPEN">{t('dashboard.open')}</option>
+                        <option value="CLOSED">{t('dashboard.closed')}</option>
                     </select>
                 </div>
             </div>
@@ -49,24 +50,24 @@ export const AdminCourseRegistry = ({ courses, onEdit, onManage, onNewCourse, on
             <div className="overflow-x-auto">
                 <table className="w-full text-left text-sm">
                     <thead className="bg-gray-50 dark:bg-[#282a2c] text-gray-500 dark:text-gray-400 border-b dark:border-[#3c4043]">
-                        <tr><th className="p-4">Status</th><th className="p-4">Kod</th><th className="p-4">Namn</th><th className="p-4">Datum</th><th className="p-4 text-right">Åtgärd</th></tr>
+                        <tr><th className="p-4">{t('dashboard.table.status')}</th><th className="p-4">{t('dashboard.table.code')}</th><th className="p-4">{t('dashboard.table.name')}</th><th className="p-4">{t('dashboard.table.date')}</th><th className="p-4 text-right">{t('dashboard.table.action')}</th></tr>
                     </thead>
                     <tbody className="divide-y divide-gray-100 dark:divide-[#3c4043]">
                         {currentItems.map(c => (
                             <tr key={c.id} className="hover:bg-gray-50 dark:hover:bg-[#282a2c]">
                                 <td className="p-4">
                                     <div className="flex items-center gap-3">
-                                        <div className={`w-3 h-3 rounded-full ${c.color || 'bg-gray-300'}`} title="Kursfärg"></div>
-                                        <span className={`px-2 py-1 rounded text-xs font-bold ${c.isOpen ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>{c.isOpen ? 'Öppen' : 'Stängd'}</span>
+                                        <div className={`w-3 h-3 rounded-full ${c.color || 'bg-gray-300'}`} title={t('dashboard.course_color')}></div>
+                                        <span className={`px-2 py-1 rounded text-xs font-bold ${c.isOpen ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>{c.isOpen ? t('dashboard.open') : t('dashboard.closed')}</span>
                                     </div>
                                 </td>
                                 <td className="p-4 font-mono text-gray-600 dark:text-gray-400">{c.courseCode}</td>
                                 <td className="p-4 font-bold text-gray-900 dark:text-white">{c.name}</td>
                                 <td className="p-4 text-gray-500 dark:text-gray-400 text-xs">{formatDate(c.startDate)} - {formatDate(c.endDate)}</td>
                                 <td className="p-4 text-right flex justify-end gap-2 text-gray-500">
-                                    <button onClick={() => onEdit(c)} className="p-2 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-gray-700 rounded-lg transition-colors" title="Redigera kurs"><Edit2 size={16} /></button>
-                                    <button onClick={() => onDelete(c.id)} className="p-2 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors" title="Ta bort kurs"><Trash2 size={16} /></button>
-                                    <button onClick={() => onManage(c.id)} className="text-indigo-600 dark:text-indigo-400 font-bold hover:underline px-2 py-1 ml-2">Hantera</button>
+                                    <button onClick={() => onEdit(c)} className="p-2 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-gray-700 rounded-lg transition-colors" title={t('dashboard.edit_course')}><Edit2 size={16} /></button>
+                                    <button onClick={() => onDelete(c.id)} className="p-2 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors" title={t('dashboard.delete_course')}><Trash2 size={16} /></button>
+                                    <button onClick={() => onManage(c.id)} className="text-indigo-600 dark:text-indigo-400 font-bold hover:underline px-2 py-1 ml-2">{t('dashboard.manage')}</button>
                                 </td>
                             </tr>
                         ))}
@@ -83,10 +84,10 @@ export const RecentUsersWidget = ({ latestUsers, onNewUserClick }) => (
         <div className="flex justify-between items-center mb-4">
             <h3 className="font-bold text-gray-800 dark:text-white flex items-center gap-2">
                 <User size={18} className="text-indigo-600" />
-                Senaste användare
+                {t('dashboard.recent_users')}
             </h3>
             <button onClick={onNewUserClick} className="text-xs bg-indigo-600 text-white px-3 py-1.5 rounded-lg font-bold hover:bg-indigo-700 flex items-center gap-1">
-                <Plus size={12} /> Ny
+                <Plus size={12} /> {t('dashboard.new')}
             </button>
         </div>
         <div className="space-y-3">
@@ -101,7 +102,7 @@ export const RecentUsersWidget = ({ latestUsers, onNewUserClick }) => (
                     </div>
                 </div>
             )) : (
-                <p className="text-sm text-gray-400 italic">Inga nya användare registrerade.</p>
+                <p className="text-sm text-gray-400 italic">{t('dashboard.no_new_users')}</p>
             )}
         </div>
     </div>
@@ -126,7 +127,7 @@ export const RecentUploadsWidget = ({ latestDocs }) => {
                 <div className="flex justify-between items-center mb-4">
                     <h3 className="font-bold text-gray-800 dark:text-white flex items-center gap-2">
                         <FileIcon size={18} className="text-blue-600" />
-                        Senaste uppladdningar
+                        {t('dashboard.recent_uploads')}
                     </h3>
                 </div>
                 <div className="space-y-3 flex-1">
@@ -140,14 +141,14 @@ export const RecentUploadsWidget = ({ latestDocs }) => {
                                 {getFileIcon(d.fileType)}
                             </div>
                             <div className="overflow-hidden flex-1">
-                                <p className="text-sm font-bold text-gray-900 dark:text-white truncate" title={d.fileName || d.title || 'Okänd fil'}>{d.fileName || d.title || 'Okänd fil'}</p>
+                                <p className="text-sm font-bold text-gray-900 dark:text-white truncate" title={d.fileName || d.title || t('dashboard.unknown_file')}>{d.fileName || d.title || t('dashboard.unknown_file')}</p>
                                 <p className="text-xs text-gray-500 dark:text-gray-400">
-                                    {d.size ? `${(d.size / 1024).toFixed(1)} KB` : 'Okänd storlek'} • {d.uploadedAt ? new Date(d.uploadedAt).toLocaleDateString('sv-SE') : 'Okänt datum'}
+                                    {d.size ? `${(d.size / 1024).toFixed(1)} KB` : t('dashboard.unknown_size')} • {d.uploadedAt ? new Date(d.uploadedAt).toLocaleDateString('sv-SE') : t('dashboard.unknown_date')}
                                 </p>
                             </div>
                         </div>
                     )) : (
-                        <p className="text-sm text-gray-400 italic">Inga filer uppladdade än.</p>
+                        <p className="text-sm text-gray-400 italic">{t('dashboard.no_files_uploaded')}</p>
                     )}
                 </div>
             </div>
@@ -195,7 +196,7 @@ export const RecentUploadsWidget = ({ latestDocs }) => {
                                 className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl transition-colors flex items-center justify-center gap-2"
                             >
                                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" x2="12" y1="15" y2="3" /></svg>
-                                Ladda ner fil
+                                {t('common.download_file') || 'Ladda ner fil'}
                             </a>
                         </div>
                     </div>
@@ -206,6 +207,7 @@ export const RecentUploadsWidget = ({ latestDocs }) => {
 };
 
 export const AdminUserTable = ({ users, onNewUser, onEdit, onDelete }) => {
+    const { t } = useTranslation();
     const [searchTerm, setSearchTerm] = React.useState('');
     const [filterRole, setFilterRole] = React.useState('ALL');
     const [availableRoles, setAvailableRoles] = useState([]);
@@ -231,9 +233,9 @@ export const AdminUserTable = ({ users, onNewUser, onEdit, onDelete }) => {
         <div className="bg-card dark:bg-card-dark rounded-[var(--radius-xl)] border border-card dark:border-card-dark shadow-sm overflow-hidden animate-in slide-in-from-bottom-8" style={{ backdropFilter: 'var(--card-backdrop)' }}>
             <div className="p-6 border-b border-card dark:border-card-dark flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-gray-50/50 dark:bg-[#131314]/50">
                 <div className="flex items-center gap-4">
-                    <h3 className="font-bold text-gray-800 dark:text-white">Användarregister</h3>
+                    <h3 className="font-bold text-gray-800 dark:text-white">{t('dashboard.user_registry')}</h3>
                     <button onClick={onNewUser} className="text-xs bg-indigo-600 text-white px-3 py-1.5 rounded-lg font-bold hover:bg-indigo-700 flex items-center gap-1">
-                        <Plus size={14} /> Ny Användare
+                        <Plus size={14} /> {t('dashboard.new_user')}
                     </button>
                 </div>
                 <div className="flex gap-2 w-full md:w-auto">
@@ -241,7 +243,7 @@ export const AdminUserTable = ({ users, onNewUser, onEdit, onDelete }) => {
                         <Search className="absolute left-3 top-2.5 text-gray-400" size={16} />
                         <input
                             className="w-full pl-9 pr-4 py-2 border rounded-lg text-sm dark:bg-[#1E1F20] dark:text-white dark:border-[#3c4043]"
-                            placeholder="Sök användare..."
+                            placeholder={t('dashboard.search_user')}
                             value={searchTerm}
                             onChange={e => { setSearchTerm(e.target.value); setCurrentPage(1); }}
                         />
@@ -251,16 +253,16 @@ export const AdminUserTable = ({ users, onNewUser, onEdit, onDelete }) => {
                         value={filterRole}
                         onChange={e => { setFilterRole(e.target.value); setCurrentPage(1); }}
                     >
-                        <option value="ALL">Alla Roller</option>
+                        <option value="ALL">{t('dashboard.all_roles')}</option>
                         {availableRoles && availableRoles.length > 0 ? (
                             availableRoles.map(r => (
                                 <option key={r.id} value={r.name}>{r.name}</option>
                             ))
                         ) : (
                             <>
-                                <option value="STUDENT">Studenter</option>
-                                <option value="TEACHER">Lärare</option>
-                                <option value="ADMIN">Admins</option>
+                                <option value="STUDENT">{t('dashboard.students')}</option>
+                                <option value="TEACHER">{t('dashboard.teachers')}</option>
+                                <option value="ADMIN">{t('dashboard.admins')}</option>
                             </>
                         )}
                     </select>
@@ -271,11 +273,11 @@ export const AdminUserTable = ({ users, onNewUser, onEdit, onDelete }) => {
                 <table className="w-full text-left text-sm">
                     <thead className="bg-gray-50 dark:bg-[#282a2c] text-gray-500 dark:text-gray-400 border-b dark:border-[#3c4043]">
                         <tr>
-                            <th className="p-4">Användare</th>
-                            <th className="p-4">Email</th>
-                            <th className="p-4">Roll</th>
-                            <th className="p-4">Status</th>
-                            <th className="p-4 text-right">Åtgärd</th>
+                            <th className="p-4">{t('dashboard.table.user')}</th>
+                            <th className="p-4">{t('dashboard.table.email')}</th>
+                            <th className="p-4">{t('dashboard.table.role')}</th>
+                            <th className="p-4">{t('dashboard.table.status')}</th>
+                            <th className="p-4 text-right">{t('dashboard.table.action')}</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-100 dark:divide-[#3c4043]">
@@ -296,16 +298,16 @@ export const AdminUserTable = ({ users, onNewUser, onEdit, onDelete }) => {
                                         {u.role?.name || u.role}
                                     </span>
                                 </td>
-                                <td className="p-4 text-gray-400 text-xs">Aktiv</td>
+                                <td className="p-4 text-gray-400 text-xs">{t('dashboard.active')}</td>
                                 <td className="p-4 text-right">
                                     <div className="flex justify-end gap-2">
                                         {onEdit && (
-                                            <button onClick={() => onEdit(u)} className="p-2 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-gray-700 rounded-lg transition-colors" title="Redigera användare">
+                                            <button onClick={() => onEdit(u)} className="p-2 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-gray-700 rounded-lg transition-colors" title={t('dashboard.edit_user')}>
                                                 <Edit2 size={16} />
                                             </button>
                                         )}
                                         {onDelete && (
-                                            <button onClick={() => onDelete(u.id)} className="p-2 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors" title="Ta bort användare">
+                                            <button onClick={() => onDelete(u.id)} className="p-2 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors" title={t('dashboard.delete_user')}>
                                                 <Trash2 size={16} />
                                             </button>
                                         )}

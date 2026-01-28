@@ -52,18 +52,18 @@ const OnlineFriendsWidget = () => {
             <div className="flex items-center justify-between mb-4">
                 <h3 className="font-bold text-lg dark:text-white flex items-center gap-2">
                     <Users size={20} className="text-indigo-600" />
-                    Online Vänner
+                    {t('widgets.online_friends.title')}
                 </h3>
                 <span className="bg-green-100 text-green-700 text-xs font-bold px-2 py-1 rounded-full flex items-center gap-1">
                     <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-                    {friends.length} online
+                    {t('widgets.online_friends.x_online', { count: friends.length })}
                 </span>
             </div>
 
             <div className="flex-1 overflow-y-auto space-y-3 pr-2 scrollbar-thin">
                 {friends.length === 0 ? (
                     <div className="text-center text-gray-400 py-8 text-sm italic">
-                        Inga vänner online just nu.
+                        {t('widgets.online_friends.empty')}
                     </div>
                 ) : (
                     friends.map(friend => (
@@ -77,7 +77,7 @@ const OnlineFriendsWidget = () => {
                                 <p className="text-xs text-gray-500 truncate">{friend.role}</p>
                             </div>
                             <div className="text-[10px] text-green-600 font-bold opacity-0 group-hover:opacity-100 transition-opacity">
-                                Profil
+                                {t('widgets.online_friends.profile')}
                             </div>
                         </Link>
                     ))
@@ -86,7 +86,7 @@ const OnlineFriendsWidget = () => {
 
             <div className="pt-4 mt-auto border-t border-gray-100 dark:border-[#3c4043]">
                 <Link to="/profile" className="text-xs text-indigo-600 hover:underline font-bold block text-center">
-                    Visa alla vänner
+                    {t('widgets.online_friends.view_all')}
                 </Link>
             </div>
         </div>

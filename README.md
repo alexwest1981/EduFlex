@@ -753,13 +753,27 @@ taskkill /PID <PID> /F
 ## 🇸🇪 Svenska
 
 ### ⚡ Senaste Uppdateringarna
+*   **🌍 Frontend-lokalisering & Lärarpanel (28 jan 2026):**
+    *   **Lärarpanel:** Fullständig översättning av alla widgets, tabeller och modaler för lärare till svenska och engelska.
+    *   **E-boksförbättringar:** Implementerat uppladdningsindikator med procentvisare för bättre användarupplevelse vid stora filer.
+    *   **Auto-omslag:** Automatiskt generering av bokomslag direkt från EPUB-filer om ingen bild laddas upp manuellt.
+    *   **Utökade Gränser:** Höjt gränsen för filuppladdning till 500MB för att stödja tunga e-böcker och videofiler.
+    *   **Bugfixar:** Åtgärdat krasch i mobilvyn (`t is not defined`) och rensat upp markdown-formatering i komponenter.
+
 *   **🤖 AI Tutor Stabilitetsfixar (27 jan 2026):**
     *   **Kompileringsfix:** Löste ett kritiskt fel där backend inte kunde byggas på grund av saknad `Embedding`-klass via `VectorStoreEntry`-refaktorering.
     *   **Runtime-stabilitet:** Fixade en krasch (`NullPointerException`) i `AITutorService` genom att filtrera bort ogiltiga vektordata under sökning.
     *   **Robusthet:** AI-tutorn hanterar nu saknad data snyggt istället för att krascha applikationen.
 
+*   **📚 Fristående E-boksbibliotek (28 jan 2026):**
+    *   **Bibliotek i Sidofältet:** Nu tillgängligt som en dedikerad länk i sidofältet för alla roller, inklusive elever.
+    *   **Kategorifiltrering:** Ny sidopanel i biblioteket för att filtrera mellan ämnen som Matematik, Programmering, Administration, Ekonomi och mer.
+    *   **Rollbaserad Åtkomst:** Elever har läsrättigheter medan Admin, Lärare och Rektorer kan ladda upp och hantera böcker.
+    *   **Dynamiska Kategorier:** Systemet känner automatiskt av kategorier från uppladdade böcker och uppdaterar filterlistan.
+    *   **Sömlös Integration:** Fullt stöd i samtliga 8 layout-teman och mobilanpassat gränssnitt.
+
 *   **📹 Videouppladdning & MinIO-fixar (28 jan 2026):**
-    *   **Backend Proxy via API:** Implementerade en `FileController` som strömmar filer från MinIO genom backenden. Detta löser "Mixed Content"-varningar och 401 Unauthorized-fel vid uppspelning på externa domäner.
+    *   **Backend Proxy via API:** Implementerade en `FileController` som strömmar filer från MinIO genom backenden. Detta löser "Mixed Content"-varningar och 401 Unauthorized-fel vid uppspelning på externa domäner som `eduflexlms.se`.
     *   **Korrekt Filhantering:** Uppladdade videor behåller nu sina ursprungliga filändelser (.mp4, .mov, etc) för korrekt igenkänning av webbläsaren.
     *   **Refaktorerad Lagring:** Flyttat all filhantering i `CourseService` till ett abstrakt lagringslager (`FileStorageService`), vilket möjliggör sömlös växling mellan lokal lagring och MinIO/S3.
     *   **Byggstabilitet:** Åtgärdat beroendekonflikter i `CourseService` som tidigare blockerade produktion-byggen.
@@ -770,10 +784,6 @@ taskkill /PID <PID> /F
     *   **Automatisk Migrering:** Alla befintliga kurser tilldelas slugs automatiskt vid serverstart.
     *   **Dual Lookup:** Gamla siffer-baserade länkar fungerar fortfarande för bakåtkompatibilitet.
 
-*   **📹 Videouppladdning & MinIO-fixar (28 jan 2026):**
-    *   **Backend Proxy via API:** Implementerade en `FileController` som strömmar filer från MinIO genom backenden. Detta löser "Mixed Content"-varningar och 401 Unauthorized-fel vid uppspelning på externa domäner som `eduflexlms.se`.
-    *   **Korrekt Filhantering:** Uppladdade videor behåller nu sina ursprungliga filändelser (.mp4, .mov, etc) för korrekt igenkänning av webbläsaren.
-    *   **Refaktorerad Lagring:** Flyttat all filhantering i `CourseService` till ett abstrakt lagringslager (`FileStorageService`), vilket möjliggör sömlös växling mellan lokal lagring och MinIO/S3.
     *   **Byggstabilitet:** Åtgärdat beroendekonflikter i `CourseService` som tidigare blockerade produktion-byggen.
 
 *   **🤖 AI Tutor UI-förbättringar (27 jan 2026):**

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Video, Users, Clock, Play, Calendar, ExternalLink, Loader2, Wifi, WifiOff } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { api } from '../../../services/api';
 
 /**
@@ -7,6 +8,7 @@ import { api } from '../../../services/api';
  * Displays countdown for scheduled lessons and "Join Now" for active ones
  */
 const LiveLessonWidget = ({ currentUser }) => {
+    const { t } = useTranslation();
     const [lessons, setLessons] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -26,7 +28,7 @@ const LiveLessonWidget = ({ currentUser }) => {
             setError(null);
         } catch (err) {
             console.error('Failed to load live lessons:', err);
-            setError('Kunde inte ladda lektioner');
+            setError(t('widgets.live_lessons.error_load'));
         } finally {
             setLoading(false);
         }
@@ -45,7 +47,7 @@ const LiveLessonWidget = ({ currentUser }) => {
 
         } catch (err) {
             console.error('Failed to join lesson:', err);
-            alert('Kunde inte ansluta till lektionen');
+            alert(t('widgets.live_lessons.error_join'));
         } finally {
             setJoiningId(null);
         }
@@ -78,7 +80,7 @@ const LiveLessonWidget = ({ currentUser }) => {
         if (lesson.minutesUntilStart <= 5) {
             return (
                 <span className="flex items-center gap-1 px-2 py-0.5 bg-yellow-500 text-white text-xs font-bold rounded-full">
-                    <Clock size={10} /> Snart
+                    <Clock size={10} /> {t('widgets.live_lessons.soon')}
                 </span>
             );
         }
@@ -114,8 +116,8 @@ const LiveLessonWidget = ({ currentUser }) => {
                             <Video className="text-white" size={20} />
                         </div>
                         <div>
-                            <h3 className="font-bold text-white">Live-lektioner</h3>
-                            <p className="text-xs text-white/70">Kommande videomöten</p>
+                            <h3 className="font-bold text-white">{t('widgets.live_lessons.title')}</h3>
+                            <p className="text-xs text-white/70">{t('widgets.live_lessons.subtitle')}</p>
                         </div>
                     </div>
                     {lessons.some(l => l.status === 'LIVE') && (
@@ -136,9 +138,8 @@ const LiveLessonWidget = ({ currentUser }) => {
                 {lessons.map((lesson) => (
                     <div
                         key={lesson.id}
-                        className={`p-4 hover:bg-gray-50 dark:hover:bg-[#282a2c] transition-colors ${
-                            lesson.status === 'LIVE' ? 'bg-red-50 dark:bg-red-900/10' : ''
-                        }`}
+                        className={`p-4 hover:bg-gray-50 dark:hover:bg-[#282a2c] transition-colors ${lesson.status === 'LIVE' ? 'bg-red-50 dark:bg-red-900/10' : ''
+                            }`}
                     >
                         <div className="flex items-start justify-between gap-4">
                             <div className="flex-1 min-w-0">
@@ -146,7 +147,7 @@ const LiveLessonWidget = ({ currentUser }) => {
                                     {getStatusBadge(lesson)}
                                     {lesson.isHost && (
                                         <span className="px-2 py-0.5 bg-gray-100 dark:bg-[#3c4043] text-gray-600 dark:text-gray-300 text-xs rounded-full">
-                                            Värd
+                                            {t('widgets.live_lessons.host')}
                                         </span>
                                     )}
                                 </div>
@@ -166,27 +167,26 @@ const LiveLessonWidget = ({ currentUser }) => {
                             <button
                                 onClick={() => handleJoin(lesson)}
                                 disabled={joiningId === lesson.id}
-                                className={`flex-shrink-0 flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-sm transition-all ${
-                                    lesson.status === 'LIVE'
+                                className={`flex-shrink-0 flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-sm transition-all ${lesson.status === 'LIVE'
                                         ? 'bg-red-500 hover:bg-red-600 text-white shadow-lg shadow-red-500/25'
                                         : lesson.minutesUntilStart <= 15
-                                        ? 'bg-indigo-600 hover:bg-indigo-700 text-white'
-                                        : 'bg-gray-100 dark:bg-[#3c4043] text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-[#4c4043]'
-                                } disabled:opacity-50`}
+                                            ? 'bg-indigo-600 hover:bg-indigo-700 text-white'
+                                            : 'bg-gray-100 dark:bg-[#3c4043] text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-[#4c4043]'
+                                    } disabled:opacity-50`}
                             >
                                 {joiningId === lesson.id ? (
                                     <Loader2 size={16} className="animate-spin" />
                                 ) : lesson.status === 'LIVE' ? (
                                     <>
-                                        <Play size={16} fill="currentColor" /> Gå med
+                                        <Play size={16} fill="currentColor" /> {t('widgets.live_lessons.join')}
                                     </>
                                 ) : lesson.minutesUntilStart <= 15 ? (
                                     <>
-                                        <Video size={16} /> Förbered
+                                        <Video size={16} /> {t('widgets.live_lessons.prepare')}
                                     </>
                                 ) : (
                                     <>
-                                        <Calendar size={16} /> Visa
+                                        <Calendar size={16} /> {t('widgets.live_lessons.view')}
                                     </>
                                 )}
                             </button>
@@ -222,7 +222,7 @@ const LiveLessonWidget = ({ currentUser }) => {
                         href="/calendar"
                         className="text-xs text-indigo-600 dark:text-indigo-400 hover:underline flex items-center justify-center gap-1"
                     >
-                        Se alla i kalendern <ExternalLink size={12} />
+                        {t('widgets.live_lessons.see_all_calendar')} <ExternalLink size={12} />
                     </a>
                 </div>
             )}

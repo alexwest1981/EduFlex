@@ -168,7 +168,7 @@ public class LtiService {
         }
     }
 
-    private void verifySignature(SignedJWT signedJWT, String jwksUrl) throws Exception {
+    protected void verifySignature(SignedJWT signedJWT, String jwksUrl) throws Exception {
         // Use Nimbus RemoteJWKSet to fetch and cache keys
         RemoteJWKSet<SecurityContext> jwkSet = new RemoteJWKSet<>(new java.net.URI(jwksUrl).toURL());
         JWSVerificationKeySelector<SecurityContext> keySelector = new JWSVerificationKeySelector<>(JWSAlgorithm.RS256,

@@ -11,14 +11,16 @@
   },
   "dependencies": {
     "@stomp/stompjs": "^7.2.1",
+    "epubjs": "^0.3.93",
     "i18next": "^23.10.0",
     "i18next-browser-languagedetector": "^7.2.0",
     "lucide-react": "^0.344.0",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
     "react-hot-toast": "^2.6.0",
-    "react-i18next": "^14.1.0",
+    "react-i18next": "^15.4.0",
     "react-quill-new": "^3.7.0",
+    "react-reader": "^2.0.15",
     "react-router-dom": "^6.22.3",
     "recharts": "^2.15.4",
     "sockjs-client": "^1.6.1",
@@ -38,7 +40,7 @@
     "vite": "^5.1.6"
   },
   "overrides": {
-    "react": "$react",
-    "react-dom": "$react-dom"
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
   }
 }

@@ -42,7 +42,7 @@ export const CreateCourseModal = ({ isOpen, onClose, onCourseCreated, currentUse
             };
             await api.courses.create(payload, currentUser.id);
             onCourseCreated(); onClose();
-        } catch (error) { alert("Kunde inte skapa kursen."); } finally { setLoading(false); }
+        } catch (error) { alert(t('teacher_modals.error_create')); } finally { setLoading(false); }
     };
 
     if (!isOpen) return null;
@@ -62,19 +62,19 @@ export const CreateCourseModal = ({ isOpen, onClose, onCourseCreated, currentUse
                     </div>
                     <textarea className="w-full p-2 border rounded dark:bg-[#131314] dark:border-[#3c4043] dark:text-white min-h-[100px]" value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })} placeholder={t('course_modal.description')} />
 
-                    <input className="w-full p-2 border rounded dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" value={formData.tags} onChange={e => setFormData({ ...formData, tags: e.target.value })} placeholder="Taggar (comma-separated, t.ex. Math, Algebra)" />
+                    <input className="w-full p-2 border rounded dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" value={formData.tags} onChange={e => setFormData({ ...formData, tags: e.target.value })} placeholder={t('teacher_modals.tags_placeholder')} />
 
                     {/* GROUP ROOMS */}
                     <div className="bg-gray-50 dark:bg-[#282a2c] p-4 rounded-xl space-y-3">
                         <label className="text-sm font-bold text-gray-700 dark:text-gray-300">Grupprum</label>
                         {groupRooms.map((room, index) => (
                             <div key={index} className="flex gap-2 items-center">
-                                <input className="w-1/3 p-2 border rounded text-sm dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" placeholder="Namn (t.ex Grupp 1)" value={room.name} onChange={e => updateGroupRoom(index, 'name', e.target.value)} />
-                                <input className="flex-1 p-2 border rounded text-sm dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" placeholder="Länk" value={room.link} onChange={e => updateGroupRoom(index, 'link', e.target.value)} />
+                                <input className="w-1/3 p-2 border rounded text-sm dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" placeholder={t('teacher_modals.room_name_placeholder')} value={room.name} onChange={e => updateGroupRoom(index, 'name', e.target.value)} />
+                                <input className="flex-1 p-2 border rounded text-sm dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" placeholder={t('teacher_modals.link')} value={room.link} onChange={e => updateGroupRoom(index, 'link', e.target.value)} />
                                 <button type="button" onClick={() => removeGroupRoom(index)} className="text-red-500 hover:bg-red-50 p-1 rounded"><X size={16} /></button>
                             </div>
                         ))}
-                        <button type="button" onClick={addGroupRoom} className="text-xs font-bold text-indigo-600 hover:underline">+ Lägg till grupprum</button>
+                        <button type="button" onClick={addGroupRoom} className="text-xs font-bold text-indigo-600 hover:underline">{t('teacher_modals.add_room')}</button>
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
@@ -85,7 +85,7 @@ export const CreateCourseModal = ({ isOpen, onClose, onCourseCreated, currentUse
 
                     {/* COLORS */}
                     <div>
-                        <label className="text-xs font-bold text-gray-500 mb-2 block">Kursfärg</label>
+                        <label className="text-xs font-bold text-gray-500 mb-2 block">{t('teacher_modals.course_color')}</label>
                         <div className="flex gap-2 flex-wrap">
                             {COURSE_COLORS.map(c => (
                                 <button
@@ -143,7 +143,7 @@ export const EditCourseModal = ({ isOpen, onClose, onCourseUpdated, courseToEdit
                 groupRooms: groupRooms.filter(r => r.name) // Save if name exists
             });
             onCourseUpdated(); onClose();
-        } catch (error) { alert("Kunde inte uppdatera kursen."); } finally { setLoading(false); }
+        } catch (error) { alert(t('teacher_modals.error_update')); } finally { setLoading(false); }
     };
 
     return (
@@ -154,9 +154,9 @@ export const EditCourseModal = ({ isOpen, onClose, onCourseUpdated, courseToEdit
                     <button onClick={onClose}><X className="text-gray-500" size={20} /></button>
                 </div>
                 <form onSubmit={handleSubmit} className="p-6 space-y-4 overflow-y-auto custom-scrollbar flex-1">
-                    <input className="w-full p-2 border rounded dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} placeholder="Kursnamn" />
+                    <input className="w-full p-2 border rounded dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} placeholder={t('teacher_modals.course_name')} />
                     <div className="grid grid-cols-2 gap-4">
-                        <input className="w-full p-2 border rounded dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" value={formData.courseCode} onChange={e => setFormData({ ...formData, courseCode: e.target.value })} placeholder="Kurskod" />
+                        <input className="w-full p-2 border rounded dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" value={formData.courseCode} onChange={e => setFormData({ ...formData, courseCode: e.target.value })} placeholder={t('teacher_modals.course_code')} />
                         <select className="w-full p-2 border rounded dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" value={formData.category} onChange={e => setFormData({ ...formData, category: e.target.value })}>
                             <option value="">{t('course_modal.category')}...</option>
                             {COURSE_CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
@@ -164,8 +164,7 @@ export const EditCourseModal = ({ isOpen, onClose, onCourseUpdated, courseToEdit
                     </div>
                     <textarea className="w-full p-2 border rounded dark:bg-[#131314] dark:border-[#3c4043] dark:text-white min-h-[100px]" value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })} placeholder={t('course_modal.description')} />
 
-                    <input className="w-full p-2 border rounded dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" value={formData.tags} onChange={e => setFormData({ ...formData, tags: e.target.value })} placeholder="Taggar (separera med komma, t.ex. AI, Matematik, Algebra)" />
-
+                    <input className="w-full p-2 border rounded dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" value={formData.tags} onChange={e => setFormData({ ...formData, tags: e.target.value })} placeholder={t('teacher_modals.tags_placeholder')} />
                     {/* Digitalt Klassrum */}
                     <div className="bg-indigo-50 dark:bg-indigo-900/20 p-4 rounded-xl border border-indigo-100 dark:border-indigo-800">
                         <h4 className="text-xs font-bold uppercase text-indigo-600 dark:text-indigo-400 mb-3 flex items-center gap-2"><Video size={14} /> {t('course_modal.classroom_section')}</h4>
@@ -181,12 +180,12 @@ export const EditCourseModal = ({ isOpen, onClose, onCourseUpdated, courseToEdit
                         <label className="text-sm font-bold text-gray-700 dark:text-gray-300">Grupprum</label>
                         {groupRooms.map((room, index) => (
                             <div key={index} className="flex gap-2 items-center">
-                                <input className="w-1/3 p-2 border rounded text-sm dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" placeholder="Namn" value={room.name} onChange={e => updateGroupRoom(index, 'name', e.target.value)} />
-                                <input className="flex-1 p-2 border rounded text-sm dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" placeholder="Länk" value={room.link} onChange={e => updateGroupRoom(index, 'link', e.target.value)} />
+                                <input className="w-1/3 p-2 border rounded text-sm dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" placeholder={t('teacher_modals.room_name_placeholder')} value={room.name} onChange={e => updateGroupRoom(index, 'name', e.target.value)} />
+                                <input className="flex-1 p-2 border rounded text-sm dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" placeholder={t('teacher_modals.link')} value={room.link} onChange={e => updateGroupRoom(index, 'link', e.target.value)} />
                                 <button type="button" onClick={() => removeGroupRoom(index)} className="text-red-500 hover:bg-red-50 p-1 rounded"><X size={16} /></button>
                             </div>
                         ))}
-                        <button type="button" onClick={addGroupRoom} className="text-xs font-bold text-indigo-600 hover:underline">+ Lägg till grupprum</button>
+                        <button type="button" onClick={addGroupRoom} className="text-xs font-bold text-indigo-600 hover:underline">{t('teacher_modals.add_room')}</button>
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
@@ -196,7 +195,7 @@ export const EditCourseModal = ({ isOpen, onClose, onCourseUpdated, courseToEdit
 
                     {/* COLORS */}
                     <div>
-                        <label className="text-xs font-bold text-gray-500 mb-2 block">Kursfärg</label>
+                        <label className="text-xs font-bold text-gray-500 mb-2 block">{t('teacher_modals.course_color')}</label>
                         <div className="flex gap-2 flex-wrap">
                             {COURSE_COLORS.map(c => (
                                 <button

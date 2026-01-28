@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
-import { LayoutDashboard, FileText, User, Settings, LogOut, Layers, Menu, X, Award, Zap, Moon, Sun, Calendar, BookOpen, TrendingUp, Bell, Search, Plus, HelpCircle, Shield, Folder, BarChart2, HardDrive, Wallet, Music, Play, Pause, Heart, Speaker, Store } from 'lucide-react';
+import { LayoutDashboard, FileText, User, Settings, LogOut, Layers, Menu, X, Award, Zap, Moon, Sun, Calendar, BookOpen, TrendingUp, Bell, Search, Plus, HelpCircle, Shield, Folder, BarChart2, HardDrive, Wallet, Music, Play, Pause, Heart, Speaker, Store, Library } from 'lucide-react';
 import { useAppContext } from '../../context/AppContext';
 import { useModules } from '../../context/ModuleContext';
 import { useTranslation } from 'react-i18next';
@@ -31,12 +31,13 @@ const EmberLayout = ({ children }) => {
     const generalNav = [
         { path: '/', icon: <LayoutDashboard size={18} />, label: t('sidebar.dashboard') },
         { path: '/profile', icon: <User size={18} />, label: t('sidebar.profile') || 'Min Profil' },
-        { path: '/calendar', icon: <Calendar size={18} />, label: t('sidebar.calendar') },
     ];
 
     const utilityNav = [
         { path: '/catalog', icon: <Layers size={18} />, label: t('sidebar.catalog') },
+        { path: '/ebooks', icon: <Library size={18} />, label: t('sidebar.library') || 'Bibliotek' },
         { path: '/documents', icon: <FileText size={18} />, label: t('sidebar.documents') },
+        { path: '/calendar', icon: <Calendar size={18} />, label: t('sidebar.calendar') || 'Kalender' },
         ...(roleName === 'TEACHER' || roleName === 'ADMIN' ? [{ path: '/resources', icon: <BookOpen size={18} />, label: t('sidebar.resource_bank') }] : []),
     ];
 

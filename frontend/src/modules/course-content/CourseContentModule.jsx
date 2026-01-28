@@ -4,6 +4,7 @@ import { BookOpen, Plus, Edit2, Trash2, Save, ChevronRight, Video, Download, Pap
 import { api, getSafeUrl } from '../../services/api';
 import OnlyOfficeEditor from '../../features/documents/OnlyOfficeEditor';
 import VideoPlayer from './components/VideoPlayer';
+import EpubViewer from '../../components/common/EpubViewer';
 
 export const CourseContentModuleMetadata = {
     key: 'material',
@@ -173,6 +174,7 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
     // Helper: Identifiera filtyp
     const isVideoFile = (url) => url && url.match(/\.(mp4|webm|ogg|mov)$/i);
     const isImageFile = (url) => url && url.match(/\.(jpg|jpeg|png|gif|webp)$/i);
+    const isEpubFile = (url) => url && url.match(/\.epub$/i);
 
     const getEmbedUrl = (url) => {
         if (!url) return null;
@@ -340,6 +342,7 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
                                 <option value="STUDY_MATERIAL">Studiematerial (Fil/Dokument)</option>
                                 <option value="QUESTIONS">Instuderingsfrågor</option>
                                 <option value="LINK">Extern Länk</option>
+                                <option value="EPUB">E-bok (EPUB)</option>
                             </select>
                         </div>
 
@@ -374,7 +377,7 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
                                 type="file"
                                 accept={formData.type === 'VIDEO'
                                     ? '.mp4,.mov,.webm,.avi,.mkv'
-                                    : '.pdf,.doc,.docx,.ppt,.pptx,.zip,.mp4,.mov,.webm,.jpg,.jpeg,.png,.gif,.webp'}
+                                    : '.pdf,.epub,.doc,.docx,.ppt,.pptx,.zip,.mp4,.mov,.webm,.jpg,.jpeg,.png,.gif,.webp'}
                                 className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
                                 onChange={e => {
                                     const selectedFile = e.target.files[0];
@@ -532,6 +535,16 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
                             {selectedLesson.fileUrl && isImageFile(selectedLesson.fileUrl) && (
                                 <div className="rounded-xl overflow-hidden shadow-lg border border-gray-200 dark:border-[#3c4043]">
                                     <img src={getSafeUrl(selectedLesson.fileUrl)} alt="Lektionsmaterial" className="w-full h-auto object-contain max-h-[600px] bg-gray-50 dark:bg-black/50" />
+                                </div>
+                            )}
+
+                            {/* 4. EPUB E-BOK (NYTT!) */}
+                            {selectedLesson.fileUrl && isEpubFile(selectedLesson.fileUrl) && (
+                                <div className="h-[700px] rounded-xl overflow-hidden shadow-lg border border-gray-200 dark:border-[#3c4043]">
+                                    <EpubViewer
+                                        url={getSafeUrl(selectedLesson.fileUrl)}
+                                        title={selectedLesson.title}
+                                    />
                                 </div>
                             )}
                         </div>

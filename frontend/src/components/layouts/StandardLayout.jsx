@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
-import { LayoutDashboard, FileText, User, Settings, LogOut, Layers, Menu, X, Award, Zap, Moon, Sun, Calendar, BookOpen, TrendingUp, Users, HelpCircle, Store } from 'lucide-react';
+import { LayoutDashboard, FileText, User, Settings, LogOut, Layers, Menu, X, Award, Zap, Moon, Sun, Calendar, BookOpen, TrendingUp, Users, HelpCircle, Store, Library } from 'lucide-react';
 import { useAppContext } from '../../context/AppContext';
 import { useModules } from '../../context/ModuleContext';
 import { useTranslation } from 'react-i18next';
@@ -72,15 +72,16 @@ const StandardLayout = ({ children }) => {
 
     const navItems = [
         { path: '/', icon: <LayoutDashboard size={20} />, label: t('sidebar.dashboard') },
-        { path: '/calendar', icon: <Calendar size={20} />, label: t('sidebar.calendar') || 'Kalender' },
+        { path: '/calendar', icon: <Calendar size={20} />, label: t('sidebar.calendar') },
         { path: '/documents', icon: <FileText size={20} />, label: t('sidebar.documents') },
         { path: '/catalog', icon: <Layers size={20} />, label: t('sidebar.catalog') },
+        { path: '/ebooks', icon: <Library size={20} />, label: t('sidebar.library') },
         ...(roleName === 'TEACHER' || roleName === 'ADMIN' ? [{ path: '/resources', icon: <BookOpen size={20} />, label: t('sidebar.resource_bank') }] : []),
-        ...(roleName === 'TEACHER' ? [{ path: '/?tab=COURSES', icon: <BookOpen size={20} />, label: 'Mina kurser' }] : []),
-        ...(roleName === 'STUDENT' ? [{ path: '/my-courses', icon: <BookOpen size={20} />, label: 'Mina kurser' }] : []),
+        ...(roleName === 'TEACHER' ? [{ path: '/?tab=COURSES', icon: <BookOpen size={20} />, label: t('sidebar.my_courses') || 'Mina kurser' }] : []),
+        ...(roleName === 'STUDENT' ? [{ path: '/my-courses', icon: <BookOpen size={20} />, label: t('sidebar.my_courses') || 'Mina kurser' }] : []),
         ...(roleName === 'ADMIN' ? [{ path: '/admin', icon: <Settings size={20} />, label: t('sidebar.admin') }] : []),
         ...(analyticsActive && roleName === 'ADMIN' ? [{ path: '/analytics', icon: <TrendingUp size={20} />, label: t('sidebar.analytics') }] : []),
-        { path: '/support', icon: <HelpCircle size={20} />, label: t('sidebar.support') || 'Kontakt & Support' },
+        { path: '/support', icon: <HelpCircle size={20} />, label: t('sidebar.support') },
         { path: '/profile', icon: <User size={20} />, label: t('sidebar.my_profile') },
     ];
 
@@ -245,7 +246,7 @@ const StandardLayout = ({ children }) => {
                         <button
                             onClick={() => setSidebarOpen(!sidebarOpen)}
                             className="p-2 hover:bg-gray-200 dark:hover:bg-[#282a2c] rounded-lg text-gray-500 dark:text-gray-400 transition-colors"
-                            title={sidebarOpen ? "Minimera meny" : "Expandera meny"}
+                            title={sidebarOpen ? t('common.minimize_menu') || "Minimera meny" : t('common.expand_menu') || "Expandera meny"}
                         >
                             {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
                         </button>
@@ -256,7 +257,7 @@ const StandardLayout = ({ children }) => {
                         <button
                             onClick={() => setFriendsPanelOpen(!friendsPanelOpen)}
                             className={`relative p-2.5 rounded-full transition-colors ${friendsPanelOpen ? 'bg-indigo-100 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400' : 'hover:bg-gray-100 text-gray-500 dark:text-gray-400 dark:hover:bg-[#282a2c]'}`}
-                            title="Online Vänner"
+                            title={t('common.online_friends') || "Online Vänner"}
                         >
                             <Users size={20} />
                             <span className="absolute top-2 right-2 flex h-2 w-2">

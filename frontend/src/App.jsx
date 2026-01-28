@@ -44,6 +44,7 @@ import SupportPage from './features/support/SupportPage';
 import CommunityHub from './features/community/CommunityHub';
 import CommunityAdmin from './features/community/CommunityAdmin';
 import AIQuizGenerator from './features/ai/AIQuizGenerator';
+import EbookLibrary from './features/library/EbookLibrary';
 
 // --- PROTECTED ROUTE ---
 const ProtectedRoute = ({ children, roles }) => {
@@ -191,6 +192,14 @@ const AppRoutes = () => {
                     <ProtectedRoute>
                         <Layout currentUser={currentUser} handleLogout={logout}>
                             <DocumentManager currentUser={currentUser} />
+                        </Layout>
+                    </ProtectedRoute>
+                } />
+
+                <Route path="/ebooks" element={
+                    <ProtectedRoute>
+                        <Layout currentUser={currentUser} handleLogout={logout}>
+                            <EbookLibrary />
                         </Layout>
                     </ProtectedRoute>
                 } />

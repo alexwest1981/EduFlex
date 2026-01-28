@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
-import { LayoutDashboard, FileText, User, Settings, LogOut, Layers, Menu, X, Award, Zap, Moon, Sun, Calendar, BookOpen, TrendingUp, Bell, Search, Plus, HelpCircle, Shield, Folder, BarChart2, HardDrive, Wallet, PieChart, Activity, Store } from 'lucide-react';
+import { LayoutDashboard, FileText, User, Settings, LogOut, Layers, Menu, X, Award, Zap, Moon, Sun, Calendar, BookOpen, TrendingUp, Bell, Search, Plus, HelpCircle, Shield, Folder, BarChart2, HardDrive, Wallet, PieChart, Activity, Store, Library } from 'lucide-react';
 import { useAppContext } from '../../context/AppContext';
 import { useModules } from '../../context/ModuleContext';
 import { useTranslation } from 'react-i18next';
@@ -23,7 +23,7 @@ const MidnightLayout = ({ children }) => {
         if (!currentUser?.profilePictureUrl) return null;
         let url = currentUser.profilePictureUrl;
         if (url.includes('minio:9000')) url = url.replace('minio:9000', 'localhost:9000');
-        return url.startsWith('http') ? url : `${window.location.origin}${url}`;
+        return url.startsWith('http') ? url : `${window.location.origin}${url} `;
     };
     const profileImgUrl = getProfileUrl();
     const token = localStorage.getItem('token');
@@ -34,6 +34,7 @@ const MidnightLayout = ({ children }) => {
         { path: '/', icon: <LayoutDashboard size={18} />, label: t('sidebar.dashboard') },
         { path: '/catalog', icon: <Wallet size={18} />, label: t('sidebar.catalog') },
         { path: '/documents', icon: <FileText size={18} />, label: t('sidebar.documents') },
+        { path: '/ebooks', icon: <Library size={18} />, label: t('sidebar.library') || 'Bibliotek' },
         { path: '/calendar', icon: <Calendar size={18} />, label: t('sidebar.calendar') },
         { path: '/support', icon: <HelpCircle size={18} />, label: t('sidebar.support') || 'Kontakt & Support' },
         ...(roleName === 'ADMIN' ? [{ path: '/analytics', icon: <Activity size={18} />, label: t('sidebar.analytics') }] : []),
@@ -43,17 +44,17 @@ const MidnightLayout = ({ children }) => {
     return (
         <div className="flex items-center justify-center p-6 h-screen w-screen overflow-hidden text-zinc-300 font-sans transition-colors duration-300" style={{ background: 'var(--app-background)' }}> {/* Rich Zinc Black */}
             <style>{`
-                @media (prefers-color-scheme: dark) {
-                    .dark-mode-bg { background: var(--app-background-dark) !important; }
-                }
-                :root.dark body { background: var(--app-background-dark) !important; }
-                .app-wrapper { background: var(--app-background); }
-                .dark .app-wrapper { background: var(--app-background-dark); }
-                .midnight-scroll::-webkit-scrollbar { width: 6px; }
-                .midnight-scroll::-webkit-scrollbar-track { background: #121212; }
-                .midnight-scroll::-webkit-scrollbar-thumb { background: #27272a; border-radius: 10px; }
-                .midnight-scroll::-webkit-scrollbar-thumb:hover { background: #3f3f46; }
-            `}</style>
+@media(prefers - color - scheme: dark) {
+                    .dark - mode - bg { background: var(--app - background - dark)!important; }
+}
+                : root.dark body { background: var(--app - background - dark)!important; }
+                .app - wrapper { background: var(--app - background); }
+                .dark.app - wrapper { background: var(--app - background - dark); }
+                .midnight - scroll:: -webkit - scrollbar { width: 6px; }
+                .midnight - scroll:: -webkit - scrollbar - track { background: #121212; }
+                .midnight - scroll:: -webkit - scrollbar - thumb { background: #27272a; border - radius: 10px; }
+                .midnight - scroll:: -webkit - scrollbar - thumb:hover { background: #3f3f46; }
+`}</style>
 
             {/* FLOATING APP CONTAINER - Dark Zinc Card */}
             <div className="w-full h-full max-w-[1700px] bg-[#121212] rounded-[32px] shadow-2xl overflow-hidden flex flex-col border border-white/10 relative">
@@ -81,11 +82,11 @@ const MidnightLayout = ({ children }) => {
                                     to={item.path}
                                     className={({ isActive: navActive }) => {
                                         const isActive = navActive || (item.path === '/admin' && location.pathname.startsWith('/enterprise'));
-                                        return `px-4 py-1.5 rounded-full text-xs font-medium transition-all duration-300 flex items-center gap-2
+                                        return `px - 4 py - 1.5 rounded - full text - xs font - medium transition - all duration - 300 flex items - center gap - 2
                                         ${isActive
                                                 ? 'bg-zinc-800 text-white shadow-sm ring-1 ring-white/10'
                                                 : 'text-zinc-500 hover:text-zinc-200 hover:bg-white/5'
-                                            }`;
+                                            } `;
                                     }}
                                 >
                                     {({ isActive: navActive }) => {

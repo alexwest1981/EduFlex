@@ -127,7 +127,7 @@ export const MobileSidebar = ({ isOpen, onClose, navItems, friendsPanelOpen, set
                             )}
                         </div>
                         <div className="flex flex-col">
-                            <span className="text-xs text-gray-500 dark:text-gray-400">Inloggad som</span>
+                            <span className="text-xs text-gray-500 dark:text-gray-400">{t('dashboard.logged_in_as')}</span>
                             <span className="font-bold text-gray-900 dark:text-white">{currentUser.firstName}</span>
                         </div>
                     </div>
@@ -263,10 +263,10 @@ export const MobileBottomNav = ({ onMenuOpen }) => {
             style={getContainerStyles()}
         >
             <div className={`flex justify-around items-center ${depth === 'floating' ? 'h-[72px] px-2' : 'h-[80px] px-2'}`}>
-                <NavItem to="/" icon={LayoutDashboard} label="Home" />
-                <NavItem to="/catalog" icon={Layers} label="Catalog" />
-                <NavItem to="/calendar" icon={Calendar} label="Calendar" />
-                <NavItem to="/profile" icon={User} label="Profile" />
+                <NavItem to="/" icon={LayoutDashboard} label={t('sidebar.dashboard')} />
+                <NavItem to="/catalog" icon={Layers} label={t('sidebar.catalog')} />
+                <NavItem to="/calendar" icon={Calendar} label={t('sidebar.calendar')} />
+                <NavItem to="/profile" icon={User} label={t('sidebar.my_profile')} />
 
                 {/* More / Menu Button */}
                 <button
@@ -287,6 +287,7 @@ export const MobileBottomNav = ({ onMenuOpen }) => {
  * MobileHeader - Simplified, clean header.
  */
 export const MobileHeader = ({ friendsPanelOpen, setFriendsPanelOpen }) => {
+    const { t } = useTranslation();
     const { currentUser } = useAppContext();
     const profileImgUrl = getSafeUrl(currentUser?.profilePictureUrl);
     const [adminMenuOpen, setAdminMenuOpen] = React.useState(false);
@@ -307,7 +308,7 @@ export const MobileHeader = ({ friendsPanelOpen, setFriendsPanelOpen }) => {
                     )}
                 </div>
                 <div className="flex flex-col">
-                    <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">Välkommen tillbaka,</span>
+                    <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">{t('dashboard.welcome_back') || 'Välkommen tillbaka,'}</span>
                     <span className="text-sm font-bold text-gray-900 dark:text-white leading-tight">{currentUser?.firstName}</span>
                 </div>
             </div>

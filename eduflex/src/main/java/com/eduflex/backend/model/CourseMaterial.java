@@ -8,7 +8,7 @@ import jakarta.persistence.*;
 public class CourseMaterial {
 
     public enum MaterialType {
-        TEXT, VIDEO, FILE, LINK, LESSON, STUDY_MATERIAL, QUESTIONS
+        TEXT, VIDEO, FILE, LINK, LESSON, STUDY_MATERIAL, QUESTIONS, EPUB
     }
 
     public enum VideoStatus {

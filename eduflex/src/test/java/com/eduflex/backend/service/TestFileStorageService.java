@@ -14,4 +14,9 @@ public class TestFileStorageService implements FileStorageService {
     public String storeFile(MultipartFile file) {
         return "http://localhost:9000/test-bucket/" + file.getOriginalFilename();
     }
+
+    @Override
+    public java.io.InputStream getFileStream(String path) {
+        return new java.io.ByteArrayInputStream("test content".getBytes());
+    }
 }

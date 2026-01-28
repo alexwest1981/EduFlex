@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { BadgeAlert, ArrowRight, AlertCircle, AlertTriangle, Clock, Shield, User } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { api } from '../../../services/api';
 
 const AdminTicketsWidget = ({ onManage }) => {
+    const { t } = useTranslation();
     const [tickets, setTickets] = useState([]);
     const [loading, setLoading] = useState(true);
 
@@ -49,7 +51,7 @@ const AdminTicketsWidget = ({ onManage }) => {
             <div className="p-6">
                 <div className="flex justify-between items-start">
                     <div>
-                        <p className="text-gray-500 dark:text-gray-400 text-[10px] font-bold uppercase tracking-wider">Aktiva Supportärenden</p>
+                        <p className="text-gray-500 dark:text-gray-400 text-[10px] font-bold uppercase tracking-wider">{t('widgets.tickets.active')}</p>
                         <p className="text-4xl font-black text-gray-900 dark:text-white mt-1">{stats.total}</p>
                     </div>
                     <div className={`p-3 rounded-full ${stats.critical > 0 ? 'bg-red-100 text-red-600 animate-pulse' : 'bg-indigo-100 text-indigo-600'}`}>
@@ -59,16 +61,16 @@ const AdminTicketsWidget = ({ onManage }) => {
 
                 {/* BREAKDOWN (Matches AdminStats style) */}
                 <div className="flex flex-wrap gap-x-3 gap-y-1 mt-4 pt-4 border-t border-gray-100 dark:border-[#3c4043]">
-                    <div className="flex items-center gap-1 text-[10px] font-bold text-gray-600 dark:text-gray-400" title="Kritiska">
+                    <div className="flex items-center gap-1 text-[10px] font-bold text-gray-600 dark:text-gray-400" title={t('widgets.tickets.critical')}>
                         <AlertTriangle size={11} className="text-red-500" /> {stats.critical} K
                     </div>
-                    <div className="flex items-center gap-1 text-[10px] font-bold text-gray-600 dark:text-gray-400" title="Hög prioritet">
+                    <div className="flex items-center gap-1 text-[10px] font-bold text-gray-600 dark:text-gray-400" title={t('widgets.tickets.high')}>
                         <Shield size={11} className="text-orange-500" /> {stats.high} H
                     </div>
-                    <div className="flex items-center gap-1 text-[10px] font-bold text-gray-600 dark:text-gray-400" title="Medium prioritet">
+                    <div className="flex items-center gap-1 text-[10px] font-bold text-gray-600 dark:text-gray-400" title={t('widgets.tickets.medium')}>
                         <AlertCircle size={11} className="text-yellow-500" /> {stats.medium} M
                     </div>
-                    <div className="flex items-center gap-1 text-[10px] font-bold text-gray-600 dark:text-gray-400" title="Låg prioritet">
+                    <div className="flex items-center gap-1 text-[10px] font-bold text-gray-600 dark:text-gray-400" title={t('widgets.tickets.low')}>
                         <Clock size={11} className="text-green-500" /> {stats.low} L
                     </div>
                 </div>
@@ -77,9 +79,9 @@ const AdminTicketsWidget = ({ onManage }) => {
             {/* TICKET LIST (Matches RecentUsersWidget style) */}
             <div className="px-6 pb-6 flex-1 overflow-hidden flex flex-col">
                 <div className="flex justify-between items-center mb-4 pt-2 border-t border-gray-100 dark:border-[#3c4043]">
-                    <h4 className="text-xs font-black text-gray-400 uppercase tracking-widest">Öppna ärenden</h4>
+                    <h4 className="text-xs font-black text-gray-400 uppercase tracking-widest">{t('widgets.tickets.open')}</h4>
                     <button onClick={onManage} className="text-[10px] font-black uppercase text-indigo-600 hover:underline flex items-center gap-1">
-                        Hantera <ArrowRight size={10} />
+                        {t('dashboard.manage')} <ArrowRight size={10} />
                     </button>
                 </div>
 
@@ -103,7 +105,7 @@ const AdminTicketsWidget = ({ onManage }) => {
                                 </p>
                                 <div className="flex items-center gap-2 mt-1.5">
                                     <div className="flex items-center gap-1 text-[8px] font-black text-gray-400 uppercase">
-                                        <User size={8} /> {t.userName || 'Okänd'}
+                                        <User size={8} /> {t.userName || t('common.unknown')}
                                     </div>
                                     <div className="w-1 h-1 rounded-full bg-gray-300" />
                                     <div className="text-[8px] font-black text-gray-400 uppercase">
@@ -115,7 +117,7 @@ const AdminTicketsWidget = ({ onManage }) => {
                     )) : (
                         <div className="h-full flex flex-col items-center justify-center text-center p-4">
                             <Clock size={32} className="text-gray-200 mb-2" />
-                            <p className="text-xs text-gray-400 italic">Inga öppna ärenden just nu.</p>
+                            <p className="text-xs text-gray-400 italic">{t('widgets.tickets.empty')}</p>
                         </div>
                     )}
                 </div>

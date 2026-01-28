@@ -21,11 +21,6 @@ const AdminDashboard = () => {
 
     const [unreadCount, setUnreadCount] = useState(0);
 
-    // Guard: Prevent hook call if React environment is unstable (although this typically means bundle issues)
-    if (typeof window !== 'undefined' && !window.React && process.env.NODE_ENV === 'development') {
-        console.warn("React global not found, but continuing in dev mode");
-    }
-
     // Widget State via Hook
     const { widgets, toggleWidget } = useDashboardWidgets('admin', {
         stats: true,
@@ -38,13 +33,13 @@ const AdminDashboard = () => {
     });
 
     const widgetLabels = {
-        stats: 'Statistik',
-        calendar: 'Kalender & Schema',
-        recentUsers: 'Senaste Användare',
-        recentDocs: 'Nyligen Uppladdat',
-        messages: 'Senaste Meddelanden',
-        onlineFriends: 'Online Vänner',
-        tickets: 'Supportärenden'
+        stats: t('dashboard.widgets.stats'),
+        calendar: t('dashboard.widgets.calendar'),
+        recentUsers: t('dashboard.widgets.recent_users'),
+        recentDocs: t('dashboard.widgets.recent_docs'),
+        messages: t('dashboard.widgets.messages'),
+        onlineFriends: t('dashboard.widgets.online_friends'),
+        tickets: t('dashboard.widgets.tickets')
     };
 
     const fetchStats = async () => {
@@ -94,7 +89,7 @@ const AdminDashboard = () => {
                         onClick={() => setActiveTab('overview')}
                         className={`pb-3 flex items-center gap-2 font-bold text-lg transition-colors border-b-2 whitespace-nowrap capitalize ${activeTab === 'overview' ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200'}`}
                     >
-                        <LayoutDashboard size={20} /> Översikt
+                        <LayoutDashboard size={20} /> {t('dashboard.tabs.overview')}
                     </button>
                     <button
                         onClick={() => setActiveTab('communication')}
@@ -104,7 +99,7 @@ const AdminDashboard = () => {
                             <MessageSquare size={20} />
                             {unreadCount > 0 && <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full font-bold">{unreadCount}</span>}
                         </div>
-                        Kommunikation
+                        {t('dashboard.tabs.communication')}
                     </button>
                 </div>
                 {activeTab === 'overview' && (

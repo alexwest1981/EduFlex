@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { api } from '../../../../services/api';
 import SkolverketCourseSelector from '../../../../components/SkolverketCourseSelector';
 
@@ -18,6 +19,7 @@ const COURSE_COLORS = [
 
 // --- CREATE USER ---
 export const CreateUserModal = ({ isOpen, onClose, onUserCreated }) => {
+    const { t } = useTranslation();
     const [formData, setFormData] = useState({ firstName: '', lastName: '', email: '', username: '', password: '', role: 'STUDENT' });
     const [loading, setLoading] = useState(false);
     const [roleList, setRoleList] = useState([]);
@@ -38,7 +40,7 @@ export const CreateUserModal = ({ isOpen, onClose, onUserCreated }) => {
             onUserCreated();
             onClose();
         } catch (error) {
-            setErrorMsg("Kunde inte skapa användare. Kontrollera uppgifterna.");
+            setErrorMsg(t('messages.register_error') || "Kunde inte skapa användare. Kontrollera uppgifterna.");
         } finally {
             setLoading(false);
         }
@@ -50,18 +52,18 @@ export const CreateUserModal = ({ isOpen, onClose, onUserCreated }) => {
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in">
             <div className="bg-white dark:bg-[#1E1F20] w-full max-w-md rounded-2xl shadow-2xl border border-gray-200 dark:border-[#3c4043] overflow-hidden">
                 <div className="p-4 border-b border-gray-100 dark:border-[#3c4043] flex justify-between items-center">
-                    <h3 className="font-bold text-lg text-gray-900 dark:text-white">Registrera ny användare</h3>
+                    <h3 className="font-bold text-lg text-gray-900 dark:text-white">{t('admin.register_new_user')}</h3>
                     <button onClick={onClose}><X className="text-gray-500" size={20} /></button>
                 </div>
                 <form onSubmit={handleSubmit} className="p-6 space-y-4">
                     {errorMsg && <div className="p-3 bg-red-100 text-red-700 text-sm rounded-lg">{errorMsg}</div>}
                     <div className="grid grid-cols-2 gap-4">
-                        <input required className="w-full p-2 rounded-lg border dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" placeholder="Förnamn" value={formData.firstName} onChange={e => setFormData({ ...formData, firstName: e.target.value })} />
-                        <input required className="w-full p-2 rounded-lg border dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" placeholder="Efternamn" value={formData.lastName} onChange={e => setFormData({ ...formData, lastName: e.target.value })} />
+                        <input required className="w-full p-2 rounded-lg border dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" placeholder={t('admin.firstname')} value={formData.firstName} onChange={e => setFormData({ ...formData, firstName: e.target.value })} />
+                        <input required className="w-full p-2 rounded-lg border dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" placeholder={t('admin.lastname')} value={formData.lastName} onChange={e => setFormData({ ...formData, lastName: e.target.value })} />
                     </div>
-                    <input required className="w-full p-2 rounded-lg border dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" placeholder="Användarnamn" value={formData.username} onChange={e => setFormData({ ...formData, username: e.target.value })} />
-                    <input required type="email" className="w-full p-2 rounded-lg border dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" placeholder="Email" value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })} />
-                    <input required type="password" className="w-full p-2 rounded-lg border dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" placeholder="Lösenord" value={formData.password} onChange={e => setFormData({ ...formData, password: e.target.value })} />
+                    <input required className="w-full p-2 rounded-lg border dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" placeholder={t('auth.username')} value={formData.username} onChange={e => setFormData({ ...formData, username: e.target.value })} />
+                    <input required type="email" className="w-full p-2 rounded-lg border dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" placeholder={t('admin.email')} value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })} />
+                    <input required type="password" className="w-full p-2 rounded-lg border dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" placeholder={t('admin.password')} value={formData.password} onChange={e => setFormData({ ...formData, password: e.target.value })} />
                     <select className="w-full p-2 rounded-lg border dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" value={formData.role} onChange={e => setFormData({ ...formData, role: e.target.value })}>
                         {roleList && roleList.length > 0 ? (
                             roleList.map(r => (
@@ -69,13 +71,13 @@ export const CreateUserModal = ({ isOpen, onClose, onUserCreated }) => {
                             ))
                         ) : (
                             <>
-                                <option value="STUDENT">Student</option>
-                                <option value="TEACHER">Lärare</option>
-                                <option value="ADMIN">Administratör</option>
+                                <option value="STUDENT">{t('auth.student')}</option>
+                                <option value="TEACHER">{t('auth.teacher')}</option>
+                                <option value="ADMIN">{t('auth.admin')}</option>
                             </>
                         )}
                     </select>
-                    <button disabled={loading} type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 rounded-lg mt-2">{loading ? 'Sparar...' : 'Skapa Användare'}</button>
+                    <button disabled={loading} type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 rounded-lg mt-2">{loading ? t('common.loading') : t('admin.create_account')}</button>
                 </form>
             </div>
         </div>
@@ -84,6 +86,7 @@ export const CreateUserModal = ({ isOpen, onClose, onUserCreated }) => {
 
 // --- EDIT USER ---
 export const EditUserModal = ({ isOpen, onClose, onUserUpdated, userToEdit }) => {
+    const { t } = useTranslation();
     const [formData, setFormData] = useState({ firstName: '', lastName: '', email: '', username: '', role: '' });
     const [loading, setLoading] = useState(false);
     const [roleList, setRoleList] = useState([]);
@@ -116,7 +119,7 @@ export const EditUserModal = ({ isOpen, onClose, onUserUpdated, userToEdit }) =>
             onUserUpdated();
             onClose();
         } catch (error) {
-            setErrorMsg("Kunde inte uppdatera användare. Kontrollera uppgifterna.");
+            setErrorMsg(t('messages.setting_error') || "Kunde inte uppdatera användare. Kontrollera uppgifterna.");
         } finally {
             setLoading(false);
         }
@@ -128,7 +131,7 @@ export const EditUserModal = ({ isOpen, onClose, onUserUpdated, userToEdit }) =>
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in">
             <div className="bg-white dark:bg-[#1E1F20] w-full max-w-md rounded-2xl shadow-2xl border border-gray-200 dark:border-[#3c4043] overflow-hidden">
                 <div className="p-4 border-b border-gray-100 dark:border-[#3c4043] flex justify-between items-center">
-                    <h3 className="font-bold text-lg text-gray-900 dark:text-white">Redigera användare</h3>
+                    <h3 className="font-bold text-lg text-gray-900 dark:text-white">{t('admin.edit_user')}</h3>
                     <button onClick={onClose}><X className="text-gray-500" size={20} /></button>
                 </div>
                 <form onSubmit={handleSubmit} className="p-6 space-y-4">
@@ -146,13 +149,13 @@ export const EditUserModal = ({ isOpen, onClose, onUserUpdated, userToEdit }) =>
                             ))
                         ) : (
                             <>
-                                <option value="STUDENT">Student</option>
-                                <option value="TEACHER">Lärare</option>
-                                <option value="ADMIN">Administratör</option>
+                                <option value="STUDENT">{t('auth.student')}</option>
+                                <option value="TEACHER">{t('auth.teacher')}</option>
+                                <option value="ADMIN">{t('auth.admin')}</option>
                             </>
                         )}
                     </select>
-                    <button disabled={loading} type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 rounded-lg mt-2">{loading ? 'Sparar...' : 'Uppdatera Användare'}</button>
+                    <button disabled={loading} type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 rounded-lg mt-2">{loading ? t('common.loading') : t('dashboard.active')}</button>
                 </form>
             </div>
         </div>
@@ -162,6 +165,7 @@ export const EditUserModal = ({ isOpen, onClose, onUserUpdated, userToEdit }) =>
 
 // --- CREATE COURSE ---
 export const CreateCourseModal = ({ isOpen, onClose, onCourseCreated, teachers }) => {
+    const { t } = useTranslation();
     const [formData, setFormData] = useState({ name: '', courseCode: '', description: '', category: 'Övrigt', tags: '', teacherId: '', startDate: '', endDate: '', color: 'bg-indigo-600', maxStudents: 30 });
     const [loading, setLoading] = useState(false);
     const [useSkolverket, setUseSkolverket] = useState(false);
@@ -177,7 +181,7 @@ export const CreateCourseModal = ({ isOpen, onClose, onCourseCreated, teachers }
             onClose();
             setSelectedSkolverketCourse(null);
             setUseSkolverket(false);
-        } catch (error) { alert("Kunde inte skapa kursen."); } finally { setLoading(false); }
+        } catch (error) { alert(t('course.error_occurred') || "Kunde inte skapa kursen."); } finally { setLoading(false); }
     };
 
     const handleSkolverketSelect = (course) => {
@@ -198,14 +202,14 @@ export const CreateCourseModal = ({ isOpen, onClose, onCourseCreated, teachers }
             <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in">
                 <div className="bg-white dark:bg-[#1E1F20] w-full max-w-md rounded-2xl shadow-2xl border border-gray-200 dark:border-[#3c4043] overflow-hidden max-h-[90vh] overflow-y-auto">
                     <div className="p-4 border-b border-gray-100 dark:border-[#3c4043] flex justify-between items-center">
-                        <h3 className="font-bold text-lg text-gray-900 dark:text-white">Skapa ny kurs</h3>
+                        <h3 className="font-bold text-lg text-gray-900 dark:text-white">{t('admin.create_course')}</h3>
                         <button onClick={onClose}><X className="text-gray-500" size={20} /></button>
                     </div>
                     <form onSubmit={handleSubmit} className="p-6 space-y-4">
                         {/* Skolverket Option */}
                         <div className="flex items-center gap-2 p-3 bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-800 rounded-lg">
                             <input type="checkbox" id="useSkolverket" checked={useSkolverket} onChange={(e) => { setUseSkolverket(e.target.checked); if (!e.target.checked) setSelectedSkolverketCourse(null); }} className="w-4 h-4" />
-                            <label htmlFor="useSkolverket" className="text-sm font-medium text-indigo-900 dark:text-indigo-100">Baserad på Skolverkskurs</label>
+                            <label htmlFor="useSkolverket" className="text-sm font-medium text-indigo-900 dark:text-indigo-100">{t('admin.base_on_skolverket')}</label>
                         </div>
                         {useSkolverket && (
                             <div>
@@ -221,15 +225,15 @@ export const CreateCourseModal = ({ isOpen, onClose, onCourseCreated, teachers }
                                         </div>
                                     </div>
                                 ) : (
-                                    <button type="button" onClick={() => setShowSkolverketSelector(true)} className="w-full p-3 border-2 border-dashed border-indigo-300 dark:border-indigo-700 rounded-lg text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 font-medium">Välj Skolverkskurs</button>
+                                    <button type="button" onClick={() => setShowSkolverketSelector(true)} className="w-full p-3 border-2 border-dashed border-indigo-300 dark:border-indigo-700 rounded-lg text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 font-medium">{t('admin.choose_skolverket_course')}</button>
                                 )}
                             </div>
                         )}
-                        <input required className="w-full p-2 border rounded dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" placeholder="Kursnamn" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} />
+                        <input required className="w-full p-2 border rounded dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" placeholder={t('admin.course_name')} value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} />
                         <div className="grid grid-cols-2 gap-4">
-                            <input required className="w-full p-2 border rounded dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" placeholder="Kurskod" value={formData.courseCode} onChange={e => setFormData({ ...formData, courseCode: e.target.value })} />
+                            <input required className="w-full p-2 border rounded dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" placeholder={t('admin.course_code')} value={formData.courseCode} onChange={e => setFormData({ ...formData, courseCode: e.target.value })} />
                             <select className="w-full p2 border rounded dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" value={formData.category} onChange={e => setFormData({ ...formData, category: e.target.value })}>
-                                <option value="">Välj kategori...</option>
+                                <option value="">{t('course_modal.category')}...</option>
                                 {COURSE_CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
                             </select>
                         </div>
@@ -237,28 +241,28 @@ export const CreateCourseModal = ({ isOpen, onClose, onCourseCreated, teachers }
                             <input type="date" className="w-full p-2 border rounded dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" value={formData.startDate} onChange={e => setFormData({ ...formData, startDate: e.target.value })} />
                             <input type="date" className="w-full p-2 border rounded dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" value={formData.endDate} onChange={e => setFormData({ ...formData, endDate: e.target.value })} />
                         </div>
-                        <input type="number" className="w-full p-2 border rounded dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" placeholder="Max platser" value={formData.maxStudents} onChange={e => setFormData({ ...formData, maxStudents: e.target.value })} />
+                        <input type="number" className="w-full p-2 border rounded dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" placeholder={t('admin.max_seats')} value={formData.maxStudents} onChange={e => setFormData({ ...formData, maxStudents: e.target.value })} />
 
-                        <input className="w-full p-2 border rounded dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" value={formData.tags} onChange={e => setFormData({ ...formData, tags: e.target.value })} placeholder="Taggar (comma-separated, t.ex. Math, Algebra)" />
+                        <input className="w-full p-2 border rounded dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" value={formData.tags} onChange={e => setFormData({ ...formData, tags: e.target.value })} placeholder={t('admin.tags')} />
 
                         {/* DIGITAL CLASSROOM SETTINGS */}
                         <div className="p-4 bg-gray-50 dark:bg-[#131314] border border-gray-100 dark:border-[#3c4043] rounded-lg space-y-3">
-                            <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider">Digitalt Klassrum (Frivilligt)</h4>
+                            <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider">{t('admin.digital_classroom')}</h4>
                             <div className="grid grid-cols-2 gap-4">
                                 <select className="w-full p-2 text-sm border rounded dark:bg-[#1E1F20] dark:border-[#3c4043] dark:text-white" value={formData.classroomType || ''} onChange={e => setFormData({ ...formData, classroomType: e.target.value })}>
-                                    <option value="">Välj plattform...</option>
+                                    <option value="">{t('admin.choose_platform')}</option>
                                     <option value="ZOOM">Zoom</option>
                                     <option value="TEAMS">Microsoft Teams</option>
                                     <option value="MEET">Google Meet</option>
                                     <option value="DISCORD">Discord</option>
                                 </select>
-                                <input className="w-full p-2 text-sm border rounded dark:bg-[#1E1F20] dark:border-[#3c4043] dark:text-white" placeholder="Klistra in länk..." value={formData.classroomLink || ''} onChange={e => setFormData({ ...formData, classroomLink: e.target.value })} />
+                                <input className="w-full p-2 text-sm border rounded dark:bg-[#1E1F20] dark:border-[#3c4043] dark:text-white" placeholder={t('admin.paste_link')} value={formData.classroomLink || ''} onChange={e => setFormData({ ...formData, classroomLink: e.target.value })} />
                             </div>
                         </div>
 
                         {/* COLORS */}
                         <div>
-                            <label className="text-xs font-bold text-gray-500 mb-2 block">Kursfärg</label>
+                            <label className="text-xs font-bold text-gray-500 mb-2 block">{t('admin.color_theme')}</label>
                             <div className="flex gap-2 flex-wrap">
                                 {COURSE_COLORS.map(c => (
                                     <button
@@ -272,9 +276,9 @@ export const CreateCourseModal = ({ isOpen, onClose, onCourseCreated, teachers }
                             </div>
                         </div>
 
-                        <select className="w-full p-2 border rounded dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" value={formData.teacherId} onChange={e => setFormData({ ...formData, teacherId: e.target.value })}><option value="">Välj lärare...</option>{teachers.map(t => (<option key={t.id} value={t.id}>{t.fullName} ({t.email})</option>))}</select>
-                        <textarea className="w-full p-2 border rounded dark:bg-[#131314] dark:border-[#3c4043] dark:text-white h-20 resize-none" placeholder="Beskrivning" value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })} />
-                        <button disabled={loading} type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 rounded-lg mt-2">{loading ? 'Skapar...' : 'Skapa Kurs'}</button>
+                        <select className="w-full p-2 border rounded dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" value={formData.teacherId} onChange={e => setFormData({ ...formData, teacherId: e.target.value })}><option value="">{t('admin.choose_teacher')}</option>{teachers.map(t => (<option key={t.id} value={t.id}>{t.fullName} ({t.email})</option>))}</select>
+                        <textarea className="w-full p-2 border rounded dark:bg-[#131314] dark:border-[#3c4043] dark:text-white h-20 resize-none" placeholder={t('admin.content')} value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })} />
+                        <button disabled={loading} type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 rounded-lg mt-2">{loading ? t('common.loading') : t('admin.create_course')}</button>
                     </form>
                 </div>
             </div>
@@ -285,6 +289,7 @@ export const CreateCourseModal = ({ isOpen, onClose, onCourseCreated, teachers }
 
 // --- EDIT COURSE ---
 export const EditCourseModal = ({ isOpen, onClose, onCourseUpdated, teachers, courseToEdit }) => {
+    const { t } = useTranslation();
     if (!isOpen || !courseToEdit) return null;
     const [formData, setFormData] = useState({ name: '', courseCode: '', category: '', description: '', tags: '', teacherId: '', startDate: '', endDate: '', color: '', maxStudents: 30 });
     const [loading, setLoading] = useState(false);
@@ -305,14 +310,14 @@ export const EditCourseModal = ({ isOpen, onClose, onCourseUpdated, teachers, co
         try {
             await api.courses.update(courseToEdit.id, { ...formData, maxStudents: parseInt(formData.maxStudents) });
             onCourseUpdated(); onClose();
-        } catch (error) { alert("Kunde inte uppdatera kursen."); } finally { setLoading(false); }
+        } catch (error) { alert(t('course.error_occurred') || "Kunde inte uppdatera kursen."); } finally { setLoading(false); }
     };
 
     return (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in">
             <div className="bg-white dark:bg-[#1E1F20] w-full max-w-md rounded-2xl shadow-2xl border border-gray-200 dark:border-[#3c4043] overflow-hidden">
                 <div className="p-4 border-b border-gray-100 dark:border-[#3c4043] flex justify-between items-center">
-                    <h3 className="font-bold text-lg text-gray-900 dark:text-white">Redigera kurs</h3>
+                    <h3 className="font-bold text-lg text-gray-900 dark:text-white">{t('admin.edit_course')}</h3>
                     <button onClick={onClose}><X className="text-gray-500" size={20} /></button>
                 </div>
                 <form onSubmit={handleSubmit} className="p-6 space-y-4">
@@ -320,32 +325,32 @@ export const EditCourseModal = ({ isOpen, onClose, onCourseUpdated, teachers, co
                     <div className="grid grid-cols-2 gap-4">
                         <input className="w-full p-2 border rounded dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" value={formData.courseCode} onChange={e => setFormData({ ...formData, courseCode: e.target.value })} />
                         <select className="w-full p-2 border rounded dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" value={formData.category} onChange={e => setFormData({ ...formData, category: e.target.value })}>
-                            <option value="">Välj kategori...</option>
+                            <option value="">{t('course_modal.category')}...</option>
                             {COURSE_CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
                         </select>
                     </div>
                     <input className="w-full p-2 border rounded dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" type="number" value={formData.maxStudents} onChange={e => setFormData({ ...formData, maxStudents: e.target.value })} />
 
-                    <input className="w-full p-2 border rounded dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" value={formData.tags} onChange={e => setFormData({ ...formData, tags: e.target.value })} placeholder="Taggar (separera med komma, t.ex. AI, Matematik)" />
+                    <input className="w-full p-2 border rounded dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" value={formData.tags} onChange={e => setFormData({ ...formData, tags: e.target.value })} placeholder={t('admin.tags')} />
 
                     {/* DIGITAL CLASSROOM SETTINGS */}
                     <div className="p-4 bg-gray-50 dark:bg-[#131314] border border-gray-100 dark:border-[#3c4043] rounded-lg space-y-3">
-                        <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider">Digitalt Klassrum (Frivilligt)</h4>
+                        <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider">{t('admin.digital_classroom')}</h4>
                         <div className="grid grid-cols-2 gap-4">
                             <select className="w-full p-2 text-sm border rounded dark:bg-[#1E1F20] dark:border-[#3c4043] dark:text-white" value={formData.classroomType || ''} onChange={e => setFormData({ ...formData, classroomType: e.target.value })}>
-                                <option value="">Välj plattform...</option>
+                                <option value="">{t('admin.choose_platform')}</option>
                                 <option value="ZOOM">Zoom</option>
                                 <option value="TEAMS">Microsoft Teams</option>
                                 <option value="MEET">Google Meet</option>
                                 <option value="DISCORD">Discord</option>
                             </select>
-                            <input className="w-full p-2 text-sm border rounded dark:bg-[#1E1F20] dark:border-[#3c4043] dark:text-white" placeholder="Klistra in länk..." value={formData.classroomLink || ''} onChange={e => setFormData({ ...formData, classroomLink: e.target.value })} />
+                            <input className="w-full p-2 text-sm border rounded dark:bg-[#1E1F20] dark:border-[#3c4043] dark:text-white" placeholder={t('admin.paste_link')} value={formData.classroomLink || ''} onChange={e => setFormData({ ...formData, classroomLink: e.target.value })} />
                         </div>
                     </div>
 
                     {/* COLORS */}
                     <div>
-                        <label className="text-xs font-bold text-gray-500 mb-2 block">Kursfärg</label>
+                        <label className="text-xs font-bold text-gray-500 mb-2 block">{t('admin.color_theme')}</label>
                         <div className="flex gap-2 flex-wrap">
                             {COURSE_COLORS.map(c => (
                                 <button
@@ -359,8 +364,8 @@ export const EditCourseModal = ({ isOpen, onClose, onCourseUpdated, teachers, co
                         </div>
                     </div>
 
-                    <select className="w-full p-2 border rounded dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" value={formData.teacherId} onChange={e => setFormData({ ...formData, teacherId: e.target.value })}><option value="">Välj lärare...</option>{teachers?.map(t => (<option key={t.id} value={t.id}>{t.fullName} ({t.email})</option>))}</select>
-                    <button disabled={loading} type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 rounded-lg mt-2">Spara</button>
+                    <select className="w-full p-2 border rounded dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" value={formData.teacherId} onChange={e => setFormData({ ...formData, teacherId: e.target.value })}><option value="">{t('admin.choose_teacher')}</option>{teachers?.map(t => (<option key={t.id} value={t.id}>{t.fullName} ({t.email})</option>))}</select>
+                    <button disabled={loading} type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 rounded-lg mt-2">{t('common.save')}</button>
                 </form>
             </div>
         </div>

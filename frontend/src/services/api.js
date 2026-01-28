@@ -327,7 +327,43 @@ export const api = {
 
     documents: {
         getAll: () => fetch(`${API_BASE}/documents/all`, { headers: getHeaders() }).then(handleResponse),
-        upload: (userId, formData) => fetch(`${API_BASE}/documents/user/${userId}`, { method: 'POST', headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }, body: formData }).then(handleResponse),
+        upload: (userId, formData, onProgress) => {
+            return new Promise((resolve, reject) => {
+                const xhr = new XMLHttpRequest();
+                xhr.open('POST', `${API_BASE}/documents/user/${userId}`);
+
+                // Add headers
+                const token = localStorage.getItem('token');
+                if (token) xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+                const tenantId = getTenantFromUrl();
+                if (tenantId) xhr.setRequestHeader('X-Tenant-ID', tenantId);
+
+                // Progress event
+                if (onProgress) {
+                    xhr.upload.onprogress = (event) => {
+                        if (event.lengthComputable) {
+                            const percent = Math.round((event.loaded / event.total) * 100);
+                            onProgress(percent);
+                        }
+                    };
+                }
+
+                xhr.onload = () => {
+                    if (xhr.status >= 200 && xhr.status < 300) {
+                        try {
+                            resolve(JSON.parse(xhr.responseText));
+                        } catch (e) {
+                            resolve(xhr.responseText);
+                        }
+                    } else {
+                        reject(new Error(xhr.statusText || 'Upload failed'));
+                    }
+                };
+
+                xhr.onerror = () => reject(new Error('Network error'));
+                xhr.send(formData);
+            });
+        },
         delete: (id) => fetch(`${API_BASE}/documents/${id}`, { method: 'DELETE', headers: getHeaders() }).then(handleResponse),
         getUserDocs: (userId) => fetch(`${API_BASE}/documents/user/${userId}`, { headers: getHeaders() }).then(handleResponse),
         share: (docId, userId) => fetch(`${API_BASE}/documents/${docId}/share?userId=${userId}`, { method: 'POST', headers: getHeaders() }).then(handleResponse),

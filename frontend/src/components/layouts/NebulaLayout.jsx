@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
-import { LayoutDashboard, FileText, User, Settings, LogOut, Layers, Menu, X, Award, Zap, Moon, Sun, Calendar, BookOpen, TrendingUp, Bell, Search, ShoppingBag, MessageSquare, PieChart, HelpCircle, Store } from 'lucide-react';
+import { LayoutDashboard, FileText, User, Settings, LogOut, Layers, Menu, X, Award, Zap, Moon, Sun, Calendar, BookOpen, TrendingUp, Bell, Search, ShoppingBag, MessageSquare, PieChart, HelpCircle, Store, Library } from 'lucide-react';
 import { useAppContext } from '../../context/AppContext';
 import { useModules } from '../../context/ModuleContext';
 import { useTranslation } from 'react-i18next';
@@ -20,7 +20,7 @@ const NebulaLayout = ({ children }) => {
         if (!currentUser?.profilePictureUrl) return null;
         let url = currentUser.profilePictureUrl;
         if (url.includes('minio:9000')) url = url.replace('minio:9000', 'localhost:9000');
-        return url.startsWith('http') ? url : `${window.location.origin}${url}`;
+        return url.startsWith('http') ? url : `${window.location.origin}${url} `;
     };
     const profileImgUrl = getProfileUrl();
 
@@ -34,6 +34,7 @@ const NebulaLayout = ({ children }) => {
     const navItems = [
         { path: '/', icon: <LayoutDashboard size={20} />, label: t('sidebar.dashboard') },
         { path: '/catalog', icon: <ShoppingBag size={20} />, label: t('sidebar.catalog') }, // Shopping Bag for Catalogue fits Bryzos vibe
+        { path: '/ebooks', icon: <Library size={18} />, label: t('sidebar.library') || 'Bibliotek' },
         { path: '/calendar', icon: <Calendar size={20} />, label: t('sidebar.calendar') },
         { path: '/documents', icon: <FileText size={20} />, label: t('sidebar.documents') },
         { path: '/support', icon: <HelpCircle size={20} />, label: t('sidebar.support') || 'Kontakt & Support' },
@@ -44,14 +45,14 @@ const NebulaLayout = ({ children }) => {
     return (
         <div className="flex flex-col h-screen text-gray-800 dark:text-[#E3E3E3] font-sans transition-colors duration-300 overflow-hidden" style={{ background: 'var(--app-background)' }}>
             <style>{`
-                @media (prefers-color-scheme: dark) {
-                    .dark-mode-bg { background: var(--app-background-dark) !important; }
-                }
-                :root.dark body { background: var(--app-background-dark) !important; }
-                .app-wrapper { background: var(--app-background); }
-                .dark .app-wrapper { background: var(--app-background-dark); }
-            `}</style>
-            <div className={`fixed inset-0 -z-10 app-wrapper transition-colors duration-300 pointer-events-none`} />
+@media(prefers - color - scheme: dark) {
+                    .dark - mode - bg { background: var(--app - background - dark)!important; }
+}
+                : root.dark body { background: var(--app - background - dark)!important; }
+                .app - wrapper { background: var(--app - background); }
+                .dark.app - wrapper { background: var(--app - background - dark); }
+`}</style>
+            <div className={`fixed inset - 0 - z - 10 app - wrapper transition - colors duration - 300 pointer - events - none`} />
 
             {/* NEBULA TOP BAR - Minimalist & Glassy */}
             <header className="h-24 px-10 flex items-center justify-between shrink-0">
@@ -72,11 +73,11 @@ const NebulaLayout = ({ children }) => {
                     {navItems.map((item) => {
                         const isActive = location.pathname === item.path || (item.path === '/admin' && location.pathname.startsWith('/enterprise'));
                         return (
-                            <NavLink key={item.path} to={item.path} className={`p-3.5 rounded-2xl transition-all duration-300 group
+                            <NavLink key={item.path} to={item.path} className={`p - 3.5 rounded - 2xl transition - all duration - 300 group
                                 ${isActive
                                     ? 'bg-white dark:bg-[#2D2D2D] text-purple-600 dark:text-purple-400 shadow-xl shadow-purple-900/5 scale-110'
                                     : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-white/50 dark:hover:bg-white/5'
-                                }`}>
+                                } `}>
                                 {item.icon}
                             </NavLink>
                         );

@@ -59,8 +59,8 @@ const StudentScheduleAndDeadlinesWidget = ({ assignments = [] }) => {
                     const diffTime = eventDateNormal - today;
                     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-                    if (diffDays === 0) dayLabel = "Idag";
-                    else if (diffDays === 1) dayLabel = "Imorgon";
+                    if (diffDays === 0) dayLabel = t('common.today');
+                    else if (diffDays === 1) dayLabel = t('common.tomorrow');
 
                     return {
                         id: event.id,
@@ -71,7 +71,7 @@ const StudentScheduleAndDeadlinesWidget = ({ assignments = [] }) => {
                         type: event.type === 'LECTURE' || event.meetingLink ? 'online' : 'campus',
                         platform: event.platform || (event.meetingLink ? 'Zoom' : null),
                         link: event.meetingLink,
-                        room: event.location || 'Sal saknas'
+                        room: event.location || t('widgets.schedule.room_missing')
                     };
                 });
 
@@ -102,12 +102,12 @@ const StudentScheduleAndDeadlinesWidget = ({ assignments = [] }) => {
                 <div className="p-5">
                     <h3 className="font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
                         <Calendar className="text-indigo-500" size={20} />
-                        Dagens & Veckans Schema
+                        {t('widgets.schedule.title')}
                     </h3>
 
                     <div className="space-y-3 min-h-[150px]">
                         {isLoading ? (
-                            <div className="text-center text-sm text-gray-400 py-4">Laddar schema...</div>
+                            <div className="text-center text-sm text-gray-400 py-4">{t('widgets.schedule.loading')}</div>
                         ) : lessons.length > 0 ? (
                             lessons.map((lesson) => (
                                 <div key={lesson.id} className="relative pl-4 border-l-2 border-indigo-100 dark:border-indigo-900/50 py-1">
@@ -122,11 +122,11 @@ const StudentScheduleAndDeadlinesWidget = ({ assignments = [] }) => {
                                             <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold ${lesson.platform === 'Zoom' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300' :
                                                 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300'
                                                 }`}>
-                                                {lesson.platform || 'Online'}
+                                                {lesson.platform || t('widgets.schedule.online')}
                                             </span>
                                         ) : (
                                             <span className="text-[10px] px-1.5 py-0.5 rounded-full font-bold bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300">
-                                                Campus
+                                                {t('widgets.schedule.campus')}
                                             </span>
                                         )}
                                     </div>
@@ -135,7 +135,7 @@ const StudentScheduleAndDeadlinesWidget = ({ assignments = [] }) => {
 
                                     {lesson.type === 'online' && lesson.link ? (
                                         <a href={lesson.link} target="_blank" rel="noopener noreferrer" className="w-full flex items-center justify-center gap-2 py-1.5 bg-indigo-50 hover:bg-indigo-100 dark:bg-[#282a2c] dark:hover:bg-[#3c4043] text-indigo-700 dark:text-indigo-300 rounded-lg text-xs font-bold transition-colors">
-                                            {getPlatformIcon(lesson.platform)} Anslut
+                                            {getPlatformIcon(lesson.platform)} {t('widgets.schedule.connect')}
                                         </a>
                                     ) : (
                                         <div className="flex items-center gap-1.5 text-xs text-gray-500">
@@ -146,7 +146,7 @@ const StudentScheduleAndDeadlinesWidget = ({ assignments = [] }) => {
                             ))
                         ) : (
                             <div className="flex flex-col items-center justify-center h-full text-gray-400 text-sm py-4">
-                                <p>Inga lektioner idag</p>
+                                <p>{t('widgets.schedule.empty')}</p>
                             </div>
                         )}
                     </div>
@@ -155,7 +155,7 @@ const StudentScheduleAndDeadlinesWidget = ({ assignments = [] }) => {
                         onClick={() => navigate('/calendar')}
                         className="w-full mt-4 flex items-center justify-center gap-1 text-xs font-bold text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
                     >
-                        Se hela schemat <ArrowRight size={12} />
+                        {t('widgets.schedule.view_full')} <ArrowRight size={12} />
                     </button>
                 </div>
 
@@ -163,7 +163,7 @@ const StudentScheduleAndDeadlinesWidget = ({ assignments = [] }) => {
                 <div className="p-5 bg-gray-50/50 dark:bg-[#282a2c]/20">
                     <h3 className="font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
                         <Bell className="text-orange-500" size={20} />
-                        Kommande Inlämningar
+                        {t('widgets.schedule.upcoming_submissions')}
                         {assignments.length > 0 && (
                             <span className="text-xs font-bold bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300 px-2 py-0.5 rounded-full">
                                 {assignments.length}
@@ -186,20 +186,20 @@ const StudentScheduleAndDeadlinesWidget = ({ assignments = [] }) => {
                                         onClick={() => navigate(`/course/${a.courseId}`)}
                                         className="text-xs font-bold text-indigo-600 dark:text-indigo-400 flex items-center gap-1 hover:underline"
                                     >
-                                        Gå till uppgift <ArrowRight size={10} />
+                                        {t('widgets.schedule.go_to_task')} <ArrowRight size={10} />
                                     </button>
                                 </div>
                             ))
                         ) : (
                             <div className="flex flex-col items-center justify-center h-full text-gray-400 text-sm py-4">
-                                <p>Inga kommande deadlines</p>
+                                <p>{t('widgets.schedule.no_deadlines')}</p>
                             </div>
                         )}
                     </div>
 
                     {assignments.length > 3 && (
                         <button className="w-full mt-4 text-xs font-bold text-center text-gray-400 hover:text-orange-600 dark:hover:text-orange-400 transition-colors">
-                            Visa alla ({assignments.length})
+                            {t('widgets.schedule.view_all_count', { count: assignments.length })}
                         </button>
                     )}
                 </div>

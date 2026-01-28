@@ -66,16 +66,16 @@ const TeacherDashboard = ({ currentUser }) => {
 
 
     const widgetLabels = {
-        showActiveCourses: 'Aktiva Kurser',
-        showMyStudents: 'Mina Studenter',
-        showToGrade: 'Att Rätta',
-        showApplications: 'Ansökningar',
-        showAtRisk: 'Studenter i Riskzon',
-        showRiskWidget: 'Risk Analys Widget',
-        showSchedule: 'Schema & Händelser',
-        showShortcuts: 'Genvägar',
-        showMessages: 'Meddelanden',
-        showOnlineFriends: 'Online Vänner'
+        showActiveCourses: t('teacher_widgets.active_courses'),
+        showMyStudents: t('teacher_widgets.my_students'),
+        showToGrade: t('teacher_widgets.to_grade'),
+        showApplications: t('teacher_widgets.applications'),
+        showAtRisk: t('teacher_dashboard.tab_students'),
+        showRiskWidget: t('teacher_widgets.risk_zone'),
+        showSchedule: t('teacher_dashboard.section_schedule'),
+        showShortcuts: t('teacher_dashboard.section_shortcuts'),
+        showMessages: t('dashboard.widgets.messages'),
+        showOnlineFriends: t('dashboard.widgets.online_friends')
     };
 
     useEffect(() => {
@@ -157,8 +157,8 @@ const TeacherDashboard = ({ currentUser }) => {
         try {
             await api.courses.handleApplication(appId, action);
             loadDashboardData();
-            alert(action === 'approve' ? "Student antagen!" : "Ansökan avslagen.");
-        } catch (e) { alert("Något gick fel."); }
+            alert(action === 'approve' ? t('teacher_tables.admitted_msg') : t('teacher_tables.rejected_msg'));
+        } catch (e) { alert(t('teacher_tables.error_msg')); }
     };
 
     if (isLoading) return <div className="p-20 text-center text-gray-500">{t('messages.loading')}</div>;
@@ -278,20 +278,20 @@ const TeacherDashboard = ({ currentUser }) => {
             {activeTab === 'COURSES' && (
                 <div className="space-y-6 animate-in slide-in-from-bottom-2 duration-300">
                     <div className="flex justify-between items-center bg-gray-50 dark:bg-[#1E1F20] p-4 rounded-xl border border-gray-200 dark:border-[#3c4043]">
-                        <h3 className="font-bold text-gray-700 dark:text-white">Administration</h3>
-                        <button onClick={() => setShowCreateModal(true)} className="bg-indigo-600 text-white px-4 py-2 rounded-lg font-bold flex items-center gap-2 hover:bg-indigo-700 shadow-lg"><Plus size={18} /> Skapa Kurs</button>
+                        <h3 className="font-bold text-gray-700 dark:text-white">{t('teacher_dashboard.section_admin')}</h3>
+                        <button onClick={() => setShowCreateModal(true)} className="bg-indigo-600 text-white px-4 py-2 rounded-lg font-bold flex items-center gap-2 hover:bg-indigo-700 shadow-lg"><Plus size={18} /> {t('admin.create_course')}</button>
                     </div>
 
                     <div className="grid grid-cols-1 gap-4">
                         {myCourses.map(course => (
                             <div key={course.id} className="bg-white dark:bg-[#1E1F20] p-6 rounded-2xl border border-gray-200 dark:border-[#3c4043] shadow-sm flex flex-col md:flex-row justify-between items-center gap-6">
                                 <div className="flex-1">
-                                    <div className="flex items-center gap-3 mb-1"><div className={`w-3 h-3 rounded-full ${course.color || 'bg-gray-300'}`}></div><span className={`px-2 py-1 text-[10px] font-bold uppercase rounded ${course.isOpen ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>{course.isOpen ? 'Öppen' : 'Stängd'}</span><h3 className="text-lg font-bold text-gray-900 dark:text-white">{course.name}</h3></div>
-                                    <div className="flex items-center gap-4 text-xs text-gray-400 font-mono"><span>{course.courseCode}</span><span>•</span><span>{course.students?.length}/{course.maxStudents} stud</span></div>
+                                    <div className="flex items-center gap-3 mb-1"><div className={`w-3 h-3 rounded-full ${course.color || 'bg-gray-300'}`}></div><span className={`px-2 py-1 text-[10px] font-bold uppercase rounded ${course.isOpen ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>{course.isOpen ? t('teacher_tables.open') : t('teacher_tables.closed')}</span><h3 className="text-lg font-bold text-gray-900 dark:text-white">{course.name}</h3></div>
+                                    <div className="flex items-center gap-4 text-xs text-gray-400 font-mono"><span>{course.courseCode}</span><span>•</span><span>{course.students?.length}/{course.maxStudents} {t('admin.students').toLowerCase()}</span></div>
                                 </div>
                                 <div className="flex gap-2">
-                                    <button onClick={() => navigate(`/course/${course.slug || course.id}`)} className="px-4 py-2 bg-gray-100 dark:bg-[#282a2c] hover:bg-gray-200 text-gray-700 dark:text-white rounded-lg font-bold text-sm">Gå till kurs</button>
-                                    <button onClick={() => { setCourseToEdit(course); setShowEditModal(true); }} className="px-4 py-2 bg-indigo-50 text-indigo-700 rounded-lg font-bold text-sm hover:bg-indigo-100 flex items-center gap-2"><Edit2 size={16} /> Redigera</button>
+                                    <button onClick={() => navigate(`/course/${course.slug || course.id}`)} className="px-4 py-2 bg-gray-100 dark:bg-[#282a2c] hover:bg-gray-200 text-gray-700 dark:text-white rounded-lg font-bold text-sm">{t('course_modal.go_to_course')}</button>
+                                    <button onClick={() => { setCourseToEdit(course); setShowEditModal(true); }} className="px-4 py-2 bg-indigo-50 text-indigo-700 rounded-lg font-bold text-sm hover:bg-indigo-100 flex items-center gap-2"><Edit2 size={16} /> {t('common.edit')}</button>
                                 </div>
                             </div>
                         ))}
@@ -302,18 +302,18 @@ const TeacherDashboard = ({ currentUser }) => {
             {activeTab === 'STUDENTS' && (
                 <div className="bg-white dark:bg-[#1E1F20] rounded-2xl border border-gray-200 dark:border-[#3c4043] shadow-sm overflow-hidden animate-in slide-in-from-bottom-2 duration-300">
                     <div className="p-4 border-b border-gray-100 dark:border-[#3c4043] flex justify-between items-center">
-                        <h3 className="font-bold text-gray-700 dark:text-white">Alla Studenter ({allStudents.length})</h3>
-                        <div className="relative"><Search className="absolute left-3 top-2.5 text-gray-400" size={16} /><input type="text" placeholder="Sök..." className="pl-9 pr-4 py-2 rounded-lg border dark:border-[#3c4043] bg-gray-50 dark:bg-[#131314] text-sm outline-none" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} /></div>
+                        <h3 className="font-bold text-gray-700 dark:text-white">{t('teacher_tables.all_students_count', { count: allStudents.length })}</h3>
+                        <div className="relative"><Search className="absolute left-3 top-2.5 text-gray-400" size={16} /><input type="text" placeholder={`${t('common.search')}...`} className="pl-9 pr-4 py-2 rounded-lg border dark:border-[#3c4043] bg-gray-50 dark:bg-[#131314] text-sm outline-none" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} /></div>
                     </div>
                     <table className="w-full text-left text-sm">
-                        <thead className="bg-gray-50 dark:bg-[#282a2c] text-gray-500 uppercase text-xs font-bold border-b dark:border-[#3c4043]"><tr><th className="p-4">Namn</th><th className="p-4">Senast inloggad</th><th className="p-4 text-right">Åtgärd</th></tr></thead>
+                        <thead className="bg-gray-50 dark:bg-[#282a2c] text-gray-500 uppercase text-xs font-bold border-b dark:border-[#3c4043]"><tr><th className="p-4">{t('teacher_tables.student')}</th><th className="p-4">{t('teacher_tables.submitted')}</th><th className="p-4 text-right">{t('common.action')}</th></tr></thead>
                         <tbody className="divide-y divide-gray-100 dark:divide-[#3c4043]">
                             {allStudents.filter(s => s.fullName.toLowerCase().includes(searchTerm.toLowerCase())).map(student => (
-                                <tr key={student.id} className="hover:bg-gray-50 dark:hover:bg-[#282a2c]/50"><td className="p-4 font-bold">{student.fullName}</td><td className="p-4 text-gray-500">{student.daysSinceLogin === 999 ? 'Aldrig' : `${student.daysSinceLogin} dagar sedan`}</td><td className="p-4 text-right">
+                                <tr key={student.id} className="hover:bg-gray-50 dark:hover:bg-[#282a2c]/50"><td className="p-4 font-bold">{student.fullName}</td><td className="p-4 text-gray-500">{student.daysSinceLogin === 999 ? t('teacher_tables.never') : t('teacher_tables.days_ago', { count: student.daysSinceLogin })}</td><td className="p-4 text-right">
                                     <button onClick={() => {
                                         setMessageRecipient(student);
                                         // setActiveTab('COMMUNICATION'); // REMOVED: Now opens modal directly via messageRecipient state
-                                    }} className="text-indigo-600 font-bold text-xs hover:underline">Kontakta</button>
+                                    }} className="text-indigo-600 font-bold text-xs hover:underline">{t('teacher_tables.contact')}</button>
                                 </td></tr>
                             ))}
                         </tbody>

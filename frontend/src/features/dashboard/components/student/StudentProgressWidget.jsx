@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { api } from '../../../../services/api';
 import { Loader2, AlertTriangle, CheckCircle, ChevronRight, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 const StudentProgressWidget = ({ currentUser }) => {
+    const { t } = useTranslation();
     const [progress, setProgress] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [selectedCourse, setSelectedCourse] = useState(null);
@@ -32,7 +34,7 @@ const StudentProgressWidget = ({ currentUser }) => {
     return (
         <div className="bg-white dark:bg-[#1E1F20] rounded-2xl border border-gray-200 dark:border-[#3c4043] shadow-sm p-6">
             <h3 className="font-bold text-gray-900 dark:text-white text-sm uppercase tracking-wider mb-4">
-                Mina Kursresultat
+                {t('widgets.student_progress.title')}
             </h3>
             <div className="space-y-3">
                 {progress.map(p => (
@@ -55,12 +57,12 @@ const StudentProgressWidget = ({ currentUser }) => {
                             </div>
                         ) : (
                             <div className="flex items-center gap-1.5 text-xs text-green-600 dark:text-green-400 font-medium">
-                                <CheckCircle size={12} /> Ligger bra till
+                                <CheckCircle size={12} /> {t('widgets.student_progress.on_track')}
                             </div>
                         )}
                         <div className="mt-2 text-[10px] text-gray-400 flex gap-3">
-                            <span>Uppgifter: {p.completedAssignments}/{p.totalAssignments}</span>
-                            <span>Quiz: {p.completedQuizzes}/{p.totalQuizzes}</span>
+                            <span>{t('widgets.student_progress.assignments')}: {p.completedAssignments}/{p.totalAssignments}</span>
+                            <span>{t('widgets.student_progress.quizzes')}: {p.completedQuizzes}/{p.totalQuizzes}</span>
                         </div>
                     </div>
                 ))}
@@ -75,12 +77,12 @@ const StudentProgressWidget = ({ currentUser }) => {
                         </button>
 
                         <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-1">{selectedCourse.courseName}</h2>
-                        <p className="text-sm text-gray-500 mb-6">Detaljerad översikt</p>
+                        <p className="text-sm text-gray-500 mb-6">{t('widgets.student_progress.detailed_overview')}</p>
 
                         <div className="space-y-6 max-h-[60vh] overflow-y-auto pr-2">
                             {/* SENASTE RESULTAT */}
                             <div>
-                                <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Senaste Resultat</h4>
+                                <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">{t('widgets.student_progress.latest_results')}</h4>
                                 {selectedCourse.recentResults && selectedCourse.recentResults.length > 0 ? (
                                     <div className="space-y-2">
                                         {selectedCourse.recentResults.slice(0, 10).map((res, i) => (
@@ -94,7 +96,7 @@ const StudentProgressWidget = ({ currentUser }) => {
                                         ))}
                                     </div>
                                 ) : (
-                                    <p className="text-sm text-gray-400 italic">Inga resultat än.</p>
+                                    <p className="text-sm text-gray-400 italic">{t('widgets.student_progress.no_results')}</p>
                                 )}
                             </div>
 
@@ -102,9 +104,9 @@ const StudentProgressWidget = ({ currentUser }) => {
                             {selectedCourse.isAtRisk && (
                                 <div className="bg-red-50 dark:bg-red-900/20 p-4 rounded-xl border border-red-100 dark:border-red-900">
                                     <h4 className="flex items-center gap-2 text-red-700 dark:text-red-300 font-bold text-sm mb-1">
-                                        <AlertTriangle size={16} /> Varning
+                                        <AlertTriangle size={16} /> {t('widgets.student_progress.at_risk')}
                                     </h4>
-                                    <p className="text-xs text-red-600 dark:text-red-400">{selectedCourse.riskReason}. Se till att komma ikapp!</p>
+                                    <p className="text-xs text-red-600 dark:text-red-400">{selectedCourse.riskReason}. {t('widgets.student_progress.catch_up')}</p>
                                 </div>
                             )}
                         </div>
@@ -113,7 +115,7 @@ const StudentProgressWidget = ({ currentUser }) => {
                             onClick={() => navigate(`/course/${selectedCourse.courseSlug || selectedCourse.courseId}`)}
                             className="w-full mt-6 bg-indigo-600 text-white font-bold py-3 rounded-xl hover:bg-indigo-700 flex items-center justify-center gap-2"
                         >
-                            Gå till kursen <ChevronRight size={16} />
+                            {t('widgets.student_progress.go_to_course')} <ChevronRight size={16} />
                         </button>
                     </div>
                 </div>
