@@ -2,6 +2,7 @@ package com.eduflex.backend.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import java.io.InputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -10,13 +11,11 @@ import java.nio.file.StandardCopyOption;
 import java.util.UUID;
 
 @Service
-public class LocalFileStorageService implements FileStorageService {
+public class LocalFileStorageService implements StorageService {
 
     private final Path fileStorageLocation;
 
     public LocalFileStorageService() {
-        // Här sparas filerna. Ändra "uploads" till en absolut sökväg om du vill (t.ex.
-        // "C:/EduFlex/uploads")
         this.fileStorageLocation = Paths.get("uploads").toAbsolutePath().normalize();
 
         try {
@@ -26,46 +25,59 @@ public class LocalFileStorageService implements FileStorageService {
         }
     }
 
-    public String storeFile(MultipartFile file) {
-        // Generera unikt filnamn för att undvika krockar
-        String originalFileName = file.getOriginalFilename();
-        String fileExtension = "";
-        if (originalFileName != null && originalFileName.contains(".")) {
-            fileExtension = originalFileName.substring(originalFileName.lastIndexOf("."));
-        }
-        String fileName = UUID.randomUUID().toString() + fileExtension;
-
+    @Override
+    public String save(MultipartFile file) {
         try {
-            // Kontrollera filnamnet
-            if (fileName.contains("..")) {
-                throw new RuntimeException("Filnamnet innehåller ogiltig sökväg " + fileName);
-            }
-
-            // Kopiera filen till målmålet (ersätt befintlig fil med samma namn)
-            Path targetLocation = this.fileStorageLocation.resolve(fileName);
-            Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
-
-            // Returnera URL-sökvägen (anpassa efter hur du serverar statiska filer)
-            return "/uploads/" + fileName;
-        } catch (IOException ex) {
-            throw new RuntimeException("Kunde inte spara filen " + fileName + ". Försök igen!", ex);
+            return save(file.getInputStream(), file.getContentType(), file.getOriginalFilename());
+        } catch (Exception e) {
+            throw new RuntimeException("Save failed", e);
         }
     }
 
     @Override
-    public java.io.InputStream getFileStream(String path) {
+    public String save(InputStream data, String contentType, String originalName) {
+        String extension = "";
+        if (originalName != null && originalName.contains(".")) {
+            extension = originalName.substring(originalName.lastIndexOf("."));
+        }
+        String storageId = UUID.randomUUID().toString() + extension;
+        return save(data, contentType, originalName, storageId);
+    }
+
+    @Override
+    public String save(InputStream data, String contentType, String originalName, String customId) {
         try {
-            // Remove /uploads/ prefix if present
-            String fileName = path.replace("/uploads/", "").replace("/", "");
-            Path filePath = this.fileStorageLocation.resolve(fileName).normalize();
-
-            if (!Files.exists(filePath)) {
-                throw new java.io.FileNotFoundException("File not found: " + filePath);
+            Path targetLocation = this.fileStorageLocation.resolve(customId);
+            if (targetLocation.getParent() != null) {
+                Files.createDirectories(targetLocation.getParent());
             }
+            Files.copy(data, targetLocation, StandardCopyOption.REPLACE_EXISTING);
+            return customId;
+        } catch (IOException ex) {
+            throw new RuntimeException("Kunde inte spara filen " + customId, ex);
+        }
+    }
 
+    @Override
+    public InputStream load(String storageId) {
+        try {
+            Path filePath = this.fileStorageLocation.resolve(storageId).normalize();
+            if (!Files.exists(filePath)) {
+                throw new java.io.FileNotFoundException("File not found: " + storageId);
+            }
             return Files.newInputStream(filePath);
         } catch (Exception e) {
-            throw new RuntimeException("Could not read file: " + path, e);
+            throw new RuntimeException("Could not read file: " + storageId, e);
+        }
+    }
+
+    @Override
+    public void delete(String storageId) {
+        try {
+            Path filePath = this.fileStorageLocation.resolve(storageId).normalize();
+            Files.deleteIfExists(filePath);
+        } catch (IOException e) {
+            throw new RuntimeException("Could not delete file: " + storageId, e);
         }
     }
 }

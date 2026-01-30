@@ -1,6 +1,6 @@
 package com.eduflex.backend.controller;
 
-import com.eduflex.backend.service.FileStorageService;
+import com.eduflex.backend.service.StorageService;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -16,16 +16,16 @@ import java.net.URLConnection;
 @CrossOrigin(origins = "*")
 public class FileController {
 
-    private final FileStorageService fileStorageService;
+    private final StorageService storageService;
 
-    public FileController(FileStorageService fileStorageService) {
-        this.fileStorageService = fileStorageService;
+    public FileController(StorageService storageService) {
+        this.storageService = storageService;
     }
 
     @GetMapping("/{fileName:.+}")
     public ResponseEntity<Resource> getFile(@PathVariable String fileName) {
         try {
-            InputStream inputStream = fileStorageService.getFileStream(fileName);
+            InputStream inputStream = storageService.load(fileName);
             InputStreamResource resource = new InputStreamResource(inputStream);
 
             String contentType = URLConnection.guessContentTypeFromName(fileName);

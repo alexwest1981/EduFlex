@@ -4,7 +4,7 @@ import com.eduflex.backend.model.Course;
 import com.eduflex.backend.model.Lesson;
 import com.eduflex.backend.repository.CourseRepository;
 import com.eduflex.backend.repository.LessonRepository;
-import com.eduflex.backend.service.FileStorageService;
+import com.eduflex.backend.service.StorageService;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,14 +18,14 @@ public class LessonController {
     private final LessonRepository lessonRepo;
     private final CourseRepository courseRepo;
     private final com.eduflex.backend.repository.UserRepository userRepo; // <--- NY
-    private final FileStorageService fileService;
+    private final StorageService storageService;
 
     public LessonController(LessonRepository lessonRepo, CourseRepository courseRepo,
-            com.eduflex.backend.repository.UserRepository userRepo, FileStorageService fileService) {
+            com.eduflex.backend.repository.UserRepository userRepo, StorageService storageService) {
         this.lessonRepo = lessonRepo;
         this.courseRepo = courseRepo;
         this.userRepo = userRepo;
-        this.fileService = fileService;
+        this.storageService = storageService;
     }
 
     @GetMapping("/course/{courseId}")
@@ -58,7 +58,8 @@ public class LessonController {
         lesson.setSortOrder(existing.size() + 1);
 
         if (file != null && !file.isEmpty()) {
-            String path = fileService.storeFile(file);
+            String storageId = storageService.save(file);
+            String path = "/api/storage/" + storageId;
             lesson.setAttachmentUrl(path);
             lesson.setAttachmentName(file.getOriginalFilename());
         }
@@ -85,7 +86,8 @@ public class LessonController {
         lesson.setSortOrder(0);
 
         if (file != null && !file.isEmpty()) {
-            String path = fileService.storeFile(file);
+            String storageId = storageService.save(file);
+            String path = "/api/storage/" + storageId;
             lesson.setAttachmentUrl(path);
             lesson.setAttachmentName(file.getOriginalFilename());
         }
@@ -113,7 +115,8 @@ public class LessonController {
         lesson.setVideoUrl(videoUrl);
 
         if (file != null && !file.isEmpty()) {
-            String path = fileService.storeFile(file);
+            String storageId = storageService.save(file);
+            String path = "/api/storage/" + storageId;
             lesson.setAttachmentUrl(path);
             lesson.setAttachmentName(file.getOriginalFilename());
         }

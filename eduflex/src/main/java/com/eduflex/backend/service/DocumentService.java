@@ -21,39 +21,34 @@ public class DocumentService {
 
     private final DocumentRepository documentRepository;
     private final UserRepository userRepository;
+    private final StorageService storageService;
 
     @org.springframework.beans.factory.annotation.Autowired(required = false)
     private KafkaTemplate<String, Object> kafkaTemplate;
 
-    @Value("${file.upload-dir}")
-    private String uploadDir;
-
-    public DocumentService(DocumentRepository documentRepository, UserRepository userRepository) {
+    public DocumentService(DocumentRepository documentRepository, UserRepository userRepository,
+            StorageService storageService) {
         this.documentRepository = documentRepository;
         this.userRepository = userRepository;
+        this.storageService = storageService;
     }
 
     public Document uploadFile(Long userId, MultipartFile file) throws IOException {
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
 
-        // Skapa filnamn och spara på disk
-        String originalName = file.getOriginalFilename();
-        String uniqueName = UUID.randomUUID() + "_" + originalName;
-        Path path = Paths.get(uploadDir + "/" + uniqueName);
-        Files.createDirectories(path.getParent());
-        Files.write(path, file.getBytes());
+        String storageId = storageService.save(file);
 
         // Spara metadata i DB
         Document doc = new Document(
-                originalName,
+                file.getOriginalFilename(),
                 file.getContentType(),
-                "/uploads/" + uniqueName,
+                "/api/storage/" + storageId,
                 file.getSize(),
                 user);
 
         doc = documentRepository.save(doc);
 
-        // Skicka Kafka-event för asynkron processering (AI, Media, etc)
+        // Skicka Kafka-event
         if (kafkaTemplate != null) {
             try {
                 kafkaTemplate.send(KafkaConfig.DOCUMENT_UPLOADED_TOPIC, new DocumentUploadedEvent(
@@ -64,7 +59,7 @@ public class DocumentService {
                         doc.getSize(),
                         user.getId()));
             } catch (Exception e) {
-                System.err.println("⚠ Failed to send Kafka event (Kafka might be down or disabled): " + e.getMessage());
+                System.err.println("⚠ Failed to send Kafka event: " + e.getMessage());
             }
         }
 
@@ -89,17 +84,14 @@ public class DocumentService {
     @org.springframework.transaction.annotation.Transactional
     public void deleteDocument(Long id) {
         documentRepository.findById(id).ifPresent(doc -> {
-            // Rensa delningar först för att undvika FK-problem
             doc.getSharedWith().clear();
-            documentRepository.save(doc); // Flush relation changes
+            documentRepository.save(doc);
 
-            // Ta bort filen från disken
             try {
-                String fileName = doc.getFileUrl().replace("/uploads/", "");
-                Path path = Paths.get(uploadDir + "/" + fileName);
-                Files.deleteIfExists(path);
-            } catch (IOException e) {
-                System.err.println("Could not delete file from disk: " + e.getMessage());
+                String storageId = doc.getFileUrl().replace("/api/storage/", "");
+                storageService.delete(storageId);
+            } catch (Exception e) {
+                System.err.println("Could not delete file from storage: " + e.getMessage());
             }
 
             documentRepository.delete(doc);
@@ -110,13 +102,7 @@ public class DocumentService {
         Document doc = documentRepository.findById(documentId)
                 .orElseThrow(() -> new RuntimeException("Document not found"));
 
-        // Extract filename from URL (remove /uploads/ prefix if present)
-        String fileName = doc.getFileUrl();
-        if (fileName.startsWith("/uploads/")) {
-            fileName = fileName.substring("/uploads/".length());
-        }
-
-        Path path = Paths.get(uploadDir + "/" + fileName);
-        return Files.newInputStream(path);
+        String storageId = doc.getFileUrl().replace("/api/storage/", "");
+        return storageService.load(storageId);
     }
 }

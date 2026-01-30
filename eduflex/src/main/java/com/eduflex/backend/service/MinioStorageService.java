@@ -15,7 +15,7 @@ import java.util.UUID;
 @Service
 @Primary
 @org.springframework.context.annotation.Profile("!test")
-public class MinioStorageService implements FileStorageService {
+public class MinioStorageService implements StorageService {
 
     private final MinioClient minioClient;
     private final String bucketName;
@@ -35,9 +35,8 @@ public class MinioStorageService implements FileStorageService {
                 .build();
 
         try {
-            // Simplified init for now
-            if (!minioClient.bucketExists(BucketExistsArgs.builder().bucket(bucketName).build())) {
-                minioClient.makeBucket(MakeBucketArgs.builder().bucket(bucketName).build());
+            if (!minioClient.bucketExists(io.minio.BucketExistsArgs.builder().bucket(bucketName).build())) {
+                minioClient.makeBucket(io.minio.MakeBucketArgs.builder().bucket(bucketName).build());
             }
         } catch (Exception e) {
             System.err.println("MinIO Init Error: " + e.getMessage());
@@ -45,44 +44,64 @@ public class MinioStorageService implements FileStorageService {
     }
 
     @Override
-    public String storeFile(MultipartFile file) {
-        String originalFileName = file.getOriginalFilename();
-        String extension = "";
-        if (originalFileName != null && originalFileName.contains(".")) {
-            extension = originalFileName.substring(originalFileName.lastIndexOf("."));
+    public String save(MultipartFile file) {
+        try {
+            return save(file.getInputStream(), file.getContentType(), file.getOriginalFilename());
+        } catch (Exception e) {
+            throw new RuntimeException("Save failed", e);
         }
-        String fileName = UUID.randomUUID().toString() + extension;
+    }
 
-        try (InputStream inputStream = file.getInputStream()) {
+    @Override
+    public String save(InputStream data, String contentType, String originalName) {
+        String extension = "";
+        if (originalName != null && originalName.contains(".")) {
+            extension = originalName.substring(originalName.lastIndexOf("."));
+        }
+        String storageId = UUID.randomUUID().toString() + extension;
+        return save(data, contentType, originalName, storageId);
+    }
+
+    @Override
+    public String save(InputStream data, String contentType, String originalName, String customId) {
+        try {
             minioClient.putObject(
                     PutObjectArgs.builder()
                             .bucket(bucketName)
-                            .object(fileName)
-                            .stream(inputStream, file.getSize(), -1)
-                            .contentType(file.getContentType())
+                            .object(customId)
+                            .stream(data, -1, 10 * 1024 * 1024)
+                            .contentType(contentType)
                             .build());
 
-            // Return relative URL for the proxy controller
-            return "/api/files/" + fileName;
+            return customId;
         } catch (Exception e) {
             throw new RuntimeException("Store failed", e);
         }
     }
 
     @Override
-    public java.io.InputStream getFileStream(String path) {
+    public InputStream load(String storageId) {
         try {
-            String objectName = path;
-            if (path.contains("/")) {
-                objectName = path.substring(path.lastIndexOf("/") + 1);
-            }
             return minioClient.getObject(
                     io.minio.GetObjectArgs.builder()
                             .bucket(bucketName)
-                            .object(objectName)
+                            .object(storageId)
                             .build());
         } catch (Exception e) {
-            throw new RuntimeException("Read failed", e);
+            throw new RuntimeException("Read failed: " + storageId, e);
+        }
+    }
+
+    @Override
+    public void delete(String storageId) {
+        try {
+            minioClient.removeObject(
+                    io.minio.RemoveObjectArgs.builder()
+                            .bucket(bucketName)
+                            .object(storageId)
+                            .build());
+        } catch (Exception e) {
+            throw new RuntimeException("Delete failed: " + storageId, e);
         }
     }
 }

@@ -6,11 +6,8 @@ import com.eduflex.backend.repository.CourseRepository;
 import com.eduflex.backend.repository.ScormPackageRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.beans.factory.annotation.Value;
-import jakarta.annotation.PostConstruct;
-
 import java.io.*;
-import java.nio.file.*;
+import java.net.URLConnection;
 import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -20,48 +17,29 @@ public class ScormService {
 
     private final ScormPackageRepository scormPackageRepository;
     private final CourseRepository courseRepository;
+    private final StorageService storageService;
 
-    // Use a local folder "uploads/scorm" for now. In prod, this could be MinIO/S3.
-    @Value("${app.upload.dir:uploads}")
-    private String baseUploadDir;
-
-    private Path scormStoragePath;
-
-    public ScormService(ScormPackageRepository scormPackageRepository, CourseRepository courseRepository) {
+    public ScormService(ScormPackageRepository scormPackageRepository, CourseRepository courseRepository,
+            StorageService storageService) {
         this.scormPackageRepository = scormPackageRepository;
         this.courseRepository = courseRepository;
-    }
-
-    @PostConstruct
-    public void init() {
-        this.scormStoragePath = Paths.get(baseUploadDir).resolve("scorm").toAbsolutePath().normalize();
-        try {
-            Files.createDirectories(this.scormStoragePath);
-        } catch (Exception e) {
-            throw new RuntimeException("Could not create SCORM storage directory", e);
-        }
+        this.storageService = storageService;
     }
 
     public ScormPackage uploadPackage(Long courseId, MultipartFile file) throws IOException {
         Course course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new RuntimeException("Course not found"));
 
-        // 1. Create a unique folder for this package
-        String folderName = UUID.randomUUID().toString();
-        Path targetDir = this.scormStoragePath.resolve(folderName);
-        Files.createDirectories(targetDir);
+        // 1. Unique folder ID for this package
+        String packageId = UUID.randomUUID().toString();
 
-        // 2. Unzip the file
-        unzip(file.getInputStream(), targetDir);
+        // 2. Unzip and upload each entry to StorageService
+        String launchFile = unzipToStorage(file.getInputStream(), packageId);
 
-        // 3. Detect Launch File (imsmanifest.xml parsing is complex, so we guess common
-        // defaults for now)
-        String launchFile = detectLaunchFile(targetDir);
-
-        // 4. Save metadata
+        // 3. Save metadata
         ScormPackage scorm = new ScormPackage();
-        scorm.setTitle(file.getOriginalFilename().replace(".zip", "")); // Default title from filename
-        scorm.setDirectoryPath("scorm/" + folderName + "/"); // Relative path for serving
+        scorm.setTitle(file.getOriginalFilename().replace(".zip", ""));
+        scorm.setDirectoryPath("scorm/" + packageId + "/");
         scorm.setLaunchFile(launchFile);
         scorm.setCourse(course);
         scorm.setSizeBytes(file.getSize());
@@ -69,55 +47,65 @@ public class ScormService {
         return scormPackageRepository.save(scorm);
     }
 
-    private void unzip(InputStream is, Path targetDir) throws IOException {
+    private String unzipToStorage(InputStream is, String packageId) throws IOException {
+        String launchFile = "index.html"; // Default
+        String[] candidates = { "index.html", "index_lms.html", "story.html", "launch.html",
+                "scormdriver/indexAPI.html" };
+        Set<String> entryNames = new HashSet<>();
+
         try (ZipInputStream zis = new ZipInputStream(is)) {
             ZipEntry zipEntry = zis.getNextEntry();
             while (zipEntry != null) {
-                Path newPath = targetDir.resolve(zipEntry.getName()).normalize();
+                if (!zipEntry.isDirectory()) {
+                    String entryName = zipEntry.getName();
+                    entryNames.add(entryName);
 
-                // Security check to prevent Zip Slip
-                if (!newPath.startsWith(targetDir)) {
-                    throw new IOException("Entry is outside of the target dir: " + zipEntry.getName());
-                }
+                    // Determine content type (simplified)
+                    String contentType = URLConnection.guessContentTypeFromName(entryName);
+                    if (contentType == null) {
+                        if (entryName.endsWith(".html") || entryName.endsWith(".htm"))
+                            contentType = "text/html";
+                        else if (entryName.endsWith(".js"))
+                            contentType = "application/javascript";
+                        else if (entryName.endsWith(".css"))
+                            contentType = "text/css";
+                        else if (entryName.endsWith(".xml"))
+                            contentType = "application/xml";
+                        else
+                            contentType = "application/octet-stream";
+                    }
 
-                if (zipEntry.isDirectory()) {
-                    Files.createDirectories(newPath);
-                } else {
-                    if (newPath.getParent() != null) {
-                        Files.createDirectories(newPath.getParent());
-                    }
-                    try (OutputStream fos = Files.newOutputStream(newPath)) {
-                        byte[] buffer = new byte[1024];
-                        int length;
-                        while ((length = zis.read(buffer)) > 0) {
-                            fos.write(buffer, 0, length);
-                        }
-                    }
+                    // Save to storage with path: scorm/packageId/entryName
+                    String customId = "scorm/" + packageId + "/" + entryName;
+
+                    // We need to wrap zis to avoid closing it
+                    storageService.save(new NonClosingInputStream(zis), contentType, entryName, customId);
                 }
                 zipEntry = zis.getNextEntry();
             }
         }
-    }
 
-    private String detectLaunchFile(Path dir) {
-        // Priority list of common SCORM entry points
-        String[] candidates = {
-                "index.html",
-                "index_lms.html",
-                "story.html", // Articulate Storyline
-                "launch.html",
-                "scormdriver/indexAPI.html" // Rustici
-        };
-
+        // Detect launch file
         for (String candidate : candidates) {
-            if (Files.exists(dir.resolve(candidate))) {
-                return candidate;
+            if (entryNames.contains(candidate)) {
+                launchFile = candidate;
+                break;
             }
         }
 
-        // Advanced: We could parse imsmanifest.xml to find <resource href="...">,
-        // but for MVP we fallback to first HTML found or default.
-        return "index.html"; // Fallback
+        return launchFile;
+    }
+
+    // Helper class to prevent ZipInputStream from being closed by StorageService
+    private static class NonClosingInputStream extends FilterInputStream {
+        public NonClosingInputStream(InputStream in) {
+            super(in);
+        }
+
+        @Override
+        public void close() throws IOException {
+            // Do nothing
+        }
     }
 
     public List<ScormPackage> getPackagesForCourse(Long courseId) {

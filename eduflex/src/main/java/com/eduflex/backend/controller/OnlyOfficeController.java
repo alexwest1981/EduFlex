@@ -265,7 +265,7 @@ public class OnlyOfficeController {
 
             // Construct path (assuming fileUrl starts with /uploads/)
             String pathInUploads = fileUrl.replace("/uploads/", "");
-            Path filePath = Paths.get("/app/uploads").resolve(pathInUploads).normalize();
+            Path filePath = Paths.get(uploadDir).resolve(pathInUploads).normalize();
 
             System.out.println("   -> File Path: " + filePath.toAbsolutePath());
 

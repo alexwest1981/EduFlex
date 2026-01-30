@@ -137,18 +137,21 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
                         // 2. Publika endpoints
-                        .requestMatchers("/api/auth/**", "/api/users/register", "/api/users/generate-usernames",
+                        .requestMatchers("/", "/index.html", "/favicon.ico", "/api/auth/**", "/api/users/register",
+                                "/api/users/generate-usernames",
                                 "/api/settings/**", "/login/**", "/api/tenants/**", "/api/public/**",
                                 "/api/branding/**", "/api/debug/**", "/api/onlyoffice/**")
                         .permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/tenants").permitAll() // Explicitly allow POST
                         .requestMatchers("/api/system/license/**", "/uploads/**", "/api/files/**", "/api/ebooks/**",
+                                "/api/storage/**",
                                 "/h2-console/**",
                                 "/ws/**",
                                 "/ws-log/**",
                                 "/actuator/**", "/lti/**", "/api/lti/**", "/error",
                                 "/web-apps/**", "/src/**", "/assets/**", // Allow OnlyOffice and Frontend assets
                                 "/@vite/**", "/@fs/**", "/@id/**", "/node_modules/**", // Vite Dev Mode assets
+                                "/client-assets/**", "/static/**",
                                 // Swagger UI and OpenAPI Documentation
                                 "/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html", "/api-docs/**")
                         .permitAll()

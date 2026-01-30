@@ -4,7 +4,7 @@ import com.eduflex.backend.model.CourseMaterial;
 import com.eduflex.backend.model.VectorStoreEntry;
 import com.eduflex.backend.repository.CourseMaterialRepository;
 import com.eduflex.backend.repository.EmbeddingRepository;
-import com.eduflex.backend.service.FileStorageService;
+import com.eduflex.backend.service.StorageService;
 
 import org.apache.tika.Tika;
 import org.slf4j.Logger;
@@ -23,17 +23,17 @@ public class AITutorService {
     private final GeminiService geminiService;
     private final EmbeddingRepository embeddingRepository;
     private final CourseMaterialRepository materialRepository;
-    private final FileStorageService fileStorageService;
+    private final StorageService storageService;
     private final Tika tika = new Tika();
 
     public AITutorService(GeminiService geminiService,
             EmbeddingRepository embeddingRepository,
             CourseMaterialRepository materialRepository,
-            FileStorageService fileStorageService) {
+            StorageService storageService) {
         this.geminiService = geminiService;
         this.embeddingRepository = embeddingRepository;
         this.materialRepository = materialRepository;
-        this.fileStorageService = fileStorageService;
+        this.storageService = storageService;
     }
 
     private static final int CHUNK_SIZE = 1000;
@@ -55,7 +55,13 @@ public class AITutorService {
             }
 
             if (material.getFileUrl() != null && !material.getFileUrl().isEmpty()) {
-                try (InputStream stream = fileStorageService.getFileStream(material.getFileUrl())) {
+                String storageId = material.getFileUrl();
+                if (storageId.contains("/api/storage/"))
+                    storageId = storageId.substring(storageId.lastIndexOf("/") + 1);
+                else if (storageId.contains("/api/files/"))
+                    storageId = storageId.substring(storageId.lastIndexOf("/") + 1);
+
+                try (InputStream stream = storageService.load(storageId)) {
                     String fileText = tika.parseToString(stream);
                     if (fileText != null && !fileText.isBlank()) {
                         fullText.append(fileText).append("\n");

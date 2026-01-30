@@ -13,11 +13,11 @@ import java.util.List;
 public class EbookService {
 
     private final EbookRepository ebookRepository;
-    private final FileStorageService fileStorageService;
+    private final StorageService storageService;
 
-    public EbookService(EbookRepository ebookRepository, FileStorageService fileStorageService) {
+    public EbookService(EbookRepository ebookRepository, StorageService storageService) {
         this.ebookRepository = ebookRepository;
-        this.fileStorageService = fileStorageService;
+        this.storageService = storageService;
     }
 
     public List<Ebook> getAllEbooks() {
@@ -30,10 +30,13 @@ public class EbookService {
 
     public Ebook uploadEbook(String title, String author, String description, String category, String language,
             MultipartFile file, MultipartFile cover) {
-        String fileUrl = fileStorageService.storeFile(file);
+        String storageId = storageService.save(file);
+        String fileUrl = "/api/storage/" + storageId;
+
         String coverUrl = null;
         if (cover != null && !cover.isEmpty()) {
-            coverUrl = fileStorageService.storeFile(cover);
+            String coverStorageId = storageService.save(cover);
+            coverUrl = "/api/storage/" + coverStorageId;
         }
 
         Ebook ebook = new Ebook();

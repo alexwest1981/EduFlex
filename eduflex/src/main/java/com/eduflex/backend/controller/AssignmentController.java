@@ -2,7 +2,7 @@ package com.eduflex.backend.controller;
 
 import com.eduflex.backend.model.*;
 import com.eduflex.backend.repository.*;
-import com.eduflex.backend.service.FileStorageService; // Antar att denna finns sen tidigare (DocumentService)
+import com.eduflex.backend.service.StorageService;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,15 +18,15 @@ public class AssignmentController {
     private final SubmissionRepository submissionRepo;
     private final CourseRepository courseRepo;
     private final UserRepository userRepo;
-    private final FileStorageService fileService; // Återanvänd din filtjänst
+    private final StorageService storageService;
 
     public AssignmentController(AssignmentRepository assignmentRepo, SubmissionRepository submissionRepo,
-            CourseRepository courseRepo, UserRepository userRepo, FileStorageService fileService) {
+            CourseRepository courseRepo, UserRepository userRepo, StorageService storageService) {
         this.assignmentRepo = assignmentRepo;
         this.submissionRepo = submissionRepo;
         this.courseRepo = courseRepo;
         this.userRepo = userRepo;
-        this.fileService = fileService;
+        this.storageService = storageService;
     }
 
     // --- ASSIGNMENTS ---
@@ -81,7 +81,8 @@ public class AssignmentController {
     @PostMapping("/assignments/{id}/attachments/file")
     public Assignment addFileAttachment(@PathVariable Long id, @RequestParam("file") MultipartFile file) {
         Assignment assignment = assignmentRepo.findById(id).orElseThrow();
-        String fileUrl = fileService.storeFile(file);
+        String storageId = storageService.save(file);
+        String fileUrl = "/api/storage/" + storageId;
 
         AssignmentAttachment attachment = new AssignmentAttachment(
                 file.getOriginalFilename(),
@@ -133,7 +134,8 @@ public class AssignmentController {
         User student = userRepo.findById(studentId).orElseThrow();
 
         // Ladda upp filen
-        String fileUrl = fileService.storeFile(file); // Returnerar URL path
+        String storageId = storageService.save(file);
+        String fileUrl = "/api/storage/" + storageId; // Returnerar URL path
 
         // Kolla om inlämning redan finns, uppdatera isf
         Submission submission = submissionRepo.findByAssignmentIdAndStudentId(assignmentId, studentId)

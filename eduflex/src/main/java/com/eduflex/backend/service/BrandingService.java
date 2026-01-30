@@ -13,14 +13,14 @@ import java.util.List;
 public class BrandingService {
 
     private final BrandingRepository brandingRepository;
-    private final FileStorageService fileStorageService;
+    private final StorageService storageService;
     private final LicenseService licenseService;
 
     public BrandingService(BrandingRepository brandingRepository,
-            FileStorageService fileStorageService,
+            StorageService storageService,
             LicenseService licenseService) {
         this.brandingRepository = brandingRepository;
-        this.fileStorageService = fileStorageService;
+        this.storageService = storageService;
         this.licenseService = licenseService;
     }
 
@@ -129,11 +129,11 @@ public class BrandingService {
         }
 
         // Store file in MinIO
-        String logoUrl = fileStorageService.storeFile(file);
+        String storageId = storageService.save(file);
 
         // Update branding
         OrganizationBranding branding = getBranding(organizationKey);
-        branding.setLogoUrl(logoUrl);
+        branding.setLogoUrl("/api/storage/" + storageId);
         return brandingRepository.save(branding);
     }
 
@@ -154,11 +154,11 @@ public class BrandingService {
         }
 
         // Store file in MinIO
-        String faviconUrl = fileStorageService.storeFile(file);
+        String storageId = storageService.save(file);
 
         // Update branding
         OrganizationBranding branding = getBranding(organizationKey);
-        branding.setFaviconUrl(faviconUrl);
+        branding.setFaviconUrl("/api/storage/" + storageId);
         return brandingRepository.save(branding);
     }
 
@@ -178,11 +178,11 @@ public class BrandingService {
         }
 
         // Store file in MinIO
-        String backgroundUrl = fileStorageService.storeFile(file);
+        String storageId = storageService.save(file);
 
         // Update branding
         OrganizationBranding branding = getBranding(organizationKey);
-        branding.setLoginBackgroundUrl(backgroundUrl);
+        branding.setLoginBackgroundUrl("/api/storage/" + storageId);
         return brandingRepository.save(branding);
     }
 

@@ -111,7 +111,48 @@ public class AuthTokenFilter extends OncePerRequestFilter {
             logger.error("Cannot set user authentication: {}", e.getMessage());
         }
 
+        // Neutralize corrupted frontend tokens to prevent OAuth2 filters from throwing
+        // 500
+        String headerAuth = request.getHeader("Authorization");
+        if (headerAuth != null) {
+            if (headerAuth.equalsIgnoreCase("Bearer null") ||
+                    headerAuth.equalsIgnoreCase("Bearer undefined") ||
+                    headerAuth.equalsIgnoreCase("Bearer [object Object]")) {
+
+                HttpServletRequest wrapper = wrapRequestToHideAuth(request);
+                filterChain.doFilter(wrapper, response);
+                return;
+            }
+        }
+
         filterChain.doFilter(request, response);
+    }
+
+    private HttpServletRequest wrapRequestToHideAuth(HttpServletRequest request) {
+        return new HttpServletRequestWrapper(request) {
+            @Override
+            public String getHeader(String name) {
+                if ("Authorization".equalsIgnoreCase(name)) {
+                    return null;
+                }
+                return super.getHeader(name);
+            }
+
+            @Override
+            public Enumeration<String> getHeaderNames() {
+                List<String> names = new ArrayList<>(Collections.list(super.getHeaderNames()));
+                names.removeIf(n -> "Authorization".equalsIgnoreCase(n));
+                return Collections.enumeration(names);
+            }
+
+            @Override
+            public Enumeration<String> getHeaders(String name) {
+                if ("Authorization".equalsIgnoreCase(name)) {
+                    return Collections.emptyEnumeration();
+                }
+                return super.getHeaders(name);
+            }
+        };
     }
 
     // Check if we need parseJwt anymore, the logic is embedded above.

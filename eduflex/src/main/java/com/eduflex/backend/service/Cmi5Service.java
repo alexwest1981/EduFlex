@@ -4,43 +4,70 @@ import com.eduflex.backend.security.JwtUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.io.*;
+import java.net.URLConnection;
+import java.util.*;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 @Service
 public class Cmi5Service {
 
-    private final Path storageLocation = Paths.get("uploads/cmi5");
     private final JwtUtils jwtUtils;
+    private final StorageService storageService;
 
-    public Cmi5Service(JwtUtils jwtUtils) {
+    public Cmi5Service(JwtUtils jwtUtils, StorageService storageService) {
         this.jwtUtils = jwtUtils;
+        this.storageService = storageService;
     }
 
     public Map<String, Object> importPackage(Long courseId, MultipartFile file) throws IOException {
-        // 1. Save File (Basic stub implementation)
-        String filename = UUID.randomUUID() + "_" + file.getOriginalFilename();
-        // Files.copy(file.getInputStream(), storageLocation.resolve(filename));
+        String packageId = UUID.randomUUID().toString();
 
-        // 2. Parse cmi5.xml (Mocking parsing logic for now)
-        // In reality, we would unzip and read cmi5.xml to find the launch URL.
+        // Unzip and upload to storage (similar to SCORM)
+        String launchUrl = unzipToStorage(file.getInputStream(), packageId);
 
         Map<String, Object> au = new HashMap<>();
         au.put("id", UUID.randomUUID().toString());
         au.put("title", file.getOriginalFilename().replace(".zip", ""));
         au.put("launchMethod", "Popup");
-        au.put("url", "/uploads/cmi5/" + filename + "/index.html"); // Mock path
+        au.put("url", "/api/storage/cmi5/" + packageId + "/" + launchUrl);
 
         return au;
     }
 
+    private String unzipToStorage(InputStream is, String packageId) throws IOException {
+        String launchFile = "index.html";
+        try (ZipInputStream zis = new ZipInputStream(is)) {
+            ZipEntry zipEntry = zis.getNextEntry();
+            while (zipEntry != null) {
+                if (!zipEntry.isDirectory()) {
+                    String entryName = zipEntry.getName();
+                    if (entryName.endsWith("cmi5.xml")) {
+                        // In a real implementation we'd parse this to find the AU launch URL
+                    }
+
+                    String contentType = URLConnection.guessContentTypeFromName(entryName);
+                    String customId = "cmi5/" + packageId + "/" + entryName;
+                    storageService.save(new NonClosingInputStream(zis), contentType, entryName, customId);
+                }
+                zipEntry = zis.getNextEntry();
+            }
+        }
+        return launchFile;
+    }
+
+    private static class NonClosingInputStream extends FilterInputStream {
+        public NonClosingInputStream(InputStream in) {
+            super(in);
+        }
+
+        @Override
+        public void close() throws IOException {
+        }
+    }
+
     public String generateLrsToken() {
-        // Generate a simplified token for LRS acting
-        // In standard implementation, this should be a Basic Auth pair or OAuth token
         return jwtUtils.generateJwtToken("xapi-actor");
     }
 }

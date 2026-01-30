@@ -45,7 +45,7 @@ public class CourseService {
     @Value("${file.upload-dir}")
     private String uploadDir;
 
-    private final FileStorageService fileStorageService;
+    private final StorageService storageService;
 
     public CourseService(CourseRepository courseRepository,
             UserRepository userRepository,
@@ -56,7 +56,7 @@ public class CourseService {
             AssignmentRepository assignmentRepository,
             SubmissionRepository submissionRepository,
             SkolverketCourseRepository skolverketCourseRepository,
-            FileStorageService fileStorageService) {
+            StorageService storageService) {
         this.courseRepository = courseRepository;
         this.userRepository = userRepository;
         this.materialRepository = materialRepository;
@@ -66,7 +66,7 @@ public class CourseService {
         this.assignmentRepository = assignmentRepository;
         this.submissionRepository = submissionRepository;
         this.skolverketCourseRepository = skolverketCourseRepository;
-        this.fileStorageService = fileStorageService;
+        this.storageService = storageService;
     }
 
     @EventListener(ApplicationReadyEvent.class)
@@ -298,8 +298,8 @@ public class CourseService {
         }
         material.setCourse(course);
         if (file != null && !file.isEmpty()) {
-            String fileUrl = fileStorageService.storeFile(file);
-            material.setFileUrl(fileUrl);
+            String storageId = storageService.save(file);
+            material.setFileUrl("/api/storage/" + storageId);
             material.setFileName(file.getOriginalFilename());
 
             // Detect video files and set video-specific metadata
@@ -341,8 +341,8 @@ public class CourseService {
             material.setAvailableFrom(null);
         }
         if (file != null && !file.isEmpty()) {
-            String fileUrl = fileStorageService.storeFile(file);
-            material.setFileUrl(fileUrl);
+            String storageId = storageService.save(file);
+            material.setFileUrl("/api/storage/" + storageId);
             material.setFileName(file.getOriginalFilename());
 
             // Detect video files and set video-specific metadata

@@ -283,6 +283,8 @@ services:
       - "8443:443"
     networks:
       - eduflex-net
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
   # --- LIVE VIDEO LESSONS (Jitsi Meet) ---
   # Self-hosted Jitsi for private video classrooms

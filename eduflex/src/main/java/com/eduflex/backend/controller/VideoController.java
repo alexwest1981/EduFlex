@@ -2,7 +2,7 @@ package com.eduflex.backend.controller;
 
 import com.eduflex.backend.model.CourseMaterial;
 import com.eduflex.backend.repository.CourseMaterialRepository;
-import com.eduflex.backend.service.FileStorageService;
+import com.eduflex.backend.service.StorageService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +23,7 @@ import java.util.Map;
 public class VideoController {
 
     private final CourseMaterialRepository materialRepository;
-    private final FileStorageService fileStorageService;
+    private final StorageService storageService;
 
     private final StringRedisTemplate redisTemplate;
     private final ObjectMapper objectMapper;
@@ -35,11 +35,11 @@ public class VideoController {
     private static final long MAX_VIDEO_SIZE = 500 * 1024 * 1024;
 
     public VideoController(CourseMaterialRepository materialRepository,
-            FileStorageService fileStorageService,
+            StorageService storageService,
             StringRedisTemplate redisTemplate,
             ObjectMapper objectMapper) {
         this.materialRepository = materialRepository;
-        this.fileStorageService = fileStorageService;
+        this.storageService = storageService;
         this.redisTemplate = redisTemplate;
         this.objectMapper = objectMapper;
     }
@@ -78,7 +78,8 @@ public class VideoController {
                     .orElseThrow(() -> new RuntimeException("Material not found"));
 
             // Store file using MinIO (or local storage depending on config)
-            String fileUrl = fileStorageService.storeFile(file);
+            String storageId = storageService.save(file);
+            String fileUrl = "/api/storage/" + storageId;
 
             // Update material with video info
             material.setFileUrl(fileUrl);

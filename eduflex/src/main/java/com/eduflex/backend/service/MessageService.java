@@ -12,6 +12,7 @@ import com.eduflex.backend.repository.MessageRepository;
 import com.eduflex.backend.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import com.eduflex.backend.service.StorageService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,15 +24,15 @@ public class MessageService {
     private final MessageRepository messageRepository;
     private final UserRepository userRepository;
     private final com.eduflex.backend.repository.MessageFolderRepository messageFolderRepository;
-    private final FileStorageService fileStorageService;
+    private final StorageService storageService;
 
     public MessageService(MessageRepository messageRepository, UserRepository userRepository,
             com.eduflex.backend.repository.MessageFolderRepository messageFolderRepository,
-            FileStorageService fileStorageService) {
+            StorageService storageService) {
         this.messageRepository = messageRepository;
         this.userRepository = userRepository;
         this.messageFolderRepository = messageFolderRepository;
-        this.fileStorageService = fileStorageService;
+        this.storageService = storageService;
     }
 
     public MessageDTO sendMessage(Long senderId, Long recipientId, String subject, String content, String folderSlug) {
@@ -56,7 +57,8 @@ public class MessageService {
         if (files != null && !files.isEmpty()) {
             for (MultipartFile file : files) {
                 if (!file.isEmpty()) {
-                    String url = fileStorageService.storeFile(file);
+                    String storageId = storageService.save(file);
+                    String url = "/api/storage/" + storageId;
                     msg.addAttachment(
                             new MessageAttachment(file.getOriginalFilename(), file.getContentType(), url, msg));
                 }

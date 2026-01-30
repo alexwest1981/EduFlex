@@ -25,7 +25,7 @@ public class UserService {
     private final LicenseService licenseService;
 
     private final com.eduflex.backend.repository.AuditLogRepository auditLogRepository;
-    private final FileStorageService fileStorageService;
+    private final StorageService storageService;
     private final ConnectionRepository connectionRepository;
     private final AchievementService achievementService;
 
@@ -33,7 +33,7 @@ public class UserService {
             com.eduflex.backend.repository.RoleRepository roleRepository,
             PasswordEncoder passwordEncoder, LicenseService licenseService,
             com.eduflex.backend.repository.AuditLogRepository auditLogRepository,
-            FileStorageService fileStorageService,
+            StorageService storageService,
             ConnectionRepository connectionRepository,
             AchievementService achievementService) {
         this.userRepository = userRepository;
@@ -41,7 +41,7 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
         this.licenseService = licenseService;
         this.auditLogRepository = auditLogRepository;
-        this.fileStorageService = fileStorageService;
+        this.storageService = storageService;
         this.connectionRepository = connectionRepository;
         this.achievementService = achievementService;
     }
@@ -277,8 +277,8 @@ public class UserService {
     public User uploadProfilePicture(Long userId, MultipartFile file) throws IOException {
         User user = getUserById(userId);
         if (file != null && !file.isEmpty()) {
-            String path = fileStorageService.storeFile(file);
-            user.setProfilePictureUrl(path);
+            String storageId = storageService.save(file);
+            user.setProfilePictureUrl("/api/storage/" + storageId);
             userRepository.save(user);
 
             // Trigger Achievement
