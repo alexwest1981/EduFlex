@@ -13,8 +13,8 @@ import java.io.InputStream;
 import java.util.UUID;
 
 @Service
-@Primary
 @org.springframework.context.annotation.Profile("!test")
+@org.springframework.context.annotation.Primary
 public class MinioStorageService implements StorageService {
 
     private final MinioClient minioClient;

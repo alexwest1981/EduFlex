@@ -207,6 +207,12 @@ export const api = {
         getStats: () => fetch(`${API_BASE}/skolverket/stats`, { headers: getHeaders() }).then(handleResponse)
     },
 
+    adaptiveLearning: {
+        getMyRecommendations: () => fetch(`${API_BASE}/adaptive-learning/recommendations`, { headers: getHeaders() }).then(handleResponse),
+        markAsViewed: (id) => fetch(`${API_BASE}/adaptive-learning/recommendations/${id}/view`, { method: 'PUT', headers: getHeaders() }).then(handleResponse),
+        triggerAnalysis: () => fetch(`${API_BASE}/adaptive-learning/trigger`, { method: 'POST', headers: getHeaders() }).then(handleResponse)
+    },
+
     messages: {
         getInbox: () => fetch(`${API_BASE}/messages/inbox`, { headers: getHeaders() }).then(handleResponse),
         getSent: () => fetch(`${API_BASE}/messages/sent`, { headers: getHeaders() }).then(handleResponse),

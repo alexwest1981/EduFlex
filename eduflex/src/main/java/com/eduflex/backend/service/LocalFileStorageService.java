@@ -11,12 +11,14 @@ import java.nio.file.StandardCopyOption;
 import java.util.UUID;
 
 @Service
+@org.springframework.context.annotation.Profile("!test")
 public class LocalFileStorageService implements StorageService {
 
     private final Path fileStorageLocation;
 
-    public LocalFileStorageService() {
-        this.fileStorageLocation = Paths.get("uploads").toAbsolutePath().normalize();
+    public LocalFileStorageService(
+            @org.springframework.beans.factory.annotation.Value("${file.upload-dir:uploads}") String uploadDir) {
+        this.fileStorageLocation = Paths.get(uploadDir).toAbsolutePath().normalize();
 
         try {
             Files.createDirectories(this.fileStorageLocation);

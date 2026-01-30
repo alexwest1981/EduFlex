@@ -2,12 +2,14 @@ package com.eduflex.backend.controller;
 
 import com.eduflex.backend.model.Ebook;
 import com.eduflex.backend.service.EbookService;
+import org.springframework.http.CacheControl;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.InputStream;
+import java.util.concurrent.TimeUnit;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/ebooks")
@@ -15,96 +17,89 @@ import java.util.List;
 public class EbookController {
 
     private final EbookService ebookService;
-    private final com.eduflex.backend.service.reader.BookReaderService bookReaderService;
 
-    public EbookController(EbookService ebookService,
-            com.eduflex.backend.service.reader.BookReaderService bookReaderService) {
+    public EbookController(EbookService ebookService) {
         this.ebookService = ebookService;
-        this.bookReaderService = bookReaderService;
-    }
-
-    @GetMapping("/{id}/metadata")
-    public ResponseEntity<com.eduflex.backend.dto.BookMetadataDto> getMetadata(@PathVariable Long id) {
-        Ebook ebook = ebookService.getEbookById(id);
-        try (com.eduflex.backend.service.reader.BookContent content = bookReaderService.loadBook(ebook.getFileUrl())) {
-            return ResponseEntity.ok(new com.eduflex.backend.dto.BookMetadataDto(
-                    content.getTitle(),
-                    content.getAuthor(),
-                    content.getPageCount(),
-                    content.getChapters(),
-                    content.getCoverImage()));
-        } catch (Exception e) {
-            return ResponseEntity.status(500).build();
-        }
-    }
-
-    @GetMapping("/{id}/page/{pageNumber}")
-    public ResponseEntity<org.springframework.core.io.Resource> getPageImage(
-            @PathVariable Long id,
-            @PathVariable int pageNumber) {
-        Ebook ebook = ebookService.getEbookById(id);
-        try (com.eduflex.backend.service.reader.BookContent content = bookReaderService.loadBook(ebook.getFileUrl())) {
-            InputStream is = content.getPageImage(pageNumber);
-            return ResponseEntity.ok()
-                    .contentType(org.springframework.http.MediaType.IMAGE_PNG)
-                    .body(new org.springframework.core.io.InputStreamResource(is));
-        } catch (Exception e) {
-            return ResponseEntity.status(500).build();
-        }
     }
 
     @GetMapping
-    public List<Ebook> getAll() {
+    public List<Ebook> getAllEbooks() {
         return ebookService.getAllEbooks();
     }
 
     @GetMapping("/{id}")
-    public Ebook getById(@PathVariable Long id) {
-        return ebookService.getEbookById(id);
+    public ResponseEntity<Ebook> getEbook(@PathVariable Long id) {
+        try {
+            return ResponseEntity.ok(ebookService.getEbookById(id));
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @PostMapping("/upload")
-    public ResponseEntity<Ebook> upload(
+    public ResponseEntity<?> uploadEbook(
             @RequestParam("title") String title,
-            @RequestParam(value = "author", required = false) String author,
-            @RequestParam(value = "description", required = false) String description,
-            @RequestParam(value = "category", required = false) String category,
-            @RequestParam(value = "language", required = false) String language,
+            @RequestParam("author") String author,
+            @RequestParam("description") String description,
+            @RequestParam("category") String category,
+            @RequestParam("language") String language,
             @RequestParam("file") MultipartFile file,
             @RequestParam(value = "cover", required = false) MultipartFile cover) {
         try {
-            Ebook saved = ebookService.uploadEbook(title, author, description, category, language, file, cover);
-            return ResponseEntity.ok(saved);
+            Ebook ebook = ebookService.uploadEbook(title, author, description, category, language, file, cover);
+            return ResponseEntity.ok(ebook);
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
+            return ResponseEntity.badRequest().body(Map.of("message", "Upload failed: " + e.getMessage()));
         }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Ebook> update(
-            @PathVariable Long id,
-            @RequestBody Ebook ebookDetails) {
+    public ResponseEntity<?> updateEbook(@PathVariable Long id, @RequestBody Map<String, String> payload) {
         try {
-            Ebook updated = ebookService.updateEbook(id,
-                    ebookDetails.getTitle(),
-                    ebookDetails.getAuthor(),
-                    ebookDetails.getDescription(),
-                    ebookDetails.getCategory(),
-                    ebookDetails.getLanguage());
-            return ResponseEntity.ok(updated);
+            Ebook updatedEbook = ebookService.updateEbook(
+                    id,
+                    payload.get("title"),
+                    payload.get("author"),
+                    payload.get("description"),
+                    payload.get("category"),
+                    payload.get("language"));
+            return ResponseEntity.ok(updatedEbook);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
+            return ResponseEntity.badRequest().body(Map.of("message", "Update failed: " + e.getMessage()));
         }
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> delete(@PathVariable Long id) {
-        ebookService.deleteEbook(id);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<?> deleteEbook(@PathVariable Long id) {
+        try {
+            ebookService.deleteEbook(id);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
-    @GetMapping("/search")
-    public List<Ebook> search(@RequestParam("q") String query) {
-        return ebookService.searchEbooks(query);
+    @GetMapping("/{id}/metadata")
+    public ResponseEntity<?> getMetadata(@PathVariable Long id) {
+        try {
+            return ResponseEntity.ok(ebookService.getEbookMetadata(id));
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @GetMapping("/{id}/page/{pageNumber}")
+    public ResponseEntity<byte[]> getPage(@PathVariable Long id, @PathVariable int pageNumber) {
+        try {
+            byte[] image = ebookService.getEbookPage(id, pageNumber);
+            return ResponseEntity.ok()
+                    .contentType(MediaType.IMAGE_PNG)
+                    .cacheControl(CacheControl.maxAge(365, TimeUnit.DAYS).cachePublic().immutable())
+                    .body(image);
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 }

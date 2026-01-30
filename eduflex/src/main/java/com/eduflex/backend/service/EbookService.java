@@ -6,7 +6,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.eduflex.backend.service.reader.PdfBookContent;
+import org.springframework.util.StreamUtils;
+
+import java.io.InputStream;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Transactional
@@ -73,5 +79,38 @@ public class EbookService {
 
     public List<Ebook> searchEbooks(String query) {
         return ebookRepository.findByTitleContainingIgnoreCaseOrAuthorContainingIgnoreCase(query, query);
+    }
+
+    public Map<String, Object> getEbookMetadata(Long id) {
+        Ebook ebook = getEbookById(id);
+        String storageId = ebook.getFileUrl().substring(ebook.getFileUrl().lastIndexOf("/") + 1);
+
+        try (InputStream inputStream = storageService.load(storageId);
+                PdfBookContent content = new PdfBookContent(inputStream)) {
+
+            Map<String, Object> metadata = new HashMap<>();
+            metadata.put("title", content.getTitle());
+            metadata.put("author", content.getAuthor());
+            metadata.put("pageCount", content.getPageCount());
+            metadata.put("chapters", content.getChapters());
+
+            return metadata;
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to load ebook metadata", e);
+        }
+    }
+
+    public byte[] getEbookPage(Long id, int pageNumber) {
+        Ebook ebook = getEbookById(id);
+        String storageId = ebook.getFileUrl().substring(ebook.getFileUrl().lastIndexOf("/") + 1);
+
+        try (InputStream inputStream = storageService.load(storageId);
+                PdfBookContent content = new PdfBookContent(inputStream)) {
+
+            InputStream pageImage = content.getPageImage(pageNumber);
+            return StreamUtils.copyToByteArray(pageImage);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to render ebook page", e);
+        }
     }
 }

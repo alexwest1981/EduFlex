@@ -1,0 +1,113 @@
+.adaptive-learning-widget {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.adaptive-learning-widget h3 {
+    margin-top: 0;
+    margin-bottom: 16px;
+    font-size: 1.1rem;
+    color: var(--text-primary, #e0e0e0);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.recommendation-card {
+    background: linear-gradient(135deg, rgba(88, 101, 242, 0.1) 0%, rgba(59, 130, 246, 0.05) 100%);
+    border-left: 4px solid #5865F2;
+    /* EduFlex blue */
+    border-radius: 8px;
+    padding: 16px;
+    display: flex;
+    gap: 16px;
+    margin-bottom: 12px;
+    transition: transform 0.2s ease;
+}
+
+.recommendation-card:hover {
+    transform: translateY(-2px);
+    background: linear-gradient(135deg, rgba(88, 101, 242, 0.15) 0%, rgba(59, 130, 246, 0.1) 100%);
+}
+
+.rec-icon {
+    font-size: 24px;
+    padding-top: 4px;
+}
+
+.rec-content {
+    flex: 1;
+}
+
+.rec-content h4 {
+    margin: 0 0 8px 0;
+    font-size: 1rem;
+    color: #fff;
+}
+
+.rec-text {
+    font-size: 0.95rem;
+    color: #ccc;
+    line-height: 1.5;
+    margin-bottom: 16px;
+    /* Allow newlines from AI text */
+    white-space: pre-line;
+}
+
+.rec-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+.dismiss-btn {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #aaa;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.2s;
+}
+
+.dismiss-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+}
+
+.go-to-lesson-btn {
+    background: #5865F2;
+    color: #fff;
+    text-decoration: none;
+    padding: 6px 16px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: background 0.2s;
+}
+
+.go-to-lesson-btn:hover {
+    background: #4752C4;
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

@@ -1,6 +1,8 @@
 package com.eduflex.backend.service.ai;
 
 import com.eduflex.backend.model.CourseMaterial;
+import com.eduflex.backend.model.Lesson;
+import com.eduflex.backend.model.User;
 import com.eduflex.backend.model.VectorStoreEntry;
 import com.eduflex.backend.repository.CourseMaterialRepository;
 import com.eduflex.backend.repository.EmbeddingRepository;
@@ -137,6 +139,31 @@ public class AITutorService {
         } catch (Exception e) {
             logger.error("Error in askTutor", e);
             return "Tyvärr uppstod ett fel när jag försökte svara. Försök igen senare.";
+        }
+    }
+
+    public String generateStudyTip(Lesson lesson, User student) {
+        try {
+            String prompt = String.format(
+                    "Du är en vänlig och peppande studiecoach på EduFlex. Din elev, %s, verkar ha fastnat på lektionen '%s' i kursen.\n\n"
+                            +
+                            "Uppgift:\n" +
+                            "Ge ett kort, motiverande studietips (max 3 meningar). Förklara varför detta moment är viktigt på ett enkelt sätt.\n"
+                            +
+                            "Använd en uppmuntrande ton, och föreslå kanske att de ska ta en kort paus om det känns svårt.\n"
+                            +
+                            "Lektionens innehåll (utdrag): %s",
+                    student.getFirstName(),
+                    lesson.getTitle(),
+                    lesson.getContent() != null
+                            ? (lesson.getContent().length() > 300 ? lesson.getContent().substring(0, 300) + "..."
+                                    : lesson.getContent())
+                            : "Ingen text.");
+
+            return geminiService.generateResponse(prompt);
+        } catch (Exception e) {
+            logger.error("Error generating study tip for user {} on lesson {}", student.getId(), lesson.getId(), e);
+            return "Kom igen! Du fixar det här. Ta en liten paus och försök igen med fräscha ögon!";
         }
     }
 

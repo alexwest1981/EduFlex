@@ -14,9 +14,10 @@ import org.springframework.web.servlet.HandlerMapping;
 import java.io.InputStream;
 import java.net.URLConnection;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
+import org.springframework.http.CacheControl;
 
 @RestController
-@RequestMapping("/api/storage")
 @CrossOrigin(origins = "*")
 public class StorageController {
 
@@ -28,12 +29,20 @@ public class StorageController {
 
     /**
      * Unified fetch endpoint for any file in MinIO/Local storage.
+     * Handles both /api/storage/{id} and /uploads/{id}
      */
-    @GetMapping("/**")
+    @GetMapping({ "/api/storage/**", "/uploads/**" })
     public ResponseEntity<Resource> getFile(HttpServletRequest request) {
         String path = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
-        // Extract the part after /api/storage/
-        String storageId = path.substring(path.indexOf("/api/storage/") + "/api/storage/".length());
+
+        String storageId;
+        if (path.contains("/api/storage/")) {
+            storageId = path.substring(path.indexOf("/api/storage/") + "/api/storage/".length());
+        } else if (path.contains("/uploads/")) {
+            storageId = path.substring(path.indexOf("/uploads/") + "/uploads/".length());
+        } else {
+            return ResponseEntity.badRequest().build();
+        }
 
         try {
             InputStream inputStream = storageService.load(storageId);
@@ -52,6 +61,7 @@ public class StorageController {
             }
 
             return ResponseEntity.ok()
+                    .cacheControl(CacheControl.maxAge(365, TimeUnit.DAYS).cachePublic().immutable())
                     .contentType(MediaType.parseMediaType(contentType))
                     .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + fileName + "\"")
                     .body(resource);
@@ -63,7 +73,7 @@ public class StorageController {
     /**
      * Unified upload endpoint (optional, services often have their own wrappers).
      */
-    @PostMapping("/upload")
+    @PostMapping("/api/storage/upload")
     public ResponseEntity<Map<String, String>> upload(@RequestParam("file") MultipartFile file) {
         try {
             String storageId = storageService.save(file);

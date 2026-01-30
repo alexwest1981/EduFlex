@@ -21,6 +21,7 @@ import WidgetWrapper from './components/WidgetWrapper';
 // --- SHARED ---
 import { useDashboardWidgets } from '../../hooks/useDashboardWidgets';
 import DashboardCustomizer from '../../components/dashboard/DashboardCustomizer';
+import AdaptiveLearningWidget from '../../components/dashboard/AdaptiveLearningWidget';
 
 const StudentDashboard = ({ currentUser }) => {
     const { t } = useTranslation();
@@ -159,6 +160,8 @@ const StudentDashboard = ({ currentUser }) => {
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     {/* LEFT COLUMN (Content) */}
                     <div className="lg:col-span-2 space-y-6">
+
+                        <AdaptiveLearningWidget />
 
                         {widgets.calendar && (
                             <WidgetWrapper className="h-auto">

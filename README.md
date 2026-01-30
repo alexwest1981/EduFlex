@@ -33,6 +33,11 @@
 
 ---
 
+*   **🚀 Performance & E-book Enhancements (Jan 30, 2026):**
+    *   **Permanent Caching:** Enabled 1-year persistent caching (`immutable`) for ebook covers and media assets, dramatically improving library load times.
+    *   **MinIO Proxy:** Implemented a smart proxy in `StorageController` to serve legacy `/uploads/` paths directly from MinIO without database migration.
+    *   **PDF Metadata Engine:** New backend service to extract Table of Contents and render PDF pages as high-quality images for the interactive viewer.
+
 *   **📊 Enterprise Audit & Analytics (Jan 30, 2026):**
     *   **Activity Heatmaps:** Visualized student engagement with GitHub-style contributions graph (last 30 days).
     *   **Course Drop-off Analysis:** New funnel visualization identifying exactly where students stop progressing in a course (supports both Lessons and Materials).
@@ -786,6 +791,11 @@ taskkill /PID <PID> /F
 ## 🇸🇪 Svenska
 
 ### ⚡ Senaste Uppdateringarna
+*   **🚀 Prestanda & E-boksförbättringar (30 jan 2026):**
+    *   **Permanent Cachning:** Aktiverat 1-års cachning (`immutable`) för bokomslag och media, vilket gör biblioteket blixtsnabbt.
+    *   **MinIO Proxy:** Smart proxy i `StorageController` som servar gamla `/uploads/`-länkar direkt från MinIO utan databasändringar.
+    *   **PDF-motor:** Ny backend-tjänst som extraherar innehållsförteckning och renderar PDF-sidor som bilder för den interaktiva läsaren.
+
 *   **📡 Cloudflare Tunnel & OnlyOffice Stabilitet (30 jan 2026):**
     *   **Infrastrukturstabilitet:** Åtgärdat `500 Internal Server Error` och `401 Unauthorized` genom att uppdatera `SecurityConfig` och `AuthTokenFilter`.
     *   **WebSocket-stöd:** Aktiverat routing för `/ws` och `/ws-log` via Cloudflare Tunnel för fungerande chatt och realtidsloggar.
