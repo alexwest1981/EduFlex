@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Book, Upload, Search, Trash2, X, Maximize2, Library, Filter, Settings } from 'lucide-react';
+import { Book, Upload, Search, Trash2, X, Maximize2, Library, Filter, Settings, Sparkles } from 'lucide-react';
 import { api } from '../../services/api';
 import EpubViewer from '../../components/common/EpubViewer';
 import PdfViewer from '../../components/common/PdfViewer';
