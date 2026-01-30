@@ -12,12 +12,18 @@ import com.eduflex.backend.repository.QuizRepository;
 import com.eduflex.backend.repository.QuizResultRepository;
 import com.eduflex.backend.repository.SubmissionRepository;
 import com.eduflex.backend.repository.UserRepository;
+import com.eduflex.backend.repository.LessonRepository;
+import com.eduflex.backend.repository.CourseMaterialRepository;
+import com.eduflex.backend.model.Lesson;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.Month;
 import com.eduflex.backend.model.StudentActivityLog;
 import com.eduflex.backend.repository.StudentActivityLogRepository;
+import com.eduflex.backend.repository.UserLessonProgressRepository;
+import com.eduflex.backend.model.UserLessonProgress;
+import com.eduflex.backend.model.CourseMaterial;
 import java.time.format.TextStyle;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -31,12 +37,18 @@ public class AnalyticsService {
         private final SubmissionRepository submissionRepository;
         private final QuizRepository quizRepository;
         private final QuizResultRepository quizResultRepository;
+        private final LessonRepository lessonRepository;
         private final StudentActivityLogRepository activityLogRepository;
+        private final UserLessonProgressRepository progressRepository;
+        private final CourseMaterialRepository courseMaterialRepository;
 
         public AnalyticsService(UserRepository userRepository, CourseRepository courseRepository,
                         AssignmentRepository assignmentRepository, SubmissionRepository submissionRepository,
                         QuizRepository quizRepository, QuizResultRepository quizResultRepository,
-                        StudentActivityLogRepository activityLogRepository) {
+                        StudentActivityLogRepository activityLogRepository,
+                        UserLessonProgressRepository progressRepository,
+                        LessonRepository lessonRepository,
+                        CourseMaterialRepository courseMaterialRepository) {
                 this.userRepository = userRepository;
                 this.courseRepository = courseRepository;
                 this.assignmentRepository = assignmentRepository;
@@ -44,6 +56,9 @@ public class AnalyticsService {
                 this.quizRepository = quizRepository;
                 this.quizResultRepository = quizResultRepository;
                 this.activityLogRepository = activityLogRepository;
+                this.progressRepository = progressRepository;
+                this.lessonRepository = lessonRepository;
+                this.courseMaterialRepository = courseMaterialRepository;
         }
 
         public Map<String, Object> getSystemOverview(String range) {
@@ -187,28 +202,30 @@ public class AnalyticsService {
                         Map<String, Object> map = new HashMap<>();
                         map.put("id", student.getId());
                         map.put("name", student.getFullName());
-                        map.put("personnummer", "19900101-1234"); // Mockat då vi saknar fältet just nu
+                        map.put("personnummer", student.getSsn() != null ? student.getSsn() : "EJ ANGIVET");
 
                         // Aktivitet senaste 30 dagarna
-                        // LocalDateTime thirtyDaysAgo = LocalDateTime.now().minusDays(30);
+                        LocalDateTime thirtyDaysAgo = LocalDateTime.now().minusDays(30);
+                        List<StudentActivityLog> logs = activityLogRepository
+                                        .findByUserIdOrderByTimestampDesc(student.getId())
+                                        .stream()
+                                        .filter(l -> l.getTimestamp().isAfter(thirtyDaysAgo))
+                                        .collect(Collectors.toList());
 
-                        // Hämta kurser
-                        // List<Course> courses = new ArrayList<>(student.getCourses());
+                        // Beräkna närvaro: Antal unika dagar med aktivitet / 20 (förväntade dagar per
+                        // månad)
+                        long activeDays = logs.stream()
+                                        .map(l -> l.getTimestamp().toLocalDate())
+                                        .distinct()
+                                        .count();
 
-                        // Loggad tid (baserat på activity logs + inloggningar)
-                        // Vi gör en approximation: Varje unikt datum med aktivitet = 4h studier
-                        // Detta är en förenkling för CSN-rappertering i MVP
+                        double attendancePercent = Math.min(100, (activeDays * 100.0 / 20.0));
 
-                        // TODO: Implementera mer exakt logik med timestamps från activityLogRepository
-                        // long activeDays = 0; // Placeholder
-
-                        // Mockad logik för demonstration:
-                        long loginCountLast30 = student.getLoginCount(); // Förenkling
-                        double attendancePercent = Math.min(100, (loginCountLast30 * 5)); // 20 inloggningar = 100%
-
-                        map.put("attendancePercent", attendancePercent);
+                        map.put("attendancePercent", Math.round(attendancePercent * 10.0) / 10.0);
+                        map.put("activeDays", activeDays);
                         map.put("status", attendancePercent < 50 ? "Not Eligible" : "Eligible");
-                        map.put("comment", attendancePercent < 50 ? "För låg aktivitet" : "Godkänd");
+                        map.put("comment", attendancePercent < 50 ? "För låg aktivitet (" + activeDays + " dagar)"
+                                        : "Godkänd");
 
                         return map;
                 }).collect(Collectors.toList());
@@ -604,5 +621,88 @@ public class AnalyticsService {
                 return getStudentInsights().stream()
                                 .filter(studentMap -> "High".equals(studentMap.get("riskFactor")))
                                 .collect(Collectors.toList());
+        }
+
+        public Map<String, Integer> getActivityHeatmap(Long userId) {
+                LocalDateTime thirtyDaysAgo = LocalDateTime.now().minusDays(30);
+                List<StudentActivityLog> logs;
+
+                if (userId != null) {
+                        logs = activityLogRepository.findByUserIdOrderByTimestampDesc(userId)
+                                        .stream()
+                                        .filter(l -> l.getTimestamp().isAfter(thirtyDaysAgo))
+                                        .collect(Collectors.toList());
+                } else {
+                        logs = activityLogRepository.findAllSince(thirtyDaysAgo);
+                }
+
+                Map<String, Integer> heatmap = new HashMap<>();
+                for (StudentActivityLog log : logs) {
+                        String date = log.getTimestamp().toLocalDate().toString();
+                        heatmap.put(date, heatmap.getOrDefault(date, 0) + 1);
+                }
+                return heatmap;
+        }
+
+        public List<Map<String, Object>> getCourseDropOff(Long courseId) {
+                Course course = courseRepository.findById(courseId).orElseThrow();
+                List<User> students = new ArrayList<>(course.getStudents());
+                int totalStudents = students.size();
+
+                if (totalStudents == 0)
+                        return new ArrayList<>();
+
+                List<Map<String, Object>> dropOff = new ArrayList<>();
+
+                // Hämta lektioner
+                List<Lesson> lessons = lessonRepository.findByCourseIdOrderBySortOrderAsc(courseId);
+
+                // Hämta material som räknas som "steg" i progressionen (LESSON, VIDEO,
+                // STUDY_MATERIAL)
+                List<CourseMaterial> materials = courseMaterialRepository.findByCourseId(courseId).stream()
+                                .filter(m -> m.getType() == CourseMaterial.MaterialType.LESSON ||
+                                                m.getType() == CourseMaterial.MaterialType.VIDEO ||
+                                                m.getType() == CourseMaterial.MaterialType.STUDY_MATERIAL)
+                                .collect(Collectors.toList());
+
+                // Om vi har lektioner, använd dem primärt
+                if (!lessons.isEmpty()) {
+                        for (Lesson lesson : lessons) {
+                                dropOff.add(createDropOffStep(courseId, students, totalStudents, lesson.getId(),
+                                                lesson.getTitle(), StudentActivityLog.ActivityType.VIEW_LESSON));
+                        }
+                } else if (!materials.isEmpty()) {
+                        // Annars använd material
+                        materials.sort(Comparator.comparing(CourseMaterial::getId)); // Enkel sortering
+                        for (CourseMaterial material : materials) {
+                                StudentActivityLog.ActivityType activityType = (material
+                                                .getType() == CourseMaterial.MaterialType.VIDEO)
+                                                                ? StudentActivityLog.ActivityType.WATCH_VIDEO
+                                                                : StudentActivityLog.ActivityType.VIEW_LESSON;
+
+                                dropOff.add(createDropOffStep(courseId, students, totalStudents, material.getId(),
+                                                material.getTitle(), activityType));
+                        }
+                }
+
+                return dropOff;
+        }
+
+        private Map<String, Object> createDropOffStep(Long courseId, List<User> students, int totalStudents, Long id,
+                        String title, StudentActivityLog.ActivityType activityType) {
+                Map<String, Object> step = new HashMap<>();
+                step.put("id", id);
+                step.put("title", title);
+
+                long completedCount = students.stream().filter(s -> activityLogRepository
+                                .findByCourseIdAndUserIdOrderByTimestampDesc(courseId, s.getId())
+                                .stream().anyMatch(l -> l.getActivityType() == activityType
+                                                && l.getDetails().contains(title)))
+                                .count();
+
+                double rate = (double) completedCount / totalStudents * 100;
+                step.put("completedCount", completedCount);
+                step.put("completionRate", Math.round(rate * 10.0) / 10.0);
+                return step;
         }
 }

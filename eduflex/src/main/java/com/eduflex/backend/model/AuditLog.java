@@ -18,14 +18,18 @@ public class AuditLog {
     private String modifiedBy; // Username
     private LocalDateTime timestamp;
 
+    @Column(columnDefinition = "TEXT")
+    private String changeData; // JSON representation of the entity state
+
     public AuditLog() {
     }
 
-    public AuditLog(String action, String entityName, String entityId, String modifiedBy) {
+    public AuditLog(String action, String entityName, String entityId, String modifiedBy, String changeData) {
         this.action = action;
         this.entityName = entityName;
         this.entityId = entityId;
         this.modifiedBy = modifiedBy;
+        this.changeData = changeData;
         this.timestamp = LocalDateTime.now();
     }
 
@@ -76,5 +80,13 @@ public class AuditLog {
 
     public void setTimestamp(LocalDateTime timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public String getChangeData() {
+        return changeData;
+    }
+
+    public void setChangeData(String changeData) {
+        this.changeData = changeData;
     }
 }

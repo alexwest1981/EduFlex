@@ -81,4 +81,15 @@ public class AnalyticsController {
     public ResponseEntity<List<Map<String, Object>>> getAtRiskStudents() {
         return ResponseEntity.ok(analyticsService.getAtRiskStudents());
     }
+
+    @GetMapping("/heatmap")
+    public ResponseEntity<Map<String, Integer>> getActivityHeatmap(
+            @RequestParam(required = false) Long userId) {
+        return ResponseEntity.ok(analyticsService.getActivityHeatmap(userId));
+    }
+
+    @GetMapping("/drop-off/{courseId}")
+    public ResponseEntity<List<Map<String, Object>>> getCourseDropOff(@PathVariable Long courseId) {
+        return ResponseEntity.ok(analyticsService.getCourseDropOff(courseId));
+    }
 }

@@ -34,7 +34,7 @@ public class AuditListener {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             String username = (auth != null && auth.isAuthenticated()) ? auth.getName() : "SYSTEM";
 
-            // Hämta ID från entiteten (User.getId() eller Course.getId())
+            // Hämta ID från entiteten
             String id = "UNKNOWN";
             try {
                 Method getIdMethod = entity.getClass().getMethod("getId");
@@ -45,10 +45,27 @@ public class AuditListener {
                 // Ingen getId metod
             }
 
-            // Skapa loggen
-            AuditLog log = new AuditLog(action, entity.getClass().getSimpleName(), id, username);
+            // Deep-Diff: Serialisera entiteten till JSON (exkludera lösenord etc)
+            String changeData = null;
+            try {
+                com.fasterxml.jackson.databind.ObjectMapper mapper = com.eduflex.backend.config.BeanUtil
+                        .getBean(com.fasterxml.jackson.databind.ObjectMapper.class);
+                if (mapper == null)
+                    mapper = new com.fasterxml.jackson.databind.ObjectMapper();
 
-            // Spara via Repository (hämtat via BeanUtil)
+                // Skapa en kopia eller filtrera manuellt för att undvika cirkulära beroenden
+                // och känslig data
+                // För MVP serialiserar vi hela objektet men använder @JsonIgnore regler som
+                // redan finns i modellen
+                changeData = mapper.writeValueAsString(entity);
+            } catch (Exception e) {
+                changeData = "{\"error\": \"Could not serialize entity: " + e.getMessage() + "\"}";
+            }
+
+            // Skapa loggen
+            AuditLog log = new AuditLog(action, entity.getClass().getSimpleName(), id, username, changeData);
+
+            // Spara via Repository
             AuditLogRepository repo = BeanUtil.getBean(AuditLogRepository.class);
             repo.save(log);
 
@@ -57,7 +74,6 @@ public class AuditListener {
 
         } catch (Exception e) {
             System.err.println("Failed to audit log: " + e.getMessage());
-            e.printStackTrace();
         }
     }
 }

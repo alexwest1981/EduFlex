@@ -33,6 +33,12 @@
 
 ---
 
+*   **📊 Enterprise Audit & Analytics (Jan 30, 2026):**
+    *   **Activity Heatmaps:** Visualized student engagement with GitHub-style contributions graph (last 30 days).
+    *   **Course Drop-off Analysis:** New funnel visualization identifying exactly where students stop progressing in a course (supports both Lessons and Materials).
+    *   **Deep-Diff Audit Logs:** Complete transparency for Admins – logs now show exact "before/after" JSON snapshots of modified entities.
+    *   **Real-Data Reporting:** CSN reports and attendance calculations now use actual `StudentActivityLog` data.
+
 *   **📡 Cloudflare Tunnel & OnlyOffice Stability (Jan 30, 2026):**
     *   **Infrastructure Stability:** Resolved `500 Internal Server Error` and `401 Unauthorized` for external users by updating `SecurityConfig` and `AuthTokenFilter`.
     *   **WebSocket Support:** Enabled `/ws` and `/ws-log` routing via Cloudflare Tunnel for real-time chat and logs.
@@ -740,11 +746,11 @@ See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for manual setup.
 | Community Marketplace | ✅ Implemented |
 | Question Bank Integration | ✅ Implemented |
 | AI-powered Quiz Generation (Gemini) | ✅ Implemented |
+| Advanced Analytics Dashboard | ✅ Implemented |
 | Microservices Split (Video/PDF) | 🔜 Q2 2026 |
 | Event Bus (Kafka/RabbitMQ) | 🔜 Q3 2026 |
 | Mobile App (React Native) | 🔜 Q4 2026 |
 | Push Notifications (Mobile) | 🔜 Q4 2026 |
-| Advanced Analytics Dashboard | 🔜 Q2 2026 |
 
 ---
 

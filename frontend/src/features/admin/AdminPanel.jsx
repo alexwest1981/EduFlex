@@ -16,6 +16,7 @@ import { ChatModuleMetadata } from '../../modules/chat/ChatModule';
 import { GamificationModuleMetadata } from '../../modules/gamification/GamificationModule';
 import { useModules } from '../../context/ModuleContext';
 import UserImport from './UserImport';
+import AuditLogDashboard from './AuditLogDashboard';
 
 const AdminPanel = ({ currentUser }) => {
     const { t } = useTranslation();
@@ -300,9 +301,9 @@ const AdminPanel = ({ currentUser }) => {
             </div>
 
             <div className="flex flex-wrap gap-2 mb-8 border-b border-gray-200 dark:border-[#282a2c] pb-1">
-                {['users', 'courses', 'content', 'settings'].map(tab => (
+                {['users', 'courses', 'content', 'audit', 'settings'].map(tab => (
                     <button key={tab} onClick={() => setAdminTab(tab)} className={`px-4 py-2 rounded-t-lg font-medium text-sm transition-colors flex items-center gap-2 capitalize ${adminTab === tab ? 'bg-gray-100 dark:bg-[#282a2c] text-indigo-600 dark:text-white border-b-2 border-indigo-500' : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200'}`}>
-                        {tab === 'users' ? 'Användare' : tab === 'courses' ? 'Kurser' : tab === 'content' ? 'Innehåll' : 'Inställningar'}
+                        {tab === 'users' ? 'Användare' : tab === 'courses' ? 'Kurser' : tab === 'content' ? 'Innehåll' : tab === 'audit' ? 'Audit Log' : 'Inställningar'}
                     </button>
                 ))}
             </div>
@@ -518,6 +519,11 @@ const AdminPanel = ({ currentUser }) => {
                             </table>
                         </div>
                     </div>
+                )}
+
+                {/* AUDIT LOG FLIK */}
+                {adminTab === 'audit' && (
+                    <AuditLogDashboard />
                 )}
 
                 {/* INSTÄLLNINGAR FLIK */}

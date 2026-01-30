@@ -195,6 +195,8 @@ export const api = {
         getActivityTrend: (range) => fetch(`${API_BASE}/analytics/activity-trend?range=${range || '30d'}`, { headers: getHeaders() }).then(handleResponse),
         getCoursePerformance: () => fetch(`${API_BASE}/analytics/course-performance`, { headers: getHeaders() }).then(handleResponse),
         getAtRiskStudents: () => fetch(`${API_BASE}/analytics/at-risk-students`, { headers: getHeaders() }).then(handleResponse),
+        getHeatmap: (userId) => fetch(`${API_BASE}/analytics/heatmap${userId ? `?userId=${userId}` : ''}`, { headers: getHeaders() }).then(handleResponse),
+        getDropOff: (courseId) => fetch(`${API_BASE}/analytics/drop-off/${courseId}`, { headers: getHeaders() }).then(handleResponse),
     },
 
     skolverket: {
@@ -422,6 +424,16 @@ export const api = {
             headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }, // No Content-Type for FormData!
             body: formData
         }).then(handleResponse),
+
+        // Audit Logs
+        getAuditLogs: (params = {}) => {
+            const searchParams = new URLSearchParams();
+            if (params.user) searchParams.set('user', params.user);
+            if (params.action) searchParams.set('action', params.action);
+            if (params.entity) searchParams.set('entity', params.entity);
+            return fetch(`${API_BASE}/admin/audit?${searchParams}`, { headers: getHeaders() }).then(handleResponse);
+        },
+        getAuditLog: (id) => fetch(`${API_BASE}/admin/audit/${id}`, { headers: getHeaders() }).then(handleResponse),
     },
 
     license: { // Keeping for backward compat if anyone calls it separately, but consolidated in system for UI

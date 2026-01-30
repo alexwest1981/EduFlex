@@ -5,7 +5,9 @@ import {
     LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer,
     BarChart, Bar, Legend, PieChart, Pie, Cell
 } from 'recharts';
-import { TrendingUp, Users, AlertTriangle, BookOpen, Download, MessageSquare } from 'lucide-react';
+import { TrendingUp, Users, AlertTriangle, BookOpen, Download, MessageSquare, Activity, Filter } from 'lucide-react';
+import ActivityHeatmap from '../../components/dashboard/ActivityHeatmap';
+import CourseDropOffAnalysis from '../../components/dashboard/CourseDropOffAnalysis';
 
 const COLORS = ['#4f46e5', '#10b981', '#f59e0b', '#ef4444'];
 
@@ -15,6 +17,7 @@ const AnalyticsDashboard = () => {
     const [courseData, setCourseData] = useState([]);
     const [atRiskData, setAtRiskData] = useState([]);
     const [overview, setOverview] = useState(null);
+    const [selectedCourseId, setSelectedCourseId] = useState(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -32,6 +35,9 @@ const AnalyticsDashboard = () => {
             ]);
             setTrendData(trend);
             setCourseData(courses);
+            if (courses.length > 0 && !selectedCourseId) {
+                setSelectedCourseId(courses[0].id);
+            }
             setAtRiskData(risk);
             setOverview(ov);
         } catch (e) {
@@ -64,8 +70,8 @@ const AnalyticsDashboard = () => {
                             key={r}
                             onClick={() => setTrendRange(r)}
                             className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${trendRange === r
-                                    ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300'
-                                    : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-[#282a2c]'
+                                ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300'
+                                : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-[#282a2c]'
                                 }`}
                         >
                             {r === '7d' ? 'Senaste Veckan' : r === '30d' ? 'Månad' : 'Kvartal'}
@@ -137,6 +143,31 @@ const AnalyticsDashboard = () => {
                             ))
                         )}
                     </div>
+                </div>
+            </div>
+
+            {/* Heatmap & Drop-off Row */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div className="lg:col-span-1">
+                    <ActivityHeatmap />
+                </div>
+                <div className="lg:col-span-2">
+                    <div className="flex justify-between items-center mb-4 px-2">
+                        <div className="flex items-center gap-2 text-gray-500 text-sm">
+                            <Filter size={14} />
+                            <span>Välj kurs för analys:</span>
+                        </div>
+                        <select
+                            className="bg-white dark:bg-[#1E1F20] border border-gray-200 dark:border-[#3c4043] rounded-lg px-3 py-1.5 text-xs font-medium text-gray-700 dark:text-gray-300 focus:ring-2 focus:ring-indigo-500"
+                            value={selectedCourseId || ''}
+                            onChange={(e) => setSelectedCourseId(e.target.value)}
+                        >
+                            {courseData.map(c => (
+                                <option key={c.id} value={c.id}>{c.name}</option>
+                            ))}
+                        </select>
+                    </div>
+                    {selectedCourseId && <CourseDropOffAnalysis courseId={selectedCourseId} />}
                 </div>
             </div>
 
