@@ -315,51 +315,54 @@ const EbookLibrary = () => {
                                         )}
 
                                         {/* Overlay on hover */}
-                                        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
+                                        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center p-4">
+                                            {/* Primary Action: Read */}
                                             <button
                                                 onClick={() => setSelectedBook(book)}
-                                                className="bg-white text-gray-900 p-3 rounded-full hover:bg-indigo-50 transition-colors shadow-lg"
+                                                className="bg-white text-gray-900 p-4 rounded-full hover:bg-indigo-50 transition-all hover:scale-110 shadow-xl mb-auto mt-auto"
                                                 title={t('library.read_book')}
                                             >
-                                                <Maximize2 size={24} />
+                                                <Maximize2 size={28} />
                                             </button>
+
+                                            {/* Admin Action Bar (at bottom) */}
                                             {canUpload && (
-                                                <button
-                                                    onClick={() => {
-                                                        setUploadData({
-                                                            title: book.title,
-                                                            author: book.author || '',
-                                                            category: book.category || '',
-                                                            language: book.language || 'Svenska',
-                                                            description: book.description || ''
-                                                        });
-                                                        setSelectedBook(book); // Use this to track which book is being edited
-                                                        setIsEditModalOpen(true);
-                                                    }}
-                                                    className="bg-indigo-600 text-white p-3 rounded-full hover:bg-indigo-700 transition-colors shadow-lg"
-                                                    title={t('common.edit')}
-                                                >
-                                                    <Settings size={22} />
-                                                </button>
-                                            )}
-                                            {canUpload && (
-                                                <button
-                                                    onClick={() => handleIndexForAI(book.id)}
-                                                    className="bg-purple-600 text-white p-3 rounded-full hover:bg-purple-700 transition-colors shadow-lg"
-                                                    title="Indexera för AI Study Pal"
-                                                    disabled={isIndexing}
-                                                >
-                                                    <Sparkles size={22} className={isIndexing ? 'animate-pulse' : ''} />
-                                                </button>
-                                            )}
-                                            {canUpload && (
-                                                <button
-                                                    onClick={() => handleDelete(book.id)}
-                                                    className="bg-red-500 text-white p-3 rounded-full hover:bg-red-600 transition-colors shadow-lg"
-                                                    title={t('common.delete')}
-                                                >
-                                                    <Trash2 size={22} />
-                                                </button>
+                                                <div className="flex items-center gap-1 bg-white/10 backdrop-blur-md p-1 rounded-xl border border-white/20 w-fit">
+                                                    <button
+                                                        onClick={() => {
+                                                            setUploadData({
+                                                                title: book.title,
+                                                                author: book.author || '',
+                                                                category: book.category || '',
+                                                                language: book.language || 'Svenska',
+                                                                description: book.description || ''
+                                                            });
+                                                            setSelectedBook(book);
+                                                            setIsEditModalOpen(true);
+                                                        }}
+                                                        className="p-2 text-white hover:bg-white/20 rounded-lg transition-colors"
+                                                        title={t('common.edit')}
+                                                    >
+                                                        <Settings size={18} />
+                                                    </button>
+
+                                                    <button
+                                                        onClick={() => handleIndexForAI(book.id)}
+                                                        className="p-2 text-purple-300 hover:bg-purple-500/20 rounded-lg transition-colors"
+                                                        title="Indexera för AI Study Pal"
+                                                        disabled={isIndexing}
+                                                    >
+                                                        <Sparkles size={18} className={isIndexing ? 'animate-pulse' : ''} />
+                                                    </button>
+
+                                                    <button
+                                                        onClick={() => handleDelete(book.id)}
+                                                        className="p-2 text-red-400 hover:bg-red-500/20 rounded-lg transition-colors"
+                                                        title={t('common.delete')}
+                                                    >
+                                                        <Trash2 size={18} />
+                                                    </button>
+                                                </div>
                                             )}
                                         </div>
                                     </div>
