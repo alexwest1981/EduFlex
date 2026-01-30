@@ -44,6 +44,7 @@
     *   **Biblioteks-RAG:** AI:n kan nu hämta kunskap från både kursmaterial och e-böcker i biblioteket.
     *   **Interaktiv Chatt-Widget:** En ny, vänlig chatt-bubbla i kursvyn för snabb hjälp och pepp.
     *   **Manuell Indexering:** Lärare kan nu indexera valfria e-böcker från biblioteket för att göra sin Pal smartare.
+    *   **Automatiserad Migration:** En ny global motor ser till att ALLA kunders databaser uppdateras automatiskt vid start, vilket förhindrar krascher vid nya releaser.
 
 *   **📚 PDF Support in Ebook Library (Jan 30, 2026):**
     *   **Interactive PDF Viewer:** New dedicated viewer for PDF documents with table of contents navigation.
