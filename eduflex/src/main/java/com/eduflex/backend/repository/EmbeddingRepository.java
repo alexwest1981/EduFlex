@@ -14,5 +14,9 @@ public interface EmbeddingRepository extends JpaRepository<VectorStoreEntry, Lon
     // search
     List<VectorStoreEntry> findByCourseId(Long courseId);
 
-    void deleteByDocumentId(Long documentId);
+    List<VectorStoreEntry> findBySourceTypeAndSourceId(String sourceType, Long sourceId);
+
+    List<VectorStoreEntry> findBySourceType(String sourceType);
+
+    void deleteBySourceTypeAndSourceId(String sourceType, Long sourceId);
 }

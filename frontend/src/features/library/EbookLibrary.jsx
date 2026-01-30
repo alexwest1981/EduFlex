@@ -13,6 +13,7 @@ const EbookLibrary = () => {
     const { t } = useTranslation();
     const [ebooks, setEbooks] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [isIndexing, setIsIndexing] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedBook, setSelectedBook] = useState(null);
     const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
@@ -182,6 +183,28 @@ const EbookLibrary = () => {
         }
     };
 
+    const handleIndexForAI = async (id) => {
+        if (!confirm('Vill du indexera den här boken för din AI Study Pal? Detta gör att AI:n kan svara på frågor baserat på bokens innehåll.')) return;
+        setIsIndexing(true);
+        const loadingToast = toast.loading('Indexerar boken för AI Study Pal...');
+        try {
+            const response = await fetch(`/api/study-pal/index-ebook/${id}`, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+            });
+            if (response.ok) {
+                toast.success('Boken har indexerats! Din AI Study Pal är nu smartare. 🧠✨', { id: loadingToast });
+            } else {
+                toast.error('Kunde inte indexera boken just nu.', { id: loadingToast });
+            }
+        } catch (error) {
+            console.error('Failed to index ebook:', error);
+            toast.error('Ett fel inträffade vid indexering.', { id: loadingToast });
+        } finally {
+            setIsIndexing(false);
+        }
+    };
+
     const filteredEbooks = ebooks.filter(book => {
         const matchesSearch = book.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
             book.author?.toLowerCase().includes(searchQuery.toLowerCase());
@@ -317,6 +340,16 @@ const EbookLibrary = () => {
                                                     title={t('common.edit')}
                                                 >
                                                     <Settings size={22} />
+                                                </button>
+                                            )}
+                                            {canUpload && (
+                                                <button
+                                                    onClick={() => handleIndexForAI(book.id)}
+                                                    className="bg-purple-600 text-white p-3 rounded-full hover:bg-purple-700 transition-colors shadow-lg"
+                                                    title="Indexera för AI Study Pal"
+                                                    disabled={isIndexing}
+                                                >
+                                                    <Sparkles size={22} className={isIndexing ? 'animate-pulse' : ''} />
                                                 </button>
                                             )}
                                             {canUpload && (

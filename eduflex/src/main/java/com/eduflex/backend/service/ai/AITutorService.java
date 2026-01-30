@@ -47,7 +47,7 @@ public class AITutorService {
             CourseMaterial material = materialRepository.findById(materialId)
                     .orElseThrow(() -> new RuntimeException("Material not found: " + materialId));
 
-            embeddingRepository.deleteByDocumentId(materialId);
+            embeddingRepository.deleteBySourceTypeAndSourceId("MATERIAL", materialId);
 
             StringBuilder fullText = new StringBuilder();
             if (material.getContent() != null && !material.getContent().isBlank()) {
@@ -85,7 +85,9 @@ public class AITutorService {
 
                 VectorStoreEntry embedding = new VectorStoreEntry();
                 embedding.setCourseId(courseId);
-                embedding.setDocumentId(materialId);
+                embedding.setSourceType("MATERIAL");
+                embedding.setSourceId(materialId);
+                embedding.setSourceTitle(material.getTitle());
                 embedding.setTextChunk(chunk);
                 embedding.setEmbeddingVector(vectorArray);
 

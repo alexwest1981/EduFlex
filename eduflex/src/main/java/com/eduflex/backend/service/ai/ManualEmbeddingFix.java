@@ -8,7 +8,8 @@ public class ManualEmbeddingFix {
     public void test() {
         VectorStoreEntry e = new VectorStoreEntry();
         e.setCourseId(1L);
-        e.setDocumentId(1L);
+        e.setSourceType("MATERIAL");
+        e.setSourceId(1L);
         e.setTextChunk("test");
         e.setEmbeddingVector(new Double[] { 1.0 });
     }

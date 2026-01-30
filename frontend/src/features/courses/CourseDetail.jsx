@@ -27,7 +27,7 @@ import TeacherAttendanceView from '../dashboard/components/teacher/TeacherAttend
 import EvaluationModal from '../../components/EvaluationModal';
 import TeacherEvaluationModal from '../../components/TeacherEvaluationModal';
 import { LiveLessonButton } from '../../modules/live-lessons';
-import AITutorWidget from '../ai/components/AITutorWidget';
+import StudyPalWidget from '../../components/common/StudyPalWidget';
 
 const CourseDetail = ({ currentUser }) => {
     const { id } = useParams();
@@ -482,8 +482,8 @@ const CourseDetail = ({ currentUser }) => {
                 />
             )}
 
-            {/* AI Tutor Widget */}
-            <AITutorWidget courseId={course.id} />
+            {/* AI Study Pal Widget */}
+            <StudyPalWidget courseId={course.id} lessonTitle={activeTab === 'material' ? 'Lektion' : activeTab} />
         </div>
     );
 };
