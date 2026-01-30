@@ -5,11 +5,11 @@ import com.eduflex.backend.model.VectorStoreEntry;
 import com.eduflex.backend.repository.EbookRepository;
 import com.eduflex.backend.repository.EmbeddingRepository;
 import com.eduflex.backend.service.StorageService;
+import org.apache.tika.metadata.Metadata;
 import org.apache.tika.Tika;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.io.InputStream;
 import java.util.*;
@@ -37,7 +37,9 @@ public class AiStudyPalService {
         this.storageService = storageService;
     }
 
-    @Transactional
+    // We remove @Transactional here because this process can be very long
+    // (embedding many chunks) and we don't want to hold a DB connection or
+    // timeout the transaction. Each save is individually handled.
     public void indexEbook(Long ebookId) {
         try {
             Ebook ebook = ebookRepository.findById(ebookId)
@@ -51,29 +53,57 @@ public class AiStudyPalService {
 
             StringBuilder textBuilder = new StringBuilder();
             try (InputStream is = storageService.load(storageId)) {
-                String extracted = tika.parseToString(is);
-                if (extracted != null)
+                logger.info("📄 AI Study Pal: Startar textutvinning för fil: {}", storageId);
+
+                Metadata metadata = new Metadata();
+                metadata.set("resourceName", storageId);
+
+                String extracted = tika.parseToString(is, metadata);
+                if (extracted != null && !extracted.trim().isEmpty()) {
                     textBuilder.append(extracted);
+                    logger.info("✅ AI Study Pal: Lyckades utvinna {} tecken från {}", extracted.length(), storageId);
+                } else {
+                    logger.warn("⚠️ AI Study Pal: Ingen text kunde utvinnas från {}", storageId);
+                }
+            } catch (Exception e) {
+                logger.error("❌ AI Study Pal: Textutvinning misslyckades för {}. Fel: {}", storageId, e.getMessage());
             }
 
             String fullText = textBuilder.toString().trim();
-            if (fullText.isEmpty())
+            if (fullText.isEmpty()) {
+                logger.warn("🚫 Indexering avbruten: Inget innehåll hittades i e-bok {}", ebookId);
                 return;
+            }
 
             List<String> chunks = splitText(fullText);
+            logger.info("🧩 Delar upp text i {} segment för AI-analys", chunks.size());
+
+            int successCount = 0;
             for (String chunk : chunks) {
-                List<Double> vector = geminiService.generateEmbedding(chunk);
-                VectorStoreEntry entry = new VectorStoreEntry();
-                entry.setSourceType("EBOOK");
-                entry.setSourceId(ebookId);
-                entry.setSourceTitle(ebook.getTitle());
-                entry.setTextChunk(chunk);
-                entry.setEmbeddingVector(vector.toArray(new Double[0]));
-                embeddingRepository.save(entry);
+                try {
+                    List<Double> vector = geminiService.generateEmbedding(chunk);
+                    VectorStoreEntry entry = new VectorStoreEntry();
+                    entry.setSourceType("EBOOK");
+                    entry.setSourceId(ebookId);
+                    entry.setSourceTitle(ebook.getTitle());
+                    entry.setTextChunk(chunk);
+                    entry.setEmbeddingVector(vector.toArray(new Double[0]));
+                    embeddingRepository.save(entry);
+                    successCount++;
+                } catch (Exception chunkError) {
+                    logger.error("⚠️ Kunde inte skapa embedding för ett segment i e-bok {}: {}", ebookId,
+                            chunkError.getMessage());
+                }
             }
-            logger.info("Indexed ebook {} with {} chunks", ebookId, chunks.size());
+
+            if (successCount > 0) {
+                logger.info("✅ Indexering klar för e-bok {}: {}/{} segment sparade", ebookId, successCount,
+                        chunks.size());
+            } else {
+                logger.error("❌ Indexering misslyckades helt för e-bok {}: Inga segment kunde bearbetas", ebookId);
+            }
         } catch (Exception e) {
-            logger.error("Failed to index ebook {}", ebookId, e);
+            logger.error("Hoppsan! Något gick fel vid indexering av e-bok {}: {}", ebookId, e.getMessage());
         }
     }
 

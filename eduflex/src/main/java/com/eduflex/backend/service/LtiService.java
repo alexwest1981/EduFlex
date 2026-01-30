@@ -3,6 +3,7 @@ package com.eduflex.backend.service;
 import com.eduflex.backend.model.LtiPlatform;
 import com.eduflex.backend.model.User;
 import com.eduflex.backend.model.Role;
+import com.eduflex.backend.repository.LtiKeyRepository;
 import com.eduflex.backend.repository.LtiPlatformRepository;
 import com.eduflex.backend.repository.UserRepository;
 import com.eduflex.backend.repository.RoleRepository;
@@ -43,38 +44,58 @@ public class LtiService {
     private final LtiPlatformRepository platformRepository;
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final LtiKeyRepository ltiKeyRepository;
+    private final TenantService tenantService;
     private final JwtUtils jwtUtils;
 
     @Autowired
     public LtiService(LtiPlatformRepository platformRepository, UserRepository userRepository,
-            RoleRepository roleRepository, JwtUtils jwtUtils) {
+            RoleRepository roleRepository, LtiKeyRepository ltiKeyRepository,
+            TenantService tenantService, JwtUtils jwtUtils) {
         this.platformRepository = platformRepository;
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
+        this.ltiKeyRepository = ltiKeyRepository;
+        this.tenantService = tenantService;
         this.jwtUtils = jwtUtils;
     }
 
     @PostConstruct
     public void init() {
         try {
-            // Generate a 2048-bit RSA key pair for signing OUR requests to LMS (if needed
-            // for Deep Linking etc)
-            KeyPairGenerator gen = KeyPairGenerator.getInstance("RSA");
-            gen.initialize(2048);
-            KeyPair keyPair = gen.generateKeyPair();
+            // Check if we already have a key in the database
+            Optional<com.eduflex.backend.model.LtiKey> existingKey = ltiKeyRepository.findFirstByOrderByCreatedAtDesc();
 
-            // Convert to JWK format
-            rsaKey = new RSAKey.Builder((RSAPublicKey) keyPair.getPublic())
-                    .privateKey((RSAPrivateKey) keyPair.getPrivate())
-                    .keyUse(KeyUse.SIGNATURE)
-                    .algorithm(JWSAlgorithm.RS256)
-                    .keyID(UUID.randomUUID().toString())
-                    .build();
+            if (existingKey.isPresent()) {
+                logger.info("🔑 Loading existing LTI RSA Key from database (ID: {})", existingKey.get().getKeyId());
+                rsaKey = RSAKey.parse(existingKey.get().getPrivateKey());
+            } else {
+                logger.info("🆕 Generating new LTI RSA Key pair...");
+                KeyPairGenerator gen = KeyPairGenerator.getInstance("RSA");
+                gen.initialize(2048);
+                KeyPair keyPair = gen.generateKeyPair();
+
+                rsaKey = new RSAKey.Builder((RSAPublicKey) keyPair.getPublic())
+                        .privateKey((RSAPrivateKey) keyPair.getPrivate())
+                        .keyUse(KeyUse.SIGNATURE)
+                        .algorithm(JWSAlgorithm.RS256)
+                        .keyID(UUID.randomUUID().toString())
+                        .build();
+
+                // Save to database
+                com.eduflex.backend.model.LtiKey dbKey = new com.eduflex.backend.model.LtiKey();
+                dbKey.setKeyId(rsaKey.getKeyID());
+                dbKey.setPrivateKey(rsaKey.toJSONString()); // Store as JWK JSON
+                dbKey.setPublicKey(rsaKey.toPublicJWK().toJSONString());
+                ltiKeyRepository.save(dbKey);
+                logger.info("💾 Saved new LTI RSA Key to database.");
+            }
 
             jwkSet = new JWKSet(rsaKey);
 
         } catch (Exception e) {
-            throw new RuntimeException("Failed to generate LTI keys", e);
+            logger.error("Failed to initialize LTI keys", e);
+            // Don't crash the whole app if LTI fails, but it will be broken
         }
     }
 
@@ -114,7 +135,19 @@ public class LtiService {
             LtiPlatform platform = platformRepository.findByIssuer(issuer)
                     .orElseThrow(() -> new IllegalArgumentException("Unknown Platform Issuer: " + issuer));
 
-            // 3. Verify Signature using Platform's JWKS
+            // 3. Set Tenant Context if mapped
+            if (platform.getTenantId() != null && !platform.getTenantId().isBlank()) {
+                com.eduflex.backend.model.Tenant tenant = tenantService.getTenant(platform.getTenantId());
+                if (tenant != null && tenant.getDbSchema() != null) {
+                    com.eduflex.backend.config.tenant.TenantContext.setCurrentTenant(tenant.getDbSchema());
+                    logger.info("🏢 LTI Launch: Switched context to tenant {} (Schema: {})", tenant.getId(),
+                            tenant.getDbSchema());
+                }
+            } else {
+                com.eduflex.backend.config.tenant.TenantContext.setCurrentTenant("public");
+            }
+
+            // 3.1 Verify Signature using Platform's JWKS
             if (platform.getJwksUrl() != null && !platform.getJwksUrl().isEmpty()) {
                 verifySignature(signedJWT, platform.getJwksUrl());
             } else {
@@ -127,7 +160,7 @@ public class LtiService {
 
             // 4. Verify Claims
             JWTClaimsSet claims = signedJWT.getJWTClaimsSet();
-            verifyClaims(claims, platform.getClientId());
+            verifyClaims(claims, platform.getClientId(), platform.getDeploymentId());
 
             // 5. User Provisioning & Mode Check
             String messageType = (String) claims.getClaim("https://purl.imsglobal.org/spec/lti/claim/message_type");
@@ -159,7 +192,8 @@ public class LtiService {
 
             } else {
                 // Standard Resource Link Launch
-                return "TOKEN:" + provisionUserAndGenerateToken(claims);
+                String token = provisionUserAndGenerateToken(claims);
+                return "TOKEN:" + token;
             }
 
         } catch (Exception e) {
@@ -181,13 +215,21 @@ public class LtiService {
         jwtProcessor.process(signedJWT, null);
     }
 
-    private void verifyClaims(JWTClaimsSet claims, String expectedAudience) throws Exception {
+    private void verifyClaims(JWTClaimsSet claims, String expectedAudience, String expectedDeploymentId)
+            throws Exception {
         // Verify Audience
         List<String> aud = claims.getAudience();
         if (aud == null || !aud.contains(expectedAudience)) {
-            // Some LMSs send array, some string. Nimbus handles conversion but list check
-            // is safest.
             throw new SecurityException("Invalid Audience. Expected " + expectedAudience);
+        }
+
+        // Verify Deployment ID (if configured)
+        if (expectedDeploymentId != null && !expectedDeploymentId.isEmpty()) {
+            String actualDeploymentId = (String) claims
+                    .getClaim("https://purl.imsglobal.org/spec/lti/claim/deployment_id");
+            if (!expectedDeploymentId.equals(actualDeploymentId)) {
+                throw new SecurityException("Invalid Deployment ID. Expected " + expectedDeploymentId);
+            }
         }
 
         // Verify Expiration

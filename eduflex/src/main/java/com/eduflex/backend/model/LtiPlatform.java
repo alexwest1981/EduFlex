@@ -27,6 +27,8 @@ public class LtiPlatform {
 
     private String deploymentId; // Optional specific deployment ID if needed
 
+    private String tenantId; // The tenant this platform belongs to (id from public.tenants)
+
     public LtiPlatform() {
     }
 
@@ -93,5 +95,13 @@ public class LtiPlatform {
 
     public void setDeploymentId(String deploymentId) {
         this.deploymentId = deploymentId;
+    }
+
+    public String getTenantId() {
+        return tenantId;
+    }
+
+    public void setTenantId(String tenantId) {
+        this.tenantId = tenantId;
     }
 }

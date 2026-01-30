@@ -1,10 +1,8 @@
 package com.eduflex.backend.service.reader;
 
 import com.eduflex.backend.dto.BookChapterDto;
-import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
-import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageDestination;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineNode;
@@ -26,8 +24,8 @@ public class PdfBookContent implements BookContent {
     private final PDFRenderer renderer;
 
     public PdfBookContent(InputStream inputStream) throws IOException {
-        // PDFBox 3.0 uses Loader.loadPDF
-        this.document = Loader.loadPDF(inputStream.readAllBytes());
+        // PDFBox 2.0 uses PDDocument.load
+        this.document = PDDocument.load(inputStream);
         this.renderer = new PDFRenderer(document);
     }
 

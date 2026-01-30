@@ -14,7 +14,9 @@ const LtiPlatformManager = () => {
         clientId: '',
         authUrl: '',
         tokenUrl: '',
-        jwksUrl: ''
+        jwksUrl: '',
+        deploymentId: '',
+        tenantId: ''
     });
 
     useEffect(() => {
@@ -40,7 +42,9 @@ const LtiPlatformManager = () => {
             clientId: platform.clientId,
             authUrl: platform.authUrl,
             tokenUrl: platform.tokenUrl,
-            jwksUrl: platform.jwksUrl
+            jwksUrl: platform.jwksUrl,
+            deploymentId: platform.deploymentId || '',
+            tenantId: platform.tenantId || ''
         });
         setIsEditing(true);
     };
@@ -52,7 +56,9 @@ const LtiPlatformManager = () => {
             clientId: '',
             authUrl: '',
             tokenUrl: '',
-            jwksUrl: ''
+            jwksUrl: '',
+            deploymentId: '',
+            tenantId: ''
         });
         setIsEditing(true);
     };
@@ -199,6 +205,42 @@ const LtiPlatformManager = () => {
                                 />
                             </div>
                             <p className="text-xs text-gray-500 mt-1">URL där LMS:et publicerar sina publika nycklar.</p>
+                        </div>
+
+                        {/* Deployment ID */}
+                        <div>
+                            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
+                                Deployment ID (Valfri)
+                            </label>
+                            <div className="flex items-center gap-2 bg-gray-50 dark:bg-[#282a2c] border border-gray-200 dark:border-[#3c4043] rounded-xl px-4 py-3">
+                                <Server size={18} className="text-gray-400" />
+                                <input
+                                    type="text"
+                                    className="bg-transparent border-none outline-none text-gray-900 dark:text-white w-full"
+                                    placeholder="d73282..."
+                                    value={formData.deploymentId}
+                                    onChange={e => setFormData({ ...formData, deploymentId: e.target.value })}
+                                />
+                            </div>
+                        </div>
+
+                        {/* Tenant ID Mapping */}
+                        <div>
+                            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
+                                Mappa till Tenant ID
+                            </label>
+                            <div className="flex items-center gap-2 bg-gray-50 dark:bg-[#282a2c] border border-gray-200 dark:border-[#3c4043] rounded-xl px-4 py-3">
+                                <Globe size={18} className="text-gray-400" />
+                                <input
+                                    type="text"
+                                    required
+                                    className="bg-transparent border-none outline-none text-gray-900 dark:text-white w-full"
+                                    placeholder="public"
+                                    value={formData.tenantId}
+                                    onChange={e => setFormData({ ...formData, tenantId: e.target.value })}
+                                />
+                            </div>
+                            <p className="text-xs text-gray-500 mt-1">Denna plattform loggar in användare i detta schema.</p>
                         </div>
                     </div>
 

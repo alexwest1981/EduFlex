@@ -34,22 +34,20 @@
 ---
 
 *   **📡 Cloudflare Tunnel & OnlyOffice Stability (Jan 30, 2026):**
-    *   **Infrastructure Stability:** Resolved `500 Internal Server Error` and `401 Unauthorized` for external users by updating `SecurityConfig` and `AuthTokenFilter` to handle SPA entry points and sanitize corrupted tokens.
+    *   **Infrastructure Stability:** Resolved `500 Internal Server Error` and `401 Unauthorized` for external users by updating `SecurityConfig` and `AuthTokenFilter`.
     *   **WebSocket Support:** Enabled `/ws` and `/ws-log` routing via Cloudflare Tunnel for real-time chat and logs.
-    *   **OnlyOffice Fix:** Resolved the "Download failed (Code -4)" error by correcting hardcoded paths and hardening Docker networking (`extra_hosts`).
+    *   **OnlyOffice Fix:** Resolved the "Download failed (Code -4)" error and hardened Docker networking (`extra_hosts`).
     *   **Local Dev Optimization:** Updated `run_backend_local.ps1` with Windows-safe path handling and correct MinIO public URLs.
 
-*   **🤖 AI Study Pal - Den personliga studievännen (Jan 30, 2026):**
-    *   **Stöttande Personlighet:** En varm och entusiastisk AI (Gemini 2.0 Flash) som agerar som en "vän" och peppar studenten.
-    *   **Biblioteks-RAG:** AI:n kan nu hämta kunskap från både kursmaterial och e-böcker i biblioteket.
-    *   **Interaktiv Chatt-Widget:** En ny, vänlig chatt-bubbla i kursvyn för snabb hjälp och pepp.
-    *   **Manuell Indexering:** Lärare kan nu indexera valfria e-böcker från biblioteket för att göra sin Pal smartare.
-    *   **Automatiserad Migration:** En ny global motor ser till att ALLA kunders databaser uppdateras automatiskt vid start, vilket förhindrar krascher vid nya releaser.
+*   **🤖 AI Study Pal & Database Stability (Jan 30, 2026):**
+    *   **PDF Indexing Fix:** Resolved Tika/PDFBox version conflict by downgrading to 2.0.31. AI Study Pal now correctly parses large PDF documents.
+    *   **Multi-Tenant Migrations:** Robustified Flyway scripts (V5, V6) with `DO` blocks to safely handle schema updates across all tenants.
+    *   **Auto-Migration Runner:** Implemented `GlobalMigrationRunner` to automatically synchronize all tenant schemas on application startup.
+    *   **Swedish Personality:** Enhanced AI Tutor (Gemini 2.0 Flash) with a supportive "Study Pal" persona in Swedish.
 
 *   **📚 PDF Support in Ebook Library (Jan 30, 2026):**
     *   **Interactive PDF Viewer:** New dedicated viewer for PDF documents with table of contents navigation.
-    *   **Backend Rendering:** Integrated Apache PDFBox 3.0 for server-side page rendering and metadata extraction.
-    *   **Unified Experience:** Seamless switching between EPUB and PDF formats within the library.
+    *   **Backend Rendering:** Integrated Apache PDFBox 2.0.31 for server-side page rendering and metadata extraction.
     *   **TOC Navigation:** Automatic extraction of PDF bookmarks for a structured reading experience.
 
 *   **🤖 AI Tutor Stability Fixes (Jan 27, 2026):**
@@ -783,15 +781,20 @@ taskkill /PID <PID> /F
 
 ### ⚡ Senaste Uppdateringarna
 *   **📡 Cloudflare Tunnel & OnlyOffice Stabilitet (30 jan 2026):**
-    *   **Infrastrukturstabilitet:** Åtgärdat `500 Internal Server Error` och `401 Unauthorized` genom att uppdatera `SecurityConfig` och `AuthTokenFilter` för att hantera SPA-ingångspunkter och neutralisera korrupta tokens.
+    *   **Infrastrukturstabilitet:** Åtgärdat `500 Internal Server Error` och `401 Unauthorized` genom att uppdatera `SecurityConfig` och `AuthTokenFilter`.
     *   **WebSocket-stöd:** Aktiverat routing för `/ws` och `/ws-log` via Cloudflare Tunnel för fungerande chatt och realtidsloggar.
-    *   **OnlyOffice-fix:** Löst "Nedladdning misslyckades (Code -4)" genom att korrigera hårdkodade sökvägar i backenden och säkra Docker-nätverkskommunikation (`extra_hosts`).
-    *   **Lokal Dev-optimering:** Uppdaterat `run_backend_local.ps1` med Windows-kompatibla sökvägar och korrekta publika MinIO-URL:er för sömlös åtkomst via tunneln.
+    *   **OnlyOffice-fix:** Löst "Nedladdning misslyckades (Code -4)" genom att korrigera nätverkskommunikation (`extra_hosts`) och interna sökvägar.
+    *   **Lokal Dev-optimering:** Uppdaterat `run_backend_local.ps1` med Windows-kompatibla sökvägar och korrekta publika MinIO-URL:er.
+
+*   **🤖 AI Study Pal & Databasstabilitet (30 jan 2026):**
+    *   **PDF Indexering Fixad:** Åtgärdat versionskonflikt mellan Tika och PDFBox (nedgraderat till 2.0.31). AI Study Pal kan nu extrahera text från PDF korrekt.
+    *   **Robustare Migrationer:** Uppdaterat Flyway-skript (V5, V6) med `DO`-block för att säkert hantera multi-tenant-miljöer utan krascher.
+    *   **Automatiserad Migration:** Implementerat `GlobalMigrationRunner` som automatiskt migrerar ALLA kundscheman vid uppstart.
+    *   **Renare Loggar:** Refaktorerat `AiStudyPalService` med svensk, mänsklig ton i loggningen för bättre monitorering.
 
 *   **📚 PDF-stöd i E-boksbiblioteket (30 jan 2026):**
     *   **Interaktiv PDF-läsare:** Ny dedikerad läsare för PDF-dokument med innehållsförteckning.
-    *   **Backend-rendering:** Integrerat Apache PDFBox 3.0 för rendering av sidor och extraktion av metadata på serversidan.
-    *   **Enad Upplevelse:** Sömlös växling mellan EPUB- och PDF-format i biblioteket.
+    *   **Backend-rendering:** Integrerat Apache PDFBox 2.0.31 för rendering av sidor och extraktion av metadata på serversidan.
     *   **Kapitelnavigering:** Automatisk extraktion av PDF-bokmärken för en strukturerad läsupplevelse.
 
 *   **🌍 Frontend-lokalisering & Lärarpanel (28 jan 2026):**
