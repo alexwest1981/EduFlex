@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Book, Upload, Search, Trash2, X, Maximize2, Library, Filter, Settings } from 'lucide-react';
 import { api } from '../../services/api';
 import EpubViewer from '../../components/common/EpubViewer';
+import PdfViewer from '../../components/common/PdfViewer';
 import EpubThumbnail from '../../components/common/EpubThumbnail';
 import { useAppContext } from '../../context/AppContext';
 import { useTranslation } from 'react-i18next';
@@ -369,12 +370,19 @@ const EbookLibrary = () => {
                                 </button>
                             </div>
                             <div className="flex-1 overflow-hidden">
-                                <EpubViewer
-                                    url={selectedBook.fileUrl}
-                                    title={selectedBook.title}
-                                    location={location}
-                                    onLocationChange={(loc) => setLocation(loc)}
-                                />
+                                {selectedBook.fileUrl?.toLowerCase().endsWith('.pdf') ? (
+                                    <PdfViewer
+                                        ebookId={selectedBook.id}
+                                        title={selectedBook.title}
+                                    />
+                                ) : (
+                                    <EpubViewer
+                                        url={selectedBook.fileUrl}
+                                        title={selectedBook.title}
+                                        location={location}
+                                        onLocationChange={(loc) => setLocation(loc)}
+                                    />
+                                )}
                             </div>
                         </div>
                     )}

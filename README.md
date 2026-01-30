@@ -39,6 +39,12 @@
     *   **OnlyOffice Fix:** Resolved the "Download failed (Code -4)" error by correcting hardcoded paths and hardening Docker networking (`extra_hosts`).
     *   **Local Dev Optimization:** Updated `run_backend_local.ps1` with Windows-safe path handling and correct MinIO public URLs.
 
+*   **📚 PDF Support in Ebook Library (Jan 30, 2026):**
+    *   **Interactive PDF Viewer:** New dedicated viewer for PDF documents with table of contents navigation.
+    *   **Backend Rendering:** Integrated Apache PDFBox 3.0 for server-side page rendering and metadata extraction.
+    *   **Unified Experience:** Seamless switching between EPUB and PDF formats within the library.
+    *   **TOC Navigation:** Automatic extraction of PDF bookmarks for a structured reading experience.
+
 *   **🤖 AI Tutor Stability Fixes (Jan 27, 2026):**
     *   **Compilation Fix:** Resolved a critical class mismatch (`Embedding` vs `VectorStoreEntry`) that prevented backend builds.
     *   **Runtime Stability:** Fixed a `NullPointerException` in `AITutorService` by filtering out invalid vector embeddings during search.
@@ -775,6 +781,12 @@ taskkill /PID <PID> /F
     *   **OnlyOffice-fix:** Löst "Nedladdning misslyckades (Code -4)" genom att korrigera hårdkodade sökvägar i backenden och säkra Docker-nätverkskommunikation (`extra_hosts`).
     *   **Lokal Dev-optimering:** Uppdaterat `run_backend_local.ps1` med Windows-kompatibla sökvägar och korrekta publika MinIO-URL:er för sömlös åtkomst via tunneln.
 
+*   **📚 PDF-stöd i E-boksbiblioteket (30 jan 2026):**
+    *   **Interaktiv PDF-läsare:** Ny dedikerad läsare för PDF-dokument med innehållsförteckning.
+    *   **Backend-rendering:** Integrerat Apache PDFBox 3.0 för rendering av sidor och extraktion av metadata på serversidan.
+    *   **Enad Upplevelse:** Sömlös växling mellan EPUB- och PDF-format i biblioteket.
+    *   **Kapitelnavigering:** Automatisk extraktion av PDF-bokmärken för en strukturerad läsupplevelse.
+
 *   **🌍 Frontend-lokalisering & Lärarpanel (28 jan 2026):**
     *   **Lärarpanel:** Fullständig översättning av alla widgets, tabeller och modaler för lärare till svenska och engelska.
     *   **Elevpanel:** Fullständig översättning av alla widgets (Närvaro, Schema, Gamification, Framsteg) till svenska och engelska.
@@ -1081,4 +1093,4 @@ För Enterprise-frågor:
 
 ---
 
-*Last updated: 2026-01-30 (Cloudflare Tunnel Stability, OnlyOffice Path Fix & WebSocket Support)*
+*Last updated: 2026-01-30 (PDF Support, Cloudflare Tunnel Stability & OnlyOffice Fixes)*

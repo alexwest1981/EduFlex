@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.InputStream;
 import java.util.List;
 
 @RestController
@@ -14,9 +15,42 @@ import java.util.List;
 public class EbookController {
 
     private final EbookService ebookService;
+    private final com.eduflex.backend.service.reader.BookReaderService bookReaderService;
 
-    public EbookController(EbookService ebookService) {
+    public EbookController(EbookService ebookService,
+            com.eduflex.backend.service.reader.BookReaderService bookReaderService) {
         this.ebookService = ebookService;
+        this.bookReaderService = bookReaderService;
+    }
+
+    @GetMapping("/{id}/metadata")
+    public ResponseEntity<com.eduflex.backend.dto.BookMetadataDto> getMetadata(@PathVariable Long id) {
+        Ebook ebook = ebookService.getEbookById(id);
+        try (com.eduflex.backend.service.reader.BookContent content = bookReaderService.loadBook(ebook.getFileUrl())) {
+            return ResponseEntity.ok(new com.eduflex.backend.dto.BookMetadataDto(
+                    content.getTitle(),
+                    content.getAuthor(),
+                    content.getPageCount(),
+                    content.getChapters(),
+                    content.getCoverImage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).build();
+        }
+    }
+
+    @GetMapping("/{id}/page/{pageNumber}")
+    public ResponseEntity<org.springframework.core.io.Resource> getPageImage(
+            @PathVariable Long id,
+            @PathVariable int pageNumber) {
+        Ebook ebook = ebookService.getEbookById(id);
+        try (com.eduflex.backend.service.reader.BookContent content = bookReaderService.loadBook(ebook.getFileUrl())) {
+            InputStream is = content.getPageImage(pageNumber);
+            return ResponseEntity.ok()
+                    .contentType(org.springframework.http.MediaType.IMAGE_PNG)
+                    .body(new org.springframework.core.io.InputStreamResource(is));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).build();
+        }
     }
 
     @GetMapping
