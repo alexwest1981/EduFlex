@@ -8,6 +8,9 @@ import java.util.List;
 
 @Repository
 public interface CourseMaterialRepository extends JpaRepository<CourseMaterial, Long> {
-    // Hämta allt material för en viss kurs
+    // Hämta allt material för en viss kurs, sorterat efter ordning
+    List<CourseMaterial> findByCourseIdOrderBySortOrderAsc(Long courseId);
+
+    // Hämta allt material för en viss kurs (osorterat/ursprunglig)
     List<CourseMaterial> findByCourseId(Long courseId);
 }

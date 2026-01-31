@@ -763,30 +763,34 @@
     "features": {
       "badge": "Varför EduFlex?",
       "title": "Allt du behöver för att driva en modern skola",
-      "subtitle": "Från robusta bedömningsverktyg till beroendeframkallande gamification - vi har dig täckt.",
-      "core_education": {
-        "title": "Kärnfunktioner",
-        "desc": "Omfattande kurshantering, SCORM-stöd, uppgiftsbedömning och automatgenererade certifikat."
+      "subtitle": "Från robusta bedömningsverktyg till revolutionerande AI-stöd - vi har dig täckt.",
+      "ai_creator": {
+        "title": "AI Course Creator",
+        "desc": "Ladda upp en studiehandledning (PDF) och låt Gemini AI skapa en komplett kurs med lektioner, datum och smarta koder på under 60 sekunder. Nu med automatisk databassynkronisering."
+      },
+      "cascading_deletes": {
+        "title": "Kaskadradering",
+        "desc": "Sömlös hantering av kursinnehåll. När en kurs raderas städas allt tillhörande material och lektioner bort automatiskt för att hålla databasen ren."
+      },
+      "lti_ready": {
+        "title": "LTI 1.3 Ready",
+        "desc": "Fullt verifierat stöd för OIDC-lanseringar. Sömlös integration med externa plattformar som Canvas och Moodle."
       },
       "gamification": {
-        "title": "Gamification",
+        "title": "Gamification 2.0",
         "desc": "Inbyggd XP, utmärkelser, nivåer, topplistor och dagliga utmaningar för att öka elevengagemanget."
       },
       "multi_tenancy": {
         "title": "Äkta Multi-Tenancy",
-        "desc": "Fullständig dataisolering med schema-per-tenant-arkitektur. Din data är endast din."
+        "desc": "Fullständig dataisolering med schema-per-tenant-arkitektur. Din data är din."
+      },
+      "analytics": {
+        "title": "Analyser & Insikter",
+        "desc": "Realtidsdashboards för rektorer och lärare. Värmekartor och avhoppsförutsägelse."
       },
       "security": {
         "title": "Enterprise-Säkerhet",
         "desc": "Rollbaserad åtkomstkontroll (RBAC), granskningsloggning och säker Keycloak SSO-integration."
-      },
-      "analytics": {
-        "title": "Analyser & Insikter",
-        "desc": "Realtidsdashboards för rektorer och lärare. Värmekart, avhoppsförutsägelse och mer."
-      },
-      "skolverket": {
-        "title": "Skolverket-Ansluten",
-        "desc": "Direkt integration med Skolverkets läroplan och betygskriterier (E-A)."
       }
     },
     "architecture": {

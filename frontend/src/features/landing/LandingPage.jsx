@@ -57,16 +57,22 @@ const LandingPage = () => {
 
     const features = [
         {
-            icon: <BookOpen className="w-6 h-6" />,
-            title: t('landing.features.core_education.title'),
-            description: t('landing.features.core_education.desc'),
-            gradient: 'from-blue-500 to-cyan-500'
+            icon: <Sparkles className="w-6 h-6" />,
+            title: t('landing.features.ai_creator.title'),
+            description: t('landing.features.ai_creator.desc'),
+            gradient: 'from-purple-500 to-indigo-500'
         },
         {
             icon: <Trophy className="w-6 h-6" />,
             title: t('landing.features.gamification.title'),
             description: t('landing.features.gamification.desc'),
             gradient: 'from-yellow-500 to-orange-500'
+        },
+        {
+            icon: <Globe className="w-6 h-6" />,
+            title: t('landing.features.lti_ready.title'),
+            description: t('landing.features.lti_ready.desc'),
+            gradient: 'from-blue-600 to-cyan-500'
         },
         {
             icon: <Database className="w-6 h-6" />,
@@ -85,12 +91,6 @@ const LandingPage = () => {
             title: t('landing.features.analytics.title'),
             description: t('landing.features.analytics.desc'),
             gradient: 'from-indigo-500 to-purple-500'
-        },
-        {
-            icon: <Globe className="w-6 h-6" />,
-            title: t('landing.features.skolverket.title'),
-            description: t('landing.features.skolverket.desc'),
-            gradient: 'from-cyan-500 to-blue-500'
         }
     ];
 
@@ -103,64 +103,58 @@ const LandingPage = () => {
 
     const highlights = [
         {
-            icon: <Trophy className="w-6 h-6" />,
-            title: 'Gamification Engine',
-            description: 'XP-system, utmärkelser, dagliga utmaningar, streaks och topplistor. Achievement toast vid upplåsta prestationer.',
-            gradient: 'from-yellow-500 to-orange-500'
+            icon: <Sparkles className="w-6 h-6" />,
+            title: 'AI Course Creator',
+            description: 'Skapa kompletta kurser från PDF-dokument på under 60 sekunder. Autogenererade lektioner, datum och smarta koder med inbyggd databassynkronisering.',
+            gradient: 'from-purple-600 to-blue-600'
         },
         {
             icon: <Globe className="w-6 h-6" />,
-            title: '9 Språk',
-            description: 'Svenska, engelska, norska, danska, finska, tyska, franska, spanska och arabiska. Full i18n-support.',
-            gradient: 'from-blue-500 to-cyan-500'
+            title: 'LTI 1.3 Core',
+            description: 'Fullt verifierat stöd för OIDC-lansering. Sömlös integration med Canvas, Moodle och Blackboard för säker autentisering.',
+            gradient: 'from-blue-600 to-indigo-600'
+        },
+        {
+            icon: <Trophy className="w-6 h-6" />,
+            title: 'Gamification Engine',
+            description: 'XP-system, utmärkelser, dagliga utmaningar, streaks och topplistor. Ökar elevengagemanget med spelmekanik.',
+            gradient: 'from-yellow-500 to-orange-500'
         },
         {
             icon: <Database className="w-6 h-6" />,
             title: 'Schema-per-Tenant',
-            description: 'Äkta multi-tenancy med komplett dataisolering. Varje organisation får eget PostgreSQL-schema med automatisk provisionering.',
+            description: 'Äkta multi-tenancy med komplett dataisolering. Varje organisation får sitt eget PostgreSQL-schema automatiskt.',
             gradient: 'from-purple-500 to-pink-500'
         },
         {
-            icon: <Zap className="w-6 h-6" />,
-            title: 'Real-time WebSockets',
-            description: 'STOMP/SockJS för direkta notifikationer, online-vänner och live debug-terminal med Matrix-stil.',
-            gradient: 'from-green-500 to-emerald-500'
+            icon: <Users className="w-6 h-6" />,
+            title: 'Community Marketplace',
+            description: 'Dela och importera kursmaterial från ett gemensamt ekosystem. Samverka med andra utbildningsanordnare.',
+            gradient: 'from-teal-500 to-cyan-500'
         },
         {
-            icon: <Server className="w-6 h-6" />,
-            title: 'Kubernetes Ready',
-            description: 'Full Helm chart-support med Prometheus/Grafana monitoring stack. Docker Compose för utveckling.',
-            gradient: 'from-indigo-500 to-purple-500'
+            icon: <Zap className="w-6 h-6" />,
+            title: 'Cascading Deletes',
+            description: 'Underhållsfri hantering. När du tar bort en kurs raderas allt tillhörande material och lektioner automatiskt utan databaskonflikter.',
+            gradient: 'from-green-500 to-emerald-500'
         },
         {
             icon: <Shield className="w-6 h-6" />,
             title: 'Enterprise SSO',
-            description: 'Keycloak-integration med OAuth2/OIDC. Stöd för internal, keycloak eller hybrid autentiseringsläge.',
+            description: 'Keycloak-integration med OAuth2/OIDC. Full kontroll över identiteter och åtkomstnivåer i organisationen.',
             gradient: 'from-red-500 to-orange-500'
         },
         {
             icon: <Zap className="w-6 h-6" />,
             title: 'Friendly URLs (Slugs)',
-            description: 'Sökmotorvänliga och läsbara adresser för alla kurser. Navigera via namn istället för dunkla siffer-ID:n.',
+            description: 'Sökmotorvänliga och läsbara adresser för alla kurser. Navigera via läsbara namn istället för tekniska ID:n.',
             gradient: 'from-cyan-400 to-blue-500'
         },
         {
             icon: <Sparkles className="w-6 h-6" />,
             title: 'AI Quiz Generator',
-            description: 'Generera automatiskt quiz från dokument (PDF/Word) eller text med hjälp av Gemini AI. Exportera direkt till frågebanken.',
+            description: 'Generera quiz automatiskt från dokument (PDF/Word) med Gemini AI. Exportera direkt till din personliga frågebank.',
             gradient: 'from-purple-600 to-pink-600'
-        },
-        {
-            icon: <BookOpen className="w-6 h-6" />,
-            title: 'E-bok & Bibliotek',
-            description: 'Fristående e-boksbibliotek med kategorifiltrering och inbyggd EPUB/PDF-läsare. Stöd för stora filer och auto-omslag.',
-            gradient: 'from-teal-500 to-cyan-600'
-        },
-        {
-            icon: <Globe className="w-6 h-6" />,
-            title: 'LTI 1.3 Certifierad',
-            description: 'Sömlös integration med Canvas, Moodle och Blackboard. Automatisk provisioning av användare och kurser.',
-            gradient: 'from-blue-600 to-indigo-600'
         }
     ];
 

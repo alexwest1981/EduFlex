@@ -356,7 +356,7 @@ public class CourseService {
     }
 
     public List<CourseMaterial> getMaterialsForCourse(Long courseId) {
-        return materialRepository.findByCourseId(courseId);
+        return materialRepository.findByCourseIdOrderBySortOrderAsc(courseId);
     }
 
     public void deleteMaterial(Long id) {

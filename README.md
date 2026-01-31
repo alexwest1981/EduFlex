@@ -39,6 +39,9 @@
     *   **Editable Preview:** Review and modify the AI-generated title, description, and dates before committing to course creation.
     *   **Smart Course Codes:** Automatically generates concise abbreviations (e.g., "DBT") from the course title instead of random IDs.
     *   **Visibility Controls:** Integrated "Open for Students" toggle in both creation and editing modals for granular access management.
+    *   **Database Stability (Flyway V7):** Implemented a permanent migration to synchronize all tenant schemas with the latest AI course metadata requirements.
+    *   **Cascading Deletes:** Added full entity-level cascading to allow safe deletion of courses, ensuring all associated materials and lessons are properly cleaned up.
+    *   **Schema Cleanup:** Purged deprecated test schemas to maintain environment focus and speed.
 
 *   **🚀 Performance & E-book Enhancements (Jan 30, 2026):**
     *   **Permanent Caching:** Enabled 1-year persistent caching (`immutable`) for ebook covers and media assets, dramatically improving library load times.
@@ -804,6 +807,9 @@ taskkill /PID <PID> /F
     *   **Redigerbar Förhandsvisning:** Granska och justera AI-genererad titel, beskrivning och datum i realtid innan kursen skapas.
     *   **Smartare Kurskoder:** Genererar automatiskt kortfattade förkortningar (t.ex. "DBT") baserat på kursnamnet istället för slumpmässiga AI-id:n.
     *   **Synlighetskontroll:** Ny global kontroll för "Öppen för studenter" direkt i kursadministrationen för enkel hantering av kursstatus.
+    *   **Databasstabilitet (Flyway V7):** Implementerat en permanent migration som säkrar att alla skolscheman har rätt struktur för AI-genererat innehåll.
+    *   **Kaskadradering:** Möjliggjort säker radering av kurser genom att automatiskt städa bort alla tillhörande material och lektioner.
+    *   **Miljörensning:** Rensat bort gamla test-schemas för en stabilare och snabbare utvecklingsmiljö.
 
 *   **🚀 Prestanda & E-boksförbättringar (30 jan 2026):**
     *   **Permanent Cachning:** Aktiverat 1-års cachning (`immutable`) för bokomslag och media, vilket gör biblioteket blixtsnabbt.
@@ -1133,4 +1139,4 @@ För Enterprise-frågor:
 
 ---
 
-*Last updated: 2026-01-30 (PDF Support, Cloudflare Tunnel Stability & OnlyOffice Fixes)*
+*Last updated: 2026-01-31 (AI Course Generation Stability, Flyway V7 & Cascading Deletes)*

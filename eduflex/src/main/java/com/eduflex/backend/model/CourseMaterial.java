@@ -43,6 +43,8 @@ public class CourseMaterial {
     @com.fasterxml.jackson.annotation.JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     private java.time.LocalDateTime availableFrom;
 
+    private int sortOrder;
+
     @Enumerated(EnumType.STRING)
     private MaterialType type;
 
@@ -111,6 +113,14 @@ public class CourseMaterial {
 
     public void setAvailableFrom(java.time.LocalDateTime availableFrom) {
         this.availableFrom = availableFrom;
+    }
+
+    public int getSortOrder() {
+        return sortOrder;
+    }
+
+    public void setSortOrder(int sortOrder) {
+        this.sortOrder = sortOrder;
     }
 
     public MaterialType getType() {

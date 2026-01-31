@@ -49,6 +49,36 @@ public class Course {
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
     private java.util.List<GroupRoom> groupRooms = new java.util.ArrayList<>();
 
+    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
+    private java.util.List<CourseMaterial> materials = new java.util.ArrayList<>();
+
+    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
+    private java.util.List<Lesson> lessons = new java.util.ArrayList<>();
+
+    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
+    private java.util.List<Assignment> assignments = new java.util.ArrayList<>();
+
+    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
+    private java.util.List<Quiz> quizzes = new java.util.ArrayList<>();
+
+    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
+    private java.util.List<CalendarEvent> calendarEvents = new java.util.ArrayList<>();
+
+    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
+    private java.util.List<ScormPackage> scormPackages = new java.util.ArrayList<>();
+
+    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
+    private java.util.List<ForumCategory> forumCategories = new java.util.ArrayList<>();
+
+    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
+    private java.util.List<StudentActivityLog> activityLogs = new java.util.ArrayList<>();
+
+    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
+    private java.util.List<CourseApplication> courseApplications = new java.util.ArrayList<>();
+
+    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
+    private java.util.List<CourseResult> courseResults = new java.util.ArrayList<>();
+
     public java.util.List<GroupRoom> getGroupRooms() {
         return groupRooms;
     }
@@ -254,5 +284,85 @@ public class Course {
 
     public void setSkolverketCourse(SkolverketCourse skolverketCourse) {
         this.skolverketCourse = skolverketCourse;
+    }
+
+    public java.util.List<CourseMaterial> getMaterials() {
+        return materials;
+    }
+
+    public void setMaterials(java.util.List<CourseMaterial> materials) {
+        this.materials = materials;
+    }
+
+    public java.util.List<Lesson> getLessons() {
+        return lessons;
+    }
+
+    public void setLessons(java.util.List<Lesson> lessons) {
+        this.lessons = lessons;
+    }
+
+    public java.util.List<Assignment> getAssignments() {
+        return assignments;
+    }
+
+    public void setAssignments(java.util.List<Assignment> assignments) {
+        this.assignments = assignments;
+    }
+
+    public java.util.List<Quiz> getQuizzes() {
+        return quizzes;
+    }
+
+    public void setQuizzes(java.util.List<Quiz> quizzes) {
+        this.quizzes = quizzes;
+    }
+
+    public java.util.List<CalendarEvent> getCalendarEvents() {
+        return calendarEvents;
+    }
+
+    public void setCalendarEvents(java.util.List<CalendarEvent> calendarEvents) {
+        this.calendarEvents = calendarEvents;
+    }
+
+    public java.util.List<ScormPackage> getScormPackages() {
+        return scormPackages;
+    }
+
+    public void setScormPackages(java.util.List<ScormPackage> scormPackages) {
+        this.scormPackages = scormPackages;
+    }
+
+    public java.util.List<ForumCategory> getForumCategories() {
+        return forumCategories;
+    }
+
+    public void setForumCategories(java.util.List<ForumCategory> forumCategories) {
+        this.forumCategories = forumCategories;
+    }
+
+    public java.util.List<StudentActivityLog> getActivityLogs() {
+        return activityLogs;
+    }
+
+    public void setActivityLogs(java.util.List<StudentActivityLog> activityLogs) {
+        this.activityLogs = activityLogs;
+    }
+
+    public java.util.List<CourseApplication> getCourseApplications() {
+        return courseApplications;
+    }
+
+    public void setCourseApplications(java.util.List<CourseApplication> courseApplications) {
+        this.courseApplications = courseApplications;
+    }
+
+    public java.util.List<CourseResult> getCourseResults() {
+        return courseResults;
+    }
+
+    public void setCourseResults(java.util.List<CourseResult> courseResults) {
+        this.courseResults = courseResults;
     }
 }

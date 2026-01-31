@@ -1,10 +1,10 @@
 package com.eduflex.backend.controller;
 
 import com.eduflex.backend.model.Course;
-import com.eduflex.backend.model.Lesson;
+import com.eduflex.backend.model.CourseMaterial;
 import com.eduflex.backend.model.User;
+import com.eduflex.backend.repository.CourseMaterialRepository;
 import com.eduflex.backend.repository.CourseRepository;
-import com.eduflex.backend.repository.LessonRepository;
 import com.eduflex.backend.service.UserService;
 import com.eduflex.backend.service.ai.GeminiService;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -30,17 +30,17 @@ public class AICourseController {
 
     private final GeminiService geminiService;
     private final CourseRepository courseRepository;
-    private final LessonRepository lessonRepository;
+    private final CourseMaterialRepository materialRepository;
     private final UserService userService;
     private final ObjectMapper objectMapper;
     private final Tika tika = new Tika();
 
     public AICourseController(GeminiService geminiService, CourseRepository courseRepository,
-            LessonRepository lessonRepository, UserService userService, ObjectMapper objectMapper) {
+            CourseMaterialRepository materialRepository, UserService userService, ObjectMapper objectMapper) {
         logger.info("AICourseController INITIALIZED");
         this.geminiService = geminiService;
         this.courseRepository = courseRepository;
-        this.lessonRepository = lessonRepository;
+        this.materialRepository = materialRepository;
         this.userService = userService;
         this.objectMapper = objectMapper;
     }
@@ -52,7 +52,6 @@ public class AICourseController {
         }
         String username = auth.getName();
         return userService.getUserByUsernameWithBadges(username);
-        // Or generic getUser(username) if exist, but this one works.
     }
 
     @PostMapping("/generate-preview")
@@ -60,14 +59,12 @@ public class AICourseController {
         try {
             logger.info("Received request to generate course from file: {}", file.getOriginalFilename());
 
-            // Limit file size if needed, but Tika handles stream.
             String text = tika.parseToString(file.getInputStream());
 
             if (text == null || text.isBlank()) {
                 return ResponseEntity.badRequest().body("Could not extract text from file.");
             }
 
-            // Simple truncation to avoid huge payload if PDF is massive
             if (text.length() > 100000) {
                 text = text.substring(0, 100000);
             }
@@ -75,17 +72,14 @@ public class AICourseController {
             logger.info("Extracted {} characters. Calling Gemini...", text.length());
             String jsonResponse = geminiService.generateCourseStructure(text);
 
-            // Validate JSON
             JsonNode root = objectMapper.readTree(jsonResponse);
 
             return ResponseEntity.ok(root);
 
         } catch (IOException e) {
-            e.printStackTrace(); // DEBUG
             logger.error("File processing failed", e);
             return ResponseEntity.status(500).body("Error processing file: " + e.getMessage());
         } catch (Exception e) {
-            e.printStackTrace(); // DEBUG
             logger.error("AI generation failed", e);
             return ResponseEntity.status(500).body("AI generation failed: " + e.getMessage());
         }
@@ -94,8 +88,11 @@ public class AICourseController {
     @PostMapping("/create")
     public ResponseEntity<?> createCourse(@RequestBody JsonNode courseData) {
         try {
-            logger.info("Creating course from AI data: {}",
-                    courseData.has("title") ? courseData.get("title").asText() : "No Title");
+            if (courseData == null || !courseData.has("title")) {
+                return ResponseEntity.badRequest().body("Course data must include a title.");
+            }
+
+            logger.info("Creating course from AI data: {}", courseData.get("title").asText());
 
             User currentUser = getCurrentUser();
 
@@ -105,52 +102,53 @@ public class AICourseController {
             course.setStartDate(courseData.has("startDate") ? courseData.get("startDate").asText() : "");
             course.setEndDate(courseData.has("endDate") ? courseData.get("endDate").asText() : "");
             course.setTeacher(currentUser);
-            course.setOpen(true); // Default to open for AI created courses
+            course.setOpen(true);
 
-            // Generate slug only if needed
-            course.setSlug(course.getName().toLowerCase().replace(" ", "-") + "-" + System.currentTimeMillis());
+            String baseSlug = course.getName().toLowerCase().replaceAll("[^a-z0-9]", "-");
+            course.setSlug(baseSlug + "-" + System.currentTimeMillis());
             course.setCourseCode(generateCourseCode(course.getName()));
 
             Course savedCourse = courseRepository.save(course);
 
-            // Flatten Modules into Lessons
+            // Create materials
             int sortOrder = 0;
-            if (courseData.has("modules")) {
+            if (courseData.has("modules") && courseData.get("modules").isArray()) {
                 for (JsonNode moduleNode : courseData.get("modules")) {
                     String moduleTitle = moduleNode.has("title") ? moduleNode.get("title").asText() : "Modul";
 
-                    // Ensure we handle lessons
-                    if (moduleNode.has("lessons")) {
+                    if (moduleNode.has("lessons") && moduleNode.get("lessons").isArray()) {
                         for (JsonNode lessonNode : moduleNode.get("lessons")) {
-                            Lesson lesson = new Lesson();
+                            CourseMaterial material = new CourseMaterial();
                             String lessonTitle = lessonNode.has("title") ? lessonNode.get("title").asText() : "Lektion";
 
-                            // Prepend Module Info to make it clear in the flat list
-                            lesson.setTitle(moduleTitle + ": " + lessonTitle);
-                            lesson.setContent(lessonNode.has("content") ? lessonNode.get("content").asText() : "");
-                            lesson.setCourse(savedCourse);
-                            lesson.setAuthor(currentUser);
-                            lesson.setSortOrder(sortOrder++);
+                            material.setTitle(moduleTitle + ": " + lessonTitle);
+                            material.setContent(lessonNode.has("content") ? lessonNode.get("content").asText() : "");
+                            material.setCourse(savedCourse);
+                            material.setSortOrder(sortOrder++);
 
-                            // Handling Quiz questions - appending to content for now as we lack Quiz
-                            // Service logic here
-                            if (lessonNode.has("isQuiz") && lessonNode.get("isQuiz").asBoolean()
-                                    && lessonNode.has("questions")) {
-                                StringBuilder quizContent = new StringBuilder(lesson.getContent());
-                                quizContent.append("\n\n<h3>Quizförslag</h3><ul>");
+                            boolean isQuiz = lessonNode.has("isQuiz") && lessonNode.get("isQuiz").asBoolean();
+                            material.setType(isQuiz ? CourseMaterial.MaterialType.QUESTIONS
+                                    : CourseMaterial.MaterialType.LESSON);
+
+                            if (isQuiz && lessonNode.has("questions") && lessonNode.get("questions").isArray()) {
+                                StringBuilder quizContent = new StringBuilder(material.getContent());
+                                if (quizContent.length() > 0)
+                                    quizContent.append("\n\n");
+                                quizContent.append("<h3>Quizförslag</h3><ul>");
                                 for (JsonNode q : lessonNode.get("questions")) {
-                                    quizContent.append("<li><strong>").append(q.get("text").asText())
+                                    quizContent.append("<li><strong>")
+                                            .append(q.has("text") ? q.get("text").asText() : "Fråga")
                                             .append("</strong><br/>");
-                                    if (q.has("options")) {
+                                    if (q.has("options") && q.get("options").isArray()) {
                                         quizContent.append("Alternativ: ").append(q.get("options").toString());
                                     }
                                     quizContent.append("</li>");
                                 }
                                 quizContent.append("</ul>");
-                                lesson.setContent(quizContent.toString());
+                                material.setContent(quizContent.toString());
                             }
 
-                            lessonRepository.save(lesson);
+                            materialRepository.save(material);
                         }
                     }
                 }
