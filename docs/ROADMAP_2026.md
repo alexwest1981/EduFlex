@@ -22,7 +22,7 @@
 
 | Funktion | Beskrivning | Status |
 | :--- | :--- | :--- |
-| **LTI 1.3 Core** | Grundläggande launch-stöd för externa verktyg. | 🚧 **Pågående** |
+| **LTI 1.3 Core** | Grundläggande launch-stöd för externa verktyg. | ✅ **Klar** |
 | **LTI 1.3 Advantage** | Stöd för AGS (Betyg) och NRPS (Roller/Namn). | 📅 **Planerad** |
 | **xAPI & cmi5** | Modern spårning (LRS) för mobilt lärande och simuleringar. Ersätter SCORM. | 📅 **Planerad** |
 | **Workflow Integration** | Utbildning direkt i Slack/Teams/Salesforce ("Headless LMS"). | 📅 **Planerad** |
