@@ -28,6 +28,12 @@ public class Ebook {
 
     private String language;
 
+    private String isbn;
+
+    @ManyToMany
+    @JoinTable(name = "ebook_courses", joinColumns = @JoinColumn(name = "ebook_id"), inverseJoinColumns = @JoinColumn(name = "course_id"))
+    private java.util.Set<Course> courses = new java.util.HashSet<>();
+
     private LocalDateTime uploadDate;
 
     public Ebook() {
@@ -99,11 +105,27 @@ public class Ebook {
         this.language = language;
     }
 
+    public String getIsbn() {
+        return isbn;
+    }
+
+    public void setIsbn(String isbn) {
+        this.isbn = isbn;
+    }
+
     public LocalDateTime getUploadDate() {
         return uploadDate;
     }
 
     public void setUploadDate(LocalDateTime uploadDate) {
         this.uploadDate = uploadDate;
+    }
+
+    public java.util.Set<Course> getCourses() {
+        return courses;
+    }
+
+    public void setCourses(java.util.Set<Course> courses) {
+        this.courses = courses;
     }
 }

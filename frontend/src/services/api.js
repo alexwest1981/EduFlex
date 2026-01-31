@@ -679,17 +679,17 @@ export const api = {
 
         // AI Tutor (RAG)
         tutor: {
-            chat: (courseId, question) => fetch(`${API_BASE}/ai/tutor/chat`, {
+            chat: (courseId, question) => fetch(`${API_BASE}/ai-tutor/chat`, {
                 method: 'POST',
                 headers: getHeaders(),
                 body: JSON.stringify({ courseId, question })
             }).then(handleResponse),
-            ingest: (courseId, documentId) => fetch(`${API_BASE}/ai/tutor/ingest`, {
+            ingest: (courseId, documentId) => fetch(`${API_BASE}/ai-tutor/ingest`, {
                 method: 'POST',
                 headers: getHeaders(),
                 body: JSON.stringify({ courseId, documentId })
             }).then(handleResponse),
-            ingestCourse: (courseId) => fetch(`${API_BASE}/ai/tutor/ingest-course`, {
+            ingestCourse: (courseId) => fetch(`${API_BASE}/ai-tutor/ingest-course`, {
                 method: 'POST',
                 headers: getHeaders(),
                 body: JSON.stringify({ courseId })

@@ -30,6 +30,7 @@ public enum LicenseType {
             case "FORUM":
             case "SCORM":
             case "AI_QUIZ":
+            case "AI_TUTOR":
                 // Basic has NO these modules. Pro and Enterprise have them.
                 return this == PRO;
 

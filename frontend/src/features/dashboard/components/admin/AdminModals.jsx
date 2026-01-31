@@ -166,7 +166,7 @@ export const EditUserModal = ({ isOpen, onClose, onUserUpdated, userToEdit }) =>
 // --- CREATE COURSE ---
 export const CreateCourseModal = ({ isOpen, onClose, onCourseCreated, teachers }) => {
     const { t } = useTranslation();
-    const [formData, setFormData] = useState({ name: '', courseCode: '', description: '', category: 'Övrigt', tags: '', teacherId: '', startDate: '', endDate: '', color: 'bg-indigo-600', maxStudents: 30 });
+    const [formData, setFormData] = useState({ name: '', courseCode: '', description: '', category: 'Övrigt', tags: '', teacherId: '', startDate: '', endDate: '', color: 'bg-indigo-600', maxStudents: 30, isOpen: true });
     const [loading, setLoading] = useState(false);
     const [useSkolverket, setUseSkolverket] = useState(false);
     const [showSkolverketSelector, setShowSkolverketSelector] = useState(false);
@@ -206,6 +206,16 @@ export const CreateCourseModal = ({ isOpen, onClose, onCourseCreated, teachers }
                         <button onClick={onClose}><X className="text-gray-500" size={20} /></button>
                     </div>
                     <form onSubmit={handleSubmit} className="p-6 space-y-4">
+                        <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-[#131314] rounded-lg border border-gray-100 dark:border-[#3c4043]">
+                            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Öppen för studenter</span>
+                            <button
+                                type="button"
+                                onClick={() => setFormData({ ...formData, isOpen: !formData.isOpen })}
+                                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${formData.isOpen ? 'bg-indigo-600' : 'bg-gray-200 dark:bg-gray-700'}`}
+                            >
+                                <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${formData.isOpen ? 'translate-x-6' : 'translate-x-1'}`} />
+                            </button>
+                        </div>
                         {/* Skolverket Option */}
                         <div className="flex items-center gap-2 p-3 bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-800 rounded-lg">
                             <input type="checkbox" id="useSkolverket" checked={useSkolverket} onChange={(e) => { setUseSkolverket(e.target.checked); if (!e.target.checked) setSelectedSkolverketCourse(null); }} className="w-4 h-4" />
@@ -238,8 +248,14 @@ export const CreateCourseModal = ({ isOpen, onClose, onCourseCreated, teachers }
                             </select>
                         </div>
                         <div className="grid grid-cols-2 gap-4">
-                            <input type="date" className="w-full p-2 border rounded dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" value={formData.startDate} onChange={e => setFormData({ ...formData, startDate: e.target.value })} />
-                            <input type="date" className="w-full p-2 border rounded dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" value={formData.endDate} onChange={e => setFormData({ ...formData, endDate: e.target.value })} />
+                            <div className="space-y-1">
+                                <label className="text-xs font-bold text-gray-500">{t('admin.start_date') || 'Startdatum'}</label>
+                                <input type="date" className="w-full p-2 border rounded dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" value={formData.startDate} onChange={e => setFormData({ ...formData, startDate: e.target.value })} />
+                            </div>
+                            <div className="space-y-1">
+                                <label className="text-xs font-bold text-gray-500">{t('admin.end_date') || 'Slutdatum'}</label>
+                                <input type="date" className="w-full p-2 border rounded dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" value={formData.endDate} onChange={e => setFormData({ ...formData, endDate: e.target.value })} />
+                            </div>
                         </div>
                         <input type="number" className="w-full p-2 border rounded dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" placeholder={t('admin.max_seats')} value={formData.maxStudents} onChange={e => setFormData({ ...formData, maxStudents: e.target.value })} />
 
@@ -290,8 +306,7 @@ export const CreateCourseModal = ({ isOpen, onClose, onCourseCreated, teachers }
 // --- EDIT COURSE ---
 export const EditCourseModal = ({ isOpen, onClose, onCourseUpdated, teachers, courseToEdit }) => {
     const { t } = useTranslation();
-    if (!isOpen || !courseToEdit) return null;
-    const [formData, setFormData] = useState({ name: '', courseCode: '', category: '', description: '', tags: '', teacherId: '', startDate: '', endDate: '', color: '', maxStudents: 30 });
+    const [formData, setFormData] = useState({ name: '', courseCode: '', category: '', description: '', tags: '', teacherId: '', startDate: '', endDate: '', color: '', maxStudents: 30, isOpen: true });
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
@@ -300,7 +315,8 @@ export const EditCourseModal = ({ isOpen, onClose, onCourseUpdated, teachers, co
                 name: courseToEdit.name || '', courseCode: courseToEdit.courseCode || '', category: courseToEdit.category || 'Övrigt',
                 description: courseToEdit.description || '', tags: courseToEdit.tags || '', teacherId: courseToEdit.teacher?.id || '', startDate: courseToEdit.startDate || '',
                 endDate: courseToEdit.endDate || '', color: courseToEdit.color || 'bg-indigo-600', maxStudents: courseToEdit.maxStudents || 30,
-                classroomType: courseToEdit.classroomType || '', classroomLink: courseToEdit.classroomLink || ''
+                classroomType: courseToEdit.classroomType || '', classroomLink: courseToEdit.classroomLink || '',
+                isOpen: courseToEdit.isOpen !== undefined ? courseToEdit.isOpen : true
             });
         }
     }, [courseToEdit]);
@@ -313,6 +329,8 @@ export const EditCourseModal = ({ isOpen, onClose, onCourseUpdated, teachers, co
         } catch (error) { alert(t('course.error_occurred') || "Kunde inte uppdatera kursen."); } finally { setLoading(false); }
     };
 
+    if (!isOpen || !courseToEdit) return null;
+
     return (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in">
             <div className="bg-white dark:bg-[#1E1F20] w-full max-w-md rounded-2xl shadow-2xl border border-gray-200 dark:border-[#3c4043] overflow-hidden">
@@ -321,6 +339,16 @@ export const EditCourseModal = ({ isOpen, onClose, onCourseUpdated, teachers, co
                     <button onClick={onClose}><X className="text-gray-500" size={20} /></button>
                 </div>
                 <form onSubmit={handleSubmit} className="p-6 space-y-4">
+                    <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-[#131314] rounded-lg border border-gray-100 dark:border-[#3c4043]">
+                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Öppen för studenter</span>
+                        <button
+                            type="button"
+                            onClick={() => setFormData({ ...formData, isOpen: !formData.isOpen })}
+                            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${formData.isOpen ? 'bg-indigo-600' : 'bg-gray-200 dark:bg-gray-700'}`}
+                        >
+                            <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${formData.isOpen ? 'translate-x-6' : 'translate-x-1'}`} />
+                        </button>
+                    </div>
                     <input className="w-full p-2 border rounded dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} />
                     <div className="grid grid-cols-2 gap-4">
                         <input className="w-full p-2 border rounded dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" value={formData.courseCode} onChange={e => setFormData({ ...formData, courseCode: e.target.value })} />
@@ -328,6 +356,16 @@ export const EditCourseModal = ({ isOpen, onClose, onCourseUpdated, teachers, co
                             <option value="">{t('course_modal.category')}...</option>
                             {COURSE_CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
                         </select>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-1">
+                            <label className="text-xs font-bold text-gray-500">{t('admin.start_date')}</label>
+                            <input type="date" className="w-full p-2 border rounded dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" value={formData.startDate} onChange={e => setFormData({ ...formData, startDate: e.target.value })} />
+                        </div>
+                        <div className="space-y-1">
+                            <label className="text-xs font-bold text-gray-500">{t('admin.end_date')}</label>
+                            <input type="date" className="w-full p-2 border rounded dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" value={formData.endDate} onChange={e => setFormData({ ...formData, endDate: e.target.value })} />
+                        </div>
                     </div>
                     <input className="w-full p-2 border rounded dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" type="number" value={formData.maxStudents} onChange={e => setFormData({ ...formData, maxStudents: e.target.value })} />
 

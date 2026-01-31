@@ -7,6 +7,8 @@ import { useAppContext } from '../../context/AppContext';
 
 import { COURSE_CATEGORIES } from '../../constants/courseCategories';
 
+
+
 const CourseCatalog = () => {
     const { currentUser } = useAppContext();
     const [courses, setCourses] = useState([]);
@@ -14,6 +16,7 @@ const CourseCatalog = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('Alla Kurser');
     const [selectedCourseInfo, setSelectedCourseInfo] = useState(null);
+
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -89,16 +92,23 @@ const CourseCatalog = () => {
                     <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Kurskatalog</h1>
                     <p className="text-gray-500 dark:text-gray-400">Utforska, filtrera och hitta din nästa utmaning.</p>
                 </div>
-                <div className="relative w-full md:w-96">
-                    <Search className="absolute left-4 top-3.5 text-gray-400" size={20} />
-                    <input
-                        className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 dark:border-[#3c4043] bg-white dark:bg-[#1E1F20] text-gray-900 dark:text-white shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all"
-                        placeholder="Sök efter kurser..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                    />
+
+                <div className="flex gap-4 items-center">
+
+
+                    <div className="relative w-full md:w-96">
+                        <Search className="absolute left-4 top-3.5 text-gray-400" size={20} />
+                        <input
+                            className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 dark:border-[#3c4043] bg-white dark:bg-[#1E1F20] text-gray-900 dark:text-white shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all"
+                            placeholder="Sök efter kurser..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                    </div>
                 </div>
             </header>
+
+
 
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
                 {/* --- KATEGORIER --- */}

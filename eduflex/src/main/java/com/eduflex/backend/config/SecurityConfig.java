@@ -213,6 +213,10 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/ai/quiz/**")
                         .hasAnyAuthority("ADMIN", "ROLE_ADMIN", "TEACHER", "ROLE_TEACHER")
 
+                        // 7. AI Course Generation endpoints
+                        .requestMatchers("/api/ai-course/**")
+                        .hasAnyAuthority("ADMIN", "ROLE_ADMIN", "TEACHER", "ROLE_TEACHER")
+
                         // 7. Module management endpoints
                         .requestMatchers(HttpMethod.GET, "/api/modules").authenticated()
                         .requestMatchers(HttpMethod.PUT, "/api/modules/**")

@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { AdminUserTable, AdminCourseRegistry } from './components/admin/AdminTables';
 import RolesAdmin from './components/admin/RolesAdmin';
 import { CreateUserModal, CreateCourseModal, EditCourseModal, EditUserModal } from './components/admin/AdminModals';
+import AICourseCreator from '../courses/AICourseCreator';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../../services/api';
 import { useModules } from '../../context/ModuleContext';
@@ -32,6 +33,7 @@ const AdministrationPanel = ({ users, courses, teachers, fetchStats }) => {
     const [showCourseModal, setShowCourseModal] = useState(false);
     const [showEditCourseModal, setShowEditCourseModal] = useState(false);
     const [courseToEdit, setCourseToEdit] = useState(null);
+    const [showAiModal, setShowAiModal] = useState(false);
 
     const handleDeleteCourse = async (courseId) => {
         if (window.confirm("Är du säker på att du vill ta bort denna kurs? Detta går inte att ångra.")) {
@@ -92,7 +94,16 @@ const AdministrationPanel = ({ users, courses, teachers, fetchStats }) => {
     const renderContent = () => {
         switch (activeTab) {
             case 'users': return <AdminUserTable users={users} onNewUser={() => setShowUserModal(true)} onEdit={(u) => { setUserToEdit(u); setShowEditUserModal(true); }} onDelete={handleDeleteUser} />;
-            case 'courses': return <AdminCourseRegistry courses={courses} onNewCourse={() => setShowCourseModal(true)} onEdit={(c) => { setCourseToEdit(c); setShowEditCourseModal(true); }} onManage={(id) => navigate(`/course/${id}`)} onDelete={handleDeleteCourse} />;
+            case 'courses': return (
+                <AdminCourseRegistry
+                    courses={courses}
+                    onNewCourse={() => setShowCourseModal(true)}
+                    onAiCourseClick={() => setShowAiModal(true)}
+                    onEdit={(c) => { setCourseToEdit(c); setShowEditCourseModal(true); }}
+                    onManage={(id) => navigate(`/course/${id}`)}
+                    onDelete={handleDeleteCourse}
+                />
+            );
             case 'roles': return <RolesAdmin />;
             case 'logs': return <LogDashboard />;
             case 'terminal': return <RealTimeLogViewer />;
@@ -163,6 +174,15 @@ const AdministrationPanel = ({ users, courses, teachers, fetchStats }) => {
             <EditUserModal isOpen={showEditUserModal} onClose={() => setShowEditUserModal(false)} onUserUpdated={fetchStats} userToEdit={userToEdit} />
             <CreateCourseModal isOpen={showCourseModal} onClose={() => setShowCourseModal(false)} onCourseCreated={fetchStats} teachers={teachers} />
             <EditCourseModal isOpen={showEditCourseModal} onClose={() => setShowEditCourseModal(false)} onCourseUpdated={fetchStats} teachers={teachers} courseToEdit={courseToEdit} />
+
+            <AICourseCreator
+                isOpen={showAiModal}
+                onClose={() => setShowAiModal(false)}
+                onCourseCreated={() => {
+                    fetchStats();
+                    setShowAiModal(false);
+                }}
+            />
         </div>
     );
 };

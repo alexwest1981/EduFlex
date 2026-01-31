@@ -78,6 +78,9 @@ public class ModuleService {
                 createIfNotExists("AI_QUIZ", "AI Quiz Generator",
                                 "Generera quiz-frågor automatiskt från dokument med Google Gemini AI. Kräver PRO eller ENTERPRISE.",
                                 "1.0.0", false, true);
+                createIfNotExists("AI_TUTOR", "AI Tutor (RAG)",
+                                "AI-driven studiecoach som svarar på frågor baserat på kursmaterial. Kräver PRO eller ENTERPRISE.",
+                                "1.0.0", false, true);
 
                 logger.info("=== ModuleService: Module initialization complete. Total modules: {} ===",
                                 moduleRepository.count());

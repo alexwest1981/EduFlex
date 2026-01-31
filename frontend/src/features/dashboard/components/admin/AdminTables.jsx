@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { User, FileText, File as FileIcon, Search, Plus, Edit2, Trash2, FileCode, Image } from 'lucide-react';
+import { User, FileText, File as FileIcon, Search, Plus, Edit2, Trash2, FileCode, Image, BookOpen } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { api } from '../../../../services/api';
 // ... (skip down to AdminCourseRegistry signature)
 import Pagination from '../../../../components/common/Pagination';
 
-export const AdminCourseRegistry = ({ courses, onEdit, onManage, onNewCourse, onDelete }) => {
+export const AdminCourseRegistry = ({ courses, onEdit, onManage, onNewCourse, onAiCourseClick, onDelete }) => {
     const { t } = useTranslation();
     const [searchTerm, setSearchTerm] = useState('');
     const [filterStatus, setFilterStatus] = useState('ALL');
@@ -33,7 +33,16 @@ export const AdminCourseRegistry = ({ courses, onEdit, onManage, onNewCourse, on
             <div className="p-6 border-b border-card dark:border-card-dark flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-gray-50/50 dark:bg-[#131314]/50">
                 <div className="flex items-center gap-4">
                     <h3 className="font-bold text-gray-800 dark:text-white">{t('dashboard.course_registry')}</h3>
-                    <button onClick={onNewCourse} className="text-xs bg-indigo-600 text-white px-3 py-1.5 rounded-lg font-bold hover:bg-indigo-700 flex items-center gap-1"><Plus size={14} /> {t('dashboard.new_course')}</button>
+                    <div className="flex gap-2">
+                        <button
+                            onClick={onAiCourseClick}
+                            className="text-xs bg-gradient-to-r from-indigo-600 to-violet-600 text-white px-3 py-1.5 rounded-lg font-bold shadow-sm hover:opacity-90 transition-opacity flex items-center gap-1"
+                        >
+                            <BookOpen size={14} />
+                            Skapa med AI
+                        </button>
+                        <button onClick={onNewCourse} className="text-xs bg-gray-900 dark:bg-white text-white dark:text-black px-3 py-1.5 rounded-lg font-bold hover:opacity-80 flex items-center gap-1"><Plus size={14} /> {t('dashboard.new_course')}</button>
+                    </div>
                 </div>
                 <div className="flex gap-2 w-full md:w-auto">
                     <div className="relative flex-1 md:flex-none">

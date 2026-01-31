@@ -73,6 +73,73 @@ public class GeminiService {
             }
             """;
 
+    private static final String COURSE_SYSTEM_PROMPT = """
+            Du är en expert på instruktionsdesign och läroplansutveckling.
+            Din uppgift är att skapa en strukturerad onlinekurs baserat på det givna materialet.
+
+            Skapa en kursstruktur med Moduler och Lektioner.
+            För varje lektion, skriv en kort sammanfattning av innehållet.
+            Inkludera även förslag på quiz-frågor för vissa lektioner.
+
+            FORMAT:
+            Du MÅSTE svara med giltig JSON som följer denna struktur:
+            {
+              "title": "Kurstitel",
+              "description": "Kort kursbeskrivning",
+              "startDate": "YYYY-MM-DD",
+              "endDate": "YYYY-MM-DD",
+              "modules": [
+                {
+                  "title": "Modul 1: Introduktion",
+                  "lessons": [
+                    {
+                      "title": "Lektion 1.1",
+                      "content": "Sammanfattning av lektionen...",
+                      "isQuiz": false
+                    },
+                    {
+                      "title": "Quiz 1",
+                      "isQuiz": true,
+                      "questions": [
+                        {
+                          "text": "Fråga?",
+                          "options": ["A", "B", "C", "D"],
+                          "correctIndex": 0,
+                          "explanation": "Förklaring..."
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+
+            Regler:
+            1. Strukturera materialet logiskt.
+            2. Varje modul ska ha 2-5 lektioner.
+            3. Avsluta varje modul med ett quiz om möjligt.
+            4. Försök hitta start- och slutdatum för kursen i texten. Om du hittar dem, använd formatet YYYY-MM-DD. Om de saknas helt, lämna fälten tomma ("").
+            5. Svara på SAMMA SPRÅK som källtexten.
+            """;
+
+    /**
+     * Generates a full course structure from document text using Gemini.
+     */
+    public String generateCourseStructure(String documentText) {
+        logger.info("Generating course structure from document text length: {}", documentText.length());
+
+        // Truncate if too long (approx 30k chars to stay within token limits for Flash
+        // model)
+        // Gemini 1.5/2.0 handle huge context, but let's be safe or just pass it all if
+        // using 1.5 Pro/Flash.
+        // The default model is gemini-2.0-flash which has 1M context, so passing full
+        // text is fine usually.
+        // But let's check config.
+
+        String prompt = COURSE_SYSTEM_PROMPT + "\n\nKÄLLTEXT:\n---\n" + documentText + "\n---\n";
+        return callGemini(prompt);
+    }
+
     /**
      * Generates quiz questions from a specific topic/context.
      */
@@ -91,7 +158,7 @@ public class GeminiService {
         String fullPrompt = QUIZ_SYSTEM_PROMPT + "\n\n"
                 + buildTopicUserPrompt(topic, questionCount, difficultyDesc, language);
 
-        return callGemini(fullPrompt);
+        return callGemini(fullPrompt, true);
     }
 
     private String buildTopicUserPrompt(String topic, int questionCount, String difficultyDesc, String language) {
@@ -112,6 +179,10 @@ public class GeminiService {
     }
 
     private String callGemini(String prompt) {
+        return callGemini(prompt, false);
+    }
+
+    private String callGemini(String prompt, boolean validateQuiz) {
         // Build request body for Gemini API
         Map<String, Object> requestBody = Map.of(
                 "contents", List.of(
@@ -135,11 +206,15 @@ public class GeminiService {
 
             String content = extractContentFromResponse(response.getBody());
             content = cleanJsonResponse(content);
-            validateJsonResponse(content);
+
+            if (validateQuiz) {
+                validateJsonResponse(content);
+            }
+
             return content;
         } catch (Exception e) {
-            logger.error("Failed to generate quiz questions with Gemini", e);
-            throw new RuntimeException("Failed to generate quiz questions: " + e.getMessage(), e);
+            logger.error("Failed to call Gemini", e);
+            throw new RuntimeException("Gemini call failed: " + e.getMessage(), e);
         }
     }
 
@@ -175,7 +250,7 @@ public class GeminiService {
         questionCount = Math.max(1, Math.min(15, questionCount));
         String fullPrompt = QUIZ_SYSTEM_PROMPT + "\n\n"
                 + buildUserPrompt(documentText, questionCount, difficulty, language);
-        return callGemini(fullPrompt);
+        return callGemini(fullPrompt, true);
     }
 
     /**

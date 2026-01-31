@@ -33,6 +33,13 @@
 
 ---
 
+*   **🤖 Generative Course Creation - AI-kursgenerator (Jan 31, 2026):**
+    *   **One-Click Course Creation:** Upload a course syllabus (PDF) and let AI generate modules, lessons, summaries, and quizzes automatically.
+    *   **Automated Date Extraction:** AI intelligently identifies and extracts course start/end dates from the uploaded document.
+    *   **Editable Preview:** Review and modify the AI-generated title, description, and dates before committing to course creation.
+    *   **Smart Course Codes:** Automatically generates concise abbreviations (e.g., "DBT") from the course title instead of random IDs.
+    *   **Visibility Controls:** Integrated "Open for Students" toggle in both creation and editing modals for granular access management.
+
 *   **🚀 Performance & E-book Enhancements (Jan 30, 2026):**
     *   **Permanent Caching:** Enabled 1-year persistent caching (`immutable`) for ebook covers and media assets, dramatically improving library load times.
     *   **MinIO Proxy:** Implemented a smart proxy in `StorageController` to serve legacy `/uploads/` paths directly from MinIO without database migration.
@@ -791,6 +798,13 @@ taskkill /PID <PID> /F
 ## 🇸🇪 Svenska
 
 ### ⚡ Senaste Uppdateringarna
+*   **🤖 Generative Course Creation - AI-kursgenerator (31 jan 2026):**
+    *   **One-Click Course Creation:** Ladda upp en studiehandledning (PDF) och låt AI generera moduler, lektioner, sammanfattningar och quiz med ett klick.
+    *   **Automatisk Datumläsning:** AI:n identifierar och extraherar nu automatiskt kursens start- och slutdatum från det uppladdade materialet.
+    *   **Redigerbar Förhandsvisning:** Granska och justera AI-genererad titel, beskrivning och datum i realtid innan kursen skapas.
+    *   **Smartare Kurskoder:** Genererar automatiskt kortfattade förkortningar (t.ex. "DBT") baserat på kursnamnet istället för slumpmässiga AI-id:n.
+    *   **Synlighetskontroll:** Ny global kontroll för "Öppen för studenter" direkt i kursadministrationen för enkel hantering av kursstatus.
+
 *   **🚀 Prestanda & E-boksförbättringar (30 jan 2026):**
     *   **Permanent Cachning:** Aktiverat 1-års cachning (`immutable`) för bokomslag och media, vilket gör biblioteket blixtsnabbt.
     *   **MinIO Proxy:** Smart proxy i `StorageController` som servar gamla `/uploads/`-länkar direkt från MinIO utan databasändringar.

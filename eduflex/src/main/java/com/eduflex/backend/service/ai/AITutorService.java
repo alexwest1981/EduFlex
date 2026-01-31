@@ -28,14 +28,18 @@ public class AITutorService {
     private final StorageService storageService;
     private final Tika tika = new Tika();
 
+    private final com.eduflex.backend.repository.EbookRepository ebookRepository;
+
     public AITutorService(GeminiService geminiService,
             EmbeddingRepository embeddingRepository,
             CourseMaterialRepository materialRepository,
-            StorageService storageService) {
+            StorageService storageService,
+            com.eduflex.backend.repository.EbookRepository ebookRepository) {
         this.geminiService = geminiService;
         this.embeddingRepository = embeddingRepository;
         this.materialRepository = materialRepository;
         this.storageService = storageService;
+        this.ebookRepository = ebookRepository;
     }
 
     private static final int CHUNK_SIZE = 1000;
@@ -111,6 +115,67 @@ public class AITutorService {
             ingestMaterial(courseId, material.getId());
         }
         logger.info("Finished bulk ingestion for course {}", courseId);
+    }
+
+    @Transactional
+    public void ingestEbook(Long ebookId) {
+        try {
+            logger.info("Ingesting ebook {}", ebookId);
+            com.eduflex.backend.model.Ebook ebook = ebookRepository.findById(ebookId)
+                    .orElseThrow(() -> new RuntimeException("Ebook not found"));
+
+            // Clear existing embeddings for this ebook across all courses
+            embeddingRepository.deleteBySourceTypeAndSourceId("EBOOK", ebookId);
+
+            String storageId = ebook.getFileUrl().substring(ebook.getFileUrl().lastIndexOf("/") + 1);
+            String text = "";
+
+            try (InputStream stream = storageService.load(storageId)) {
+                // Determine type based on fileUrl or content type (approximation)
+                if (ebook.getFileUrl().toLowerCase().endsWith(".epub")) {
+                    // For EPUB, we might need a dedicated parser, but Tika handles many formats.
+                    // PdfBookContent handles PDFs specifically for pages, but for text extraction
+                    // Tika is good.
+                    text = tika.parseToString(stream);
+                } else {
+                    // Default to Tika for PDF and others
+                    text = tika.parseToString(stream);
+                }
+            } catch (Exception e) {
+                logger.warn("Failed to extract text from ebook {}: {}", ebookId, e.getMessage());
+                return;
+            }
+
+            if (text == null || text.isBlank()) {
+                logger.warn("No text extracted from ebook {}", ebookId);
+                return;
+            }
+
+            List<String> chunks = splitText(text);
+
+            for (com.eduflex.backend.model.Course course : ebook.getCourses()) {
+                logger.info("Indexing ebook {} for course {}", ebook.getTitle(), course.getName());
+                for (String chunk : chunks) {
+                    List<Double> vector = geminiService.generateEmbedding(chunk);
+                    Double[] vectorArray = vector.toArray(new Double[0]);
+
+                    VectorStoreEntry embedding = new VectorStoreEntry();
+                    embedding.setCourseId(course.getId());
+                    embedding.setSourceType("EBOOK");
+                    embedding.setSourceId(ebookId);
+                    embedding.setSourceTitle("Bok: " + ebook.getTitle()); // Prefix to distinguish
+                    embedding.setTextChunk(chunk);
+                    embedding.setEmbeddingVector(vectorArray);
+
+                    embeddingRepository.save(embedding);
+                }
+            }
+            logger.info("Ingested ebook {} for {} courses", ebookId, ebook.getCourses().size());
+
+        } catch (Exception e) {
+            logger.error("Ebook ingestion failed", e);
+            throw new RuntimeException("Ebook ingestion failed: " + e.getMessage());
+        }
     }
 
     public String askTutor(Long courseId, String question) {

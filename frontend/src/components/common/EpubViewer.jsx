@@ -29,7 +29,10 @@ const EpubViewer = ({ url, title, location, onLocationChange }) => {
                     swipeable={true}
                     epubOptions={{
                         flow: 'paginated', // or scrolled
-                        manager: 'default'
+                        manager: 'default',
+                        requestHeaders: {
+                            Authorization: `Bearer ${localStorage.getItem('token')}`
+                        }
                     }}
                     loadingView={<div className="h-full flex items-center justify-center">Laddar e-bok...</div>}
                 />

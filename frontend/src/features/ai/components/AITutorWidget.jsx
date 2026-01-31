@@ -35,7 +35,14 @@ const AITutorWidget = ({ courseId }) => {
             setMessages(prev => [...prev, { role: 'ai', text: response.answer }]);
         } catch (error) {
             console.error("Failed to chat with AI", error);
-            setMessages(prev => [...prev, { role: 'ai', text: 'Ojdå, något gick fel. Försök igen senare.' }]);
+            if (error.message && error.message.includes("403")) {
+                setMessages(prev => [...prev, {
+                    role: 'ai',
+                    text: '🔒 **Denna funktion kräver PRO eller ENTERPRISE.**\n\nUppgradera din licens för att få tillgång till din personliga AI-tutor.'
+                }]);
+            } else {
+                setMessages(prev => [...prev, { role: 'ai', text: 'Ojdå, något gick fel. Försök igen senare. 🤕' }]);
+            }
         } finally {
             setIsLoading(false);
         }

@@ -43,10 +43,13 @@ public class EbookController {
             @RequestParam("description") String description,
             @RequestParam("category") String category,
             @RequestParam("language") String language,
+            @RequestParam(value = "isbn", required = false) String isbn,
             @RequestParam("file") MultipartFile file,
-            @RequestParam(value = "cover", required = false) MultipartFile cover) {
+            @RequestParam(value = "cover", required = false) MultipartFile cover,
+            @RequestParam(value = "courseIds", required = false) List<Long> courseIds) {
         try {
-            Ebook ebook = ebookService.uploadEbook(title, author, description, category, language, file, cover);
+            Ebook ebook = ebookService.uploadEbook(title, author, description, category, language, isbn, file, cover,
+                    courseIds);
             return ResponseEntity.ok(ebook);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Map.of("message", "Upload failed: " + e.getMessage()));
@@ -54,15 +57,24 @@ public class EbookController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateEbook(@PathVariable Long id, @RequestBody Map<String, String> payload) {
+    public ResponseEntity<?> updateEbook(@PathVariable Long id, @RequestBody Map<String, Object> payload) {
         try {
+            List<Long> courseIds = null;
+            if (payload.get("courseIds") != null) {
+                courseIds = ((List<?>) payload.get("courseIds")).stream()
+                        .map(obj -> Long.valueOf(obj.toString()))
+                        .collect(java.util.stream.Collectors.toList());
+            }
+
             Ebook updatedEbook = ebookService.updateEbook(
                     id,
-                    payload.get("title"),
-                    payload.get("author"),
-                    payload.get("description"),
-                    payload.get("category"),
-                    payload.get("language"));
+                    (String) payload.get("title"),
+                    (String) payload.get("author"),
+                    (String) payload.get("description"),
+                    (String) payload.get("category"),
+                    (String) payload.get("language"),
+                    (String) payload.get("isbn"),
+                    courseIds);
             return ResponseEntity.ok(updatedEbook);
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
@@ -100,6 +112,33 @@ public class EbookController {
                     .body(image);
         } catch (Exception e) {
             return ResponseEntity.notFound().build();
+        }
+    }
+
+    @GetMapping("/{id}/cover")
+    public ResponseEntity<byte[]> getCover(@PathVariable Long id) {
+        try {
+            byte[] image = ebookService.getEbookCover(id);
+            // Detect content type or default to jpeg
+            MediaType mediaType = MediaType.IMAGE_JPEG;
+            if (image.length > 3 && image[0] == (byte) 0x89 && image[1] == (byte) 0x50)
+                mediaType = MediaType.IMAGE_PNG;
+
+            return ResponseEntity.ok()
+                    .contentType(mediaType)
+                    .cacheControl(CacheControl.maxAge(365, TimeUnit.DAYS).cachePublic().immutable())
+                    .body(image);
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @GetMapping("/metadata/fetch")
+    public ResponseEntity<Map<String, Object>> fetchMetadata(@RequestParam String isbn) {
+        try {
+            return ResponseEntity.ok(ebookService.fetchMetadataByIsbn(isbn));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
     }
 }

@@ -596,7 +596,11 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
                                                 alert("Dokumentet har indexerats!");
                                             } catch (e) {
                                                 console.error(e);
-                                                alert("Kunde inte indexera dokumentet.");
+                                                if (e.message && e.message.includes("403")) {
+                                                    alert("🔒 Denna funktion kräver en PRO eller ENTERPRISE licens.");
+                                                } else {
+                                                    alert("Kunde inte indexera dokumentet.");
+                                                }
                                             }
                                         }}
                                         className="flex items-center gap-2 px-4 py-2 bg-purple-100 hover:bg-purple-200 text-sm font-bold text-purple-700 rounded-lg shadow-sm border border-transparent transition-colors"

@@ -13,9 +13,11 @@ import java.util.Map;
 public class AITutorController {
 
     private final AITutorService aiTutorService;
+    private final com.eduflex.backend.service.ModuleService moduleService;
 
-    public AITutorController(AITutorService aiTutorService) {
+    public AITutorController(AITutorService aiTutorService, com.eduflex.backend.service.ModuleService moduleService) {
         this.aiTutorService = aiTutorService;
+        this.moduleService = moduleService;
     }
 
     /**
@@ -25,6 +27,11 @@ public class AITutorController {
     @PostMapping("/ingest")
     @PreAuthorize("hasAnyRole('TEACHER', 'ADMIN')")
     public ResponseEntity<?> ingestDocument(@RequestBody Map<String, Long> payload) {
+        try {
+            moduleService.toggleModule("AI_TUTOR", true);
+        } catch (Exception e) {
+            return ResponseEntity.status(403).body("AI Tutor module is not available in your license.");
+        }
         Long courseId = payload.get("courseId");
         Long documentId = payload.get("documentId");
 
@@ -42,11 +49,38 @@ public class AITutorController {
     }
 
     /**
+     * Ingest an Ebook for RAG.
+     * Accessible by TEACHER and ADMIN.
+     */
+    @PostMapping("/ingest-ebook/{ebookId}")
+    @PreAuthorize("hasAnyRole('TEACHER', 'ADMIN')")
+    public ResponseEntity<?> ingestEbook(@PathVariable Long ebookId) {
+        try {
+            moduleService.toggleModule("AI_TUTOR", true);
+        } catch (Exception e) {
+            return ResponseEntity.status(403).body("AI Tutor module is not available in your license.");
+        }
+
+        try {
+            // Run async to avoid blocking
+            new Thread(() -> aiTutorService.ingestEbook(ebookId)).start();
+            return ResponseEntity.ok("Ebook ingestion started. This may take a moment.");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error starting ebook ingestion: " + e.getMessage());
+        }
+    }
+
+    /**
      * Ask the AI Tutor a question.
      * Accessible by STUDENT, TEACHER, ADMIN.
      */
     @PostMapping("/chat")
     public ResponseEntity<?> chat(@RequestBody Map<String, Object> payload) {
+        try {
+            moduleService.toggleModule("AI_TUTOR", true);
+        } catch (Exception e) {
+            return ResponseEntity.status(403).body("AI Tutor module is not available in your license.");
+        }
         Object courseIdObj = payload.get("courseId");
         if (courseIdObj == null) {
             return ResponseEntity.badRequest().body("Missing courseId");
@@ -69,6 +103,11 @@ public class AITutorController {
     @PostMapping("/ingest-course")
     @PreAuthorize("hasAnyRole('TEACHER', 'ADMIN')")
     public ResponseEntity<?> ingestCourse(@RequestBody Map<String, Object> payload) {
+        try {
+            moduleService.toggleModule("AI_TUTOR", true);
+        } catch (Exception e) {
+            return ResponseEntity.status(403).body("AI Tutor module is not available in your license.");
+        }
         Object courseIdObj = payload.get("courseId");
         if (courseIdObj == null) {
             return ResponseEntity.badRequest().body("Missing courseId");

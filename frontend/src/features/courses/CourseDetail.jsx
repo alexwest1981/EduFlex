@@ -360,7 +360,11 @@ const CourseDetail = ({ currentUser }) => {
                                                 alert("Indexering startad i bakgrunden. Du kan fortsätta arbeta.");
                                             } catch (e) {
                                                 console.error(e);
-                                                alert("Kunde inte starta indexering.");
+                                                if (e.message && e.message.includes("403")) {
+                                                    alert("🔒 Denna funktion kräver en PRO eller ENTERPRISE licens.");
+                                                } else {
+                                                    alert("Kunde inte starta indexering.");
+                                                }
                                             }
                                         }}
                                         className="w-full bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 px-4 py-2 rounded-lg text-sm font-bold flex items-center justify-center gap-2 hover:bg-indigo-100 dark:hover:bg-indigo-900/40 transition-colors shadow-sm"
@@ -482,8 +486,7 @@ const CourseDetail = ({ currentUser }) => {
                 />
             )}
 
-            {/* AI Study Pal Widget */}
-            <StudyPalWidget courseId={course.id} lessonTitle={activeTab === 'material' ? 'Lektion' : activeTab} />
+            {/* AI Study Pal Widget Removed - Integrated into Global Chat */}
         </div>
     );
 };
