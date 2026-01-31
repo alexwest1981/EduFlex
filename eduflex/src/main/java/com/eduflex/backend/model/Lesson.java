@@ -1,5 +1,6 @@
 package com.eduflex.backend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 @Entity
@@ -22,6 +23,7 @@ public class Lesson {
 
     @ManyToOne(optional = true)
     @JoinColumn(name = "course_id", nullable = true)
+    @JsonIgnore
     private Course course;
 
     @ManyToOne

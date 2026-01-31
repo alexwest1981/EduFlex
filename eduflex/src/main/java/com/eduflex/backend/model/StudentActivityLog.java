@@ -1,5 +1,6 @@
 package com.eduflex.backend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
@@ -12,7 +13,12 @@ public class StudentActivityLog {
         DOWNLOAD_FILE,
         WATCH_VIDEO,
         COURSE_ACCESS,
-        LOGIN
+        LOGIN,
+        QUIZ_ATTEMPT,
+        ASSIGNMENT_SUBMISSION,
+        FORUM_POST,
+        EBOOK_READ,
+        AI_TUTOR_CHAT
     }
 
     @Id
@@ -25,6 +31,7 @@ public class StudentActivityLog {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "course_id", nullable = true)
+    @JsonIgnore
     private Course course;
 
     @ManyToOne(fetch = FetchType.LAZY)

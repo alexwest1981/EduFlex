@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { X, Send, AlertTriangle, FileText, User } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { api } from '../../../services/api';
+import AIPersonalizationWidget from '../widgets/AIPersonalizationWidget';
 
 const StudentContactModal = ({ isOpen, onClose, student, currentUser }) => {
     const { t } = useTranslation();
@@ -107,6 +108,9 @@ const StudentContactModal = ({ isOpen, onClose, student, currentUser }) => {
                             </p>
                         </div>
                     </div>
+
+                    {/* AI Insights (NEW) */}
+                    <AIPersonalizationWidget userId={student.id} isTeacher={true} />
 
                     {/* Subject Line */}
                     <div>

@@ -14,19 +14,22 @@ public class QuizService {
     private final CourseRepository courseRepository;
     private final UserRepository userRepository;
 
-    // NYTT: Injicera GamificationService
+    // NYTT: Injicera GamificationService och StudentActivityService
     private final GamificationService gamificationService;
+    private final StudentActivityService studentActivityService;
 
     public QuizService(QuizRepository quizRepository,
-                       QuizResultRepository resultRepository,
-                       CourseRepository courseRepository,
-                       UserRepository userRepository,
-                       GamificationService gamificationService) { // <--- Lägg till här i konstruktorn
+            QuizResultRepository resultRepository,
+            CourseRepository courseRepository,
+            UserRepository userRepository,
+            GamificationService gamificationService,
+            StudentActivityService studentActivityService) { // <--- Lägg till här i konstruktorn
         this.quizRepository = quizRepository;
         this.resultRepository = resultRepository;
         this.courseRepository = courseRepository;
         this.userRepository = userRepository;
         this.gamificationService = gamificationService;
+        this.studentActivityService = studentActivityService;
     }
 
     public List<Quiz> getQuizzesByCourse(Long courseId) {
@@ -86,7 +89,8 @@ public class QuizService {
                 if (selectedOptionId != null && q.getOptions() != null) {
                     boolean isCorrect = q.getOptions().stream()
                             .anyMatch(o -> o.getId().equals(selectedOptionId) && o.isCorrect());
-                    if (isCorrect) score++;
+                    if (isCorrect)
+                        score++;
                 }
             }
         }
@@ -100,13 +104,19 @@ public class QuizService {
 
         QuizResult savedResult = resultRepository.save(result);
 
+        // LOGGA AKTIVITET FÖR AI
+        studentActivityService.logActivity(studentId, quiz.getCourse().getId(), null,
+                StudentActivityLog.ActivityType.QUIZ_ATTEMPT,
+                String.format("Genomförde quiz: %s. Resultat: %d/%d", quiz.getTitle(), score, maxScore));
+
         // --- GAMIFICATION TRIGGERS ---
         // Ge 10 poäng per rätt svar
         if (score > 0) {
             gamificationService.addPoints(studentId, score * 10);
         }
 
-        // Bonus: Om man fick alla rätt, ge en Badge (ID 2 = "Quiz Master" som vi skapade i init)
+        // Bonus: Om man fick alla rätt, ge en Badge (ID 2 = "Quiz Master" som vi
+        // skapade i init)
         if (score == maxScore && maxScore > 0) {
             // Ge extra 50 bonuspoäng för perfekt resultat
             gamificationService.addPoints(studentId, 50);

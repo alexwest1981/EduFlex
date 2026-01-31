@@ -13,7 +13,7 @@
 | **Generativt Författande (Kurser)** | "One-click course creation". Ladda upp PDF/PPT/Video och låt systemet generera kursstruktur, sammanfattningar och quiz automatiskt. | ✅ **Stabil** (V1) |
 | **AI-Tutor & Copilot** | En inbyggd chattbot som svarar på elevers frågor baserat enbart på kursmaterialet (RAG). Rollspelspartner för träning. | ✅ **Klar** (V1) |
 | **MCP-Server** | Gör EduFlex tillgängligt för externa AI-agenter (Model Context Protocol). | ✅ **Klar** (V1) |
-| **Prediktiv Personalisering** | Analyserar beteendedata för att identifiera "at-risk"-studenter och rekommenderar stödmaterial. | 📅 **Planerad** |
+| **Prediktiv Personalisering** | Analyserar beteendedata för att identifiera "at-risk"-studenter och rekommenderar stödmaterial (Gemini-integration). | ✅ **Klar** (V1) |
 
 ---
 
@@ -23,8 +23,8 @@
 | Funktion | Beskrivning | Status |
 | :--- | :--- | :--- |
 | **LTI 1.3 Core** | Grundläggande launch-stöd för externa verktyg. | ✅ **Klar** |
-| **LTI 1.3 Advantage** | Stöd för AGS (Betyg) och NRPS (Roller/Namn). | 📅 **Planerad** |
-| **xAPI & cmi5** | Modern spårning (LRS) för mobilt lärande och simuleringar. Ersätter SCORM. | 📅 **Planerad** |
+| **LTI 1.3 Advantage** | Stöd för AGS (Betyg) och NRPS (Roller/Namn). | 📅 **Nästa sprint** |
+| **xAPI & cmi5** | Modern spårning (LRS) för mobilt lärande och simuleringar. | 📅 **Pågående** |
 | **Workflow Integration** | Utbildning direkt i Slack/Teams/Salesforce ("Headless LMS"). | 📅 **Planerad** |
 
 ---
@@ -36,8 +36,8 @@
 | :--- | :--- | :--- |
 | **Socialt Lärande (Basic)** | Community Hub / Marketplace. | ✅ **Klar** |
 | **Socialt Lärande (Avancerat)** | P2P-delning, kommentarer i kurser, "YouTube for Learning". | 📅 **Planerad** |
-| **Gamification (Basic)** | XP, Levlar, Badges. | ✅ **Klar** |
-| **Gamification (Avancerat)** | Streaks, Leaderboards, LinkedIn-delbara badges. | 📅 **Planerad** |
+| **Gamification (Basic)** | XP, Levlar, Badges, Streaks. | ✅ **Klar** |
+| **Gamification (Avancerat)** | Leaderboards, LinkedIn-delbara badges. | 📅 **Planerad** |
 | **Mobil-först** | Responsiv webbdesign. | ✅ **Klar** |
 | **Offline-läge / PWA** | Installera som app, ladda ner kurser för offline-bruk. | 📅 **Planerad** |
 
@@ -67,6 +67,6 @@
 
 Detta dokument är den **låsta roadmapen** tills målen är nådda.
 
-1.  **Verifiera LTI 1.3**: Säkerställ att vi kan launcha verktyg säkert.
-2.  **Öka Mobilitet**: Finputsa responsive design.
-3.  **Starta AI-Tutor**: Utforska RAG-implementering.
+1.  **LTI 1.3 Advantage**: Implementera stöd för betygsrapportering tillbaka till LMS.
+2.  **LRS (xAPI/cmi5)**: Implementera Learning Record Store för djupare analys.
+3.  **UI/UX Polish**: Finjustera mobila vyer för lärare.

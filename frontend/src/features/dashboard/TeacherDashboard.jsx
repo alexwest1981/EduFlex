@@ -259,7 +259,7 @@ const TeacherDashboard = ({ currentUser }) => {
 
                         {/* Meddelanden (Höger - 1 kolumn) */}
                         <div className="lg:col-span-1 h-full space-y-6">
-                            {widgets.showRiskWidget && <TeacherAtRiskWidget currentUser={currentUser} settings={{ enabled: true }} />}
+                            {widgets.showRiskWidget && <TeacherAtRiskWidget currentUser={currentUser} settings={{ enabled: true }} onSelectStudent={(s) => setMessageRecipient(s)} />}
                             {widgets.showOnlineFriends && (
                                 <div className="h-80">
                                     <OnlineFriendsWidget />

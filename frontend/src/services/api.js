@@ -757,6 +757,11 @@ export const api = {
                 body: JSON.stringify({ reason })
             }).then(handleResponse),
         }
+    },
+
+    personalization: {
+        getMyAnalysis: () => fetch(`${API_BASE}/personalization/analyze`, { headers: getHeaders() }).then(handleResponse),
+        getUserAnalysis: (userId) => fetch(`${API_BASE}/personalization/analyze/${userId}`, { headers: getHeaders() }).then(handleResponse)
     }
 };
 

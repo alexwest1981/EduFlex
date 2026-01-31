@@ -3,7 +3,10 @@ import { AlertCircle, ArrowRight, Ban, User } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { api } from '../../../services/api';
 
-const TeacherAtRiskWidget = ({ currentUser, settings }) => {
+const TeacherAtRiskWidget = ({ currentUser, settings, onSelectStudent }) => {
+    // ...
+    // Note: I will only replace the specific lines that need changing to avoid replacing the whole file if not needed.
+    // Wait, replacing chunks is better.
     const { t } = useTranslation();
     const [students, setStudents] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -50,7 +53,7 @@ const TeacherAtRiskWidget = ({ currentUser, settings }) => {
                     </div>
                 ) : (
                     students.map(student => (
-                        <div key={student.id} className="flex items-center justify-between p-2 hover:bg-gray-50 dark:hover:bg-[#282a2c] rounded-lg transition-colors cursor-pointer group">
+                        <div key={student.id} onClick={() => onSelectStudent && onSelectStudent(student)} className="flex items-center justify-between p-2 hover:bg-gray-50 dark:hover:bg-[#282a2c] rounded-lg transition-colors cursor-pointer group">
                             <div className="flex items-center gap-3">
                                 <div className="w-8 h-8 rounded-full bg-red-100 dark:bg-red-900/20 text-red-600 flex items-center justify-center">
                                     <User size={14} />

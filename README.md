@@ -33,6 +33,13 @@
 
 ---
 
+*   **🤖 AI Personalization Engine (Jan 31, 2026):**
+    *   **Predictive Insights:** Analyzes student behavior (logins, progress, activity) to identify "at-risk" patterns.
+    *   **Student Coach:** Offers personalized study tips and encouragement ("Focus on Java basics") directly on the dashboard.
+    *   **Teacher Risk Zone:** Dedicated module for teachers to spot struggling students, view deep AI analysis, and take immediate action via the contact modal.
+    *   **Privacy-First:** Students see coaching advice; Teachers see risk rationale.
+    *   **JSON Recursion Fix:** Improved backend stability by eliminating infinite loops in course data serialization.
+
 *   **🤖 Generative Course Creation - AI-kursgenerator (Jan 31, 2026):**
     *   **One-Click Course Creation:** Upload a course syllabus (PDF) and let AI generate modules, lessons, summaries, and quizzes automatically.
     *   **Automated Date Extraction:** AI intelligently identifies and extracts course start/end dates from the uploaded document.

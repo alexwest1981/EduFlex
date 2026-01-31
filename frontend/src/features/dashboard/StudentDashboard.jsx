@@ -21,7 +21,7 @@ import WidgetWrapper from './components/WidgetWrapper';
 // --- SHARED ---
 import { useDashboardWidgets } from '../../hooks/useDashboardWidgets';
 import DashboardCustomizer from '../../components/dashboard/DashboardCustomizer';
-import AdaptiveLearningWidget from '../../components/dashboard/AdaptiveLearningWidget';
+import AIPersonalizationWidget from './widgets/AIPersonalizationWidget';
 
 const StudentDashboard = ({ currentUser }) => {
     const { t } = useTranslation();
@@ -43,7 +43,8 @@ const StudentDashboard = ({ currentUser }) => {
         sidebar: true,
         dailyChallenges: true,
         calendar: true,
-        achievements: true
+        achievements: true,
+        aiInsights: true
     });
 
     const widgetLabels = {
@@ -53,7 +54,8 @@ const StudentDashboard = ({ currentUser }) => {
         sidebar: t('dashboard.widgets.tasks'),
         dailyChallenges: t('dashboard.widgets.daily_challenges'),
         calendar: t('dashboard.widgets.calendar'),
-        achievements: t('dashboard.widgets.achievements')
+        achievements: t('dashboard.widgets.achievements'),
+        aiInsights: t('dashboard.widgets.ai_personalization')
     };
 
     useEffect(() => {
@@ -161,7 +163,11 @@ const StudentDashboard = ({ currentUser }) => {
                     {/* LEFT COLUMN (Content) */}
                     <div className="lg:col-span-2 space-y-6">
 
-                        <AdaptiveLearningWidget />
+                        {widgets.aiInsights && (
+                            <WidgetWrapper className="h-auto">
+                                <AIPersonalizationWidget variant="compact" />
+                            </WidgetWrapper>
+                        )}
 
                         {widgets.calendar && (
                             <WidgetWrapper className="h-auto">

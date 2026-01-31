@@ -109,6 +109,12 @@ const LandingPage = () => {
             gradient: 'from-purple-600 to-blue-600'
         },
         {
+            icon: <TrendingUp className="w-6 h-6" />,
+            title: 'Prediktiv AI-Analys',
+            description: 'Identifiera riskstudenter innan det är för sent. AI analyserar beteendemönster och ger lärare beslutsstöd samt elever personliga studietips.',
+            gradient: 'from-red-500 to-pink-600'
+        },
+        {
             icon: <Globe className="w-6 h-6" />,
             title: 'LTI 1.3 Core',
             description: 'Fullt verifierat stöd för OIDC-lansering. Sömlös integration med Canvas, Moodle och Blackboard för säker autentisering.',

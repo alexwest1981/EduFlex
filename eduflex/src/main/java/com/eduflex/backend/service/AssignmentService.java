@@ -30,18 +30,21 @@ public class AssignmentService {
     private final UserRepository userRepository;
     private final com.eduflex.backend.service.GamificationService gamificationService;
     private final com.eduflex.backend.service.AchievementService achievementService;
+    private final com.eduflex.backend.service.StudentActivityService studentActivityService;
     private final Path fileStorageLocation;
 
     public AssignmentService(AssignmentRepository assignmentRepo, SubmissionRepository submissionRepo,
             CourseRepository courseRepo, UserRepository userRepo,
             com.eduflex.backend.service.GamificationService gamificationService,
-            com.eduflex.backend.service.AchievementService achievementService) {
+            com.eduflex.backend.service.AchievementService achievementService,
+            com.eduflex.backend.service.StudentActivityService studentActivityService) {
         this.assignmentRepository = assignmentRepo;
         this.submissionRepository = submissionRepo;
         this.courseRepository = courseRepo;
         this.userRepository = userRepo;
         this.gamificationService = gamificationService;
         this.achievementService = achievementService;
+        this.studentActivityService = studentActivityService;
 
         this.fileStorageLocation = Paths.get("uploads/submissions").toAbsolutePath().normalize();
         try {
@@ -125,6 +128,11 @@ public class AssignmentService {
             }
         }
         Submission saved = submissionRepository.save(submission);
+
+        // LOGGA AKTIVITET FÖR AI
+        studentActivityService.logActivity(studentId, assignment.getCourse().getId(), null,
+                com.eduflex.backend.model.StudentActivityLog.ActivityType.ASSIGNMENT_SUBMISSION,
+                "Lämnade in uppgift: " + assignment.getTitle());
 
         // Trigger Achievement: Submission Count
         try {

@@ -47,36 +47,47 @@ public class Course {
     private String tags; // Comma-separated tags for AI context (e.g. "Math, Algebra, Linear Equations")
 
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private java.util.List<GroupRoom> groupRooms = new java.util.ArrayList<>();
 
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private java.util.List<CourseMaterial> materials = new java.util.ArrayList<>();
 
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private java.util.List<Lesson> lessons = new java.util.ArrayList<>();
 
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private java.util.List<Assignment> assignments = new java.util.ArrayList<>();
 
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private java.util.List<Quiz> quizzes = new java.util.ArrayList<>();
 
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private java.util.List<CalendarEvent> calendarEvents = new java.util.ArrayList<>();
 
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private java.util.List<ScormPackage> scormPackages = new java.util.ArrayList<>();
 
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private java.util.List<ForumCategory> forumCategories = new java.util.ArrayList<>();
 
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private java.util.List<StudentActivityLog> activityLogs = new java.util.ArrayList<>();
 
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private java.util.List<CourseApplication> courseApplications = new java.util.ArrayList<>();
 
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private java.util.List<CourseResult> courseResults = new java.util.ArrayList<>();
 
     public java.util.List<GroupRoom> getGroupRooms() {

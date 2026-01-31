@@ -100,6 +100,8 @@
       "tasks": "Uppgifter & Feedback",
       "daily_challenges": "Dagens Utmaningar",
       "achievements": "Mina Prestationer",
+      "ai_insights": "AI-Insikter",
+      "ai_personalization": "Personliga Studietips",
       "daily_challenges_widget": {
         "title": "Dagens Utmaningar",
         "subtitle": "Slutför för att tjäna XP",
@@ -881,5 +883,18 @@
     "sending": "Skickar...",
     "success_message": "Tack! Vi kontaktar dig inom 24 timmar.",
     "error_message": "Något gick fel. Försök igen eller maila oss direkt."
+  },
+  "ai_personalization": {
+    "title": "AI-Insikter & Rekommendationer",
+    "risk_low": "Låg risk",
+    "risk_medium": "Medelrisk",
+    "risk_high": "Hög risk",
+    "suggested_activities": "Föreslagna aktiviteter",
+    "coaching_advice": "Coachande råd",
+    "update_analysis": "Uppdatera AI-analys",
+    "lesson_type": "Lektion",
+    "practice_type": "Övning",
+    "rationale_prefix": "AI-resonemang:",
+    "no_data": "Inte tillräckligt med data för AI-analys än. Fortsätt arbeta i kurserna!"
   }
 }
