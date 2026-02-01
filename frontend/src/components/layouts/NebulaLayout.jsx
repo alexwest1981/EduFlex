@@ -1,4 +1,3 @@
-```
 import React, { useEffect } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { LayoutDashboard, FileText, User, Settings, LogOut, Layers, Menu, X, Award, Zap, Moon, Sun, Calendar, BookOpen, TrendingUp, Bell, Search, ShoppingBag, MessageSquare, PieChart, HelpCircle, Store, Library, ClipboardList } from 'lucide-react';
@@ -22,7 +21,7 @@ const NebulaLayout = ({ children }) => {
         if (!currentUser?.profilePictureUrl) return null;
         let url = currentUser.profilePictureUrl;
         if (url.includes('minio:9000')) url = url.replace('minio:9000', 'localhost:9000');
-        return url.startsWith('http') ? url : `${ window.location.origin }${ url } `;
+        return url.startsWith('http') ? url : `${window.location.origin}${url} `;
     };
     const profileImgUrl = getProfileUrl();
 
@@ -79,11 +78,10 @@ const NebulaLayout = ({ children }) => {
                         const isActive = location.pathname === item.path || (item.path === '/admin' && location.pathname.startsWith('/enterprise'));
                         return (
                             <NavLink key={item.path} to={item.path} className={`p - 3.5 rounded - 2xl transition - all duration - 300 group
-                                ${
-    isActive
-        ? 'bg-white dark:bg-[#2D2D2D] text-purple-600 dark:text-purple-400 shadow-xl shadow-purple-900/5 scale-110'
-        : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-white/50 dark:hover:bg-white/5'
-} `}>
+                                ${isActive
+                                    ? 'bg-white dark:bg-[#2D2D2D] text-purple-600 dark:text-purple-400 shadow-xl shadow-purple-900/5 scale-110'
+                                    : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-white/50 dark:hover:bg-white/5'
+                                } `}>
                                 {item.icon}
                             </NavLink>
                         );
