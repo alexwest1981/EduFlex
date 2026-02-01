@@ -20,6 +20,7 @@ import com.eduflex.backend.repository.UserRepository;
 @RestController
 @RequestMapping("/api/gamification")
 @CrossOrigin(origins = "*")
+@org.springframework.security.access.prepost.PreAuthorize("isAuthenticated()")
 public class GamificationController {
 
     private final GamificationService gamificationService;
@@ -79,6 +80,7 @@ public class GamificationController {
 
     // Endpoint för att manuellt ge poäng (används av lärare eller admin)
     @PostMapping("/award/{userId}")
+    @org.springframework.security.access.prepost.PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN', 'TEACHER', 'ROLE_TEACHER')")
     public ResponseEntity<User> givePoints(@PathVariable Long userId, @RequestParam int points) {
         return ResponseEntity.ok(gamificationService.addPoints(userId, points));
     }
@@ -144,6 +146,7 @@ public class GamificationController {
      * Admin endpoint: Recalculate XP for all users in the system.
      */
     @PostMapping("/achievements/recalculate-all")
+    @org.springframework.security.access.prepost.PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN')")
     public ResponseEntity<Map<String, Object>> recalculateAllXp() {
         int usersUpdated = achievementService.recalculateAllUsersXp();
         return ResponseEntity.ok(Map.of(

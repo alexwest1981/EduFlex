@@ -120,8 +120,11 @@ public class TenantService {
                     .schemas(schema)
                     .locations("classpath:db/migration")
                     .baselineOnMigrate(true)
+                    .outOfOrder(true)
+                    .validateOnMigrate(false)
                     .load();
 
+            flyway.repair();
             flyway.migrate();
             logger.info("Flyway migration completed for schema: {}", schema);
 

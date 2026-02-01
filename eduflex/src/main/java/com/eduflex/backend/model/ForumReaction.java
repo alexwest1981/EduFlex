@@ -3,13 +3,15 @@ package com.eduflex.backend.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Entity
 @Data
-@NoArgsConstructor
 @Table(name = "forum_reactions")
 public class ForumReaction {
+
+    public ForumReaction() {
+        // Required by Hibernate
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

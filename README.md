@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/images/Logo_text.png" width="600" alt="EduFlex Logo" />
+  <img src="docs/Logo_top.png" width="600" alt="EduFlex Logo" />
 </p>
 
 <h1 align="center">🎓 EduFlex LMS 2.0</h1>
@@ -32,6 +32,13 @@
 </p>
 
 ---
+
+*   **📊 Kursutvärderingar & AI-analys (Feb 1, 2026):**
+    *   **Komplett Utvärderingssystem:** Nytt system för att skapa, hantera och analysera kursutvärderingar. Redesignat gränssnitt för både lärare och studenter.
+    *   **Studentgränssnitt & Notiser:** Mobilvänligt, anonymiserat formulär. Automatiska systemnotiser vid aktivering samt en ny Dashboard-widget ("Din röst är viktig!") för smidig åtkomst.
+    *   **AI-Feedback Analys:** Integrerat med Google Gemini för att automatiskt sammanfatta fritextsvar och identifiera förbättringsområden.
+    *   **Lärarverktyg:** Dashboard för att hantera mallar, aktivera utvärderingar för specifika kurser och se AI-genererade sammanfattningar i realtid.
+    *   **Anonymitet & Säkerhet:** Avancerad hash-teknik för student-ID. Fixat kritiska serialiseringsfel (500 error) och uppdaterat `SecurityConfig` för säker åtkomst till analytics.
 
 *   **⚡ Cloudflare & Automation - Cold Start (Feb 1, 2026):**
     *   **Cold Start Script:** New `cold_start.ps1` script that automates everything from process cleanup and Docker startup to launching Backend/Frontend/Tunnel in separate windows.

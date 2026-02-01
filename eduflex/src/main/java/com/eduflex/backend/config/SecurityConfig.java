@@ -140,7 +140,8 @@ public class SecurityConfig {
                         .requestMatchers("/", "/index.html", "/favicon.ico", "/api/auth/**", "/api/users/register",
                                 "/api/users/generate-usernames",
                                 "/api/settings/**", "/login/**", "/api/tenants/**", "/api/public/**",
-                                "/api/branding/**", "/api/debug/**", "/api/onlyoffice/**")
+                                "/api/branding/**", "/api/debug/**", "/api/onlyoffice/**",
+                                "/api/gamification/config/system")
                         .permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/tenants").permitAll() // Explicitly allow POST
                         .requestMatchers("/api/system/license/**", "/uploads/**", "/api/files/**", "/api/ebooks/**",
@@ -219,6 +220,9 @@ public class SecurityConfig {
                         .hasAnyAuthority("ADMIN", "ROLE_ADMIN", "TEACHER", "ROLE_TEACHER")
 
                         // 7. Analytics endpoints
+                        .requestMatchers("/api/analytics/my-status", "/api/analytics/student/**",
+                                "/api/analytics/heatmap")
+                        .authenticated()
                         .requestMatchers("/api/analytics/**")
                         .hasAnyAuthority("ADMIN", "ROLE_ADMIN", "TEACHER", "ROLE_TEACHER")
 

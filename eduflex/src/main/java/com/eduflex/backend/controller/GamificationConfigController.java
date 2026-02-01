@@ -11,6 +11,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/gamification/config")
 @CrossOrigin(origins = "*")
+@org.springframework.security.access.prepost.PreAuthorize("isAuthenticated()")
 public class GamificationConfigController {
 
     @Autowired

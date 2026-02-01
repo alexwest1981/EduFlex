@@ -1,30 +1,18 @@
 -- Migration to support multiple source types in embeddings
 DO $$ 
 BEGIN 
-    -- Rename document_id to source_id if it exists in CURRENT schema
+    -- 1. Rename document_id to source_id if it exists
     IF EXISTS (SELECT 1 FROM information_schema.columns 
                WHERE table_schema = current_schema() 
                AND table_name = 'embeddings' 
                AND column_name = 'document_id') THEN
         ALTER TABLE embeddings RENAME COLUMN document_id TO source_id;
     END IF;
-
-    -- Add source_type if it doesn't exist
-    IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
-                   WHERE table_schema = current_schema() 
-                   AND table_name = 'embeddings' 
-                   AND column_name = 'source_type') THEN
-        ALTER TABLE embeddings ADD COLUMN source_type VARCHAR(20) NOT NULL DEFAULT 'MATERIAL';
-    END IF;
-
-    -- Add source_title if it doesn't exist
-    IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
-                   WHERE table_schema = current_schema() 
-                   AND table_name = 'embeddings' 
-                   AND column_name = 'source_title') THEN
-        ALTER TABLE embeddings ADD COLUMN source_title VARCHAR(255);
-    END IF;
 END $$;
+
+-- 2. Add columns natively (Idempotent)
+ALTER TABLE embeddings ADD COLUMN IF NOT EXISTS source_type VARCHAR(20) NOT NULL DEFAULT 'MATERIAL';
+ALTER TABLE embeddings ADD COLUMN IF NOT EXISTS source_title VARCHAR(255);
 
 -- Drop and recreate indexes safely
 -- Ensure course_id can be null (global or tenant-specific)

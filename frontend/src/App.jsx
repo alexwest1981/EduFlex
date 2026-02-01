@@ -45,6 +45,8 @@ import CommunityHub from './features/community/CommunityHub';
 import CommunityAdmin from './features/community/CommunityAdmin';
 import AIQuizGenerator from './features/ai/AIQuizGenerator';
 import EbookLibrary from './features/library/EbookLibrary';
+import EvaluationManager from './modules/evaluation/EvaluationManager';
+import EvaluationFormView from './modules/evaluation/EvaluationFormView';
 
 // --- PROTECTED ROUTE ---
 const ProtectedRoute = ({ children, roles }) => {
@@ -260,6 +262,23 @@ const AppRoutes = () => {
                 } />
 
                 {/* Community redirects to ResourceBank with community tab */}
+                {/* EVALUATION SYSTEM */}
+                <Route path="/evaluations/manage" element={
+                    <ProtectedRoute roles={['TEACHER', 'ADMIN']}>
+                        <Layout currentUser={currentUser} handleLogout={logout}>
+                            <EvaluationManager />
+                        </Layout>
+                    </ProtectedRoute>
+                } />
+
+                <Route path="/evaluations/student/:instanceId" element={
+                    <ProtectedRoute>
+                        <Layout currentUser={currentUser} handleLogout={logout}>
+                            <EvaluationFormView />
+                        </Layout>
+                    </ProtectedRoute>
+                } />
+
                 <Route path="/community" element={
                     <Navigate to="/resources?tab=community" replace />
                 } />

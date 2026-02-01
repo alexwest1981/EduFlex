@@ -17,6 +17,7 @@ import StudentScheduleAndDeadlinesWidget from './widgets/StudentScheduleAndDeadl
 import StudentGamificationWidget from './widgets/StudentGamificationWidget';
 import AchievementsWidget from './widgets/AchievementsWidget';
 import WidgetWrapper from './components/WidgetWrapper';
+import EvaluationNotificationWidget from './widgets/EvaluationNotificationWidget';
 
 // --- SHARED ---
 import { useDashboardWidgets } from '../../hooks/useDashboardWidgets';
@@ -180,6 +181,8 @@ const StudentDashboard = ({ currentUser }) => {
                                 <StudentAttendanceWidget currentUser={currentUser} settings={{ enabled: true }} />
                             </WidgetWrapper>
                         )}
+
+                        <EvaluationNotificationWidget />
 
                         {widgets.courses && (
                             <StudentCourseGrid courses={myCourses} navigate={navigate} />

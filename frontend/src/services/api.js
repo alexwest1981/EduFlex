@@ -626,6 +626,14 @@ export const api = {
         claimChallenge: (challengeId) => fetch(`${API_BASE}/gamification/challenges/${challengeId}/claim`, { method: 'POST', headers: getHeaders() }).then(handleResponse),
         getStreak: (userId) => fetch(`${API_BASE}/gamification/streak/login/${userId}`, { headers: getHeaders() }).then(handleResponse),
     },
+    evaluations: {
+        getMyActive: () => fetch(`${API_BASE}/evaluations/my-active`, { headers: getHeaders() }).then(handleResponse),
+        submit: (instanceId, answers) => fetch(`${API_BASE}/evaluations/instance/${instanceId}/submit`, {
+            method: 'POST',
+            headers: getHeaders(),
+            body: JSON.stringify(answers)
+        }).then(handleResponse),
+    },
     support: {
         createTicket: (data) => fetch(`${API_BASE}/support/tickets`, {
             method: 'POST',

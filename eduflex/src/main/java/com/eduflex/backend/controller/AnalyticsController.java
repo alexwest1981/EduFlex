@@ -14,7 +14,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/analytics")
-@PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN', 'TEACHER', 'ROLE_TEACHER')")
 public class AnalyticsController {
 
     private final AnalyticsService analyticsService;
@@ -24,28 +23,33 @@ public class AnalyticsController {
     }
 
     @GetMapping("/overview")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN', 'TEACHER', 'ROLE_TEACHER')")
     public ResponseEntity<Map<String, Object>> getOverview(
             @RequestParam(required = false, defaultValue = "month") String range) {
         return ResponseEntity.ok(analyticsService.getSystemOverview(range));
     }
 
     @GetMapping("/growth")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN', 'TEACHER', 'ROLE_TEACHER')")
     public ResponseEntity<List<Map<String, Object>>> getGrowth(
             @RequestParam(required = false, defaultValue = "month") String range) {
         return ResponseEntity.ok(analyticsService.getUserGrowth(range));
     }
 
     @GetMapping("/engagement")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN', 'TEACHER', 'ROLE_TEACHER')")
     public ResponseEntity<Map<String, Object>> getEngagement() {
         return ResponseEntity.ok(analyticsService.getEngagementStats());
     }
 
     @GetMapping("/students")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN', 'TEACHER', 'ROLE_TEACHER')")
     public ResponseEntity<List<Map<String, Object>>> getStudentInsights() {
         return ResponseEntity.ok(analyticsService.getStudentInsights());
     }
 
     @GetMapping("/csn-report")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN', 'TEACHER', 'ROLE_TEACHER')")
     public ResponseEntity<List<Map<String, Object>>> getCSNReport() {
         // Enbart PRINCIPAL/ADMIN borde nå denna
         return ResponseEntity.ok(analyticsService.getCSNReport());
@@ -67,38 +71,45 @@ public class AnalyticsController {
     // --- NEW ENDPOINTS FOR DASHBOARD ---
 
     @GetMapping("/activity-trend")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN', 'TEACHER', 'ROLE_TEACHER')")
     public ResponseEntity<List<Map<String, Object>>> getActivityTrend(
             @RequestParam(required = false, defaultValue = "30d") String range) {
         return ResponseEntity.ok(analyticsService.getActivityTrend(range));
     }
 
     @GetMapping("/course-performance")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN', 'TEACHER', 'ROLE_TEACHER')")
     public ResponseEntity<List<Map<String, Object>>> getCoursePerformance() {
         return ResponseEntity.ok(analyticsService.getCoursePerformance());
     }
 
     @GetMapping("/at-risk-students")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN', 'TEACHER', 'ROLE_TEACHER')")
     public ResponseEntity<List<Map<String, Object>>> getAtRiskStudents() {
         return ResponseEntity.ok(analyticsService.getAtRiskStudents());
     }
 
     @GetMapping("/heatmap")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Map<String, Integer>> getActivityHeatmap(
             @RequestParam(required = false) Long userId) {
         return ResponseEntity.ok(analyticsService.getActivityHeatmap(userId));
     }
 
     @GetMapping("/drop-off/{courseId}")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN', 'TEACHER', 'ROLE_TEACHER')")
     public ResponseEntity<List<Map<String, Object>>> getCourseDropOff(@PathVariable Long courseId) {
         return ResponseEntity.ok(analyticsService.getCourseDropOff(courseId));
     }
 
     @GetMapping("/course/{courseId}/completion-summary")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN', 'TEACHER', 'ROLE_TEACHER')")
     public ResponseEntity<List<Map<String, Object>>> getCourseCompletionSummary(@PathVariable Long courseId) {
         return ResponseEntity.ok(analyticsService.getCourseCompletionSummary(courseId));
     }
 
     @GetMapping("/course/{courseId}/item-details")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN', 'TEACHER', 'ROLE_TEACHER')")
     public ResponseEntity<List<Map<String, Object>>> getCourseItemDetails(
             @PathVariable Long courseId,
             @RequestParam Long itemId,
