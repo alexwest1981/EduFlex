@@ -601,7 +601,8 @@
     "classroom_section": "Digitalt Klassrum",
     "classroom_link": "Möteslänk",
     "exam_link": "Länk till Tentarum",
-    "create_btn": "Skapa"
+    "create_btn": "Skapa",
+    "go_to_course": "Gå till kurs"
   },
   "analytics": {
     "title": "Systeminsikter",

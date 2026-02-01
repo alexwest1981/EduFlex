@@ -146,7 +146,7 @@ public class MessageService {
                 .collect(Collectors.toList());
 
         for (User admin : admins) {
-            sendMessage(null, admin.getId(),
+            sendMessage(admin.getId(), admin.getId(),
                     "SYSTEMFEL: " + (report.getUrl() != null ? report.getUrl() : "Okänd URL"),
                     "Källa: " + report.getUrl() + "\nMeddelande: " + report.getMessage() + "\nStack: "
                             + report.getStack(),

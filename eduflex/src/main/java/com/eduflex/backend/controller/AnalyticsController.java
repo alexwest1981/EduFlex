@@ -92,4 +92,17 @@ public class AnalyticsController {
     public ResponseEntity<List<Map<String, Object>>> getCourseDropOff(@PathVariable Long courseId) {
         return ResponseEntity.ok(analyticsService.getCourseDropOff(courseId));
     }
+
+    @GetMapping("/course/{courseId}/completion-summary")
+    public ResponseEntity<List<Map<String, Object>>> getCourseCompletionSummary(@PathVariable Long courseId) {
+        return ResponseEntity.ok(analyticsService.getCourseCompletionSummary(courseId));
+    }
+
+    @GetMapping("/course/{courseId}/item-details")
+    public ResponseEntity<List<Map<String, Object>>> getCourseItemDetails(
+            @PathVariable Long courseId,
+            @RequestParam Long itemId,
+            @RequestParam String type) {
+        return ResponseEntity.ok(analyticsService.getCourseItemDetails(courseId, itemId, type));
+    }
 }

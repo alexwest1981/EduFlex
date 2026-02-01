@@ -148,6 +148,7 @@ public class SecurityConfig {
                                 "/h2-console/**",
                                 "/ws/**",
                                 "/ws-log/**",
+                                "/ws-forum/**",
                                 "/actuator/**", "/lti/**", "/api/lti/**", "/error",
                                 "/web-apps/**", "/src/**", "/assets/**", // Allow OnlyOffice and Frontend assets
                                 "/@vite/**", "/@fs/**", "/@id/**", "/node_modules/**", // Vite Dev Mode assets
@@ -217,7 +218,11 @@ public class SecurityConfig {
                         .requestMatchers("/api/ai-course/**")
                         .hasAnyAuthority("ADMIN", "ROLE_ADMIN", "TEACHER", "ROLE_TEACHER")
 
-                        // 7. Module management endpoints
+                        // 7. Analytics endpoints
+                        .requestMatchers("/api/analytics/**")
+                        .hasAnyAuthority("ADMIN", "ROLE_ADMIN", "TEACHER", "ROLE_TEACHER")
+
+                        // 8. Module management endpoints
                         .requestMatchers(HttpMethod.GET, "/api/modules").authenticated()
                         .requestMatchers(HttpMethod.PUT, "/api/modules/**")
                         .hasAnyAuthority("ADMIN", "ROLE_ADMIN")

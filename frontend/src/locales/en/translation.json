@@ -27,7 +27,9 @@
     "online_friends": "Online Friends",
     "today": "Today",
     "tomorrow": "Tomorrow",
-    "all": "All"
+    "all": "All",
+    "light_mode": "Bright location",
+    "dark_mode": "Dark mode"
   },
   "sidebar": {
     "dashboard": "Dashboard",
@@ -43,7 +45,8 @@
     "my_courses": "My Courses",
     "ebooks": "E-books",
     "system": "System",
-    "ai_quiz": "AI Quiz"
+    "ai_quiz": "AI Quiz",
+    "support": "Support & Contact"
   },
   "library": {
     "title": "Library",
@@ -104,7 +107,9 @@
         "empty": "No challenges available yet",
         "completed": "✓ Done",
         "reset_in": "New challenges in {{hours}}h {{minutes}}m"
-      }
+      },
+      "ai_insights": "AI insights",
+      "ai_personalization": "Personalised study tips"
     },
     "my_courses": "My Courses",
     "files": "Files",
@@ -750,7 +755,8 @@
     "classroom_section": "Digital Classroom",
     "classroom_link": "Meeting Link",
     "exam_link": "Exam Room Link",
-    "create_btn": "Create"
+    "create_btn": "Create",
+    "go_to_course": "Go to Course"
   },
   "analytics": {
     "title": "System Insights",
@@ -892,7 +898,8 @@
     "invoices": "Invoices",
     "subscription_plans": "Subscription Plans",
     "payment_settings": "Payment Settings",
-    "promo_codes": "Promo Codes"
+    "promo_codes": "Promo Codes",
+    "tickets": "Issues"
   },
   "landing": {
     "nav": {
@@ -937,20 +944,32 @@
       "skolverket": {
         "title": "Skolverket Connected",
         "desc": "Direct integration with the Swedish National Curriculum and grading criteria (E-A)."
+      },
+      "ai_creator": {
+        "title": "AI Course Creator",
+        "desc": "Upload a study guide (PDF) and let Gemini AI create a complete course with lessons, dates and smart codes in under 60 seconds. Now with automatic database synchronisation."
+      },
+      "cascading_deletes": {
+        "title": "Cascade cancellation",
+        "desc": "Seamless management of course content. When a course is deleted, all associated materials and lessons are automatically purged to keep the database clean."
+      },
+      "lti_ready": {
+        "title": "LTI 1.3 Ready",
+        "desc": "Fully verified support for OIDC launches. Seamless integration with external platforms like Canvas and Moodle."
       }
     },
     "architecture": {
       "badge": "Built for Scale",
       "title": "Enterprise-Grade Architecture",
       "powered_by": "Powered by Industry Standards",
-      "items": [
-        "Spring Boot 3.4 Microservices",
-        "PostgreSQL with Schema-per-Tenant",
-        "Redis Caching Layer",
-        "MinIO S3 Compatible Storage",
-        "Keycloak SSO Identity Management",
-        "Kubernetes & Helm Charts"
-      ]
+      "items": {
+        "0": "Spring Boot 3.4 Microservices",
+        "1": "PostgreSQL with Schema-per-Tenant",
+        "2": "Redis Caching Layer",
+        "3": "MinIO S3 Compatible Storage",
+        "4": "Keycloak SSO Identity Management",
+        "5": "Kubernetes & Helm Charts"
+      }
     },
     "pricing": {
       "title": "Simple, Transparent Pricing",
@@ -958,37 +977,37 @@
       "basic": {
         "name": "Basic",
         "price": "990 SEK / month",
-        "features": [
-          "Up to 100 users",
-          "Core Course Management",
-          "Basic Reporting",
-          "Community Support"
-        ],
+        "features": {
+          "0": "Up to 100 users",
+          "1": "Core Course Management",
+          "2": "Basic Reporting",
+          "3": "Community Support"
+        },
         "cta": "Get Started"
       },
       "pro": {
         "name": "Pro",
         "price": "2 990 SEK / month",
-        "features": [
-          "Up to 500 users",
-          "Full Gamification Suite",
-          "Skolverket Integration",
-          "CSN Export",
-          "Priority Support"
-        ],
+        "features": {
+          "0": "Up to 500 users",
+          "1": "Full Gamification Suite",
+          "2": "Skolverket Integration",
+          "3": "CSN Export",
+          "4": "Priority Support"
+        },
         "cta": "Request Demo",
         "badge": "Most Popular"
       },
       "enterprise": {
         "name": "Enterprise",
         "price": "Contact Us",
-        "features": [
-          "Unlimited Users",
-          "White-label Branding",
-          "Keycloak SSO",
-          "SLA 99.99%",
-          "Dedicated Infrastructure"
-        ],
+        "features": {
+          "0": "Unlimited Users",
+          "1": "White-label Branding",
+          "2": "Keycloak SSO",
+          "3": "SLA 99.99%",
+          "4": "Dedicated Infrastructure"
+        },
         "cta": "Contact Sales"
       }
     },
@@ -1027,5 +1046,18 @@
     "sending": "Sending...",
     "success_message": "Thank you! We'll contact you within 24 hours.",
     "error_message": "Something went wrong. Please try again or email us directly."
+  },
+  "ai_personalization": {
+    "title": "AI Insights & Recommendations",
+    "risk_low": "Low risk",
+    "risk_medium": "Medium risk",
+    "risk_high": "High risk",
+    "suggested_activities": "Proposed activities",
+    "coaching_advice": "Coaching advice",
+    "update_analysis": "Update AI analysis",
+    "lesson_type": "lesson",
+    "practice_type": "Exercise",
+    "rationale_prefix": "AI reasoning:",
+    "no_data": "Not enough data for AI analysis yet. Keep working in the courses!"
   }
 }

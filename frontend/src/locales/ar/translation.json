@@ -19,7 +19,17 @@
     "send": "إرسال",
     "yes": "نعم",
     "no": "لا",
-    "unknown": "مجهول"
+    "unknown": "مجهول",
+    "light_mode": "[MISSING] Ljust läge",
+    "dark_mode": "[MISSING] Mörkt läge",
+    "choose": "[MISSING] Välj...",
+    "optional": "[MISSING] Valfritt",
+    "minimize_menu": "[MISSING] Minimera meny",
+    "expand_menu": "[MISSING] Expandera meny",
+    "online_friends": "[MISSING] Online Vänner",
+    "today": "[MISSING] Idag",
+    "tomorrow": "[MISSING] Imorgon",
+    "all": "[MISSING] Alla"
   },
   "sidebar": {
     "dashboard": "لوحة القيادة",
@@ -29,7 +39,14 @@
     "documents": "المستندات",
     "catalog": "كتالوج الدورة",
     "calendar": "التقويم",
-    "resource_bank": "بنك الموارد"
+    "resource_bank": "بنك الموارد",
+    "library": "[MISSING] Bibliotek",
+    "analytics": "[MISSING] Analyser & Insikter",
+    "support": "[MISSING] Support & Kontakt",
+    "my_courses": "[MISSING] Mina kurser",
+    "ebooks": "[MISSING] E-böcker",
+    "system": "[MISSING] System",
+    "ai_quiz": "[MISSING] AI Quiz"
   },
   "dashboard": {
     "welcome": "مرحباً، {{name}}!",
@@ -86,7 +103,82 @@
     "closed": "مغلق",
     "no_match": "لا توجد نتائج.",
     "showing_x_of_y": "عرض {{count}} من {{total}} دورات",
-    "manage": "إدارة"
+    "manage": "إدارة",
+    "welcome_back": "[MISSING] Välkommen tillbaka,",
+    "tabs": {
+      "overview": "[MISSING] Översikt",
+      "communication": "[MISSING] Kommunikation"
+    },
+    "widgets": {
+      "stats": "[MISSING] Statistik",
+      "calendar": "[MISSING] Kalender & Schema",
+      "recent_users": "[MISSING] Senaste Användare",
+      "recent_docs": "[MISSING] Nyligen Uppladdat",
+      "messages": "[MISSING] Senaste Meddelanden",
+      "online_friends": "[MISSING] Online Vänner",
+      "tickets": "[MISSING] Supportärenden",
+      "gamification": "[MISSING] Gamification Status",
+      "attendance": "[MISSING] Min Närvaro",
+      "my_courses": "[MISSING] Mina Kurser",
+      "tasks": "[MISSING] Uppgifter & Feedback",
+      "daily_challenges": "[MISSING] Dagens Utmaningar",
+      "achievements": "[MISSING] Mina Prestationer",
+      "ai_insights": "[MISSING] AI-Insikter",
+      "ai_personalization": "[MISSING] Personliga Studietips",
+      "daily_challenges_widget": {
+        "title": "[MISSING] Dagens Utmaningar",
+        "subtitle": "[MISSING] Slutför för att tjäna XP",
+        "days": "[MISSING] {{count}} dagar",
+        "empty": "[MISSING] Inga utmaningar tillgängliga än",
+        "completed": "[MISSING] ✓ Klar",
+        "reset_in": "[MISSING] Nya utmaningar om {{hours}}h {{minutes}}m"
+      }
+    },
+    "total_users": "[MISSING] Totalt Användare",
+    "realtime_update_notice": "[MISSING] Data uppdateras i realtid.",
+    "new_messages": "[MISSING] Nya Meddelanden",
+    "go_to_inbox": "[MISSING] Gå till inkorgen",
+    "students": "[MISSING] Studenter",
+    "teachers": "[MISSING] Lärare",
+    "admins": "[MISSING] Admins",
+    "mentors": "[MISSING] Mentorer",
+    "principals": "[MISSING] Rektorer",
+    "new_course": "[MISSING] Ny Kurs",
+    "search_course": "[MISSING] Sök kurs...",
+    "table": {
+      "status": "[MISSING] Status",
+      "code": "[MISSING] Kod",
+      "name": "[MISSING] Namn",
+      "date": "[MISSING] Datum",
+      "action": "[MISSING] Åtgärd",
+      "user": "[MISSING] Användare",
+      "email": "[MISSING] Email",
+      "role": "[MISSING] Roll"
+    },
+    "course_color": "[MISSING] Kursfärg",
+    "edit_course": "[MISSING] Redigera kurs",
+    "delete_course": "[MISSING] Ta bort kurs",
+    "recent_users": "[MISSING] Senaste användare",
+    "new": "[MISSING] Ny",
+    "no_new_users": "[MISSING] Inga nya användare registrerade.",
+    "recent_uploads": "[MISSING] Senaste uppladdningar",
+    "unknown_file": "[MISSING] Okänd fil",
+    "unknown_size": "[MISSING] Okänd storlek",
+    "unknown_date": "[MISSING] Okänt datum",
+    "no_files_uploaded": "[MISSING] Inga filer uppladdade än.",
+    "user_registry": "[MISSING] Användarregister",
+    "new_user": "[MISSING] Ny Användare",
+    "search_user": "[MISSING] Sök användare...",
+    "all_roles": "[MISSING] Alla Roller",
+    "active": "[MISSING] Aktiv",
+    "edit_user": "[MISSING] Redigera användare",
+    "delete_user": "[MISSING] Ta bort användare",
+    "feedback": {
+      "new": "[MISSING] Ny Feedback",
+      "course": "[MISSING] Kurs: {{name}}",
+      "praise": "[MISSING] Bra jobbat!",
+      "details": "[MISSING] Visa detaljer"
+    }
   },
   "chat": {
     "title": "الدردشة والدعم",
@@ -126,7 +218,23 @@
     "absent": "غائب",
     "description": "الوصف",
     "no_description": "لا يوجد وصف.",
-    "note": "ملاحظة"
+    "note": "ملاحظة",
+    "manage_attendance": "[MISSING] Hantera Närvaro",
+    "new_event": "[MISSING] Nytt Tillfälle",
+    "create_event_title": "[MISSING] Skapa nytt tillfälle",
+    "event_title": "[MISSING] Titel",
+    "event_start": "[MISSING] Start",
+    "event_end": "[MISSING] Slut",
+    "event_type": "[MISSING] Typ",
+    "type_lesson": "[MISSING] Lektion",
+    "type_workshop": "[MISSING] Workshop",
+    "type_exam": "[MISSING] Prov",
+    "type_other": "[MISSING] Annat",
+    "create_btn": "[MISSING] Skapa",
+    "save_attendance": "[MISSING] Spara Närvaro",
+    "saved_success": "[MISSING] Närvaro sparad!",
+    "save_error": "[MISSING] Fel vid sparande",
+    "create_error": "[MISSING] Kunde inte skapa event"
   },
   "assessment": {
     "title": "التقييم والنتائج",
@@ -147,7 +255,10 @@
     "comment_label": "تعليق (اختياري)",
     "comment_placeholder": "رأيك...",
     "submit_btn": "إرسال",
-    "validation_error": "يرجى تقييم جميع الأسئلة."
+    "validation_error": "يرجى تقييم جميع الأسئلة.",
+    "manage_btn": "[MISSING] Hantera Utvärdering",
+    "saved_success": "[MISSING] Utvärdering sparad!",
+    "save_error": "[MISSING] Kunde inte spara utvärderingen."
   },
   "license": {
     "locked_title": "النظام مقفل",
@@ -226,7 +337,18 @@
     "edit_course_settings": "تعديل إعدادات الدورة",
     "course_name": "اسم الدورة",
     "course_code": "رمز الدورة",
-    "color_theme": "سمة اللون"
+    "color_theme": "سمة اللون",
+    "register_new_user": "[MISSING] Registrera ny användare",
+    "edit_user": "[MISSING] Redigera användare",
+    "edit_course": "[MISSING] Redigera kurs",
+    "base_on_skolverket": "[MISSING] Baserad på Skolverkskurs",
+    "choose_skolverket_course": "[MISSING] Välj Skolverkskurs",
+    "max_seats": "[MISSING] Max platser",
+    "tags": "[MISSING] Taggar",
+    "digital_classroom": "[MISSING] Digitalt Klassrum (Frivilligt)",
+    "choose_platform": "[MISSING] Välj plattform...",
+    "paste_link": "[MISSING] Klistra in länk...",
+    "choose_teacher": "[MISSING] Välj lärare..."
   },
   "catalog": {
     "title": "كتالوج الدورات",
@@ -290,7 +412,23 @@
     "no_material": "لا توجد مواد.",
     "open_link": "فتح الرابط",
     "read": "مقروء",
-    "mark_read": "تحديد كمقروء"
+    "mark_read": "تحديد كمقروء",
+    "scorm": "[MISSING] Interaktiva Moduler",
+    "kursinformation": "[MISSING] Kursinformation",
+    "attendance": "[MISSING] Närvaro",
+    "connect_classroom": "[MISSING] Anslut till Klassrum",
+    "evaluate_course": "[MISSING] Utvärdera Kurs",
+    "feedback_thanks": "[MISSING] Tack för din feedback!",
+    "error_occurred": "[MISSING] Ett fel uppstod:",
+    "result_passed": "[MISSING] Godkänd",
+    "result_failed": "[MISSING] Underkänd",
+    "result_pending": "[MISSING] Ej bedömd",
+    "mark_passed": "[MISSING] Godkänn",
+    "mark_failed": "[MISSING] Underkänn",
+    "certificate": "[MISSING] Certifikat",
+    "course_completed": "[MISSING] Kursen avslutad",
+    "view_certificate": "[MISSING] Visa Certifikat",
+    "claim_certificate": "[MISSING] Hämta Certifikat"
   },
   "assignments": {
     "header": "المهام",
@@ -410,7 +548,8 @@
     "ongoing_course": "دورة جارية",
     "upcoming_event": "حدث قادم",
     "no_events": "لا توجد أحداث مجدولة.",
-    "new_message": "رسالة جديدة"
+    "new_message": "رسالة جديدة",
+    "course_start": "[MISSING] Kursstart: {{name}}"
   },
   "shortcuts": {
     "calendar": "الذهاب إلى التقويم",
@@ -425,6 +564,67 @@
       "view_all": "عرض الكل",
       "empty": "لا توجد رسائل جديدة.",
       "from": "من"
+    },
+    "online_friends": {
+      "title": "[MISSING] Online Vänner",
+      "x_online": "[MISSING] {{count}} online",
+      "empty": "[MISSING] Inga vänner online just nu.",
+      "profile": "[MISSING] Profil",
+      "view_all": "[MISSING] Visa alla vänner"
+    },
+    "live_lessons": {
+      "title": "[MISSING] Live-lektioner",
+      "subtitle": "[MISSING] Kommande videomöten",
+      "soon": "[MISSING] Snart",
+      "host": "[MISSING] Värd",
+      "join": "[MISSING] Gå med",
+      "prepare": "[MISSING] Förbered",
+      "view": "[MISSING] Visa",
+      "see_all_calendar": "[MISSING] Se alla i kalendern",
+      "error_load": "[MISSING] Kunde inte ladda lektioner",
+      "error_join": "[MISSING] Kunde inte ansluta till lektion"
+    },
+    "tickets": {
+      "active": "[MISSING] Aktiva Supportärenden",
+      "critical": "[MISSING] Kritiska",
+      "high": "[MISSING] Hög prioritet",
+      "medium": "[MISSING] Medium prioritet",
+      "low": "[MISSING] Låg prioritet",
+      "open": "[MISSING] Öppna ärenden",
+      "empty": "[MISSING] Inga öppna ärenden just nu."
+    },
+    "student_progress": {
+      "title": "[MISSING] Mina Kursresultat",
+      "on_track": "[MISSING] Ligger bra till",
+      "at_risk": "[MISSING] Varning",
+      "assignments": "[MISSING] Uppgifter",
+      "quizzes": "[MISSING] Quiz",
+      "detailed_overview": "[MISSING] Detaljerad översikt",
+      "latest_results": "[MISSING] Senaste Resultat",
+      "no_results": "[MISSING] Inga resultat än.",
+      "catch_up": "[MISSING] Se till att komma ikapp!",
+      "go_to_course": "[MISSING] Gå till kursen"
+    },
+    "attendance_widget": {
+      "title": "[MISSING] Min Digitala Närvaro",
+      "activity_level": "[MISSING] Aktivitetsnivå",
+      "registered_time": "[MISSING] Registrerad tid",
+      "goal_week": "[MISSING] Mål (Vecka)",
+      "low_warning": "[MISSING] Obs! Din närvaro är låg. Kontakta din mentor."
+    },
+    "schedule": {
+      "title": "[MISSING] Dagens & Veckans Schema",
+      "loading": "[MISSING] Laddar schema...",
+      "campus": "[MISSING] Campus",
+      "online": "[MISSING] Online",
+      "connect": "[MISSING] Anslut",
+      "empty": "[MISSING] Inga lektioner idag",
+      "view_full": "[MISSING] Se hela schemat",
+      "upcoming_submissions": "[MISSING] Kommande Inlämningar",
+      "go_to_task": "[MISSING] Gå till uppgift",
+      "no_deadlines": "[MISSING] Inga kommande deadlines",
+      "view_all_count": "[MISSING] Visa alla ({{count}})",
+      "room_missing": "[MISSING] Sal saknas"
     }
   },
   "course_modal": {
@@ -440,7 +640,8 @@
     "classroom_section": "الفصل الرقمي",
     "classroom_link": "رابط الاجتماع",
     "exam_link": "رابط قاعة الاختبار",
-    "create_btn": "إنشاء"
+    "create_btn": "إنشاء",
+    "go_to_course": "[MISSING] Gå till kurs"
   },
   "analytics": {
     "title": "رؤى المستثمر",
@@ -582,6 +783,266 @@
     "invoices": "الفواتير",
     "subscription_plans": "خطط الاشتراك",
     "payment_settings": "إعدادات الدفع",
-    "promo_codes": "الرموز الترويجية"
+    "promo_codes": "الرموز الترويجية",
+    "tickets": "[MISSING] Ärenden"
+  },
+  "library": {
+    "title": "[MISSING] Bibliotek",
+    "subtitle": "[MISSING] Utforska och läs e-böcker",
+    "search_placeholder": "[MISSING] Sök efter titel eller författare...",
+    "categories": "[MISSING] Kategorier",
+    "all_categories": "[MISSING] Alla",
+    "read_book": "[MISSING] Läs bok",
+    "edit_book": "[MISSING] Redigera bok",
+    "delete_book": "[MISSING] Ta bort bok",
+    "upload_book": "[MISSING] Ladda upp ny bok",
+    "no_books_found": "[MISSING] Inga böcker hittades.",
+    "edit_modal_title": "[MISSING] Redigera E-bok",
+    "upload_modal_title": "[MISSING] Ladda upp ny E-bok",
+    "title_label": "[MISSING] Titel",
+    "author_label": "[MISSING] Författare",
+    "category_label": "[MISSING] Kategori",
+    "description_label": "[MISSING] Beskrivning",
+    "save_changes": "[MISSING] Spara ändringar",
+    "upload_btn": "[MISSING] Ladda upp",
+    "language_label": "[MISSING] Språk",
+    "epub_file_label": "[MISSING] EPUB-fil",
+    "cover_image_label": "[MISSING] Omslagsbild",
+    "no_cover": "[MISSING] Inget omslag",
+    "select_file_alert": "[MISSING] Vänligen välj en EPUB-fil",
+    "delete_confirm": "[MISSING] Är du säker på att du vill ta bort denna bok?",
+    "delete_success": "[MISSING] Bok borttagen",
+    "no_books_desc": "[MISSING] Prova att söka på något annat eller ladda upp din första e-bok till biblioteket."
+  },
+  "teacher_widgets": {
+    "active_courses": "[MISSING] Aktiva Kurser",
+    "my_students": "[MISSING] Mina Studenter",
+    "to_grade": "[MISSING] Att Rätta",
+    "applications": "[MISSING] Ansökningar",
+    "risk_zone": "[MISSING] Riskzon",
+    "at_risk_title": "[MISSING] Elever i Farozonen",
+    "students_count": "[MISSING] {{count}} st",
+    "no_at_risk": "[MISSING] Inga elever i riskzonen just nu. 👍",
+    "completion_prefix": "[MISSING] slutfört",
+    "view_all_risk": "[MISSING] Visa alla risk-elever"
+  },
+  "teacher_tables": {
+    "all_graded_title": "[MISSING] Allt är rättat!",
+    "all_graded_desc": "[MISSING] Bra jobbat, inga väntande inlämningar.",
+    "pending_submissions_count": "[MISSING] Väntande inlämningar ({{count}})",
+    "action_required": "[MISSING] Kräver åtgärd",
+    "student": "[MISSING] Student",
+    "assignment": "[MISSING] Uppgift",
+    "course": "[MISSING] Kurs",
+    "submitted": "[MISSING] Inlämnad",
+    "go_to_grading": "[MISSING] Gå till Rättning",
+    "no_pending_applications": "[MISSING] Inga väntande ansökningar just nu.",
+    "applying_to": "[MISSING] Söker till kurs",
+    "date": "[MISSING] Datum",
+    "decision": "[MISSING] Beslut",
+    "approve": "[MISSING] Godkänn",
+    "reject": "[MISSING] Avslå",
+    "never": "[MISSING] Aldrig",
+    "days_ago": "[MISSING] {{count}} dagar sedan",
+    "contact": "[MISSING] Kontakta",
+    "admitted_msg": "[MISSING] Student antagen!",
+    "rejected_msg": "[MISSING] Ansökan avslagen.",
+    "error_msg": "[MISSING] Något gick fel.",
+    "unknown_student": "[MISSING] Okänd"
+  },
+  "student_contact": {
+    "title": "[MISSING] Kontakta Student",
+    "subtitle": "[MISSING] Rapportera och följ upp med {{name}}",
+    "risk_factor": "[MISSING] Identifierad Riskfaktor",
+    "never_logged_in": "[MISSING] Studenten har aldrig loggat in på plattformen.",
+    "inactive_days": "[MISSING] Studenten har varit inaktiv i {{count}} dagar.",
+    "no_risk": "[MISSING] Ingen kritisk risk identifierad för tillfället, men uppföljning rekommenderas.",
+    "subject_label": "[MISSING] Ämne (Baserat på risk)",
+    "auto_generated_label": "[MISSING] Automatiskt Genererat Underlag",
+    "auto_generated_desc": "[MISSING] Detta underlag baseras på systemets data och skickas med i mailet.",
+    "teacher_notes_label": "[MISSING] Dina kommentarer / Åtgärdsplan",
+    "teacher_notes_placeholder": "[MISSING] Skriv ett personligt meddelande, instruktioner eller specifika åtgärder som studenten behöver göra...",
+    "report_and_send": "[MISSING] Rapportera & Skicka",
+    "sending": "[MISSING] Skickar...",
+    "sent_success": "[MISSING] Meddelande skickat!",
+    "send_error": "[MISSING] Kunde inte skicka meddelandet.",
+    "divider": "[MISSING] Lärarens kommentar:",
+    "regards": "[MISSING] Med vänlig hälsning,",
+    "templates": {
+      "follow_up_subject": "[MISSING] Uppföljning av dina studier",
+      "no_login_subject": "[MISSING] Viktigt: Du har inte loggat in ännu",
+      "no_login_body": "[MISSING] Jag ser att du ännu inte har loggat in på EduFlex. För att kunna tillgodogöra dig kursen är det viktigt att du kommer igång snart.",
+      "need_help_login": "[MISSING] Behöver du hjälp med inloggningen eller att hitta rätt material?",
+      "warning_inactivity_subject": "[MISSING] Varning: Hög frånvaro och inaktivitet",
+      "warning_inactivity_body": "[MISSING] Jag ser att du inte har varit aktiv på EduFlex på {{count}} dagar. Detta är oroande och påverkar dina studier negativt.",
+      "review_plan": "[MISSING] Vi behöver se över din studieplan för att säkerställa att du hinner med alla moment.",
+      "follow_up_absence_subject": "[MISSING] Uppföljning: Frånvaro",
+      "follow_up_absence_body": "[MISSING] Jag noterade att det var {{count}} dagar sedan du senast var aktiv.",
+      "reach_out": "[MISSING] Hör av dig om du behöver hjälp med något specifikt moment.",
+      "generic_body": "[MISSING] Jag vill stämma av hur det går för dig i kursen."
+    }
+  },
+  "teacher_modals": {
+    "tags_placeholder": "[MISSING] Taggar (separera med komma, t.ex. AI, Matematik, Algebra)",
+    "group_rooms": "[MISSING] Grupprum",
+    "room_name_placeholder": "[MISSING] Namn",
+    "link": "[MISSING] Länk",
+    "add_room": "[MISSING] + Lägg till grupprum",
+    "course_color": "[MISSING] Kursfärg",
+    "error_create": "[MISSING] Kunde inte skapa kursen.",
+    "error_update": "[MISSING] Kunde inte uppdatera kursen.",
+    "course_name": "[MISSING] Kursnamn",
+    "course_code": "[MISSING] Kurskod"
+  },
+  "landing": {
+    "nav": {
+      "features": "[MISSING] Funktioner",
+      "architecture": "[MISSING] Arkitektur",
+      "pricing": "[MISSING] Priser",
+      "login": "[MISSING] Logga in",
+      "get_started": "[MISSING] Kom igång"
+    },
+    "hero": {
+      "badge": "[MISSING] v2.0 Nu Tillgänglig",
+      "title_start": "[MISSING] LMS:et som ",
+      "title_highlight": "[MISSING] Studenter Älskar",
+      "subtitle": "[MISSING] EduFlex överbryggar klyftan mellan enterprise-LMS och moderna konsumentappar. Gamifierat, snabbt och vackert lärande för nästa generation.",
+      "cta_trial": "[MISSING] Boka Demo",
+      "cta_docs": "[MISSING] Visa API-dokumentation"
+    },
+    "features": {
+      "badge": "[MISSING] Varför EduFlex?",
+      "title": "[MISSING] Allt du behöver för att driva en modern skola",
+      "subtitle": "[MISSING] Från robusta bedömningsverktyg till revolutionerande AI-stöd - vi har dig täckt.",
+      "ai_creator": {
+        "title": "[MISSING] AI Course Creator",
+        "desc": "[MISSING] Ladda upp en studiehandledning (PDF) och låt Gemini AI skapa en komplett kurs med lektioner, datum och smarta koder på under 60 sekunder. Nu med automatisk databassynkronisering."
+      },
+      "cascading_deletes": {
+        "title": "[MISSING] Kaskadradering",
+        "desc": "[MISSING] Sömlös hantering av kursinnehåll. När en kurs raderas städas allt tillhörande material och lektioner bort automatiskt för att hålla databasen ren."
+      },
+      "lti_ready": {
+        "title": "[MISSING] LTI 1.3 Ready",
+        "desc": "[MISSING] Fullt verifierat stöd för OIDC-lanseringar. Sömlös integration med externa plattformar som Canvas och Moodle."
+      },
+      "gamification": {
+        "title": "[MISSING] Gamification 2.0",
+        "desc": "[MISSING] Inbyggd XP, utmärkelser, nivåer, topplistor och dagliga utmaningar för att öka elevengagemanget."
+      },
+      "multi_tenancy": {
+        "title": "[MISSING] Äkta Multi-Tenancy",
+        "desc": "[MISSING] Fullständig dataisolering med schema-per-tenant-arkitektur. Din data är din."
+      },
+      "analytics": {
+        "title": "[MISSING] Analyser & Insikter",
+        "desc": "[MISSING] Realtidsdashboards för rektorer och lärare. Värmekartor och avhoppsförutsägelse."
+      },
+      "security": {
+        "title": "[MISSING] Enterprise-Säkerhet",
+        "desc": "[MISSING] Rollbaserad åtkomstkontroll (RBAC), granskningsloggning och säker Keycloak SSO-integration."
+      }
+    },
+    "architecture": {
+      "badge": "[MISSING] Byggd för Skalning",
+      "title": "[MISSING] Enterprise-Arkitektur",
+      "powered_by": "[MISSING] Drivs av Branschstandarder",
+      "items": {
+        "0": "[MISSING] Spring Boot 3.4 Mikrotjänster",
+        "1": "[MISSING] PostgreSQL med Schema-per-Tenant",
+        "2": "[MISSING] Redis Caching-lager",
+        "3": "[MISSING] MinIO S3-Kompatibel Lagring",
+        "4": "[MISSING] Keycloak SSO Identitetshantering",
+        "5": "[MISSING] Kubernetes & Helm Charts"
+      }
+    },
+    "pricing": {
+      "title": "[MISSING] Enkel, Transparent Prissättning",
+      "subtitle": "[MISSING] Välj planen som passar din skola.",
+      "basic": {
+        "name": "[MISSING] Basic",
+        "price": "[MISSING] 990 SEK / månad",
+        "features": {
+          "0": "[MISSING] Upp till 100 användare",
+          "1": "[MISSING] Grundläggande Kurshantering",
+          "2": "[MISSING] Enkel Rapportering",
+          "3": "[MISSING] Community Support"
+        },
+        "cta": "[MISSING] Kom igång"
+      },
+      "pro": {
+        "name": "[MISSING] Pro",
+        "price": "[MISSING] 2 990 SEK / månad",
+        "features": {
+          "0": "[MISSING] Upp till 500 användare",
+          "1": "[MISSING] Fullständig Gamification",
+          "2": "[MISSING] Skolverket-Integration",
+          "3": "[MISSING] CSN-Export",
+          "4": "[MISSING] Prioriterad Support"
+        },
+        "cta": "[MISSING] Boka Demo",
+        "badge": "[MISSING] Mest Populär"
+      },
+      "enterprise": {
+        "name": "[MISSING] Enterprise",
+        "price": "[MISSING] Kontakta Oss",
+        "features": {
+          "0": "[MISSING] Obegränsat Antal Användare",
+          "1": "[MISSING] White-label Branding",
+          "2": "[MISSING] Keycloak SSO",
+          "3": "[MISSING] SLA 99.99%",
+          "4": "[MISSING] Dedikerad Infrastruktur"
+        },
+        "cta": "[MISSING] Kontakta Försäljning"
+      }
+    },
+    "footer": {
+      "tagline": "[MISSING] Stärker utbildning med modern teknik. Byggd med ❤️ i Sverige.",
+      "product": "[MISSING] Produkt",
+      "features": "[MISSING] Funktioner",
+      "pricing": "[MISSING] Priser",
+      "roadmap": "[MISSING] Roadmap",
+      "resources": "[MISSING] Resurser",
+      "documentation": "[MISSING] Dokumentation",
+      "api_reference": "[MISSING] API-Referens",
+      "system_status": "[MISSING] Systemstatus",
+      "connect": "[MISSING] Kontakt",
+      "contact_sales": "[MISSING] Kontakta Försäljning",
+      "twitter": "[MISSING] Twitter",
+      "github": "[MISSING] GitHub",
+      "copyright": "[MISSING] © 2026 EduFlex. Alla rättigheter förbehållna.",
+      "developed_by": "[MISSING] Utvecklad av",
+      "fenrir": "[MISSING] Fenrir Studio"
+    }
+  },
+  "contact": {
+    "title": "[MISSING] Boka Demo",
+    "name": "[MISSING] Namn",
+    "name_placeholder": "[MISSING] Ditt namn",
+    "email": "[MISSING] E-post",
+    "email_placeholder": "[MISSING] din@email.se",
+    "organization": "[MISSING] Organisation",
+    "organization_placeholder": "[MISSING] Skolans namn",
+    "phone": "[MISSING] Telefon",
+    "phone_placeholder": "[MISSING] +46 70 123 45 67",
+    "message": "[MISSING] Meddelande",
+    "message_placeholder": "[MISSING] Berätta lite om era behov...",
+    "submit": "[MISSING] Skicka förfrågan",
+    "sending": "[MISSING] Skickar...",
+    "success_message": "[MISSING] Tack! Vi kontaktar dig inom 24 timmar.",
+    "error_message": "[MISSING] Något gick fel. Försök igen eller maila oss direkt."
+  },
+  "ai_personalization": {
+    "title": "[MISSING] AI-Insikter & Rekommendationer",
+    "risk_low": "[MISSING] Låg risk",
+    "risk_medium": "[MISSING] Medelrisk",
+    "risk_high": "[MISSING] Hög risk",
+    "suggested_activities": "[MISSING] Föreslagna aktiviteter",
+    "coaching_advice": "[MISSING] Coachande råd",
+    "update_analysis": "[MISSING] Uppdatera AI-analys",
+    "lesson_type": "[MISSING] Lektion",
+    "practice_type": "[MISSING] Övning",
+    "rationale_prefix": "[MISSING] AI-resonemang:",
+    "no_data": "[MISSING] Inte tillräckligt med data för AI-analys än. Fortsätt arbeta i kurserna!"
   }
 }

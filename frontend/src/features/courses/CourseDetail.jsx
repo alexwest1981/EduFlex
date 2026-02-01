@@ -11,6 +11,8 @@ import { useTranslation } from 'react-i18next';
 import { api } from '../../services/api';
 import SkolverketCourseInfo from '../../components/SkolverketCourseInfo';
 
+import TeacherCourseSummary from '../dashboard/components/teacher/TeacherCourseSummary';
+
 // --- CONTEXT ---
 import { useAppContext } from '../../context/AppContext';
 import { useModules } from '../../context/ModuleContext';
@@ -53,7 +55,10 @@ const CourseDetail = ({ currentUser }) => {
     const modules = [
         {
             key: 'summary',
-            comp: SummaryModule,
+            comp: ({ courseId, isTeacher, currentUser }) => {
+                if (isTeacher) return <TeacherCourseSummary courseId={courseId} />;
+                return <SummaryModule courseId={courseId} currentUser={currentUser} />;
+            },
             meta: { name: 'Sammanfattning' },
             icon: <SummaryIcon size={18} />,
             enabled: true,

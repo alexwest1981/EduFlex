@@ -12,10 +12,10 @@ export const ForumModuleMetadata = {
     permissions: ['READ', 'WRITE']
 };
 
-const ForumModule = ({ courseId, currentUser }) => {
+const ForumModule = (props) => {
     return (
         <div className="animate-in fade-in h-full">
-            <CourseForum courseId={courseId} currentUser={currentUser} />
+            <CourseForum {...props} />
         </div>
     );
 };

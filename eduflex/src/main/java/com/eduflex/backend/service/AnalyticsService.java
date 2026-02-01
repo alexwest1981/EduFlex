@@ -282,6 +282,7 @@ public class AnalyticsService {
                         Map<String, Object> map = new HashMap<>();
                         map.put("id", student.getId());
                         map.put("name", student.getFullName());
+                        map.put("firstName", student.getFirstName());
                         map.put("email", student.getEmail());
                         map.put("lastLogin", student.getLastLogin());
                         map.put("loginCount", student.getLoginCount());
@@ -704,5 +705,154 @@ public class AnalyticsService {
                 step.put("completedCount", completedCount);
                 step.put("completionRate", Math.round(rate * 10.0) / 10.0);
                 return step;
+        }
+
+        // --- TEACHER COURSE SUMMARY DASHBOARD ---
+
+        public List<Map<String, Object>> getCourseCompletionSummary(Long courseId) {
+                Course course = courseRepository.findById(courseId).orElseThrow();
+                int totalStudents = course.getStudents().size();
+                List<Map<String, Object>> summary = new ArrayList<>();
+
+                // 1. LESSONS
+                List<Lesson> lessons = lessonRepository.findByCourseIdOrderBySortOrderAsc(courseId);
+                for (Lesson lesson : lessons) {
+                        Map<String, Object> item = new HashMap<>();
+                        item.put("id", lesson.getId());
+                        item.put("title", lesson.getTitle());
+                        item.put("type", "LESSON");
+                        item.put("totalStudents", totalStudents);
+
+                        long completedCount = course.getStudents().stream().filter(student -> {
+                                // Check if student has viewed the lesson (using ActivityLog for MVP)
+                                return activityLogRepository
+                                                .findByCourseIdAndUserIdOrderByTimestampDesc(courseId, student.getId())
+                                                .stream()
+                                                .anyMatch(l -> (l
+                                                                .getActivityType() == StudentActivityLog.ActivityType.VIEW_LESSON)
+                                                                && l.getDetails().contains(lesson.getTitle()));
+                        }).count();
+
+                        item.put("completedCount", completedCount);
+                        summary.add(item);
+                }
+
+                // 2. QUIZZES
+                List<Quiz> quizzes = quizRepository.findByCourseId(courseId);
+                for (Quiz quiz : quizzes) {
+                        Map<String, Object> item = new HashMap<>();
+                        item.put("id", quiz.getId());
+                        item.put("title", quiz.getTitle());
+                        item.put("type", "QUIZ");
+                        item.put("totalStudents", totalStudents);
+
+                        long completedCount = course.getStudents().stream().filter(student -> {
+                                return !quizResultRepository.findByStudentIdAndQuizCourseId(student.getId(), courseId)
+                                                .stream()
+                                                .filter(qr -> qr.getQuiz().getId().equals(quiz.getId()))
+                                                .collect(Collectors.toList()).isEmpty();
+                        }).count();
+
+                        item.put("completedCount", completedCount);
+                        summary.add(item);
+                }
+
+                // 3. ASSIGNMENTS
+                List<Assignment> assignments = assignmentRepository.findAll().stream()
+                                .filter(a -> a.getCourse().getId().equals(courseId))
+                                .collect(Collectors.toList());
+
+                for (Assignment assignment : assignments) {
+                        Map<String, Object> item = new HashMap<>();
+                        item.put("id", assignment.getId());
+                        item.put("title", assignment.getTitle());
+                        item.put("type", "ASSIGNMENT");
+                        item.put("totalStudents", totalStudents);
+
+                        long completedCount = course.getStudents().stream().filter(student -> {
+                                return submissionRepository
+                                                .findByStudentIdAndAssignmentCourseId(student.getId(), courseId)
+                                                .stream()
+                                                .anyMatch(s -> s.getAssignment().getId().equals(assignment.getId()));
+                        }).count();
+
+                        item.put("completedCount", completedCount);
+                        summary.add(item);
+                }
+
+                return summary;
+        }
+
+        public List<Map<String, Object>> getCourseItemDetails(Long courseId, Long itemId, String type) {
+                Course course = courseRepository.findById(courseId).orElseThrow();
+                List<Map<String, Object>> details = new ArrayList<>();
+
+                for (User student : course.getStudents()) {
+                        Map<String, Object> studentStatus = new HashMap<>();
+                        studentStatus.put("studentId", student.getId());
+                        studentStatus.put("name", student.getFullName());
+                        studentStatus.put("firstName", student.getFirstName()); // Add firstName safely
+                        boolean completed = false;
+                        String info = "-"; // Grade or Score
+                        LocalDateTime date = null;
+
+                        if ("LESSON".equalsIgnoreCase(type)) {
+                                Lesson lesson = lessonRepository.findById(itemId).orElse(null);
+                                if (lesson != null) {
+                                        Optional<StudentActivityLog> log = activityLogRepository
+                                                        .findByCourseIdAndUserIdOrderByTimestampDesc(courseId,
+                                                                        student.getId())
+                                                        .stream()
+                                                        .filter(l -> (l.getActivityType() == StudentActivityLog.ActivityType.VIEW_LESSON)
+                                                                        && l.getDetails().contains(lesson.getTitle()))
+                                                        .findFirst();
+                                        if (log.isPresent()) {
+                                                completed = true;
+                                                date = log.get().getTimestamp();
+                                                info = "Läst";
+                                        }
+                                }
+                        } else if ("QUIZ".equalsIgnoreCase(type)) {
+                                List<QuizResult> results = quizResultRepository
+                                                .findByStudentIdAndQuizCourseId(student.getId(), courseId).stream()
+                                                .filter(qr -> qr.getQuiz().getId().equals(itemId))
+                                                .collect(Collectors.toList());
+                                if (!results.isEmpty()) {
+                                        completed = true;
+                                        QuizResult best = results.get(0); // Take first or logic for best/latest
+                                        date = best.getDate();
+                                        info = best.getScore() + "/" + best.getMaxScore();
+                                }
+
+                        } else if ("ASSIGNMENT".equalsIgnoreCase(type)) {
+                                Optional<Submission> submission = submissionRepository
+                                                .findByStudentIdAndAssignmentCourseId(student.getId(), courseId)
+                                                .stream()
+                                                .filter(s -> s.getAssignment().getId().equals(itemId))
+                                                .findFirst();
+                                if (submission.isPresent()) {
+                                        completed = true;
+                                        date = submission.get().getSubmittedAt();
+                                        info = submission.get().getGrade() != null ? submission.get().getGrade()
+                                                        : "Inlämnad";
+                                }
+                        }
+
+                        studentStatus.put("status", completed ? "COMPLETED" : "PENDING");
+                        studentStatus.put("info", info);
+                        studentStatus.put("date", date);
+                        details.add(studentStatus);
+                }
+
+                // Sort: Pending top (teachers want to see who hasn't done it), then by name
+                details.sort((a, b) -> {
+                        String sa = (String) a.get("status");
+                        String sb = (String) b.get("status");
+                        if (!sa.equals(sb))
+                                return sa.equals("PENDING") ? -1 : 1;
+                        return ((String) a.get("name")).compareTo((String) b.get("name"));
+                });
+
+                return details;
         }
 }

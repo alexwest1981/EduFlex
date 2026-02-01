@@ -33,6 +33,16 @@
 
 ---
 
+*   **⚡ Cloudflare & Automation - Cold Start (Feb 1, 2026):**
+    *   **Cold Start Script:** New `cold_start.ps1` script that automates everything from process cleanup and Docker startup to launching Backend/Frontend/Tunnel in separate windows.
+    *   **Cloudflare Source of Truth:** Standardized on `logs/cloudflared-config.yml` to ensure full support for WebSockets (Forum), MinIO, and OnlyOffice.
+    *   **Cleanup Utility:** Integrated automatic termination of hanging Java, Node, and Cloudflared processes to prevent port conflicts.
+
+*   **💬 Forum UI Modernization (Feb 1, 2026):**
+    *   **Goodbye Browser Prompts:** Eliminated all `window.prompt` and `window.confirm` calls in the Forum module.
+    *   **Modern Modals:** Implemented native React modals (`NewThreadModal`, `NewCategoryModal`) with Lucide icons, validation, and full EduFlex styling.
+    *   **Category Controls:** Integrated "Teacher Only" toggle directly into the new category creation workflow.
+
 *   **🤖 AI Personalization Engine (Jan 31, 2026):**
     *   **Predictive Insights:** Analyzes student behavior (logins, progress, activity) to identify "at-risk" patterns.
     *   **Student Coach:** Offers personalized study tips and encouragement ("Focus on Java basics") directly on the dashboard.

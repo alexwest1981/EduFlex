@@ -46,6 +46,11 @@ export default defineConfig(({ mode }) => {
                     ws: true,
                     changeOrigin: true
                 },
+                '/ws-forum': {
+                    target: backendUrl,
+                    ws: true,
+                    changeOrigin: true
+                },
                 '/web-apps': {
                     target: 'http://localhost:8081',
                     changeOrigin: true,

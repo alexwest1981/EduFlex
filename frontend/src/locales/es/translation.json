@@ -19,7 +19,17 @@
     "send": "Enviar",
     "yes": "Sí",
     "no": "No",
-    "unknown": "Desconocido"
+    "unknown": "Desconocido",
+    "light_mode": "Ubicación luminosa",
+    "dark_mode": "Modo oscuro",
+    "choose": "Elige...",
+    "optional": "Opcional",
+    "minimize_menu": "Minimizar menú",
+    "expand_menu": "Ampliar el menú",
+    "online_friends": "Amigos en línea",
+    "today": "Hoy estamos",
+    "tomorrow": "Mañana",
+    "all": "Todos"
   },
   "sidebar": {
     "dashboard": "Panel",
@@ -29,7 +39,14 @@
     "documents": "Documentos",
     "catalog": "Catálogo de Cursos",
     "calendar": "Calendario",
-    "resource_bank": "Banco de Recursos"
+    "resource_bank": "Banco de Recursos",
+    "library": "Biblioteca",
+    "analytics": "Análisis e información",
+    "support": "Asistencia y contacto",
+    "my_courses": "Mis cursos",
+    "ebooks": "Libros electrónicos",
+    "system": "Sistema",
+    "ai_quiz": "AI Quiz"
   },
   "dashboard": {
     "welcome": "¡Bienvenido, {{name}}!",
@@ -86,7 +103,82 @@
     "closed": "Cerrado",
     "no_match": "Sin coincidencias.",
     "showing_x_of_y": "Mostrando {{count}} de {{total}} cursos",
-    "manage": "Gestionar"
+    "manage": "Gestionar",
+    "welcome_back": "Bienvenidos de nuevo al programa,",
+    "tabs": {
+      "overview": "Panorama del programa",
+      "communication": "Comunicación"
+    },
+    "widgets": {
+      "stats": "Estadísticas",
+      "calendar": "Calendario y horario",
+      "recent_users": "Últimos usuarios",
+      "recent_docs": "Cargado recientemente",
+      "messages": "Últimas notificaciones",
+      "online_friends": "Amigos en línea",
+      "tickets": "Casos de apoyo",
+      "gamification": "Estado de la gamificación",
+      "attendance": "Mi presencia",
+      "my_courses": "Mis cursos",
+      "tasks": "Tareas y comentarios",
+      "daily_challenges": "Los retos de hoy",
+      "achievements": "Mis logros",
+      "ai_insights": "Inteligencia Artificial",
+      "ai_personalization": "Consejos de estudio personalizados",
+      "daily_challenges_widget": {
+        "title": "Los retos de hoy",
+        "subtitle": "Completar para ganar XP",
+        "days": "{{cuenta}} días",
+        "empty": "Aún no hay retos disponibles",
+        "completed": "✓ Claro",
+        "reset_in": "Nuevos retos en {{horas}}h {{minutos}}m"
+      }
+    },
+    "total_users": "Usuarios totales",
+    "realtime_update_notice": "Los datos se actualizan en tiempo real.",
+    "new_messages": "Nuevas notificaciones",
+    "go_to_inbox": "Ir a la bandeja de entrada",
+    "students": "Estudiantes",
+    "teachers": "Profesores",
+    "admins": "Admins",
+    "mentors": "Mentores",
+    "principals": "Rectores",
+    "new_course": "Nuevo curso",
+    "search_course": "Buscar cursos...",
+    "table": {
+      "status": "Estado",
+      "code": "Código",
+      "name": "Nombre de la organización",
+      "date": "Fecha",
+      "action": "Acción",
+      "user": "Usuarios",
+      "email": "Correo electrónico",
+      "role": "Rollo"
+    },
+    "course_color": "Color del curso",
+    "edit_course": "Editar curso",
+    "delete_course": "Eliminar curso",
+    "recent_users": "Últimos usuarios",
+    "new": "Nuevo",
+    "no_new_users": "No se han registrado nuevos usuarios.",
+    "recent_uploads": "Últimas cargas",
+    "unknown_file": "Archivo desconocido",
+    "unknown_size": "Tamaño desconocido",
+    "unknown_date": "Fecha desconocida",
+    "no_files_uploaded": "Aún no se han cargado archivos.",
+    "user_registry": "Registro de usuarios",
+    "new_user": "Nuevo usuario",
+    "search_user": "Buscar usuarios...",
+    "all_roles": "Todas las funciones",
+    "active": "Activo",
+    "edit_user": "Editar usuario",
+    "delete_user": "Eliminar usuarios",
+    "feedback": {
+      "new": "Nuevos comentarios",
+      "course": "Curso: {{nombre}}",
+      "praise": "¡Bien hecho!",
+      "details": "Ver detalles"
+    }
   },
   "chat": {
     "title": "Chat y Soporte",
@@ -126,7 +218,23 @@
     "absent": "Ausente",
     "description": "Descripción",
     "no_description": "Sin descripción.",
-    "note": "Nota"
+    "note": "Nota",
+    "manage_attendance": "Gestionar la presencia",
+    "new_event": "Nueva oportunidad",
+    "create_event_title": "Crear nuevas oportunidades",
+    "event_title": "Título",
+    "event_start": "Fecha de inicio",
+    "event_end": "Fin",
+    "event_type": "Tipo",
+    "type_lesson": "lección",
+    "type_workshop": "Taller",
+    "type_exam": "Muestra",
+    "type_other": "Otros",
+    "create_btn": "Cree",
+    "save_attendance": "Guardar presencia",
+    "saved_success": "Asistencia salvada",
+    "save_error": "Errores al guardar",
+    "create_error": "No se han podido crear eventos"
   },
   "assessment": {
     "title": "Evaluación y Resultados",
@@ -147,7 +255,10 @@
     "comment_label": "Comentario (Opcional)",
     "comment_placeholder": "Tu opinión...",
     "submit_btn": "Enviar",
-    "validation_error": "Por favor califica todas las preguntas."
+    "validation_error": "Por favor califica todas las preguntas.",
+    "manage_btn": "Gestionar la evaluación",
+    "saved_success": "¡Evaluación salvada!",
+    "save_error": "No se ha podido guardar la evaluación."
   },
   "license": {
     "locked_title": "Sistema Bloqueado",
@@ -226,7 +337,18 @@
     "edit_course_settings": "Editar ajustes del curso",
     "course_name": "Nombre del curso",
     "course_code": "Código del curso",
-    "color_theme": "Tema de color"
+    "color_theme": "Tema de color",
+    "register_new_user": "Registrar nuevo usuario",
+    "edit_user": "Editar usuario",
+    "edit_course": "Editar curso",
+    "base_on_skolverket": "Basado en el curso Skolverk",
+    "choose_skolverket_course": "Seleccionar curso Skolverk",
+    "max_seats": "Número máximo de plazas",
+    "tags": "Etiquetas",
+    "digital_classroom": "Aula digital (opcional)",
+    "choose_platform": "Elija su plataforma...",
+    "paste_link": "Pegar enlace...",
+    "choose_teacher": "Elige a tu profesor..."
   },
   "catalog": {
     "title": "Catálogo de Cursos",
@@ -290,7 +412,23 @@
     "no_material": "Sin material.",
     "open_link": "Abrir enlace",
     "read": "Leído",
-    "mark_read": "Marcar como leído"
+    "mark_read": "Marcar como leído",
+    "scorm": "Módulos interactivos",
+    "kursinformation": "Información sobre el curso",
+    "attendance": "Presencia",
+    "connect_classroom": "Conectar con el aula",
+    "evaluate_course": "Evaluar el curso",
+    "feedback_thanks": "Gracias por sus comentarios.",
+    "error_occurred": "Se ha producido un error:",
+    "result_passed": "Autorizado",
+    "result_failed": "Fallido",
+    "result_pending": "No evaluado",
+    "mark_passed": "Autorizar",
+    "mark_failed": "Rechazar",
+    "certificate": "Certificado",
+    "course_completed": "El curso está cerrado",
+    "view_certificate": "Certificado de visado",
+    "claim_certificate": "Descargar certificado"
   },
   "assignments": {
     "header": "Tareas",
@@ -410,7 +548,8 @@
     "ongoing_course": "Curso en Curso",
     "upcoming_event": "Próximo Evento",
     "no_events": "No hay eventos programados.",
-    "new_message": "Nuevo Mensaje"
+    "new_message": "Nuevo Mensaje",
+    "course_start": "Fecha de inicio del curso: {{name}}"
   },
   "shortcuts": {
     "calendar": "Ir al Calendario",
@@ -425,6 +564,67 @@
       "view_all": "Ver Todo",
       "empty": "No hay mensajes nuevos.",
       "from": "De"
+    },
+    "online_friends": {
+      "title": "Amigos en línea",
+      "x_online": "{{cuenta}} en línea",
+      "empty": "No hay amigos en línea en este momento.",
+      "profile": "Perfil de",
+      "view_all": "Mostrar todos los amigos"
+    },
+    "live_lessons": {
+      "title": "Clases en directo",
+      "subtitle": "Próximas videoconferencias",
+      "soon": "Pronto",
+      "host": "Anfitrión",
+      "join": "Únete a nosotros",
+      "prepare": "Prepare",
+      "view": "Visados",
+      "see_all_calendar": "Ver todo en el calendario",
+      "error_load": "No se pueden cargar las lecciones",
+      "error_join": "No se ha podido conectar a la clase"
+    },
+    "tickets": {
+      "active": "Casos de asistencia activos",
+      "critical": "Crítica",
+      "high": "Alta prioridad",
+      "medium": "Prioridad media",
+      "low": "Prioridad baja",
+      "open": "Casos abiertos",
+      "empty": "No hay casos abiertos por el momento."
+    },
+    "student_progress": {
+      "title": "Resultados de mi curso",
+      "on_track": "Bien situado",
+      "at_risk": "Advertencia",
+      "assignments": "Tareas",
+      "quizzes": "Cuestionario",
+      "detailed_overview": "Resumen detallado",
+      "latest_results": "Últimos resultados",
+      "no_results": "Aún no hay resultados.",
+      "catch_up": "Póngase al día.",
+      "go_to_course": "Ir al curso"
+    },
+    "attendance_widget": {
+      "title": "Mi presencia digital",
+      "activity_level": "Nivel de actividad",
+      "registered_time": "Hora de registro",
+      "goal_week": "Objetivo (semana)",
+      "low_warning": "Tenga en cuenta. Su asistencia es baja. Póngase en contacto con su tutor."
+    },
+    "schedule": {
+      "title": "Horario del día y de la semana",
+      "loading": "Cargando programa...",
+      "campus": "Campus",
+      "online": "En línea",
+      "connect": "Conectar",
+      "empty": "Hoy no hay clases",
+      "view_full": "Ver el programa completo",
+      "upcoming_submissions": "Próximos envíos",
+      "go_to_task": "Ir a la tarea",
+      "no_deadlines": "No hay plazos próximos",
+      "view_all_count": "Mostrar todo ({{count}})",
+      "room_missing": "Falta una habitación"
     }
   },
   "course_modal": {
@@ -440,7 +640,8 @@
     "classroom_section": "Aula Digital",
     "classroom_link": "Enlace de Reunión",
     "exam_link": "Enlace de Sala de Examen",
-    "create_btn": "Crear"
+    "create_btn": "Crear",
+    "go_to_course": "Ir al curso"
   },
   "analytics": {
     "title": "Perspectivas del Sistema",
@@ -582,6 +783,266 @@
     "invoices": "Facturas",
     "subscription_plans": "Planes de Suscripción",
     "payment_settings": "Configuración de Pagos",
-    "promo_codes": "Códigos Promocionales"
+    "promo_codes": "Códigos Promocionales",
+    "tickets": "Cuestiones"
+  },
+  "library": {
+    "title": "Biblioteca",
+    "subtitle": "Explorar y leer libros electrónicos",
+    "search_placeholder": "Buscar por título o autor...",
+    "categories": "Categorías",
+    "all_categories": "Todos",
+    "read_book": "Leer el libro",
+    "edit_book": "Editar libro",
+    "delete_book": "Quitar libro",
+    "upload_book": "Cargar nuevo libro",
+    "no_books_found": "No se han encontrado libros.",
+    "edit_modal_title": "Editar libro electrónico",
+    "upload_modal_title": "Cargar nuevo libro electrónico",
+    "title_label": "Título",
+    "author_label": "Autor",
+    "category_label": "Categoría",
+    "description_label": "Descripción del programa",
+    "save_changes": "Guardar cambios",
+    "upload_btn": "Cargar",
+    "language_label": "Idioma",
+    "epub_file_label": "Archivo EPUB",
+    "cover_image_label": "Imagen de portada",
+    "no_cover": "Sin cobertura",
+    "select_file_alert": "Seleccione un archivo EPUB",
+    "delete_confirm": "¿Seguro que quieres borrar este libro?",
+    "delete_success": "Libro retirado",
+    "no_books_desc": "Intenta buscar otra cosa o subir tu primer libro electrónico a la biblioteca."
+  },
+  "teacher_widgets": {
+    "active_courses": "Cursos activos",
+    "my_students": "Mis alumnos",
+    "to_grade": "Corregir",
+    "applications": "Aplicaciones",
+    "risk_zone": "Zona de riesgo",
+    "at_risk_title": "Alumnos en la zona de peligro",
+    "students_count": "{{cuenta}} st",
+    "no_at_risk": "No hay estudiantes en riesgo en este momento. 👍",
+    "completion_prefix": "finalizado",
+    "view_all_risk": "Mostrar todos los alumnos en riesgo"
+  },
+  "teacher_tables": {
+    "all_graded_title": "¡Todo está corregido!",
+    "all_graded_desc": "Buen trabajo, no hay envíos pendientes.",
+    "pending_submissions_count": "Envíos pendientes ({{count}})",
+    "action_required": "Requiere acción",
+    "student": "estudiante",
+    "assignment": "Tarea",
+    "course": "Curso",
+    "submitted": "Enviado",
+    "go_to_grading": "Ir a Corrección",
+    "no_pending_applications": "No hay solicitudes pendientes en este momento.",
+    "applying_to": "Solicitar un curso",
+    "date": "Fecha",
+    "decision": "Decisión",
+    "approve": "Autorizar",
+    "reject": "Rechazar",
+    "never": "Nunca",
+    "days_ago": "{{count}} días atrás",
+    "contact": "Póngase en contacto con nosotros",
+    "admitted_msg": "¡Alumno aceptado!",
+    "rejected_msg": "Solicitud rechazada.",
+    "error_msg": "Algo salió mal.",
+    "unknown_student": "Desconocido"
+  },
+  "student_contact": {
+    "title": "Estudiante de contacto",
+    "subtitle": "Informe y seguimiento de {{name}}",
+    "risk_factor": "Factor de riesgo identificado",
+    "never_logged_in": "El estudiante nunca se ha conectado a la plataforma.",
+    "inactive_days": "El alumno ha estado inactivo durante {{count}} días.",
+    "no_risk": "No se ha identificado ningún riesgo crítico en este momento, pero se recomienda un seguimiento.",
+    "subject_label": "Asunto (en función del riesgo)",
+    "auto_generated_label": "Documento generado automáticamente",
+    "auto_generated_desc": "Esta documentación se basa en los datos del sistema y se envía por correo electrónico.",
+    "teacher_notes_label": "Sus comentarios / Plan de acción",
+    "teacher_notes_placeholder": "Escriba un mensaje personalizado, instrucciones o acciones concretas que el alumno deba realizar...",
+    "report_and_send": "Informar y enviar",
+    "sending": "Enviando...",
+    "sent_success": "¡Mensaje enviado!",
+    "send_error": "No se ha podido enviar el mensaje.",
+    "divider": "Comentario del profesor:",
+    "regards": "Atentamente",
+    "templates": {
+      "follow_up_subject": "Seguimiento de sus estudios",
+      "no_login_subject": "Importante: Aún no ha iniciado sesión",
+      "no_login_body": "Veo que aún no ha iniciado sesión en EduFlex. Para sacar provecho del curso, es importante que empiece pronto.",
+      "need_help_login": "¿Necesita ayuda para iniciar sesión o encontrar el material adecuado?",
+      "warning_inactivity_subject": "Advertencia: Alto absentismo e inactividad",
+      "warning_inactivity_body": "Veo que no has estado activo en EduFlex durante {{count}} días. Esto es preocupante y afecta negativamente a tus estudios.",
+      "review_plan": "Tendremos que revisar su plan de estudios para asegurarnos de que dispone de tiempo suficiente para completar todos los módulos.",
+      "follow_up_absence_subject": "Seguimiento: Ausencia",
+      "follow_up_absence_body": "Me he dado cuenta de que han pasado {{count}} días desde la última vez que estuviste activo.",
+      "reach_out": "Póngase en contacto con nosotros si necesita ayuda con algún paso concreto.",
+      "generic_body": "Quiero comprobar cómo te va en el curso."
+    }
+  },
+  "teacher_modals": {
+    "tags_placeholder": "Etiquetas (separadas por comas, por ejemplo, AI, Maths, Algebra)",
+    "group_rooms": "Sala para grupos",
+    "room_name_placeholder": "Nombre de la organización",
+    "link": "Enlace",
+    "add_room": "+ Añadir sala de grupo",
+    "course_color": "Color del curso",
+    "error_create": "No se ha podido crear el curso.",
+    "error_update": "No se ha podido actualizar el curso.",
+    "course_name": "Nombre del curso",
+    "course_code": "Código del curso"
+  },
+  "landing": {
+    "nav": {
+      "features": "Características y funciones",
+      "architecture": "Arquitectura",
+      "pricing": "Precios",
+      "login": "Acceder al sitio web",
+      "get_started": "Para empezar"
+    },
+    "hero": {
+      "badge": "Ya está disponible la versión 2.0",
+      "title_start": "El LMS como",
+      "title_highlight": "Los estudiantes aman",
+      "subtitle": "EduFlex tiende un puente entre los LMS empresariales y las modernas aplicaciones de consumo. Aprendizaje gamificado, rápido y atractivo para la próxima generación.",
+      "cta_trial": "Reservar una demostración",
+      "cta_docs": "Ver la documentación de la API"
+    },
+    "features": {
+      "badge": "¿Por qué EduFlex?",
+      "title": "Todo lo que necesita para dirigir una escuela moderna",
+      "subtitle": "Desde sólidas herramientas de evaluación hasta un revolucionario soporte de inteligencia artificial.",
+      "ai_creator": {
+        "title": "Creador de cursos de AI",
+        "desc": "Cargue una guía de estudio (PDF) y deje que Gemini AI cree un curso completo con lecciones, fechas y códigos inteligentes en menos de 60 segundos. Ahora con sincronización automática de la base de datos."
+      },
+      "cascading_deletes": {
+        "title": "Cancelación en cascada",
+        "desc": "Gestión transparente del contenido de los cursos. Cuando se elimina un curso, todos los materiales y lecciones asociados se purgan automáticamente para mantener limpia la base de datos."
+      },
+      "lti_ready": {
+        "title": "LTI 1.3 Listo",
+        "desc": "Soporte totalmente verificado para lanzamientos OIDC. Perfecta integración con plataformas externas como Canvas y Moodle."
+      },
+      "gamification": {
+        "title": "Gamificación 2.0",
+        "desc": "XP incorporado, insignias, niveles, tablas de clasificación y desafíos diarios para aumentar el compromiso de los estudiantes."
+      },
+      "multi_tenancy": {
+        "title": "Multi-Tenancy real",
+        "desc": "Aislamiento total de los datos con arquitectura de esquema por inquilino. Sus datos son suyos."
+      },
+      "analytics": {
+        "title": "Análisis e información",
+        "desc": "Cuadros de mando en tiempo real para directores y profesores. Mapas de calor y predicción del abandono escolar."
+      },
+      "security": {
+        "title": "Seguridad de las empresas",
+        "desc": "Control de acceso basado en roles (RBAC), registro de auditorías e integración segura de Keycloak SSO."
+      }
+    },
+    "architecture": {
+      "badge": "Diseñado para escalar",
+      "title": "Arquitectura empresarial",
+      "powered_by": "Impulsado por las normas del sector",
+      "items": {
+        "0": "Microservicios de Spring Boot 3.4",
+        "1": "PostgreSQL con esquema por arrendatario",
+        "2": "Almacenamiento en caché Redis",
+        "3": "Almacenamiento compatible con MinIO S3",
+        "4": "Keycloak SSO Gestión de identidades",
+        "5": "Kubernetes y gráficos Helm"
+      }
+    },
+    "pricing": {
+      "title": "Precios sencillos y transparentes",
+      "subtitle": "Elija el plan que mejor se adapte a su centro.",
+      "basic": {
+        "name": "Básico",
+        "price": "990 SEK / mes",
+        "features": {
+          "0": "Hasta 100 usuarios",
+          "1": "Gestión básica de cursos",
+          "2": "Informes sencillos",
+          "3": "Apoyo comunitario"
+        },
+        "cta": "Cómo empezar"
+      },
+      "pro": {
+        "name": "Pro",
+        "price": "2 990 SEK / mes",
+        "features": {
+          "0": "Hasta 500 usuarios",
+          "1": "Gamificación total",
+          "2": "Skolverket-Integración",
+          "3": "Exportación CSN",
+          "4": "Apoyo prioritario"
+        },
+        "cta": "Reservar una demostración",
+        "badge": "Más populares"
+      },
+      "enterprise": {
+        "name": "Empresa",
+        "price": "Contacte con nosotros",
+        "features": {
+          "0": "Número ilimitado de usuarios",
+          "1": "Marca blanca",
+          "2": "Keycloak SSO",
+          "3": "SLA 99,99",
+          "4": "Infraestructura dedicada"
+        },
+        "cta": "Contacto de ventas"
+      }
+    },
+    "footer": {
+      "tagline": "Potenciar la educación con tecnología moderna. Construido con ❤️ en Suecia.",
+      "product": "Producto",
+      "features": "Características y funciones",
+      "pricing": "Precios",
+      "roadmap": "Mapa de carreteras",
+      "resources": "Recursos",
+      "documentation": "Documentación",
+      "api_reference": "Referencia API",
+      "system_status": "Estado del sistema",
+      "connect": "Póngase en contacto con nosotros",
+      "contact_sales": "Contacto de ventas",
+      "twitter": "Twitter",
+      "github": "GitHub",
+      "copyright": "2026 EduFlex. Todos los derechos reservados.",
+      "developed_by": "Desarrollado por",
+      "fenrir": "Estudio Fenrir"
+    }
+  },
+  "contact": {
+    "title": "Reservar una demostración",
+    "name": "Nombre de la organización",
+    "name_placeholder": "Su nombre",
+    "email": "Correo electrónico",
+    "email_placeholder": "din@email.se",
+    "organization": "Organización",
+    "organization_placeholder": "Nombre de la escuela",
+    "phone": "Número de teléfono",
+    "phone_placeholder": "+46 70 123 45 67",
+    "message": "Notificación",
+    "message_placeholder": "Háblenos un poco de sus necesidades...",
+    "submit": "Enviar solicitud",
+    "sending": "Enviando...",
+    "success_message": "Muchas gracias. Nos pondremos en contacto con usted en un plazo de 24 horas.",
+    "error_message": "Algo ha ido mal. Vuelva a intentarlo o envíenos un correo electrónico directamente."
+  },
+  "ai_personalization": {
+    "title": "Inteligencia Artificial",
+    "risk_low": "Riesgo bajo",
+    "risk_medium": "Riesgo medio",
+    "risk_high": "Alto riesgo",
+    "suggested_activities": "Actividades propuestas",
+    "coaching_advice": "Consejos de coaching",
+    "update_analysis": "Actualizar el análisis de la IA",
+    "lesson_type": "lección",
+    "practice_type": "Ejercicio",
+    "rationale_prefix": "Razonamiento AI:",
+    "no_data": "Aún no hay suficientes datos para el análisis de IA. ¡Sigue trabajando en los cursos!"
   }
 }

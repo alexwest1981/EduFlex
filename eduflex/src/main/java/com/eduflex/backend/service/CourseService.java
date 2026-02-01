@@ -473,12 +473,22 @@ public class CourseService {
         if (c.getTeacher() != null) {
             teacherDTO = new UserSummaryDTO(
                     c.getTeacher().getId(),
+                    c.getTeacher().getFirstName(),
+                    c.getTeacher().getLastName(),
                     c.getTeacher().getFullName(),
                     c.getTeacher().getUsername(),
-                    c.getTeacher().getRole().getName());
+                    c.getTeacher().getRole().getName(),
+                    c.getTeacher().getProfilePictureUrl());
         }
         List<UserSummaryDTO> studentDTOs = c.getStudents().stream()
-                .map(s -> new UserSummaryDTO(s.getId(), s.getFullName(), s.getUsername(), s.getRole().getName()))
+                .map(s -> new UserSummaryDTO(
+                        s.getId(),
+                        s.getFirstName(),
+                        s.getLastName(),
+                        s.getFullName(),
+                        s.getUsername(),
+                        s.getRole().getName(),
+                        s.getProfilePictureUrl()))
                 .collect(Collectors.toList());
 
         return new CourseDTO(

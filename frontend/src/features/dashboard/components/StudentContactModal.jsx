@@ -19,7 +19,10 @@ const StudentContactModal = ({ isOpen, onClose, student, currentUser }) => {
 
     const generateTemplate = () => {
         let generatedSubject = t('student_contact.templates.follow_up_subject');
-        let generatedBody = `Hej ${student.firstName},\n\n`;
+
+        // Get first name safely (analytics API might only return 'name')
+        const firstName = student.firstName || (student.name ? student.name.split(' ')[0] : 'Student');
+        let generatedBody = `Hej ${firstName},\n\n`;
 
         // Logic to determine risk reason
         // Currently based on daysSinceLogin from TeacherDashboard logic (999 = never logged in)

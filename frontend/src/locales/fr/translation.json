@@ -19,7 +19,17 @@
     "send": "Envoyer",
     "yes": "Oui",
     "no": "Non",
-    "unknown": "Inconnu"
+    "unknown": "Inconnu",
+    "light_mode": "Emplacement lumineux",
+    "dark_mode": "Mode sombre",
+    "choose": "Choisissez...",
+    "optional": "En option",
+    "minimize_menu": "Réduire le menu",
+    "expand_menu": "Développer le menu",
+    "online_friends": "Amis en ligne",
+    "today": "Aujourd'hui, nous sommes",
+    "tomorrow": "Demain",
+    "all": "Tous"
   },
   "sidebar": {
     "dashboard": "Tableau de bord",
@@ -29,7 +39,14 @@
     "documents": "Documents",
     "catalog": "Catalogue des Cours",
     "calendar": "Calendrier",
-    "resource_bank": "Banque de Ressources"
+    "resource_bank": "Banque de Ressources",
+    "library": "Bibliothèque",
+    "analytics": "Analyses et aperçus",
+    "support": "Soutien et contact",
+    "my_courses": "Mes cours",
+    "ebooks": "E-books",
+    "system": "Système",
+    "ai_quiz": "Quiz sur l'IA"
   },
   "dashboard": {
     "welcome": "Bienvenue, {{name}} !",
@@ -86,7 +103,82 @@
     "closed": "Fermé",
     "no_match": "Aucun résultat.",
     "showing_x_of_y": "Affichage de {{count}} sur {{total}} cours",
-    "manage": "Gérer"
+    "manage": "Gérer",
+    "welcome_back": "Bienvenue dans le programme,",
+    "tabs": {
+      "overview": "Aperçu du programme",
+      "communication": "Communication"
+    },
+    "widgets": {
+      "stats": "Statistiques",
+      "calendar": "Calendrier et horaires",
+      "recent_users": "Derniers utilisateurs",
+      "recent_docs": "Récemment téléchargé",
+      "messages": "Dernières notifications",
+      "online_friends": "Amis en ligne",
+      "tickets": "Cas de soutien",
+      "gamification": "Statut de la gamification",
+      "attendance": "Ma présence",
+      "my_courses": "Mes cours",
+      "tasks": "Tâches et retour d'information",
+      "daily_challenges": "Les défis d'aujourd'hui",
+      "achievements": "Mes réalisations",
+      "ai_insights": "Perspectives de l'IA",
+      "ai_personalization": "Conseils d'étude personnalisés",
+      "daily_challenges_widget": {
+        "title": "Les défis d'aujourd'hui",
+        "subtitle": "A compléter pour gagner de l'XP",
+        "days": "{{count}} jours",
+        "empty": "Aucun défi n'est encore disponible",
+        "completed": "✓ Clair",
+        "reset_in": "Nouveaux défis sur {{heures}}h {{minutes}}m"
+      }
+    },
+    "total_users": "Total des utilisateurs",
+    "realtime_update_notice": "Les données sont mises à jour en temps réel.",
+    "new_messages": "Nouvelles notifications",
+    "go_to_inbox": "Accéder à la boîte de réception",
+    "students": "Les étudiants",
+    "teachers": "Enseignants",
+    "admins": "Administrateurs",
+    "mentors": "Mentors",
+    "principals": "Recteurs",
+    "new_course": "Nouveau cours",
+    "search_course": "Rechercher des cours...",
+    "table": {
+      "status": "Statut",
+      "code": "Code",
+      "name": "Nom de l'organisation",
+      "date": "Date",
+      "action": "Action",
+      "user": "Utilisateurs",
+      "email": "Courriel",
+      "role": "Rouleau"
+    },
+    "course_color": "Couleur du cours",
+    "edit_course": "Modifier le cours",
+    "delete_course": "Supprimer le cours",
+    "recent_users": "Derniers utilisateurs",
+    "new": "Nouveau",
+    "no_new_users": "Aucun nouvel utilisateur n'a été enregistré.",
+    "recent_uploads": "Derniers téléchargements",
+    "unknown_file": "Fichier inconnu",
+    "unknown_size": "Taille inconnue",
+    "unknown_date": "Date inconnue",
+    "no_files_uploaded": "Aucun fichier n'a encore été téléchargé.",
+    "user_registry": "Registre des utilisateurs",
+    "new_user": "Nouvel utilisateur",
+    "search_user": "Recherche d'utilisateurs...",
+    "all_roles": "Tous les rôles",
+    "active": "Actif",
+    "edit_user": "Modifier l'utilisateur",
+    "delete_user": "Supprimer des utilisateurs",
+    "feedback": {
+      "new": "Nouveau retour d'information",
+      "course": "Cours : {{nom}}",
+      "praise": "Bravo !",
+      "details": "Voir les détails"
+    }
   },
   "chat": {
     "title": "Chat & Support",
@@ -126,7 +218,23 @@
     "absent": "Absent",
     "description": "Description",
     "no_description": "Pas de description.",
-    "note": "Note"
+    "note": "Note",
+    "manage_attendance": "Gérer la présence",
+    "new_event": "Nouvelle opportunité",
+    "create_event_title": "Créer une nouvelle opportunité",
+    "event_title": "Titre",
+    "event_start": "Date de début",
+    "event_end": "La fin",
+    "event_type": "Type",
+    "type_lesson": "leçon",
+    "type_workshop": "Atelier",
+    "type_exam": "Échantillon",
+    "type_other": "Autres",
+    "create_btn": "Créer",
+    "save_attendance": "Sauvegarder la présence",
+    "saved_success": "L'assiduité est sauvée !",
+    "save_error": "Erreurs d'enregistrement",
+    "create_error": "Impossible de créer des événements"
   },
   "assessment": {
     "title": "Évaluation & Résultats",
@@ -147,7 +255,10 @@
     "comment_label": "Commentaire (Optionnel)",
     "comment_placeholder": "Votre avis...",
     "submit_btn": "Envoyer",
-    "validation_error": "Veuillez noter toutes les questions."
+    "validation_error": "Veuillez noter toutes les questions.",
+    "manage_btn": "Gérer l'évaluation",
+    "saved_success": "L'évaluation est sauvée !",
+    "save_error": "Impossible d'enregistrer l'évaluation."
   },
   "license": {
     "locked_title": "Système Verrouillé",
@@ -226,7 +337,18 @@
     "edit_course_settings": "Modifier les paramètres du cours",
     "course_name": "Nom du cours",
     "course_code": "Code du cours",
-    "color_theme": "Thème couleur"
+    "color_theme": "Thème couleur",
+    "register_new_user": "Enregistrer un nouvel utilisateur",
+    "edit_user": "Modifier l'utilisateur",
+    "edit_course": "Modifier le cours",
+    "base_on_skolverket": "Basé sur le cours de Skolverk",
+    "choose_skolverket_course": "Sélectionner le cours de Skolverk",
+    "max_seats": "Nombre maximal de sièges",
+    "tags": "Tags",
+    "digital_classroom": "Salle de classe numérique (en option)",
+    "choose_platform": "Choisissez votre plateforme...",
+    "paste_link": "Coller le lien...",
+    "choose_teacher": "Choisissez votre professeur..."
   },
   "catalog": {
     "title": "Catalogue de Cours",
@@ -290,7 +412,23 @@
     "no_material": "Aucun matériel.",
     "open_link": "Ouvrir lien",
     "read": "Lu",
-    "mark_read": "Marquer comme lu"
+    "mark_read": "Marquer comme lu",
+    "scorm": "Modules interactifs",
+    "kursinformation": "Informations sur les cours",
+    "attendance": "Présence",
+    "connect_classroom": "Se connecter à la salle de classe",
+    "evaluate_course": "Évaluer le cours",
+    "feedback_thanks": "Merci pour vos commentaires !",
+    "error_occurred": "Une erreur s'est produite :",
+    "result_passed": "Autorisé",
+    "result_failed": "Échec",
+    "result_pending": "Non évalué",
+    "mark_passed": "Autoriser",
+    "mark_failed": "Rejeter",
+    "certificate": "Certificat",
+    "course_completed": "Le cours est fermé",
+    "view_certificate": "Certificat de visa",
+    "claim_certificate": "Télécharger le certificat"
   },
   "assignments": {
     "header": "Devoirs",
@@ -410,7 +548,8 @@
     "ongoing_course": "Cours en Cours",
     "upcoming_event": "Événement à Venir",
     "no_events": "Aucun événement prévu.",
-    "new_message": "Nouveau Message"
+    "new_message": "Nouveau Message",
+    "course_start": "Date de début des cours : {{nom}}"
   },
   "shortcuts": {
     "calendar": "Aller au Calendrier",
@@ -425,6 +564,67 @@
       "view_all": "Voir Tout",
       "empty": "Pas de nouveaux messages.",
       "from": "De"
+    },
+    "online_friends": {
+      "title": "Amis en ligne",
+      "x_online": "{{count}} en ligne",
+      "empty": "Pas d'amis en ligne pour le moment.",
+      "profile": "Profil de",
+      "view_all": "Afficher tous les amis"
+    },
+    "live_lessons": {
+      "title": "Cours en direct",
+      "subtitle": "Prochaines réunions vidéo",
+      "soon": "Bientôt",
+      "host": "Hôte",
+      "join": "Rejoignez-nous",
+      "prepare": "Préparer",
+      "view": "Visas",
+      "see_all_calendar": "Tout voir dans le calendrier",
+      "error_load": "Impossible de charger les leçons",
+      "error_join": "Impossible de se connecter à la leçon"
+    },
+    "tickets": {
+      "active": "Cas d'assistance actifs",
+      "critical": "Critique",
+      "high": "Priorité élevée",
+      "medium": "Priorité moyenne",
+      "low": "Faible priorité",
+      "open": "Affaires en cours",
+      "empty": "Il n'y a pas de dossier en cours pour le moment."
+    },
+    "student_progress": {
+      "title": "Mes résultats de cours",
+      "on_track": "Bien situé",
+      "at_risk": "Avertissement",
+      "assignments": "Tâches",
+      "quizzes": "Quiz",
+      "detailed_overview": "Aperçu détaillé",
+      "latest_results": "Derniers résultats",
+      "no_results": "Aucun résultat pour l'instant.",
+      "catch_up": "Ne manquez pas de rattraper votre retard !",
+      "go_to_course": "Aller au cours"
+    },
+    "attendance_widget": {
+      "title": "Ma présence numérique",
+      "activity_level": "Niveau d'activité",
+      "registered_time": "Temps enregistré",
+      "goal_week": "Objectif (semaine)",
+      "low_warning": "A noter. Votre taux de participation est faible. Veuillez contacter votre mentor."
+    },
+    "schedule": {
+      "title": "Programme de la journée et de la semaine",
+      "loading": "Chargement du programme...",
+      "campus": "Campus",
+      "online": "En ligne",
+      "connect": "Connecter",
+      "empty": "Pas de cours aujourd'hui",
+      "view_full": "Voir le programme complet",
+      "upcoming_submissions": "Soumissions à venir",
+      "go_to_task": "Aller à la tâche",
+      "no_deadlines": "Aucune échéance à venir",
+      "view_all_count": "Tout afficher ({{count}})",
+      "room_missing": "Pièce manquante"
     }
   },
   "course_modal": {
@@ -440,7 +640,8 @@
     "classroom_section": "Classe Numérique",
     "classroom_link": "Lien de Réunion",
     "exam_link": "Lien Salle d'Examen",
-    "create_btn": "Créer"
+    "create_btn": "Créer",
+    "go_to_course": "Aller au cours"
   },
   "analytics": {
     "title": "Aperçus du Système",
@@ -582,6 +783,266 @@
     "invoices": "Factures",
     "subscription_plans": "Plans d'Abonnement",
     "payment_settings": "Paramètres de Paiement",
-    "promo_codes": "Codes Promo"
+    "promo_codes": "Codes Promo",
+    "tickets": "Enjeux"
+  },
+  "library": {
+    "title": "Bibliothèque",
+    "subtitle": "Explorer et lire des livres électroniques",
+    "search_placeholder": "Recherche par titre ou par auteur...",
+    "categories": "Catégories",
+    "all_categories": "Tous",
+    "read_book": "Lire le livre",
+    "edit_book": "Editer le livre",
+    "delete_book": "Supprimer le livre",
+    "upload_book": "Télécharger un nouveau livre",
+    "no_books_found": "Aucun livre n'a été trouvé.",
+    "edit_modal_title": "Éditer un livre électronique",
+    "upload_modal_title": "Télécharger un nouveau livre électronique",
+    "title_label": "Titre",
+    "author_label": "Auteur",
+    "category_label": "Catégorie",
+    "description_label": "Description du programme",
+    "save_changes": "Enregistrer les modifications",
+    "upload_btn": "Téléchargement",
+    "language_label": "Langue",
+    "epub_file_label": "Fichier EPUB",
+    "cover_image_label": "Image de couverture",
+    "no_cover": "Pas de couverture",
+    "select_file_alert": "Veuillez sélectionner un fichier EPUB",
+    "delete_confirm": "Êtes-vous sûr de vouloir supprimer ce livre ?",
+    "delete_success": "Livre retiré",
+    "no_books_desc": "Essayez de chercher autre chose ou de télécharger votre premier livre électronique à la bibliothèque."
+  },
+  "teacher_widgets": {
+    "active_courses": "Cours actifs",
+    "my_students": "Mes élèves",
+    "to_grade": "Corriger",
+    "applications": "Applications",
+    "risk_zone": "Zone à risque",
+    "at_risk_title": "Les élèves dans la zone de danger",
+    "students_count": "{{count}} st",
+    "no_at_risk": "Aucun élève n'est en danger pour le moment. 👍",
+    "completion_prefix": "finalisé",
+    "view_all_risk": "Afficher tous les élèves à risque"
+  },
+  "teacher_tables": {
+    "all_graded_title": "Tout est corrigé !",
+    "all_graded_desc": "Bon travail, aucune soumission en attente.",
+    "pending_submissions_count": "Soumissions en attente ({{count}})",
+    "action_required": "Nécessite une action",
+    "student": "étudiant",
+    "assignment": "Tâche",
+    "course": "Cours",
+    "submitted": "Soumis",
+    "go_to_grading": "Aller à la correction",
+    "no_pending_applications": "Aucune demande n'est en cours pour le moment.",
+    "applying_to": "S'inscrire à un cours",
+    "date": "Date",
+    "decision": "Décision",
+    "approve": "Autoriser",
+    "reject": "Rejeter",
+    "never": "Jamais",
+    "days_ago": "Il y a {{count}} jours",
+    "contact": "Contactez nous",
+    "admitted_msg": "Étudiant accepté !",
+    "rejected_msg": "Demande rejetée.",
+    "error_msg": "Quelque chose n'a pas fonctionné.",
+    "unknown_student": "Inconnu"
+  },
+  "student_contact": {
+    "title": "Contacter l'étudiant",
+    "subtitle": "Rapport et suivi avec {{nom}}",
+    "risk_factor": "Facteur de risque identifié",
+    "never_logged_in": "L'étudiant ne s'est jamais connecté à la plateforme.",
+    "inactive_days": "L'étudiant est inactif depuis {{count}} jours.",
+    "no_risk": "Aucun risque critique n'a été identifié pour le moment, mais un suivi est recommandé.",
+    "subject_label": "Sujet (en fonction du risque)",
+    "auto_generated_label": "Document généré automatiquement",
+    "auto_generated_desc": "Cette documentation est basée sur les données du système et est envoyée par courrier électronique.",
+    "teacher_notes_label": "Vos commentaires / Plan d'action",
+    "teacher_notes_placeholder": "Rédigez un message personnalisé, des instructions ou des actions spécifiques que l'élève doit faire...",
+    "report_and_send": "Rapport et envoi",
+    "sending": "Envoi...",
+    "sent_success": "Message envoyé !",
+    "send_error": "Impossible d'envoyer le message.",
+    "divider": "Commentaire de l'enseignant :",
+    "regards": "Je vous prie d'agréer, Monsieur le Président, l'expression de mes sentiments distingués.",
+    "templates": {
+      "follow_up_subject": "Suivi de vos études",
+      "no_login_subject": "Important : Vous n'êtes pas encore connecté",
+      "no_login_body": "Je vois que vous ne vous êtes pas encore connecté à EduFlex. Afin de bénéficier du cours, il est important que vous commenciez rapidement.",
+      "need_help_login": "Vous avez besoin d'aide pour vous connecter ou pour trouver le bon matériel ?",
+      "warning_inactivity_subject": "Avertissement : taux élevé d'absentéisme et d'inactivité",
+      "warning_inactivity_body": "Je constate que vous n'êtes plus actif sur EduFlex depuis {{count}} jours. Ceci est inquiétant et affecte négativement vos études.",
+      "review_plan": "Nous devrons revoir votre plan d'études afin de nous assurer que vous disposez de suffisamment de temps pour compléter tous les modules.",
+      "follow_up_absence_subject": "Suivi : Absence",
+      "follow_up_absence_body": "J'ai remarqué que cela fait {{count}} jours que vous n'avez pas été actif.",
+      "reach_out": "N'hésitez pas à nous contacter si vous avez besoin d'aide pour une étape spécifique.",
+      "generic_body": "Je veux savoir comment vous vous débrouillez dans le cours."
+    }
+  },
+  "teacher_modals": {
+    "tags_placeholder": "Tags (séparer par une virgule, par exemple AI, Maths, Algebra)",
+    "group_rooms": "Salle de groupe",
+    "room_name_placeholder": "Nom de l'organisation",
+    "link": "Lien vers",
+    "add_room": "+ Ajouter une salle de groupe",
+    "course_color": "Couleur du cours",
+    "error_create": "Impossible de créer le cours.",
+    "error_update": "Impossible de mettre à jour le cours.",
+    "course_name": "Nom du cours",
+    "course_code": "Code du cours"
+  },
+  "landing": {
+    "nav": {
+      "features": "Caractéristiques et fonctions",
+      "architecture": "Architecture",
+      "pricing": "Prix",
+      "login": "Se connecter au site web",
+      "get_started": "Pour commencer"
+    },
+    "hero": {
+      "badge": "v2.0 disponible",
+      "title_start": "Le LMS en tant que",
+      "title_highlight": "Les étudiants aiment",
+      "subtitle": "EduFlex comble le fossé entre les LMS d'entreprise et les applications grand public modernes. L'apprentissage gamifié, rapide et beau pour la nouvelle génération.",
+      "cta_trial": "Réserver une démonstration",
+      "cta_docs": "Voir la documentation de l'API"
+    },
+    "features": {
+      "badge": "Pourquoi EduFlex ?",
+      "title": "Tout ce dont vous avez besoin pour gérer une école moderne",
+      "subtitle": "Des outils d'évaluation robustes à l'assistance révolutionnaire en matière d'IA, nous avons tout ce qu'il vous faut.",
+      "ai_creator": {
+        "title": "Créateur de cours d'IA",
+        "desc": "Téléchargez un guide d'étude (PDF) et laissez Gemini AI créer un cours complet avec des leçons, des dates et des codes intelligents en moins de 60 secondes. Maintenant avec synchronisation automatique de la base de données."
+      },
+      "cascading_deletes": {
+        "title": "Annulation de la cascade",
+        "desc": "Gestion transparente du contenu des cours. Lorsqu'un cours est supprimé, tous les documents et leçons associés sont automatiquement supprimés pour que la base de données reste propre."
+      },
+      "lti_ready": {
+        "title": "LTI 1.3 prêt",
+        "desc": "Prise en charge entièrement vérifiée des lancements de l'OIDC. Intégration transparente avec des plateformes externes telles que Canvas et Moodle."
+      },
+      "gamification": {
+        "title": "Gamification 2.0",
+        "desc": "XP, badges, niveaux, classements et défis quotidiens intégrés pour accroître l'engagement des élèves."
+      },
+      "multi_tenancy": {
+        "title": "Une véritable multi-tenance",
+        "desc": "Isolation totale des données grâce à l'architecture \"schéma par locataire\". Vos données vous appartiennent."
+      },
+      "analytics": {
+        "title": "Analyses et aperçus",
+        "desc": "Tableaux de bord en temps réel pour les directeurs et les enseignants. Cartes de chaleur et prédiction des abandons."
+      },
+      "security": {
+        "title": "Sécurité des entreprises",
+        "desc": "Contrôle d'accès basé sur les rôles (RBAC), enregistrement des audits et intégration sécurisée de Keycloak SSO."
+      }
+    },
+    "architecture": {
+      "badge": "Conçu pour s'adapter",
+      "title": "Architecture d'entreprise",
+      "powered_by": "Les normes de l'industrie",
+      "items": {
+        "0": "Spring Boot 3.4 Microservices",
+        "1": "PostgreSQL avec Schema-per-Tenant",
+        "2": "Stockage en cache Redis",
+        "3": "Stockage compatible MinIO S3",
+        "4": "Gestion de l'identité SSO de Keycloak",
+        "5": "Kubernetes et graphiques Helm"
+      }
+    },
+    "pricing": {
+      "title": "Une tarification simple et transparente",
+      "subtitle": "Choisissez le plan qui convient à votre école.",
+      "basic": {
+        "name": "De base",
+        "price": "990 SEK / mois",
+        "features": {
+          "0": "Jusqu'à 100 utilisateurs",
+          "1": "Gestion de base des cours",
+          "2": "Rapports faciles à établir",
+          "3": "Soutien communautaire"
+        },
+        "cta": "Pour commencer"
+      },
+      "pro": {
+        "name": "Pro",
+        "price": "2 990 SEK / mois",
+        "features": {
+          "0": "Jusqu'à 500 utilisateurs",
+          "1": "Gamification complète",
+          "2": "Skolverket-Intégration",
+          "3": "CSN export",
+          "4": "Soutien prioritaire"
+        },
+        "cta": "Réserver une démonstration",
+        "badge": "Les plus populaires"
+      },
+      "enterprise": {
+        "name": "Entreprise",
+        "price": "Nous contacter",
+        "features": {
+          "0": "Nombre illimité d'utilisateurs",
+          "1": "Marque blanche",
+          "2": "Keycloak SSO",
+          "3": "SLA 99.99%",
+          "4": "Infrastructure dédiée"
+        },
+        "cta": "Contacter les ventes"
+      }
+    },
+    "footer": {
+      "tagline": "Renforcer l'éducation grâce à la technologie moderne. Construit sur ❤️ en Suède.",
+      "product": "Produit",
+      "features": "Caractéristiques et fonctions",
+      "pricing": "Prix",
+      "roadmap": "Feuille de route",
+      "resources": "Ressources",
+      "documentation": "Documentation",
+      "api_reference": "Référence API",
+      "system_status": "État du système",
+      "connect": "Contactez nous",
+      "contact_sales": "Contacter les ventes",
+      "twitter": "Twitter",
+      "github": "GitHub",
+      "copyright": "© 2026 EduFlex. Tous droits réservés.",
+      "developed_by": "Développé par",
+      "fenrir": "Studio Fenrir"
+    }
+  },
+  "contact": {
+    "title": "Réserver une démonstration",
+    "name": "Nom de l'organisation",
+    "name_placeholder": "Votre nom",
+    "email": "Adresse électronique",
+    "email_placeholder": "din@email.se",
+    "organization": "Organisation",
+    "organization_placeholder": "[MISSING] Skolans namn",
+    "phone": "Numéro de téléphone",
+    "phone_placeholder": "+46 70 123 45 67",
+    "message": "Notification",
+    "message_placeholder": "Parlez-nous un peu de vos besoins...",
+    "submit": "Envoyer la demande",
+    "sending": "Envoi...",
+    "success_message": "Merci beaucoup ! Nous vous contacterons dans les 24 heures.",
+    "error_message": "Un problème s'est produit. Veuillez réessayer ou nous envoyer un courriel directement."
+  },
+  "ai_personalization": {
+    "title": "Perspectives et recommandations en matière d'IA",
+    "risk_low": "Risque faible",
+    "risk_medium": "Risque moyen",
+    "risk_high": "Risque élevé",
+    "suggested_activities": "Activités proposées",
+    "coaching_advice": "Conseils d'accompagnement",
+    "update_analysis": "Mise à jour de l'analyse de l'IA",
+    "lesson_type": "leçon",
+    "practice_type": "Exercice",
+    "rationale_prefix": "Raisonnement de l'IA :",
+    "no_data": "Il n'y a pas encore assez de données pour l'analyse de l'IA. Continuez à travailler dans les cours !"
   }
 }

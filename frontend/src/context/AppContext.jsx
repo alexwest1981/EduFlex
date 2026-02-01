@@ -15,6 +15,7 @@ const AppContext = createContext({
     updateSystemSetting: () => { },
     toggleTheme: () => { },
     API_BASE: '',
+    token: null,
     api: {}
 });
 
@@ -26,6 +27,7 @@ export const AppProvider = ({ children }) => {
     const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
     const [licenseStatus, setLicenseStatus] = useState('checking');
     const [licenseLocked, setLicenseLocked] = useState(false);
+    const [token, setToken] = useState(localStorage.getItem('token'));
 
     const API_BASE = '/api';
 
@@ -119,6 +121,7 @@ export const AppProvider = ({ children }) => {
 
     const login = (user, token, tenantId) => {
         localStorage.setItem('token', token);
+        setToken(token);
         localStorage.setItem('user', JSON.stringify(user));
         if (tenantId) {
             // Persist tenantId for api.js to skip hostname check
@@ -130,6 +133,7 @@ export const AppProvider = ({ children }) => {
 
     const logout = () => {
         localStorage.removeItem('token');
+        setToken(null);
         localStorage.removeItem('user');
         localStorage.removeItem('force_tenant'); // Clear tenant context
         setCurrentUser(null);
@@ -169,6 +173,7 @@ export const AppProvider = ({ children }) => {
             licenseStatus,
             licenseLocked,
             API_BASE,
+            token,
             api
         }}>
             {children}

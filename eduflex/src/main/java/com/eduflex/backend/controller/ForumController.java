@@ -2,6 +2,7 @@ package com.eduflex.backend.controller;
 
 import com.eduflex.backend.model.*;
 import com.eduflex.backend.repository.*;
+import com.eduflex.backend.service.ForumService;
 import com.eduflex.backend.service.GamificationService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,18 +22,21 @@ public class ForumController {
     private final CourseRepository courseRepository;
     private final UserRepository userRepository;
 
-    // Vi använder GamificationService för poäng
-    private final GamificationService gamificationService;
+    // Vi använder GamificationService för poäng (via Service nu)
+    // private final GamificationService gamificationService; -> Flyttad till
+    // Service
+
+    private final ForumService forumService;
 
     // --- RÄTTAD KONSTRUKTOR ---
     public ForumController(ForumThreadRepository t, ForumPostRepository p, ForumCategoryRepository cat,
-            CourseRepository c, UserRepository u, GamificationService g) {
+            CourseRepository c, UserRepository u, ForumService forumService) {
         this.threadRepository = t;
         this.postRepository = p;
         this.categoryRepository = cat;
         this.courseRepository = c;
         this.userRepository = u;
-        this.gamificationService = g; // Nu matchar 'g' parametern ovan
+        this.forumService = forumService;
     }
 
     // --- KATEGORIER ---
@@ -45,16 +49,18 @@ public class ForumController {
         // Skapa default-kategorier om kursen är ny
         if (categories.isEmpty()) {
             Course course = courseRepository.findById(courseId).orElseThrow();
-            User admin = course.getTeacher();
+            // User admin = course.getTeacher(); // Ej kritiskt för auto-generering
 
             ForumCategory infoCat = new ForumCategory("Viktig information",
                     "Regler, uppslag och kursinformation från läraren.", true, course);
             categoryRepository.save(infoCat);
 
+            // Skapa tråden manuellt här eller via service (vi gör det enkelt här då det är
+            // init)
             ForumThread rulesThread = new ForumThread();
             rulesThread.setCourse(course);
             rulesThread.setCategory(infoCat);
-            rulesThread.setAuthor(admin);
+            rulesThread.setAuthor(course.getTeacher());
             rulesThread.setTitle("Forumregler & Information");
             rulesThread.setContent(
                     "Välkommen till kursforumet!\n\nHär är några enkla regler:\n1. Håll god ton.\n2. Inga personangrepp.\n3. Håll diskussionen relevant till ämnet.\n\nLycka till med studierna!");
@@ -106,20 +112,8 @@ public class ForumController {
         String title = payload.get("title");
         String content = payload.get("content");
 
-        ForumCategory category = categoryRepository.findById(categoryId).orElseThrow();
-        User author = userRepository.findById(userId).orElseThrow();
-
-        ForumThread thread = new ForumThread();
-        thread.setCourse(category.getCourse());
-        thread.setCategory(category);
-        thread.setAuthor(author);
-        thread.setTitle(title);
-        thread.setContent(content);
-
-        ForumThread savedThread = threadRepository.save(thread);
-
-        // GAMIFICATION: Ge 20 poäng för ny tråd
-        gamificationService.addPoints(userId, 20);
+        // Använd Service för logik + websocket + gamification
+        ForumThread savedThread = forumService.createThread(categoryId, userId, title, content);
 
         return ResponseEntity.ok(savedThread);
     }
@@ -148,18 +142,8 @@ public class ForumController {
         Long userId = Long.valueOf(payload.get("userId"));
         String content = payload.get("content");
 
-        ForumThread thread = threadRepository.findById(threadId).orElseThrow();
-        User author = userRepository.findById(userId).orElseThrow();
-
-        ForumPost post = new ForumPost();
-        post.setThread(thread);
-        post.setAuthor(author);
-        post.setContent(content);
-
-        ForumPost savedPost = postRepository.save(post);
-
-        // GAMIFICATION: Ge 10 poäng för svar
-        gamificationService.addPoints(userId, 10);
+        // Använd Service för logik + websocket + gamification
+        ForumPost savedPost = forumService.replyToThread(threadId, userId, content);
 
         return ResponseEntity.ok(savedPost);
     }
@@ -169,6 +153,23 @@ public class ForumController {
     public ResponseEntity<Void> deletePost(@PathVariable Long id) {
         postRepository.deleteById(id);
         return ResponseEntity.ok().build();
+    }
+
+    // --- REACTIONS (NYTT) ---
+    @PostMapping("/post/{postId}/react")
+    public ResponseEntity<Void> reactToPost(@PathVariable Long postId, @RequestBody Map<String, String> payload) {
+        Long userId = Long.valueOf(payload.get("userId"));
+        String reactionType = payload.get("type"); // e.g. "LIKE", "LOVE"
+
+        forumService.reactToPost(postId, userId, reactionType);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/thread/{threadId}/summary")
+    public ResponseEntity<String> summarizeThread(@PathVariable Long threadId) {
+        String summary = forumService.summarizeThread(threadId);
+        // Returns plain text or could be wrapped in JSON map
+        return ResponseEntity.ok(summary);
     }
 
     @GetMapping("/recent/{userId}")
