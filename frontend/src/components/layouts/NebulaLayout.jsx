@@ -3,7 +3,7 @@ import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { LayoutDashboard, FileText, User, Settings, LogOut, Layers, Menu, X, Award, Zap, Moon, Sun, Calendar, BookOpen, TrendingUp, Bell, Search, ShoppingBag, MessageSquare, PieChart, HelpCircle, Store, Library, ClipboardList } from 'lucide-react';
 import { useAppContext } from '../../context/AppContext';
 import { useModules } from '../../context/ModuleContext';
-import logoMain from '../../assets/images/logo_main.png';
+import logoTop from '../../assets/images/Logo_top.png';
 import { useTranslation } from 'react-i18next';
 
 import ChatModule from '../../modules/chat/ChatModule';
@@ -64,7 +64,7 @@ const NebulaLayout = ({ children }) => {
                 <div className="flex items-center gap-4">
                     <div className="flex items-center gap-2">
                         <div className="h-10 w-10 flex items-center justify-center">
-                            <img src={logoMain} alt="EduFlex Logo" className="w-full h-full object-contain" />
+                            <img src={logoTop} alt="EduFlex Logo" className="w-full h-full object-contain" />
                         </div>
                         <span className="font-black text-2xl tracking-tight text-gray-800 dark:text-white opacity-80 uppercase">
                             {systemSettings?.site_name || "EduFlex"}
