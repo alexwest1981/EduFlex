@@ -1,12 +1,14 @@
 import React, { useEffect } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
-import { LayoutDashboard, FileText, User, Settings, LogOut, Layers, Menu, X, Award, Zap, Moon, Sun, Calendar, BookOpen, TrendingUp, Bell, Search, Plus, HelpCircle, Shield, Folder, BarChart2, HardDrive, Wallet, Music, Play, Pause, Heart, Speaker, Store, Library } from 'lucide-react';
+import { LayoutDashboard, FileText, User, Settings, LogOut, Layers, Menu, X, Award, Zap, Moon, Sun, Calendar, BookOpen, TrendingUp, Bell, Search, Plus, HelpCircle, Shield, Folder, BarChart2, HardDrive, Wallet, Music, Play, Pause, Heart, Speaker, Store, Library, ClipboardList } from 'lucide-react';
 import { useAppContext } from '../../context/AppContext';
 import { useModules } from '../../context/ModuleContext';
 import { useTranslation } from 'react-i18next';
 import ChatModule from '../../modules/chat/ChatModule';
 import GlobalSearch from '../GlobalSearch';
 import NotificationBell from '../NotificationBell';
+import SidebarSection from '../SidebarSection';
+import { ShieldCheck } from 'lucide-react';
 
 const EmberLayout = ({ children }) => {
     const { currentUser, logout, systemSettings, theme, toggleTheme, API_BASE } = useAppContext();
@@ -27,25 +29,29 @@ const EmberLayout = ({ children }) => {
     const token = localStorage.getItem('token');
     const roleName = currentUser?.role?.name || currentUser?.role;
 
-    // Grouping Navigation for Ember Sidebar
-    const generalNav = [
-        { path: '/', icon: <LayoutDashboard size={18} />, label: t('sidebar.dashboard') },
-        { path: '/profile', icon: <User size={18} />, label: t('sidebar.profile') || 'Min Profil' },
-    ];
-
-    const utilityNav = [
-        { path: '/catalog', icon: <Layers size={18} />, label: t('sidebar.catalog') },
-        { path: '/ebooks', icon: <Library size={18} />, label: t('sidebar.library') || 'Bibliotek' },
-        { path: '/documents', icon: <FileText size={18} />, label: t('sidebar.documents') },
-        { path: '/calendar', icon: <Calendar size={18} />, label: t('sidebar.calendar') || 'Kalender' },
-        ...(roleName === 'TEACHER' || roleName === 'ADMIN' ? [{ path: '/resources', icon: <BookOpen size={18} />, label: t('sidebar.resource_bank') }] : []),
-    ];
-
-    const supportNav = [
-        ...(roleName === 'ADMIN' ? [{ path: '/analytics', icon: <TrendingUp size={18} />, label: t('sidebar.analytics') }] : []),
-        ...(roleName === 'ADMIN' ? [{ path: '/admin', icon: <Settings size={18} />, label: t('sidebar.admin') }] : []),
-        { path: '#logout', icon: <LogOut size={18} />, label: t('sidebar.logout'), action: handleLogout },
-    ];
+    const navItems = {
+        main: [
+            { path: '/', icon: <LayoutDashboard size={18} />, label: t('sidebar.dashboard') },
+            { path: '/catalog', icon: <Layers size={18} />, label: t('sidebar.catalog') },
+        ],
+        education: [
+            ...(roleName === 'TEACHER' || roleName === 'ADMIN' ? [{ path: '/resources', icon: <BookOpen size={18} />, label: t('sidebar.resource_bank') }] : []),
+            ...(roleName === 'TEACHER' || roleName === 'ADMIN' ? [{ path: '/evaluations/manage', icon: <ClipboardList size={18} />, label: 'Utvärderingar' }] : []),
+            ...(roleName === 'TEACHER' ? [{ path: '/?tab=COURSES', icon: <BookOpen size={18} />, label: t('sidebar.my_courses') || 'Mina kurser' }] : []),
+            ...(roleName === 'STUDENT' ? [{ path: '/my-courses', icon: <BookOpen size={18} />, label: t('sidebar.my_courses') || 'Mina kurser' }] : []),
+            { path: '/ebooks', icon: <Library size={18} />, label: t('sidebar.ebooks') },
+            ...(isModuleActive('AI_QUIZ') && (roleName === 'ADMIN' || roleName === 'TEACHER') ? [{ path: '/ai-quiz', icon: <Zap size={18} />, label: t('sidebar.ai_quiz') }] : []),
+        ],
+        tools: [
+            { path: '/calendar', icon: <Calendar size={18} />, label: t('sidebar.calendar') },
+            { path: '/documents', icon: <FileText size={18} />, label: t('sidebar.documents') },
+            { path: '/support', icon: <HelpCircle size={18} />, label: t('sidebar.support') },
+        ],
+        admin: [
+            ...(roleName === 'ADMIN' ? [{ path: '/admin', icon: <Settings size={18} />, label: t('sidebar.admin') }] : []),
+            ...(isModuleActive('ANALYTICS') && roleName === 'ADMIN' ? [{ path: '/analytics', icon: <TrendingUp size={18} />, label: t('sidebar.analytics') }] : []),
+        ]
+    };
 
 
     return (
@@ -84,75 +90,56 @@ const EmberLayout = ({ children }) => {
                     </div>
 
                     {/* Navigation Scroll */}
-                    <div className="flex-1 overflow-y-auto px-6 space-y-8 scrollbar-hide py-2">
-
-                        {/* Group: GENERAL */}
-                        <div>
-                            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4 px-3">General</h3>
-                            <div className="space-y-1">
-                                {generalNav.map(item => (
-                                    <NavLink key={item.path} to={item.path} className={({ isActive: navActive }) => {
-                                        const isActive = navActive || (item.path === '/admin' && location.pathname.startsWith('/enterprise'));
-                                        return `flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200
-                                        ${isActive ? 'bg-orange-50 dark:bg-orange-900/10 text-[#FF5722]' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'}`;
-                                    }}>
-                                        {item.icon}
-                                        <span className="font-medium text-sm">{item.label}</span>
-                                    </NavLink>
-                                ))}
-                            </div>
-                        </div>
-
-                        {/* Group: UTILITIES */}
-                        <div>
-                            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4 px-3">Utilities</h3>
-                            <div className="space-y-1">
-                                {utilityNav.map(item => (
-                                    <NavLink key={item.path} to={item.path} className={({ isActive: navActive }) => {
-                                        const isActive = navActive || (item.path === '/admin' && location.pathname.startsWith('/enterprise'));
-                                        return `flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200
-                                        ${isActive ? 'bg-orange-50 dark:bg-orange-900/10 text-[#FF5722]' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'}`;
-                                    }}>
-                                        {item.icon}
-                                        <span className="font-medium text-sm">{item.label}</span>
-                                    </NavLink>
-                                ))}
-                            </div>
-                        </div>
-
-                        {/* Group: SUPPORT */}
-                        <div>
-                            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4 px-3">Support</h3>
-                            <div className="space-y-1">
-                                {supportNav.map(item => (
-                                    item.action ? (
-                                        <button key={item.label} onClick={item.action} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-gray-500 dark:text-gray-400 hover:bg-red-50 dark:hover:bg-red-900/10 hover:text-red-600">
-                                            {item.icon}
-                                            <span className="font-medium text-sm">{item.label}</span>
-                                        </button>
-                                    ) : (
-                                        <NavLink key={item.path} to={item.path} className={({ isActive: navActive }) => {
-                                            const isActive = navActive || (item.path === '/admin' && location.pathname.startsWith('/enterprise'));
-                                            return `flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200
-                                            ${isActive ? 'bg-orange-50 dark:bg-orange-900/10 text-[#FF5722]' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'}`;
-                                        }}>
-                                            {item.icon}
-                                            <span className="font-medium text-sm">{item.label}</span>
-                                        </NavLink>
-                                    )
-                                ))}
-                            </div>
-                        </div>
-
+                    <div className="flex-1 overflow-y-auto px-6 py-4 space-y-2 scrollbar-hide">
+                        <SidebarSection
+                            title={t('sidebar.categories.main')}
+                            items={navItems.main}
+                            sidebarOpen={true}
+                        />
+                        <SidebarSection
+                            title={t('sidebar.categories.education')}
+                            items={navItems.education}
+                            sidebarOpen={true}
+                        />
+                        <SidebarSection
+                            title={t('sidebar.categories.tools')}
+                            items={navItems.tools}
+                            sidebarOpen={true}
+                        />
+                        {navItems.admin.length > 0 && (
+                            <SidebarSection
+                                title={t('sidebar.categories.admin')}
+                                items={navItems.admin}
+                                sidebarOpen={true}
+                            />
+                        )}
                     </div>
 
-                    {/* Bottom Helper */}
-                    <div className="p-6">
-                        <div onClick={() => navigate('/support')} className="flex items-center gap-3 px-4 py-3 text-gray-500 hover:text-gray-900 cursor-pointer transition-colors">
-                            <HelpCircle size={18} />
-                            <span className="font-medium text-sm">{t('sidebar.support') || 'Help & Support'}</span>
-                            <span className="ml-auto bg-[#3F51B5] text-white text-[10px] font-bold px-1.5 py-0.5 rounded-md">8</span>
+                    {/* Bottom Profile Helper */}
+                    <div className="p-6 border-t border-gray-100 dark:border-gray-800">
+                        <div
+                            onClick={() => navigate('/profile')}
+                            className="flex items-center gap-3 p-2 rounded-xl cursor-pointer hover:bg-orange-50 dark:hover:bg-orange-900/10 transition-colors group"
+                        >
+                            <div className="w-10 h-10 rounded-full bg-orange-100 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 flex items-center justify-center overflow-hidden shrink-0">
+                                {profileImgUrl ? (
+                                    <img src={profileImgUrl} alt="Profil" className="w-full h-full object-cover" />
+                                ) : (
+                                    <User size={18} className="text-[#FF5722]" />
+                                )}
+                            </div>
+                            <div className="min-w-0">
+                                <p className="text-sm font-bold text-gray-900 dark:text-white truncate">{currentUser?.firstName}</p>
+                                <p className="text-[10px] uppercase font-bold text-[#FF5722] tracking-wider">{roleName}</p>
+                            </div>
                         </div>
+
+                        <button
+                            onClick={handleLogout}
+                            className="w-full mt-4 flex items-center gap-2 px-4 py-2 text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/10 rounded-xl transition-colors text-xs font-bold"
+                        >
+                            <LogOut size={16} /> {t('sidebar.logout')}
+                        </button>
                     </div>
                 </aside>
 

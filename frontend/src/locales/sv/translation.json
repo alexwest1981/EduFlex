@@ -46,7 +46,13 @@
     "my_courses": "Mina kurser",
     "ebooks": "E-böcker",
     "system": "System",
-    "ai_quiz": "AI Quiz"
+    "ai_quiz": "AI Quiz",
+    "categories": {
+      "main": "Huvudmeny",
+      "education": "Utbildning",
+      "tools": "Verktyg",
+      "admin": "Administration"
+    }
   },
   "library": {
     "title": "Bibliotek",

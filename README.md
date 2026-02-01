@@ -38,6 +38,12 @@
 ## 🇸🇪 Svenska
 
 ### ⚡ Senaste Uppdateringarna
+*   **🧩 Sidomeny-refaktorering & Gruppering (1 feb 2026):**
+    *   **Kategoriserad Navigation:** Sidomenyn har byggts om från grunden för att minska visuell stress, särskilt för administratörer. Menyval är nu logiskt grupperade i sektioner (Huvudmeny, Utbildning, Verktyg, Administration).
+    *   **Utfällbara Sektioner:** Ny `SidebarSection`-komponent som tillåter att grupper fälls in/ut för att spara vertikalt utrymme.
+    *   **Modern Profil-area:** Profilsektionen har flyttats till botten för en mer premium "v2.0"-känsla, med snabbåtkomst till inställningar och logga ut.
+    *   **Tema-konsistens:** Synkroniserat navigationslogiken över alla fem teman (`Standard`, `Ember`, `Voltage`, `Midnight`, `Nebula`) för en enhetlig upplevelse.
+
 *   **📊 Kursutvärderingar & AI-analys (1 feb 2026):**
     *   **Komplett Utvärderingssystem:** Nytt system för att skapa, hantera och analysera kursutvärderingar. Redesignat gränssnitt för både lärare och studenter.
     *   **Studentgränssnitt & Notiser:** Mobilvänligt, anonymiserat formulär. Automatiska systemnotiser vid aktivering samt en ny Dashboard-widget ("Din röst är viktig!") för smidig åtkomst.
@@ -240,6 +246,12 @@ curl -X POST http://localhost:8080/api/tenants \
 ## 🇬🇧 English
 
 ### ⚡ Latest Updates
+*   **🧩 Sidebar Refactor & Grouping (Feb 1, 2026):**
+    *   **Categorized Navigation:** The sidebar has been rebuilt from scratch to reduce visual clutter, especially for administrators. Navigation items are now logically grouped into sections (Main Menu, Education, Tools, Administration).
+    *   **Collapsible Sections:** New `SidebarSection` component that allows groups to be collapsed/expanded to save vertical space.
+    *   **Modern Profile Area:** The profile section has been moved to the bottom for a more premium "v2.0" feel, with quick access to settings and logout.
+    *   **Theme Consistency:** Synchronized navigation logic across all five themes (`Standard`, `Ember`, `Voltage`, `Midnight`, `Nebula`) for a unified experience.
+
 *   **📊 Course Evaluations & AI Analysis (Feb 1, 2026):**
     *   **Complete Evaluation System:** New system for creating, managing, and analyzing course evaluations. Redesigned interface for both teachers and students.
     *   **Student Interface & Notifications:** Mobile-friendly, anonymized form. Automatic system notifications upon activation and a new Dashboard widget ("Your voice matters!") for easy access.

@@ -46,7 +46,13 @@
     "ebooks": "E-books",
     "system": "System",
     "ai_quiz": "AI Quiz",
-    "support": "Support & Contact"
+    "support": "Support & Contact",
+    "categories": {
+      "main": "Main Menu",
+      "education": "Education",
+      "tools": "Tools",
+      "admin": "Administration"
+    }
   },
   "library": {
     "title": "Library",

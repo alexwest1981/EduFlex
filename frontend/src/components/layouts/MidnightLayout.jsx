@@ -33,10 +33,11 @@ const MidnightLayout = ({ children }) => {
     const navItems = [
         { path: '/', icon: <LayoutDashboard size={18} />, label: t('sidebar.dashboard') },
         { path: '/catalog', icon: <Wallet size={18} />, label: t('sidebar.catalog') },
-        { path: '/documents', icon: <FileText size={18} />, label: t('sidebar.documents') },
-        { path: '/ebooks', icon: <Library size={18} />, label: t('sidebar.library') || 'Bibliotek' },
+        { path: '/my-courses', icon: <BookOpen size={18} />, label: t('sidebar.my_courses') },
+        { path: '/ebooks', icon: <Library size={18} />, label: t('sidebar.ebooks') },
         { path: '/calendar', icon: <Calendar size={18} />, label: t('sidebar.calendar') },
-        { path: '/support', icon: <HelpCircle size={18} />, label: t('sidebar.support') || 'Kontakt & Support' },
+        { path: '/documents', icon: <FileText size={18} />, label: t('sidebar.documents') },
+        ...(roleName === 'TEACHER' || roleName === 'ADMIN' ? [{ path: '/resources', icon: <BookOpen size={18} />, label: t('sidebar.resource_bank') }] : []),
         ...(roleName === 'ADMIN' ? [{ path: '/analytics', icon: <Activity size={18} />, label: t('sidebar.analytics') }] : []),
         ...(roleName === 'ADMIN' ? [{ path: '/admin', icon: <Settings size={18} />, label: t('sidebar.admin') }] : []),
     ];

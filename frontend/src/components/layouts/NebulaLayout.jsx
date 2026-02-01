@@ -33,12 +33,14 @@ const NebulaLayout = ({ children }) => {
     // Nebula uses icon-heavy top navigation
     const navItems = [
         { path: '/', icon: <LayoutDashboard size={20} />, label: t('sidebar.dashboard') },
-        { path: '/catalog', icon: <ShoppingBag size={20} />, label: t('sidebar.catalog') }, // Shopping Bag for Catalogue fits Bryzos vibe
-        { path: '/ebooks', icon: <Library size={18} />, label: t('sidebar.library') || 'Bibliotek' },
+        { path: '/catalog', icon: <ShoppingBag size={20} />, label: t('sidebar.catalog') },
+        { path: '/my-courses', icon: <BookOpen size={20} />, label: t('sidebar.my_courses') },
+        { path: '/ebooks', icon: <Library size={18} />, label: t('sidebar.ebooks') },
         { path: '/calendar', icon: <Calendar size={20} />, label: t('sidebar.calendar') },
         { path: '/documents', icon: <FileText size={20} />, label: t('sidebar.documents') },
-        { path: '/support', icon: <HelpCircle size={20} />, label: t('sidebar.support') || 'Kontakt & Support' },
+        ...(roleName === 'TEACHER' || roleName === 'ADMIN' ? [{ path: '/resources', icon: <BookOpen size={20} />, label: t('sidebar.resource_bank') }] : []),
         ...(roleName === 'TEACHER' || roleName === 'ADMIN' ? [{ path: '/evaluations/manage', icon: <ClipboardList size={20} />, label: 'Utvärderingar' }] : []),
+        { path: '/support', icon: <HelpCircle size={20} />, label: t('sidebar.support') },
         ...(roleName === 'ADMIN' ? [{ path: '/analytics', icon: <PieChart size={20} />, label: t('sidebar.analytics') }] : []),
         ...(roleName === 'ADMIN' ? [{ path: '/admin', icon: <Settings size={20} />, label: t('sidebar.admin') }] : []),
     ];
