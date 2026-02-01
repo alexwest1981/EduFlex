@@ -86,7 +86,6 @@ const StandardLayout = ({ children }) => {
             ...(roleName === 'TEACHER' ? [{ path: '/?tab=COURSES', icon: <BookOpen size={20} />, label: t('sidebar.my_courses') || 'Mina kurser' }] : []),
             ...(roleName === 'STUDENT' ? [{ path: '/my-courses', icon: <BookOpen size={20} />, label: t('sidebar.my_courses') || 'Mina kurser' }] : []),
             { path: '/ebooks', icon: <Library size={20} />, label: t('sidebar.ebooks') },
-            ...(isModuleActive('AI_QUIZ') && (roleName === 'ADMIN' || roleName === 'TEACHER') ? [{ path: '/ai-quiz', icon: <Zap size={20} />, label: t('sidebar.ai_quiz') }] : []),
         ],
         tools: [
             { path: '/calendar', icon: <Calendar size={20} />, label: t('sidebar.calendar') },
