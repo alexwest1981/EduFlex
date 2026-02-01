@@ -10,6 +10,7 @@ import GlobalSearch from '../GlobalSearch';
 import NotificationBell from '../NotificationBell';
 import OnlineFriendsPanel from '../social/OnlineFriendsPanel';
 import SidebarSection from '../SidebarSection';
+import logoMain from '../../assets/images/logo_main.png';
 
 const StandardLayout = ({ children }) => {
     const { currentUser, logout, systemSettings, theme, toggleTheme, API_BASE } = useAppContext();
@@ -122,8 +123,8 @@ const StandardLayout = ({ children }) => {
                 {/* LOGO AREA */}
                 <div className="h-16 flex items-center justify-between px-6 border-b border-gray-100 dark:border-[#282a2c] shrink-0">
                     <div className="flex items-center">
-                        <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center mr-3 shadow-lg shadow-indigo-500/20">
-                            <ShieldCheck className="text-white" size={18} />
+                        <div className="w-9 h-9 flex items-center justify-center mr-3">
+                            <img src={logoMain} alt="EduFlex Logo" className="w-full h-full object-contain" />
                         </div>
                         <span className={`font-bold text-xl tracking-tight text-gray-800 dark:text-white truncate block ${!sidebarOpen && 'lg:hidden'}`}>
                             {systemSettings?.site_name || "EduFlex"}
