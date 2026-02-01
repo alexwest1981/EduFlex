@@ -956,6 +956,10 @@
       "lti_ready": {
         "title": "LTI 1.3 Ready",
         "desc": "Fully verified support for OIDC launches. Seamless integration with external platforms like Canvas and Moodle."
+      },
+      "evaluation_system": {
+        "title": "Course Evaluation & Insights",
+        "desc": "Complete system for course quality. Automatic student notifications and AI analysis of open-ended answers to measure training ROI."
       }
     },
     "architecture": {

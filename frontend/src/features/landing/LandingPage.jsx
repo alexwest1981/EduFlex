@@ -91,6 +91,12 @@ const LandingPage = () => {
             title: t('landing.features.analytics.title'),
             description: t('landing.features.analytics.desc'),
             gradient: 'from-indigo-500 to-purple-500'
+        },
+        {
+            icon: <Zap className="w-6 h-6" />,
+            title: t('landing.features.evaluation_system.title'),
+            description: t('landing.features.evaluation_system.desc'),
+            gradient: 'from-blue-600 to-indigo-700'
         }
     ];
 
@@ -161,6 +167,12 @@ const LandingPage = () => {
             title: 'AI Quiz Generator',
             description: 'Generera quiz automatiskt från dokument (PDF/Word) med Gemini AI. Exportera direkt till din personliga frågebank.',
             gradient: 'from-purple-600 to-pink-600'
+        },
+        {
+            icon: <BarChart className="w-6 h-6" />,
+            title: 'Kursutvärdering & Insikter',
+            description: 'Komplett system för kurskvalitet, automatiserade studentnotiser och AI-analys av fritextsvar för att mäta ROI.',
+            gradient: 'from-indigo-600 to-blue-700'
         }
     ];
 

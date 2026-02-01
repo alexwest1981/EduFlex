@@ -794,6 +794,10 @@
       "security": {
         "title": "Enterprise-Säkerhet",
         "desc": "Rollbaserad åtkomstkontroll (RBAC), granskningsloggning och säker Keycloak SSO-integration."
+      },
+      "evaluation_system": {
+        "title": "Kursutvärdering & Insikter",
+        "desc": "Komplett system för kurskvalitet. Automatiska studentnotiser och AI-analys av fritextsvar för att mäta utbildningens ROI."
       }
     },
     "architecture": {
