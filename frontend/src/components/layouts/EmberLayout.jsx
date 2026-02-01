@@ -8,6 +8,7 @@ import ChatModule from '../../modules/chat/ChatModule';
 import GlobalSearch from '../GlobalSearch';
 import NotificationBell from '../NotificationBell';
 import SidebarSection from '../SidebarSection';
+import logoMain from '../../assets/images/logo_main.png';
 import { ShieldCheck } from 'lucide-react';
 
 const EmberLayout = ({ children }) => {
@@ -74,8 +75,8 @@ const EmberLayout = ({ children }) => {
                     {/* Brand */}
                     <div className="h-24 flex items-center px-8">
                         <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 bg-black dark:bg-white rounded-lg flex items-center justify-center">
-                                <span className="text-white dark:text-black font-bold text-lg">E</span>
+                            <div className="w-9 h-9 flex items-center justify-center">
+                                <img src={logoMain} alt="EduFlex Logo" className="w-full h-full object-contain" />
                             </div>
                             <span className="font-bold text-xl tracking-tight text-gray-900 dark:text-white">
                                 {systemSettings?.site_name || "EduFlex"}

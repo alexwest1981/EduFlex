@@ -9,6 +9,7 @@ import ChatModule from '../../modules/chat/ChatModule';
 
 import GlobalSearch from '../GlobalSearch';
 import NotificationBell from '../NotificationBell';
+import logoMain from '../../assets/images/logo_main.png';
 
 const MidnightLayout = ({ children }) => {
     const { currentUser, logout, systemSettings, theme, toggleTheme, API_BASE } = useAppContext();
@@ -67,8 +68,8 @@ const MidnightLayout = ({ children }) => {
                     <div className="flex items-center gap-10">
                         {/* Brand */}
                         <div className="flex items-center gap-3">
-                            <div className="w-9 h-9 bg-gradient-to-br from-[#00DC82] to-[#00A862] rounded-xl flex items-center justify-center shadow-lg shadow-green-500/20">
-                                <Zap size={18} className="text-black fill-black" />
+                            <div className="w-9 h-9 flex items-center justify-center">
+                                <img src={logoMain} alt="EduFlex Logo" className="w-full h-full object-contain filter brightness-0 invert" />
                             </div>
                             <span className="font-bold text-lg tracking-tight text-white/90">
                                 {systemSettings?.site_name || "EduFlex"}

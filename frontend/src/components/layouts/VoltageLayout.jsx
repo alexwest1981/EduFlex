@@ -8,6 +8,7 @@ import ChatModule from '../../modules/chat/ChatModule';
 import GlobalSearch from '../GlobalSearch';
 import NotificationBell from '../NotificationBell';
 import SidebarSection from '../SidebarSection';
+import logoMain from '../../assets/images/logo_main.png';
 import { ShieldCheck } from 'lucide-react';
 
 const VoltageLayout = ({ children }) => {
@@ -74,8 +75,8 @@ const VoltageLayout = ({ children }) => {
                     {/* Brand / Logo */}
                     <div className="h-24 flex items-center justify-center lg:justify-start lg:px-8">
                         <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 border-2 border-[#CCFF00] rounded-full flex items-center justify-center">
-                                <span className="text-[#CCFF00] font-bold text-lg">+</span>
+                            <div className="w-10 h-10 flex items-center justify-center">
+                                <img src={logoMain} alt="EduFlex Logo" className="w-full h-full object-contain" />
                             </div>
                             <span className="font-bold text-xl tracking-tight text-white hidden lg:block">
                                 {systemSettings?.site_name || "EduFlex"}

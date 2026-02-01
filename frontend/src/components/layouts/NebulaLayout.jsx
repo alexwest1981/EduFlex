@@ -1,8 +1,10 @@
+```
 import React, { useEffect } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { LayoutDashboard, FileText, User, Settings, LogOut, Layers, Menu, X, Award, Zap, Moon, Sun, Calendar, BookOpen, TrendingUp, Bell, Search, ShoppingBag, MessageSquare, PieChart, HelpCircle, Store, Library, ClipboardList } from 'lucide-react';
 import { useAppContext } from '../../context/AppContext';
 import { useModules } from '../../context/ModuleContext';
+import logoMain from '../../assets/images/logo_main.png';
 import { useTranslation } from 'react-i18next';
 
 import ChatModule from '../../modules/chat/ChatModule';
@@ -20,7 +22,7 @@ const NebulaLayout = ({ children }) => {
         if (!currentUser?.profilePictureUrl) return null;
         let url = currentUser.profilePictureUrl;
         if (url.includes('minio:9000')) url = url.replace('minio:9000', 'localhost:9000');
-        return url.startsWith('http') ? url : `${window.location.origin}${url} `;
+        return url.startsWith('http') ? url : `${ window.location.origin }${ url } `;
     };
     const profileImgUrl = getProfileUrl();
 
@@ -62,8 +64,8 @@ const NebulaLayout = ({ children }) => {
                 {/* Logo Area */}
                 <div className="flex items-center gap-4">
                     <div className="flex items-center gap-2">
-                        <div className="h-10 w-10 bg-gradient-to-tr from-purple-600 to-indigo-500 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-purple-500/20">
-                            {systemSettings?.site_name ? systemSettings.site_name[0] : 'E'}
+                        <div className="h-10 w-10 flex items-center justify-center">
+                            <img src={logoMain} alt="EduFlex Logo" className="w-full h-full object-contain" />
                         </div>
                         <span className="font-black text-2xl tracking-tight text-gray-800 dark:text-white opacity-80 uppercase">
                             {systemSettings?.site_name || "EduFlex"}
@@ -77,10 +79,11 @@ const NebulaLayout = ({ children }) => {
                         const isActive = location.pathname === item.path || (item.path === '/admin' && location.pathname.startsWith('/enterprise'));
                         return (
                             <NavLink key={item.path} to={item.path} className={`p - 3.5 rounded - 2xl transition - all duration - 300 group
-                                ${isActive
-                                    ? 'bg-white dark:bg-[#2D2D2D] text-purple-600 dark:text-purple-400 shadow-xl shadow-purple-900/5 scale-110'
-                                    : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-white/50 dark:hover:bg-white/5'
-                                } `}>
+                                ${
+    isActive
+        ? 'bg-white dark:bg-[#2D2D2D] text-purple-600 dark:text-purple-400 shadow-xl shadow-purple-900/5 scale-110'
+        : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-white/50 dark:hover:bg-white/5'
+} `}>
                                 {item.icon}
                             </NavLink>
                         );
