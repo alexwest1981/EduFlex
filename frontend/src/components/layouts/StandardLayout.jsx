@@ -6,9 +6,9 @@ import { useModules } from '../../context/ModuleContext';
 import { useTranslation } from 'react-i18next';
 
 import ChatModule from '../../modules/chat/ChatModule';
+import GlobalSearch from '../GlobalSearch';
 import NotificationBell from '../NotificationBell';
 import OnlineFriendsPanel from '../social/OnlineFriendsPanel';
-import { MobileSidebar, MobileHeader, MobileBottomNav } from './MobileComponents';
 import SidebarSection from '../SidebarSection';
 
 const StandardLayout = ({ children }) => {
@@ -18,13 +18,8 @@ const StandardLayout = ({ children }) => {
     const navigate = useNavigate();
     const location = useLocation();
     const [sidebarOpen, setSidebarOpen] = useState(true);
-    const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
     const [friendsPanelOpen, setFriendsPanelOpen] = useState(false);
-
-    // Close mobile sidebar on route change
-    useEffect(() => {
-        setMobileSidebarOpen(false);
-    }, [location.pathname]);
+    const [scrolled, setScrolled] = useState(false);
 
     const handleLogout = () => { logout(); navigate('/login'); };
 
@@ -71,6 +66,15 @@ const StandardLayout = ({ children }) => {
         return () => clearInterval(intervalId);
     }, [currentUser]);
 
+    useEffect(() => {
+        const handleScroll = () => {
+            setScrolled(window.scrollY > 0);
+        };
+
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
+
     const navItems = {
         main: [
             { path: '/', icon: <LayoutDashboard size={20} />, label: t('sidebar.dashboard') },
@@ -108,25 +112,12 @@ const StandardLayout = ({ children }) => {
             `}</style>
             <div className={`fixed inset-0 -z-10 app-wrapper transition-colors duration-300 pointer-events-none`} />
 
-            {/* Mobile overlay */}
-            {/* Mobile Sidebar (New Theme) */}
-            <MobileSidebar
-                isOpen={mobileSidebarOpen}
-                onClose={() => setMobileSidebarOpen(false)}
-                navItems={navItems}
-                friendsPanelOpen={friendsPanelOpen}
-                setFriendsPanelOpen={setFriendsPanelOpen}
-            />
-
-            {/* Desktop Sidebar */}
+            {/* SIDEBAR - Always desktop-focused now */}
             <aside className={`
+                relative h-full transition-all duration-300 z-50 flex flex-col
+                ${sidebarOpen ? 'w-72' : 'w-20'}
+                bg-white/80 dark:bg-[#1E1F20]/80 border-r border-gray-100 dark:border-[#282a2c]
                 hidden lg:flex
-                ${sidebarOpen ? 'w-64' : 'w-20'}
-                bg-white dark:bg-gray-900 
-                lg:bg-card lg:dark:bg-card-dark 
-                border-none
-                transition-all duration-300 flex-col fixed h-full z-40 
-                shadow-[4px_0_24px_rgba(0,0,0,0.02)] dark:shadow-[4px_0_24px_rgba(0,0,0,0.4)]
             `} style={{ backdropFilter: 'var(--card-backdrop)' }}>
 
                 {/* LOGO AREA */}
@@ -210,24 +201,19 @@ const StandardLayout = ({ children }) => {
             </aside>
 
             {/* Main content - responsive margins */}
-            <main className={`flex-1 transition-all duration-300 ${sidebarOpen ? 'lg:ml-64' : 'lg:ml-20'} ml-0 p-0 lg:p-8 pb-20 lg:pb-8 h-full overflow-y-auto bg-gray-50 dark:bg-[#131314]`}>
+            <main className={`flex-1 transition-all duration-300 ${sidebarOpen ? 'lg:ml-72' : 'lg:ml-20'} ml-0 p-0 h-full overflow-y-auto bg-gray-50 dark:bg-[#131314]`}>
 
-                <MobileHeader
-                    friendsPanelOpen={friendsPanelOpen}
-                    setFriendsPanelOpen={setFriendsPanelOpen}
-                />
-
-                {/* Desktop Header */}
-                <div className="hidden lg:flex mb-6 items-center justify-between">
+                <header className={`h-16 flex items-center justify-between px-8 sticky top-0 z-40 transition-all ${scrolled ? 'bg-white/80 dark:bg-[#1E1F20]/80 backdrop-blur-md border-b border-gray-100 dark:border-[#282a2c]' : 'bg-transparent'
+                    }`}>
                     <div className="flex items-center gap-4">
-                        {/* Desktop sidebar toggle */}
                         <button
                             onClick={() => setSidebarOpen(!sidebarOpen)}
-                            className="p-2 hover:bg-gray-200 dark:hover:bg-[#282a2c] rounded-lg text-gray-500 dark:text-gray-400 transition-colors"
+                            className="p-2 hover:bg-gray-100 dark:hover:bg-[#282a2c] rounded-xl text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hidden lg:block"
                             title={sidebarOpen ? t('common.minimize_menu') || "Minimera meny" : t('common.expand_menu') || "Expandera meny"}
                         >
                             {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
                         </button>
+                        <GlobalSearch />
                     </div>
 
                     <div className="flex items-center gap-2 relative">
@@ -247,15 +233,12 @@ const StandardLayout = ({ children }) => {
 
                         <NotificationBell />
                     </div>
-                </div>
+                </header>
 
-                <div className="px-4 lg:px-0">
+                <div className="flex-1 overflow-y-auto p-4 lg:p-8 relative custom-scrollbar">
                     {children}
                 </div>
             </main>
-
-            {/* Mobile Bottom Navigation */}
-            <MobileBottomNav onMenuOpen={() => setMobileSidebarOpen(true)} />
 
             {isModuleActive('CHAT') && (
                 <div className="hidden lg:block">

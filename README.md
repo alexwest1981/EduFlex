@@ -43,6 +43,7 @@
     *   **Utfällbara Sektioner:** Ny `SidebarSection`-komponent som tillåter att grupper fälls in/ut för att spara vertikalt utrymme.
     *   **Modern Profil-area:** Profilsektionen har flyttats till botten för en mer premium "v2.0"-känsla, med snabbåtkomst till inställningar och logga ut.
     *   **Tema-konsistens:** Synkroniserat navigationslogiken över alla fem teman (`Standard`, `Ember`, `Voltage`, `Midnight`, `Nebula`) för en enhetlig upplevelse.
+    *   **Desktop Focus (v2.1):** Allt "mobil-tema"-logik (bottom-nav, mobila headers) har tagits bort från desktop-teman för att ge fullt fokus på den kommande Native React-mobilappen.
 
 *   **📊 Kursutvärderingar & AI-analys (1 feb 2026):**
     *   **Komplett Utvärderingssystem:** Nytt system för att skapa, hantera och analysera kursutvärderingar. Redesignat gränssnitt för både lärare och studenter.
@@ -251,6 +252,7 @@ curl -X POST http://localhost:8080/api/tenants \
     *   **Collapsible Sections:** New `SidebarSection` component that allows groups to be collapsed/expanded to save vertical space.
     *   **Modern Profile Area:** The profile section has been moved to the bottom for a more premium "v2.0" feel, with quick access to settings and logout.
     *   **Theme Consistency:** Synchronized navigation logic across all five themes (`Standard`, `Ember`, `Voltage`, `Midnight`, `Nebula`) for a unified experience.
+    *   **Desktop Focus (v2.1):** All "mobile theme" logic (bottom-nav, mobile headers) has been removed from desktop themes to maintain full focus on the upcoming Native React mobile app.
 
 *   **📊 Course Evaluations & AI Analysis (Feb 1, 2026):**
     *   **Complete Evaluation System:** New system for creating, managing, and analyzing course evaluations. Redesigned interface for both teachers and students.

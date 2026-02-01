@@ -158,10 +158,6 @@ const FloatingLayout = ({ children }) => {
                 </div>
 
                 {children}
-
-                <button onClick={() => setSidebarOpen(!sidebarOpen)} className="fixed bottom-8 right-8 p-3 bg-gray-900 text-white rounded-full shadow-lg z-50 md:hidden">
-                    {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
-                </button>
             </main >
 
             {
