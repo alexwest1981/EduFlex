@@ -201,7 +201,7 @@ const StandardLayout = ({ children }) => {
             </aside>
 
             {/* Main content - responsive margins */}
-            <main className={`flex-1 transition-all duration-300 ${sidebarOpen ? 'lg:ml-72' : 'lg:ml-20'} ml-0 p-0 h-full overflow-y-auto bg-gray-50 dark:bg-[#131314]`}>
+            <main className={`flex-1 transition-all duration-300 ml-0 p-0 h-full overflow-y-auto bg-gray-50 dark:bg-[#131314]`}>
 
                 <header className={`h-16 flex items-center justify-between px-8 sticky top-0 z-40 transition-all ${scrolled ? 'bg-white/80 dark:bg-[#1E1F20]/80 backdrop-blur-md border-b border-gray-100 dark:border-[#282a2c]' : 'bg-transparent'
                     }`}>
