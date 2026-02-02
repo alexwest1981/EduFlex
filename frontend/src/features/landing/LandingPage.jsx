@@ -97,6 +97,18 @@ const LandingPage = () => {
             title: t('landing.features.evaluation_system.title'),
             description: t('landing.features.evaluation_system.desc'),
             gradient: 'from-blue-600 to-indigo-700'
+        },
+        {
+            icon: <Trophy className="w-6 h-6" />,
+            title: "Gamification V2.0",
+            description: "Streaks, Quests och en butik för profilanpassning ökar engagemanget.",
+            gradient: 'from-orange-500 to-red-500'
+        },
+        {
+            icon: <Play className="w-6 h-6" />,
+            title: "Privata Videorum",
+            description: "Självhostad Jitsi Meet utan tidsgränser för obegränsade lektioner.",
+            gradient: 'from-emerald-500 to-teal-500'
         }
     ];
 

@@ -216,6 +216,7 @@ export const api = {
 
     messages: {
         getInbox: () => fetch(`${API_BASE}/messages/inbox`, { headers: getHeaders() }).then(handleResponse),
+        getFolder: (slug) => fetch(`${API_BASE}/messages/folder/${slug}`, { headers: getHeaders() }).then(handleResponse),
         getSent: () => fetch(`${API_BASE}/messages/sent`, { headers: getHeaders() }).then(handleResponse),
         getFolders: () => fetch(`${API_BASE}/messages/folders`, { headers: getHeaders() }).then(handleResponse),
         createFolder: (name) => fetch(`${API_BASE}/messages/folders`, { method: 'POST', headers: getHeaders(), body: JSON.stringify({ name }) }).then(handleResponse),

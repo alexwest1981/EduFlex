@@ -38,11 +38,13 @@
 ## 🇸🇪 Svenska
 
 ### ⚡ Senaste Uppdateringarna
-*   **🎮 EduGame Expansion & Infrastruktur (2 feb 2026):**
-    *   **EduGame Framework:** Initierat arkitekturen för `com.eduflex.backend.edugame` – en dedikerad modul för gamification v2.0.
-    *   **Shop & Profiler:** Planering klar för en inbyggd butik där elever kan köpa bakgrunder och ramar för sina profilbilder med XP.
-    *   **Docker Dual-Track:** Infört en hybrid-strategi för utveckling (Local Services vs Docker) för att kringgå WSL2-lagringsproblem på Windows.
-    *   **Avatar-fix:** Löste kritiska 400 Bad Request-fel vid uppladdning av profilbilder genom att stabilisera MinIO-containern och backend-konfigurationen.
+*   **🎮 Gamification V2.0 & Privat Video-infra (2 feb 2026):**
+    *   **EduGame Engine (V2.0):** Lanserat en komplett backend-motor för `Streaks`, `Quests` och `Friendships`. Systemet automatgenererar nu dagliga uppdrag och spårar social interaktion.
+    *   **Customization Shop:** Implementerat en butik där användare kan köpa profilarmer, bakgrunder och unika titlar med intjänad XP/poäng.
+    *   **Dynamic UI Rendering:** Profiler och avatars renderar nu utrustade ramar och bakgrunder i realtid med högsta visuella kvalitet.
+    *   **Privat Jitsi Server:** Migrerat till en helt självhostad Jitsi-stack via Docker för obegränsade videomöten utan tidsgräns.
+    *   **Infrastructure & Docker:** Stabiliserat Docker-miljön på Windows genom att flytta VHDX-lagring och lösa portkonflikter mellan containrar och lokala tjänster.
+    *   **Avatar-fix:** Löste kritiska 400 Bad Request-fel vid uppladdning genom att stabilisera MinIO-konfigurationen.
 
 *   **🧩 Sidomeny-refaktorering & Gruppering (1 feb 2026):**
     *   **Kategoriserad Navigation:** Sidomenyn har byggts om från grunden för att minska visuell stress, särskilt för administratörer. Menyval är nu logiskt grupperade i sektioner (Huvudmeny, Utbildning, Verktyg, Administration).

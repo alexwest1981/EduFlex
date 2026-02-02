@@ -20,6 +20,10 @@ ingress:
   - hostname: storage.eduflexlms.se
     service: http://127.0.0.1:9000
 
+  # Dedicated Jitsi Meet Domain
+  - hostname: meet.eduflexlms.se
+    service: http://127.0.0.1:8444
+
   # Dedicated API Domain
   - hostname: api.eduflexlms.se
     service: http://127.0.0.1:8080

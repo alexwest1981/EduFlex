@@ -21,6 +21,7 @@ import Dashboard from './features/dashboard/Dashboard';
 import CourseDetail from './features/courses/CourseDetail';
 import StudentCoursesPage from './features/courses/StudentCoursesPage';
 import CalendarView from './features/calendar/CalendarView';
+import ShopView from './features/edugame/ShopView';
 
 // --- SYSTEM ---
 import LicenseLock from './features/system/LicenseLock';
@@ -227,6 +228,14 @@ const AppRoutes = () => {
                     <ProtectedRoute roles={['TEACHER', 'ADMIN']}>
                         <Layout currentUser={currentUser} handleLogout={logout}>
                             <AIQuizGenerator />
+                        </Layout>
+                    </ProtectedRoute>
+                } />
+
+                <Route path="/shop" element={
+                    <ProtectedRoute>
+                        <Layout currentUser={currentUser} handleLogout={logout}>
+                            <ShopView />
                         </Layout>
                     </ProtectedRoute>
                 } />

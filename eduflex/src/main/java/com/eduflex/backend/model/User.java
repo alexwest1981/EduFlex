@@ -103,9 +103,20 @@ public class User implements Serializable {
     @JsonIgnore
     private Set<Course> coursesCreated = new HashSet<>();
 
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private com.eduflex.backend.edugame.model.EduGameProfile gamificationProfile;
+
     // Inner Enum REMOVED - replaced by com.eduflex.backend.model.Role Entity
 
     // --- GETTERS & SETTERS ---
+    public com.eduflex.backend.edugame.model.EduGameProfile getGamificationProfile() {
+        return gamificationProfile;
+    }
+
+    public void setGamificationProfile(com.eduflex.backend.edugame.model.EduGameProfile gamificationProfile) {
+        this.gamificationProfile = gamificationProfile;
+    }
+
     public Long getId() {
         return id;
     }

@@ -92,6 +92,7 @@ const StandardLayout = ({ children }) => {
             { path: '/calendar', icon: <Calendar size={20} />, label: t('sidebar.calendar') },
             { path: '/documents', icon: <FileText size={20} />, label: t('sidebar.documents') },
             { path: '/support', icon: <HelpCircle size={20} />, label: t('sidebar.support') },
+            ...(isModuleActive('EDUGAME') ? [{ path: '/shop', icon: <Store size={20} />, label: 'Butik' }] : [])
         ],
         admin: [
             ...(roleName === 'ADMIN' ? [{ path: '/admin', icon: <Settings size={20} />, label: t('sidebar.admin') }] : []),

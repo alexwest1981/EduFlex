@@ -83,13 +83,31 @@ Validera och dokumentera för pilots – ingen tung kodning behövs.
 
 ---
 
+## Fas 4: Gamification & Next-Gen UX - FULLT IMPLEMENTERAD ✅
+- **Status:** KLAR (Feb 2, 2026)
+- **EduGame Engine:** Ny motor för streaks, quests och socialt utbyte (V2.0). ✅
+- **Customization Shop:** Inbyggd butik för att köpa profilarmer, bakgrunder och titlar. ✅
+- **Self-Hosted Video:** Full Jitsi Meet-integration på egen infrastruktur för obegränsade möten. ✅
+
+---
+
+## Revenue Potential
+**Target:** 1-5 MSEK ARR (Annual Recurring Revenue)
+
+### Pricing Model (Förslag)
+- **Free Tier:** 50 användare, basic features
+- **Pro:** 500 SEK/månad per 100 användare (Inkluderar Gamification & Avancerad Analys)
+- **Enterprise:** Custom pricing, white-label, SLA, obegränsade videomöten, support
+
+---
+
 ## Next Steps
 
-1. **Vecka 1:** Slutför Fas 2 mini-gaps (load-testing, docs, badges)
-2. **Vecka 2-3:** Kubernetes/Helm migration
-3. **Vecka 4-9:** Multi-tenancy implementation
-4. **Vecka 10-15:** Compliance & SLA
-5. **Vecka 16:** Enterprise Launch 🚀
+1. **Feb/Mars:** Slutför mobilapp-prototyp (React Native)
+2. **Q2:** Microservices Split (Video/PDF-tjänster)
+3. **Q3:** Event Bus integration (Kafka) för realtids-gamification
+4. **Q4:** Beta-testning med första Enterprise-kund 🚀
+
 
 ---
 

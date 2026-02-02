@@ -3,6 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { Camera, Mail, Phone, MapPin, Save, Lock, User, AlertTriangle, Globe, Settings as SettingsIcon, Layout, Download, Shield, CreditCard, Check, X, Linkedin, Instagram, Facebook, Twitter, Search, UserPlus, UserMinus, Ban, Award } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { api, getSafeUrl } from '../../services/api.js';
+import eduGameService from '../../services/eduGameService';
 import UserBilling from '../billing/UserBilling';
 import { useModules } from '../../context/ModuleContext';
 
@@ -356,29 +357,67 @@ const UserProfile = ({ currentUser, showMessage, refreshUser }) => {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 {/* VÄNSTER: Profilkort (Gemini Surface: #1E1F20) */}
-                <div className="p-6 flex flex-col items-center text-center h-fit bg-white dark:bg-[#1E1F20] rounded-2xl shadow-sm border border-gray-200 dark:border-[#282a2c] transition-colors">
-                    <div className="relative group mb-4">
-                        <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-gray-100 dark:border-[#282a2c] shadow-sm bg-gray-50 dark:bg-[#131314] flex items-center justify-center">
-                            {(() => {
-                                if (previewImage) return <img src={previewImage} alt="Profil" className="w-full h-full object-cover" />;
-                                if (displayUser.profilePictureUrl) {
-                                    return <img src={getSafeUrl(displayUser.profilePictureUrl)} alt="Profil" className="w-full h-full object-cover" />;
-                                }
-                                return <span className="text-4xl font-bold text-gray-400 dark:text-gray-500">{displayUser.firstName?.[0]}</span>;
-                            })()}
+                {/* VÄNSTER: Profilkort (Gemini Surface: #1E1F20) - Now with dynamic background */}
+                <div
+                    className="p-6 flex flex-col items-center text-center h-fit bg-white dark:bg-[#1E1F20] rounded-2xl shadow-sm border border-gray-200 dark:border-[#282a2c] transition-colors relative overflow-hidden"
+                    style={{
+                        backgroundImage: currentUser?.gamificationProfile?.activeBackground ? `url(/gamification/${currentUser.gamificationProfile.activeBackground})` : 'none',
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center'
+                    }}
+                >
+                    {/* Dark overlay if background exists, to ensure text readability */}
+                    {currentUser?.gamificationProfile?.activeBackground && (
+                        <div className="absolute inset-0 bg-white/80 dark:bg-[#1E1F20]/80 backdrop-blur-[1px] z-0"></div>
+                    )}
+
+                    <div className="relative group mb-4 z-10">
+                        <div className="relative w-32 h-32 flex items-center justify-center">
+                            {/* AVATAR */}
+                            <div className="w-28 h-28 rounded-full overflow-hidden border-4 border-gray-100 dark:border-[#282a2c] shadow-sm bg-gray-50 dark:bg-[#131314] flex items-center justify-center z-10">
+                                {(() => {
+                                    if (previewImage) return <img src={previewImage} alt="Profil" className="w-full h-full object-cover" />;
+                                    if (displayUser.profilePictureUrl) {
+                                        return <img src={getSafeUrl(displayUser.profilePictureUrl)} alt="Profil" className="w-full h-full object-cover" />;
+                                    }
+                                    return <span className="text-4xl font-bold text-gray-400 dark:text-gray-500">{displayUser.firstName?.[0]}</span>;
+                                })()}
+                            </div>
+
+                            {/* FRAME OVERLAY */}
+                            {currentUser?.gamificationProfile?.activeFrame && (
+                                <img
+                                    src={`/gamification/${currentUser.gamificationProfile.activeFrame}`}
+                                    alt="Frame"
+                                    className="absolute inset-0 w-32 h-32 z-20 pointer-events-none object-contain scale-110"
+                                />
+                            )}
                         </div>
+
                         {/* Kamera-knapp */}
-                        <label className="absolute bottom-0 right-0 bg-black dark:bg-[#3c4043] text-white p-2 rounded-full cursor-pointer hover:bg-gray-800 transition-colors shadow-md border border-white dark:border-[#1E1F20]">
+                        <label className="absolute bottom-0 right-0 bg-black dark:bg-[#3c4043] text-white p-2 rounded-full cursor-pointer hover:bg-gray-800 transition-colors shadow-md border border-white dark:border-[#1E1F20] z-30">
                             <Camera size={16} />
                             <input type="file" className="hidden" accept="image/*" onChange={handleImageChange} />
                         </label>
                     </div>
-                    <h2 className="text-xl font-bold text-gray-900 dark:text-[#E3E3E3]">{formData.firstName} {formData.lastName}</h2>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">@{currentUser.username} • {currentUser.role?.name || currentUser.role}</p>
-                    <div className="w-full border-t border-gray-100 dark:border-[#282a2c] pt-4 text-left space-y-3">
-                        <div className="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-300"><Mail size={16} className="text-gray-400" /> {formData.email || "-"}</div>
-                        <div className="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-300"><Phone size={16} className="text-gray-400" /> {formData.phone || "-"}</div>
-                        <div className="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-300"><MapPin size={16} className="text-gray-400" /> {formData.city || "-"}</div>
+
+                    <div className="relative z-10">
+                        <h2 className="text-xl font-bold text-gray-900 dark:text-[#E3E3E3]">{formData.firstName} {formData.lastName}</h2>
+                        <div className="flex items-center justify-center gap-2 mt-1">
+                            <p className="text-sm text-gray-500 dark:text-gray-400">@{currentUser.username}</p>
+                            {currentUser?.gamificationProfile?.currentTitle && (
+                                <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700 dark:bg-indigo-900/50 dark:text-indigo-300">
+                                    {currentUser.gamificationProfile.currentTitle}
+                                </span>
+                            )}
+                        </div>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 mb-4 mt-1">{currentUser.role?.name || currentUser.role}</p>
+
+                        <div className="w-full border-t border-gray-100 dark:border-[#282a2c] pt-4 text-left space-y-3">
+                            <div className="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-300"><Mail size={16} className="text-gray-400" /> {formData.email || "-"}</div>
+                            <div className="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-300"><Phone size={16} className="text-gray-400" /> {formData.phone || "-"}</div>
+                            <div className="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-300"><MapPin size={16} className="text-gray-400" /> {formData.city || "-"}</div>
+                        </div>
                     </div>
                 </div>
 
@@ -396,6 +435,10 @@ const UserProfile = ({ currentUser, showMessage, refreshUser }) => {
 
                         <button onClick={() => setActiveTab('achievements')} className={`flex-1 py-4 font-bold text-sm min-w-[120px] transition-colors ${activeTab === 'achievements' ? 'bg-gray-50 dark:bg-[#282a2c] text-gray-900 dark:text-white border-b-2 border-black dark:border-white' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-[#282a2c]'}`}>
                             <div className="flex items-center justify-center gap-2"><Award size={18} /> Prestationer</div>
+                        </button>
+
+                        <button onClick={() => setActiveTab('themes')} className={`flex-1 py-4 font-bold text-sm min-w-[120px] transition-colors ${activeTab === 'themes' ? 'bg-gray-50 dark:bg-[#282a2c] text-gray-900 dark:text-white border-b-2 border-black dark:border-white' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-[#282a2c]'}`}>
+                            <div className="flex items-center justify-center gap-2"><Layout size={18} /> Tema</div>
                         </button>
 
                         <button onClick={() => setActiveTab('security_privacy')} className={`flex-1 py-4 font-bold text-sm min-w-[120px] transition-colors ${activeTab === 'security_privacy' ? 'bg-gray-50 dark:bg-[#282a2c] text-gray-900 dark:text-white border-b-2 border-black dark:border-white' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-[#282a2c]'}`}>
@@ -588,6 +631,45 @@ const UserProfile = ({ currentUser, showMessage, refreshUser }) => {
 
                         {activeTab === 'achievements' && (
                             <AchievementsGallery currentUser={currentUser} />
+                        )}
+
+                        {activeTab === 'themes' && (
+                            <div className="text-center py-12">
+                                <div className="max-w-md mx-auto bg-gray-50 dark:bg-[#131314] p-8 rounded-2xl border border-gray-100 dark:border-[#3c4043]">
+                                    <div className="w-20 h-20 bg-indigo-100 dark:bg-indigo-900/30 rounded-full flex items-center justify-center mx-auto mb-4 text-indigo-600 dark:text-indigo-400">
+                                        <Layout size={32} />
+                                    </div>
+                                    <h3 className="text-xl font-bold dark:text-white mb-2">Anpassa din Profil</h3>
+                                    <p className="text-gray-500 mb-6">
+                                        Du kan köpa nya ramar, bakgrunder och titlar i butiken för att göra din profil unik!
+                                    </p>
+
+                                    <div className="space-y-4 mb-8 text-left">
+                                        <div className="flex justify-between items-center p-3 bg-white dark:bg-[#1E1F20] rounded-lg border border-gray-200 dark:border-[#282a2c]">
+                                            <span className="text-sm font-bold text-gray-700 dark:text-gray-300">Aktiv Ram</span>
+                                            <span className="text-xs text-indigo-600 bg-indigo-50 dark:bg-indigo-900/30 px-2 py-1 rounded">
+                                                {currentUser?.gamificationProfile?.activeFrame || "Standard"}
+                                            </span>
+                                        </div>
+                                        <div className="flex justify-between items-center p-3 bg-white dark:bg-[#1E1F20] rounded-lg border border-gray-200 dark:border-[#282a2c]">
+                                            <span className="text-sm font-bold text-gray-700 dark:text-gray-300">Aktiv Titel</span>
+                                            <span className="text-xs text-purple-600 bg-purple-50 dark:bg-purple-900/30 px-2 py-1 rounded">
+                                                {currentUser?.gamificationProfile?.currentTitle || "Ingen"}
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    {isModuleActive('EDUGAME') ? (
+                                        <Link to="/shop" className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 transition-colors shadow-lg shadow-indigo-200 dark:shadow-none w-full">
+                                            Gå till Butiken
+                                        </Link>
+                                    ) : (
+                                        <div className="text-sm text-gray-400 italic">
+                                            Butiken är för närvarande inaktiverad.
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
                         )}
 
 

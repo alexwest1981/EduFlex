@@ -82,6 +82,10 @@ public class ModuleService {
                                 "AI-driven studiecoach som svarar på frågor baserat på kursmaterial. Kräver PRO eller ENTERPRISE.",
                                 "1.0.0", false, true);
 
+                createIfNotExists("EDUGAME", "EduGame Core",
+                                "Avancerad spelmotor med quests, shop och sociala funktioner. Kräver Gamification Engine.",
+                                "1.0.0", false, true);
+
                 logger.info("=== ModuleService: Module initialization complete. Total modules: {} ===",
                                 moduleRepository.count());
         }

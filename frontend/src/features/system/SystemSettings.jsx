@@ -5,7 +5,7 @@ import {
     MessageSquare, Calendar, CreditCard, BarChart3, Briefcase,
     GraduationCap, BookOpen, Globe, Shield, Cpu, HardDrive,
     Download, RefreshCw, Trash2, Plus, AlertTriangle, Clock, CheckCircle2,
-    Link2, Cloud, Eye, EyeOff, Key, Save
+    Link2, Cloud, Eye, EyeOff, Key, Save, Gamepad2, Trophy
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../../context/ThemeContext';
@@ -33,6 +33,8 @@ const moduleIcons = {
     'ENTERPRISE': Briefcase,
     'EDUCATION': GraduationCap,
     'AI_QUIZ': Sparkles,
+    'GAMIFICATION': Trophy,
+    'EDUGAME': Gamepad2,
     // Fallback
     'DEFAULT': Package
 };
@@ -922,7 +924,7 @@ const SystemSettings = ({ asTab = false }) => {
                 const moduleCategories = {
                     'Utbildning': ['QUIZ_BASIC', 'QUIZ_PRO', 'AI_QUIZ', 'SUBMISSIONS', 'SCORM'],
                     'Kommunikation': ['CHAT', 'FORUM'],
-                    'Gamification': ['GAMIFICATION'],
+                    'Gamification': ['GAMIFICATION', 'EDUGAME'],
                     'Analys & Rapporter': ['ANALYTICS'],
                     'Utseende': ['DARK_MODE', 'ENTERPRISE_WHITELABEL'],
                     'Övrigt': ['REVENUE']
@@ -991,10 +993,24 @@ const SystemSettings = ({ asTab = false }) => {
                                 <div className="divide-y divide-gray-100 dark:divide-[#3c4043]">
                                     {categoryModules.map(mod => {
                                         const ModuleIcon = getModuleIcon(mod.moduleKey);
+
+                                        // Specific Dependency Checks
+                                        let dependencyMet = true;
+                                        let dependencyMsg = "";
+
+                                        if (mod.moduleKey === 'EDUGAME') {
+                                            const gamificationMod = modules.find(m => m.moduleKey === 'GAMIFICATION');
+                                            if (!gamificationMod || !gamificationMod.active) {
+                                                dependencyMet = false;
+                                                dependencyMsg = "Kräver Gamification Engine";
+                                            }
+                                        }
+
                                         return (
                                             <div
                                                 key={mod.moduleKey}
-                                                className="flex items-center gap-4 px-5 py-4 hover:bg-gray-50 dark:hover:bg-[#282a2c]/50 transition-colors"
+                                                className={`flex items-center gap-4 px-5 py-4 transition-colors ${!dependencyMet ? 'bg-gray-50/50 dark:bg-gray-900/10 opacity-60' : 'hover:bg-gray-50 dark:hover:bg-[#282a2c]/50'
+                                                    }`}
                                             >
                                                 {/* Module Icon */}
                                                 <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${mod.active
@@ -1014,6 +1030,11 @@ const SystemSettings = ({ asTab = false }) => {
                                                         <span className="text-[10px] text-gray-400 dark:text-gray-500">v{mod.version}</span>
                                                     </div>
                                                     <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-1">{mod.description}</p>
+                                                    {!dependencyMet && (
+                                                        <div className="flex items-center gap-1 text-xs text-red-500 mt-1 font-medium">
+                                                            <AlertTriangle size={12} /> {dependencyMsg}
+                                                        </div>
+                                                    )}
                                                 </div>
 
                                                 {/* Status Badge */}
@@ -1030,11 +1051,11 @@ const SystemSettings = ({ asTab = false }) => {
                                                 <div className="flex-shrink-0">
                                                     <button
                                                         onClick={() => handleToggleModule(mod.moduleKey, mod.active)}
-                                                        disabled={toggling === mod.moduleKey}
+                                                        disabled={toggling === mod.moduleKey || !dependencyMet}
                                                         className={`relative w-11 h-6 rounded-full transition-colors duration-200 ${mod.active
                                                             ? 'bg-indigo-500'
                                                             : 'bg-gray-300 dark:bg-gray-600'
-                                                            } ${toggling === mod.moduleKey ? 'opacity-50' : ''}`}
+                                                            } ${(toggling === mod.moduleKey || !dependencyMet) ? 'opacity-50 cursor-not-allowed' : ''}`}
                                                     >
                                                         <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform duration-200 ${mod.active ? 'translate-x-5' : 'translate-x-0'
                                                             }`}>

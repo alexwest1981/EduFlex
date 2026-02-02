@@ -18,6 +18,7 @@ import StudentGamificationWidget from './widgets/StudentGamificationWidget';
 import AchievementsWidget from './widgets/AchievementsWidget';
 import WidgetWrapper from './components/WidgetWrapper';
 import EvaluationNotificationWidget from './widgets/EvaluationNotificationWidget';
+import EduQuestWidget from '../edugame/EduQuestWidget';
 
 // --- SHARED ---
 import { useDashboardWidgets } from '../../hooks/useDashboardWidgets';
@@ -46,7 +47,8 @@ const StudentDashboard = ({ currentUser }) => {
         dailyChallenges: true,
         calendar: true,
         achievements: true,
-        aiInsights: true
+        aiInsights: true,
+        eduQuest: true // Default enabled
     });
 
     const widgetLabels = {
@@ -57,7 +59,8 @@ const StudentDashboard = ({ currentUser }) => {
         dailyChallenges: t('dashboard.widgets.daily_challenges'),
         calendar: t('dashboard.widgets.calendar'),
         achievements: t('dashboard.widgets.achievements'),
-        aiInsights: t('dashboard.widgets.ai_personalization')
+        aiInsights: t('dashboard.widgets.ai_personalization'),
+        eduQuest: "EduQuest Uppdrag"
     };
 
     useEffect(() => {
@@ -214,7 +217,15 @@ const StudentDashboard = ({ currentUser }) => {
                             />
                         )}
 
-                        {widgets.dailyChallenges && (
+                        {/* EduQuest Widget - Only if EDUGAME is active */}
+                        {widgets.eduQuest && isModuleActive('EDUGAME') && (
+                            <WidgetWrapper className="h-auto">
+                                <EduQuestWidget />
+                            </WidgetWrapper>
+                        )}
+
+                        {/* Legacy Daily Challenges - Hide if EduQuest is active? Or keep both? Keeping for now but maybe conditional */}
+                        {widgets.dailyChallenges && !isModuleActive('EDUGAME') && (
                             <WidgetWrapper className="h-auto">
                                 <DailyChallengesWidget />
                             </WidgetWrapper>
