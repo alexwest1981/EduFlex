@@ -26,7 +26,7 @@ public class Course {
 
     private String category;
 
-    @Column(length = 5000)
+    @Column(columnDefinition = "TEXT")
     private String description;
 
     private String startDate;

@@ -195,6 +195,7 @@ export const api = {
         getActivityTrend: (range) => fetch(`${API_BASE}/analytics/activity-trend?range=${range || '30d'}`, { headers: getHeaders() }).then(handleResponse),
         getCoursePerformance: () => fetch(`${API_BASE}/analytics/course-performance`, { headers: getHeaders() }).then(handleResponse),
         getAtRiskStudents: () => fetch(`${API_BASE}/analytics/at-risk-students`, { headers: getHeaders() }).then(handleResponse),
+        getAtRiskAiSummary: (userId) => fetch(`${API_BASE}/analytics/at-risk/${userId}/ai-summary`, { headers: getHeaders() }).then(handleResponse),
         getHeatmap: (userId) => fetch(`${API_BASE}/analytics/heatmap${userId ? `?userId=${userId}` : ''}`, { headers: getHeaders() }).then(handleResponse),
         getDropOff: (courseId) => fetch(`${API_BASE}/analytics/drop-off/${courseId}`, { headers: getHeaders() }).then(handleResponse),
     },

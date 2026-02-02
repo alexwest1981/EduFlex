@@ -5,7 +5,7 @@ import {
     LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer,
     BarChart, Bar, Legend, PieChart, Pie, Cell
 } from 'recharts';
-import { TrendingUp, Users, AlertTriangle, BookOpen, Download, MessageSquare, Activity, Filter } from 'lucide-react';
+import { TrendingUp, Users, AlertTriangle, BookOpen, Download, MessageSquare, Activity, Filter, Sparkles, X } from 'lucide-react';
 import ActivityHeatmap from '../../components/dashboard/ActivityHeatmap';
 import CourseDropOffAnalysis from '../../components/dashboard/CourseDropOffAnalysis';
 
@@ -19,6 +19,11 @@ const AnalyticsDashboard = () => {
     const [overview, setOverview] = useState(null);
     const [selectedCourseId, setSelectedCourseId] = useState(null);
     const [loading, setLoading] = useState(true);
+
+    // AI Summary State
+    const [aiSummary, setAiSummary] = useState(null);
+    const [aiLoading, setAiLoading] = useState(false);
+    const [aiStudent, setAiStudent] = useState(null);
 
     useEffect(() => {
         loadData();
@@ -44,6 +49,20 @@ const AnalyticsDashboard = () => {
             console.error("Failed to load analytics", e);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const fetchAiSummary = async (student) => {
+        setAiStudent(student);
+        setAiLoading(true);
+        setAiSummary(null);
+        try {
+            const response = await api.analytics.getAtRiskAiSummary(student.id);
+            setAiSummary(response.summary);
+        } catch (e) {
+            setAiSummary("Kunde inte hämta AI-analys för tillfället.");
+        } finally {
+            setAiLoading(false);
         }
     };
 
@@ -136,15 +155,79 @@ const AnalyticsDashboard = () => {
                                             <div className="text-xs text-gray-500">{student.completionRate} klart • {student.lastLogin ? new Date(student.lastLogin).toLocaleDateString() : 'Aldrig inloggad'}</div>
                                         </div>
                                     </div>
-                                    <button className="text-gray-300 hover:text-indigo-600 transition-colors" title="Kontakta">
-                                        <MessageSquare size={18} />
-                                    </button>
+                                    <div className="flex items-center gap-2">
+                                        <button
+                                            onClick={() => fetchAiSummary(student)}
+                                            className="p-2 text-indigo-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg transition-colors"
+                                            title="AI Analys"
+                                        >
+                                            <Sparkles size={18} />
+                                        </button>
+                                        <button className="p-2 text-gray-300 hover:text-indigo-600 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors" title="Kontakta">
+                                            <MessageSquare size={18} />
+                                        </button>
+                                    </div>
                                 </div>
                             ))
                         )}
                     </div>
                 </div>
             </div>
+
+            {/* AI Summary Modal */}
+            {(aiLoading || aiSummary) && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in">
+                    <div className="bg-white dark:bg-[#1E1F20] w-full max-w-lg rounded-2xl shadow-2xl border border-gray-200 dark:border-[#3c4043] overflow-hidden">
+                        <div className="p-6 border-b border-gray-100 dark:border-[#3c4043] flex justify-between items-center">
+                            <div className="flex items-center gap-3">
+                                <div className="p-2 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-xl">
+                                    <Sparkles size={20} />
+                                </div>
+                                <div>
+                                    <h3 className="font-bold text-gray-900 dark:text-white">AI-Insikt: {aiStudent?.name}</h3>
+                                    <p className="text-xs text-gray-500 italic">Genererad av Gemini AI</p>
+                                </div>
+                            </div>
+                            <button
+                                onClick={() => { setAiSummary(null); setAiLoading(false); }}
+                                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+                            >
+                                <X size={20} />
+                            </button>
+                        </div>
+                        <div className="p-8">
+                            {aiLoading ? (
+                                <div className="space-y-4">
+                                    <div className="h-4 bg-gray-100 dark:bg-gray-800 rounded animate-pulse w-3/4"></div>
+                                    <div className="h-4 bg-gray-100 dark:bg-gray-800 rounded animate-pulse w-full"></div>
+                                    <div className="h-4 bg-gray-100 dark:bg-gray-800 rounded animate-pulse w-5/6"></div>
+                                    <p className="text-center text-xs text-gray-400 mt-6 font-medium animate-pulse">Analyserar studentdata och mönster...</p>
+                                </div>
+                            ) : (
+                                <div className="prose dark:prose-invert max-w-none">
+                                    <p className="text-gray-700 dark:text-gray-300 leading-relaxed text-lg">
+                                        {aiSummary}
+                                    </p>
+                                    <div className="mt-8 p-4 bg-indigo-50 dark:bg-indigo-900/10 rounded-xl border border-indigo-100 dark:border-indigo-900/30">
+                                        <p className="text-xs text-indigo-700 dark:text-indigo-300 font-medium flex items-center gap-2">
+                                            <AlertTriangle size={14} />
+                                            Sammanfattningen är baserad på inlämningar, quizzar och aktivitetsloggar.
+                                        </p>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                        <div className="p-6 bg-gray-50 dark:bg-[#131314] flex justify-end">
+                            <button
+                                onClick={() => { setAiSummary(null); setAiLoading(false); }}
+                                className="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold transition-all shadow-lg shadow-indigo-500/20"
+                            >
+                                Stäng
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* Heatmap & Drop-off Row */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

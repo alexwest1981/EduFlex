@@ -204,7 +204,7 @@ services:
     environment:
       - VITE_API_BASE_URL=/api
       - VITE_BACKEND_URL=http://backend:8080
-      - VITE_JITSI_URL=${JITSI_URL:-http://localhost:8444}
+      - VITE_JITSI_URL=${JITSI_URL:-https://meet.eduflexlms.se}
     command: npm run dev -- --host
     volumes:
       - ./frontend:/app
@@ -304,7 +304,7 @@ services:
       - ENABLE_LOBBY=0
       - ENABLE_WELCOME_PAGE=0
       - DISABLE_HTTPS=1
-      - PUBLIC_URL=http://localhost:8444
+      - PUBLIC_URL=https://meet.eduflexlms.se
       - TZ=Europe/Stockholm
       # Performance settings
       - RESOLUTION=480
@@ -337,7 +337,7 @@ services:
       - '5347'
       - '5280'
     environment:
-      - PUBLIC_URL=http://localhost:8444
+      - PUBLIC_URL=https://meet.eduflexlms.se
       - TZ=Europe/Stockholm
       # XMPP settings
       - XMPP_DOMAIN=meet.jitsi
@@ -405,7 +405,7 @@ services:
       - JVB_BREWERY_MUC=jvbbrewery@internal-muc.meet.jitsi
       - JVB_PORT=10000
       - JVB_STUN_SERVERS=meet-jit-si-turnrelay.jitsi.net:443
-      - PUBLIC_URL=http://localhost:8444
+      - PUBLIC_URL=https://meet.eduflexlms.se
     volumes:
       - jitsi_jvb_config:/config
     depends_on:

@@ -108,14 +108,14 @@ public class SecurityConfig {
                             path.startsWith("/fonts/") ||
                             path.startsWith("/cache/") ||
                             path.startsWith("/api/public/") ||
+                            path.startsWith("/api/admin/") ||
                             path.startsWith("/api/onlyoffice/") ||
                             path.startsWith("/api/tenants/")) {
                         return true;
                     }
                     // Regex check for OnlyOffice version numbers (e.g. /8.2.0/...)
                     return path.matches("^/[0-9]+\\.[0-9]+\\.[0-9]+/.*");
-                })
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                }).cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
@@ -195,7 +195,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/quizzes/**").authenticated()
                         .requestMatchers(HttpMethod.POST, "/api/logs/client").authenticated() // Allow all authenticated
                                                                                               // users to report errors
-                        .requestMatchers("/api/logs/**").hasAnyAuthority("ADMIN", "ROLE_ADMIN")
+                        .requestMatchers("/api/logs/**", "/api/admin/**").hasAnyAuthority("ADMIN", "ROLE_ADMIN")
 
                         // 5. Community endpoints
                         .requestMatchers(HttpMethod.GET, "/api/community/**").authenticated()
@@ -215,18 +215,24 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/ai/quiz/**")
                         .hasAnyAuthority("ADMIN", "ROLE_ADMIN", "TEACHER", "ROLE_TEACHER")
 
-                        // 7. AI Course Generation endpoints
+                        // 7. Gamification endpoints
+                        .requestMatchers("/api/gamification/achievements/my", "/api/gamification/points/my")
+                        .authenticated()
+                        .requestMatchers("/api/gamification/leaderboard/**").authenticated()
+                        .requestMatchers("/api/gamification/admin/**").hasAnyAuthority("ADMIN", "ROLE_ADMIN")
+
+                        // 8. AI Course Generation endpoints
                         .requestMatchers("/api/ai-course/**")
                         .hasAnyAuthority("ADMIN", "ROLE_ADMIN", "TEACHER", "ROLE_TEACHER")
 
-                        // 7. Analytics endpoints
+                        // 9. Analytics endpoints
                         .requestMatchers("/api/analytics/my-status", "/api/analytics/student/**",
                                 "/api/analytics/heatmap")
                         .authenticated()
                         .requestMatchers("/api/analytics/**")
                         .hasAnyAuthority("ADMIN", "ROLE_ADMIN", "TEACHER", "ROLE_TEACHER")
 
-                        // 8. Module management endpoints
+                        // 10. Module management endpoints
                         .requestMatchers(HttpMethod.GET, "/api/modules").authenticated()
                         .requestMatchers(HttpMethod.PUT, "/api/modules/**")
                         .hasAnyAuthority("ADMIN", "ROLE_ADMIN")

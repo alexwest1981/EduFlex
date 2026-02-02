@@ -13,3 +13,19 @@ target/
 
 # OS
 Thumbs.db
+Desktop.ini
+
+# Project
+uploads/
+backups/
+.git/
+.gitignore
+*.txt
+*.md
+!README.md
+node_modules/
+npm-debug.log
+
+# Static Assets
+src/main/resources/static/web-apps/
+

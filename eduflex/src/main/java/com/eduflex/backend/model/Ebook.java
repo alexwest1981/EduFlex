@@ -34,6 +34,11 @@ public class Ebook {
     @JoinTable(name = "ebook_courses", joinColumns = @JoinColumn(name = "ebook_id"), inverseJoinColumns = @JoinColumn(name = "course_id"))
     private java.util.Set<Course> courses = new java.util.HashSet<>();
 
+    @Enumerated(EnumType.STRING)
+    private BookType type = BookType.EPUB;
+
+    private String ttsFolderUrl;
+
     private LocalDateTime uploadDate;
 
     public Ebook() {
@@ -127,5 +132,21 @@ public class Ebook {
 
     public void setCourses(java.util.Set<Course> courses) {
         this.courses = courses;
+    }
+
+    public BookType getType() {
+        return type;
+    }
+
+    public void setType(BookType type) {
+        this.type = type;
+    }
+
+    public String getTtsFolderUrl() {
+        return ttsFolderUrl;
+    }
+
+    public void setTtsFolderUrl(String ttsFolderUrl) {
+        this.ttsFolderUrl = ttsFolderUrl;
     }
 }

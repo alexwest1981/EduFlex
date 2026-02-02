@@ -12,7 +12,7 @@ import JitsiMeeting from './JitsiMeeting';
  * - currentUser: Current logged in user
  * - isTeacher: Whether user is teacher of this course
  */
-const LiveLessonButton = ({ courseId, currentUser, isTeacher }) => {
+const LiveLessonButton = ({ courseId, courseName, currentUser, isTeacher }) => {
     const [activeLesson, setActiveLesson] = useState(null);
     const [upcomingLessons, setUpcomingLessons] = useState([]);
     const [showMeeting, setShowMeeting] = useState(false);
@@ -51,6 +51,13 @@ const LiveLessonButton = ({ courseId, currentUser, isTeacher }) => {
         }
     };
 
+    const getFriendlyRoomName = (lessonId) => {
+        if (!courseName) return `EduFlex-Lesson-${lessonId}`;
+        // Sanitize course name: remove special chars, spaces to dashes
+        const safeName = courseName.replace(/[^a-zA-Z0-9åäöÅÄÖ]/g, '-').replace(/-+/g, '-');
+        return `${safeName}-${lessonId}`;
+    };
+
     const handleStartInstant = async () => {
         setLoading(true);
         try {
@@ -61,8 +68,13 @@ const LiveLessonButton = ({ courseId, currentUser, isTeacher }) => {
 
             // Get join config
             const joinConfig = await api.get(`/live-lessons/${lesson.id}/join`);
-            setJoinConfig(joinConfig);
-            setActiveLesson({ ...lesson, ...joinConfig });
+
+            // Override roomName with friendly version
+            const friendlyRoomName = getFriendlyRoomName(lesson.id);
+            const configWithFriendlyName = { ...joinConfig, roomName: friendlyRoomName };
+
+            setJoinConfig(configWithFriendlyName);
+            setActiveLesson({ ...lesson, ...configWithFriendlyName });
             setShowMeeting(true);
 
         } catch (err) {
@@ -110,8 +122,13 @@ const LiveLessonButton = ({ courseId, currentUser, isTeacher }) => {
             }
 
             const joinConfig = await api.get(`/live-lessons/${lesson.id}/join`);
-            setJoinConfig(joinConfig);
-            setActiveLesson({ ...lesson, ...joinConfig });
+
+            // Override roomName with friendly version
+            const friendlyRoomName = getFriendlyRoomName(lesson.id);
+            const configWithFriendlyName = { ...joinConfig, roomName: friendlyRoomName };
+
+            setJoinConfig(configWithFriendlyName);
+            setActiveLesson({ ...lesson, ...configWithFriendlyName });
             setShowMeeting(true);
 
         } catch (err) {

@@ -31,13 +31,15 @@ public class AssignmentService {
     private final com.eduflex.backend.service.GamificationService gamificationService;
     private final com.eduflex.backend.service.AchievementService achievementService;
     private final com.eduflex.backend.service.StudentActivityService studentActivityService;
+    private final com.eduflex.backend.service.ai.EduAIService eduAIService;
     private final Path fileStorageLocation;
 
     public AssignmentService(AssignmentRepository assignmentRepo, SubmissionRepository submissionRepo,
             CourseRepository courseRepo, UserRepository userRepo,
             com.eduflex.backend.service.GamificationService gamificationService,
             com.eduflex.backend.service.AchievementService achievementService,
-            com.eduflex.backend.service.StudentActivityService studentActivityService) {
+            com.eduflex.backend.service.StudentActivityService studentActivityService,
+            com.eduflex.backend.service.ai.EduAIService eduAIService) {
         this.assignmentRepository = assignmentRepo;
         this.submissionRepository = submissionRepo;
         this.courseRepository = courseRepo;
@@ -45,6 +47,7 @@ public class AssignmentService {
         this.gamificationService = gamificationService;
         this.achievementService = achievementService;
         this.studentActivityService = studentActivityService;
+        this.eduAIService = eduAIService;
 
         this.fileStorageLocation = Paths.get("uploads/submissions").toAbsolutePath().normalize();
         try {
@@ -141,6 +144,11 @@ public class AssignmentService {
         } catch (Exception e) {
             // ignore
         }
+
+        // --- EDUAI TRIGGER ---
+        eduAIService.checkAndCompleteQuest(studentId,
+                com.eduflex.backend.model.EduAIQuest.QuestObjectiveType.ASSIGNMENT, assignmentId);
+        // ---------------------
 
         return saved;
     }

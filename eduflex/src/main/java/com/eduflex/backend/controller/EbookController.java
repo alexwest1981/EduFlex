@@ -141,4 +141,17 @@ public class EbookController {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
     }
+
+    @PostMapping("/{id}/tts")
+    public ResponseEntity<byte[]> getTts(@PathVariable Long id, @RequestBody Map<String, String> payload) {
+        try {
+            String text = payload.get("text");
+            byte[] audio = ebookService.getTtsForChapter(id, text);
+            return ResponseEntity.ok()
+                    .contentType(MediaType.valueOf("audio/mpeg"))
+                    .body(audio);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
 }

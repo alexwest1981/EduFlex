@@ -38,6 +38,12 @@
 ## 🇸🇪 Svenska
 
 ### ⚡ Senaste Uppdateringarna
+*   **🎮 EduGame Expansion & Infrastruktur (2 feb 2026):**
+    *   **EduGame Framework:** Initierat arkitekturen för `com.eduflex.backend.edugame` – en dedikerad modul för gamification v2.0.
+    *   **Shop & Profiler:** Planering klar för en inbyggd butik där elever kan köpa bakgrunder och ramar för sina profilbilder med XP.
+    *   **Docker Dual-Track:** Infört en hybrid-strategi för utveckling (Local Services vs Docker) för att kringgå WSL2-lagringsproblem på Windows.
+    *   **Avatar-fix:** Löste kritiska 400 Bad Request-fel vid uppladdning av profilbilder genom att stabilisera MinIO-containern och backend-konfigurationen.
+
 *   **🧩 Sidomeny-refaktorering & Gruppering (1 feb 2026):**
     *   **Kategoriserad Navigation:** Sidomenyn har byggts om från grunden för att minska visuell stress, särskilt för administratörer. Menyval är nu logiskt grupperade i sektioner (Huvudmeny, Utbildning, Verktyg, Administration).
     *   **Utfällbara Sektioner:** Ny `SidebarSection`-komponent som tillåter att grupper fälls in/ut för att spara vertikalt utrymme.

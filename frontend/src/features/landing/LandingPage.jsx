@@ -128,8 +128,8 @@ const LandingPage = () => {
         },
         {
             icon: <Trophy className="w-6 h-6" />,
-            title: 'Gamification Engine',
-            description: 'XP-system, utmärkelser, dagliga utmaningar, streaks och topplistor. Ökar elevengagemanget med spelmekanik.',
+            title: 'EduGame Engine',
+            description: 'XP-system, Shop, Profilteman, dagliga utmaningar och streaks. Gör lärandet till ett äventyr.',
             gradient: 'from-yellow-500 to-orange-500'
         },
         {

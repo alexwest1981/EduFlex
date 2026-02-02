@@ -8,4 +8,6 @@ public interface UserLessonProgressRepository extends JpaRepository<UserLessonPr
     List<UserLessonProgress> findByUserId(Long userId);
 
     boolean existsByUserIdAndMaterialId(Long userId, Long materialId);
+
+    void deleteByMaterialId(Long materialId);
 }

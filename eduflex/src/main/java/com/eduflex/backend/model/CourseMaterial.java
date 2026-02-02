@@ -21,7 +21,7 @@ public class CourseMaterial {
 
     private String title;
 
-    @Column(length = 5000)
+    @Column(columnDefinition = "TEXT")
     private String content;
 
     private String link; // För YouTube-länkar
@@ -36,7 +36,7 @@ public class CourseMaterial {
     @Enumerated(EnumType.STRING)
     private VideoStatus videoStatus; // Processing status for uploaded videos
 
-    @Column(length = 2000)
+    @Column(columnDefinition = "TEXT")
     private String videoChapters; // JSON array of {time: seconds, title: string}
 
     // NYTT: Datumstyrning

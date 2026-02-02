@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { LayoutDashboard, MessageSquare } from 'lucide-react';
+import { LayoutDashboard, MessageSquare, Brain } from 'lucide-react';
 import { api } from '../../services/api';
 import { useAppContext } from '../../context/AppContext';
 import { useModules } from '../../context/ModuleContext';
@@ -23,6 +23,7 @@ import EvaluationNotificationWidget from './widgets/EvaluationNotificationWidget
 import { useDashboardWidgets } from '../../hooks/useDashboardWidgets';
 import DashboardCustomizer from '../../components/dashboard/DashboardCustomizer';
 import AIPersonalizationWidget from './widgets/AIPersonalizationWidget';
+import EduAIDashboard from '../../components/gamification/EduAIDashboard';
 
 const StudentDashboard = ({ currentUser }) => {
     const { t } = useTranslation();
@@ -144,6 +145,9 @@ const StudentDashboard = ({ currentUser }) => {
                     <button onClick={() => setActiveTab('overview')} className={`pb-3 flex items-center gap-2 font-bold text-sm transition-colors border-b-2 ${activeTab === 'overview' ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200'}`}>
                         <LayoutDashboard size={18} /> {t('sidebar.dashboard')}
                     </button>
+                    <button onClick={() => setActiveTab('eduai')} className={`pb-3 flex items-center gap-2 font-bold text-sm transition-colors border-b-2 ${activeTab === 'eduai' ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200'}`}>
+                        <Brain size={18} /> EduAI
+                    </button>
                     <button onClick={() => setActiveTab('messages')} className={`pb-3 flex items-center gap-2 font-bold text-sm transition-colors border-b-2 ${activeTab === 'messages' ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200'}`}>
                         <MessageSquare size={18} /> {t('shortcuts.messages')}
                     </button>
@@ -164,6 +168,8 @@ const StudentDashboard = ({ currentUser }) => {
                     {/* LEFT COLUMN (Content) */}
                     <div className="lg:col-span-2 space-y-6">
 
+                        <EvaluationNotificationWidget />
+
                         {widgets.aiInsights && (
                             <WidgetWrapper className="h-auto">
                                 <AIPersonalizationWidget variant="compact" />
@@ -182,7 +188,6 @@ const StudentDashboard = ({ currentUser }) => {
                             </WidgetWrapper>
                         )}
 
-                        <EvaluationNotificationWidget />
 
                         {widgets.courses && (
                             <StudentCourseGrid courses={myCourses} navigate={navigate} />
@@ -223,6 +228,12 @@ const StudentDashboard = ({ currentUser }) => {
             {activeTab === 'messages' && (
                 <div className="animate-in slide-in-from-bottom-2 fade-in duration-300">
                     <MessageCenter />
+                </div>
+            )}
+
+            {activeTab === 'eduai' && (
+                <div className="animate-in slide-in-from-bottom-2 fade-in duration-300">
+                    <EduAIDashboard />
                 </div>
             )}
         </div>

@@ -174,9 +174,12 @@ public class UserController {
 
     @PostMapping(value = "/{id}/avatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<User> uploadAvatar(@PathVariable Long id, @RequestParam("file") MultipartFile file) {
+        System.out.println("DEBUG: uploadAvatar called for user ID: " + id + ", file present: "
+                + (file != null && !file.isEmpty()));
         try {
             return ResponseEntity.ok(userService.uploadProfilePicture(id, file));
         } catch (Exception e) {
+            e.printStackTrace(); // Log detailed error to console/log
             return ResponseEntity.badRequest().build();
         }
     }

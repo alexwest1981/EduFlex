@@ -11,7 +11,6 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/gamification/config")
 @CrossOrigin(origins = "*")
-@org.springframework.security.access.prepost.PreAuthorize("isAuthenticated()")
 public class GamificationConfigController {
 
     @Autowired
@@ -21,13 +20,14 @@ public class GamificationConfigController {
      * Get gamification config for organization
      */
     @GetMapping("/{organizationId}")
+    @org.springframework.security.access.prepost.PreAuthorize("isAuthenticated()")
     public ResponseEntity<GamificationConfig> getConfig(@PathVariable Long organizationId) {
         GamificationConfig config = configService.getConfig(organizationId);
         return ResponseEntity.ok(config);
     }
 
     /**
-     * Get system-wide config
+     * Get system-wide config (public endpoint - no authentication required)
      */
     @GetMapping("/system")
     public ResponseEntity<GamificationConfig> getSystemConfig() {
@@ -39,15 +39,17 @@ public class GamificationConfigController {
      * Check if gamification is enabled
      */
     @GetMapping("/{organizationId}/enabled")
+    @org.springframework.security.access.prepost.PreAuthorize("isAuthenticated()")
     public ResponseEntity<Map<String, Boolean>> isEnabled(@PathVariable Long organizationId) {
         boolean enabled = configService.isEnabled(organizationId);
         return ResponseEntity.ok(Map.of("enabled", enabled));
     }
 
     /**
-     * Update gamification config
+     * Update gamification config (admin only)
      */
     @PutMapping("/{organizationId}")
+    @org.springframework.security.access.prepost.PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN')")
     public ResponseEntity<GamificationConfig> updateConfig(
             @PathVariable Long organizationId,
             @RequestBody GamificationConfig config) {

@@ -330,6 +330,7 @@ const CourseDetail = ({ currentUser }) => {
                             {/* INTERNAL LIVE LESSON (Jitsi) */}
                             <LiveLessonButton
                                 courseId={course.id}
+                                courseName={course.name}
                                 currentUser={currentUser}
                                 isTeacher={isTeacher}
                             />

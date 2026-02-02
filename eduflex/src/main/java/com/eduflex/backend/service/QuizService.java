@@ -17,19 +17,22 @@ public class QuizService {
     // NYTT: Injicera GamificationService och StudentActivityService
     private final GamificationService gamificationService;
     private final StudentActivityService studentActivityService;
+    private final com.eduflex.backend.service.ai.EduAIService eduAIService;
 
     public QuizService(QuizRepository quizRepository,
             QuizResultRepository resultRepository,
             CourseRepository courseRepository,
             UserRepository userRepository,
             GamificationService gamificationService,
-            StudentActivityService studentActivityService) { // <--- Lägg till här i konstruktorn
+            StudentActivityService studentActivityService,
+            com.eduflex.backend.service.ai.EduAIService eduAIService) {
         this.quizRepository = quizRepository;
         this.resultRepository = resultRepository;
         this.courseRepository = courseRepository;
         this.userRepository = userRepository;
         this.gamificationService = gamificationService;
         this.studentActivityService = studentActivityService;
+        this.eduAIService = eduAIService;
     }
 
     public List<Quiz> getQuizzesByCourse(Long courseId) {
@@ -125,6 +128,11 @@ public class QuizService {
             gamificationService.awardBadge(studentId, 2L);
         }
         // -----------------------------
+
+        // --- EDUAI TRIGGER ---
+        eduAIService.checkAndCompleteQuest(studentId, com.eduflex.backend.model.EduAIQuest.QuestObjectiveType.QUIZ,
+                quizId);
+        // ---------------------
 
         return savedResult;
     }

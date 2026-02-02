@@ -24,6 +24,7 @@ import com.eduflex.backend.repository.StudentActivityLogRepository;
 import com.eduflex.backend.repository.UserLessonProgressRepository;
 import com.eduflex.backend.model.UserLessonProgress;
 import com.eduflex.backend.model.CourseMaterial;
+import com.eduflex.backend.service.ai.EduAIService;
 import java.time.format.TextStyle;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -41,6 +42,7 @@ public class AnalyticsService {
         private final StudentActivityLogRepository activityLogRepository;
         private final UserLessonProgressRepository progressRepository;
         private final CourseMaterialRepository courseMaterialRepository;
+        private final EduAIService eduAIService;
 
         public AnalyticsService(UserRepository userRepository, CourseRepository courseRepository,
                         AssignmentRepository assignmentRepository, SubmissionRepository submissionRepository,
@@ -48,7 +50,8 @@ public class AnalyticsService {
                         StudentActivityLogRepository activityLogRepository,
                         UserLessonProgressRepository progressRepository,
                         LessonRepository lessonRepository,
-                        CourseMaterialRepository courseMaterialRepository) {
+                        CourseMaterialRepository courseMaterialRepository,
+                        EduAIService eduAIService) {
                 this.userRepository = userRepository;
                 this.courseRepository = courseRepository;
                 this.assignmentRepository = assignmentRepository;
@@ -59,6 +62,7 @@ public class AnalyticsService {
                 this.progressRepository = progressRepository;
                 this.lessonRepository = lessonRepository;
                 this.courseMaterialRepository = courseMaterialRepository;
+                this.eduAIService = eduAIService;
         }
 
         public Map<String, Object> getSystemOverview(String range) {
@@ -625,6 +629,8 @@ public class AnalyticsService {
         }
 
         public Map<String, Integer> getActivityHeatmap(Long userId) {
+                // 7x24 Heatmap - Key format: "day:hour" (e.g. "1:14" for Monday at 14:00)
+                // Day of week: 1 (Monday) to 7 (Sunday)
                 LocalDateTime thirtyDaysAgo = LocalDateTime.now().minusDays(30);
                 List<StudentActivityLog> logs;
 
@@ -638,11 +644,60 @@ public class AnalyticsService {
                 }
 
                 Map<String, Integer> heatmap = new HashMap<>();
+                // Initialize all 7x24 slots with 0 to ensure frontend gets a full grid
+                for (int day = 1; day <= 7; day++) {
+                        for (int hour = 0; hour < 24; hour++) {
+                                heatmap.put(day + ":" + hour, 0);
+                        }
+                }
+
                 for (StudentActivityLog log : logs) {
-                        String date = log.getTimestamp().toLocalDate().toString();
-                        heatmap.put(date, heatmap.getOrDefault(date, 0) + 1);
+                        int day = log.getTimestamp().getDayOfWeek().getValue();
+                        int hour = log.getTimestamp().getHour();
+                        String key = day + ":" + hour;
+                        heatmap.put(key, heatmap.get(key) + 1);
                 }
                 return heatmap;
+        }
+
+        public String getAtRiskAiSummary(Long userId) {
+                User student = userRepository.findById(userId)
+                                .orElseThrow(() -> new RuntimeException("Student not found"));
+
+                // Gather data for Gemini
+                List<Map<String, Object>> progress = getStudentCourseProgress(userId);
+
+                StringBuilder context = new StringBuilder();
+                context.append("Elev: ").append(student.getFullName()).append("\n");
+                context.append("Senaste inloggning: ").append(student.getLastLogin()).append("\n");
+                context.append("Antal inloggningar: ").append(student.getLoginCount()).append("\n");
+
+                context.append("\nKURSSTATUS:\n");
+                for (Map<String, Object> cp : progress) {
+                        context.append("- ").append(cp.get("courseName")).append(": ");
+                        context.append("Uppgifter (").append(cp.get("completedAssignments")).append("/")
+                                        .append(cp.get("totalAssignments")).append("), ");
+                        context.append("Quizzar (").append(cp.get("completedQuizzes")).append("/")
+                                        .append(cp.get("totalQuizzes")).append("), ");
+                        context.append("Betyg: ").append(cp.get("estimatedGrade")).append(", ");
+                        if ((boolean) cp.get("isAtRisk")) {
+                                context.append("RISK: ").append(cp.get("riskReason"));
+                        }
+                        context.append("\n");
+                }
+
+                String prompt = "Du är en pedagogisk rådgivare på EduFlex LMS. Baserat på följande data för en student som markerats som 'at-risk', "
+                                +
+                                "skriv en kort sammanfattning (max 100 ord) till läraren. " +
+                                "Analysera varför studenten har det svårt och ge ett konkret förslag på intervention. "
+                                +
+                                "Språk: Svenska.\n\nDATA:\n" + context.toString();
+
+                try {
+                        return eduAIService.generateResponse(prompt);
+                } catch (Exception e) {
+                        return "Kunde inte generera AI-analys för tillfället.";
+                }
         }
 
         public List<Map<String, Object>> getCourseDropOff(Long courseId) {

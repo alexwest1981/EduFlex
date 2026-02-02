@@ -22,12 +22,15 @@ public class EbookService {
     private final StorageService storageService;
     private final com.eduflex.backend.repository.CourseRepository courseRepository;
     private final org.springframework.web.client.RestTemplate restTemplate;
+    private final com.eduflex.backend.service.ai.TtsService ttsService;
 
     public EbookService(EbookRepository ebookRepository, StorageService storageService,
-            com.eduflex.backend.repository.CourseRepository courseRepository) {
+            com.eduflex.backend.repository.CourseRepository courseRepository,
+            com.eduflex.backend.service.ai.TtsService ttsService) {
         this.ebookRepository = ebookRepository;
         this.storageService = storageService;
         this.courseRepository = courseRepository;
+        this.ttsService = ttsService;
         this.restTemplate = new org.springframework.web.client.RestTemplate();
     }
 
@@ -60,6 +63,16 @@ public class EbookService {
         ebook.setFileUrl(fileUrl);
         ebook.setCoverUrl(coverUrl);
         ebook.setIsbn(isbn);
+
+        // Detect type
+        String fileName = file.getOriginalFilename().toLowerCase();
+        if (fileName.endsWith(".mp3") || fileName.endsWith(".m4b")) {
+            ebook.setType(com.eduflex.backend.model.BookType.AUDIO);
+        } else if (fileName.endsWith(".pdf")) {
+            ebook.setType(com.eduflex.backend.model.BookType.PDF);
+        } else {
+            ebook.setType(com.eduflex.backend.model.BookType.EPUB);
+        }
 
         if (courseIds != null && !courseIds.isEmpty()) {
             List<com.eduflex.backend.model.Course> courses = courseRepository.findAllById(courseIds);
@@ -382,5 +395,14 @@ public class EbookService {
             }
         }
         return null;
+    }
+
+    public byte[] getTtsForChapter(Long ebookId, String text) {
+        Ebook ebook = getEbookById(ebookId);
+        logger.info("Generating AI TTS for book: {}", ebook.getTitle());
+        // Simplified: Generate and return bytes.
+        // In a real scenario, we'd hash the text and check MinIO/Local if we already
+        // have it.
+        return ttsService.generateSpeech(text, "nova");
     }
 }

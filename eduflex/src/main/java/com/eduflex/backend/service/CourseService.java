@@ -41,6 +41,8 @@ public class CourseService {
     private final com.eduflex.backend.repository.CourseResultRepository resultRepository;
     private final AssignmentRepository assignmentRepository;
     private final SubmissionRepository submissionRepository;
+    private final com.eduflex.backend.repository.UserLessonProgressRepository userLessonProgressRepository;
+    private final com.eduflex.backend.repository.StudentActivityLogRepository studentActivityLogRepository;
 
     @Value("${file.upload-dir}")
     private String uploadDir;
@@ -56,7 +58,9 @@ public class CourseService {
             AssignmentRepository assignmentRepository,
             SubmissionRepository submissionRepository,
             SkolverketCourseRepository skolverketCourseRepository,
-            StorageService storageService) {
+            StorageService storageService,
+            com.eduflex.backend.repository.UserLessonProgressRepository userLessonProgressRepository,
+            com.eduflex.backend.repository.StudentActivityLogRepository studentActivityLogRepository) {
         this.courseRepository = courseRepository;
         this.userRepository = userRepository;
         this.materialRepository = materialRepository;
@@ -67,6 +71,8 @@ public class CourseService {
         this.submissionRepository = submissionRepository;
         this.skolverketCourseRepository = skolverketCourseRepository;
         this.storageService = storageService;
+        this.userLessonProgressRepository = userLessonProgressRepository;
+        this.studentActivityLogRepository = studentActivityLogRepository;
     }
 
     @EventListener(ApplicationReadyEvent.class)
@@ -294,7 +300,18 @@ public class CourseService {
         material.setLink(link);
         material.setType(CourseMaterial.MaterialType.valueOf(type));
         if (availableFrom != null && !availableFrom.isEmpty()) {
-            material.setAvailableFrom(java.time.LocalDateTime.parse(availableFrom));
+            try {
+                // If the frontend sends YYYY-MM-DDTHH:mm (without seconds), ISO_LOCAL_DATE_TIME
+                // handles it
+                // but we need to be careful with parse exceptions.
+                material.setAvailableFrom(java.time.LocalDateTime.parse(availableFrom,
+                        java.time.format.DateTimeFormatter
+                                .ofPattern("[yyyy-MM-dd'T'HH:mm[:ss]][yyyy-MM-dd HH:mm[:ss]]")));
+            } catch (Exception e) {
+                System.err.println("Could not parse date: " + availableFrom + ". Error: " + e.getMessage());
+                // Fallback: set to null or now if it's invalid? Better to keep as null if
+                // invalid.
+            }
         }
         material.setCourse(course);
         if (file != null && !file.isEmpty()) {
@@ -335,10 +352,18 @@ public class CourseService {
             material.setContent(content);
         if (link != null)
             material.setLink(link);
-        if (availableFrom != null && !availableFrom.isEmpty()) {
-            material.setAvailableFrom(java.time.LocalDateTime.parse(availableFrom));
-        } else if (availableFrom != null && availableFrom.isEmpty()) {
-            material.setAvailableFrom(null);
+        if (availableFrom != null) {
+            if (availableFrom.isEmpty()) {
+                material.setAvailableFrom(null);
+            } else {
+                try {
+                    material.setAvailableFrom(java.time.LocalDateTime.parse(availableFrom,
+                            java.time.format.DateTimeFormatter
+                                    .ofPattern("[yyyy-MM-dd'T'HH:mm[:ss]][yyyy-MM-dd HH:mm[:ss]]")));
+                } catch (Exception e) {
+                    System.err.println("Could not parse date in update: " + availableFrom);
+                }
+            }
         }
         if (file != null && !file.isEmpty()) {
             String storageId = storageService.save(file);
@@ -359,7 +384,11 @@ public class CourseService {
         return materialRepository.findByCourseIdOrderBySortOrderAsc(courseId);
     }
 
+    @Transactional
     public void deleteMaterial(Long id) {
+        // Ta bort beroenden först
+        userLessonProgressRepository.deleteByMaterialId(id);
+        studentActivityLogRepository.deleteByMaterialId(id);
         materialRepository.deleteById(id);
     }
 

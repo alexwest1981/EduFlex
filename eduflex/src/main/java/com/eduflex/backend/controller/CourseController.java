@@ -95,6 +95,14 @@ public class CourseController {
         return new java.util.ArrayList<>();
     }
 
+    /**
+     * Alias for /my-courses to support frontend API calls
+     */
+    @GetMapping("/my")
+    public List<CourseDTO> getMyCoursesAlias() {
+        return getMyCourses();
+    }
+
     @GetMapping("/student/{studentId}")
     public List<Course> getStudentCourses(@PathVariable Long studentId) {
         return courseRepository.findByStudentsId(studentId);
@@ -126,7 +134,10 @@ public class CourseController {
             return ResponseEntity.ok(courseService.addMaterial(id, title, content, link, type, availableFrom, file));
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.badRequest().body("Fel vid skapande av material: " + e.getMessage());
+            String rootCause = e.getMessage();
+            if (e.getCause() != null)
+                rootCause += " | Cause: " + e.getCause().getMessage();
+            return ResponseEntity.badRequest().body("Fel vid skapande av material: " + rootCause);
         }
     }
 
@@ -142,7 +153,10 @@ public class CourseController {
             return ResponseEntity.ok(courseService.updateMaterial(id, title, content, link, availableFrom, file));
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.badRequest().body("Fel vid uppdatering: " + e.getMessage());
+            String rootCause = e.getMessage();
+            if (e.getCause() != null)
+                rootCause += " | Cause: " + e.getCause().getMessage();
+            return ResponseEntity.badRequest().body("Fel vid uppdatering: " + rootCause);
         }
     }
 

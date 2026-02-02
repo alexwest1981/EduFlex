@@ -92,6 +92,10 @@ public class UserService {
         return user;
     }
 
+    public java.util.Optional<User> findByUsername(String username) {
+        return userRepository.findByUsername(username);
+    }
+
     public User registerUser(User user) {
         // --- LICENSE LIMIT CHECK ---
         int maxUsers = licenseService.getTier().getMaxUsers();

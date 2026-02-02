@@ -89,6 +89,12 @@ public class AnalyticsController {
         return ResponseEntity.ok(analyticsService.getAtRiskStudents());
     }
 
+    @GetMapping("/at-risk/{userId}/ai-summary")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN', 'TEACHER', 'ROLE_TEACHER')")
+    public ResponseEntity<Map<String, String>> getAtRiskAiSummary(@PathVariable Long userId) {
+        return ResponseEntity.ok(Map.of("summary", analyticsService.getAtRiskAiSummary(userId)));
+    }
+
     @GetMapping("/heatmap")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Map<String, Integer>> getActivityHeatmap(

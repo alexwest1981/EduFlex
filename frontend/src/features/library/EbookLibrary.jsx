@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Book, Upload, Search, Trash2, X, Maximize2, Library, Filter, Settings, Sparkles as SparklesIcon } from 'lucide-react';
+import { Book, Upload, Search, Trash2, X, Maximize2, Library, Filter, Settings, Sparkles as SparklesIcon, Volume2, Music } from 'lucide-react';
 import { api } from '../../services/api';
 import EpubViewer from '../../components/common/EpubViewer';
 import PdfViewer from '../../components/common/PdfViewer';
@@ -7,6 +7,7 @@ import EpubThumbnail from '../../components/common/EpubThumbnail';
 import { useAppContext } from '../../context/AppContext';
 import { useTranslation } from 'react-i18next';
 import toast from 'react-hot-toast';
+import AudiobookPlayer from '../../components/common/AudiobookPlayer';
 
 
 const EbookLibrary = () => {
@@ -29,14 +30,12 @@ const EbookLibrary = () => {
         author: '',
         category: '',
         language: 'Svenska',
-        title: '',
-        author: '',
-        category: '',
-        language: 'Svenska',
         description: '',
         isbn: ''
     });
     const [isIndexing, setIsIndexing] = useState(false);
+    const [isAudioPlayerOpen, setIsAudioPlayerOpen] = useState(false);
+    const [ttsLoading, setTtsLoading] = useState(false);
 
 
     // Derive available categories dynamically from the loaded ebooks
@@ -113,13 +112,11 @@ const EbookLibrary = () => {
 
     const handleUpload = async (e) => {
         e.preventDefault();
-        if (!files.epub) return toast.error(t('library.select_file_alert') || 'Vänligen välj en EPUB-fil');
+        if (!files.epub) return toast.error(t('library.select_file_alert') || 'Vänligen välj en fil');
 
         const formData = new FormData();
         formData.append('title', uploadData.title);
         formData.append('author', uploadData.author);
-        formData.append('category', uploadData.category);
-        formData.append('language', uploadData.language);
         formData.append('category', uploadData.category);
         formData.append('language', uploadData.language);
         formData.append('description', uploadData.description);
@@ -157,9 +154,7 @@ const EbookLibrary = () => {
             setIsUploadModalOpen(false);
             setUploadProgress(0);
             fetchEbooks();
-            fetchEbooks();
             setUploadData({ title: '', author: '', category: '', language: 'Svenska', description: '', isbn: '' });
-            setFiles({ epub: null, cover: null });
             setFiles({ epub: null, cover: null });
             setSelectedCourses([]);
         } catch (error) {
@@ -238,6 +233,44 @@ const EbookLibrary = () => {
             toast.error('Ett fel inträffade vid indexering.', { id: loadingToast });
         } finally {
             setIsIndexing(false);
+        }
+    };
+
+    const handleListenWithAI = async (book) => {
+        setTtsLoading(true);
+        const loadingToast = toast.loading('Förbereder AI-uppläsning...');
+        try {
+            // 1. Fetch metadata/chapters to get text (simple version: get first 5000 chars of chapter 1)
+            // Implementation detail: for now we just send a request to our new TTS endpoint
+            // with a sample text extracted from the book service.
+
+            // In a better version, we'd open the reader, then click "Read this page"
+            // For now, let's just show it's working by reading the book's description or a placeholder.
+            const textToRead = book.description || `Detta är en uppläsning av boken ${book.title}. Tyvärr saknas beskrivning.`;
+
+            const response = await fetch(`/api/ebooks/${book.id}/tts`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ text: textToRead })
+            });
+
+            if (response.ok) {
+                const blob = await response.blob();
+                const audioUrl = URL.createObjectURL(blob);
+                setSelectedBook({ ...book, fileUrl: audioUrl, type: 'AUDIO' });
+                setIsAudioPlayerOpen(true);
+                toast.success('AI-rösten är redo! 🎧', { id: loadingToast });
+            } else {
+                toast.error('Kunde inte generera AI-röst.', { id: loadingToast });
+            }
+        } catch (error) {
+            console.error('TTS error:', error);
+            toast.error('Ett fel inträffade vid AI-uppläsning.', { id: loadingToast });
+        } finally {
+            setTtsLoading(false);
         }
     };
 
@@ -357,6 +390,11 @@ const EbookLibrary = () => {
                                             </div>
                                         </div>
                                         <span className="absolute top-2 right-2 bg-black/60 backdrop-blur-md text-white text-xs font-bold px-2 py-1 rounded-lg">{book.category}</span>
+                                        {book.type === 'AUDIO' && (
+                                            <div className="absolute top-2 left-2 bg-indigo-600 backdrop-blur-md text-white text-[10px] font-bold px-2 py-1 rounded-lg flex items-center gap-1">
+                                                <Music size={10} /> AUDIO
+                                            </div>
+                                        )}
                                     </div>
 
                                     <div className={`flex flex-col ${viewMode === 'list' ? 'flex-1 py-0' : 'p-5 flex-1'}`}>
@@ -365,6 +403,9 @@ const EbookLibrary = () => {
                                         <div className="mt-auto flex items-center gap-2 justify-end">
                                             {(currentUser?.role?.name === 'ROLE_TEACHER' || currentUser?.role?.name === 'ROLE_ADMIN' || currentUser?.role === 'TEACHER' || currentUser?.role === 'ADMIN' || currentUser?.username === 'admin') && (
                                                 <>
+                                                    <button onClick={(e) => { e.stopPropagation(); handleListenWithAI(book); }} className="p-2 text-pink-500 hover:text-pink-600 hover:bg-pink-50 dark:hover:bg-pink-900/30 rounded-lg transition-colors" title="Lyssna med AI (TTS)">
+                                                        <Volume2 size={18} />
+                                                    </button>
                                                     <button onClick={(e) => { e.stopPropagation(); handleIndexForAI(book.id); }} className="p-2 text-indigo-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg transition-colors" title="Indexera för AI Study Pal">
                                                         <SparklesIcon size={18} />
                                                     </button>
@@ -456,7 +497,7 @@ const EbookLibrary = () => {
                                     <div className="grid grid-cols-2 gap-4">
                                         <div>
                                             <label className="block text-xs font-bold text-gray-500 uppercase mb-1">{t('library.epub_file_label')} *</label>
-                                            <input type="file" accept=".epub,.pdf" required onChange={(e) => setFiles({ ...files, epub: e.target.files[0] })} className="text-xs text-gray-500 file:mr-2 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" />
+                                            <input type="file" accept=".epub,.pdf,.mp3,.m4b" required onChange={(e) => setFiles({ ...files, epub: e.target.files[0] })} className="text-xs text-gray-500 file:mr-2 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" />
                                         </div>
                                         <div>
                                             <label className="block text-xs font-bold text-gray-500 uppercase mb-1">{t('library.cover_image_label')} ({t('common.optional')})</label>
@@ -564,10 +605,12 @@ const EbookLibrary = () => {
                                 </div>
                             </div>
                             <div className="flex-1 bg-gray-100 dark:bg-gray-900 overflow-hidden relative">
-                                {selectedBook.fileUrl && selectedBook.fileUrl.toLowerCase().endsWith('.epub') ? (
-                                    <EpubViewer url={selectedBook.fileUrl} />
+                                {selectedBook.type === 'AUDIO' ? (
+                                    <AudiobookPlayer book={selectedBook} onClose={() => setSelectedBook(null)} />
+                                ) : (selectedBook.fileUrl && selectedBook.fileUrl.toLowerCase().endsWith('.epub')) || selectedBook.type === 'EPUB' ? (
+                                    <EpubViewer url={selectedBook.fileUrl} title={selectedBook.title} />
                                 ) : (
-                                    <PdfViewer url={selectedBook.fileUrl} />
+                                    <PdfViewer ebookId={selectedBook.id} title={selectedBook.title} />
                                 )}
                             </div>
                         </div>

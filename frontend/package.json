@@ -13,6 +13,7 @@
     "@stomp/stompjs": "^7.2.1",
     "deepl-node": "^1.24.0",
     "epubjs": "^0.3.93",
+    "framer-motion": "^12.29.2",
     "i18next": "^23.10.0",
     "i18next-browser-languagedetector": "^7.2.0",
     "lucide-react": "^0.344.0",

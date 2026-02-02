@@ -21,7 +21,7 @@ const JitsiMeeting = ({
     onClose,
     onParticipantJoined,
     onParticipantLeft,
-    jitsiDomain = 'localhost:8444' // Self-hosted Jitsi (no login required)
+    jitsiDomain = 'meet.eduflexlms.se' // Self-hosted Jitsi instance via Cloudflare
 }) => {
     const containerRef = useRef(null);
     const apiRef = useRef(null);
@@ -67,50 +67,13 @@ const JitsiMeeting = ({
             width: '100%',
             height: '100%',
             configOverwrite: {
-                // === CRITICAL: Disable lobby and prejoin completely ===
+                // === Standard Config for meet.jit.si ===
+                // Disable prejoin page for smoother entry (if allowed by server)
                 prejoinPageEnabled: false,
-                prejoinConfig: {
-                    enabled: false
-                },
-
-                // Lobby settings - disable completely
-                lobbyEnabled: false,
-                enableLobbyChat: false,
-                hideLobbyButton: true,
-
-                // Auto-knock to bypass lobby if it's enabled server-side
-                lobby: {
-                    autoKnock: true,
-                    enableChat: false
-                },
-
-                // Security - disable members-only mode
-                membersOnly: false,
-                enableInsecureRoomNameWarning: false,
-
-                // Disable moderator features that cause issues
-                disableModeratorIndicator: true,
-                remoteVideoMenu: {
-                    disableKick: true,
-                    disableGrantModerator: true,
-                    disablePrivateChat: false
-                },
-                disableRemoteMute: true,
 
                 // Start settings
                 startWithAudioMuted: !isHost,
                 startWithVideoMuted: !isHost,
-
-                // Disable features that cause issues
-                disableDeepLinking: true,
-                enableWelcomePage: false,
-                enableClosePage: false,
-                disableInviteFunctions: true,
-                requireDisplayName: false,
-
-                // Skip any authentication dialogs
-                enableUserRolesBasedOnToken: false,
-                enableFeaturesBasedOnToken: false,
 
                 // Toolbar
                 toolbarButtons: [
@@ -314,42 +277,7 @@ const JitsiMeeting = ({
             {/* Jitsi Container */}
             <div ref={containerRef} className="flex-1" />
 
-            {/* Bottom Controls (overlay) */}
-            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-3 p-2 bg-gray-900/80 backdrop-blur-sm rounded-2xl border border-white/10">
-                <button
-                    onClick={toggleMute}
-                    className={`p-4 rounded-xl transition-colors ${
-                        isMuted
-                            ? 'bg-red-500 text-white'
-                            : 'bg-white/10 text-white hover:bg-white/20'
-                    }`}
-                    title={isMuted ? 'Slå på mikrofon' : 'Stäng av mikrofon'}
-                >
-                    {isMuted ? <MicOff size={24} /> : <Mic size={24} />}
-                </button>
-
-                <button
-                    onClick={toggleVideo}
-                    className={`p-4 rounded-xl transition-colors ${
-                        isVideoOff
-                            ? 'bg-red-500 text-white'
-                            : 'bg-white/10 text-white hover:bg-white/20'
-                    }`}
-                    title={isVideoOff ? 'Slå på kamera' : 'Stäng av kamera'}
-                >
-                    {isVideoOff ? <VideoOff size={24} /> : <Video size={24} />}
-                </button>
-
-                <div className="w-px h-8 bg-white/20" />
-
-                <button
-                    onClick={hangUp}
-                    className="p-4 bg-red-500 hover:bg-red-600 text-white rounded-xl transition-colors"
-                    title="Lämna mötet"
-                >
-                    <PhoneOff size={24} />
-                </button>
-            </div>
+            {/* Bottom Controls removed to use native Jitsi toolbar */}
         </div>
     );
 };

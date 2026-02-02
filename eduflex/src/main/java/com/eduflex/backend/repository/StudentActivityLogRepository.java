@@ -31,4 +31,6 @@ public interface StudentActivityLogRepository extends JpaRepository<StudentActiv
     @org.springframework.data.jpa.repository.Query("SELECT s FROM StudentActivityLog s WHERE s.timestamp >= :startDate")
     List<StudentActivityLog> findAllSince(
             @org.springframework.data.repository.query.Param("startDate") LocalDateTime startDate);
+
+    void deleteByMaterialId(Long materialId);
 }

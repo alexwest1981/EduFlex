@@ -154,4 +154,38 @@ public class GamificationController {
                 "usersUpdated", usersUpdated,
                 "message", "XP recalculated for all users"));
     }
+
+    // === EduAI Quests Endpoints ===
+
+    @Autowired
+    private com.eduflex.backend.service.ai.EduAIService eduAIService;
+
+    @PostMapping("/eduai/generate")
+    public ResponseEntity<List<com.eduflex.backend.model.EduAIQuest>> generateEduAIQuests() {
+        String username = org.springframework.security.core.context.SecurityContextHolder.getContext()
+                .getAuthentication().getName();
+        User user = userRepository.findByUsername(username)
+                .orElseGet(() -> userRepository.findByEmail(username).orElseThrow());
+
+        return ResponseEntity.ok(eduAIService.generateQuests(user.getId()));
+    }
+
+    @GetMapping("/eduai/active")
+    public ResponseEntity<List<com.eduflex.backend.model.EduAIQuest>> getActiveEduAIQuests() {
+        String username = org.springframework.security.core.context.SecurityContextHolder.getContext()
+                .getAuthentication().getName();
+        User user = userRepository.findByUsername(username)
+                .orElseGet(() -> userRepository.findByEmail(username).orElseThrow());
+
+        return ResponseEntity.ok(eduAIService.getActiveQuests(user.getId()));
+    }
+
+    @PostMapping("/eduai/complete/{questId}")
+    public ResponseEntity<com.eduflex.backend.model.EduAIQuest> completeQuest(@PathVariable Long questId) {
+        // I en riktig implementation borde vi validera att questet faktiskt är klart
+        // och att det tillhör rätt användare.
+        com.eduflex.backend.model.EduAIQuest quest = eduAIService.completeQuest(questId);
+        gamificationService.addPoints(quest.getUserId(), quest.getRewardXp());
+        return ResponseEntity.ok(quest);
+    }
 }

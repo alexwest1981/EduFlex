@@ -37,7 +37,7 @@
 | **Socialt Lärande (Basic)** | Community Hub / Marketplace. | ✅ **Klar** |
 | **Socialt Lärande (Avancerat)** | P2P-delning, kommentarer i kurser, "YouTube for Learning". | 📅 **Planerad** |
 | **Gamification (Basic)** | XP, Levlar, Badges, Streaks. | ✅ **Klar** |
-| **Gamification (Avancerat)** | Leaderboards, LinkedIn-delbara badges. | 📅 **Planerad** |
+| **EduGame Expansion** | Shop för profil-teman, Sociala Streaks, "Buddy"-system. | 📅 **Pågående (Q1 2026)** |
 | **Mobil-först** | Responsiv webbdesign. | ✅ **Klar** |
 | **Offline-läge / PWA** | Installera som app, ladda ner kurser för offline-bruk. | 📅 **Planerad** |
 
