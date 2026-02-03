@@ -168,6 +168,16 @@ public class UserController {
             if (updates.containsKey("twitterUrl"))
                 user.setTwitterUrl((String) updates.get("twitterUrl"));
 
+            // NYTT: Hantera Storage Quota
+            if (updates.containsKey("storageQuota")) {
+                Object quotaVal = updates.get("storageQuota");
+                if (quotaVal instanceof Number) {
+                    user.setStorageQuota(((Number) quotaVal).longValue());
+                } else {
+                    user.setStorageQuota(Long.parseLong(quotaVal.toString()));
+                }
+            }
+
             return ResponseEntity.ok(userRepository.save(user));
         }).orElse(ResponseEntity.notFound().build());
     }

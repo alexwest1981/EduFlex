@@ -38,6 +38,13 @@
 ## 🇸🇪 Svenska
 
 ### ⚡ Senaste Uppdateringarna
+*   **📦 Lagringskvoter & Avancerad Filhantering (3 feb 2026):**
+    *   **Lagringskvoter per användare:** Implementerat ett system för att begränsa hur mycket data varje användare kan ladda upp (standard 1GB).
+    *   **Kvothantering:** Administratörer kan nu styra enskilda användares lagringsutrymme direkt via adminpanelen.
+    *   **Realtidsstatistik:** Ny sidomeny-del som visar användarens aktuella lagring mot deras kvot med en visuell progress bar.
+    *   **System-övergripande lagringsstats:** En ny dedikerad sektion i administrationspanelen visar totalt använt utrymme, antal filer och användarstatistik i hela systemet.
+    *   **Förbättrad Säkerhet & Routning:** Separerat admin-statistik till en egen kontroller (`AdminStatsController`) för säkrare hantering av administrativa data.
+
 *   **🎮 Gamification V2.0 & Privat Video-infra (2 feb 2026):**
     *   **EduGame Engine (V2.0):** Lanserat en komplett backend-motor för `Streaks`, `Quests` och `Friendships`. Systemet automatgenererar nu dagliga uppdrag och spårar social interaktion.
     *   **Customization Shop:** Implementerat en butik där användare kan köpa profilarmer, bakgrunder och unika titlar med intjänad XP/poäng.
@@ -255,6 +262,13 @@ curl -X POST http://localhost:8080/api/tenants \
 ## 🇬🇧 English
 
 ### ⚡ Latest Updates
+*   **📦 Storage Quotas & Advanced File Management (Feb 3, 2026):**
+    *   **Per-User Storage Quotas:** Implemented a system to limit data uploads for each user (default 1GB).
+    *   **Quota Management:** Administrators can now control individual user storage limits directly from the admin panel.
+    *   **Real-time Usage Stats:** New sidebar widget displaying user-specific storage usage against their quota with a visual progress bar.
+    *   **System-wide Storage Statistics:** A new dedicated administration section shows total used storage, file counts, and system-wide user stats.
+    *   **Improved Security & Routing:** Isolated administrative statistics to a dedicated controller (`AdminStatsController`) for enhanced security and routing clarity.
+
 *   **🧩 Sidebar Refactor & Grouping (Feb 1, 2026):**
     *   **Categorized Navigation:** The sidebar has been rebuilt from scratch to reduce visual clutter, especially for administrators. Navigation items are now logically grouped into sections (Main Menu, Education, Tools, Administration).
     *   **Collapsible Sections:** New `SidebarSection` component that allows groups to be collapsed/expanded to save vertical space.

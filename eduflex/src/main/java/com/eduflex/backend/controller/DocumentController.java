@@ -36,9 +36,11 @@ public class DocumentController {
     }
 
     @PostMapping("/user/{userId}")
-    public ResponseEntity<Document> upload(@PathVariable Long userId, @RequestParam("file") MultipartFile file) {
+    public ResponseEntity<Document> upload(@PathVariable Long userId,
+            @RequestParam("file") MultipartFile file,
+            @RequestParam(required = false) Long folderId) {
         try {
-            Document saved = documentService.uploadFile(userId, file);
+            Document saved = documentService.uploadFile(userId, file, folderId);
 
             // Publish PDF Event if PDF
             if ("application/pdf".equals(file.getContentType())) {
@@ -67,9 +69,18 @@ public class DocumentController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/{id}/share")
-    public ResponseEntity<?> share(@PathVariable Long id, @RequestParam Long userId) {
-        documentService.shareDocument(id, userId);
-        return ResponseEntity.ok().build();
+    @GetMapping("/folder/{folderId}")
+    public List<Document> getFolderDocs(@PathVariable Long folderId, @RequestParam Long userId) {
+        return documentService.getFolderDocuments(userId, folderId);
+    }
+
+    @GetMapping("/user/{userId}/root")
+    public List<Document> getRootDocs(@PathVariable Long userId) {
+        return documentService.getFolderDocuments(userId, null);
+    }
+
+    @GetMapping("/usage/{userId}")
+    public ResponseEntity<?> getUsage(@PathVariable Long userId) {
+        return ResponseEntity.ok(documentService.getStorageUsage(userId));
     }
 }

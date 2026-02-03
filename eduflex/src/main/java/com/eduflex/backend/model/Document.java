@@ -20,13 +20,13 @@ public class Document {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime uploadedAt;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "folder_id")
+    private Folder folder;
+
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User owner;
-
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "document_shares", joinColumns = @JoinColumn(name = "document_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
-    private java.util.Set<User> sharedWith = new java.util.HashSet<>();
 
     public Document() {
     }
@@ -69,8 +69,8 @@ public class Document {
         return owner;
     }
 
-    public java.util.Set<User> getSharedWith() {
-        return sharedWith;
+    public Folder getFolder() {
+        return folder;
     }
 
     // Setters
@@ -102,7 +102,7 @@ public class Document {
         this.owner = owner;
     }
 
-    public void setSharedWith(java.util.Set<User> sharedWith) {
-        this.sharedWith = sharedWith;
+    public void setFolder(Folder folder) {
+        this.folder = folder;
     }
 }

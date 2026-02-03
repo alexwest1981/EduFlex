@@ -376,7 +376,26 @@ export const api = {
         },
         delete: (id) => fetch(`${API_BASE}/documents/${id}`, { method: 'DELETE', headers: getHeaders() }).then(handleResponse),
         getUserDocs: (userId) => fetch(`${API_BASE}/documents/user/${userId}`, { headers: getHeaders() }).then(handleResponse),
+        getFolderDocs: (folderId, userId) => fetch(`${API_BASE}/documents/folder/${folderId}?userId=${userId}`, { headers: getHeaders() }).then(handleResponse),
+        getRootDocs: (userId) => fetch(`${API_BASE}/documents/user/${userId}/root`, { headers: getHeaders() }).then(handleResponse),
         share: (docId, userId) => fetch(`${API_BASE}/documents/${docId}/share?userId=${userId}`, { method: 'POST', headers: getHeaders() }).then(handleResponse),
+        getUsage: (userId) => fetch(`${API_BASE}/documents/usage/${userId}`, { headers: getHeaders() }).then(handleResponse),
+        getAdminStats: () => fetch(`${API_BASE}/admin/storage-stats`, { headers: getHeaders() }).then(handleResponse),
+    },
+
+    folders: {
+        create: (userId, name, parentId) => api.post(`/folders/user/${userId}`, { name, parentId }),
+        getRoot: (userId) => api.get(`/folders/user/${userId}/root`),
+        getContent: (folderId, userId) => api.get(`/folders/${folderId}/content?userId=${userId}`),
+        delete: (id) => api.delete(`/folders/${id}`),
+        rename: (id, name) => api.put(`/folders/${id}/rename`, { name }),
+    },
+
+    shares: {
+        create: (docId, sharedById, data) => api.post(`/shares/file/${docId}?sharedById=${sharedById}`, data),
+        createPublicLink: (docId, sharedById, expiresAt) => api.post(`/shares/file/${docId}/public?sharedById=${sharedById}${expiresAt ? `&expiresAt=${expiresAt}` : ''}`),
+        getTargetShares: (type, id) => api.get(`/shares/target/${type}/${id}`),
+        revoke: (id) => api.delete(`/shares/${id}`),
     },
 
     // --- RESTORED SECTIONS ---

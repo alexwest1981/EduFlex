@@ -7,6 +7,20 @@ import java.util.List;
 public interface DocumentRepository extends JpaRepository<Document, Long> {
     List<Document> findByOwnerId(Long userId);
 
-    @org.springframework.data.jpa.repository.Query("SELECT d FROM Document d LEFT JOIN d.sharedWith s WHERE d.owner.id = :userId OR s.id = :userId")
-    List<Document> findByOwnerIdOrSharedWithId(@org.springframework.data.repository.query.Param("userId") Long userId);
+    List<Document> findByOwnerIdAndFolderId(Long ownerId, Long folderId);
+
+    List<Document> findByOwnerIdAndFolderIsNull(Long ownerId);
+
+    @org.springframework.data.jpa.repository.Query("SELECT d FROM Document d WHERE d.owner.id = :userId OR d.id IN (SELECT s.document.id FROM FileShare s WHERE s.targetType = 'USER' AND s.targetId = :userId)")
+    List<Document> findByOwnerIdOrSharedWithUser(
+            @org.springframework.data.repository.query.Param("userId") Long userId);
+
+    @org.springframework.data.jpa.repository.Query("SELECT COALESCE(SUM(d.size), 0) FROM Document d WHERE d.owner.id = :userId")
+    Long getTotalSizeByOwnerId(@org.springframework.data.repository.query.Param("userId") Long userId);
+
+    @org.springframework.data.jpa.repository.Query("SELECT COALESCE(SUM(d.size), 0) FROM Document d")
+    Long getTotalSizeForAllUsers();
+
+    @org.springframework.data.jpa.repository.Query("SELECT COUNT(d) FROM Document d")
+    long countTotalDocuments();
 }

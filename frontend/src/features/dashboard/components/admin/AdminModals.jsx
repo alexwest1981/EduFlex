@@ -87,7 +87,7 @@ export const CreateUserModal = ({ isOpen, onClose, onUserCreated }) => {
 // --- EDIT USER ---
 export const EditUserModal = ({ isOpen, onClose, onUserUpdated, userToEdit }) => {
     const { t } = useTranslation();
-    const [formData, setFormData] = useState({ firstName: '', lastName: '', email: '', username: '', role: '' });
+    const [formData, setFormData] = useState({ firstName: '', lastName: '', email: '', username: '', role: '', storageQuotaGb: 1 });
     const [loading, setLoading] = useState(false);
     const [roleList, setRoleList] = useState([]);
     const [errorMsg, setErrorMsg] = useState('');
@@ -99,7 +99,8 @@ export const EditUserModal = ({ isOpen, onClose, onUserUpdated, userToEdit }) =>
                 lastName: userToEdit.lastName || '',
                 email: userToEdit.email || '',
                 username: userToEdit.username || '',
-                role: userToEdit.role?.name || userToEdit.role || 'STUDENT'
+                role: userToEdit.role?.name || userToEdit.role || 'STUDENT',
+                storageQuotaGb: userToEdit.storageQuota ? Math.round(userToEdit.storageQuota / (1024 * 1024 * 1024) * 10) / 10 : 1
             });
         }
     }, [userToEdit]);
@@ -115,7 +116,13 @@ export const EditUserModal = ({ isOpen, onClose, onUserUpdated, userToEdit }) =>
         setLoading(true);
         setErrorMsg('');
         try {
-            await api.users.update(userToEdit.id, formData);
+            const dataToSave = {
+                ...formData,
+                storageQuota: Math.round(parseFloat(formData.storageQuotaGb) * 1024 * 1024 * 1024)
+            };
+            delete dataToSave.storageQuotaGb;
+
+            await api.users.update(userToEdit.id, dataToSave);
             onUserUpdated();
             onClose();
         } catch (error) {
@@ -155,6 +162,17 @@ export const EditUserModal = ({ isOpen, onClose, onUserUpdated, userToEdit }) =>
                             </>
                         )}
                     </select>
+                    <div className="space-y-1">
+                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Lagringsutrymme (GB)</label>
+                        <input
+                            type="number"
+                            step="0.1"
+                            className="w-full p-2.5 rounded-xl border dark:bg-[#131314] dark:border-[#3c4043] dark:text-white outline-none focus:border-indigo-500/50 transition-all font-bold"
+                            placeholder="T.ex 1.0"
+                            value={formData.storageQuotaGb}
+                            onChange={e => setFormData({ ...formData, storageQuotaGb: e.target.value })}
+                        />
+                    </div>
                     <button disabled={loading} type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 rounded-lg mt-2">{loading ? t('common.loading') : t('dashboard.active')}</button>
                 </form>
             </div>

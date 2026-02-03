@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Users, BookOpen, DollarSign, FileText, Settings, Tag, Shield, Terminal } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { AdminUserTable, AdminCourseRegistry } from './components/admin/AdminTables';
@@ -14,6 +14,51 @@ import PaymentGatewaySettings from '../admin/PaymentGatewaySettings';
 import PromoCodeManagement from '../admin/PromoCodeManagement';
 import LogDashboard from '../system/LogDashboard';
 import RealTimeLogViewer from '../system/RealTimeLogViewer';
+import { HardDrive } from 'lucide-react';
+
+const AdminStorageStats = () => {
+    const [stats, setStats] = useState(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        api.documents.getAdminStats()
+            .then(setStats)
+            .catch(err => console.error("Failed to fetch storage stats", err))
+            .finally(() => setLoading(false));
+    }, []);
+
+    const formatBytes = (bytes) => {
+        if (!bytes) return '0 B';
+        const k = 1024;
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + ['B', 'KB', 'MB', 'GB', 'TB'][i];
+    };
+
+    if (loading) return <div className="p-8 text-center bg-white dark:bg-[#1E1F20] rounded-xl border border-gray-100 dark:border-[#3c4043]">Laddar...</div>;
+    if (!stats) return <div className="p-8 text-center bg-white dark:bg-[#1E1F20] rounded-xl border border-gray-100 dark:border-[#3c4043]">Kunde inte hämta statistik.</div>;
+
+    return (
+        <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="bg-white dark:bg-[#1E1F20] p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-[#3c4043]">
+                    <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Total Lagring</p>
+                    <h3 className="text-2xl font-black text-indigo-600">{formatBytes(stats.totalUsed)}</h3>
+                    <p className="text-[10px] text-gray-400 mt-1">Används i hela systemet</p>
+                </div>
+                <div className="bg-white dark:bg-[#1E1F20] p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-[#3c4043]">
+                    <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Totala Filer</p>
+                    <h3 className="text-2xl font-black text-indigo-600">{stats.totalDocuments} st</h3>
+                    <p className="text-[10px] text-gray-400 mt-1">Uppladdade dokument</p>
+                </div>
+                <div className="bg-white dark:bg-[#1E1F20] p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-[#3c4043]">
+                    <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Användare</p>
+                    <h3 className="text-2xl font-black text-indigo-600">{stats.totalUsers} st</h3>
+                    <p className="text-[10px] text-gray-400 mt-1">Användare i systemet</p>
+                </div>
+            </div>
+        </div>
+    );
+};
 
 const AdministrationPanel = ({ users, courses, teachers, fetchStats }) => {
     const { t } = useTranslation();
@@ -82,6 +127,7 @@ const AdministrationPanel = ({ users, courses, teachers, fetchStats }) => {
         {
             category: 'System',
             items: [
+                { id: 'storage', label: 'Lagring', icon: HardDrive },
                 { id: 'logs', label: 'Systemloggar (Fil)', icon: FileText },
                 { id: 'terminal', label: 'Debug Terminal (Live)', icon: Terminal },
             ]
@@ -105,6 +151,7 @@ const AdministrationPanel = ({ users, courses, teachers, fetchStats }) => {
                 />
             );
             case 'roles': return <RolesAdmin />;
+            case 'storage': return <AdminStorageStats />;
             case 'logs': return <LogDashboard />;
             case 'terminal': return <RealTimeLogViewer />;
 

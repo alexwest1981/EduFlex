@@ -106,9 +106,18 @@ public class User implements Serializable {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private com.eduflex.backend.edugame.model.EduGameProfile gamificationProfile;
 
-    // Inner Enum REMOVED - replaced by com.eduflex.backend.model.Role Entity
+    @Column(columnDefinition = "bigint default 1073741824")
+    private Long storageQuota = 1073741824L; // 1GB default (in bytes)
 
     // --- GETTERS & SETTERS ---
+    public Long getStorageQuota() {
+        return storageQuota;
+    }
+
+    public void setStorageQuota(Long storageQuota) {
+        this.storageQuota = storageQuota;
+    }
+
     public com.eduflex.backend.edugame.model.EduGameProfile getGamificationProfile() {
         return gamificationProfile;
     }
