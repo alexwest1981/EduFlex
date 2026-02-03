@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Users, BookOpen, DollarSign, FileText, Settings, Tag, Shield, Terminal } from 'lucide-react';
+import { Users, BookOpen, DollarSign, FileText, Settings, Tag, Shield, Terminal, Award } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { AdminUserTable, AdminCourseRegistry } from './components/admin/AdminTables';
 import RolesAdmin from './components/admin/RolesAdmin';

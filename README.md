@@ -54,6 +54,7 @@
 *   **🛠 Systemstabilitet & Infra-fix (3 feb 2026):**
     *   **Fixat 502 Bad Gateway:** Åtgärdat kritiska nätverksfel genom att reparera databasscheman och korrupta Redis-volymer.
     *   **Docker-hälsa:** Implementerat bättre övervakning av Docker-tjänster och automatisk återställning av hängande processer.
+    *   **Frontend-stabilitet:** Fixat `ReferenceError` i adminpanelen relaterat till saknade ikonexporter.
 
 *   **🎮 Gamification V2.0 & Privat Video-infra (2 feb 2026):**
     *   **EduGame Engine (V2.0):** Lanserat en komplett backend-motor för `Streaks`, `Quests` och `Friendships`. Systemet automatgenererar nu dagliga uppdrag och spårar social interaktion.
@@ -287,6 +288,7 @@ curl -X POST http://localhost:8080/api/tenants \
 *   **🛠 System Stability & Infra Fix (Feb 3, 2026):**
     *   **Fixed 502 Bad Gateway:** Resolved critical network errors by repairing database schemas and corrupt Redis volumes.
     *   **Docker Health:** Improved monitoring of Docker services and automatic recovery of hanging processes.
+    *   **Frontend Stability:** Fixed `ReferenceError` in administration panel related to missing icon exports.
 
 *   **🧩 Sidebar Refactor & Grouping (Feb 1, 2026):**
     *   **Categorized Navigation:** The sidebar has been rebuilt from scratch to reduce visual clutter, especially for administrators. Navigation items are now logically grouped into sections (Main Menu, Education, Tools, Administration).
