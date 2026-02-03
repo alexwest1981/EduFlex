@@ -23,4 +23,6 @@ public interface DocumentRepository extends JpaRepository<Document, Long> {
 
     @org.springframework.data.jpa.repository.Query("SELECT COUNT(d) FROM Document d")
     long countTotalDocuments();
+
+    List<Document> findByOwnerIdAndOfficialTrue(Long userId);
 }

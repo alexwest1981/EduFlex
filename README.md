@@ -45,6 +45,16 @@
     *   **System-övergripande lagringsstats:** En ny dedikerad sektion i administrationspanelen visar totalt använt utrymme, antal filer och användarstatistik i hela systemet.
     *   **Förbättrad Säkerhet & Routning:** Separerat admin-statistik till en egen kontroller (`AdminStatsController`) för säkrare hantering av administrativa data.
 
+*   **🎓 Student Records Vault - "Mina Meriter" (3 feb 2026):**
+    *   **Officiella handlingar:** Implementerat ett säkert "valv" där elever kan se och ladda ner kursbevis, betyg och intyg.
+    *   **Raderingsskydd:** Officiella dokument är skrivskyddade och kan endast hanteras av administratörer för att säkerställa integritet.
+    *   **Admin-verktyg:** Nytt gränssnitt för administratörer att ladda upp officiella meriter till enskilda elever.
+    *   **Digital Verifiering:** Varje merit visas med en verifierings-status för ökad professionell känsla.
+
+*   **🛠 Systemstabilitet & Infra-fix (3 feb 2026):**
+    *   **Fixat 502 Bad Gateway:** Åtgärdat kritiska nätverksfel genom att reparera databasscheman och korrupta Redis-volymer.
+    *   **Docker-hälsa:** Implementerat bättre övervakning av Docker-tjänster och automatisk återställning av hängande processer.
+
 *   **🎮 Gamification V2.0 & Privat Video-infra (2 feb 2026):**
     *   **EduGame Engine (V2.0):** Lanserat en komplett backend-motor för `Streaks`, `Quests` och `Friendships`. Systemet automatgenererar nu dagliga uppdrag och spårar social interaktion.
     *   **Customization Shop:** Implementerat en butik där användare kan köpa profilarmer, bakgrunder och unika titlar med intjänad XP/poäng.
@@ -268,6 +278,15 @@ curl -X POST http://localhost:8080/api/tenants \
     *   **Real-time Usage Stats:** New sidebar widget displaying user-specific storage usage against their quota with a visual progress bar.
     *   **System-wide Storage Statistics:** A new dedicated administration section shows total used storage, file counts, and system-wide user stats.
     *   **Improved Security & Routing:** Isolated administrative statistics to a dedicated controller (`AdminStatsController`) for enhanced security and routing clarity.
+
+*   **🎓 Student Records Vault - "My Merits" (Feb 3, 2026):**
+    *   **Official Documents:** Implemented a secure "vault" where students can view and download course certificates, grades, and credentials.
+    *   **Delete Protection:** Official documents are write-protected and can only be managed by administrators to ensure integrity.
+    *   **Admin Tools:** New interface for administrators to upload official records to individual students.
+
+*   **🛠 System Stability & Infra Fix (Feb 3, 2026):**
+    *   **Fixed 502 Bad Gateway:** Resolved critical network errors by repairing database schemas and corrupt Redis volumes.
+    *   **Docker Health:** Improved monitoring of Docker services and automatic recovery of hanging processes.
 
 *   **🧩 Sidebar Refactor & Grouping (Feb 1, 2026):**
     *   **Categorized Navigation:** The sidebar has been rebuilt from scratch to reduce visual clutter, especially for administrators. Navigation items are now logically grouped into sections (Main Menu, Education, Tools, Administration).

@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { AdminUserTable, AdminCourseRegistry } from './components/admin/AdminTables';
 import RolesAdmin from './components/admin/RolesAdmin';
 import { CreateUserModal, CreateCourseModal, EditCourseModal, EditUserModal } from './components/admin/AdminModals';
+import AdminMeritManager from './components/admin/AdminMeritManager';
 import AICourseCreator from '../courses/AICourseCreator';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../../services/api';
@@ -110,6 +111,7 @@ const AdministrationPanel = ({ users, courses, teachers, fetchStats }) => {
             items: [
                 { id: 'users', label: 'Användare', icon: Users },
                 { id: 'courses', label: 'Kurser', icon: BookOpen },
+                { id: 'merits', label: 'Meriter', icon: Award },
                 { id: 'roles', label: 'Roller', icon: Shield },
             ]
         },
@@ -150,6 +152,7 @@ const AdministrationPanel = ({ users, courses, teachers, fetchStats }) => {
                     onDelete={handleDeleteCourse}
                 />
             );
+            case 'merits': return <AdminMeritManager users={users} />;
             case 'roles': return <RolesAdmin />;
             case 'storage': return <AdminStorageStats />;
             case 'logs': return <LogDashboard />;

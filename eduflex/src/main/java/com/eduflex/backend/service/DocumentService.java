@@ -37,7 +37,8 @@ public class DocumentService {
         this.folderRepository = folderRepository;
     }
 
-    public Document uploadFile(Long userId, MultipartFile file, Long folderId) throws IOException {
+    public Document uploadFile(Long userId, MultipartFile file, Long folderId, String category, boolean official)
+            throws IOException {
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
 
         // Check Quota
@@ -60,6 +61,8 @@ public class DocumentService {
                 user);
 
         doc.setFolder(folder);
+        doc.setCategory(category != null ? category : "GENERAL");
+        doc.setOfficial(official);
 
         doc = documentRepository.save(doc);
 
@@ -98,6 +101,10 @@ public class DocumentService {
     @org.springframework.transaction.annotation.Transactional
     public void deleteDocument(Long id) {
         documentRepository.findById(id).ifPresent(doc -> {
+            if (doc.isOfficial()) {
+                throw new RuntimeException("Official records cannot be deleted.");
+            }
+
             try {
                 String storageId = doc.getFileUrl().replace("/api/storage/", "");
                 storageService.delete(storageId);
@@ -137,5 +144,9 @@ public class DocumentService {
         stats.put("totalDocuments", totalDocs);
         stats.put("totalUsers", totalUsers);
         return stats;
+    }
+
+    public List<Document> getMerits(Long userId) {
+        return documentRepository.findByOwnerIdAndOfficialTrue(userId);
     }
 }

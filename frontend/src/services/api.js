@@ -381,6 +381,7 @@ export const api = {
         share: (docId, userId) => fetch(`${API_BASE}/documents/${docId}/share?userId=${userId}`, { method: 'POST', headers: getHeaders() }).then(handleResponse),
         getUsage: (userId) => fetch(`${API_BASE}/documents/usage/${userId}`, { headers: getHeaders() }).then(handleResponse),
         getAdminStats: () => fetch(`${API_BASE}/admin/storage-stats`, { headers: getHeaders() }).then(handleResponse),
+        getMerits: (userId) => fetch(`${API_BASE}/documents/merits/${userId}`, { headers: getHeaders() }).then(handleResponse),
     },
 
     folders: {

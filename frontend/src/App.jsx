@@ -48,6 +48,7 @@ import AIQuizGenerator from './features/ai/AIQuizGenerator';
 import EbookLibrary from './features/library/EbookLibrary';
 import EvaluationManager from './modules/evaluation/EvaluationManager';
 import EvaluationFormView from './modules/evaluation/EvaluationFormView';
+import MeritVault from './features/merits/MeritVault';
 
 // --- PROTECTED ROUTE ---
 const ProtectedRoute = ({ children, roles }) => {
@@ -195,6 +196,14 @@ const AppRoutes = () => {
                     <ProtectedRoute>
                         <Layout currentUser={currentUser} handleLogout={logout}>
                             <DocumentManager currentUser={currentUser} />
+                        </Layout>
+                    </ProtectedRoute>
+                } />
+
+                <Route path="/merits" element={
+                    <ProtectedRoute>
+                        <Layout currentUser={currentUser} handleLogout={logout}>
+                            <MeritVault currentUser={currentUser} />
                         </Layout>
                     </ProtectedRoute>
                 } />

@@ -1,6 +1,6 @@
 package com.eduflex.backend.model;
 
-import com.fasterxml.jackson.annotation.JsonFormat; // <--- NY IMPORT
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
@@ -16,7 +16,6 @@ public class Document {
     private String fileUrl;
     private Long size;
 
-    // FIX: Tvinga datumet att bli en sträng som React förstår
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime uploadedAt;
 
@@ -27,6 +26,9 @@ public class Document {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User owner;
+
+    private String category = "GENERAL"; // GENERAL, CERTIFICATE, TRANSCRIPT, etc.
+    private boolean official = false; // Official records cannot be deleted by students
 
     public Document() {
     }
@@ -40,69 +42,84 @@ public class Document {
         this.uploadedAt = LocalDateTime.now();
     }
 
-    // Getters
+    // Getters & Setters
     public Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getFileName() {
         return fileName;
     }
 
-    public String getFileType() {
-        return fileType;
-    }
-
-    public String getFileUrl() {
-        return fileUrl;
-    }
-
-    public Long getSize() {
-        return size;
-    }
-
-    public LocalDateTime getUploadedAt() {
-        return uploadedAt;
-    }
-
-    public User getOwner() {
-        return owner;
-    }
-
-    public Folder getFolder() {
-        return folder;
-    }
-
-    // Setters
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public void setFileName(String fileName) {
         this.fileName = fileName;
+    }
+
+    public String getFileType() {
+        return fileType;
     }
 
     public void setFileType(String fileType) {
         this.fileType = fileType;
     }
 
+    public String getFileUrl() {
+        return fileUrl;
+    }
+
     public void setFileUrl(String fileUrl) {
         this.fileUrl = fileUrl;
+    }
+
+    public Long getSize() {
+        return size;
     }
 
     public void setSize(Long size) {
         this.size = size;
     }
 
+    public LocalDateTime getUploadedAt() {
+        return uploadedAt;
+    }
+
     public void setUploadedAt(LocalDateTime uploadedAt) {
         this.uploadedAt = uploadedAt;
+    }
+
+    public User getOwner() {
+        return owner;
     }
 
     public void setOwner(User owner) {
         this.owner = owner;
     }
 
+    public Folder getFolder() {
+        return folder;
+    }
+
     public void setFolder(Folder folder) {
         this.folder = folder;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public boolean isOfficial() {
+        return official;
+    }
+
+    public void setOfficial(boolean official) {
+        this.official = official;
     }
 }

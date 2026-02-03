@@ -38,9 +38,11 @@ public class DocumentController {
     @PostMapping("/user/{userId}")
     public ResponseEntity<Document> upload(@PathVariable Long userId,
             @RequestParam("file") MultipartFile file,
-            @RequestParam(required = false) Long folderId) {
+            @RequestParam(required = false) Long folderId,
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false, defaultValue = "false") boolean official) {
         try {
-            Document saved = documentService.uploadFile(userId, file, folderId);
+            Document saved = documentService.uploadFile(userId, file, folderId, category, official);
 
             // Publish PDF Event if PDF
             if ("application/pdf".equals(file.getContentType())) {
@@ -65,8 +67,12 @@ public class DocumentController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable Long id) {
-        documentService.deleteDocument(id);
-        return ResponseEntity.ok().build();
+        try {
+            documentService.deleteDocument(id);
+            return ResponseEntity.ok().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @GetMapping("/folder/{folderId}")
@@ -82,5 +88,10 @@ public class DocumentController {
     @GetMapping("/usage/{userId}")
     public ResponseEntity<?> getUsage(@PathVariable Long userId) {
         return ResponseEntity.ok(documentService.getStorageUsage(userId));
+    }
+
+    @GetMapping("/merits/{userId}")
+    public ResponseEntity<List<Document>> getMerits(@PathVariable Long userId) {
+        return ResponseEntity.ok(documentService.getMerits(userId));
     }
 }
