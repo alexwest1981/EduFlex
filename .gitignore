@@ -1,83 +1,84 @@
 # ============================================
-# EduFlex .gitignore (Standardized)
+# EduFlex .gitignore (Strict Production)
 # ============================================
+
+# User Rules
+logs/
+*.log
+scripts/
+docs/*.md
+!docs/README.md
+
+# Application Data (Locked/Huge/Sensitive)
+backups/
+data/
+uploads/
+eduflex/uploads/
+minio-data/
+
+# Infrastructure & Secrets
+cloudflared.exe
+cloudflared_config.yml
+.env
+*.license
+license_history.json
+*.lic
+eduflex.license
+minio/minio.exe
+
+# AI & Assistant Tools
+.agent/
+.gemini/
+.claude/
+.cursor/
+brain/
+artifacts/
 
 # Build & Project Artifacts
 target/
 dist/
 node_modules/
+frontend/node_modules/
+frontend/dist/
+eduflex/target/
+eduflex/proguard.conf
+
+# IDE & Editor Settings
 .idea/
 .vscode/
 *.iml
 *.ipr
 *.iws
-
-# User Data & Uploads
-/uploads/
-/backups/
-/data/
-/logs/
-/minio-data/
-eduflex/uploads/
-minio/*.exe
-
-# Environment & Secrets
-.env
-*.license
-license_history.json
-*.lic
-
-# OS & AI assistant
 .DS_Store
 Thumbs.db
-.gemini/
-.claude/
 
-# Debug files
-*.log
-*.log.*
-DEBUG_STATUS_AND_PLAN.md
+# Temp / Debug Files
 compile_log*.txt
+*debug*.txt
+*debug*.log
+restore-output.log
+mvn_output*.txt
+build_log*.txt
 
-# Specific local files to ignore
-eduflex/proguard.conf
-eduflex/target/
-frontend/node_modules/
-frontend/dist/
-
-# System reserved
+# System reserved names (Windows)
 nul
 config/nul
 
-# Keep documentation and plans
+# Keep project files
 !README.md
-!task.md
-!walkthrough.md
-!ScriptDescription.md
-!ROADMAP.md
-!implementation_plan*.md
-!commercial_plan.md
-!gamification_plan.md
-!*.java
-!*.jsx
-!*.js
-!*.css
-!*.html
-!*.xml
-!*.yml
-!*.yaml
-!*.ps1
-!*.md
-!*.png
-!*.jpg
-!*.jpeg
-!*.svg
-!*.webp
-!*.ico
-!*.sql
+!docs/
 !pom.xml
 !package.json
 !package-lock.json
-!composer.json
-!tsconfig.json
 !stripe_prices.json
+!ScriptDescription.md
+!ROADMAP.md
+!COMMERCIAL_PLAN.md
+!GAMIFICATION_PLAN.md
+!DEPLOYMENT_GUIDE.md
+!INFRASTRUCTURE_GUIDE.md
+!SECURITY_AUDIT.md
+!DATABASE_CONFIG_PLAN.md
+!ANTI_RE_PLAN.md
+!COMMUNITY_EXPANSION_PLAN.md
+!SECURITY_VERIFICATION_PLAN.md

@@ -28,6 +28,13 @@ const CommunityHub = ({ minimal = false }) => {
     const [showPublishModal, setShowPublishModal] = useState(false);
     const [selectedAuthorId, setSelectedAuthorId] = useState(null);
 
+    // Listen for external publish event (e.g. from ResourceBank header)
+    useEffect(() => {
+        const handlePublishEvent = () => setShowPublishModal(true);
+        window.addEventListener('community:publish', handlePublishEvent);
+        return () => window.removeEventListener('community:publish', handlePublishEvent);
+    }, []);
+
     // Load subjects on mount
     useEffect(() => {
         loadSubjects();
