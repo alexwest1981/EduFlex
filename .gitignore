@@ -1,22 +1,23 @@
 # ============================================
-# EduFlex .gitignore (Strict Production)
+# EduFlex .gitignore (Strict Security Mode)
 # ============================================
 
-# User Rules
-logs/
-*.log
+# Sensitive Tools & Scripts (CRITICAL)
+tools/
 scripts/
-docs/*.md
-!docs/README.md
+.agent/
+.gemini/
+.claude/
+.cursor/
+brain/
+artifacts/
 
-# Application Data (Locked/Huge/Sensitive)
+# Application Data & Credentials
 backups/
 data/
 uploads/
 eduflex/uploads/
 minio-data/
-
-# Infrastructure & Secrets
 cloudflared.exe
 cloudflared_config.yml
 .env
@@ -26,15 +27,7 @@ license_history.json
 eduflex.license
 minio/minio.exe
 
-# AI & Assistant Tools
-.agent/
-.gemini/
-.claude/
-.cursor/
-brain/
-artifacts/
-
-# Build & Project Artifacts
+# Build & System
 target/
 dist/
 node_modules/
@@ -42,8 +35,6 @@ frontend/node_modules/
 frontend/dist/
 eduflex/target/
 eduflex/proguard.conf
-
-# IDE & Editor Settings
 .idea/
 .vscode/
 *.iml
@@ -51,8 +42,13 @@ eduflex/proguard.conf
 *.iws
 .DS_Store
 Thumbs.db
+nul
+config/nul
 
-# Temp / Debug Files
+# Logs
+logs/
+*.log
+*.log.*
 compile_log*.txt
 *debug*.txt
 *debug*.log
@@ -60,11 +56,7 @@ restore-output.log
 mvn_output*.txt
 build_log*.txt
 
-# System reserved names (Windows)
-nul
-config/nul
-
-# Keep project files
+# Documentation & Public Config
 !README.md
 !docs/
 !pom.xml
