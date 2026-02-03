@@ -807,7 +807,25 @@ export const api = {
                 method: 'POST',
                 headers: getHeaders(),
                 body: JSON.stringify({ reason })
-            }).then(handleResponse),
+            }).then(handleResponse)
+        }
+    },
+
+    ai: {
+        resources: {
+            generate: (userId, type, prompt, context) => {
+                const params = new URLSearchParams({
+                    userId: userId.toString(),
+                    type: type,
+                    prompt: prompt
+                });
+                if (context) params.append('context', context);
+
+                return fetch(`${API_BASE}/ai/resources/generate?${params}`, {
+                    method: 'POST',
+                    headers: getHeaders()
+                }).then(handleResponse);
+            }
         }
     },
 
