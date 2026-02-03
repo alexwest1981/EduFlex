@@ -50,7 +50,17 @@ public class Assignment {
     @Column(name = "achievement_id")
     private Long achievementId;
 
+    private String sourceCommunityItemId;
+
     // Getters & Setters
+    public String getSourceCommunityItemId() {
+        return sourceCommunityItemId;
+    }
+
+    public void setSourceCommunityItemId(String sourceCommunityItemId) {
+        this.sourceCommunityItemId = sourceCommunityItemId;
+    }
+
     public Long getId() {
         return id;
     }

@@ -6,6 +6,10 @@ import com.eduflex.backend.model.*;
 import com.eduflex.backend.model.community.*;
 import com.eduflex.backend.repository.*;
 import com.eduflex.backend.repository.community.*;
+import com.eduflex.backend.dto.community.AuthorProfileDTO;
+import com.eduflex.backend.dto.community.CommunityLeaderboardDTO;
+import com.eduflex.backend.model.User;
+import com.eduflex.backend.repository.UserRepository;
 import com.eduflex.backend.model.QuestionBankItem;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -35,6 +39,7 @@ public class CommunityService {
     private final TenantRepository tenantRepository;
     private final QuestionBankRepository questionBankRepository;
     private final SocialIntegrationService socialService;
+    private final UserRepository userRepository;
     private final ObjectMapper objectMapper;
 
     public CommunityService(
@@ -47,6 +52,7 @@ public class CommunityService {
             TenantRepository tenantRepository,
             QuestionBankRepository questionBankRepository,
             SocialIntegrationService socialService,
+            UserRepository userRepository,
             ObjectMapper objectMapper) {
         this.itemRepository = itemRepository;
         this.ratingRepository = ratingRepository;
@@ -57,6 +63,7 @@ public class CommunityService {
         this.tenantRepository = tenantRepository;
         this.questionBankRepository = questionBankRepository;
         this.socialService = socialService;
+        this.userRepository = userRepository;
         this.objectMapper = objectMapper;
     }
 
@@ -169,6 +176,7 @@ public class CommunityService {
     public Page<CommunityItemDTO> browse(
             String subject,
             ContentType contentType,
+            Long authorId,
             String sortBy,
             Pageable pageable) {
         Page<CommunityItem> items;
@@ -176,7 +184,15 @@ public class CommunityService {
         CommunitySubject subjectEnum = parseSubject(subject);
 
         // Build query based on filters
-        if (subjectEnum != null && contentType != null) {
+        if (authorId != null) {
+            items = switch (sortBy) {
+                case "popular" ->
+                    itemRepository.findByStatusAndAuthorUserIdOrderByDownloadCountDesc(status, authorId, pageable);
+                case "rating" ->
+                    itemRepository.findByStatusAndAuthorUserIdOrderByAverageRatingDesc(status, authorId, pageable);
+                default -> itemRepository.findByStatusAndAuthorUserIdOrderByPublishedAtDesc(status, authorId, pageable);
+            };
+        } else if (subjectEnum != null && contentType != null) {
             items = switch (sortBy) {
                 case "popular" -> itemRepository.findByStatusAndSubjectAndContentTypeOrderByDownloadCountDesc(status,
                         subjectEnum, contentType, pageable);
@@ -287,6 +303,7 @@ public class CommunityService {
             quiz.setTitle((String) data.get("title") + " (Community)");
             quiz.setDescription((String) data.get("description"));
             quiz.setAuthor(currentUser);
+            quiz.setSourceCommunityItemId(item.getId());
 
             // Determine category for QuestionBank based on subject
             String questionBankCategory = item.getSubject() != null
@@ -375,6 +392,7 @@ public class CommunityService {
             assignment.setTitle((String) data.get("title") + " (Community)");
             assignment.setDescription((String) data.get("description"));
             assignment.setAuthor(currentUser);
+            assignment.setSourceCommunityItemId(item.getId());
 
             if (data.get("xpReward") != null) {
                 assignment.setXpReward((Integer) data.get("xpReward"));
@@ -397,6 +415,7 @@ public class CommunityService {
             lesson.setContent((String) data.get("content"));
             lesson.setVideoUrl((String) data.get("videoUrl"));
             lesson.setAuthor(currentUser);
+            lesson.setSourceCommunityItemId(item.getId());
 
             Lesson saved = lessonRepository.save(lesson);
             return saved.getId();
@@ -456,6 +475,87 @@ public class CommunityService {
                 tenantId);
         return items.stream()
                 .map(item -> CommunityItemDTO.fromEntity(item, parseMetadata(item.getMetadata())))
+                .toList();
+    }
+
+    // ==================== AUTHOR PROFILES ====================
+
+    public AuthorProfileDTO getAuthorProfile(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found: " + userId));
+
+        List<CommunityItem> items = itemRepository.findByAuthorUserIdAndAuthorTenantIdOrderByCreatedAtDesc(userId,
+                null);
+        // Note: null tenantId for global lookup if needed, but usually we filter by
+        // userId for public items
+
+        // If items are empty, user might be from another tenant but public
+        if (items.isEmpty()) {
+            // Find all items by this userId regardless of tenant (since it's public schema)
+            items = itemRepository.findAll().stream()
+                    .filter(i -> userId.equals(i.getAuthorUserId()))
+                    .sorted(Comparator.comparing(CommunityItem::getCreatedAt).reversed())
+                    .toList();
+        }
+
+        double avgRating = items.stream().filter(i -> i.getRatingCount() > 0)
+                .mapToDouble(CommunityItem::getAverageRating).average().orElse(0.0);
+        int totalDownloads = items.stream().mapToInt(CommunityItem::getDownloadCount).sum();
+
+        List<CommunityItemDTO> recent = items.stream()
+                .limit(5)
+                .map(item -> CommunityItemDTO.fromEntity(item, parseMetadata(item.getMetadata())))
+                .toList();
+
+        return new AuthorProfileDTO(
+                user.getId(),
+                user.getFullName(),
+                "EduFlex", // Could be more dynamic
+                user.getProfilePictureUrl(),
+                "Pedagog på EduFlex Community",
+                user.getLinkedinUrl(),
+                user.getTwitterUrl(),
+                items.size(),
+                avgRating,
+                totalDownloads,
+                user.getCreatedAt(),
+                recent);
+    }
+
+    public List<CommunityLeaderboardDTO> getLeaderboard() {
+        // Simple leaderboard logic: find top 10 authors by combined score
+        // In a real DB we'd use a native query for better performance
+        List<CommunityItem> allPublished = itemRepository.findAll().stream()
+                .filter(i -> i.getStatus() == PublishStatus.PUBLISHED)
+                .toList();
+
+        Map<Long, List<CommunityItem>> authorItems = allPublished.stream()
+                .collect(Collectors.groupingBy(CommunityItem::getAuthorUserId));
+
+        return authorItems.entrySet().stream()
+                .map(entry -> {
+                    Long userId = entry.getKey();
+                    List<CommunityItem> items = entry.getValue();
+                    int downloads = items.stream().mapToInt(CommunityItem::getDownloadCount).sum();
+                    double avgRating = items.stream().filter(i -> i.getRatingCount() > 0)
+                            .mapToDouble(CommunityItem::getAverageRating).average().orElse(0.0);
+
+                    // Score formula: (downloads * 2) + (resourceCount * 5) + (rating * 10)
+                    int score = (downloads * 2) + (items.size() * 5) + (int) (avgRating * 10);
+
+                    CommunityItem representative = items.get(0);
+                    return new CommunityLeaderboardDTO(
+                            userId,
+                            representative.getAuthorName(),
+                            representative.getAuthorTenantName(),
+                            representative.getAuthorProfilePictureUrl(),
+                            items.size(),
+                            downloads,
+                            avgRating,
+                            score);
+                })
+                .sorted(Comparator.comparing(CommunityLeaderboardDTO::score).reversed())
+                .limit(10)
                 .toList();
     }
 

@@ -12,8 +12,11 @@ const PaymentGatewaySettings = () => {
         webhookSecret: '',
         isTestMode: true,
         enabledMethods: 'CARD,SWISH,INVOICE',
-        isActive: false
+        isActive: false,
+        domainUrl: ''
     });
+
+
 
     useEffect(() => {
         fetchSettings();
@@ -33,6 +36,12 @@ const PaymentGatewaySettings = () => {
             setIsLoading(false);
         }
     };
+
+
+
+    useEffect(() => {
+        fetchSettings();
+    }, []);
 
     const handleSave = async () => {
         setIsSaving(true);
@@ -143,6 +152,22 @@ const PaymentGatewaySettings = () => {
                         />
                     </div>
 
+                    <div>
+                        <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
+                            System Domain URL
+                        </label>
+                        <input
+                            type="text"
+                            className="w-full p-3 rounded-xl border border-gray-200 dark:border-[#3c4043] bg-gray-50 dark:bg-[#131314] text-gray-900 dark:text-white font-mono text-sm"
+                            placeholder="http://localhost:5174 or https://site.com"
+                            value={formData.domainUrl}
+                            onChange={(e) => setFormData({ ...formData, domainUrl: e.target.value })}
+                        />
+                        <p className="text-xs text-gray-500 mt-1">
+                            Used for Stripe redirect URLs (Success/Cancel).
+                        </p>
+                    </div>
+
                     <div className="flex items-center gap-3">
                         <input
                             type="checkbox"
@@ -200,14 +225,16 @@ const PaymentGatewaySettings = () => {
                 </div>
             </div>
 
-            {/* Save Button */}
-            <div className="flex justify-end">
+
+
+            {/* Save Button for Stripe */}
+            <div className="flex justify-end p-4 bg-gray-50 dark:bg-[#131314] rounded-2xl border border-gray-200 dark:border-[#3c4043]">
                 <button
                     onClick={handleSave}
                     disabled={isSaving}
                     className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-bold disabled:opacity-50"
                 >
-                    {isSaving ? 'Saving...' : 'Save Payment Settings'}
+                    {isSaving ? 'Saving...' : 'Save All Stripe Settings'}
                 </button>
             </div>
         </div>

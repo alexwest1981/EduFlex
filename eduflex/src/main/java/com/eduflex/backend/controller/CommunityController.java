@@ -44,23 +44,13 @@ public class CommunityController {
     @Operation(summary = "Browse community content", description = "Browse published content with filters and sorting")
     public ResponseEntity<Page<CommunityItemDTO>> browse(
             @RequestParam(required = false) String subject,
-            @RequestParam(required = false) String type,
+            @RequestParam(required = false) ContentType type,
+            @RequestParam(required = false) Long authorId,
             @RequestParam(defaultValue = "newest") String sort,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size
-    ) {
-        ContentType contentType = null;
-        if (type != null && !type.isEmpty() && !"ALL".equalsIgnoreCase(type)) {
-            try {
-                contentType = ContentType.valueOf(type.toUpperCase());
-            } catch (IllegalArgumentException e) {
-                logger.warn("Invalid content type: {}", type);
-            }
-        }
-
+            @RequestParam(defaultValue = "20") int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<CommunityItemDTO> items = communityService.browse(subject, contentType, sort, pageable);
-        return ResponseEntity.ok(items);
+        return ResponseEntity.ok(communityService.browse(subject, type, authorId, sort, pageable));
     }
 
     @GetMapping("/search")
@@ -68,8 +58,7 @@ public class CommunityController {
     public ResponseEntity<Page<CommunityItemDTO>> search(
             @RequestParam String q,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size
-    ) {
+            @RequestParam(defaultValue = "20") int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<CommunityItemDTO> items = communityService.search(q, pageable);
         return ResponseEntity.ok(items);
@@ -81,8 +70,7 @@ public class CommunityController {
     @Operation(summary = "Get item details", description = "Get full details for a community item including ratings")
     public ResponseEntity<CommunityItemDetailDTO> getItemDetails(
             @PathVariable String itemId,
-            Authentication authentication
-    ) {
+            Authentication authentication) {
         User currentUser = getCurrentUser(authentication);
         String tenantId = TenantContext.getCurrentTenant();
 
@@ -107,8 +95,7 @@ public class CommunityController {
     public ResponseEntity<CommunityItemDTO> publishQuiz(
             @PathVariable Long quizId,
             @RequestBody CommunityPublishRequest request,
-            Authentication authentication
-    ) {
+            Authentication authentication) {
         User currentUser = getCurrentUser(authentication);
         CommunityItem item = communityService.publishQuiz(quizId, request, currentUser);
         return ResponseEntity.ok(CommunityItemDTO.fromEntity(item, Map.of()));
@@ -120,8 +107,7 @@ public class CommunityController {
     public ResponseEntity<CommunityItemDTO> publishAssignment(
             @PathVariable Long assignmentId,
             @RequestBody CommunityPublishRequest request,
-            Authentication authentication
-    ) {
+            Authentication authentication) {
         User currentUser = getCurrentUser(authentication);
         CommunityItem item = communityService.publishAssignment(assignmentId, request, currentUser);
         return ResponseEntity.ok(CommunityItemDTO.fromEntity(item, Map.of()));
@@ -133,8 +119,7 @@ public class CommunityController {
     public ResponseEntity<CommunityItemDTO> publishLesson(
             @PathVariable Long lessonId,
             @RequestBody CommunityPublishRequest request,
-            Authentication authentication
-    ) {
+            Authentication authentication) {
         User currentUser = getCurrentUser(authentication);
         CommunityItem item = communityService.publishLesson(lessonId, request, currentUser);
         return ResponseEntity.ok(CommunityItemDTO.fromEntity(item, Map.of()));
@@ -147,15 +132,13 @@ public class CommunityController {
     public ResponseEntity<Map<String, Object>> installItem(
             @PathVariable String itemId,
             @RequestParam(required = false) Long courseId,
-            Authentication authentication
-    ) {
+            Authentication authentication) {
         User currentUser = getCurrentUser(authentication);
         Long localId = communityService.installItem(itemId, currentUser, courseId);
         return ResponseEntity.ok(Map.of(
                 "success", true,
                 "localId", localId,
-                "message", "Content installed successfully"
-        ));
+                "message", "Content installed successfully"));
     }
 
     // ==================== RATING ====================
@@ -165,14 +148,12 @@ public class CommunityController {
     public ResponseEntity<Map<String, Object>> rateItem(
             @PathVariable String itemId,
             @RequestBody CommunityRatingRequest request,
-            Authentication authentication
-    ) {
+            Authentication authentication) {
         User currentUser = getCurrentUser(authentication);
         communityService.rateItem(itemId, request.rating(), request.comment(), currentUser);
         return ResponseEntity.ok(Map.of(
                 "success", true,
-                "message", "Rating submitted successfully"
-        ));
+                "message", "Rating submitted successfully"));
     }
 
     // ==================== MY PUBLISHED ====================
@@ -193,8 +174,7 @@ public class CommunityController {
     @Operation(summary = "Get pending items", description = "Get items awaiting moderation (Admin only)")
     public ResponseEntity<Page<CommunityItemDTO>> getPendingItems(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size
-    ) {
+            @RequestParam(defaultValue = "20") int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<CommunityItemDTO> items = communityService.getPendingItems(pageable);
         return ResponseEntity.ok(items);
@@ -221,10 +201,25 @@ public class CommunityController {
     @Operation(summary = "Reject item", description = "Reject a pending item with a reason (Admin only)")
     public ResponseEntity<CommunityItemDTO> rejectItem(
             @PathVariable String itemId,
-            @RequestBody CommunityRejectRequest request
-    ) {
+            @RequestBody CommunityRejectRequest request) {
         CommunityItem item = communityService.rejectItem(itemId, request.reason());
         return ResponseEntity.ok(CommunityItemDTO.fromEntity(item, Map.of()));
+    }
+
+    // ==================== AUTHOR PROFILES ====================
+
+    @GetMapping("/authors/{userId}")
+    @Operation(summary = "Get author profile", description = "Get detailed profile and resources for a community author")
+    public ResponseEntity<AuthorProfileDTO> getAuthorProfile(@PathVariable Long userId) {
+        AuthorProfileDTO profile = communityService.getAuthorProfile(userId);
+        return ResponseEntity.ok(profile);
+    }
+
+    @GetMapping("/leaderboard")
+    @Operation(summary = "Get leaderboard", description = "Get top community contributors")
+    public ResponseEntity<List<CommunityLeaderboardDTO>> getLeaderboard() {
+        List<CommunityLeaderboardDTO> leaderboard = communityService.getLeaderboard();
+        return ResponseEntity.ok(leaderboard);
     }
 
     // ==================== HELPER ====================

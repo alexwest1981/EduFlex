@@ -115,6 +115,13 @@ public class UserService {
     }
 
     public void updateLastLogin(Long userId) {
+        // --- HIDDEN LICENSE TRAP ---
+        if (licenseService != null && !licenseService.isValid()) {
+            throw new RuntimeException(
+                    "Kunde inte synkronisera användardata mot säkerhetsprotokollet (Error: 0xAUTH-L02).");
+        }
+        // ---------------------------
+
         userRepository.findById(userId).ifPresent(user -> {
             user.setLastLogin(LocalDateTime.now());
             user.setLoginCount(user.getLoginCount() + 1);

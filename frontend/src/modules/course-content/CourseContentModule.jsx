@@ -53,7 +53,8 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
             let quizUrl = `${window.location.origin}/api/quizzes/course/${courseId}`;
 
             if (mode === 'GLOBAL') {
-                url = `${window.location.origin}/api/lessons/my?userId=${currentUser?.id}`;
+                // Fetch generic Resources of type LESSON
+                url = `${window.location.origin}/api/resources/my?userId=${currentUser?.id}&type=LESSON`;
                 quizUrl = `${window.location.origin}/api/quizzes/my?userId=${currentUser?.id}`;
             }
 
@@ -64,10 +65,52 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
 
             if (resLessons.ok) {
                 const data = await resLessons.json();
-                setLessons(data);
+
+                // MAP resources to Lesson format
+                const mappedLessons = data.map(item => {
+                    // If it's a generic Resource, map it. If it's a legacy Lesson, keep it.
+                    if (item.content && typeof item.content === 'string' && item.content.startsWith('{')) {
+                        try {
+                            // Try to parse JSON content from Resource
+                            const jsonContent = JSON.parse(item.content);
+
+                            // Transform JSON structure to flat string for display if needed
+                            let displayContent = "";
+                            if (jsonContent.outline) {
+                                displayContent = jsonContent.outline.map(o => `### ${o.title}\n${o.content}`).join("\n\n");
+                            } else if (jsonContent.instructions) {
+                                displayContent = `## Instruktioner\n${jsonContent.instructions}`;
+                            } else {
+                                displayContent = "Ingen förhandsvisning tillgänglig.";
+                            }
+
+                            return {
+                                id: item.id,
+                                title: item.name,
+                                content: displayContent,
+                                type: 'LESSON', // Force type for UI
+                                availableFrom: item.createdAt,
+                                isResource: true // Flag to identify generic resource
+                            };
+                        } catch (e) {
+                            // Fallback if parsing fails or it's not JSON
+                            return item;
+                        }
+                    } else if (item.name && !item.title) {
+                        // It's a Resource but maybe content is simple string?
+                        return {
+                            ...item,
+                            title: item.name
+                        };
+                    }
+                    return item;
+                });
+
+                setLessons(mappedLessons);
+
                 // Select first item if nothing selected
-                if (data.length > 0 && !selectedLesson && !selectedQuiz) {
-                    setSelectedLesson(data[0]);
+                if (mappedLessons.length > 0 && !selectedLesson && !selectedQuiz) {
+                    setSelectedLesson(mappedLessons[0]);
                 }
             }
 

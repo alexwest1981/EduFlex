@@ -8,4 +8,8 @@ public interface TenantRepository extends JpaRepository<Tenant, String> {
     Optional<Tenant> findByDomain(String domain);
 
     Optional<Tenant> findByDbSchema(String dbSchema);
+
+    Optional<Tenant> findByStripeCustomerId(String stripeCustomerId);
+
+    Optional<Tenant> findByStripeSubscriptionId(String stripeSubscriptionId);
 }

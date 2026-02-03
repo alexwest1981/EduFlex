@@ -21,6 +21,12 @@ public class Tenant implements Serializable {
     @Column(unique = true)
     private String domain; // e.g. "school-a.eduflex.se"
 
+    @Column(unique = true)
+    private String stripeCustomerId;
+
+    @Column(unique = true)
+    private String stripeSubscriptionId;
+
     @Column(nullable = false)
     private boolean isActive = true;
 
@@ -75,6 +81,22 @@ public class Tenant implements Serializable {
 
     public void setDomain(String domain) {
         this.domain = domain;
+    }
+
+    public String getStripeCustomerId() {
+        return stripeCustomerId;
+    }
+
+    public void setStripeCustomerId(String stripeCustomerId) {
+        this.stripeCustomerId = stripeCustomerId;
+    }
+
+    public String getStripeSubscriptionId() {
+        return stripeSubscriptionId;
+    }
+
+    public void setStripeSubscriptionId(String stripeSubscriptionId) {
+        this.stripeSubscriptionId = stripeSubscriptionId;
     }
 
     public boolean isActive() {

@@ -38,6 +38,30 @@
 ## 🇸🇪 Svenska
 
 ### ⚡ Senaste Uppdateringarna
+*   **🏪 Community Marknadsplats Expansion (3 feb 2026):**
+    *   **Författarprofiler:** Varje bidragsgivare har nu en dedikerad profil med statistik över nedladdningar, betyg och deras publicerade material.
+    *   **Topplista (Leaderboard):** Introducerat en global topplista som främjar engagemang genom att lyfta fram de mest aktiva och högst värderade bidragsgivarna.
+    *   **Förbättrad Sökbarhet:** Implementerat "Bläddra efter författare" och avancerad filtrering för att enklare hitta resurser från favoritförfattare.
+    *   **Urprungspårning (Attribution):** Allt material som hämtas från communityt spårar nu sitt ursprung via `sourceCommunityItemId`, vilket säkrar attribution för skaparen även efter installation.
+    *   **UI-integration:** Sömlös integration av Marknadsplatsen i Resursbanken för en snabbare och lyxigare användarupplevelse.
+
+*   **🔐 Avancerad Systemhärdning & Säkerhet (3 feb 2026):**
+    *   **Licensskydd (Anti-Cloning):** Implementerat domän-låsning i `LicenseService`. Systemet validerar nu att domänen i licensfilen matchar den faktiska servern.
+    *   **GDPR-kryptering (Data-at-Rest):** Fullständig AES-256 GCM kryptering för känsliga fält i databasen (Personnummer, telefon, adress). Transparent dekryptering via JPA Converters.
+    *   **Brute-Force Skydd:** Implementerat `RateLimitingFilter` på inloggning som blockerar IP-adresser i 15 minuter efter 5 misslyckade försök.
+    *   **Produktionslåsning:** Tagit bort alla utvecklar-bypassar och miljövariabel-overrides för att garantera 100% säkerhet i kundmiljöer.
+
+*   **🔐 Säker Konfigurationshantering (3 feb 2026):**
+    *   **Databas-baserade API-nycklar:** Migrerat alla känsliga API-nycklar (Stripe, Gemini) från `.env`-filer till säker databaslagring.
+    *   **Dynamisk Konfiguration:** Administratörer kan nu uppdatera API-nycklar och systemkonfiguration direkt via Admin-panelen utan att behöva starta om servern.
+    *   **Konsoliderad AI-konfiguration:** Flyttat all AI-konfiguration till en dedikerad "AI-inställningar"-sektion i systeminställningar för bättre organisation.
+    *   **Automatisk Migration:** Skapat PowerShell-script för att automatiskt migrera befintliga nycklar från miljövariabler till databasen.
+
+*   **🚀 Resursbank & AI-expansion (3 feb 2026):**
+    *   **Resursbanken:** En central hubb för alla dina quiz, uppgifter och lektioner. Nu med stöd för att dela och hämta material från ett gemensamt Community-bibliotek.
+    *   **AI EduTask & EduLesson:** Generera kompletta inlämningsuppgifter och lektionsplaneringar med AI på sekunder.
+    *   **Säkerhet:** Uppgraderat hanteringen av API-nycklar och hemligheter för ökad systemsäkerhet.
+
 *   **📦 Lagringskvoter & Avancerad Filhantering (3 feb 2026):**
     *   **Lagringskvoter per användare:** Implementerat ett system för att begränsa hur mycket data varje användare kan ladda upp (standard 1GB).
     *   **Kvothantering:** Administratörer kan nu styra enskilda användares lagringsutrymme direkt via adminpanelen.
@@ -150,11 +174,12 @@
 
 #### 🍎 Utbildning (Core)
 - **Kurshantering:** Rika kurser med text, video, bilagor och quiz
-- **AI Quiz-generering:** Generera quiz automatiskt från dokument med Google Gemini
+- **AI Quiz & Lektioner:** Generera quiz, uppgifter och lektionsplaner automatiskt med Google Gemini
 - **SCORM / xAPI:** Stöd för Articulate/Captivate-paket
 - **Uppgifter:** Filinlämningar med lärarbedömning
 - **Certifikat:** Automatiska, spårbara PDF-diplom
 - **E-boksbibliotek:** Fristående bibliotek för EPUB/PDF med kategorier
+- **Resursbank:** Centraliserad hantering av allt utbildningsmaterial
 
 #### 🎮 Gamification
 - **Poäng & Nivåer:** XP genom aktivitet och framsteg
@@ -273,6 +298,19 @@ curl -X POST http://localhost:8080/api/tenants \
 ## 🇬🇧 English
 
 ### ⚡ Latest Updates
+*   **🏪 Community Marketplace Expansion (Feb 3, 2026):**
+    *   **Author Profiles:** Dedicated profiles for all contributors featuring download stats, ratings, and published resources.
+    *   **Contributor Leaderboard:** New global leaderboard to recognize and reward top community contributors.
+    *   **Enhanced Discovery:** Added "Browse by Author" and advanced filtering to easily find resources from your favorite creators.
+    *   **Origin Tracking (Attribution):** All community-sourced content now tracks its origin via `sourceCommunityItemId`, ensuring proper attribution even after installation.
+    *   **UI Modernization:** Seamless integration of the new Marketplace UI into the Resource Bank for a premium user experience.
+
+*   **🔐 Advanced System Hardening & Security (Feb 3, 2026):**
+    *   **License Anti-Cloning:** Implemented domain binding in `LicenseService` to prevent unauthorized software redistribution.
+    *   **GDPR Data Encryption:** Full AES-256 GCM encryption for sensitive database fields (SSN, phone, address) using JPA attribute converters.
+    *   **Brute-Force Mitigation:** New `RateLimitingFilter` blocking suspicious IPs for 15 minutes after 5 failed login attempts.
+    *   **Production Lockdown:** Removed all developer bypasses and hardcoded overrides to ensure a secure "live service" experience.
+
 *   **📦 Storage Quotas & Advanced File Management (Feb 3, 2026):**
     *   **Per-User Storage Quotas:** Implemented a system to limit data uploads for each user (default 1GB).
     *   **Quota Management:** Administrators can now control individual user storage limits directly from the admin panel.

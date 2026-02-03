@@ -55,7 +55,9 @@ public class PublicTenantController {
                     request.getAdminEmail(),
                     request.getAdminPassword(),
                     request.getAdminFirstName(),
-                    request.getAdminLastName());
+                    request.getAdminLastName(),
+                    null,
+                    null);
 
             return ResponseEntity.ok(Map.of(
                     "message", "Organization registered successfully",

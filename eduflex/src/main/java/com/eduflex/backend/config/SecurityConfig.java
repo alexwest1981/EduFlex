@@ -6,7 +6,6 @@ import com.eduflex.backend.security.CustomUserDetailsService;
 import com.eduflex.backend.security.KeycloakJwtAuthConverter;
 import com.eduflex.backend.security.LicenseFilter;
 import com.eduflex.backend.config.tenant.TenantFilter;
-import com.eduflex.backend.security.LoggingAuthenticationEntryPoint;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -40,6 +39,7 @@ public class SecurityConfig {
     private final LicenseFilter licenseFilter;
     private final KeycloakJwtAuthConverter keycloakJwtAuthConverter;
     private final TenantFilter tenantFilter;
+    private final com.eduflex.backend.security.RateLimitingFilter rateLimitingFilter;
 
     @Value("${eduflex.auth.mode:hybrid}")
     private String authMode;
@@ -57,7 +57,8 @@ public class SecurityConfig {
             com.eduflex.backend.security.OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler,
             com.eduflex.backend.security.OAuth2LoginFailureHandler oAuth2LoginFailureHandler,
             com.eduflex.backend.security.CustomOidcUserService customOidcUserService,
-            com.eduflex.backend.security.LoggingAuthenticationEntryPoint loggingAuthenticationEntryPoint) {
+            com.eduflex.backend.security.LoggingAuthenticationEntryPoint loggingAuthenticationEntryPoint,
+            com.eduflex.backend.security.RateLimitingFilter rateLimitingFilter) {
         this.userDetailsService = userDetailsService;
         this.customOAuth2UserService = customOAuth2UserService;
         this.authTokenFilter = authTokenFilter;
@@ -68,6 +69,7 @@ public class SecurityConfig {
         this.oAuth2LoginFailureHandler = oAuth2LoginFailureHandler;
         this.customOidcUserService = customOidcUserService;
         this.loggingAuthenticationEntryPoint = loggingAuthenticationEntryPoint;
+        this.rateLimitingFilter = rateLimitingFilter;
     }
 
     @Bean
@@ -141,7 +143,7 @@ public class SecurityConfig {
                                 "/api/users/generate-usernames",
                                 "/api/settings/**", "/login/**", "/api/tenants/**", "/api/public/**",
                                 "/api/branding/**", "/api/debug/**", "/api/onlyoffice/**",
-                                "/api/gamification/config/system")
+                                "/api/gamification/config/system", "/api/payment/**")
                         .permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/tenants").permitAll() // Explicitly allow POST
                         .requestMatchers("/api/system/license/**", "/uploads/**", "/api/files/**", "/api/ebooks/**",
@@ -264,6 +266,7 @@ public class SecurityConfig {
             http.addFilterBefore(authTokenFilter, UsernamePasswordAuthenticationFilter.class);
         }
         http.addFilterBefore(licenseFilter, UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(rateLimitingFilter, UsernamePasswordAuthenticationFilter.class);
 
         // OAuth2 Login (for social login and Keycloak browser-based SSO)
         http.oauth2Login(oauth2 -> oauth2

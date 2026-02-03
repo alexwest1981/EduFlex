@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class ResourceService {
@@ -21,8 +20,18 @@ public class ResourceService {
         this.userRepository = userRepository;
     }
 
-    public List<Resource> getMyResources(Long userId) {
+    public List<Resource> getMyResources(Long userId, String type) {
         User owner = userRepository.findById(userId).orElseThrow();
+        if (type != null && !type.isBlank()) {
+            try {
+                Resource.ResourceType resourceType = Resource.ResourceType.valueOf(type.toUpperCase());
+                return resourceRepository.findByOwnerAndType(owner, resourceType);
+            } catch (IllegalArgumentException e) {
+                // Invalid type, ignore or verify? For now, fallback to all or empty?
+                // Let's just return empty lists for safety if type is invalid but intended
+                return List.of();
+            }
+        }
         return resourceRepository.findByOwner(owner);
     }
 

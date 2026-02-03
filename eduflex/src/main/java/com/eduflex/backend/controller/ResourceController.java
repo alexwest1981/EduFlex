@@ -18,8 +18,8 @@ public class ResourceController {
     }
 
     @GetMapping("/my")
-    public List<Resource> getMyResources(@RequestParam Long userId) {
-        return resourceService.getMyResources(userId);
+    public List<Resource> getMyResources(@RequestParam Long userId, @RequestParam(required = false) String type) {
+        return resourceService.getMyResources(userId, type);
     }
 
     @GetMapping("/community")

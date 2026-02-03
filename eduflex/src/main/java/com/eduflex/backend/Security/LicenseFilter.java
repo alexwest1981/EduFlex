@@ -1,6 +1,7 @@
 package com.eduflex.backend.security;
 
 import com.eduflex.backend.service.LicenseService;
+import com.eduflex.backend.util.RuntimeGuard;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -14,14 +15,22 @@ import java.io.IOException;
 public class LicenseFilter extends OncePerRequestFilter {
 
     private final LicenseService licenseService;
+    private final RuntimeGuard runtimeGuard;
 
-    public LicenseFilter(LicenseService licenseService) {
+    public LicenseFilter(LicenseService licenseService, RuntimeGuard runtimeGuard) {
         this.licenseService = licenseService;
+        this.runtimeGuard = runtimeGuard;
     }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
+
+        // --- ANTI-RE: RUNTIME CHECK ---
+        if (runtimeGuard != null) {
+            runtimeGuard.validateIntegrity();
+        }
+        // ------------------------------
 
         try {
             // 1. Om systemet är upplåst -> Kör vidare

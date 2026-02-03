@@ -181,6 +181,11 @@
 			<groupId>org.springframework.kafka</groupId>
 			<artifactId>spring-kafka</artifactId>
 		</dependency>
+        <dependency>
+			<groupId>com.stripe</groupId>
+			<artifactId>stripe-java</artifactId>
+			<version>24.12.0</version>
+		</dependency>
 	</dependencies>
 
 	<dependencyManagement>
@@ -226,6 +231,46 @@
 						<groupId>org.openrewrite.recipe</groupId>
 						<artifactId>rewrite-spring</artifactId>
 						<version>5.25.1</version>
+					</dependency>
+				</dependencies>
+			</plugin>
+			<plugin>
+				<groupId>com.github.wvengen</groupId>
+				<artifactId>proguard-maven-plugin</artifactId>
+				<version>2.6.1</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals><goal>proguard</goal></goals>
+					</execution>
+				</executions>
+				<configuration>
+					<proguardVersion>7.4.2</proguardVersion>
+					<obfuscate>true</obfuscate>
+					<injar>${project.build.finalName}.jar</injar>
+					<outjar>${project.build.finalName}-protected.jar</outjar>
+					<proguardInclude>${basedir}/proguard.conf</proguardInclude>
+					<libs>
+						<lib>${java.home}/jmods/java.base.jmod</lib>
+						<lib>${java.home}/jmods/java.desktop.jmod</lib>
+						<lib>${java.home}/jmods/java.management.jmod</lib>
+						<lib>${java.home}/jmods/java.security.jgss.jmod</lib>
+						<lib>${java.home}/jmods/java.sql.jmod</lib>
+						<lib>${java.home}/jmods/java.xml.jmod</lib>
+					</libs>
+				</configuration>
+				<dependencies>
+					<dependency>
+						<groupId>com.guardsquare</groupId>
+						<artifactId>proguard-base</artifactId>
+						<version>7.4.2</version>
+						<scope>runtime</scope>
+					</dependency>
+					<dependency>
+						<groupId>com.guardsquare</groupId>
+						<artifactId>proguard-core</artifactId>
+						<version>9.1.1</version>
+						<scope>runtime</scope>
 					</dependency>
 				</dependencies>
 			</plugin>

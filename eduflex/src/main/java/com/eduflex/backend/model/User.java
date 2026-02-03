@@ -30,8 +30,13 @@ public class User implements Serializable {
     @Column(unique = true)
     private String email;
 
+    @Convert(converter = com.eduflex.backend.util.EncryptedStringConverter.class)
     private String phone;
+
+    @Convert(converter = com.eduflex.backend.util.EncryptedStringConverter.class)
     private String address;
+
+    @Convert(converter = com.eduflex.backend.util.EncryptedStringConverter.class)
     private String ssn;
     private String language = "sv";
     private String profilePictureUrl;

@@ -279,6 +279,13 @@ public class GeminiService {
     }
 
     /**
+     * Generates content ensuring JSON output format.
+     */
+    public String generateJsonContent(String prompt) {
+        return callGemini(prompt, false);
+    }
+
+    /**
      * Builds the user prompt for document-based quiz generation.
      */
     private String buildUserPrompt(String documentText, int questionCount,

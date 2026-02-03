@@ -6,8 +6,10 @@ import SubjectSidebar from './components/SubjectSidebar';
 import ContentGrid from './components/ContentGrid';
 import CommunityDetailModal from './components/CommunityDetailModal';
 import PublishModal from './components/PublishModal';
+import AuthorProfile from './components/AuthorProfile';
+import ContributorLeaderboard from './components/ContributorLeaderboard';
 
-const CommunityHub = () => {
+const CommunityHub = ({ minimal = false }) => {
     const { currentUser } = useAppContext();
 
     // State
@@ -24,6 +26,7 @@ const CommunityHub = () => {
     // Modals
     const [selectedItem, setSelectedItem] = useState(null);
     const [showPublishModal, setShowPublishModal] = useState(false);
+    const [selectedAuthorId, setSelectedAuthorId] = useState(null);
 
     // Load subjects on mount
     useEffect(() => {
@@ -113,58 +116,60 @@ const CommunityHub = () => {
         currentUser?.role?.isSuperAdmin;
 
     return (
-        <div className="max-w-7xl mx-auto p-4 md:p-8 animate-in fade-in pb-20">
+        <div className={`max-w-7xl mx-auto animate-in fade-in pb-20 ${minimal ? '' : 'p-4 md:p-8'}`}>
             {/* Header */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-                <div className="flex items-center gap-3">
-                    <div className="p-3 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl shadow-lg">
-                        <Store className="text-white" size={28} />
-                    </div>
-                    <div>
-                        <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
-                            EduFlex Community
-                        </h1>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">
-                            Utforska och dela utbildningsmaterial
-                        </p>
-                    </div>
-                </div>
-
-                <div className="flex items-center gap-3">
-                    {/* Search */}
-                    <div className="relative flex-1 md:w-80">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                        <input
-                            type="text"
-                            placeholder="Sök material..."
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            onKeyDown={handleSearch}
-                            className="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-[#282a2c] border border-gray-200
-                                     dark:border-transparent rounded-xl text-sm focus:ring-2 focus:ring-indigo-500
-                                     focus:border-transparent outline-none"
-                        />
+            {!minimal && (
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+                    <div className="flex items-center gap-3">
+                        <div className="p-3 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl shadow-lg">
+                            <Store className="text-white" size={28} />
+                        </div>
+                        <div>
+                            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
+                                EduFlex Community
+                            </h1>
+                            <p className="text-sm text-gray-500 dark:text-gray-400">
+                                Utforska och dela utbildningsmaterial
+                            </p>
+                        </div>
                     </div>
 
-                    {/* Publish Button (Teachers/Admins only) */}
-                    {isTeacherOrAdmin && (
-                        <button
-                            onClick={() => setShowPublishModal(true)}
-                            className="flex items-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700
-                                     text-white font-semibold rounded-xl transition-colors shadow-lg
-                                     hover:shadow-indigo-500/25"
-                        >
-                            <Plus size={18} />
-                            <span className="hidden md:inline">Publicera</span>
-                        </button>
-                    )}
+                    <div className="flex items-center gap-3">
+                        {/* Search */}
+                        <div className="relative flex-1 md:w-80">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                            <input
+                                type="text"
+                                placeholder="Sök material..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                onKeyDown={handleSearch}
+                                className="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-[#282a2c] border border-gray-200
+                                         dark:border-transparent rounded-xl text-sm focus:ring-2 focus:ring-indigo-500
+                                         focus:border-transparent outline-none"
+                            />
+                        </div>
+
+                        {/* Publish Button (Teachers/Admins only) */}
+                        {isTeacherOrAdmin && (
+                            <button
+                                onClick={() => setShowPublishModal(true)}
+                                className="flex items-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700
+                                         text-white font-semibold rounded-xl transition-colors shadow-lg
+                                         hover:shadow-indigo-500/25"
+                            >
+                                <Plus size={18} />
+                                <span className="hidden md:inline">Publicera</span>
+                            </button>
+                        )}
+                    </div>
                 </div>
-            </div>
+            )}
 
             {/* Main Content */}
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-                {/* Sidebar - Subjects */}
-                <div className="lg:col-span-1">
+                {/* Sidebar - Subjects & Leaderboard */}
+                <div className="lg:col-span-1 space-y-6">
                     <SubjectSidebar
                         subjects={subjects}
                         selectedSubject={selectedSubject}
@@ -172,6 +177,10 @@ const CommunityHub = () => {
                             setSelectedSubject(s);
                             setPage(0);
                         }}
+                    />
+
+                    <ContributorLeaderboard
+                        onSelectAuthor={setSelectedAuthorId}
                     />
                 </div>
 
@@ -188,11 +197,10 @@ const CommunityHub = () => {
                                         setSelectedType(type);
                                         setPage(0);
                                     }}
-                                    className={`px-3 py-1.5 text-sm font-medium rounded-lg transition-colors ${
-                                        selectedType === type
-                                            ? 'bg-white dark:bg-[#1E1F20] text-gray-900 dark:text-white shadow'
-                                            : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'
-                                    }`}
+                                    className={`px-3 py-1.5 text-sm font-medium rounded-lg transition-colors ${selectedType === type
+                                        ? 'bg-white dark:bg-[#1E1F20] text-gray-900 dark:text-white shadow'
+                                        : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'
+                                        }`}
                                 >
                                     {type === 'ALL' ? 'Alla' : type === 'QUIZ' ? 'Quiz' : type === 'ASSIGNMENT' ? 'Uppgift' : 'Lektion'}
                                 </button>
@@ -265,6 +273,10 @@ const CommunityHub = () => {
                     itemId={selectedItem.id}
                     onClose={() => setSelectedItem(null)}
                     onInstall={handleInstall}
+                    onViewAuthor={(authorId) => {
+                        setSelectedItem(null);
+                        setSelectedAuthorId(authorId);
+                    }}
                 />
             )}
 
@@ -277,6 +289,17 @@ const CommunityHub = () => {
                         loadItems();
                     }}
                     currentUser={currentUser}
+                />
+            )}
+            {/* Author Profile Modal */}
+            {selectedAuthorId && (
+                <AuthorProfile
+                    userId={selectedAuthorId}
+                    onClose={() => setSelectedAuthorId(null)}
+                    onSelectItem={(item) => {
+                        setSelectedAuthorId(null);
+                        setSelectedItem(item);
+                    }}
                 />
             )}
         </div>

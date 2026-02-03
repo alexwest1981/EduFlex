@@ -792,6 +792,12 @@ export const api = {
         // My Published
         getMyPublished: () => fetch(`${API_BASE}/community/my-published`, { headers: getHeaders() }).then(handleResponse),
 
+        // Author Profiles
+        getAuthorProfile: (userId) => fetch(`${API_BASE}/community/authors/${userId}`, { headers: getHeaders() }).then(handleResponse),
+
+        // Leaderboard
+        getLeaderboard: () => fetch(`${API_BASE}/community/leaderboard`, { headers: getHeaders() }).then(handleResponse),
+
         // Admin Moderation
         admin: {
             getPending: (page = 0, size = 20) => fetch(`${API_BASE}/community/admin/pending?page=${page}&size=${size}`, { headers: getHeaders() }).then(handleResponse),

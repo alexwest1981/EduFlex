@@ -32,6 +32,9 @@ public class PaymentSettings {
     @Column(name = "is_active")
     private Boolean isActive = false;
 
+    @Column(name = "domain_url", columnDefinition = "TEXT")
+    private String domainUrl;
+
     // Getters and Setters
 
     public Long getId() {
@@ -88,5 +91,13 @@ public class PaymentSettings {
 
     public void setIsActive(Boolean isActive) {
         this.isActive = isActive;
+    }
+
+    public String getDomainUrl() {
+        return domainUrl;
+    }
+
+    public void setDomainUrl(String domainUrl) {
+        this.domainUrl = domainUrl;
     }
 }

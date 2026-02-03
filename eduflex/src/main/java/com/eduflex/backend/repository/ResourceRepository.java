@@ -14,4 +14,6 @@ public interface ResourceRepository extends JpaRepository<Resource, Long> {
     List<Resource> findByVisibility(Resource.ResourceVisibility visibility);
 
     List<Resource> findByType(Resource.ResourceType type);
+
+    List<Resource> findByOwnerAndType(User owner, Resource.ResourceType type);
 }

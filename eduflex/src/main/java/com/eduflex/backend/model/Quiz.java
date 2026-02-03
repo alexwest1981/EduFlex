@@ -32,7 +32,17 @@ public class Quiz {
     @JsonIgnoreProperties("quiz")
     private List<Question> questions;
 
+    private String sourceCommunityItemId;
+
     // Getters & Setters
+    public String getSourceCommunityItemId() {
+        return sourceCommunityItemId;
+    }
+
+    public void setSourceCommunityItemId(String sourceCommunityItemId) {
+        this.sourceCommunityItemId = sourceCommunityItemId;
+    }
+
     public Long getId() {
         return id;
     }

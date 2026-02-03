@@ -40,6 +40,7 @@ public class AuthController {
     private final SubscriptionPlanRepository subscriptionPlanRepository;
     private final com.eduflex.backend.repository.RoleRepository roleRepository;
     private final StudentActivityService studentActivityService;
+    private final com.eduflex.backend.security.RateLimitingFilter rateLimitingFilter;
 
     public AuthController(AuthenticationManager authenticationManager,
             UserRepository userRepository,
@@ -50,7 +51,8 @@ public class AuthController {
             SubscriptionPlanRepository subscriptionPlanRepository,
 
             com.eduflex.backend.repository.RoleRepository roleRepository,
-            StudentActivityService studentActivityService) {
+            StudentActivityService studentActivityService,
+            com.eduflex.backend.security.RateLimitingFilter rateLimitingFilter) {
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
         this.userService = userService;
@@ -60,6 +62,7 @@ public class AuthController {
         this.subscriptionPlanRepository = subscriptionPlanRepository;
         this.roleRepository = roleRepository;
         this.studentActivityService = studentActivityService;
+        this.rateLimitingFilter = rateLimitingFilter;
     }
 
     @Operation(summary = "Authenticate user", description = "Authenticates a user and returns a JWT token.")
@@ -84,8 +87,16 @@ public class AuthController {
 
             System.out.println("DEBUG: Rate limit check passed.");
 
-            Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(loginRequest.username(), loginRequest.password()));
+            Authentication authentication;
+            try {
+                authentication = authenticationManager.authenticate(
+                        new UsernamePasswordAuthenticationToken(loginRequest.username(), loginRequest.password()));
+            } catch (org.springframework.security.authentication.BadCredentialsException bce) {
+                String ip = getClientIp(request);
+                System.out.println("DEBUG: Failed login for " + loginRequest.username() + " from IP " + ip);
+                rateLimitingFilter.recordAttempt(ip);
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Ogiltigt användarnamn eller lösenord.");
+            }
 
             System.out.println("DEBUG: Authentication successful.");
 
@@ -175,5 +186,13 @@ public class AuthController {
         userRepository.save(user);
 
         return ResponseEntity.ok("Användare registrerad!");
+    }
+
+    private String getClientIp(HttpServletRequest request) {
+        String xfHeader = request.getHeader("X-Forwarded-For");
+        if (xfHeader == null) {
+            return request.getRemoteAddr();
+        }
+        return xfHeader.split(",")[0];
     }
 }

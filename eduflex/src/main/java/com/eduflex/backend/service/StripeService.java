@@ -1,105 +1,116 @@
 package com.eduflex.backend.service;
 
-import org.springframework.stereotype.Service;
+import com.eduflex.backend.model.PaymentSettings;
+import com.eduflex.backend.repository.PaymentSettingsRepository;
+import com.stripe.exception.StripeException;
+import com.stripe.model.checkout.Session;
+import com.stripe.param.checkout.SessionCreateParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
-/**
- * Placeholder/Stub for Stripe Payment Gateway Integration
- * TODO: Replace with real Stripe SDK when API keys are available
- */
 @Service
 public class StripeService {
 
-    private static final Logger logger = LoggerFactory.getLogger(StripeService.class);
+        private final PaymentSettingsRepository paymentSettingsRepository;
 
-    private String apiKey;
-    private String webhookSecret;
+        public StripeService(PaymentSettingsRepository paymentSettingsRepository) {
+                this.paymentSettingsRepository = paymentSettingsRepository;
+        }
 
-    /**
-     * Configure Stripe API credentials
-     */
-    public void configure(String apiKey, String webhookSecret) {
-        this.apiKey = apiKey;
-        this.webhookSecret = webhookSecret;
-        logger.info("Stripe configured (placeholder mode)");
-    }
+        private static final Logger logger = LoggerFactory.getLogger(StripeService.class);
 
-    /**
-     * Create a payment intent (STUB)
-     * In real implementation: Use Stripe SDK to create PaymentIntent
-     */
-    public Map<String, Object> createPaymentIntent(Long amount, String currency, Long userId) {
-        logger.info("Creating payment intent (STUB): {} {}, user: {}", amount, currency, userId);
+        @Value("${eduflex.domain.url:http://localhost:5173}")
+        private String defaultDomainUrl;
 
-        Map<String, Object> result = new HashMap<>();
-        result.put("id", "pi_stub_" + System.currentTimeMillis());
-        result.put("clientSecret", "pi_stub_secret_" + System.currentTimeMillis());
-        result.put("amount", amount);
-        result.put("currency", currency);
-        result.put("status", "requires_payment_method");
+        /**
+         * Gets the active domain URL from DB or fallback to env.
+         */
+        private String getDomainUrl() {
+                return paymentSettingsRepository.findByIsActiveTrue()
+                                .map(PaymentSettings::getDomainUrl)
+                                .filter(url -> url != null && !url.isBlank())
+                                .orElse(defaultDomainUrl);
+        }
 
-        return result;
-    }
+        /**
+         * Ensures Stripe is configured with the correct API key.
+         */
+        private void ensureConfigured() {
+                paymentSettingsRepository.findByIsActiveTrue()
+                                .filter(s -> "STRIPE".equals(s.getProvider()))
+                                .ifPresent(s -> {
+                                        if (s.getApiKey() != null && !s.getApiKey().isBlank()) {
+                                                com.stripe.Stripe.apiKey = s.getApiKey();
+                                        }
+                                });
+        }
 
-    /**
-     * Create a subscription (STUB)
-     * In real implementation: Use Stripe SDK to create Subscription
-     */
-    public Map<String, Object> createSubscription(Long userId, String priceId) {
-        logger.info("Creating subscription (STUB): user {}, price {}", userId, priceId);
+        public String createCheckoutSession(String priceId, String email, String tenantName, String desiredDomain,
+                        String adminName) throws StripeException {
+                ensureConfigured();
+                String activeDomainUrl = getDomainUrl();
 
-        Map<String, Object> result = new HashMap<>();
-        result.put("id", "sub_stub_" + System.currentTimeMillis());
-        result.put("status", "active");
-        result.put("currentPeriodEnd", System.currentTimeMillis() + 2592000000L); // +30 days
+                // Metadata to pass through to the webhook for provisioning
+                Map<String, String> metadata = new HashMap<>();
+                metadata.put("tenant_name", tenantName);
+                metadata.put("desired_domain", desiredDomain);
+                metadata.put("type", "NEW_TENANT_SUBSCRIPTION");
+                metadata.put("admin_email", email);
+                metadata.put("admin_name", adminName);
 
-        return result;
-    }
+                SessionCreateParams params = SessionCreateParams.builder()
+                                .setMode(SessionCreateParams.Mode.SUBSCRIPTION)
+                                .setSuccessUrl(activeDomainUrl + "/onboarding/success?session_id={CHECKOUT_SESSION_ID}")
+                                .setCancelUrl(activeDomainUrl + "/onboarding/cancel")
+                                .setCustomerEmail(email)
+                                .addLineItem(
+                                                SessionCreateParams.LineItem.builder()
+                                                                .setQuantity(1L)
+                                                                .setPrice(priceId)
+                                                                .build())
+                                .putAllMetadata(metadata)
+                                .setSubscriptionData(
+                                                SessionCreateParams.SubscriptionData.builder()
+                                                                .putAllMetadata(metadata)
+                                                                .build())
+                                .build();
 
-    /**
-     * Cancel a subscription (STUB)
-     */
-    public Map<String, Object> cancelSubscription(String subscriptionId) {
-        logger.info("Canceling subscription (STUB): {}", subscriptionId);
+                Session session = Session.create(params);
+                logger.info("Created Stripe Checkout Session: {}", session.getId());
+                return session.getUrl();
+        }
 
-        Map<String, Object> result = new HashMap<>();
-        result.put("id", subscriptionId);
-        result.put("status", "canceled");
+        public void createRefund(String transactionId, long amount) {
+                ensureConfigured();
+                logger.info("Issuing refund for transaction: {} of amount: {}", transactionId, amount);
+                try {
+                        com.stripe.param.RefundCreateParams params = com.stripe.param.RefundCreateParams.builder()
+                                        .setPaymentIntent(transactionId)
+                                        .setAmount(amount)
+                                        .build();
+                        com.stripe.model.Refund refund = com.stripe.model.Refund.create(params);
+                        logger.info("Refund created: {}", refund.getId());
+                } catch (StripeException e) {
+                        logger.error("Stripe Refund failed", e);
+                        throw new RuntimeException("Refund failed: " + e.getMessage());
+                }
+        }
 
-        return result;
-    }
+        public String createCustomerPortalSession(String customerId) throws StripeException {
+                ensureConfigured();
+                com.stripe.param.billingportal.SessionCreateParams params = com.stripe.param.billingportal.SessionCreateParams
+                                .builder()
+                                .setCustomer(customerId)
+                                .setReturnUrl(getDomainUrl() + "/admin/billing")
+                                .build();
 
-    /**
-     * Process refund (STUB)
-     */
-    public Map<String, Object> createRefund(String paymentIntentId, Long amount) {
-        logger.info("Creating refund (STUB): {} for {}", paymentIntentId, amount);
-
-        Map<String, Object> result = new HashMap<>();
-        result.put("id", "re_stub_" + System.currentTimeMillis());
-        result.put("amount", amount);
-        result.put("status", "succeeded");
-
-        return result;
-    }
-
-    /**
-     * Verify webhook signature (STUB)
-     * In real implementation: Use Stripe.Webhook.constructEvent()
-     */
-    public boolean verifyWebhookSignature(String payload, String signature) {
-        logger.info("Verifying webhook signature (STUB)");
-        // In placeholder mode, always return true
-        return true;
-    }
-
-    /**
-     * Check if Stripe is configured
-     */
-    public boolean isConfigured() {
-        return apiKey != null && !apiKey.isEmpty();
-    }
+                com.stripe.model.billingportal.Session session = com.stripe.model.billingportal.Session.create(params);
+                return session.getUrl();
+        }
 }

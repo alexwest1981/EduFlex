@@ -16,69 +16,79 @@ import java.util.List;
 @Repository
 public interface CommunityItemRepository extends JpaRepository<CommunityItem, String> {
 
-    // === Browse with pagination ===
+        // === Browse with pagination ===
 
-    Page<CommunityItem> findByStatusOrderByPublishedAtDesc(PublishStatus status, Pageable pageable);
+        Page<CommunityItem> findByStatusOrderByPublishedAtDesc(PublishStatus status, Pageable pageable);
 
-    Page<CommunityItem> findByStatusOrderByDownloadCountDesc(PublishStatus status, Pageable pageable);
+        Page<CommunityItem> findByStatusOrderByDownloadCountDesc(PublishStatus status, Pageable pageable);
 
-    Page<CommunityItem> findByStatusOrderByAverageRatingDesc(PublishStatus status, Pageable pageable);
+        Page<CommunityItem> findByStatusOrderByAverageRatingDesc(PublishStatus status, Pageable pageable);
 
-    // === Filter by subject ===
+        // === Filter by subject ===
 
-    Page<CommunityItem> findByStatusAndSubjectOrderByPublishedAtDesc(
-            PublishStatus status, CommunitySubject subject, Pageable pageable);
+        Page<CommunityItem> findByStatusAndSubjectOrderByPublishedAtDesc(
+                        PublishStatus status, CommunitySubject subject, Pageable pageable);
 
-    Page<CommunityItem> findByStatusAndSubjectOrderByDownloadCountDesc(
-            PublishStatus status, CommunitySubject subject, Pageable pageable);
+        Page<CommunityItem> findByStatusAndSubjectOrderByDownloadCountDesc(
+                        PublishStatus status, CommunitySubject subject, Pageable pageable);
 
-    Page<CommunityItem> findByStatusAndSubjectOrderByAverageRatingDesc(
-            PublishStatus status, CommunitySubject subject, Pageable pageable);
+        Page<CommunityItem> findByStatusAndSubjectOrderByAverageRatingDesc(
+                        PublishStatus status, CommunitySubject subject, Pageable pageable);
 
-    // === Filter by content type ===
+        // === Filter by content type ===
 
-    Page<CommunityItem> findByStatusAndContentTypeOrderByPublishedAtDesc(
-            PublishStatus status, ContentType contentType, Pageable pageable);
+        Page<CommunityItem> findByStatusAndContentTypeOrderByPublishedAtDesc(
+                        PublishStatus status, ContentType contentType, Pageable pageable);
 
-    Page<CommunityItem> findByStatusAndContentTypeOrderByDownloadCountDesc(
-            PublishStatus status, ContentType contentType, Pageable pageable);
+        Page<CommunityItem> findByStatusAndContentTypeOrderByDownloadCountDesc(
+                        PublishStatus status, ContentType contentType, Pageable pageable);
 
-    Page<CommunityItem> findByStatusAndContentTypeOrderByAverageRatingDesc(
-            PublishStatus status, ContentType contentType, Pageable pageable);
+        Page<CommunityItem> findByStatusAndContentTypeOrderByAverageRatingDesc(
+                        PublishStatus status, ContentType contentType, Pageable pageable);
 
-    // === Combined filters ===
+        // === Combined filters ===
 
-    Page<CommunityItem> findByStatusAndSubjectAndContentTypeOrderByPublishedAtDesc(
-            PublishStatus status, CommunitySubject subject, ContentType contentType, Pageable pageable);
+        Page<CommunityItem> findByStatusAndSubjectAndContentTypeOrderByPublishedAtDesc(
+                        PublishStatus status, CommunitySubject subject, ContentType contentType, Pageable pageable);
 
-    Page<CommunityItem> findByStatusAndSubjectAndContentTypeOrderByDownloadCountDesc(
-            PublishStatus status, CommunitySubject subject, ContentType contentType, Pageable pageable);
+        // Author Filtering
+        Page<CommunityItem> findByStatusAndAuthorUserIdOrderByDownloadCountDesc(PublishStatus status, Long authorUserId,
+                        Pageable pageable);
 
-    Page<CommunityItem> findByStatusAndSubjectAndContentTypeOrderByAverageRatingDesc(
-            PublishStatus status, CommunitySubject subject, ContentType contentType, Pageable pageable);
+        Page<CommunityItem> findByStatusAndAuthorUserIdOrderByAverageRatingDesc(PublishStatus status, Long authorUserId,
+                        Pageable pageable);
 
-    // === Full-text search ===
+        Page<CommunityItem> findByStatusAndAuthorUserIdOrderByPublishedAtDesc(PublishStatus status, Long authorUserId,
+                        Pageable pageable);
 
-    @Query("SELECT c FROM CommunityItem c WHERE c.status = :status AND " +
-            "(LOWER(c.title) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
-            "LOWER(c.description) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
-            "LOWER(c.authorName) LIKE LOWER(CONCAT('%', :query, '%')))")
-    Page<CommunityItem> searchByQuery(@Param("status") PublishStatus status,
-                                       @Param("query") String query, Pageable pageable);
+        Page<CommunityItem> findByStatusAndSubjectAndContentTypeOrderByDownloadCountDesc(
+                        PublishStatus status, CommunitySubject subject, ContentType contentType, Pageable pageable);
 
-    // === My published items ===
+        Page<CommunityItem> findByStatusAndSubjectAndContentTypeOrderByAverageRatingDesc(
+                        PublishStatus status, CommunitySubject subject, ContentType contentType, Pageable pageable);
 
-    List<CommunityItem> findByAuthorUserIdAndAuthorTenantIdOrderByCreatedAtDesc(
-            Long authorUserId, String authorTenantId);
+        // === Full-text search ===
 
-    // === Admin: Pending moderation ===
+        @Query("SELECT c FROM CommunityItem c WHERE c.status = :status AND " +
+                        "(LOWER(c.title) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+                        "LOWER(c.description) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+                        "LOWER(c.authorName) LIKE LOWER(CONCAT('%', :query, '%')))")
+        Page<CommunityItem> searchByQuery(@Param("status") PublishStatus status,
+                        @Param("query") String query, Pageable pageable);
 
-    Page<CommunityItem> findByStatusOrderByCreatedAtAsc(PublishStatus status, Pageable pageable);
+        // === My published items ===
 
-    long countByStatus(PublishStatus status);
+        List<CommunityItem> findByAuthorUserIdAndAuthorTenantIdOrderByCreatedAtDesc(
+                        Long authorUserId, String authorTenantId);
 
-    // === Statistics ===
+        // === Admin: Pending moderation ===
 
-    @Query("SELECT c.subject, COUNT(c) FROM CommunityItem c WHERE c.status = :status GROUP BY c.subject")
-    List<Object[]> countBySubject(@Param("status") PublishStatus status);
+        Page<CommunityItem> findByStatusOrderByCreatedAtAsc(PublishStatus status, Pageable pageable);
+
+        long countByStatus(PublishStatus status);
+
+        // === Statistics ===
+
+        @Query("SELECT c.subject, COUNT(c) FROM CommunityItem c WHERE c.status = :status GROUP BY c.subject")
+        List<Object[]> countBySubject(@Param("status") PublishStatus status);
 }

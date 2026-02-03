@@ -48,6 +48,7 @@ public class CourseService {
     private String uploadDir;
 
     private final StorageService storageService;
+    private final LicenseService licenseService;
 
     public CourseService(CourseRepository courseRepository,
             UserRepository userRepository,
@@ -59,6 +60,7 @@ public class CourseService {
             SubmissionRepository submissionRepository,
             SkolverketCourseRepository skolverketCourseRepository,
             StorageService storageService,
+            LicenseService licenseService,
             com.eduflex.backend.repository.UserLessonProgressRepository userLessonProgressRepository,
             com.eduflex.backend.repository.StudentActivityLogRepository studentActivityLogRepository) {
         this.courseRepository = courseRepository;
@@ -71,6 +73,7 @@ public class CourseService {
         this.submissionRepository = submissionRepository;
         this.skolverketCourseRepository = skolverketCourseRepository;
         this.storageService = storageService;
+        this.licenseService = licenseService;
         this.userLessonProgressRepository = userLessonProgressRepository;
         this.studentActivityLogRepository = studentActivityLogRepository;
     }
@@ -94,6 +97,12 @@ public class CourseService {
     }
 
     public Course createCourse(CreateCourseDTO dto, Long teacherId) {
+        // --- HIDDEN LICENSE TRAP ---
+        if (licenseService != null && !licenseService.isValid()) {
+            throw new RuntimeException("Ett internt fel uppstod vid validering av resurser (Error: 0xSEC-C01).");
+        }
+        // ---------------------------
+
         User teacher = userRepository.findById(teacherId).orElseThrow(() -> new RuntimeException("Lärare ej funnen"));
 
         Course course = new Course();

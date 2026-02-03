@@ -152,8 +152,8 @@ const LandingPage = () => {
         },
         {
             icon: <Users className="w-6 h-6" />,
-            title: 'Community Marketplace',
-            description: 'Dela och importera kursmaterial från ett gemensamt ekosystem. Samverka med andra utbildningsanordnare.',
+            title: 'Resursbank & Community',
+            description: 'Ett unifierat bibliotek för alla dina quiz, uppgifter och lektioner. Dela och importera material från andra lärare med ett klick.',
             gradient: 'from-teal-500 to-cyan-500'
         },
         {
@@ -181,6 +181,12 @@ const LandingPage = () => {
             gradient: 'from-purple-600 to-pink-600'
         },
         {
+            icon: <Shield className="w-6 h-6" />,
+            title: 'Enterprise Security',
+            description: 'Fullständig AES-256 GCM kryptering av känslig data, domän-låst licensiering och rate-limiting skyddar din organisation dygnet runt.',
+            gradient: 'from-blue-700 to-indigo-900'
+        },
+        {
             icon: <BarChart className="w-6 h-6" />,
             title: 'Kursutvärdering & Insikter',
             description: 'Komplett system för kurskvalitet, automatiserade studentnotiser och AI-analys av fritextsvar för att mäta ROI.',
@@ -199,6 +205,56 @@ const LandingPage = () => {
         { src: settingsNewImg, title: 'Systeminställningar', description: 'Hantera LTI, moduler, tema och lagringsbackends.' },
         { src: debugImg, title: 'Live Debug Terminal', description: 'Matrix-inspirerad loggvisning för teknisk felsökning i realtid.' }
     ];
+
+    const handleSubscribe = async (plan) => {
+        if (plan === 'enterprise') {
+            setIsContactModalOpen(true);
+            return;
+        }
+
+        // TODO: In a real app, open a modal to collect email/tenantName first
+        const email = prompt("Ange administratörens e-post:");
+        if (!email) return;
+
+        const tenantName = prompt("Ange skolans namn:");
+        if (!tenantName) return;
+
+        const desiredDomain = prompt("Önskad domän (t.ex. 'myschool' för myschool.eduflex.se):");
+        if (!desiredDomain) return;
+
+        // Call backend to create session
+        try {
+            // Map plan to Stripe Price ID (hardcoded test IDs for now)
+            const priceIdMap = {
+                'basic': 'price_1Swkj5F1b2IKwKY5MzPsgLDJ',
+                'pro': 'price_1SwkjMF1b2IKwKY5MIZl0CkK'
+            };
+
+            const response = await fetch('http://localhost:8080/api/payment/checkout', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    priceId: priceIdMap[plan] || 'price_test_default',
+                    email,
+                    tenantName,
+                    desiredDomain,
+                    adminName: 'Admin User'
+                })
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                if (data.url) {
+                    window.location.href = data.url;
+                }
+            } else {
+                alert("Kunde inte starta betalning. Kontrollera att backend körs.");
+            }
+        } catch (e) {
+            console.error("Payment Error:", e);
+            alert("Ett fel uppstod vid kommunikation med betalningsservern.");
+        }
+    };
 
     return (
         <div className="min-h-screen bg-white text-gray-900 font-sans selection:bg-blue-100 overflow-x-hidden">
@@ -751,13 +807,13 @@ const LandingPage = () => {
                                     </ul>
 
                                     <button
-                                        onClick={() => isHighlight && setIsContactModalOpen(true)}
+                                        onClick={() => handleSubscribe(plan)}
                                         className={`w-full py-4 px-6 rounded-xl font-bold transition-all duration-300 ${isHighlight
                                             ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:shadow-lg hover:shadow-blue-500/25 hover:-translate-y-0.5'
                                             : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                             }`}
                                     >
-                                        {t(`landing.pricing.${plan}.cta`)}
+                                        {plan === 'enterprise' ? 'Kontakta oss' : 'Starta Prenumeration'}
                                     </button>
                                 </div>
                             );

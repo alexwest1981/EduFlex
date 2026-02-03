@@ -6,7 +6,7 @@ import {
 import { api } from '../../../services/api';
 import SubjectIcon from './SubjectIcon';
 
-const CommunityDetailModal = ({ itemId, onClose, onInstall }) => {
+const CommunityDetailModal = ({ itemId, onClose, onInstall, onViewAuthor }) => {
     const [item, setItem] = useState(null);
     const [loading, setLoading] = useState(true);
     const [installing, setInstalling] = useState(false);
@@ -145,7 +145,10 @@ const CommunityDetailModal = ({ itemId, onClose, onInstall }) => {
                     )}
 
                     {/* Author Section */}
-                    <div className="bg-gray-50 dark:bg-[#282a2c] rounded-xl p-4 mb-6">
+                    <div
+                        className="bg-gray-50 dark:bg-[#282a2c] rounded-xl p-4 mb-6 cursor-pointer hover:bg-gray-100 dark:hover:bg-[#3c4043] transition-colors"
+                        onClick={() => onViewAuthor(item.authorUserId)}
+                    >
                         <div className="flex items-center gap-3">
                             <div className="w-12 h-12 bg-gray-200 dark:bg-[#3c4043] rounded-full flex items-center justify-center overflow-hidden">
                                 {item.authorProfilePictureUrl ? (
@@ -157,7 +160,10 @@ const CommunityDetailModal = ({ itemId, onClose, onInstall }) => {
                                 )}
                             </div>
                             <div>
-                                <p className="font-bold text-gray-900 dark:text-white">{item.authorName}</p>
+                                <p className="font-bold text-gray-900 dark:text-white flex items-center gap-1">
+                                    {item.authorName}
+                                    <ExternalLink size={14} className="text-gray-400" />
+                                </p>
                                 <p className="text-sm text-gray-500">{item.authorTenantName}</p>
                             </div>
                         </div>

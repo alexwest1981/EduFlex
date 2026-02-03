@@ -30,7 +30,8 @@ public class TenantService {
 
     @Transactional(rollbackFor = Exception.class)
     public Tenant createTenant(String name, String domain, String dbSchema, String organizationKey, String adminEmail,
-            String adminPassword, String adminFirstName, String adminLastName) {
+            String adminPassword, String adminFirstName, String adminLastName, String stripeCustomerId,
+            String stripeSubscriptionId) {
         if (tenantRepository.existsById(organizationKey)) {
             throw new org.springframework.web.server.ResponseStatusException(
                     org.springframework.http.HttpStatus.CONFLICT,
@@ -65,16 +66,28 @@ public class TenantService {
         tenant.setName(name);
         tenant.setDomain(domain);
         tenant.setDbSchema(dbSchema);
+        tenant.setStripeCustomerId(stripeCustomerId);
+        tenant.setStripeSubscriptionId(stripeSubscriptionId);
         tenant.setActive(true);
 
         tenant = tenantRepository.save(tenant);
-        logger.info("Saved Tenant entity: {}, Schema: '{}'", tenant.getId(), dbSchema);
+        logger.info("Saved Tenant entity: {}, Schema: '{}', StripeCustomer: {}", tenant.getId(), dbSchema,
+                stripeCustomerId);
 
         // 2. Create Schema
         initTenantSchema(dbSchema, name);
         createInitialAdminUser(dbSchema, adminEmail, adminPassword, adminFirstName, adminLastName);
 
         return tenant;
+    }
+
+    @Transactional
+    public void deactivateTenantByStripeCustomer(String stripeCustomerId) {
+        tenantRepository.findByStripeCustomerId(stripeCustomerId).ifPresent(tenant -> {
+            logger.warn("Deactivating tenant: {} due to subscription cancellation.", tenant.getId());
+            tenant.setActive(false);
+            tenantRepository.save(tenant);
+        });
     }
 
     // --- Helper methods for frontend compatibility ---
@@ -101,7 +114,7 @@ public class TenantService {
     public Tenant createTenantRaw(String name, String tenantId, String schema) {
         // Default admin credentials for quick create
         String defaultAdmin = "admin@" + tenantId + ".local";
-        return createTenant(name, tenantId, schema, tenantId, defaultAdmin, "admin", "Admin", "User");
+        return createTenant(name, tenantId, schema, tenantId, defaultAdmin, "admin", "Admin", "User", null, null);
     }
 
     // Make this public so we can call it from initSchema

@@ -2,7 +2,6 @@ package com.eduflex.backend.controller;
 
 import com.eduflex.backend.model.PaymentSettings;
 import com.eduflex.backend.repository.PaymentSettingsRepository;
-import com.eduflex.backend.service.StripeService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -14,12 +13,9 @@ import java.util.List;
 public class PaymentSettingsController {
 
     private final PaymentSettingsRepository paymentSettingsRepository;
-    private final StripeService stripeService;
 
-    public PaymentSettingsController(PaymentSettingsRepository paymentSettingsRepository,
-            StripeService stripeService) {
+    public PaymentSettingsController(PaymentSettingsRepository paymentSettingsRepository) {
         this.paymentSettingsRepository = paymentSettingsRepository;
-        this.stripeService = stripeService;
     }
 
     /**
@@ -56,13 +52,9 @@ public class PaymentSettingsController {
                     existing.setIsTestMode(settings.getIsTestMode());
                     existing.setEnabledMethods(settings.getEnabledMethods());
                     existing.setIsActive(settings.getIsActive());
+                    existing.setDomainUrl(settings.getDomainUrl());
 
                     PaymentSettings saved = paymentSettingsRepository.save(existing);
-
-                    // Configure Stripe with new settings
-                    if ("STRIPE".equals(saved.getProvider()) && saved.getIsActive()) {
-                        stripeService.configure(saved.getApiKey(), saved.getWebhookSecret());
-                    }
 
                     return ResponseEntity.ok(saved);
                 })
@@ -76,10 +68,6 @@ public class PaymentSettingsController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<PaymentSettings> createSettings(@RequestBody PaymentSettings settings) {
         PaymentSettings saved = paymentSettingsRepository.save(settings);
-
-        if ("STRIPE".equals(saved.getProvider()) && saved.getIsActive()) {
-            stripeService.configure(saved.getApiKey(), saved.getWebhookSecret());
-        }
 
         return ResponseEntity.ok(saved);
     }

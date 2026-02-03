@@ -70,7 +70,9 @@ public class TenantController {
                     request.getAdminEmail(),
                     request.getAdminPassword(),
                     request.getAdminFirstName(),
-                    request.getAdminLastName());
+                    request.getAdminLastName(),
+                    null,
+                    null);
             return ResponseEntity.ok(tenant);
 
         } catch (org.springframework.web.server.ResponseStatusException e) {

@@ -259,7 +259,7 @@ const SystemSettings = ({ asTab = false }) => {
         {
             category: 'AI & Automation',
             items: [
-                { id: 'ai', label: 'AI Quiz', icon: Sparkles },
+                { id: 'ai', label: 'AI-inställningar', icon: Sparkles },
             ]
         },
         {
@@ -691,7 +691,7 @@ const SystemSettings = ({ asTab = false }) => {
                 return (
                     <div className="space-y-6">
                         <div>
-                            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">AI Quiz-generering</h2>
+                            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">AI-inställningar</h2>
                             <p className="text-gray-500 dark:text-gray-400">Generera quiz-frågor automatiskt från dokument med Google Gemini AI.</p>
                         </div>
 

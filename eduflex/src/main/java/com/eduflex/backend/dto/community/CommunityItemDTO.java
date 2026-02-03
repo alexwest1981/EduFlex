@@ -21,6 +21,7 @@ public record CommunityItemDTO(
         String subjectColor,
         String difficulty,
         String gradeLevel,
+        Long authorUserId,
         String authorName,
         String authorTenantName,
         String authorProfilePictureUrl,
@@ -29,8 +30,7 @@ public record CommunityItemDTO(
         int downloadCount,
         LocalDateTime publishedAt,
         PublishStatus status,
-        Map<String, Object> metadata
-) {
+        Map<String, Object> metadata) {
     /**
      * Create DTO from entity
      */
@@ -46,6 +46,7 @@ public record CommunityItemDTO(
                 item.getSubject() != null ? item.getSubject().getColor() : "#94A3B8",
                 item.getDifficulty(),
                 item.getGradeLevel(),
+                item.getAuthorUserId(),
                 item.getAuthorName(),
                 item.getAuthorTenantName(),
                 item.getAuthorProfilePictureUrl(),
@@ -54,7 +55,6 @@ public record CommunityItemDTO(
                 item.getDownloadCount(),
                 item.getPublishedAt(),
                 item.getStatus(),
-                parsedMetadata
-        );
+                parsedMetadata);
     }
 }

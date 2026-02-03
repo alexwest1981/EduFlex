@@ -1,5 +1,7 @@
 package com.eduflex.backend.service;
 
+import com.eduflex.backend.util.RuntimeGuard;
+import com.eduflex.backend.util.Obfuscator;
 import com.eduflex.backend.model.LicenseType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
@@ -16,35 +18,38 @@ import java.util.Map;
 @Service
 public class LicenseService {
 
-    private static final String LICENSE_FILE = "eduflex.license";
+    private static final String LICENSE_FILE = Obfuscator.dec("ZWR1ZmxleC5saWNlbnNl");
 
-    private LicenseType currentTier = LicenseType.ENTERPRISE;
+    private final com.eduflex.backend.repository.PaymentSettingsRepository paymentSettingsRepository;
+    private final org.springframework.core.env.Environment env;
+
+    private com.eduflex.backend.model.LicenseType currentTier = com.eduflex.backend.model.LicenseType.ENTERPRISE;
     private boolean isValid = false;
     private String customerName = "Okänd";
     private LocalDate expiryDate;
     private java.security.PublicKey publicKey;
 
+    public LicenseService(com.eduflex.backend.repository.PaymentSettingsRepository paymentSettingsRepository,
+            org.springframework.core.env.Environment env) {
+        this.paymentSettingsRepository = paymentSettingsRepository;
+        this.env = env;
+    }
+
     @PostConstruct
     public void init() {
         loadPublicKey();
         validateCurrentLicense();
-
-        // --- DEV OVERRIDE ---
-        this.currentTier = LicenseType.ENTERPRISE;
-        this.isValid = true;
-        this.expiryDate = LocalDate.MAX; // Fix för NPE
-        System.out.println("🔧 DEV MODE: Forced License Tier to ENTERPRISE");
     }
 
     private void loadPublicKey() {
         try {
             // Load from classpath (src/main/resources/public.pem)
-            byte[] keyBytes = getClass().getResourceAsStream("/public.pem").readAllBytes();
+            byte[] keyBytes = getClass().getResourceAsStream(Obfuscator.dec("L3B1YmxpYy5wZW0=")).readAllBytes();
             String keyString = new String(keyBytes, StandardCharsets.UTF_8).trim();
 
             // Remove headers if present
-            keyString = keyString.replace("-----BEGIN PUBLIC KEY-----", "")
-                    .replace("-----END PUBLIC KEY-----", "")
+            keyString = keyString.replace(Obfuscator.dec("LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0="), "")
+                    .replace(Obfuscator.dec("LS0tLS1FTkQgUFVCTElDIEtFWS0tLS0t"), "")
                     .replaceAll("\\s", "");
 
             byte[] decoded = Base64.getDecoder().decode(keyString);
@@ -60,6 +65,10 @@ public class LicenseService {
     }
 
     public void validateCurrentLicense() {
+        // --- ANTI-RE: RUNTIME CHECK ---
+        RuntimeGuard.performIntegrityCheck();
+        // ------------------------------
+
         File file = new File(LICENSE_FILE);
         if (!file.exists()) {
             System.out.println("⚠️  LICENS: Ingen licensfil hittad. Systemet är låst.");
@@ -88,11 +97,12 @@ public class LicenseService {
                     });
 
             // 2. Extrahera data
-            String payloadBase64 = data.get("payload");
-            String signature = data.get("signature");
+            String payloadBase64 = data.get(Obfuscator.dec("cGF5bG9hZA=="));
+            String signature = data.get(Obfuscator.dec("c2lnbmF0dXJl"));
 
             // 3. Verifiera signatur med RSA
-            java.security.Signature publicSignature = java.security.Signature.getInstance("SHA256withRSA");
+            java.security.Signature publicSignature = java.security.Signature
+                    .getInstance(Obfuscator.dec("U0hBMjU2d2l0aFJTQQ=="));
             publicSignature.initVerify(publicKey);
             publicSignature.update(new String(Base64.getDecoder().decode(payloadBase64), StandardCharsets.UTF_8)
                     .getBytes(StandardCharsets.UTF_8));
@@ -108,18 +118,28 @@ public class LicenseService {
                     new com.fasterxml.jackson.core.type.TypeReference<Map<String, String>>() {
                     });
 
-            String tierStr = payloadMap.get("tier");
-            String expiryStr = payloadMap.get("validUntil");
-            this.customerName = payloadMap.get("customer");
+            String tierStr = payloadMap.get(Obfuscator.dec("dGllcg=="));
+            String expiryStr = payloadMap.get(Obfuscator.dec("dmFsaWRVbnRpbA=="));
+            this.customerName = payloadMap.get(Obfuscator.dec("Y3VzdG9tZXI="));
 
-            // 5. Kolla datum
+            // 5. Check Expiry
             LocalDate expires = LocalDate.parse(expiryStr);
             if (LocalDate.now().isAfter(expires)) {
                 throw new RuntimeException("Licensen gick ut den " + expires);
             }
 
-            // 6. Allt OK!
-            this.currentTier = LicenseType.valueOf(tierStr.replace("PLUS", "PRO"));
+            // 6. Domain Validation (Anti-Cloning)
+            String licensedDomain = payloadMap.get(Obfuscator.dec("ZG9tYWlu"));
+            if (licensedDomain != null && !licensedDomain.isBlank()) {
+                String systemDomain = getSystemDomain();
+                if (systemDomain != null && !systemDomain.contains(licensedDomain)) {
+                    throw new RuntimeException("Domän-matchning misslyckades! Licenserad för: " + licensedDomain
+                            + " men systemet körs på: " + systemDomain);
+                }
+            }
+
+            // 7. Success!
+            this.currentTier = com.eduflex.backend.model.LicenseType.valueOf(tierStr.replace("PLUS", "PRO"));
             this.expiryDate = expires;
             this.isValid = true;
             System.out.println("✅ LICENS GODKÄND (RSA): " + currentTier + " för " + customerName);
@@ -173,5 +193,11 @@ public class LicenseService {
 
     public boolean isExpiringSoon() {
         return getDaysRemaining() <= 30; // Varna om under 30 dagar
+    }
+
+    private String getSystemDomain() {
+        return paymentSettingsRepository.findByIsActiveTrue()
+                .map(com.eduflex.backend.model.PaymentSettings::getDomainUrl)
+                .orElse(env.getProperty("EDUFLEX_DOMAIN_URL"));
     }
 }
