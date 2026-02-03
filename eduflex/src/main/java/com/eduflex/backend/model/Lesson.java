@@ -65,6 +65,11 @@ public class Lesson {
         this.content = content;
     }
 
+    // Alias för frontend-kompatibilitet
+    public String getDescription() {
+        return content;
+    }
+
     public String getVideoUrl() {
         return videoUrl;
     }
