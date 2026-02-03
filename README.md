@@ -280,6 +280,11 @@ curl -X POST http://localhost:8080/api/tenants \
     *   **System-wide Storage Statistics:** A new dedicated administration section shows total used storage, file counts, and system-wide user stats.
     *   **Improved Security & Routing:** Isolated administrative statistics to a dedicated controller (`AdminStatsController`) for enhanced security and routing clarity.
 
+*   **🚀 Resursbank & AI Expansion (Feb 3, 2026):**
+    *   **Resursbanken:** En central hubb för Quiz, Uppgifter och Lektioner med stöd för Community-delning.
+    *   **AI EduTask & EduLesson:** Generera fullständiga inlämningsuppgifter och lektionsplaneringar med AI.
+    *   **Community Marketplace:** Dela och hämta material från andra lärare direkt i plattformen.
+
 *   **🎓 Student Records Vault - "My Merits" (Feb 3, 2026):**
     *   **Official Documents:** Implemented a secure "vault" where students can view and download course certificates, grades, and credentials.
     *   **Delete Protection:** Official documents are write-protected and can only be managed by administrators to ensure integrity.

@@ -724,7 +724,23 @@ export const api = {
                 headers: getHeaders(),
                 body: JSON.stringify({ courseId })
             }).then(handleResponse),
+        },
+        resources: {
+            generate: (userId, type, prompt, context) => fetch(`${API_BASE}/ai/resources/generate?userId=${userId}&type=${type}&prompt=${encodeURIComponent(prompt)}${context ? `&context=${encodeURIComponent(context)}` : ''}`, {
+                method: 'POST',
+                headers: getHeaders()
+            }).then(handleResponse),
         }
+    },
+
+    // --- RESOURCE BANK ---
+    resources: {
+        getMy: (userId) => api.get(`/resources/my?userId=${userId}`),
+        getCommunity: () => api.get('/resources/community'),
+        getOne: (id) => api.get(`/resources/${id}`),
+        create: (userId, data) => api.post(`/resources?userId=${userId}`, data),
+        update: (id, data) => api.put(`/resources/${id}`, data),
+        delete: (id) => api.delete(`/resources/${id}`),
     },
 
     // --- EDUFLEX COMMUNITY ---

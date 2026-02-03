@@ -239,6 +239,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/modules/**")
                         .hasAnyAuthority("ADMIN", "ROLE_ADMIN")
 
+                        // 11. Resource Bank endpoints
+                        .requestMatchers("/api/resources/**").authenticated()
+
                         // All other requests require authentication
                         .anyRequest().authenticated())
                 .exceptionHandling(e -> e.authenticationEntryPoint(loggingAuthenticationEntryPoint));
