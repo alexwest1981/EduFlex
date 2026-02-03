@@ -537,7 +537,7 @@ const Step1 = ({
                     >
                         <FileQuestion size={24} className={mode === 'existing' ? 'text-indigo-600' : 'text-gray-400'} />
                         <p className={`mt-2 font-medium ${mode === 'existing' ? 'text-indigo-700 dark:text-indigo-300' : 'text-gray-700 dark:text-gray-300'}`}>
-                            Välj befintligt quiz
+                            Välj befintlig resurs
                         </p>
                         <p className="text-xs text-gray-500 mt-1">
                             Från Resursbanken

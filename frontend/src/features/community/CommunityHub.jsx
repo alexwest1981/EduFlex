@@ -295,7 +295,7 @@ const CommunityHub = ({ minimal = false }) => {
                         setShowPublishModal(false);
                         loadItems();
                     }}
-                    currentUser={currentUser}
+                    userId={currentUser?.id}
                 />
             )}
             {/* Author Profile Modal */}
