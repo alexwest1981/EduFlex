@@ -148,11 +148,12 @@ const shuffleArray = (array) => {
 const PublishModal = ({ onClose, onPublished, userId }) => {
     const [step, setStep] = useState(1);
     const [mode, setMode] = useState(null); // 'csv' or 'existing'
+    const [contentType, setContentType] = useState('QUIZ'); // 'QUIZ', 'LESSON', 'ASSIGNMENT'
     const [loading, setLoading] = useState(false);
     const [publishing, setPublishing] = useState(false);
     const [subjects, setSubjects] = useState(FALLBACK_SUBJECTS);
 
-    // CSV upload state
+    // CSV upload state (only for quizzes)
     const [csvFile, setCsvFile] = useState(null);
     const [parsedQuestions, setParsedQuestions] = useState([]);
     const [csvError, setCsvError] = useState(null);
@@ -179,9 +180,9 @@ const PublishModal = ({ onClose, onPublished, userId }) => {
 
     useEffect(() => {
         if (mode === 'existing') {
-            loadExistingQuizzes();
+            loadExistingContent();
         }
-    }, [mode]);
+    }, [mode, contentType]);
 
     const loadSubjects = async () => {
         try {
@@ -199,13 +200,20 @@ const PublishModal = ({ onClose, onPublished, userId }) => {
         }
     };
 
-    const loadExistingQuizzes = async () => {
+    const loadExistingContent = async () => {
         setLoading(true);
         try {
-            const data = await api.quiz.getMy(userId);
+            let data;
+            if (contentType === 'QUIZ') {
+                data = await api.quiz.getMy(userId);
+            } else if (contentType === 'LESSON') {
+                data = await api.lessons.getMy(userId);
+            } else if (contentType === 'ASSIGNMENT') {
+                data = await api.assignments.getMy(userId);
+            }
             setItems(Array.isArray(data) ? data : []);
         } catch (err) {
-            console.error('Failed to load quizzes:', err);
+            console.error(`Failed to load ${contentType.toLowerCase()}s:`, err);
             setItems([]);
         } finally {
             setLoading(false);
@@ -270,14 +278,14 @@ const PublishModal = ({ onClose, onPublished, userId }) => {
                 subject: formData.subject,
                 difficulty: formData.difficulty,
                 gradeLevel: formData.gradeLevel,
-                description: formData.description,
+                publicDescription: formData.description,
                 tags: formData.tags
             };
 
             let result;
 
             if (mode === 'csv') {
-                // First create the quiz, then publish it
+                // CSV upload only works for quizzes
                 const quizData = {
                     title: quizTitle,
                     description: formData.description,
@@ -286,14 +294,17 @@ const PublishModal = ({ onClose, onPublished, userId }) => {
                     passingScore: 70
                 };
 
-                // Create quiz first
                 const createdQuiz = await api.quiz.createGlobal(userId, quizData);
-
-                // Then publish to community
                 result = await api.community.publishQuiz(createdQuiz.id, publishData);
             } else {
-                // Publish existing quiz
-                result = await api.community.publishQuiz(selectedItem.id, publishData);
+                // Publish existing content based on type
+                if (contentType === 'QUIZ') {
+                    result = await api.community.publishQuiz(selectedItem.id, publishData);
+                } else if (contentType === 'LESSON') {
+                    result = await api.community.publishLesson(selectedItem.id, publishData);
+                } else if (contentType === 'ASSIGNMENT') {
+                    result = await api.community.publishAssignment(selectedItem.id, publishData);
+                }
             }
 
             onPublished?.(result);
@@ -327,10 +338,10 @@ const PublishModal = ({ onClose, onPublished, userId }) => {
                     <div className="flex items-center justify-between">
                         <div>
                             <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-                                Dela Quiz i Community
+                                Dela i Community
                             </h2>
                             <p className="text-sm text-gray-500 mt-1">
-                                Steg {step} av 2: {step === 1 ? 'Välj källa' : 'Metadata & publicering'}
+                                Steg {step} av 2: {step === 1 ? 'Välj innehåll' : 'Metadata & publicering'}
                             </p>
                         </div>
                         <button
@@ -356,6 +367,8 @@ const PublishModal = ({ onClose, onPublished, userId }) => {
                         <Step1
                             mode={mode}
                             setMode={setMode}
+                            contentType={contentType}
+                            setContentType={setContentType}
                             // CSV props
                             csvFile={csvFile}
                             parsedQuestions={parsedQuestions}
@@ -439,13 +452,60 @@ const PublishModal = ({ onClose, onPublished, userId }) => {
 
 // Step 1: Choose source (CSV or existing)
 const Step1 = ({
-    mode, setMode,
+    mode, setMode, contentType, setContentType,
     csvFile, parsedQuestions, csvError, quizTitle, setQuizTitle, fileInputRef, handleFileChange,
     subjects, formData, setFormData,
     items, selectedItem, onSelectItem, loading
 }) => {
     return (
         <div className="space-y-6">
+            {/* Content Type Selection (only for existing mode) */}
+            {mode === 'existing' && (
+                <div>
+                    <h3 className="font-bold text-gray-900 dark:text-white mb-3">
+                        Vad vill du dela?
+                    </h3>
+                    <div className="grid grid-cols-3 gap-3">
+                        <button
+                            onClick={() => setContentType('QUIZ')}
+                            className={`p-3 rounded-xl border-2 transition-all text-center ${contentType === 'QUIZ'
+                                ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20'
+                                : 'border-gray-200 dark:border-[#3c4043] hover:border-gray-300'
+                                }`}
+                        >
+                            <FileQuestion size={20} className={`mx-auto ${contentType === 'QUIZ' ? 'text-indigo-600' : 'text-gray-400'}`} />
+                            <p className={`mt-1 text-sm font-medium ${contentType === 'QUIZ' ? 'text-indigo-700 dark:text-indigo-300' : 'text-gray-700 dark:text-gray-300'}`}>
+                                Quiz
+                            </p>
+                        </button>
+                        <button
+                            onClick={() => setContentType('LESSON')}
+                            className={`p-3 rounded-xl border-2 transition-all text-center ${contentType === 'LESSON'
+                                ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20'
+                                : 'border-gray-200 dark:border-[#3c4043] hover:border-gray-300'
+                                }`}
+                        >
+                            <BookOpen size={20} className={`mx-auto ${contentType === 'LESSON' ? 'text-indigo-600' : 'text-gray-400'}`} />
+                            <p className={`mt-1 text-sm font-medium ${contentType === 'LESSON' ? 'text-indigo-700 dark:text-indigo-300' : 'text-gray-700 dark:text-gray-300'}`}>
+                                Lektion
+                            </p>
+                        </button>
+                        <button
+                            onClick={() => setContentType('ASSIGNMENT')}
+                            className={`p-3 rounded-xl border-2 transition-all text-center ${contentType === 'ASSIGNMENT'
+                                ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20'
+                                : 'border-gray-200 dark:border-[#3c4043] hover:border-gray-300'
+                                }`}
+                        >
+                            <ClipboardList size={20} className={`mx-auto ${contentType === 'ASSIGNMENT' ? 'text-indigo-600' : 'text-gray-400'}`} />
+                            <p className={`mt-1 text-sm font-medium ${contentType === 'ASSIGNMENT' ? 'text-indigo-700 dark:text-indigo-300' : 'text-gray-700 dark:text-gray-300'}`}>
+                                Uppgift
+                            </p>
+                        </button>
+                    </div>
+                </div>
+            )}
+
             {/* Mode Selection */}
             <div>
                 <h3 className="font-bold text-gray-900 dark:text-white mb-3">
@@ -454,11 +514,10 @@ const Step1 = ({
                 <div className="grid grid-cols-2 gap-4">
                     <button
                         onClick={() => setMode('csv')}
-                        className={`p-4 rounded-xl border-2 transition-all text-left ${
-                            mode === 'csv'
-                                ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20'
-                                : 'border-gray-200 dark:border-[#3c4043] hover:border-gray-300'
-                        }`}
+                        className={`p-4 rounded-xl border-2 transition-all text-left ${mode === 'csv'
+                            ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20'
+                            : 'border-gray-200 dark:border-[#3c4043] hover:border-gray-300'
+                            }`}
                     >
                         <Upload size={24} className={mode === 'csv' ? 'text-indigo-600' : 'text-gray-400'} />
                         <p className={`mt-2 font-medium ${mode === 'csv' ? 'text-indigo-700 dark:text-indigo-300' : 'text-gray-700 dark:text-gray-300'}`}>
@@ -471,11 +530,10 @@ const Step1 = ({
 
                     <button
                         onClick={() => setMode('existing')}
-                        className={`p-4 rounded-xl border-2 transition-all text-left ${
-                            mode === 'existing'
-                                ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20'
-                                : 'border-gray-200 dark:border-[#3c4043] hover:border-gray-300'
-                        }`}
+                        className={`p-4 rounded-xl border-2 transition-all text-left ${mode === 'existing'
+                            ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20'
+                            : 'border-gray-200 dark:border-[#3c4043] hover:border-gray-300'
+                            }`}
                     >
                         <FileQuestion size={24} className={mode === 'existing' ? 'text-indigo-600' : 'text-gray-400'} />
                         <p className={`mt-2 font-medium ${mode === 'existing' ? 'text-indigo-700 dark:text-indigo-300' : 'text-gray-700 dark:text-gray-300'}`}>
@@ -564,11 +622,10 @@ const Step1 = ({
                                         <button
                                             key={subject.name}
                                             onClick={() => setFormData(prev => ({ ...prev, subject: subject.name }))}
-                                            className={`flex items-center gap-2 p-2 rounded-lg border transition-all ${
-                                                formData.subject === subject.name
-                                                    ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20'
-                                                    : 'border-gray-200 dark:border-[#3c4043] hover:border-gray-300'
-                                            }`}
+                                            className={`flex items-center gap-2 p-2 rounded-lg border transition-all ${formData.subject === subject.name
+                                                ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20'
+                                                : 'border-gray-200 dark:border-[#3c4043] hover:border-gray-300'
+                                                }`}
                                         >
                                             <SubjectIcon iconName={subject.iconName} color={subject.color} size={16} />
                                             <span className="text-xs font-medium text-gray-700 dark:text-gray-300 truncate">
@@ -610,18 +667,18 @@ const Step1 = ({
                             Varje rad ska innehålla: fråga, rätt svar, fel svar 1, fel svar 2, fel svar 3
                         </p>
                         <code className="block text-xs bg-blue-100 dark:bg-blue-900/40 p-2 rounded font-mono text-blue-800 dark:text-blue-200">
-                            Vad är 2+2?,4,3,5,6<br/>
+                            Vad är 2+2?,4,3,5,6<br />
                             Huvudstad i Sverige?,Stockholm,Göteborg,Malmö,Uppsala
                         </code>
                     </div>
                 </div>
             )}
 
-            {/* Existing Quiz Mode */}
+            {/* Existing Content Mode */}
             {mode === 'existing' && (
                 <div>
                     <h3 className="font-bold text-gray-900 dark:text-white mb-3">
-                        Välj quiz att dela
+                        Välj {contentType === 'QUIZ' ? 'quiz' : contentType === 'LESSON' ? 'lektion' : 'uppgift'} att dela
                     </h3>
 
                     {loading ? (
@@ -630,9 +687,11 @@ const Step1 = ({
                         </div>
                     ) : items.length === 0 ? (
                         <div className="text-center py-8 text-gray-500">
-                            <FileQuestion className="mx-auto mb-2 text-gray-300" size={48} />
-                            <p>Du har inga quiz att dela.</p>
-                            <p className="text-sm mt-1">Skapa först quiz i Resursbanken eller ladda upp CSV.</p>
+                            {contentType === 'QUIZ' ? <FileQuestion className="mx-auto mb-2 text-gray-300" size={48} /> :
+                                contentType === 'LESSON' ? <BookOpen className="mx-auto mb-2 text-gray-300" size={48} /> :
+                                    <ClipboardList className="mx-auto mb-2 text-gray-300" size={48} />}
+                            <p>Du har inga {contentType === 'QUIZ' ? 'quiz' : contentType === 'LESSON' ? 'lektioner' : 'uppgifter'} att dela.</p>
+                            <p className="text-sm mt-1">Skapa först i Resursbanken.</p>
                         </div>
                     ) : (
                         <div className="space-y-2 max-h-64 overflow-y-auto">
@@ -640,11 +699,10 @@ const Step1 = ({
                                 <button
                                     key={item.id}
                                     onClick={() => onSelectItem(item)}
-                                    className={`w-full text-left p-4 rounded-xl border-2 transition-all ${
-                                        selectedItem?.id === item.id
-                                            ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20'
-                                            : 'border-gray-200 dark:border-[#3c4043] hover:border-gray-300'
-                                    }`}
+                                    className={`w-full text-left p-4 rounded-xl border-2 transition-all ${selectedItem?.id === item.id
+                                        ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20'
+                                        : 'border-gray-200 dark:border-[#3c4043] hover:border-gray-300'
+                                        }`}
                                 >
                                     <div className="flex items-center justify-between">
                                         <div>
@@ -652,7 +710,9 @@ const Step1 = ({
                                                 {item.title}
                                             </p>
                                             <p className="text-sm text-gray-500 mt-1">
-                                                {item.questions?.length || 0} frågor
+                                                {contentType === 'QUIZ' && `${item.questions?.length || 0} frågor`}
+                                                {contentType === 'LESSON' && 'Lektion'}
+                                                {contentType === 'ASSIGNMENT' && 'Uppgift'}
                                                 {item.description && ` • ${item.description.substring(0, 50)}...`}
                                             </p>
                                         </div>
@@ -702,11 +762,10 @@ const Step2 = ({
                             <button
                                 key={subject.name}
                                 onClick={() => setFormData(prev => ({ ...prev, subject: subject.name }))}
-                                className={`flex items-center gap-2 p-2 rounded-lg border transition-all ${
-                                    formData.subject === subject.name
-                                        ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20'
-                                        : 'border-gray-200 dark:border-[#3c4043] hover:border-gray-300'
-                                }`}
+                                className={`flex items-center gap-2 p-2 rounded-lg border transition-all ${formData.subject === subject.name
+                                    ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20'
+                                    : 'border-gray-200 dark:border-[#3c4043] hover:border-gray-300'
+                                    }`}
                             >
                                 <SubjectIcon iconName={subject.iconName} color={subject.color} size={16} />
                                 <span className="text-xs font-medium text-gray-700 dark:text-gray-300 truncate">
