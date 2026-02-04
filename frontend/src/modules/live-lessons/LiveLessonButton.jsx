@@ -179,6 +179,7 @@ const LiveLessonButton = ({ courseId, courseName, currentUser, isTeacher }) => {
                         roomName={joinConfig.roomName}
                         displayName={currentUser?.firstName + ' ' + currentUser?.lastName}
                         email={currentUser?.email}
+                        id={currentUser?.id}
                         isHost={joinConfig.isHost}
                         onClose={handleEndLesson}
                     />

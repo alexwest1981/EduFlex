@@ -17,6 +17,7 @@ const JitsiMeeting = ({
     roomName,
     displayName,
     email,
+    id, // Internal user ID
     isHost = false,
     onClose,
     onParticipantJoined,
@@ -134,6 +135,7 @@ const JitsiMeeting = ({
                 DISABLE_RINGING: true
             },
             userInfo: {
+                id: id,
                 displayName: displayName || 'Deltagare',
                 email: email
             }
