@@ -86,8 +86,28 @@ const JitsiMeeting = ({
                 // Swedish language
                 defaultLanguage: 'sv',
 
-                // === PERFORMANCE OPTIMIZATIONS ===
-                resolution: 480, // Lower resolution for better performance
+                // Disable P2P mode to force traffic through the bridge (more stable for IP collisions)
+                p2p: {
+                    enabled: false,
+                    preferH264: true,
+                    disableP2P: true, // Hard disable
+                    stunServers: [
+                        { urls: 'stun:stun.l.google.com:19302' },
+                        { urls: 'stun:meet-jit-si-turnrelay.jitsi.net:443' }
+                    ]
+                },
+                // ICE/TURN configuration for better NAT traversal through Cloudflare
+                iceServers: [
+                    { urls: 'stun:stun.l.google.com:19302' },
+                    { urls: 'stun:meet-jit-si-turnrelay.jitsi.net:443' }
+                ],
+                // Force WebSocket for both signaling (XMPP) and media (Colibri)
+                // This is CRITICAL for Cloudflare Tunnels as they don't support UDP
+                websocket: 'wss://' + domain + '/xmpp-websocket',
+                openBridgeChannel: 'websocket',
+
+                // PERFORMANCE & STABILITY
+                resolution: 480,
                 constraints: {
                     video: {
                         height: { ideal: 480, max: 720, min: 180 },
@@ -95,27 +115,15 @@ const JitsiMeeting = ({
                         frameRate: { ideal: 24, max: 30 }
                     }
                 },
-                // Enable layer suspension
-                enableLayerSuspension: true,
-                // Only receive video from 4 most active speakers
-                channelLastN: 4,
-                // Disable CPU-intensive features
-                disableAudioLevels: true,
+                // Disable stats gathering to reduce noise on the tunnel
+                callStatsID: '',
+                enableDisplayNameInStats: false,
                 enableNoisyMicDetection: false,
                 enableNoAudioDetection: false,
-                disableVirtualBackground: true,
-                disableScreensharingVirtualBackground: true,
-
-                // Disable P2P mode to force traffic through the bridge (more stable for IP collisions)
-                p2p: {
-                    enabled: false
-                },
-                // Force WebSocket for better Cloudflare Tunnel compatibility
-                websocket: 'wss://' + domain + '/xmpp-websocket',
-
-                // Disable stats gathering
-                callStatsID: '',
-                enableDisplayNameInStats: false
+                disableAudioLevels: true,
+                disableSimulcast: false, // Keep on for adaptive quality
+                enableLayerSuspension: true,
+                channelLastN: 4
             },
             interfaceConfigOverwrite: {
                 SHOW_JITSI_WATERMARK: false,
