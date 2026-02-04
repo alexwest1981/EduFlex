@@ -29,7 +29,7 @@ public class PaymentController {
     private final StripeService stripeService;
     private final TenantService tenantService;
 
-    @Value("${stripe.webhook.secret}")
+    @Value("${stripe.webhook.secret:}")
     private String endpointSecret;
 
     @Autowired

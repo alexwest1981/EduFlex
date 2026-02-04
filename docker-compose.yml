@@ -141,6 +141,10 @@ services:
       - EDUFLEX_REGISTRATION_KEY=master_key_2026
       # AI Quiz Generation (Google Gemini)
       - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+      # Stripe Payments
+      - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY:-}
+      - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET:-}
+      - EDUFLEX_DOMAIN_URL=${EDUFLEX_DOMAIN_URL:-}
       # - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9094
       # Disable Kafka Auto-Configuration to prevent startup failure
       - SPRING_AUTOCONFIGURE_EXCLUDE=org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration
