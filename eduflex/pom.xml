@@ -228,15 +228,15 @@
 				<version>2.6.1</version>
 				<executions>
 					<execution>
-						<phase>prepare-package</phase>
+						<phase>package</phase>
 						<goals><goal>proguard</goal></goals>
 					</execution>
 				</executions>
 				<configuration>
 					<proguardVersion>7.4.2</proguardVersion>
 					<obfuscate>true</obfuscate>
-					<injar>${project.build.outputDirectory}</injar>
-					<outjar>${project.build.directory}/obfuscated-classes</outjar>
+					<injar>${project.build.finalName}.jar</injar>
+					<outjar>${project.build.finalName}-obfuscated.jar</outjar>
 					<proguardInclude>${basedir}/proguard.conf</proguardInclude>
 					<libs>
 						<lib>${java.home}/jmods/java.base.jmod</lib>
@@ -273,12 +273,11 @@
 				<version>3.1.0</version>
 				<executions>
 					<execution>
-						<phase>prepare-package</phase>
+						<phase>package</phase>
 						<goals><goal>run</goal></goals>
 						<configuration>
 							<target>
-								<delete dir="${project.build.outputDirectory}"/>
-								<move file="${project.build.directory}/obfuscated-classes" tofile="${project.build.outputDirectory}"/>
+								<move file="${project.build.directory}/${project.build.finalName}-obfuscated.jar" tofile="${project.build.directory}/${project.build.finalName}.jar"/>
 							</target>
 						</configuration>
 					</execution>
