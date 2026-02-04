@@ -106,9 +106,9 @@ const JitsiMeeting = ({
                 disableVirtualBackground: true,
                 disableScreensharingVirtualBackground: true,
 
-                // P2P mode for 2 participants
+                // P2P mode for 2 participants - DISABLE to prevent internal network conflicts
                 p2p: {
-                    enabled: true,
+                    enabled: false,
                     preferH264: true,
                     useStunTurn: true
                 },
