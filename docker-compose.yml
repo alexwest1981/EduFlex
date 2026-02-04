@@ -290,6 +290,7 @@ services:
   # Self-hosted Jitsi for private video classrooms
   # For full self-hosted setup, see: https://jitsi.github.io/handbook/docs/devops-guide/devops-guide-docker
   # --- LIVE VIDEO LESSONS (Jitsi Meet) ---
+  # --- LIVE VIDEO LESSONS (Jitsi Meet) ---
   jitsi-web:
     image: jitsi/web:stable-9584
     container_name: eduflex-jitsi
@@ -297,6 +298,9 @@ services:
     ports:
       - "8444:80"
     environment:
+      - PUBLIC_URL=https://meet.eduflexlms.se
+      - TZ=Europe/Stockholm
+      # General settings
       - ENABLE_AUTH=0
       - ENABLE_GUESTS=1
       - ENABLE_TRANSCRIPTIONS=0
@@ -305,14 +309,7 @@ services:
       - ENABLE_LOBBY=0
       - ENABLE_WELCOME_PAGE=0
       - DISABLE_HTTPS=1
-      - PUBLIC_URL=https://meet.eduflexlms.se
-      - TZ=Europe/Stockholm
-      # Performance settings
-      - RESOLUTION=480
-      - RESOLUTION_MIN=180
-      - RESOLUTION_WIDTH=854
-      - RESOLUTION_WIDTH_MIN=320
-      # Jitsi internal communication
+      # XMPP Internal communication
       - XMPP_DOMAIN=meet.jitsi
       - XMPP_SERVER=jitsi-prosody
       - XMPP_BOSH_URL_BASE=http://jitsi-prosody:5280
@@ -320,7 +317,7 @@ services:
       - XMPP_INTERNAL_MUC_DOMAIN=internal-muc.meet.jitsi
       - JVB_BREWERY_MUC=jvbbrewery@internal-muc.meet.jitsi
       - JICOFO_AUTH_USER=focus
-      # Colibri over WebSocket (CRITICAL for Tunnel)
+      # Colibri over WebSocket (CRITICAL for Tunnel/No-UDP)
       - ENABLE_COLIBRI_WEBSOCKET=1
       - COLIBRI_REST_API=true
       - JVB_TCP_ADDR=eduflex-jitsi-jvb
@@ -353,18 +350,13 @@ services:
       - XMPP_INTERNAL_MUC_DOMAIN=internal-muc.meet.jitsi
       - XMPP_GUEST_DOMAIN=guest.meet.jitsi
       - XMPP_RECORDER_DOMAIN=recorder.meet.jitsi
+      # Security & Internal routing
       - JICOFO_AUTH_USER=focus
       - JICOFO_AUTH_PASSWORD=eduflex_jicofo_secret
       - JVB_AUTH_USER=jvb
       - JVB_AUTH_PASSWORD=eduflex_jvb_secret
-      - JIGASI_XMPP_USER=jigasi
-      - JIGASI_XMPP_PASSWORD=eduflex_jigasi_secret
       - JVB_BREWERY_MUC=jvbbrewery
       - JICOFO_COMPONENT_SECRET=eduflex_focus_secret
-      - JIBRI_XMPP_USER=jibri
-      - JIBRI_XMPP_PASSWORD=eduflex_jibri_secret
-      - JIBRI_RECORDER_USER=recorder
-      - JIBRI_RECORDER_PASSWORD=eduflex_recorder_secret
     volumes:
       - jitsi_prosody_config:/config
       - jitsi_prosody_plugins:/prosody-plugins-custom
@@ -409,44 +401,18 @@ services:
       - JVB_AUTH_PASSWORD=eduflex_jvb_secret
       - JVB_BREWERY_MUC=jvbbrewery@internal-muc.meet.jitsi
       - JVB_PORT=10000
-      - JVB_STUN_SERVERS=meet-jit-si-turnrelay.jitsi.net:443
       - PUBLIC_URL=https://meet.eduflexlms.se
       # NAT/ICE stability fixes
       - DOCKER_HOST_ADDRESS=127.0.0.1
-      # Colibri over WebSocket mapping
+      # Colibri over WebSocket (CRITICAL for Tunnel)
+      - ENABLE_COLIBRI_WEBSOCKET=1
       - JVB_WS_SERVER_ID=jvb
       - JVB_WS_DOMAIN=meet.eduflexlms.se
-      - ENABLE_COLIBRI_WEBSOCKET=1
       - JVB_WS_PORT=9090
-      # Coturn Relay Integration
-      - TURN_SERVER_ADDRESS=jitsi-coturn
-      - TURN_SERVER_PORT=3478
-      - TURN_CREDENTIALS=eduflex_turn_secret
-      - TURN_REALM=meet.eduflexlms.se
     volumes:
       - jitsi_jvb_config:/config
     depends_on:
       - jitsi-prosody
-    networks:
-      - eduflex-net
-
-  jitsi-coturn:
-    image: coturn/coturn
-    container_name: eduflex-jitsi-coturn
-    restart: unless-stopped
-    command:
-      - "-n"
-      - "--log-file=stdout"
-      - "--min-port=49152"
-      - "--max-port=65535"
-      - "--realm=meet.eduflexlms.se"
-      - "--user=jvb:eduflex_turn_secret"
-      - "--static-auth-secret=eduflex_turn_secret"
-      - "--fingerprint"
-      - "--lt-cred-mech"
-    ports:
-      - "3478:3478"
-      - "3478:3478/udp"
     networks:
       - eduflex-net
 
