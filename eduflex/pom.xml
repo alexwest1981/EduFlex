@@ -258,6 +258,10 @@
 						<lib>${java.home}/jmods/java.sql.jmod</lib>
 						<lib>${java.home}/jmods/java.xml.jmod</lib>
 					</libs>
+					<options>
+						<option>-ignorewarnings</option>
+						<option>-dontnote **</option>
+					</options>
 				</configuration>
 				<dependencies>
 					<dependency>
