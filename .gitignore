@@ -26,6 +26,11 @@ license_history.json
 *.lic
 eduflex.license
 minio/minio.exe
+config/onlyoffice/
+onlyoffice/
+onlyoffice-data/
+onlyoffice-logs/
+
 
 # Build & System
 target/
