@@ -247,8 +247,8 @@
 				<configuration>
 					<proguardVersion>7.4.2</proguardVersion>
 					<obfuscate>true</obfuscate>
-					<injar>${project.build.finalName}.jar</injar>
-					<outjar>${project.build.finalName}-protected.jar</outjar>
+					<injar>classes</injar>
+					<outjar>${project.build.finalName}.jar</outjar>
 					<proguardInclude>${basedir}/proguard.conf</proguardInclude>
 					<libs>
 						<lib>${java.home}/jmods/java.base.jmod</lib>
