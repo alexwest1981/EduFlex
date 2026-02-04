@@ -43,7 +43,7 @@
     *   **Hotfix: Premium UI Recovery:** Åtgärdat layout-fel i `QuizModule` där rubriker och knappar överlappade. Designen är nu fullt responsiv och premium-stajlad.
     *   **Community Modal Redesign:** Ny, tydlig design för publicering till communityt med fyra dedikerade val (Ladda upp CSV, Publicera Quiz/Lektion/Uppgift).
     *   **Lektions-aggregering:** Förbättrad logik för att hämta lektioner från både vanliga lektioner och AI-genererat innehåll vid publicering.
-    *   **Hotfix: Video Connectivity:** Åtgärdat fel där studenter inte kunde ansluta till Live-lektioner. Fixat race-condition vid uppstart och säkerställt att mötesfönstret inte stängs i förtid.
+    *   **Hotfix: Video Connectivity:** Åtgärdat fel där studenter inte kunde ansluta till Live-lektioner. Fixat race-condition vid uppstart, inaktiverat P2P-läge och ställt om till `meet.jit.si` som standard för maximal stabilitet genom internettunnlar.
     *   **Städad Kodbas:** Fixat dolda Tailwind-buggar orsakade av felaktig stränghantering.
 
 *   **🏪 Community Marknadsplats Expansion (3 feb 2026):**
@@ -311,6 +311,7 @@ curl -X POST http://localhost:8080/api/tenants \
     *   **Hotfix: Premium UI Recovery:** Resolved layout regressions in `QuizModule` ensuring a fully responsive and premium aesthetic without overlapping elements.
     *   **Community Modal Redesign:** Introduced a clean four-option entry point for community publishing (CSV Upload, Publish Quiz/Lesson/Assignment).
     *   **Lesson Aggregation:** Enhanced logic to aggregate both standard and AI-generated lessons for a complete publishing experience.
+    *   **Hotfix: Video Connectivity:** Resolved student join issues in Live Lessons. Fixed startup race conditions, disabled P2P mode, and switched to `meet.jit.si` as default for enhanced stability through internet tunnels.
     *   **Codebase Cleanup:** Fixed hidden Tailwind CSS bugs caused by incorrect string formatting.
 
 *   **🏪 Community Marketplace Expansion (Feb 3, 2026):**
