@@ -222,67 +222,7 @@
 					</dependency>
 				</dependencies>
 			</plugin>
-			<plugin>
-				<groupId>com.github.wvengen</groupId>
-				<artifactId>proguard-maven-plugin</artifactId>
-				<version>2.6.1</version>
-				<executions>
-					<execution>
-						<phase>package</phase>
-						<goals><goal>proguard</goal></goals>
-					</execution>
-				</executions>
-				<configuration>
-					<proguardVersion>7.6.1</proguardVersion>
-					<obfuscate>true</obfuscate>
-					<injar>${project.build.finalName}.jar</injar>
-					<outjar>${project.build.finalName}-obfuscated.jar</outjar>
-					<proguardInclude>${basedir}/proguard.conf</proguardInclude>
-					<libs>
-						<lib>${java.home}/jmods/java.base.jmod</lib>
-						<lib>${java.home}/jmods/java.desktop.jmod</lib>
-						<lib>${java.home}/jmods/java.management.jmod</lib>
-						<lib>${java.home}/jmods/java.security.jgss.jmod</lib>
-						<lib>${java.home}/jmods/java.sql.jmod</lib>
-						<lib>${java.home}/jmods/java.xml.jmod</lib>
-					</libs>
-					<options>
-						<option>-ignorewarnings</option>
-						<option>-dontnote **</option>
-					</options>
-				</configuration>
-				<dependencies>
-					<dependency>
-						<groupId>com.guardsquare</groupId>
-						<artifactId>proguard-base</artifactId>
-						<version>7.6.1</version>
-						<scope>runtime</scope>
-					</dependency>
-					<dependency>
-						<groupId>com.guardsquare</groupId>
-						<artifactId>proguard-core</artifactId>
-						<version>9.1.5</version>
-						<scope>runtime</scope>
-					</dependency>
-				</dependencies>
-			</plugin>
 
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-antrun-plugin</artifactId>
-				<version>3.1.0</version>
-				<executions>
-					<execution>
-						<phase>package</phase>
-						<goals><goal>run</goal></goals>
-						<configuration>
-							<target>
-								<move file="${project.build.directory}/${project.build.finalName}-obfuscated.jar" tofile="${project.build.directory}/${project.build.finalName}.jar"/>
-							</target>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
 
 			<plugin>
 				<groupId>org.springframework.boot</groupId>

@@ -6,7 +6,6 @@ WORKDIR /app
 
 # Copy pom.xml and download dependencies (cached layer)
 COPY pom.xml .
-COPY proguard.conf .
 RUN mvn dependency:go-offline -B
 
 # Copy source code and build
