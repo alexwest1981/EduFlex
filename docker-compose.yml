@@ -311,17 +311,13 @@ services:
       - RESOLUTION_MIN=180
       - RESOLUTION_WIDTH=854
       - RESOLUTION_WIDTH_MIN=320
-      # Jitsi internal communication
-      - XMPP_DOMAIN=meet.jitsi
-      - XMPP_SERVER=jitsi-prosody
-      - XMPP_BOSH_URL_BASE=http://jitsi-prosody:5280
-      - XMPP_MUC_DOMAIN=muc.meet.jitsi
-      - XMPP_INTERNAL_MUC_DOMAIN=internal-muc.meet.jitsi
-      - JVB_BREWERY_MUC=jvbbrewery@internal-muc.meet.jitsi
-      - JICOFO_AUTH_USER=focus
       # Colibri over WebSocket (CRITICAL for Tunnel)
       - ENABLE_COLIBRI_WEBSOCKET=1
       - COLIBRI_REST_API=true
+      # Internal address for JVB WS proxy
+      - JVB_TCP_ADDR=eduflex-jitsi-jvb
+      - JVB_TCP_PORT=9090
+      - COLIBRI_WS_TLS=0
     volumes:
       - jitsi_web_config:/config
       - jitsi_web_crontabs:/var/spool/cron/crontabs
@@ -412,9 +408,10 @@ services:
       # NAT/ICE stability fixes
       - DOCKER_HOST_ADDRESS=127.0.0.1
       # Colibri over WebSocket mapping
-      - JVB_WS_SERVER_ID=jitsi-videobridge
+      - JVB_WS_SERVER_ID=jvb
       - JVB_WS_DOMAIN=meet.eduflexlms.se
       - ENABLE_COLIBRI_WEBSOCKET=1
+      - JVB_WS_PORT=9090
       # Coturn Relay Integration
       - TURN_SERVER_ADDRESS=jitsi-coturn
       - TURN_SERVER_PORT=3478
