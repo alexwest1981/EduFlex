@@ -13,7 +13,8 @@ import { X, Maximize2, Minimize2, Mic, MicOff, Video, VideoOff, Users, Settings,
  * - onParticipantJoined: Callback when someone joins
  * - onParticipantLeft: Callback when someone leaves
  */
-roomName,
+const JitsiMeeting = ({
+    roomName,
     displayName,
     email,
     id,
@@ -21,7 +22,7 @@ roomName,
     onClose,
     onParticipantJoined,
     onParticipantLeft,
-    jitsiDomain = 'meet.eduflexlms.se' // Fallback to user server
+    jitsiDomain = 'meet.jit.si' // Switch to public for testing stability
 }) => {
     const containerRef = useRef(null);
     const apiRef = useRef(null);
