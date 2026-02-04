@@ -43,6 +43,7 @@
     *   **Hotfix: Premium UI Recovery:** Åtgärdat layout-fel i `QuizModule` där rubriker och knappar överlappade. Designen är nu fullt responsiv och premium-stajlad.
     *   **Community Modal Redesign:** Ny, tydlig design för publicering till communityt med fyra dedikerade val (Ladda upp CSV, Publicera Quiz/Lektion/Uppgift).
     *   **Lektions-aggregering:** Förbättrad logik för att hämta lektioner från både vanliga lektioner och AI-genererat innehåll vid publicering.
+    *   **Hotfix: Video Connectivity:** Åtgärdat fel där studenter inte kunde ansluta till Live-lektioner. Fixat race-condition vid uppstart och säkerställt att mötesfönstret inte stängs i förtid.
     *   **Städad Kodbas:** Fixat dolda Tailwind-buggar orsakade av felaktig stränghantering.
 
 *   **🏪 Community Marknadsplats Expansion (3 feb 2026):**

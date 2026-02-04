@@ -156,7 +156,7 @@ const LiveLessonButton = ({ courseId, courseName, currentUser, isTeacher }) => {
     // If there's an active live lesson, show join button
     if (activeLesson && !showMeeting) {
         return (
-            <>
+            <div className="flex flex-col items-start gap-2">
                 <button
                     onClick={() => handleJoinLesson(activeLesson)}
                     disabled={loading}
@@ -173,6 +173,7 @@ const LiveLessonButton = ({ courseId, courseName, currentUser, isTeacher }) => {
                     )}
                 </button>
 
+                {/* Show meeting UI even in student view */}
                 {showMeeting && joinConfig && (
                     <JitsiMeeting
                         roomName={joinConfig.roomName}
@@ -182,7 +183,7 @@ const LiveLessonButton = ({ courseId, courseName, currentUser, isTeacher }) => {
                         onClose={handleEndLesson}
                     />
                 )}
-            </>
+            </div>
         );
     }
 
@@ -322,33 +323,49 @@ const LiveLessonButton = ({ courseId, courseName, currentUser, isTeacher }) => {
         );
     }
 
-    // Student view - show upcoming lessons or nothing
-    if (upcomingLessons.length > 0) {
-        const nextLesson = upcomingLessons[0];
-        const startsIn = Math.round((new Date(nextLesson.scheduledStart) - new Date()) / 60000);
+    // Student view - show upcoming lessons OR THE MEETING MODAL if it was triggered
+    return (
+        <>
+            {upcomingLessons.length > 0 && (
+                (() => {
+                    const nextLesson = upcomingLessons[0];
+                    const startsIn = Math.round((new Date(nextLesson.scheduledStart) - new Date()) / 60000);
 
-        // Only show button if lesson starts within 30 minutes
-        if (startsIn <= 30) {
-            return (
-                <button
-                    onClick={() => handleJoinLesson(nextLesson)}
-                    disabled={loading}
-                    className="flex items-center gap-2 px-4 py-2 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 font-bold rounded-xl hover:bg-indigo-200 dark:hover:bg-indigo-900/50 transition-colors"
-                >
-                    {loading ? (
-                        <Loader2 size={18} className="animate-spin" />
-                    ) : (
-                        <>
-                            <Video size={18} />
-                            <span>Lektion om {startsIn} min</span>
-                        </>
-                    )}
-                </button>
-            );
-        }
-    }
+                    // Only show button if lesson starts within 30 minutes
+                    if (startsIn <= 30) {
+                        return (
+                            <button
+                                onClick={() => handleJoinLesson(nextLesson)}
+                                disabled={loading}
+                                className="flex items-center gap-2 px-4 py-2 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 font-bold rounded-xl hover:bg-indigo-200 dark:hover:bg-indigo-900/50 transition-colors"
+                            >
+                                {loading ? (
+                                    <Loader2 size={18} className="animate-spin" />
+                                ) : (
+                                    <>
+                                        <Video size={18} />
+                                        <span>Lektion om {startsIn} min</span>
+                                    </>
+                                )}
+                            </button>
+                        );
+                    }
+                    return null;
+                })()
+            )}
 
-    return null;
+            {/* Crucial fix for students: Render the meeting if it was triggered */}
+            {showMeeting && joinConfig && (
+                <JitsiMeeting
+                    roomName={joinConfig.roomName}
+                    displayName={currentUser?.firstName + ' ' + currentUser?.lastName}
+                    email={currentUser?.email}
+                    isHost={joinConfig.isHost}
+                    onClose={handleEndLesson}
+                />
+            )}
+        </>
+    );
 };
 
 export default LiveLessonButton;

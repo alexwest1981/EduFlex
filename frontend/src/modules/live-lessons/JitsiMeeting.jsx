@@ -163,12 +163,14 @@ const JitsiMeeting = ({
 
             apiRef.current.addListener('videoConferenceLeft', () => {
                 // Only close if we had actually joined the conference
-                // This prevents closing when lobby kicks us before joining
+                // This prevents closing when lobby kicks us before joining or during transient state
                 if (hasJoined && onClose) {
+                    console.log('User naturally left conference, closing modal');
                     onClose();
                 } else if (!hasJoined) {
-                    console.log('Left conference before joining (possibly lobby rejection)');
-                    // Try to rejoin or show message
+                    console.log('Left conference before fully joining (possibly transient state or lobby)');
+                    // We DO NOT close the modal here to allow the user to stay/retry
+                    // This fixed the issue where the button "disappears" (modal closes) instantly
                 }
             });
 

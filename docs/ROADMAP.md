@@ -41,6 +41,7 @@ We have successfully implemented the core structure for the **Resource Bank**, a
 -   **UX**: Complete redesign of **Community Publishing Modal** with 4 entry types.
 -   **UI**: Fixed responsiveness and layout regressions in the Quiz Module.
 -   **Fix**: Enhanced lesson discovery by aggregating standard and AI-generated lessons.
+-   **Hotfix**: Resolved video connectivity issues for students and fixed Jitsi race condition.
 
 ### [v0.9.6] - 2026-02-03
 -   **Security**: Implemented **Advanced License Protection** (Domain binding & Heartbeat).
