@@ -39,9 +39,9 @@ const getAvailabilityStatus = (quiz) => {
     const from = quiz.availableFrom ? new Date(quiz.availableFrom) : null;
     const to = quiz.availableTo ? new Date(quiz.availableTo) : null;
 
-    if (from && now < from) return { status: 'LOCKED', message: `Öppnar ${from.toLocaleString()}` };
-    if (to && now > to) return { status: 'CLOSED', message: `Stängde ${to.toLocaleString()}` };
-    return { status: 'OPEN', message: to ? `Öppet t.o.m ${to.toLocaleString()}` : 'Tillgänglig' };
+    if (from && now < from) return { status: 'LOCKED', message: `Öppnar ${from.toLocaleString()} ` };
+    if (to && now > to) return { status: 'CLOSED', message: `Stängde ${to.toLocaleString()} ` };
+    return { status: 'OPEN', message: to ? `Öppet t.o.m ${to.toLocaleString()} ` : 'Tillgänglig' };
 };
 
 const QuizModule = ({ courseId, currentUser, isTeacher, mode = 'COURSE' }) => {
@@ -103,7 +103,6 @@ const QuizModule = ({ courseId, currentUser, isTeacher, mode = 'COURSE' }) => {
             }
             loadQuizzes();
             setShowBuilder(false);
-            setShowGenerator(false);
             setEditingQuiz(null);
         } catch (e) { alert(t('quiz.save_error') || "Fel vid sparande."); }
     };
@@ -139,114 +138,184 @@ const QuizModule = ({ courseId, currentUser, isTeacher, mode = 'COURSE' }) => {
 
     return (
         <div className="space-y-6 animate-in fade-in">
-            <div className="flex justify-between items-center bg-indigo-50 dark:bg-indigo-900/20 p-6 rounded-xl border border-indigo-100 dark:border-indigo-900/30">
-                <div>
-                    <h2 className="text-xl font-bold text-indigo-900 dark:text-indigo-200">{t('quiz.header')}</h2>
-                    <p className="text-indigo-700 dark:text-indigo-400 text-sm">
+            {/* Header Section */}
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-indigo-50 dark:bg-indigo-900/20 p-6 rounded-2xl border border-indigo-100 dark:border-indigo-900/30">
+                <div className="flex-1">
+                    <h2 className="text-2xl font-extrabold text-indigo-900 dark:text-indigo-200 tracking-tight">{t('quiz.header')}</h2>
+                    <p className="text-indigo-700/80 dark:text-indigo-400/80 text-sm mt-1 flex items-center gap-2">
                         {t('quiz.subtitle')}
-                        {!isPro && <span className="ml-2 text-xs bg-gray-200 dark:bg-gray-700 px-2 py-0.5 rounded text-gray-600 dark:text-gray-300">Basic</span>}
-                        {isPro && <span className="ml-2 text-xs bg-indigo-200 dark:bg-indigo-800 px-2 py-0.5 rounded text-indigo-700 dark:text-indigo-300">Pro</span>}
+                        <span className={`px-2 py-0.5 rounded text-[10px] uppercase font-bold ${isPro ? 'bg-indigo-600 text-white' : 'bg-gray-400 text-white'}`}>
+                            {isPro ? 'Pro' : 'Basic'}
+                        </span>
                     </p>
                 </div>
-                <div className="flex gap-2">
+
+                <div className="flex flex-wrap items-center gap-3">
                     {/* Student Practice Button */}
                     {!isTeacher && isPro && (
-                        <button onClick={() => setShowPracticeSetup(true)} className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-4 py-2 rounded-lg font-bold shadow-md hover:from-indigo-600 hover:to-purple-700 flex items-center gap-2 transition-colors animate-in fade-in slide-in-from-right-4">
-                            <Sparkles size={18} /> Öva med AI
+                        <button
+                            onClick={() => setShowPracticeSetup(true)}
+                            className="bg-indigo-600 text-white px-5 py-2.5 rounded-xl font-bold shadow-lg shadow-indigo-200 dark:shadow-none hover:bg-indigo-700 flex items-center gap-2 transition-all transform hover:scale-[1.02] active:scale-[0.98]"
+                        >
+                            <Sparkles size={18} />
+                            {t('quiz.practice_ai') || 'Öva med AI'}
                         </button>
                     )}
 
-                    {/* Library Tab only for PRO */}
+                    {/* Navigation Tabs for PRO Teachers */}
                     {isTeacher && isPro && (
-                        <div className="flex bg-white dark:bg-[#1E1F20] rounded-lg p-1 border border-indigo-100 dark:border-indigo-900/30 mr-4">
-                            <button onClick={() => setActiveTab('COURSE')} className={`px-3 py-1.5 rounded-md text-sm font-bold flex items-center gap-2 ${activeTab === 'COURSE' ? 'bg-indigo-100 text-indigo-700' : 'text-gray-500 hover:text-indigo-600'}`}>
-                                <HelpCircle size={16} /> {mode === 'GLOBAL' ? 'Mina Quiz' : 'Kursquiz'}
-                            </button>
-                            <button onClick={() => setActiveTab('LIBRARY')} className={`px-3 py-1.5 rounded-md text-sm font-bold flex items-center gap-2 ${activeTab === 'LIBRARY' ? 'bg-indigo-100 text-indigo-700' : 'text-gray-500 hover:text-indigo-600'}`}>
-                                <Library size={16} /> Mitt Bibliotek
-                            </button>
-                            <button onClick={() => setActiveTab('BANK')} className={`px-3 py-1.5 rounded-md text-sm font-bold flex items-center gap-2 ${activeTab === 'BANK' ? 'bg-indigo-100 text-indigo-700' : 'text-gray-500 hover:text-indigo-600'}`}>
-                                <Award size={16} /> Frågebank
-                            </button>
+                        <div className="flex bg-white/80 dark:bg-[#1E1F20]/80 backdrop-blur-sm rounded-xl p-1 border border-indigo-100 dark:border-indigo-900/30 shadow-sm">
+                            {[
+                                { id: 'COURSE', label: mode === 'GLOBAL' ? 'Mina Quiz' : 'Kursquiz', icon: HelpCircle },
+                                { id: 'LIBRARY', label: 'Bibliotek', icon: Library },
+                                { id: 'BANK', label: 'Frågebank', icon: Award }
+                            ].map(tab => (
+                                <button
+                                    key={tab.id}
+                                    onClick={() => setActiveTab(tab.id)}
+                                    className={`px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition-all ${activeTab === tab.id
+                                        ? 'bg-indigo-600 text-white shadow-md'
+                                        : 'text-gray-500 hover:text-indigo-600 hover:bg-indigo-50/50 dark:hover:bg-indigo-900/20'
+                                        }`}
+                                >
+                                    <tab.icon size={16} />
+                                    <span>{tab.label}</span>
+                                </button>
+                            ))}
                         </div>
                     )}
 
+                    {/* Secondary Actions */}
                     {isTeacher && (
                         <div className="flex gap-2">
-                            <button onClick={() => { setEditingQuiz(null); setShowBuilder(true); }} className="bg-indigo-600 text-white px-4 py-2 rounded-lg font-bold shadow-md hover:bg-indigo-700 flex items-center gap-2 transition-colors">
-                                <Plus size={18} /> {t('quiz.create_title')}
+                            {isPro && (
+                                <button
+                                    onClick={() => setShowGenerator(true)}
+                                    className="flex items-center gap-2 px-5 py-2.5 bg-purple-600 text-white rounded-xl hover:bg-purple-700 transition-all font-bold shadow-lg shadow-purple-100 dark:shadow-none transform hover:scale-[1.02] active:scale-[0.98]"
+                                >
+                                    <Sparkles size={18} />
+                                    Generera Quiz
+                                </button>
+                            )}
+                            <button
+                                onClick={() => {
+                                    setEditingQuiz(null);
+                                    setShowBuilder(true);
+                                }}
+                                className="flex items-center gap-2 px-5 py-2.5 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-all font-bold shadow-lg shadow-indigo-100 dark:shadow-none transform hover:scale-[1.02] active:scale-[0.98]"
+                            >
+                                <Plus size={22} />
+                                {t('quiz.create_title') || 'Skapa Quiz'}
                             </button>
-                            {isPro && (
-                                <button onClick={() => setShowGenerator(true)} className="bg-purple-600 text-white px-4 py-2 rounded-lg font-bold shadow-md hover:bg-purple-700 flex items-center gap-2 transition-colors">
-                                    <Award size={18} /> Generera Quiz
-                                </button>
-                            )}
-                            {isPro && (
-                                <button onClick={() => navigate('/ai-quiz')} className="bg-gradient-to-r from-blue-600 to-cyan-500 text-white px-4 py-2 rounded-lg font-bold shadow-md hover:from-blue-700 hover:to-cyan-600 flex items-center gap-2 transition-colors">
-                                    <Sparkles size={18} /> AI Quiz
-                                </button>
-                            )}
                         </div>
                     )}
                 </div>
             </div>
 
-            {activeTab === 'LIBRARY' && isPro ? (
-                <QuizLibrary />
-            ) : activeTab === 'BANK' && isPro ? (
-                <QuestionBankManager currentUser={currentUser} />
-            ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {isLoading ? <div className="col-span-full text-center text-gray-400">Laddar QuizRunner...</div> :
-                        quizzes.length > 0 ? (
-                            quizzes.map(quiz => {
-                                const avail = getAvailabilityStatus(quiz);
-                                const isLocked = avail.status !== 'OPEN' && !isTeacher;
+            {/* Content Area */}
+            <div className="min-h-[400px]">
+                {activeTab === 'LIBRARY' && isPro ? (
+                    <QuizLibrary />
+                ) : activeTab === 'BANK' && isPro ? (
+                    <QuestionBankManager currentUser={currentUser} />
+                ) : (
+                    <>
+                        {isLoading ? (
+                            <div className="flex flex-col items-center justify-center py-20 text-gray-400">
+                                <Clock className="animate-spin mb-4" size={48} />
+                                <p className="font-medium">Hämtar quiz...</p>
+                            </div>
+                        ) : quizzes.length > 0 ? (
+                            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                                {quizzes.map(quiz => {
+                                    const avail = getAvailabilityStatus(quiz);
+                                    const isLocked = avail.status !== 'OPEN' && !isTeacher;
 
-                                return (
-                                    <div key={quiz.id} className={`bg-white dark:bg-[#1E1F20] border border-gray-200 dark:border-[#3c4043] rounded-xl p-6 shadow-sm hover:shadow-md transition-all relative group ${isLocked ? 'opacity-75 grayscale-[0.5]' : ''}`}>
-                                        {isTeacher && (
-                                            <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity z-10">
-                                                <button onClick={() => { setEditingQuiz(quiz); setShowBuilder(true); }} className="p-2 bg-gray-100 dark:bg-[#3c4043] hover:bg-indigo-100 dark:hover:bg-indigo-900/50 text-gray-500 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 rounded-full transition-colors"><Edit size={16} /></button>
-                                                <button onClick={() => handleDelete(quiz.id)} className="p-2 bg-gray-100 dark:bg-[#3c4043] hover:bg-red-100 dark:hover:bg-red-900/30 text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 rounded-full transition-colors"><Trash2 size={16} /></button>
-                                            </div>
-                                        )}
-                                        <div className="flex items-start justify-between mb-4">
-                                            <div className="bg-purple-100 dark:bg-purple-900/30 p-3 rounded-full text-purple-600 dark:text-purple-400"><HelpCircle size={24} /></div>
-                                            <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">{quiz.questions ? quiz.questions.length : 0} {t('quiz.questions_count')}</span>
-                                        </div>
-                                        <h3 className="font-bold text-lg mb-2 text-gray-900 dark:text-white">{quiz.title}</h3>
-                                        <p className="text-sm text-gray-500 dark:text-gray-400 mb-4 line-clamp-2 min-h-[40px]">{quiz.description || t('quiz.knowledge_check')}</p>
-
-                                        {/* Availability Info */}
-                                        <div className={`text-xs font-bold mb-4 flex items-center gap-1 ${avail.status === 'OPEN' ? 'text-green-600' : 'text-orange-600'}`}>
-                                            <Clock size={12} /> {avail.message}
-                                        </div>
-
-                                        <button
-                                            onClick={() => !isLocked && setActiveQuiz(quiz)}
-                                            disabled={isLocked}
-                                            className={`w-full py-2 rounded-lg font-bold transition-colors flex items-center justify-center gap-2 ${isLocked ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-white border-2 border-indigo-600 text-indigo-600 hover:bg-indigo-50'}`}
+                                    return (
+                                        <div
+                                            key={quiz.id}
+                                            className={`group relative flex flex-col bg-white dark:bg-[#1E1F20] border border-gray-100 dark:border-[#3c4043] rounded-2xl p-6 shadow-sm hover:shadow-xl hover:border-indigo-200 dark:hover:border-indigo-900/40 transition-all duration-300 ${isLocked ? 'opacity-70' : ''}`}
                                         >
-                                            {isLocked ? <Lock size={18} /> : <PlayCircle size={18} />}
-                                            {isLocked ? 'Låst' : t('quiz.start_quiz')}
-                                        </button>
-                                    </div>
-                                )
-                            })
+                                            {/* Teacher Controls */}
+                                            {isTeacher && (
+                                                <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-all transform translate-y-[-5px] group-hover:translate-y-0 z-10">
+                                                    <button
+                                                        onClick={() => { setEditingQuiz(quiz); setShowBuilder(true); }}
+                                                        className="p-2.5 bg-white dark:bg-[#282a2c] hover:bg-indigo-50 dark:hover:bg-indigo-900/30 text-gray-500 hover:text-indigo-600 rounded-xl border border-gray-100 dark:border-[#3c4043] shadow-sm transition-all"
+                                                        title="Redigera"
+                                                    >
+                                                        <Edit size={16} />
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleDelete(quiz.id)}
+                                                        className="p-2.5 bg-white dark:bg-[#282a2c] hover:bg-red-50 dark:hover:bg-red-900/30 text-gray-500 hover:text-red-600 rounded-xl border border-gray-100 dark:border-[#3c4043] shadow-sm transition-all"
+                                                        title="Ta bort"
+                                                    >
+                                                        <Trash2 size={16} />
+                                                    </button>
+                                                </div>
+                                            )}
+
+                                            <div className="flex items-center justify-between mb-4">
+                                                <div className="bg-indigo-50 dark:bg-indigo-900/30 p-3 rounded-2xl text-indigo-600 dark:text-indigo-400">
+                                                    <HelpCircle size={24} />
+                                                </div>
+                                                <span className="px-3 py-1 bg-gray-50 dark:bg-[#282a2c] rounded-full text-xs font-bold text-gray-500 dark:text-gray-400 border border-gray-100 dark:border-[#3c4043]">
+                                                    {quiz.questions?.length || 0} {t('quiz.questions_count')}
+                                                </span>
+                                            </div>
+
+                                            <h3 className="font-bold text-lg mb-2 text-gray-900 dark:text-white group-hover:text-indigo-600 transition-colors">
+                                                {quiz.title}
+                                            </h3>
+                                            <p className="text-sm text-gray-500 dark:text-gray-400 mb-6 line-clamp-2 min-h-[40px]">
+                                                {quiz.description || t('quiz.knowledge_check')}
+                                            </p>
+
+                                            <div className="mt-auto pt-6 border-t border-gray-50 dark:border-[#282a2c]">
+                                                <div className={`text-xs font-bold mb-4 flex items-center gap-1.5 ${avail.status === 'OPEN' ? 'text-emerald-600' : 'text-amber-600'}`}>
+                                                    <Clock size={14} />
+                                                    {avail.message}
+                                                </div>
+
+                                                <button
+                                                    onClick={() => !isLocked && setActiveQuiz(quiz)}
+                                                    disabled={isLocked}
+                                                    className={`w-full py-3 rounded-xl font-bold transition-all flex items-center justify-center gap-2 shadow-sm ${isLocked
+                                                        ? 'bg-gray-100 dark:bg-[#282a2c] text-gray-400 cursor-not-allowed border border-gray-200 dark:border-[#3c4043]'
+                                                        : 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-indigo-100 dark:shadow-none transform active:scale-[0.98]'
+                                                        }`}
+                                                >
+                                                    {isLocked ? <Lock size={18} /> : <PlayCircle size={20} />}
+                                                    {isLocked ? 'Låst' : t('quiz.start_quiz')}
+                                                </button>
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
                         ) : (
-                            <div className="col-span-full text-center py-12 text-gray-400 bg-gray-50 dark:bg-[#131314] rounded-xl border border-dashed border-gray-300 dark:border-[#3c4043]">
-                                <Award size={48} className="mx-auto mb-2 opacity-50" /><p>{t('quiz.no_quizzes')}</p>
+                            <div className="flex flex-col items-center justify-center py-24 text-center bg-gray-50 dark:bg-[#131314] rounded-3xl border-2 border-dashed border-gray-200 dark:border-[#3c4043]">
+                                <div className="bg-white dark:bg-[#1E1F20] p-6 rounded-2xl shadow-sm mb-4">
+                                    <Award size={64} className="text-indigo-200" />
+                                </div>
+                                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">{t('quiz.no_quizzes') || 'Inga quiz ännu'}</h3>
+                                <p className="text-gray-500 max-w-sm">Här dyker de quiz upp som skapas för den här kursen eller läggs till i ditt bibliotek.</p>
                             </div>
                         )}
-                </div>
-            )}
+                    </>
+                )}
+            </div>
 
+            {/* Error states for non-pro */}
             {!isPro && activeTab === 'LIBRARY' && (
-                <div className="p-8 text-center bg-gray-50 rounded-xl border border-dashed dark:bg-[#131314] dark:border-[#3c4043]">
-                    <Award size={48} className="mx-auto mb-4 text-indigo-300" />
-                    <h3 className="text-lg font-bold mb-2">QuizRunner Pro krävs</h3>
-                    <p className="text-gray-500">Uppgradera till Pro för att få tillgång till ditt personliga quiz-bibliotek.</p>
+                <div className="p-12 text-center bg-indigo-50 dark:bg-indigo-900/10 rounded-3xl border border-indigo-100 dark:border-indigo-900/20">
+                    <Award size={64} className="mx-auto mb-6 text-indigo-300" />
+                    <h3 className="text-2xl font-extrabold mb-3 text-indigo-900 dark:text-indigo-200">QuizRunner Pro krävs</h3>
+                    <p className="text-indigo-700/70 dark:text-indigo-400/70 max-w-md mx-auto mb-8">Uppgradera till Pro för att få tillgång till ditt personliga quiz-bibliotek och AI-generering.</p>
+                    <button className="bg-indigo-600 text-white px-8 py-3 rounded-xl font-bold shadow-lg shadow-indigo-200 dark:shadow-none hover:bg-indigo-700 transition-all">
+                        Uppgradera nu
+                    </button>
                 </div>
             )}
 

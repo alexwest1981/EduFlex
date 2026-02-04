@@ -100,6 +100,11 @@ public class LessonController {
         return lessonRepo.findByAuthorId(userId);
     }
 
+    @GetMapping("/{id}")
+    public Lesson getLesson(@PathVariable Long id) {
+        return lessonRepo.findById(id).orElseThrow(() -> new RuntimeException("Lesson not found"));
+    }
+
     // Uppdatera lektion
     @PutMapping("/{id}")
     public Lesson updateLesson(

@@ -78,7 +78,10 @@ const ParticipantsModule = ({ courseId, isTeacher }) => {
 
     // Filtrera fram studenter som INTE redan går kursen (för dropdown)
     const enrolledIds = course?.students?.map(s => s.id) || [];
-    const availableStudents = allUsers.filter(u => u.role === 'STUDENT' && !enrolledIds.includes(u.id));
+    const availableStudents = allUsers.filter(u => {
+        const roleName = typeof u.role === 'string' ? u.role : u.role?.name;
+        return roleName === 'STUDENT' && !enrolledIds.includes(u.id);
+    });
 
     if (isLoading) return <div className="p-4 text-gray-500">Laddar deltagare...</div>;
     if (!course) return null;

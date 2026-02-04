@@ -145,10 +145,16 @@ const shuffleArray = (array) => {
     return arr;
 };
 
-const PublishModal = ({ onClose, onPublished, userId }) => {
-    const [step, setStep] = useState(1);
-    const [mode, setMode] = useState(null); // 'csv' or 'existing'
-    const [contentType, setContentType] = useState('QUIZ'); // 'QUIZ', 'LESSON', 'ASSIGNMENT'
+const MagicSparkles = () => (
+    <div className="absolute -top-1 -right-1 flex gap-0.5">
+        <Sparkles className="text-amber-400 animate-pulse" size={12} />
+    </div>
+);
+
+const PublishModal = ({ onClose, onPublished, userId, initialType = null, initialItemId = null }) => {
+    const [step, setStep] = useState(initialItemId && initialType ? 2 : 1);
+    const [mode, setMode] = useState(initialItemId ? 'existing' : null); // 'csv' or 'existing'
+    const [contentType, setContentType] = useState(initialType || 'QUIZ'); // 'QUIZ', 'LESSON', 'ASSIGNMENT'
     const [loading, setLoading] = useState(false);
     const [publishing, setPublishing] = useState(false);
     const [subjects, setSubjects] = useState(FALLBACK_SUBJECTS);
@@ -179,10 +185,89 @@ const PublishModal = ({ onClose, onPublished, userId }) => {
     }, []);
 
     useEffect(() => {
-        if (mode === 'existing') {
+        if (mode === 'existing' && !initialItemId) {
             loadExistingContent();
         }
-    }, [mode, contentType]);
+    }, [mode, contentType, initialItemId]);
+
+    // Handle initial item selection
+    useEffect(() => {
+        if (initialItemId && initialType) {
+            // If we have an initial item, we need to fetch its details or at least set the ID
+            setSelectedItem({ id: initialItemId, name: 'Laddar...' });
+
+            // Fetch real details to get description/tags if possible
+            const fetchItemDetails = async () => {
+                try {
+                    let data;
+                    if (initialType === 'QUIZ') {
+                        data = await api.quiz.get(initialItemId);
+                    } else if (initialType === 'RESOURCE') {
+                        data = await api.resources.getOne(initialItemId);
+                    } else if (initialType === 'ASSIGNMENT') {
+                        data = await api.assignments.getOne(initialItemId);
+                    } else if (initialType === 'LESSON') {
+                        // Some entities in "Mina Lektioner" are labeled LESSON but are actually Resource entities
+                        try {
+                            data = await api.lessons.getOne(initialItemId);
+                        } catch (e) {
+                            console.warn("Material not found, falling back to resources API");
+                            data = await api.resources.getOne(initialItemId);
+                        }
+                    }
+
+                    if (data) {
+                        setSelectedItem(data);
+                        const title = data.title || data.name || '';
+                        const content = data.description || data.content || '';
+
+                        setFormData(prev => ({
+                            ...prev,
+                            description: content.substring(0, 500),
+                            tags: data.tags || []
+                        }));
+
+                        // Magic Fill: Auto-detect subject and tags
+                        autoDetectMetadata(title, content);
+                    }
+                } catch (err) {
+                    console.error("Failed to fetch initial item details:", err);
+                }
+            };
+            fetchItemDetails();
+        }
+    }, [initialItemId, initialType]);
+
+    const autoDetectMetadata = (title, content) => {
+        const combined = (title + ' ' + content).toUpperCase();
+
+        // Simple keyword mapping
+        const subjectMap = {
+            'MATEMATIK': ['MATTE', 'TAL', 'GEOMETRI', 'ALGEBRA', 'KVADRAT', 'CALCULATOR'],
+            'SVENSKA': ['LITTERATUR', 'GRAMMATIK', 'NOVELL', 'ANALYS', 'BOOKS'],
+            'ENGELSKA': ['ENGLISH', 'VOCABULARY', 'GRAMMAR', 'BRITISH', 'AMERICAN'],
+            'FYSIK': ['KRAFT', 'ENERGI', 'ATOM', 'LJUS', 'SPEED', 'PHYSICS'],
+            'KEMI': ['MOLEKYL', 'SYRA', 'BAS', 'PERIODISKA', 'CHEMISTRY'],
+            'BIOLOGI': ['CELL', 'DJUR', 'VÄXT', 'NATUR', 'FOTOSYNTES', 'KROPPEN', 'BIOLOGY'],
+            'HISTORIA': ['KRIG', 'KUNG', 'EPOK', 'REVOLUTION', 'MEDELTID', 'HISTORY'],
+            'TEKNIK': ['KONSTRUKTION', 'OPPFINNING', 'DATA', 'MASKIN', 'TECHNOLOGY'],
+            'PROGRAMMERING': ['CODE', 'JAVASCRIPT', 'PYTHON', 'JAVA', 'ALGORITM', 'CODING']
+        };
+
+        for (const [subject, keywords] of Object.entries(subjectMap)) {
+            if (keywords.some(k => combined.includes(k)) || combined.includes(subject)) {
+                setFormData(prev => ({ ...prev, subject }));
+                break;
+            }
+        }
+
+        // Auto-tags
+        const possibleTags = ['digitalt', 'prov', 'övning', 'lära-känna', 'instudering', 'AI-genererad'];
+        const tags = possibleTags.filter(t => combined.includes(t.toUpperCase()));
+        if (tags.length > 0) {
+            setFormData(prev => ({ ...prev, tags: [...new Set([...prev.tags, ...tags])] }));
+        }
+    };
 
     const loadSubjects = async () => {
         try {
@@ -203,11 +288,28 @@ const PublishModal = ({ onClose, onPublished, userId }) => {
     const loadExistingContent = async () => {
         setLoading(true);
         try {
-            let data;
+            let data = [];
             if (contentType === 'QUIZ') {
                 data = await api.quiz.getMy(userId);
             } else if (contentType === 'LESSON') {
-                data = await api.lessons.getMy(userId);
+                // Combine both standard Lessons and Resources of type LESSON
+                const [lessons, resources] = await Promise.all([
+                    api.lessons.getMy(userId),
+                    api.resources.getMy(userId)
+                ]);
+
+                // Filter resources for LESSON type and map to consistent format
+                const lessonResources = (resources || [])
+                    .filter(r => r.type === 'LESSON')
+                    .map(r => ({
+                        id: r.id,
+                        title: r.name,
+                        description: r.description,
+                        isResource: true,
+                        type: 'LESSON'
+                    }));
+
+                data = [...(lessons || []), ...lessonResources];
             } else if (contentType === 'ASSIGNMENT') {
                 data = await api.assignments.getMy(userId);
             }
@@ -300,7 +402,7 @@ const PublishModal = ({ onClose, onPublished, userId }) => {
                 // Publish existing content based on type
                 if (contentType === 'QUIZ') {
                     result = await api.community.publishQuiz(selectedItem.id, publishData);
-                } else if (contentType === 'LESSON') {
+                } else if (contentType === 'LESSON' || contentType === 'RESOURCE') {
                     result = await api.community.publishLesson(selectedItem.id, publishData);
                 } else if (contentType === 'ASSIGNMENT') {
                     result = await api.community.publishAssignment(selectedItem.id, publishData);
@@ -459,89 +561,106 @@ const Step1 = ({
 }) => {
     return (
         <div className="space-y-6">
-            {/* Content Type Selection (only for existing mode) */}
-            {mode === 'existing' && (
-                <div>
-                    <h3 className="font-bold text-gray-900 dark:text-white mb-3">
-                        Vad vill du dela?
-                    </h3>
-                    <div className="grid grid-cols-3 gap-3">
-                        <button
-                            onClick={() => setContentType('QUIZ')}
-                            className={`p-3 rounded-xl border-2 transition-all text-center ${contentType === 'QUIZ'
-                                ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20'
-                                : 'border-gray-200 dark:border-[#3c4043] hover:border-gray-300'
-                                }`}
-                        >
-                            <FileQuestion size={20} className={`mx-auto ${contentType === 'QUIZ' ? 'text-indigo-600' : 'text-gray-400'}`} />
-                            <p className={`mt-1 text-sm font-medium ${contentType === 'QUIZ' ? 'text-indigo-700 dark:text-indigo-300' : 'text-gray-700 dark:text-gray-300'}`}>
-                                Quiz
-                            </p>
-                        </button>
-                        <button
-                            onClick={() => setContentType('LESSON')}
-                            className={`p-3 rounded-xl border-2 transition-all text-center ${contentType === 'LESSON'
-                                ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20'
-                                : 'border-gray-200 dark:border-[#3c4043] hover:border-gray-300'
-                                }`}
-                        >
-                            <BookOpen size={20} className={`mx-auto ${contentType === 'LESSON' ? 'text-indigo-600' : 'text-gray-400'}`} />
-                            <p className={`mt-1 text-sm font-medium ${contentType === 'LESSON' ? 'text-indigo-700 dark:text-indigo-300' : 'text-gray-700 dark:text-gray-300'}`}>
-                                Lektion
-                            </p>
-                        </button>
-                        <button
-                            onClick={() => setContentType('ASSIGNMENT')}
-                            className={`p-3 rounded-xl border-2 transition-all text-center ${contentType === 'ASSIGNMENT'
-                                ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20'
-                                : 'border-gray-200 dark:border-[#3c4043] hover:border-gray-300'
-                                }`}
-                        >
-                            <ClipboardList size={20} className={`mx-auto ${contentType === 'ASSIGNMENT' ? 'text-indigo-600' : 'text-gray-400'}`} />
-                            <p className={`mt-1 text-sm font-medium ${contentType === 'ASSIGNMENT' ? 'text-indigo-700 dark:text-indigo-300' : 'text-gray-700 dark:text-gray-300'}`}>
-                                Uppgift
-                            </p>
-                        </button>
-                    </div>
-                </div>
-            )}
-
-            {/* Mode Selection */}
+            {/* Selection Grid */}
             <div>
-                <h3 className="font-bold text-gray-900 dark:text-white mb-3">
-                    Hur vill du dela?
+                <h3 className="font-bold text-gray-900 dark:text-white mb-4">
+                    Vad vill du göra idag?
                 </h3>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* CSV Option */}
                     <button
-                        onClick={() => setMode('csv')}
-                        className={`p-4 rounded-xl border-2 transition-all text-left ${mode === 'csv'
-                            ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20'
-                            : 'border-gray-200 dark:border-[#3c4043] hover:border-gray-300'
+                        onClick={() => {
+                            setMode('csv');
+                            setContentType('QUIZ');
+                            setStep(2);
+                        }}
+                        className={`group relative p-5 rounded-2xl border-2 transition-all text-left overflow-hidden ${mode === 'csv'
+                            ? 'border-indigo-500 bg-indigo-50/50 dark:bg-indigo-900/20'
+                            : 'border-gray-100 dark:border-[#3c4043] hover:border-indigo-200 dark:hover:border-indigo-900/40 bg-white dark:bg-[#1E1F20]'
                             }`}
                     >
-                        <Upload size={24} className={mode === 'csv' ? 'text-indigo-600' : 'text-gray-400'} />
-                        <p className={`mt-2 font-medium ${mode === 'csv' ? 'text-indigo-700 dark:text-indigo-300' : 'text-gray-700 dark:text-gray-300'}`}>
+                        <div className={`p-3 rounded-xl mb-4 w-fit transition-colors ${mode === 'csv' ? 'bg-indigo-600 text-white' : 'bg-gray-100 dark:bg-[#282a2c] text-gray-400 group-hover:text-indigo-500'}`}>
+                            <Upload size={24} />
+                        </div>
+                        <p className={`font-bold text-lg ${mode === 'csv' ? 'text-indigo-900 dark:text-white' : 'text-gray-900 dark:text-gray-100'}`}>
                             Ladda upp CSV
                         </p>
-                        <p className="text-xs text-gray-500 mt-1">
-                            Importera frågor från fil
+                        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                            Importera frågor till Frågebanken via fil (CSV/TXT)
                         </p>
+                        {mode === 'csv' && <div className="absolute top-4 right-4 text-indigo-600"><Check size={20} strokeWidth={3} /></div>}
                     </button>
 
+                    {/* Quiz Option */}
                     <button
-                        onClick={() => setMode('existing')}
-                        className={`p-4 rounded-xl border-2 transition-all text-left ${mode === 'existing'
-                            ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20'
-                            : 'border-gray-200 dark:border-[#3c4043] hover:border-gray-300'
+                        onClick={() => {
+                            setMode('existing');
+                            setContentType('QUIZ');
+                            setStep(2);
+                        }}
+                        className={`group relative p-5 rounded-2xl border-2 transition-all text-left overflow-hidden ${mode === 'existing' && contentType === 'QUIZ'
+                            ? 'border-purple-500 bg-purple-50/50 dark:bg-purple-900/20'
+                            : 'border-gray-100 dark:border-[#3c4043] hover:border-purple-200 dark:hover:border-purple-900/40 bg-white dark:bg-[#1E1F20]'
                             }`}
                     >
-                        <FileQuestion size={24} className={mode === 'existing' ? 'text-indigo-600' : 'text-gray-400'} />
-                        <p className={`mt-2 font-medium ${mode === 'existing' ? 'text-indigo-700 dark:text-indigo-300' : 'text-gray-700 dark:text-gray-300'}`}>
-                            Välj befintlig resurs
+                        <div className={`p-3 rounded-xl mb-4 w-fit transition-colors ${mode === 'existing' && contentType === 'QUIZ' ? 'bg-purple-600 text-white' : 'bg-gray-100 dark:bg-[#282a2c] text-gray-400 group-hover:text-purple-500'}`}>
+                            <FileQuestion size={24} />
+                        </div>
+                        <p className={`font-bold text-lg ${mode === 'existing' && contentType === 'QUIZ' ? 'text-purple-900 dark:text-white' : 'text-gray-900 dark:text-gray-100'}`}>
+                            Publicera Quiz
                         </p>
-                        <p className="text-xs text-gray-500 mt-1">
-                            Från Resursbanken
+                        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                            Dela ett befintligt quiz från ditt personliga bibliotek
                         </p>
+                        {mode === 'existing' && contentType === 'QUIZ' && <div className="absolute top-4 right-4 text-purple-600"><Check size={20} strokeWidth={3} /></div>}
+                    </button>
+
+                    {/* Lesson Option */}
+                    <button
+                        onClick={() => {
+                            setMode('existing');
+                            setContentType('LESSON');
+                            setStep(2);
+                        }}
+                        className={`group relative p-5 rounded-2xl border-2 transition-all text-left overflow-hidden ${mode === 'existing' && contentType === 'LESSON'
+                            ? 'border-emerald-500 bg-emerald-50/50 dark:bg-emerald-900/20'
+                            : 'border-gray-100 dark:border-[#3c4043] hover:border-emerald-200 dark:hover:border-emerald-900/40 bg-white dark:bg-[#1E1F20]'
+                            }`}
+                    >
+                        <div className={`p-3 rounded-xl mb-4 w-fit transition-colors ${mode === 'existing' && contentType === 'LESSON' ? 'bg-emerald-600 text-white' : 'bg-gray-100 dark:bg-[#282a2c] text-gray-400 group-hover:text-emerald-500'}`}>
+                            <BookOpen size={24} />
+                        </div>
+                        <p className={`font-bold text-lg ${mode === 'existing' && contentType === 'LESSON' ? 'text-emerald-900 dark:text-white' : 'text-gray-900 dark:text-gray-100'}`}>
+                            Publicera Lektion
+                        </p>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                            Dela en lektion eller material från Resursbanken
+                        </p>
+                        {mode === 'existing' && contentType === 'LESSON' && <div className="absolute top-4 right-4 text-emerald-600"><Check size={20} strokeWidth={3} /></div>}
+                    </button>
+
+                    {/* Assignment Option */}
+                    <button
+                        onClick={() => {
+                            setMode('existing');
+                            setContentType('ASSIGNMENT');
+                            setStep(2);
+                        }}
+                        className={`group relative p-5 rounded-2xl border-2 transition-all text-left overflow-hidden ${mode === 'existing' && contentType === 'ASSIGNMENT'
+                            ? 'border-amber-500 bg-amber-50/50 dark:bg-amber-900/20'
+                            : 'border-gray-100 dark:border-[#3c4043] hover:border-amber-200 dark:hover:border-amber-900/40 bg-white dark:bg-[#1E1F20]'
+                            }`}
+                    >
+                        <div className={`p-3 rounded-xl mb-4 w-fit transition-colors ${mode === 'existing' && contentType === 'ASSIGNMENT' ? 'bg-amber-600 text-white' : 'bg-gray-100 dark:bg-[#282a2c] text-gray-400 group-hover:text-amber-500'}`}>
+                            <ClipboardList size={24} />
+                        </div>
+                        <p className={`font-bold text-lg ${mode === 'existing' && contentType === 'ASSIGNMENT' ? 'text-amber-900 dark:text-white' : 'text-gray-900 dark:text-gray-100'}`}>
+                            Publicera Uppgift
+                        </p>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                            Dela en hemuppgift eller inlämning till communityt
+                        </p>
+                        {mode === 'existing' && contentType === 'ASSIGNMENT' && <div className="absolute top-4 right-4 text-amber-600"><Check size={20} strokeWidth={3} /></div>}
                     </button>
                 </div>
             </div>
@@ -740,13 +859,24 @@ const Step2 = ({
         <div className="space-y-6">
             {/* Summary */}
             <div className="bg-indigo-50 dark:bg-indigo-900/20 rounded-xl p-4 flex items-center gap-4">
-                <div className="w-12 h-12 bg-indigo-100 dark:bg-indigo-800 rounded-xl flex items-center justify-center">
-                    <FileQuestion className="text-indigo-600 dark:text-indigo-300" size={24} />
+                <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${contentType === 'QUIZ' ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-600' :
+                    contentType === 'LESSON' ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600' :
+                        'bg-amber-100 dark:bg-amber-900/30 text-amber-600'
+                    }`}>
+                    {contentType === 'QUIZ' ? <FileQuestion size={24} /> :
+                        contentType === 'LESSON' ? <BookOpen size={24} /> :
+                            <ClipboardList size={24} />
+                    }
                 </div>
                 <div>
-                    <p className="font-bold text-gray-900 dark:text-white">{quizTitle}</p>
-                    <p className="text-sm text-indigo-600 dark:text-indigo-300">
-                        {questionCount} frågor • {mode === 'csv' ? 'Från CSV' : 'Befintligt quiz'}
+                    <p className="font-bold text-gray-900 dark:text-white">
+                        {mode === 'csv' ? quizTitle : (selectedItem?.title || selectedItem?.name)}
+                    </p>
+                    <p className="text-sm opacity-80">
+                        {contentType === 'QUIZ' ? `${questionCount} frågor` :
+                            contentType === 'LESSON' ? 'Lektion' : 'Uppgift'}
+                        {' • '}
+                        {mode === 'csv' ? 'Fristående (CSV)' : 'Från ditt bibliotek'}
                     </p>
                 </div>
             </div>

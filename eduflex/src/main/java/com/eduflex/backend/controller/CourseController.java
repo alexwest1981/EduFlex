@@ -165,6 +165,11 @@ public class CourseController {
         return courseService.getMaterialsForCourse(id);
     }
 
+    @GetMapping("/materials/{id}")
+    public ResponseEntity<CourseMaterial> getMaterial(@PathVariable Long id) {
+        return ResponseEntity.ok(courseService.getMaterialById(id));
+    }
+
     @DeleteMapping("/materials/{id}")
     public ResponseEntity<Void> deleteMaterial(@PathVariable Long id) {
         try {

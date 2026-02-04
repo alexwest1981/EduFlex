@@ -222,7 +222,8 @@ const AdminPanel = ({ currentUser }) => {
     const filteredUsers = users.filter(u => {
         const search = searchTerm.toLowerCase();
         const matchesSearch = (u.fullName || "").toLowerCase().includes(search) || (u.username || "").toLowerCase().includes(search) || (u.email || "").toLowerCase().includes(search);
-        const matchesRole = roleFilter === 'ALL' || u.role === roleFilter;
+        const roleName = typeof u.role === 'string' ? u.role : u.role?.name;
+        const matchesRole = roleFilter === 'ALL' || roleName === roleFilter;
         const isActive = u.isActive !== false;
         const matchesStatus = statusFilter === 'ALL' ? true : statusFilter === 'ACTIVE' ? isActive : !isActive;
         return matchesSearch && matchesRole && matchesStatus;
@@ -289,7 +290,8 @@ const AdminPanel = ({ currentUser }) => {
 
     const UserCoursesModal = () => {
         if (!viewingUserCourses) return null;
-        const userCourses = courses.filter(c => { if (viewingUserCourses.role === 'TEACHER') return c.teacher?.id === viewingUserCourses.id; return c.students?.some(s => s.id === viewingUserCourses.id); });
+        const userRole = typeof viewingUserCourses.role === 'string' ? viewingUserCourses.role : viewingUserCourses.role?.name;
+        const userCourses = courses.filter(c => { if (userRole === 'TEACHER') return c.teacher?.id === viewingUserCourses.id; return c.students?.some(s => s.id === viewingUserCourses.id); });
         return (<div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 backdrop-blur-sm animate-in fade-in"><div className="bg-white dark:bg-[#1E1F20] w-full max-w-lg rounded-2xl shadow-2xl border border-gray-200 dark:border-[#3c4043] overflow-hidden"><div className="p-6 border-b border-gray-100 dark:border-[#3c4043] flex justify-between items-center bg-gray-50 dark:bg-[#131314]"><h3 className="text-lg font-bold text-gray-900 dark:text-white">Kurser för {viewingUserCourses.fullName}</h3><button onClick={() => setViewingUserCourses(null)}><X size={20} className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300" /></button></div><div className="p-6 max-h-[60vh] overflow-y-auto">{userCourses.length === 0 ? <div className="text-center text-gray-500 dark:text-gray-400 py-8"><BookOpen size={32} className="mx-auto mb-2 opacity-50" /><p>Inga kurser hittades.</p></div> : <div className="space-y-3">{userCourses.map(c => (<div key={c.id} className="p-3 bg-gray-50 dark:bg-[#282a2c] rounded-xl border border-gray-100 dark:border-[#3c4043] flex justify-between items-center"><div><div className="font-bold text-gray-900 dark:text-white">{c.name}</div><div className="text-xs text-gray-500 dark:text-gray-400 font-mono">{c.courseCode || 'Ingen kod'}</div></div><span className={`text-xs px-2 py-1 rounded-full font-bold ${viewingUserCourses.role === 'TEACHER' ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300' : 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'}`}>{viewingUserCourses.role === 'TEACHER' ? 'Lärare' : 'Deltagare'}</span></div>))}</div>}</div><div className="p-4 border-t border-gray-100 dark:border-[#3c4043] flex justify-end"><button onClick={() => setViewingUserCourses(null)} className="px-4 py-2 bg-gray-900 dark:bg-white text-white dark:text-black rounded-lg text-sm font-bold hover:opacity-90">Stäng</button></div></div></div>);
     };
 
@@ -394,7 +396,14 @@ const AdminPanel = ({ currentUser }) => {
                                                 {u.ssn && <div className="flex items-center gap-1 mb-1"><Badge size={12} /> {u.ssn}</div>}
                                                 {u.phone && <div className="flex items-center gap-1"><Phone size={12} /> {u.phone}</div>}
                                             </td>
-                                            <td className="px-4 py-3"><span className={`text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wider ${u.role === 'ADMIN' ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300' : u.role === 'TEACHER' ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300' : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300'}`}>{u.role}</span></td>
+                                            <td className="px-4 py-3">
+                                                <span className={`text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wider ${(typeof u.role === 'string' ? u.role : u.role?.name) === 'ADMIN' ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300' :
+                                                        (typeof u.role === 'string' ? u.role : u.role?.name) === 'TEACHER' ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300' :
+                                                            'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300'
+                                                    }`}>
+                                                    {typeof u.role === 'string' ? u.role : u.role?.name}
+                                                </span>
+                                            </td>
                                             <td className="px-4 py-3">{u.isActive !== false ? <span className="flex items-center gap-1.5 text-xs font-medium text-green-600 dark:text-green-400"><UserCheck size={14} /> Aktiv</span> : <span className="flex items-center gap-1.5 text-xs font-medium text-red-600 dark:text-red-400"><UserX size={14} /> Inaktiv</span>}</td>
                                             <td className="px-4 py-3 text-right">
                                                 <div className="flex justify-end gap-1">
@@ -473,7 +482,7 @@ const AdminPanel = ({ currentUser }) => {
 
                                     <div className="col-span-2"><label className={labelClass}>Kategori</label><select className={inputClass} value={courseForm.category} onChange={e => setCourseForm({ ...courseForm, category: e.target.value })}>{COURSE_CATEGORIES.map(cat => <option key={cat} value={cat}>{cat}</option>)}</select></div>
                                     <div className="col-span-2"><label className={labelClass}>Beskrivning</label><textarea className={inputClass + " h-24"} value={courseForm.description} onChange={e => setCourseForm({ ...courseForm, description: e.target.value })} /></div>
-                                    <div className="col-span-2 md:col-span-1"><label className={labelClass}>Lärare</label><select className={inputClass} value={courseForm.teacherId} onChange={e => setCourseForm({ ...courseForm, teacherId: e.target.value })}><option value="">Välj lärare...</option>{users.filter(u => u.role === 'TEACHER').map(t => <option key={t.id} value={t.id}>{t.fullName}</option>)}</select></div>
+                                    <div className="col-span-2 md:col-span-1"><label className={labelClass}>Lärare</label><select className={inputClass} value={courseForm.teacherId} onChange={e => setCourseForm({ ...courseForm, teacherId: e.target.value })}><option value="">Välj lärare...</option>{users.filter(u => (typeof u.role === 'string' ? u.role : u.role?.name) === 'TEACHER').map(t => <option key={t.id} value={t.id}>{t.fullName}</option>)}</select></div>
                                     <div className="col-span-2 md:col-span-1 flex items-center pt-6"><label className="flex items-center gap-2 cursor-pointer"><input type="checkbox" checked={courseForm.isOpen} onChange={e => setCourseForm({ ...courseForm, isOpen: e.target.checked })} className="w-5 h-5 accent-indigo-600" /> <span className="font-bold text-gray-700 dark:text-gray-300">Öppen för antagning</span></label></div>
                                     <div className="col-span-2 pt-2"><button type="submit" className="bg-indigo-600 text-white px-6 py-2.5 rounded-lg font-bold w-full hover:bg-indigo-700">Spara Kurs</button></div>
                                 </form>

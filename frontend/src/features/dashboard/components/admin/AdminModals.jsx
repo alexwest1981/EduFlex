@@ -194,7 +194,8 @@ export const CreateCourseModal = ({ isOpen, onClose, onCourseCreated, teachers }
         e.preventDefault();
         setLoading(true);
         try {
-            await api.courses.create({ ...formData, maxStudents: parseInt(formData.maxStudents), skolverketCourseId: selectedSkolverketCourse?.id }, formData.teacherId);
+            const finalTeacherId = formData.teacherId ? Number(formData.teacherId) : null;
+            await api.courses.create({ ...formData, maxStudents: parseInt(formData.maxStudents), skolverketCourseId: selectedSkolverketCourse?.id, teacherId: finalTeacherId }, finalTeacherId);
             onCourseCreated();
             onClose();
             setSelectedSkolverketCourse(null);
@@ -342,7 +343,12 @@ export const EditCourseModal = ({ isOpen, onClose, onCourseUpdated, teachers, co
     const handleSubmit = async (e) => {
         e.preventDefault(); setLoading(true);
         try {
-            await api.courses.update(courseToEdit.id, { ...formData, maxStudents: parseInt(formData.maxStudents) });
+            const finalData = {
+                ...formData,
+                maxStudents: parseInt(formData.maxStudents),
+                teacherId: formData.teacherId ? Number(formData.teacherId) : null
+            };
+            await api.courses.update(courseToEdit.id, finalData);
             onCourseUpdated(); onClose();
         } catch (error) { alert(t('course.error_occurred') || "Kunde inte uppdatera kursen."); } finally { setLoading(false); }
     };

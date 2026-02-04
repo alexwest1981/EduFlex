@@ -66,4 +66,11 @@ public class ResourceService {
     public void deleteResource(Long id) {
         resourceRepository.deleteById(id);
     }
+
+    @Transactional
+    public Resource updateVisibility(Long id, Resource.ResourceVisibility visibility) {
+        Resource resource = resourceRepository.findById(id).orElseThrow();
+        resource.setVisibility(visibility);
+        return resourceRepository.save(resource);
+    }
 }

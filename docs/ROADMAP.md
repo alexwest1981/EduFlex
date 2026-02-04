@@ -36,6 +36,12 @@ We have successfully implemented the core structure for the **Resource Bank**, a
 
 ## 📝 Change Log
 
+### [v0.9.7] - 2026-02-04
+-   **New Feature**: Restored and renamed **Quiz Generator** for random question bank selection.
+-   **UX**: Complete redesign of **Community Publishing Modal** with 4 entry types.
+-   **UI**: Fixed responsiveness and layout regressions in the Quiz Module.
+-   **Fix**: Enhanced lesson discovery by aggregating standard and AI-generated lessons.
+
 ### [v0.9.6] - 2026-02-03
 -   **Security**: Implemented **Advanced License Protection** (Domain binding & Heartbeat).
 -   **Security**: Implemented **Database Encryption** for SSN, phone, and address (AES-GCM).

@@ -46,4 +46,12 @@ public class ResourceController {
     public void deleteResource(@PathVariable Long id) {
         resourceService.deleteResource(id);
     }
+
+    @PatchMapping("/{id}/visibility")
+    public Resource updateVisibility(
+            @PathVariable Long id,
+            @RequestParam String visibility) {
+        Resource.ResourceVisibility vis = Resource.ResourceVisibility.valueOf(visibility.toUpperCase());
+        return resourceService.updateVisibility(id, vis);
+    }
 }

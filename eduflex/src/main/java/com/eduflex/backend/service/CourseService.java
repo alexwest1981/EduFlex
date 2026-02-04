@@ -204,6 +204,21 @@ public class CourseService {
         if (updates.containsKey("maxStudents"))
             course.setMaxStudents((Integer) updates.get("maxStudents"));
 
+        if (updates.containsKey("teacherId")) {
+            Object tId = updates.get("teacherId");
+            if (tId != null && !tId.toString().isEmpty()) {
+                try {
+                    // Handle potential decimal strings from Double serialization (e.g. "2.0")
+                    long teacherId = (long) Double.parseDouble(tId.toString());
+                    User teacher = userRepository.findById(teacherId)
+                            .orElseThrow(() -> new RuntimeException("Teacher not found: " + teacherId));
+                    course.setTeacher(teacher);
+                } catch (NumberFormatException e) {
+                    System.err.println("Invalid teacherId format: " + tId);
+                }
+            }
+        }
+
         // --- NYA FÄLT: DIGITALA RUM ---
         if (updates.containsKey("classroomLink"))
             course.setClassroomLink((String) updates.get("classroomLink"));
@@ -391,6 +406,10 @@ public class CourseService {
 
     public List<CourseMaterial> getMaterialsForCourse(Long courseId) {
         return materialRepository.findByCourseIdOrderBySortOrderAsc(courseId);
+    }
+
+    public CourseMaterial getMaterialById(Long id) {
+        return materialRepository.findById(id).orElseThrow(() -> new RuntimeException("Material hittades inte: " + id));
     }
 
     @Transactional

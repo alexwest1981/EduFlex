@@ -176,8 +176,8 @@ const LandingPage = () => {
         },
         {
             icon: <Sparkles className="w-6 h-6" />,
-            title: 'AI Quiz Generator',
-            description: 'Generera quiz automatiskt från dokument (PDF/Word) med Gemini AI. Exportera direkt till din personliga frågebank.',
+            title: 'Quiz Generator',
+            description: 'Slumpa quiz automatiskt från din frågebank (Math, Java, Svenska etc.) för snabb kunskapskontroll utan manuellt arbete.',
             gradient: 'from-purple-600 to-pink-600'
         },
         {

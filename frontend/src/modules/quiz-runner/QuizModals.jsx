@@ -323,7 +323,7 @@ export const QuizGeneratorModal = ({ onClose, onSubmit }) => {
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex justify-center items-center z-50 p-4 animate-in fade-in zoom-in duration-200">
             <div className="bg-white dark:bg-[#1E1F20] rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col border border-gray-200 dark:border-[#3c4043]">
                 <div className="bg-indigo-600 p-6 flex justify-between items-center text-white shrink-0">
-                    <h2 className="text-xl font-bold flex items-center gap-2"><Award /> Generera Quiz (AI)</h2>
+                    <h2 className="text-xl font-bold flex items-center gap-2"><Award /> Generera Quiz</h2>
                     <button onClick={onClose}><X size={24} /></button>
                 </div>
                 <div className="p-8 space-y-6">

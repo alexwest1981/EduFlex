@@ -36,6 +36,7 @@ public class CommunityService {
     private final QuizRepository quizRepository;
     private final AssignmentRepository assignmentRepository;
     private final LessonRepository lessonRepository;
+    private final ResourceRepository resourceRepository;
     private final TenantRepository tenantRepository;
     private final QuestionBankRepository questionBankRepository;
     private final SocialIntegrationService socialService;
@@ -49,6 +50,7 @@ public class CommunityService {
             QuizRepository quizRepository,
             AssignmentRepository assignmentRepository,
             LessonRepository lessonRepository,
+            ResourceRepository resourceRepository,
             TenantRepository tenantRepository,
             QuestionBankRepository questionBankRepository,
             SocialIntegrationService socialService,
@@ -60,6 +62,7 @@ public class CommunityService {
         this.quizRepository = quizRepository;
         this.assignmentRepository = assignmentRepository;
         this.lessonRepository = lessonRepository;
+        this.resourceRepository = resourceRepository;
         this.tenantRepository = tenantRepository;
         this.questionBankRepository = questionBankRepository;
         this.socialService = socialService;
@@ -101,7 +104,14 @@ public class CommunityService {
         item.setMetadata(toJson(metadata));
 
         logger.info("Publishing quiz {} to Community by user {}", quizId, currentUser.getUsername());
-        return itemRepository.save(item);
+
+        String originalTenant = TenantContext.getCurrentTenant();
+        try {
+            TenantContext.setCurrentTenant("public");
+            return itemRepository.save(item);
+        } finally {
+            TenantContext.setCurrentTenant(originalTenant);
+        }
     }
 
     @Transactional
@@ -134,18 +144,43 @@ public class CommunityService {
         item.setMetadata(toJson(metadata));
 
         logger.info("Publishing assignment {} to Community by user {}", assignmentId, currentUser.getUsername());
-        return itemRepository.save(item);
+
+        String originalTenant = TenantContext.getCurrentTenant();
+        try {
+            TenantContext.setCurrentTenant("public");
+            return itemRepository.save(item);
+        } finally {
+            TenantContext.setCurrentTenant(originalTenant);
+        }
     }
 
     @Transactional
     public CommunityItem publishLesson(Long lessonId, CommunityPublishRequest request, User currentUser) {
-        Lesson lesson = lessonRepository.findById(lessonId)
-                .orElseThrow(() -> new RuntimeException("Lesson not found: " + lessonId));
+        // Find as Lesson first
+        Optional<Lesson> lessonOpt = lessonRepository.findById(lessonId);
 
-        if (!lesson.getAuthor().getId().equals(currentUser.getId())) {
-            throw new RuntimeException("You can only publish your own lessons");
+        if (lessonOpt.isPresent()) {
+            Lesson lesson = lessonOpt.get();
+            if (!lesson.getAuthor().getId().equals(currentUser.getId())) {
+                throw new RuntimeException("You can only publish your own lessons");
+            }
+            return publishLessonEntity(lesson, request, currentUser);
         }
 
+        // Try as Resource
+        Optional<Resource> resourceOpt = resourceRepository.findById(lessonId);
+        if (resourceOpt.isPresent()) {
+            Resource resource = resourceOpt.get();
+            if (!resource.getOwner().getId().equals(currentUser.getId())) {
+                throw new RuntimeException("You can only publish your own resources");
+            }
+            return publishResourceAsLesson(resource, request, currentUser);
+        }
+
+        throw new RuntimeException("Lesson or Resource not found: " + lessonId);
+    }
+
+    private CommunityItem publishLessonEntity(Lesson lesson, CommunityPublishRequest request, User currentUser) {
         CommunityItem item = new CommunityItem();
         item.setContentType(ContentType.LESSON);
         item.setTitle(lesson.getTitle());
@@ -164,11 +199,54 @@ public class CommunityService {
         metadata.put("hasVideo", lesson.getVideoUrl() != null && !lesson.getVideoUrl().isEmpty());
         metadata.put("hasAttachment", lesson.getAttachmentUrl() != null && !lesson.getAttachmentUrl().isEmpty());
         metadata.put("contentLength", lesson.getContent() != null ? lesson.getContent().length() : 0);
-        metadata.put("originalId", lessonId);
+        metadata.put("originalId", lesson.getId());
+        metadata.put("sourceType", "LESSON");
         item.setMetadata(toJson(metadata));
 
-        logger.info("Publishing lesson {} to Community by user {}", lessonId, currentUser.getUsername());
-        return itemRepository.save(item);
+        logger.info("Publishing lesson {} to Community by user {}", lesson.getId(), currentUser.getUsername());
+
+        String originalTenant = TenantContext.getCurrentTenant();
+        try {
+            TenantContext.setCurrentTenant("public");
+            return itemRepository.save(item);
+        } finally {
+            TenantContext.setCurrentTenant(originalTenant);
+        }
+    }
+
+    private CommunityItem publishResourceAsLesson(Resource resource, CommunityPublishRequest request,
+            User currentUser) {
+        CommunityItem item = new CommunityItem();
+        item.setContentType(ContentType.LESSON);
+        item.setTitle(resource.getName());
+        item.setDescription(
+                request.publicDescription() != null ? request.publicDescription()
+                        : truncate(resource.getContent(), 500));
+        item.setContentJson(serializeResource(resource));
+        item.setSubject(parseSubject(request.subject()));
+        item.setDifficulty(request.difficulty());
+        item.setGradeLevel(request.gradeLevel());
+        item.setTags(request.tags() != null ? request.tags() : new ArrayList<>());
+        item.setStatus(PublishStatus.PENDING);
+
+        setAuthorInfo(item, currentUser);
+
+        Map<String, Object> metadata = new HashMap<>();
+        metadata.put("originalId", resource.getId());
+        metadata.put("sourceType", "RESOURCE");
+        metadata.put("resourceType", resource.getType().name());
+        item.setMetadata(toJson(metadata));
+
+        logger.info("Publishing Resource {} as Lesson to Community by user {}", resource.getId(),
+                currentUser.getUsername());
+
+        String originalTenant = TenantContext.getCurrentTenant();
+        try {
+            TenantContext.setCurrentTenant("public");
+            return itemRepository.save(item);
+        } finally {
+            TenantContext.setCurrentTenant(originalTenant);
+        }
     }
 
     // ==================== BROWSING ====================
@@ -179,76 +257,103 @@ public class CommunityService {
             Long authorId,
             String sortBy,
             Pageable pageable) {
-        Page<CommunityItem> items;
-        PublishStatus status = PublishStatus.PUBLISHED;
-        CommunitySubject subjectEnum = parseSubject(subject);
+        String originalTenant = TenantContext.getCurrentTenant();
+        try {
+            // Community browsing is cross-tenant, always use public schema context
+            TenantContext.setCurrentTenant("public");
 
-        // Build query based on filters
-        if (authorId != null) {
-            items = switch (sortBy) {
-                case "popular" ->
-                    itemRepository.findByStatusAndAuthorUserIdOrderByDownloadCountDesc(status, authorId, pageable);
-                case "rating" ->
-                    itemRepository.findByStatusAndAuthorUserIdOrderByAverageRatingDesc(status, authorId, pageable);
-                default -> itemRepository.findByStatusAndAuthorUserIdOrderByPublishedAtDesc(status, authorId, pageable);
-            };
-        } else if (subjectEnum != null && contentType != null) {
-            items = switch (sortBy) {
-                case "popular" -> itemRepository.findByStatusAndSubjectAndContentTypeOrderByDownloadCountDesc(status,
-                        subjectEnum, contentType, pageable);
-                case "rating" -> itemRepository.findByStatusAndSubjectAndContentTypeOrderByAverageRatingDesc(status,
-                        subjectEnum, contentType, pageable);
-                default -> itemRepository.findByStatusAndSubjectAndContentTypeOrderByPublishedAtDesc(status,
-                        subjectEnum, contentType, pageable);
-            };
-        } else if (subjectEnum != null) {
-            items = switch (sortBy) {
-                case "popular" ->
-                    itemRepository.findByStatusAndSubjectOrderByDownloadCountDesc(status, subjectEnum, pageable);
-                case "rating" ->
-                    itemRepository.findByStatusAndSubjectOrderByAverageRatingDesc(status, subjectEnum, pageable);
-                default -> itemRepository.findByStatusAndSubjectOrderByPublishedAtDesc(status, subjectEnum, pageable);
-            };
-        } else if (contentType != null) {
-            items = switch (sortBy) {
-                case "popular" ->
-                    itemRepository.findByStatusAndContentTypeOrderByDownloadCountDesc(status, contentType, pageable);
-                case "rating" ->
-                    itemRepository.findByStatusAndContentTypeOrderByAverageRatingDesc(status, contentType, pageable);
-                default ->
-                    itemRepository.findByStatusAndContentTypeOrderByPublishedAtDesc(status, contentType, pageable);
-            };
-        } else {
-            items = switch (sortBy) {
-                case "popular" -> itemRepository.findByStatusOrderByDownloadCountDesc(status, pageable);
-                case "rating" -> itemRepository.findByStatusOrderByAverageRatingDesc(status, pageable);
-                default -> itemRepository.findByStatusOrderByPublishedAtDesc(status, pageable);
-            };
+            Page<CommunityItem> items;
+            PublishStatus status = PublishStatus.PUBLISHED;
+            CommunitySubject subjectEnum = parseSubject(subject);
+
+            // Build query based on filters
+            if (authorId != null) {
+                items = switch (sortBy) {
+                    case "popular" ->
+                        itemRepository.findByStatusAndAuthorUserIdOrderByDownloadCountDesc(status, authorId, pageable);
+                    case "rating" ->
+                        itemRepository.findByStatusAndAuthorUserIdOrderByAverageRatingDesc(status, authorId, pageable);
+                    default ->
+                        itemRepository.findByStatusAndAuthorUserIdOrderByPublishedAtDesc(status, authorId, pageable);
+                };
+            } else if (subjectEnum != null && contentType != null) {
+                items = switch (sortBy) {
+                    case "popular" ->
+                        itemRepository.findByStatusAndSubjectAndContentTypeOrderByDownloadCountDesc(status,
+                                subjectEnum, contentType, pageable);
+                    case "rating" -> itemRepository.findByStatusAndSubjectAndContentTypeOrderByAverageRatingDesc(status,
+                            subjectEnum, contentType, pageable);
+                    default -> itemRepository.findByStatusAndSubjectAndContentTypeOrderByPublishedAtDesc(status,
+                            subjectEnum, contentType, pageable);
+                };
+            } else if (subjectEnum != null) {
+                items = switch (sortBy) {
+                    case "popular" ->
+                        itemRepository.findByStatusAndSubjectOrderByDownloadCountDesc(status, subjectEnum, pageable);
+                    case "rating" ->
+                        itemRepository.findByStatusAndSubjectOrderByAverageRatingDesc(status, subjectEnum, pageable);
+                    default ->
+                        itemRepository.findByStatusAndSubjectOrderByPublishedAtDesc(status, subjectEnum, pageable);
+                };
+            } else if (contentType != null) {
+                items = switch (sortBy) {
+                    case "popular" ->
+                        itemRepository.findByStatusAndContentTypeOrderByDownloadCountDesc(status, contentType,
+                                pageable);
+                    case "rating" ->
+                        itemRepository.findByStatusAndContentTypeOrderByAverageRatingDesc(status, contentType,
+                                pageable);
+                    default ->
+                        itemRepository.findByStatusAndContentTypeOrderByPublishedAtDesc(status, contentType, pageable);
+                };
+            } else {
+                items = switch (sortBy) {
+                    case "popular" -> itemRepository.findByStatusOrderByDownloadCountDesc(status, pageable);
+                    case "rating" -> itemRepository.findByStatusOrderByAverageRatingDesc(status, pageable);
+                    default -> itemRepository.findByStatusOrderByPublishedAtDesc(status, pageable);
+                };
+            }
+
+            return items.map(item -> CommunityItemDTO.fromEntity(item, parseMetadata(item.getMetadata())));
+        } finally {
+            TenantContext.setCurrentTenant(originalTenant);
         }
-
-        return items.map(item -> CommunityItemDTO.fromEntity(item, parseMetadata(item.getMetadata())));
     }
 
     public Page<CommunityItemDTO> search(String query, Pageable pageable) {
-        Page<CommunityItem> items = itemRepository.searchByQuery(PublishStatus.PUBLISHED, query, pageable);
-        return items.map(item -> CommunityItemDTO.fromEntity(item, parseMetadata(item.getMetadata())));
+        String originalTenant = TenantContext.getCurrentTenant();
+        try {
+            TenantContext.setCurrentTenant("public");
+            Page<CommunityItem> items = itemRepository.searchByQuery(PublishStatus.PUBLISHED, query, pageable);
+            return items.map(item -> CommunityItemDTO.fromEntity(item, parseMetadata(item.getMetadata())));
+        } finally {
+            TenantContext.setCurrentTenant(originalTenant);
+        }
     }
 
     // ==================== ITEM DETAILS ====================
 
     public CommunityItemDetailDTO getItemDetails(String itemId, Long userId, String tenantId) {
-        CommunityItem item = itemRepository.findById(itemId)
-                .orElseThrow(() -> new RuntimeException("Community item not found: " + itemId));
+        String originalTenant = TenantContext.getCurrentTenant();
+        try {
+            TenantContext.setCurrentTenant("public");
+            CommunityItem item = itemRepository.findById(itemId)
+                    .orElseThrow(() -> new RuntimeException("Community item not found: " + itemId));
 
-        List<CommunityRating> recentRatings = ratingRepository.findTop5ByCommunityItemIdOrderByCreatedAtDesc(itemId);
-        List<CommunityRatingDTO> ratingDTOs = recentRatings.stream()
-                .map(CommunityRatingDTO::fromEntity)
-                .toList();
+            List<CommunityRating> recentRatings = ratingRepository
+                    .findTop5ByCommunityItemIdOrderByCreatedAtDesc(itemId);
+            List<CommunityRatingDTO> ratingDTOs = recentRatings.stream()
+                    .map(CommunityRatingDTO::fromEntity)
+                    .toList();
 
-        boolean alreadyInstalled = downloadRepository.existsByCommunityItemIdAndUserIdAndTenantId(itemId, userId,
-                tenantId);
+            boolean alreadyInstalled = downloadRepository.existsByCommunityItemIdAndUserIdAndTenantId(itemId, userId,
+                    tenantId);
 
-        return CommunityItemDetailDTO.fromEntity(item, parseMetadata(item.getMetadata()), ratingDTOs, alreadyInstalled);
+            return CommunityItemDetailDTO.fromEntity(item, parseMetadata(item.getMetadata()), ratingDTOs,
+                    alreadyInstalled);
+        } finally {
+            TenantContext.setCurrentTenant(originalTenant);
+        }
     }
 
     // ==================== INSTALLATION ====================
@@ -257,36 +362,50 @@ public class CommunityService {
     public Long installItem(String itemId, User currentUser, Long targetCourseId) {
         String tenantId = TenantContext.getCurrentTenant();
 
-        CommunityItem item = itemRepository.findById(itemId)
-                .orElseThrow(() -> new RuntimeException("Community item not found: " + itemId));
+        // 1. Fetch item from public schema
+        String originalTenant = TenantContext.getCurrentTenant();
+        CommunityItem item;
+        try {
+            TenantContext.setCurrentTenant("public");
+            item = itemRepository.findById(itemId)
+                    .orElseThrow(() -> new RuntimeException("Community item not found: " + itemId));
 
-        if (item.getStatus() != PublishStatus.PUBLISHED) {
-            throw new RuntimeException("Can only install published items");
+            if (item.getStatus() != PublishStatus.PUBLISHED) {
+                throw new RuntimeException("Can only install published items");
+            }
+
+            // Check if already installed (also in public schema)
+            if (downloadRepository.existsByCommunityItemIdAndUserIdAndTenantId(itemId, currentUser.getId(), tenantId)) {
+                throw new RuntimeException("You have already installed this item");
+            }
+        } finally {
+            TenantContext.setCurrentTenant(originalTenant);
         }
 
-        // Check if already installed
-        if (downloadRepository.existsByCommunityItemIdAndUserIdAndTenantId(itemId, currentUser.getId(), tenantId)) {
-            throw new RuntimeException("You have already installed this item");
-        }
-
+        // 2. Perform local installation in tenant schema
         Long localId = switch (item.getContentType()) {
             case QUIZ -> installQuiz(item, currentUser, targetCourseId);
             case ASSIGNMENT -> installAssignment(item, currentUser, targetCourseId);
             case LESSON -> installLesson(item, currentUser, targetCourseId);
         };
 
-        // Track download
-        CommunityDownload download = new CommunityDownload();
-        download.setCommunityItemId(itemId);
-        download.setUserId(currentUser.getId());
-        download.setTenantId(tenantId);
-        download.setLocalItemId(localId);
-        download.setLocalItemType(item.getContentType().name());
-        downloadRepository.save(download);
+        // 3. Track download and update count in public schema
+        try {
+            TenantContext.setCurrentTenant("public");
+            CommunityDownload download = new CommunityDownload();
+            download.setCommunityItemId(itemId);
+            download.setUserId(currentUser.getId());
+            download.setTenantId(tenantId);
+            download.setLocalItemId(localId);
+            download.setLocalItemType(item.getContentType().name());
+            downloadRepository.save(download);
 
-        // Increment download count
-        item.incrementDownloadCount();
-        itemRepository.save(item);
+            // Increment download count
+            item.incrementDownloadCount();
+            itemRepository.save(item);
+        } finally {
+            TenantContext.setCurrentTenant(originalTenant);
+        }
 
         logger.info("User {} installed community item {} as local {} ID {}",
                 currentUser.getUsername(), itemId, item.getContentType(), localId);
@@ -428,180 +547,228 @@ public class CommunityService {
 
     @Transactional
     public void rateItem(String itemId, int rating, String comment, User currentUser) {
-        String tenantId = TenantContext.getCurrentTenant();
+        String originalTenant = TenantContext.getCurrentTenant();
+        try {
+            TenantContext.setCurrentTenant("public");
+            CommunityItem item = itemRepository.findById(itemId)
+                    .orElseThrow(() -> new RuntimeException("Community item not found: " + itemId));
 
-        CommunityItem item = itemRepository.findById(itemId)
-                .orElseThrow(() -> new RuntimeException("Community item not found: " + itemId));
+            // Check for existing rating
+            Optional<CommunityRating> existing = ratingRepository.findByCommunityItemIdAndUserIdAndTenantId(
+                    itemId, currentUser.getId(), originalTenant);
 
-        // Check for existing rating
-        Optional<CommunityRating> existing = ratingRepository.findByCommunityItemIdAndUserIdAndTenantId(
-                itemId, currentUser.getId(), tenantId);
+            CommunityRating ratingEntity;
+            if (existing.isPresent()) {
+                // Update existing rating
+                ratingEntity = existing.get();
+                ratingEntity.setRating(rating);
+                ratingEntity.setComment(comment);
+            } else {
+                // Create new rating
+                ratingEntity = new CommunityRating();
+                ratingEntity.setCommunityItemId(itemId);
+                ratingEntity.setUserId(currentUser.getId());
+                ratingEntity.setTenantId(originalTenant);
+                ratingEntity.setRating(rating);
+                ratingEntity.setComment(comment);
+                ratingEntity.setReviewerName(currentUser.getUsername());
+            }
 
-        CommunityRating ratingEntity;
-        if (existing.isPresent()) {
-            // Update existing rating
-            ratingEntity = existing.get();
-            ratingEntity.setRating(rating);
-            ratingEntity.setComment(comment);
-        } else {
-            // Create new rating
-            ratingEntity = new CommunityRating();
-            ratingEntity.setCommunityItemId(itemId);
-            ratingEntity.setUserId(currentUser.getId());
-            ratingEntity.setTenantId(tenantId);
-            ratingEntity.setRating(rating);
-            ratingEntity.setComment(comment);
-            ratingEntity.setReviewerName(currentUser.getUsername());
+            ratingRepository.save(ratingEntity);
+
+            // Update average rating on item
+            List<Object[]> stats = ratingRepository.calculateRatingStats(itemId);
+            if (!stats.isEmpty() && stats.get(0)[0] != null) {
+                double avg = ((Number) stats.get(0)[0]).doubleValue();
+                long count = ((Number) stats.get(0)[1]).longValue();
+                item.updateRating(avg, (int) count);
+                itemRepository.save(item);
+            }
+
+            logger.info("User {} rated community item {} with {} stars", currentUser.getUsername(), itemId, rating);
+        } finally {
+            TenantContext.setCurrentTenant(originalTenant);
         }
-
-        ratingRepository.save(ratingEntity);
-
-        // Update average rating on item
-        List<Object[]> stats = ratingRepository.calculateRatingStats(itemId);
-        if (!stats.isEmpty() && stats.get(0)[0] != null) {
-            double avg = ((Number) stats.get(0)[0]).doubleValue();
-            long count = ((Number) stats.get(0)[1]).longValue();
-            item.updateRating(avg, (int) count);
-            itemRepository.save(item);
-        }
-
-        logger.info("User {} rated community item {} with {} stars", currentUser.getUsername(), itemId, rating);
     }
 
     // ==================== MY PUBLISHED ====================
 
     public List<CommunityItemDTO> getMyPublished(Long userId, String tenantId) {
-        List<CommunityItem> items = itemRepository.findByAuthorUserIdAndAuthorTenantIdOrderByCreatedAtDesc(userId,
-                tenantId);
-        return items.stream()
-                .map(item -> CommunityItemDTO.fromEntity(item, parseMetadata(item.getMetadata())))
-                .toList();
+        String originalTenant = TenantContext.getCurrentTenant();
+        try {
+            TenantContext.setCurrentTenant("public");
+            List<CommunityItem> items = itemRepository.findByAuthorUserIdAndAuthorTenantIdOrderByCreatedAtDesc(userId,
+                    tenantId);
+            return items.stream()
+                    .map(item -> CommunityItemDTO.fromEntity(item, parseMetadata(item.getMetadata())))
+                    .toList();
+        } finally {
+            TenantContext.setCurrentTenant(originalTenant);
+        }
     }
 
     // ==================== AUTHOR PROFILES ====================
 
     public AuthorProfileDTO getAuthorProfile(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found: " + userId));
+        String originalTenant = TenantContext.getCurrentTenant();
+        try {
+            TenantContext.setCurrentTenant("public");
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new RuntimeException("User not found: " + userId));
 
-        List<CommunityItem> items = itemRepository.findByAuthorUserIdAndAuthorTenantIdOrderByCreatedAtDesc(userId,
-                null);
-        // Note: null tenantId for global lookup if needed, but usually we filter by
-        // userId for public items
+            List<CommunityItem> items = itemRepository.findByAuthorUserIdAndAuthorTenantIdOrderByCreatedAtDesc(userId,
+                    null);
+            // Note: null tenantId for global lookup if needed, but usually we filter by
+            // userId for public items
 
-        // If items are empty, user might be from another tenant but public
-        if (items.isEmpty()) {
-            // Find all items by this userId regardless of tenant (since it's public schema)
-            items = itemRepository.findAll().stream()
-                    .filter(i -> userId.equals(i.getAuthorUserId()))
-                    .sorted(Comparator.comparing(CommunityItem::getCreatedAt).reversed())
+            // If items are empty, user might be from another tenant but public
+            if (items.isEmpty()) {
+                // Find all items by this userId regardless of tenant (since it's public schema)
+                items = itemRepository.findAll().stream()
+                        .filter(i -> userId.equals(i.getAuthorUserId()))
+                        .sorted(Comparator.comparing(CommunityItem::getCreatedAt).reversed())
+                        .toList();
+            }
+
+            double avgRating = items.stream().filter(i -> i.getRatingCount() > 0)
+                    .mapToDouble(CommunityItem::getAverageRating).average().orElse(0.0);
+            int totalDownloads = items.stream().mapToInt(CommunityItem::getDownloadCount).sum();
+
+            List<CommunityItemDTO> recent = items.stream()
+                    .limit(5)
+                    .map(item -> CommunityItemDTO.fromEntity(item, parseMetadata(item.getMetadata())))
                     .toList();
+
+            return new AuthorProfileDTO(
+                    user.getId(),
+                    user.getFullName(),
+                    "EduFlex", // Could be more dynamic
+                    user.getProfilePictureUrl(),
+                    "Pedagog på EduFlex Community",
+                    user.getLinkedinUrl(),
+                    user.getTwitterUrl(),
+                    items.size(),
+                    avgRating,
+                    totalDownloads,
+                    user.getCreatedAt(),
+                    recent);
+        } finally {
+            TenantContext.setCurrentTenant(originalTenant);
         }
-
-        double avgRating = items.stream().filter(i -> i.getRatingCount() > 0)
-                .mapToDouble(CommunityItem::getAverageRating).average().orElse(0.0);
-        int totalDownloads = items.stream().mapToInt(CommunityItem::getDownloadCount).sum();
-
-        List<CommunityItemDTO> recent = items.stream()
-                .limit(5)
-                .map(item -> CommunityItemDTO.fromEntity(item, parseMetadata(item.getMetadata())))
-                .toList();
-
-        return new AuthorProfileDTO(
-                user.getId(),
-                user.getFullName(),
-                "EduFlex", // Could be more dynamic
-                user.getProfilePictureUrl(),
-                "Pedagog på EduFlex Community",
-                user.getLinkedinUrl(),
-                user.getTwitterUrl(),
-                items.size(),
-                avgRating,
-                totalDownloads,
-                user.getCreatedAt(),
-                recent);
     }
 
     public List<CommunityLeaderboardDTO> getLeaderboard() {
-        // Simple leaderboard logic: find top 10 authors by combined score
-        // In a real DB we'd use a native query for better performance
-        List<CommunityItem> allPublished = itemRepository.findAll().stream()
-                .filter(i -> i.getStatus() == PublishStatus.PUBLISHED)
-                .toList();
+        String originalTenant = TenantContext.getCurrentTenant();
+        try {
+            TenantContext.setCurrentTenant("public");
+            // Simple leaderboard logic: find top 10 authors by combined score
+            // In a real DB we'd use a native query for better performance
+            List<CommunityItem> allPublished = itemRepository.findAll().stream()
+                    .filter(i -> i.getStatus() == PublishStatus.PUBLISHED)
+                    .toList();
 
-        Map<Long, List<CommunityItem>> authorItems = allPublished.stream()
-                .collect(Collectors.groupingBy(CommunityItem::getAuthorUserId));
+            Map<Long, List<CommunityItem>> authorItems = allPublished.stream()
+                    .collect(Collectors.groupingBy(CommunityItem::getAuthorUserId));
 
-        return authorItems.entrySet().stream()
-                .map(entry -> {
-                    Long userId = entry.getKey();
-                    List<CommunityItem> items = entry.getValue();
-                    int downloads = items.stream().mapToInt(CommunityItem::getDownloadCount).sum();
-                    double avgRating = items.stream().filter(i -> i.getRatingCount() > 0)
-                            .mapToDouble(CommunityItem::getAverageRating).average().orElse(0.0);
+            return authorItems.entrySet().stream()
+                    .map(entry -> {
+                        Long userId = entry.getKey();
+                        List<CommunityItem> items = entry.getValue();
+                        int downloads = items.stream().mapToInt(CommunityItem::getDownloadCount).sum();
+                        double avgRating = items.stream().filter(i -> i.getRatingCount() > 0)
+                                .mapToDouble(CommunityItem::getAverageRating).average().orElse(0.0);
 
-                    // Score formula: (downloads * 2) + (resourceCount * 5) + (rating * 10)
-                    int score = (downloads * 2) + (items.size() * 5) + (int) (avgRating * 10);
+                        // Score formula: (downloads * 2) + (resourceCount * 5) + (rating * 10)
+                        int score = (downloads * 2) + (items.size() * 5) + (int) (avgRating * 10);
 
-                    CommunityItem representative = items.get(0);
-                    return new CommunityLeaderboardDTO(
-                            userId,
-                            representative.getAuthorName(),
-                            representative.getAuthorTenantName(),
-                            representative.getAuthorProfilePictureUrl(),
-                            items.size(),
-                            downloads,
-                            avgRating,
-                            score);
-                })
-                .sorted(Comparator.comparing(CommunityLeaderboardDTO::score).reversed())
-                .limit(10)
-                .toList();
+                        CommunityItem representative = items.get(0);
+                        return new CommunityLeaderboardDTO(
+                                userId,
+                                representative.getAuthorName(),
+                                representative.getAuthorTenantName(),
+                                representative.getAuthorProfilePictureUrl(),
+                                items.size(),
+                                downloads,
+                                avgRating,
+                                score);
+                    })
+                    .sorted(Comparator.comparing(CommunityLeaderboardDTO::score).reversed())
+                    .limit(10)
+                    .toList();
+        } finally {
+            TenantContext.setCurrentTenant(originalTenant);
+        }
     }
 
     // ==================== ADMIN MODERATION ====================
 
     public Page<CommunityItemDTO> getPendingItems(Pageable pageable) {
-        Page<CommunityItem> items = itemRepository.findByStatusOrderByCreatedAtAsc(PublishStatus.PENDING, pageable);
-        return items.map(item -> CommunityItemDTO.fromEntity(item, parseMetadata(item.getMetadata())));
+        String originalTenant = TenantContext.getCurrentTenant();
+        try {
+            // Admin moderation happens across all tenants in the public schema
+            TenantContext.setCurrentTenant("public");
+            Page<CommunityItem> items = itemRepository.findByStatusOrderByCreatedAtAsc(PublishStatus.PENDING, pageable);
+            return items.map(item -> CommunityItemDTO.fromEntity(item, parseMetadata(item.getMetadata())));
+        } finally {
+            TenantContext.setCurrentTenant(originalTenant);
+        }
     }
 
     public long getPendingCount() {
-        return itemRepository.countByStatus(PublishStatus.PENDING);
+        String originalTenant = TenantContext.getCurrentTenant();
+        try {
+            TenantContext.setCurrentTenant("public");
+            return itemRepository.countByStatus(PublishStatus.PENDING);
+        } finally {
+            TenantContext.setCurrentTenant(originalTenant);
+        }
     }
 
     @Transactional
     public CommunityItem approveItem(String itemId) {
-        CommunityItem item = itemRepository.findById(itemId)
-                .orElseThrow(() -> new RuntimeException("Community item not found: " + itemId));
+        String originalTenant = TenantContext.getCurrentTenant();
+        try {
+            TenantContext.setCurrentTenant("public");
+            CommunityItem item = itemRepository.findById(itemId)
+                    .orElseThrow(() -> new RuntimeException("Community item not found: " + itemId));
 
-        item.setStatus(PublishStatus.PUBLISHED);
-        item.setPublishedAt(LocalDateTime.now());
-        item.setRejectionReason(null);
+            item.setStatus(PublishStatus.PUBLISHED);
+            item.setPublishedAt(LocalDateTime.now());
+            item.setRejectionReason(null);
 
-        // Social Integration: Notify external channels (Slack/Teams/Recent Activity)
-        socialService.notifyNewContent(item.getTitle(), item.getAuthorName(),
-                item.getContentType().name(), "/community/items/" + item.getId());
+            // Social Integration: Notify external channels (Slack/Teams/Recent Activity)
+            socialService.notifyNewContent(item.getTitle(), item.getAuthorName(),
+                    item.getContentType().name(), "/community/items/" + item.getId());
 
-        logger.info("Community item {} approved and social broadcast sent", itemId);
-        return itemRepository.save(item);
+            logger.info("Community item {} approved and social broadcast sent", itemId);
+            return itemRepository.save(item);
+        } finally {
+            TenantContext.setCurrentTenant(originalTenant);
+        }
     }
 
     @Transactional
     public CommunityItem rejectItem(String itemId, String reason) {
-        CommunityItem item = itemRepository.findById(itemId)
-                .orElseThrow(() -> new RuntimeException("Community item not found: " + itemId));
+        String originalTenant = TenantContext.getCurrentTenant();
+        try {
+            TenantContext.setCurrentTenant("public");
+            CommunityItem item = itemRepository.findById(itemId)
+                    .orElseThrow(() -> new RuntimeException("Community item not found: " + itemId));
 
-        item.setStatus(PublishStatus.REJECTED);
-        item.setRejectionReason(reason);
+            item.setStatus(PublishStatus.REJECTED);
+            item.setRejectionReason(reason);
 
-        logger.info("Community item {} rejected: {}", itemId, reason);
-        return itemRepository.save(item);
+            logger.info("Community item {} rejected: {}", itemId, reason);
+            return itemRepository.save(item);
+        } finally {
+            TenantContext.setCurrentTenant(originalTenant);
+        }
     }
 
     // ==================== SUBJECTS ====================
 
     public List<SubjectDTO> getSubjectsWithCounts() {
+        String originalTenant = TenantContext.getCurrentTenant();
         Map<CommunitySubject, Long> counts = new HashMap<>();
 
         // Initialize all subjects with 0
@@ -611,6 +778,7 @@ public class CommunityService {
 
         // Get actual counts (with error handling for when table doesn't exist yet)
         try {
+            TenantContext.setCurrentTenant("public");
             List<Object[]> results = itemRepository.countBySubject(PublishStatus.PUBLISHED);
             for (Object[] result : results) {
                 if (result[0] != null) {
@@ -622,6 +790,8 @@ public class CommunityService {
         } catch (Exception e) {
             // If the table doesn't exist yet, just return subjects with 0 counts
             logger.warn("Could not fetch subject counts (table may not exist yet): {}", e.getMessage());
+        } finally {
+            TenantContext.setCurrentTenant(originalTenant);
         }
 
         return Arrays.stream(CommunitySubject.values())
@@ -696,6 +866,14 @@ public class CommunityService {
         data.put("title", lesson.getTitle());
         data.put("content", lesson.getContent());
         data.put("videoUrl", lesson.getVideoUrl());
+        return toJson(data);
+    }
+
+    private String serializeResource(Resource resource) {
+        Map<String, Object> data = new HashMap<>();
+        data.put("title", resource.getName());
+        data.put("content", resource.getContent());
+        data.put("type", resource.getType().name());
         return toJson(data);
     }
 

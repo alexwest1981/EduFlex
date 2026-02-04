@@ -327,6 +327,7 @@ export const api = {
             body: formData
         }).then(handleResponse),
         getMy: (userId) => fetch(`${API_BASE}/lessons/my?userId=${userId}`, { headers: getHeaders() }).then(handleResponse),
+        getOne: (id) => fetch(`${API_BASE}/courses/materials/${id}`, { headers: getHeaders() }).then(handleResponse),
         update: (id, formData) => fetch(`${API_BASE}/courses/materials/${id}`, {
             method: 'PUT',
             headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` },
@@ -494,6 +495,7 @@ export const api = {
 
     assignments: {
         getByCourse: (courseId) => fetch(`${API_BASE}/courses/${courseId}/assignments`, { headers: getHeaders() }).then(handleResponse),
+        getOne: (id) => fetch(`${API_BASE}/assignments/${id}`, { headers: getHeaders() }).then(handleResponse),
         create: (courseId, userId, data) => fetch(`${API_BASE}/courses/${courseId}/assignments?userId=${userId}`, { method: 'POST', headers: getHeaders(), body: JSON.stringify(data) }).then(handleResponse),
         createGlobal: (userId, data) => fetch(`${API_BASE}/assignments/create?userId=${userId}`, { method: 'POST', headers: getHeaders(), body: JSON.stringify(data) }).then(handleResponse),
         update: (id, data) => fetch(`${API_BASE}/assignments/${id}`, { method: 'PUT', headers: getHeaders(), body: JSON.stringify(data) }).then(handleResponse),
@@ -827,6 +829,35 @@ export const api = {
                 }).then(handleResponse);
             }
         }
+    },
+
+    resources: {
+        getMy: (userId, type) => {
+            const params = new URLSearchParams({ userId: userId.toString() });
+            if (type) params.append('type', type);
+            return fetch(`${API_BASE}/resources/my?${params}`, { headers: getHeaders() }).then(handleResponse);
+        },
+        getCommunity: () => fetch(`${API_BASE}/resources/community`, { headers: getHeaders() }).then(handleResponse),
+        get: (id) => fetch(`${API_BASE}/resources/${id}`, { headers: getHeaders() }).then(handleResponse),
+        getOne: (id) => fetch(`${API_BASE}/resources/${id}`, { headers: getHeaders() }).then(handleResponse),
+        create: (userId, resource) => fetch(`${API_BASE}/resources?userId=${userId}`, {
+            method: 'POST',
+            headers: getHeaders(),
+            body: JSON.stringify(resource)
+        }).then(handleResponse),
+        update: (id, resource) => fetch(`${API_BASE}/resources/${id}`, {
+            method: 'PUT',
+            headers: getHeaders(),
+            body: JSON.stringify(resource)
+        }).then(handleResponse),
+        delete: (id) => fetch(`${API_BASE}/resources/${id}`, {
+            method: 'DELETE',
+            headers: getHeaders()
+        }).then(handleResponse),
+        updateVisibility: (id, visibility) => fetch(`${API_BASE}/resources/${id}/visibility?visibility=${visibility}`, {
+            method: 'PATCH',
+            headers: getHeaders()
+        }).then(handleResponse)
     },
 
     personalization: {

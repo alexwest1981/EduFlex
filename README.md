@@ -38,6 +38,13 @@
 ## 🇸🇪 Svenska
 
 ### ⚡ Senaste Uppdateringarna
+*   **🎯 Quiz-modul & Community-förbättringar (4 feb 2026):**
+    *   **Generera Quiz:** Återinfört och optimerat funktionen för att slumpmässigt skapa quiz från Frågebanken för lärare.
+    *   **Hotfix: Premium UI Recovery:** Åtgärdat layout-fel i `QuizModule` där rubriker och knappar överlappade. Designen är nu fullt responsiv och premium-stajlad.
+    *   **Community Modal Redesign:** Ny, tydlig design för publicering till communityt med fyra dedikerade val (Ladda upp CSV, Publicera Quiz/Lektion/Uppgift).
+    *   **Lektions-aggregering:** Förbättrad logik för att hämta lektioner från både vanliga lektioner och AI-genererat innehåll vid publicering.
+    *   **Städad Kodbas:** Fixat dolda Tailwind-buggar orsakade av felaktig stränghantering.
+
 *   **🏪 Community Marknadsplats Expansion (3 feb 2026):**
     *   **Författarprofiler:** Varje bidragsgivare har nu en dedikerad profil med statistik över nedladdningar, betyg och deras publicerade material.
     *   **Topplista (Leaderboard):** Introducerat en global topplista som främjar engagemang genom att lyfta fram de mest aktiva och högst värderade bidragsgivarna.
@@ -298,6 +305,13 @@ curl -X POST http://localhost:8080/api/tenants \
 ## 🇬🇧 English
 
 ### ⚡ Latest Updates
+*   **🎯 Quiz Module & Community Enhancements (Feb 4, 2026):**
+    *   **Quiz Generator:** Restored and optimized the random quiz generation feature from the Question Bank for teachers.
+    *   **Hotfix: Premium UI Recovery:** Resolved layout regressions in `QuizModule` ensuring a fully responsive and premium aesthetic without overlapping elements.
+    *   **Community Modal Redesign:** Introduced a clean four-option entry point for community publishing (CSV Upload, Publish Quiz/Lesson/Assignment).
+    *   **Lesson Aggregation:** Enhanced logic to aggregate both standard and AI-generated lessons for a complete publishing experience.
+    *   **Codebase Cleanup:** Fixed hidden Tailwind CSS bugs caused by incorrect string formatting.
+
 *   **🏪 Community Marketplace Expansion (Feb 3, 2026):**
     *   **Author Profiles:** Dedicated profiles for all contributors featuring download stats, ratings, and published resources.
     *   **Contributor Leaderboard:** New global leaderboard to recognize and reward top community contributors.

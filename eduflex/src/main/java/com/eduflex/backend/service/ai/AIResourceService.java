@@ -1,12 +1,17 @@
 package com.eduflex.backend.service.ai;
 
-import com.eduflex.backend.model.Resource;
+import com.eduflex.backend.model.*;
+import com.eduflex.backend.repository.*;
 import com.eduflex.backend.service.ResourceService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -17,11 +22,21 @@ public class AIResourceService {
   private final GeminiService geminiService;
   private final ResourceService resourceService;
   private final ObjectMapper objectMapper;
+  private final AssignmentRepository assignmentRepository;
+  private final LessonRepository lessonRepository;
+  private final QuizRepository quizRepository;
+  private final UserRepository userRepository;
 
-  public AIResourceService(GeminiService geminiService, ResourceService resourceService, ObjectMapper objectMapper) {
+  public AIResourceService(GeminiService geminiService, ResourceService resourceService, ObjectMapper objectMapper,
+      AssignmentRepository assignmentRepository, LessonRepository lessonRepository, QuizRepository quizRepository,
+      UserRepository userRepository) {
     this.geminiService = geminiService;
     this.resourceService = resourceService;
     this.objectMapper = objectMapper;
+    this.assignmentRepository = assignmentRepository;
+    this.lessonRepository = lessonRepository;
+    this.quizRepository = quizRepository;
+    this.userRepository = userRepository;
   }
 
   private static final String RESOURCE_SYSTEM_PROMPT = """
@@ -74,6 +89,7 @@ public class AIResourceService {
       }
       """;
 
+  @Transactional
   public Resource generateResource(Long userId, String type, String prompt, String context) {
     String fullPrompt = RESOURCE_SYSTEM_PROMPT + "\n\nUPPGIFT:\nSkapa en " + type + " baserat på följande:\n"
         + prompt;
@@ -86,22 +102,130 @@ public class AIResourceService {
       jsonResponse = cleanJson(jsonResponse);
 
       Map<String, Object> data = objectMapper.readValue(jsonResponse, Map.class);
+      String resourceTypeStr = ((String) data.get("type")).toUpperCase();
+      Resource.ResourceType resourceType = Resource.ResourceType.valueOf(resourceTypeStr);
 
+      User author = userRepository.findById(userId).orElseThrow();
+
+      // 1. Create the Generic Resource (for the Resource Bank)
       Resource resource = new Resource();
       resource.setName((String) data.get("name"));
       resource.setDescription((String) data.get("description"));
-      resource.setType(Resource.ResourceType.valueOf(((String) data.get("type")).toUpperCase()));
+      resource.setType(resourceType);
 
       // Convert the content map back to JSON string for storage
-      String contentJson = objectMapper.writeValueAsString(data.get("content"));
+      Object contentObj = data.get("content");
+      String contentJson = objectMapper.writeValueAsString(contentObj);
       resource.setContent(contentJson);
 
-      return resourceService.createResource(userId, resource);
+      // Save as Resource
+      Resource savedResource = resourceService.createResource(userId, resource);
+
+      // 2. ALSO save as domain-specific entity so it appears in specific modules
+      try {
+        if ("TASK".equals(resourceTypeStr)) {
+          saveAsAssignment(author, data);
+        } else if ("LESSON".equals(resourceTypeStr)) {
+          saveAsLesson(author, data);
+        } else if ("QUIZ".equals(resourceTypeStr)) {
+          saveAsQuiz(author, data);
+        }
+      } catch (Exception e) {
+        logger.error("Failed to save domain-specific entity for AI resource", e);
+        // We don't fail the whole operation if domain-saving fails, but it's not ideal
+      }
+
+      return savedResource;
 
     } catch (Exception e) {
       logger.error("Failed to generate AI resource", e);
       throw new RuntimeException("Could not generate resource: " + e.getMessage());
     }
+  }
+
+  private void saveAsAssignment(User author, Map<String, Object> data) {
+    Assignment assignment = new Assignment();
+    assignment.setTitle((String) data.get("name"));
+    assignment.setAuthor(author);
+
+    Map<String, Object> content = (Map<String, Object>) data.get("content");
+    StringBuilder desc = new StringBuilder();
+    desc.append(data.get("description")).append("\n\n");
+    if (content.containsKey("instructions")) {
+      desc.append("### Instruktioner\n").append(content.get("instructions")).append("\n\n");
+    }
+    if (content.containsKey("criteria")) {
+      desc.append("### Betygskriterier\n");
+      List<String> criteria = (List<String>) content.get("criteria");
+      for (String c : criteria) {
+        desc.append("- ").append(c).append("\n");
+      }
+    }
+    assignment.setDescription(desc.toString());
+    assignment.setDueDate(LocalDateTime.now().plusDays(7)); // Default 1 week out
+    assignmentRepository.save(assignment);
+  }
+
+  private void saveAsLesson(User author, Map<String, Object> data) {
+    Lesson lesson = new Lesson();
+    lesson.setTitle((String) data.get("name"));
+    lesson.setAuthor(author);
+    lesson.setSortOrder(0);
+
+    Map<String, Object> content = (Map<String, Object>) data.get("content");
+    StringBuilder sb = new StringBuilder();
+    sb.append("# ").append(data.get("name")).append("\n\n");
+    sb.append(data.get("description")).append("\n\n");
+
+    if (content.containsKey("outline")) {
+      List<Map<String, String>> outline = (List<Map<String, String>>) content.get("outline");
+      for (Map<String, String> section : outline) {
+        sb.append("## ").append(section.get("title")).append("\n");
+        sb.append(section.get("content")).append("\n\n");
+      }
+    }
+
+    if (content.containsKey("duration")) {
+      sb.append("**Tidsåtgång:** ").append(content.get("duration"));
+    }
+
+    lesson.setContent(sb.toString());
+    lessonRepository.save(lesson);
+  }
+
+  private void saveAsQuiz(User author, Map<String, Object> data) {
+    Quiz quiz = new Quiz();
+    quiz.setTitle((String) data.get("name"));
+    quiz.setDescription((String) data.get("description"));
+    quiz.setAuthor(author);
+
+    Map<String, Object> content = (Map<String, Object>) data.get("content");
+    if (content.containsKey("questions")) {
+      List<Map<String, Object>> questionsData = (List<Map<String, Object>>) content.get("questions");
+      List<Question> questions = new ArrayList<>();
+
+      for (Map<String, Object> qData : questionsData) {
+        Question q = new Question();
+        q.setText((String) qData.get("text"));
+        q.setQuiz(quiz);
+
+        List<String> optionsTexts = (List<String>) qData.get("options");
+        String correctAnswerText = (String) qData.get("answer");
+
+        List<Option> options = new ArrayList<>();
+        for (String optText : optionsTexts) {
+          Option o = new Option();
+          o.setText(optText);
+          o.setCorrect(optText.equalsIgnoreCase(correctAnswerText));
+          o.setQuestion(q);
+          options.add(o);
+        }
+        q.setOptions(options);
+        questions.add(q);
+      }
+      quiz.setQuestions(questions);
+    }
+    quizRepository.save(quiz);
   }
 
   private String cleanJson(String response) {

@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { QuizRunnerModal } from '../quiz-runner/QuizModals';
-import { BookOpen, Plus, Edit2, Trash2, Save, ChevronRight, Video, Download, Paperclip, Loader2, Image as ImageIcon, Film, HelpCircle, Trophy, PlayCircle, Sparkles } from 'lucide-react';
+import { BookOpen, Plus, Edit2, Trash2, Save, ChevronRight, Video, Download, Paperclip, Loader2, Image as ImageIcon, Film, HelpCircle, Trophy, PlayCircle, Sparkles, Share2 } from 'lucide-react';
 import { api, getSafeUrl } from '../../services/api';
 import OnlyOfficeEditor from '../../features/documents/OnlyOfficeEditor';
 import VideoPlayer from './components/VideoPlayer';
 import EpubViewer from '../../components/common/EpubViewer';
+import PublishModal from '../../features/community/components/PublishModal';
 
 export const CourseContentModuleMetadata = {
     key: 'material',
@@ -22,6 +23,10 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
     const [isEditing, setIsEditing] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
     const [onlyOfficeDoc, setOnlyOfficeDoc] = useState(null);
+
+    // Community Publishing
+    const [showPublishModal, setShowPublishModal] = useState(false);
+    const [publishingLesson, setPublishingLesson] = useState(null);
 
     // Form data
     const [formData, setFormData] = useState({ title: '', content: '', videoUrl: '' });
@@ -90,6 +95,7 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
                                 content: displayContent,
                                 type: 'LESSON', // Force type for UI
                                 availableFrom: item.createdAt,
+                                visibility: item.visibility, // Add visibility field
                                 isResource: true // Flag to identify generic resource
                             };
                         } catch (e) {
@@ -100,7 +106,8 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
                         // It's a Resource but maybe content is simple string?
                         return {
                             ...item,
-                            title: item.name
+                            title: item.name,
+                            visibility: item.visibility
                         };
                     }
                     return item;
@@ -294,7 +301,7 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
                                     <span className="flex-shrink-0 flex items-center justify-center w-5 h-5 rounded-full bg-gray-100 dark:bg-[#3c4043] text-xs font-mono">
                                         {isLocked ? <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg> : (idx + 1)}
                                     </span>
-                                    <div className="truncate">
+                                    <div className="truncate flex-1">
                                         <span className="truncate block font-medium flex items-center gap-2">
                                             {lesson.title}
                                             {isScheduled && <span className="text-[9px] px-1.5 py-0.5 rounded bg-yellow-100 text-yellow-800 border border-yellow-200">Kommande</span>}
@@ -309,6 +316,50 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
                                             {isLocked && <span>• Tillgänglig {new Date(lesson.availableFrom).toLocaleDateString()}</span>}
                                         </span>
                                     </div>
+                                    {/* Visibility Toggle & Share for GLOBAL mode */}
+                                    {isTeacher && mode === 'GLOBAL' && lesson.isResource && (
+                                        <div className="flex gap-1 flex-shrink-0">
+                                            {/* Visibility Toggle */}
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    const newVisibility = lesson.visibility === 'PUBLIC' ? 'PRIVATE' : 'PUBLIC';
+                                                    api.resources.updateVisibility(lesson.id, newVisibility)
+                                                        .then(() => {
+                                                            setLessons(lessons.map(l =>
+                                                                l.id === lesson.id ? { ...l, visibility: newVisibility } : l
+                                                            ));
+                                                        })
+                                                        .catch(err => {
+                                                            console.error('Failed to update visibility:', err);
+                                                            alert('Kunde inte uppdatera synlighet');
+                                                        });
+                                                }}
+                                                className={`px-2 py-1 rounded text-[9px] font-bold transition-colors ${lesson.visibility === 'PUBLIC'
+                                                    ? 'bg-green-100 text-green-700 hover:bg-green-200'
+                                                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                                    }`}
+                                                title={lesson.visibility === 'PUBLIC' ? 'Klicka för att göra privat' : 'Klicka för att göra publik'}
+                                            >
+                                                {lesson.visibility === 'PUBLIC' ? '🌐 Public' : '🔒 Private'}
+                                            </button>
+
+                                            {/* Share to Community Button (only if PUBLIC) */}
+                                            {lesson.visibility === 'PUBLIC' && (
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        setPublishingLesson(lesson);
+                                                        setShowPublishModal(true);
+                                                    }}
+                                                    className="px-2 py-1 rounded text-[9px] font-bold bg-purple-100 text-purple-700 hover:bg-purple-200 transition-colors flex items-center gap-1"
+                                                    title="Dela i Community"
+                                                >
+                                                    <Share2 size={10} /> Dela
+                                                </button>
+                                            )}
+                                        </div>
+                                    )}
                                 </div>
                                 {selectedLesson?.id === lesson.id && <ChevronRight size={14} />}
                             </div>
@@ -685,6 +736,24 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
                     quiz={activeQuizRunner}
                     onClose={() => setActiveQuizRunner(null)}
                     onSubmit={handleQuizSubmit}
+                />
+            )}
+
+            {showPublishModal && publishingLesson && (
+                <PublishModal
+                    initialType={publishingLesson.isResource ? "RESOURCE" : "LESSON"}
+                    initialItemId={publishingLesson.id}
+                    userId={currentUser?.id}
+                    onClose={() => {
+                        setShowPublishModal(false);
+                        setPublishingLesson(null);
+                    }}
+                    onPublished={() => {
+                        alert('✅ Lektion publicerad i Community för granskning!');
+                        setShowPublishModal(false);
+                        setPublishingLesson(null);
+                        loadLessons(); // Reload to get updated data
+                    }}
                 />
             )}
         </div>

@@ -61,6 +61,11 @@ public class AssignmentController {
         return assignmentRepo.findByAuthorId(userId);
     }
 
+    @GetMapping("/assignments/{id}")
+    public Assignment getAssignment(@PathVariable Long id) {
+        return assignmentRepo.findById(id).orElseThrow(() -> new RuntimeException("Uppgift ej funnen"));
+    }
+
     @PutMapping("/assignments/{id}")
     public Assignment updateAssignment(@PathVariable Long id, @RequestBody Assignment req) {
         Assignment assignment = assignmentRepo.findById(id).orElseThrow();
