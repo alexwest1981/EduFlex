@@ -205,18 +205,6 @@
 				</configuration>
 			</plugin>
 			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-				<configuration>
-					<excludes>
-						<exclude>
-							<groupId>org.projectlombok</groupId>
-							<artifactId>lombok</artifactId>
-						</exclude>
-					</excludes>
-				</configuration>
-			</plugin>
-			<plugin>
 				<groupId>org.openrewrite.maven</groupId>
 				<artifactId>rewrite-maven-plugin</artifactId>
 				<version>5.47.3</version>
@@ -247,7 +235,7 @@
 				<configuration>
 					<proguardVersion>7.4.2</proguardVersion>
 					<obfuscate>true</obfuscate>
-					<injar>classes</injar>
+					<injar>${project.build.finalName}.jar</injar>
 					<outjar>${project.build.finalName}.jar</outjar>
 					<proguardInclude>${basedir}/proguard.conf</proguardInclude>
 					<libs>
@@ -277,6 +265,19 @@
 						<scope>runtime</scope>
 					</dependency>
 				</dependencies>
+			</plugin>
+
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<excludes>
+						<exclude>
+							<groupId>org.projectlombok</groupId>
+							<artifactId>lombok</artifactId>
+						</exclude>
+					</excludes>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
