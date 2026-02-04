@@ -408,6 +408,11 @@ services:
       - PUBLIC_URL=https://meet.eduflexlms.se
       # NAT/ICE stability fixes
       - DOCKER_HOST_ADDRESS=127.0.0.1
+      # Coturn Relay Integration
+      - TURN_SERVER_ADDRESS=jitsi-coturn
+      - TURN_SERVER_PORT=3478
+      - TURN_CREDENTIALS=eduflex_turn_secret
+      - TURN_REALM=meet.eduflexlms.se
     volumes:
       - jitsi_jvb_config:/config
     depends_on:
@@ -416,16 +421,20 @@ services:
       - eduflex-net
 
   jitsi-coturn:
-    image: jitsi/coturn:stable-9584
+    image: coturn/coturn
     container_name: eduflex-jitsi-coturn
     restart: unless-stopped
-    environment:
-      - TZ=Europe/Stockholm
-      - TURNS_HOST=meet.eduflexlms.se
-      - TURNS_PORT=3478
-      - TURN_CREDENTIALS=eduflex_turn_secret
-      - TURN_REALM=meet.eduflexlms.se
-      - JVB_AUTH_PASSWORD=eduflex_jvb_secret
+    # Using simple command line config for stability
+    command:
+      - "-n"
+      - "--log-file=stdout"
+      - "--min-port=49152"
+      - "--max-port=65535"
+      - "--realm=meet.eduflexlms.se"
+      - "--user=jvb:eduflex_turn_secret"
+      - "--static-auth-secret=eduflex_turn_secret"
+      - "--fingerprint"
+      - "--lt-cred-mech"
     ports:
       - "3478:3478"
       - "3478:3478/udp"
