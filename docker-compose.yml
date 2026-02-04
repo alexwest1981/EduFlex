@@ -289,6 +289,7 @@ services:
   # --- LIVE VIDEO LESSONS (Jitsi Meet) ---
   # Self-hosted Jitsi for private video classrooms
   # For full self-hosted setup, see: https://jitsi.github.io/handbook/docs/devops-guide/devops-guide-docker
+  # --- LIVE VIDEO LESSONS (Jitsi Meet) ---
   jitsi-web:
     image: jitsi/web:stable-9584
     container_name: eduflex-jitsi
@@ -311,10 +312,17 @@ services:
       - RESOLUTION_MIN=180
       - RESOLUTION_WIDTH=854
       - RESOLUTION_WIDTH_MIN=320
+      # Jitsi internal communication
+      - XMPP_DOMAIN=meet.jitsi
+      - XMPP_SERVER=jitsi-prosody
+      - XMPP_BOSH_URL_BASE=http://jitsi-prosody:5280
+      - XMPP_MUC_DOMAIN=muc.meet.jitsi
+      - XMPP_INTERNAL_MUC_DOMAIN=internal-muc.meet.jitsi
+      - JVB_BREWERY_MUC=jvbbrewery@internal-muc.meet.jitsi
+      - JICOFO_AUTH_USER=focus
       # Colibri over WebSocket (CRITICAL for Tunnel)
       - ENABLE_COLIBRI_WEBSOCKET=1
       - COLIBRI_REST_API=true
-      # Internal address for JVB WS proxy
       - JVB_TCP_ADDR=eduflex-jitsi-jvb
       - JVB_TCP_PORT=9090
       - COLIBRI_WS_TLS=0
@@ -338,7 +346,6 @@ services:
     environment:
       - PUBLIC_URL=https://meet.eduflexlms.se
       - TZ=Europe/Stockholm
-      # XMPP settings
       - XMPP_DOMAIN=meet.jitsi
       - XMPP_SERVER=jitsi-prosody
       - XMPP_AUTH_DOMAIN=auth.meet.jitsi
@@ -346,7 +353,6 @@ services:
       - XMPP_INTERNAL_MUC_DOMAIN=internal-muc.meet.jitsi
       - XMPP_GUEST_DOMAIN=guest.meet.jitsi
       - XMPP_RECORDER_DOMAIN=recorder.meet.jitsi
-      # Component secrets (generate random for production!)
       - JICOFO_AUTH_USER=focus
       - JICOFO_AUTH_PASSWORD=eduflex_jicofo_secret
       - JVB_AUTH_USER=jvb
@@ -428,7 +434,6 @@ services:
     image: coturn/coturn
     container_name: eduflex-jitsi-coturn
     restart: unless-stopped
-    # Using simple command line config for stability
     command:
       - "-n"
       - "--log-file=stdout"
