@@ -99,7 +99,12 @@ const JitsiMeeting = ({
                 // ICE/TURN configuration for better NAT traversal through Cloudflare
                 iceServers: [
                     { urls: 'stun:stun.l.google.com:19302' },
-                    { urls: 'stun:meet-jit-si-turnrelay.jitsi.net:443' }
+                    { urls: 'stun:meet-jit-si-turnrelay.jitsi.net:443' },
+                    {
+                        urls: 'turn:meet.eduflexlms.se:3478?transport=udp',
+                        username: 'jvb',
+                        credential: 'eduflex_turn_secret'
+                    }
                 ],
                 // Force WebSocket for both signaling (XMPP) and media (Colibri)
                 // This is CRITICAL for Cloudflare Tunnels as they don't support UDP

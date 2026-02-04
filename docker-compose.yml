@@ -406,10 +406,29 @@ services:
       - JVB_PORT=10000
       - JVB_STUN_SERVERS=meet-jit-si-turnrelay.jitsi.net:443
       - PUBLIC_URL=https://meet.eduflexlms.se
+      # NAT/ICE stability fixes
+      - DOCKER_HOST_ADDRESS=127.0.0.1
     volumes:
       - jitsi_jvb_config:/config
     depends_on:
       - jitsi-prosody
+    networks:
+      - eduflex-net
+
+  jitsi-coturn:
+    image: jitsi/coturn:stable-9584
+    container_name: eduflex-jitsi-coturn
+    restart: unless-stopped
+    environment:
+      - TZ=Europe/Stockholm
+      - TURNS_HOST=meet.eduflexlms.se
+      - TURNS_PORT=3478
+      - TURN_CREDENTIALS=eduflex_turn_secret
+      - TURN_REALM=meet.eduflexlms.se
+      - JVB_AUTH_PASSWORD=eduflex_jvb_secret
+    ports:
+      - "3478:3478"
+      - "3478:3478/udp"
     networks:
       - eduflex-net
 
