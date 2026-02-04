@@ -233,7 +233,7 @@
 					</execution>
 				</executions>
 				<configuration>
-					<proguardVersion>7.4.2</proguardVersion>
+					<proguardVersion>7.6.1</proguardVersion>
 					<obfuscate>true</obfuscate>
 					<injar>${project.build.finalName}.jar</injar>
 					<outjar>${project.build.finalName}-obfuscated.jar</outjar>
@@ -255,13 +255,13 @@
 					<dependency>
 						<groupId>com.guardsquare</groupId>
 						<artifactId>proguard-base</artifactId>
-						<version>7.4.2</version>
+						<version>7.6.1</version>
 						<scope>runtime</scope>
 					</dependency>
 					<dependency>
 						<groupId>com.guardsquare</groupId>
 						<artifactId>proguard-core</artifactId>
-						<version>9.1.1</version>
+						<version>9.1.5</version>
 						<scope>runtime</scope>
 					</dependency>
 				</dependencies>
