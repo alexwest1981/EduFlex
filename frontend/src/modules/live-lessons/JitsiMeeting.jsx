@@ -13,16 +13,15 @@ import { X, Maximize2, Minimize2, Mic, MicOff, Video, VideoOff, Users, Settings,
  * - onParticipantJoined: Callback when someone joins
  * - onParticipantLeft: Callback when someone leaves
  */
-const JitsiMeeting = ({
-    roomName,
+roomName,
     displayName,
     email,
-    id, // Internal user ID
+    id,
     isHost = false,
     onClose,
     onParticipantJoined,
     onParticipantLeft,
-    jitsiDomain = 'meet.eduflexlms.se' // Self-hosted Jitsi instance via Cloudflare
+    jitsiDomain = 'meet.eduflexlms.se' // Fallback to user server
 }) => {
     const containerRef = useRef(null);
     const apiRef = useRef(null);
@@ -106,12 +105,12 @@ const JitsiMeeting = ({
                 disableVirtualBackground: true,
                 disableScreensharingVirtualBackground: true,
 
-                // P2P mode for 2 participants - DISABLE to prevent internal network conflicts
+                // Disable P2P mode to force traffic through the bridge (more stable for IP collisions)
                 p2p: {
-                    enabled: false,
-                    preferH264: true,
-                    useStunTurn: true
+                    enabled: false
                 },
+                // Force WebSocket for better Cloudflare Tunnel compatibility
+                websocket: 'wss://' + domain + '/xmpp-websocket',
 
                 // Disable stats gathering
                 callStatsID: '',
@@ -135,7 +134,7 @@ const JitsiMeeting = ({
                 DISABLE_RINGING: true
             },
             userInfo: {
-                id: id,
+                id: String(id || email || displayName),
                 displayName: displayName || 'Deltagare',
                 email: email
             }
