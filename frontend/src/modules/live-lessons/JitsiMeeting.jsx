@@ -22,7 +22,7 @@ const JitsiMeeting = ({
     onClose,
     onParticipantJoined,
     onParticipantLeft,
-    jitsiDomain = 'meet.jit.si' // Switch to public for testing stability
+    jitsiDomain = 'meet.eduflexlms.se' // Reverting to private server for unlimited meetings
 }) => {
     const containerRef = useRef(null);
     const apiRef = useRef(null);
