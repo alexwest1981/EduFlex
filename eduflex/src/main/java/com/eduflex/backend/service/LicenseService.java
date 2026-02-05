@@ -25,6 +25,8 @@ public class LicenseService {
 
     private com.eduflex.backend.model.LicenseType currentTier = com.eduflex.backend.model.LicenseType.ENTERPRISE;
     private boolean isValid = false;
+    private boolean isSystemLocked = false;
+    private boolean isOfflineMode = false;
     private String customerName = "Okänd";
     private LocalDate expiryDate;
     private java.security.PublicKey publicKey;
@@ -33,6 +35,7 @@ public class LicenseService {
             org.springframework.core.env.Environment env) {
         this.paymentSettingsRepository = paymentSettingsRepository;
         this.env = env;
+        this.isOfflineMode = "true".equalsIgnoreCase(env.getProperty("EDUFLEX_OFFLINE_MODE"));
     }
 
     @PostConstruct
@@ -164,11 +167,22 @@ public class LicenseService {
 
     // Getters med standardiserade namn
     public boolean isValid() {
-        return isValid;
+        return isValid && !isSystemLocked;
     }
 
     public boolean isLocked() {
-        return !isValid;
+        return isSystemLocked || !isValid;
+    }
+
+    public void setSystemLocked(boolean locked) {
+        this.isSystemLocked = locked;
+        if (locked) {
+            System.err.println("🚨 SYSTEM LOCK: Licensen har deaktiverats eller är ogiltig.");
+        }
+    }
+
+    public boolean isOfflineMode() {
+        return isOfflineMode;
     }
 
     public LicenseType getTier() {

@@ -16,6 +16,25 @@ public enum CommunitySubject {
     RELIGIONSKUNSKAP("Religionskunskap", "heart", "#F43F5E"),
     TEKNIK("Teknik", "cog", "#64748B"),
     PROGRAMMERING("Programmering", "code", "#0EA5E9"),
+
+    // Social Sciences & Humanities
+    PSYKOLOGI("Psykologi", "brain", "#D946EF"),
+    FILOSOFI("Filosofi", "lightbulb", "#FACC15"),
+    SOCIOLOGI("Sociologi", "users", "#818CF8"),
+    JURIDIK("Juridik", "scale", "#64748B"),
+    PEDAGOGIK("Pedagogik", "graduation-cap", "#8B5CF6"),
+
+    // Economy & Tech
+    NATIONALEKONOMI("Nationalekonomi", "trending-up", "#059669"),
+    FORETAGSEKONOMI("Företagsekonomi", "briefcase", "#B45309"),
+    ENTREPRENORSKAP("Entreprenörskap", "rocket", "#F97316"),
+    WEBBUTVECKLING("Webbutveckling", "globe", "#2563EB"),
+
+    // Science & Health
+    NATURKUNSKAP("Naturkunskap", "zap", "#FBBF24"),
+    MEDICIN("Medicin", "stethoscope", "#F43F5E"),
+    VARD_OMSORG("Vård & Omsorg", "heart", "#F43F5E"),
+
     IDROTT("Idrott & Hälsa", "activity", "#EF4444"),
     MUSIK("Musik", "music", "#D946EF"),
     BILD("Bild", "palette", "#F97316"),

@@ -35,6 +35,11 @@ eduflex/src/main/resources/static/sdkjs/
 eduflex/src/main/resources/static/sdkjs-plugins/
 eduflex/src/main/resources/static/fonts/
 eduflex/src/main/resources/static/cache/
+*.pem
+eduflex/build.txt
+eduflex/errors.txt
+bin/
+*.class
 
 
 # Build & System

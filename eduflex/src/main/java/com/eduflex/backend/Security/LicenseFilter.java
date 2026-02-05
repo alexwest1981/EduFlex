@@ -53,11 +53,11 @@ public class LicenseFilter extends OncePerRequestFilter {
             }
 
             // 4. Blockera allt annat
-            System.out.println("⛔ BLOCKED: " + path + " (Reason: System Locked)");
-            response.setStatus(402); // Payment Required (Signal to Frontend)
-            response.setContentType("application/json");
+            System.err.println("⛔ BLOCKED: " + path + " (Systemet är låst pga licensfel)");
+            response.setStatus(402); // Payment Required
+            response.setContentType("application/json;charset=UTF-8");
             response.getWriter()
-                    .write("{\"error\": \"LICENSE_REQUIRED\", \"message\": \"System is locked. Valid license required.\"}");
+                    .write("{\"error\": \"INVALID_LICENSE\", \"message\": \"Systemet är låst. Din licens är ogiltig eller obetald. Kontakta EduFlex support.\"}");
         } catch (Exception e) {
             String path = request.getRequestURI();
             System.err.println("❌ ERROR in LicenseFilter [" + path + "]: " + e.getMessage());

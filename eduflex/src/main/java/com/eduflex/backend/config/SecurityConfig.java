@@ -143,7 +143,7 @@ public class SecurityConfig {
                                 "/api/users/generate-usernames",
                                 "/api/settings/**", "/login/**", "/api/tenants/**", "/api/public/**",
                                 "/api/branding/**", "/api/debug/**", "/api/onlyoffice/**",
-                                "/api/gamification/config/system", "/api/payment/**")
+                                "/api/gamification/config/system", "/api/payment/**", "/api/community/subjects")
                         .permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/tenants").permitAll() // Explicitly allow POST
                         .requestMatchers("/api/system/license/**", "/uploads/**", "/api/files/**", "/api/ebooks/**",

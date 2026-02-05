@@ -22,6 +22,7 @@ const GRADE_LEVELS = [
 
 // Fallback subjects in case API fails
 const FALLBACK_SUBJECTS = [
+    // Core subjects
     { name: 'MATEMATIK', displayName: 'Matematik', iconName: 'calculator', color: '#8B5CF6' },
     { name: 'SVENSKA', displayName: 'Svenska', iconName: 'book-open', color: '#EC4899' },
     { name: 'ENGELSKA', displayName: 'Engelska', iconName: 'globe', color: '#3B82F6' },
@@ -32,15 +33,53 @@ const FALLBACK_SUBJECTS = [
     { name: 'SAMHALLSKUNSKAP', displayName: 'Samhällskunskap', iconName: 'users', color: '#6366F1' },
     { name: 'GEOGRAFI', displayName: 'Geografi', iconName: 'map', color: '#14B8A6' },
     { name: 'RELIGIONSKUNSKAP', displayName: 'Religionskunskap', iconName: 'heart', color: '#F43F5E' },
+
+    // Social Sciences & Humanities
+    { name: 'PSYKOLOGI', displayName: 'Psykologi', iconName: 'brain', color: '#D946EF' },
+    { name: 'FILOSOFI', displayName: 'Filosofi', iconName: 'lightbulb', color: '#FACC15' },
+    { name: 'SOCIOLOGI', displayName: 'Sociologi', iconName: 'users', color: '#818CF8' },
+    { name: 'JURIDIK', displayName: 'Juridik', iconName: 'scale', color: '#64748B' },
+    { name: 'NATIONALEKONOMI', displayName: 'Nationalekonomi', iconName: 'trending-up', color: '#059669' },
+    { name: 'KRIMINOLOGI', displayName: 'Kriminologi', iconName: 'search', color: '#475569' },
+
+    // Tech & Digital
     { name: 'TEKNIK', displayName: 'Teknik', iconName: 'cog', color: '#64748B' },
     { name: 'PROGRAMMERING', displayName: 'Programmering', iconName: 'code', color: '#0EA5E9' },
-    { name: 'IDROTT', displayName: 'Idrott & Hälsa', iconName: 'activity', color: '#EF4444' },
+    { name: 'WEBBUTVECKLING', displayName: 'Webbutveckling', iconName: 'globe', color: '#2563EB' },
+    { name: 'DATORTKNIK', displayName: 'Dator- & nätverksteknik', iconName: 'terminal', color: '#1E293B' },
+
+    // Economy & Business
+    { name: 'FORETAGSEKONOMI', displayName: 'Företagsekonomi', iconName: 'briefcase', color: '#B45309' },
+    { name: 'ENTREPRENORSKAP', displayName: 'Entreprenörskap', iconName: 'rocket', color: '#F97316' },
+    { name: 'MARKNADSFÖRING', displayName: 'Marknadsföring', iconName: 'star', color: '#F43F5E' },
+
+    // Aesthetics & Creative
     { name: 'MUSIK', displayName: 'Musik', iconName: 'music', color: '#D946EF' },
     { name: 'BILD', displayName: 'Bild', iconName: 'palette', color: '#F97316' },
+    { name: 'FOTO', displayName: 'Fotografisk bild', iconName: 'camera', color: '#6366F1' },
+    { name: 'FILMPRODUKTION', displayName: 'Filmproduktion', iconName: 'video', color: '#EF4444' },
+    { name: 'TEATER', displayName: 'Teater & Scen', iconName: 'star', color: '#A855F7' },
+    { name: 'DANS', displayName: 'Dans', iconName: 'activity', color: '#EC4899' },
     { name: 'SLOJD', displayName: 'Slöjd', iconName: 'hammer', color: '#78716C' },
+
+    // Physical & Health
+    { name: 'IDROTT', displayName: 'Idrott & Hälsa', iconName: 'activity', color: '#EF4444' },
+    { name: 'MEDICIN', displayName: 'Medicin', iconName: 'stethoscope', color: '#F43F5E' },
+    { name: 'VARD_OMSORG', displayName: 'Vård & Omsorg', iconName: 'heart', color: '#F43F5E' },
+    { name: 'ANATOMI', displayName: 'Anatomi & Fysiologi', iconName: 'activity', color: '#EF4444' },
+
+    // Practical & Others
     { name: 'HEM_KONSUMENTKUNSKAP', displayName: 'Hem- & konsumentkunskap', iconName: 'utensils', color: '#84CC16' },
-    { name: 'MODERSMAL', displayName: 'Modersmål', iconName: 'message-circle', color: '#06B6D4' },
+    { name: 'NATURKUNSKAP', displayName: 'Naturkunskap', iconName: 'zap', color: '#FBBF24' },
+    { name: 'PEDAGOGIK', displayName: 'Pedagogik', iconName: 'graduation-cap', color: '#8B5CF6' },
+
+    // Languages
+    { name: 'SPANSKA', displayName: 'Spanska', iconName: 'message-circle', color: '#F59E0B' },
+    { name: 'FRANSKA', displayName: 'Franska', iconName: 'message-circle', color: '#3B82F6' },
+    { name: 'TYSKA', displayName: 'Tyska', iconName: 'message-circle', color: '#EF4444' },
+    { name: 'MODERSMAL', displayName: 'Modersmål', iconName: 'languages', color: '#06B6D4' },
     { name: 'SPRAK_ANNAT', displayName: 'Annat Språk', iconName: 'languages', color: '#8B5CF6' },
+
     { name: 'OVRIGT', displayName: 'Övrigt', iconName: 'folder', color: '#94A3B8' }
 ];
 
@@ -243,15 +282,25 @@ const PublishModal = ({ onClose, onPublished, userId, initialType = null, initia
 
         // Simple keyword mapping
         const subjectMap = {
-            'MATEMATIK': ['MATTE', 'TAL', 'GEOMETRI', 'ALGEBRA', 'KVADRAT', 'CALCULATOR'],
-            'SVENSKA': ['LITTERATUR', 'GRAMMATIK', 'NOVELL', 'ANALYS', 'BOOKS'],
-            'ENGELSKA': ['ENGLISH', 'VOCABULARY', 'GRAMMAR', 'BRITISH', 'AMERICAN'],
-            'FYSIK': ['KRAFT', 'ENERGI', 'ATOM', 'LJUS', 'SPEED', 'PHYSICS'],
-            'KEMI': ['MOLEKYL', 'SYRA', 'BAS', 'PERIODISKA', 'CHEMISTRY'],
-            'BIOLOGI': ['CELL', 'DJUR', 'VÄXT', 'NATUR', 'FOTOSYNTES', 'KROPPEN', 'BIOLOGY'],
-            'HISTORIA': ['KRIG', 'KUNG', 'EPOK', 'REVOLUTION', 'MEDELTID', 'HISTORY'],
-            'TEKNIK': ['KONSTRUKTION', 'OPPFINNING', 'DATA', 'MASKIN', 'TECHNOLOGY'],
-            'PROGRAMMERING': ['CODE', 'JAVASCRIPT', 'PYTHON', 'JAVA', 'ALGORITM', 'CODING']
+            'MATEMATIK': ['MATTE', 'TAL', 'GEOMETRI', 'ALGEBRA', 'KVADRAT', 'CALCULATOR', 'FORMLER', 'EKVATION'],
+            'SVENSKA': ['LITTERATUR', 'GRAMMATIK', 'NOVELL', 'ANALYS', 'BOOKS', 'SKRIVA', 'LASA'],
+            'ENGELSKA': ['ENGLISH', 'VOCABULARY', 'GRAMMAR', 'BRITISH', 'AMERICAN', 'SHAKESPEARE'],
+            'FYSIK': ['KRAFT', 'ENERGI', 'ATOM', 'LJUS', 'SPEED', 'PHYSICS', 'ELEKTRICITET'],
+            'KEMI': ['MOLEKYL', 'SYRA', 'BAS', 'PERIODISKA', 'CHEMISTRY', 'REAKTION'],
+            'BIOLOGI': ['CELL', 'DJUR', 'VÄXT', 'NATUR', 'FOTOSYNTES', 'KROPPEN', 'BIOLOGY', 'DNA'],
+            'HISTORIA': ['KRIG', 'KUNG', 'EPOK', 'REVOLUTION', 'MEDELTID', 'HISTORY', 'FORNTID'],
+            'SAMHALLSKUNSKAP': ['POLITIK', 'DEMOKRATI', 'SAMHALLE', 'STATEN', 'RATTIGHETER'],
+            'GEOGRAFI': ['KARTA', 'LANDER', 'STADER', 'GEOGRAPHY', 'KLIMAT', 'BEFOLKNING'],
+            'PSYKOLOGI': ['FREUD', 'BETEENDE', 'KOGNITION', 'PSYCHOLOGY', 'HJARNAN', 'KOLA', 'TRAUMA'],
+            'FILOSOFI': ['SOKRATES', 'ETIK', 'MORAL', 'LOGIK', 'FILOSOFI', 'PHILOSOPHY', 'TÄNKANDE'],
+            'JURIDIK': ['LAG', 'RATT', 'DOMSTOL', 'PARAGRAF', 'BROTT', 'AVTAL', 'JURIDIK'],
+            'NATIONALEKONOMI': ['INFLATION', 'BNP', 'MARKNAD', 'RANTAN', 'UTBUD', 'EFTERFRAGAN', 'EKONOMI'],
+            'FORETAGSEKONOMI': ['BOKFORING', 'FÖRETAG', 'BUDGET', 'KALKYL', 'MARKNADSFÖRING'],
+            'TEKNIK': ['KONSTRUKTION', 'UPPFINNING', 'DATA', 'MASKIN', 'TECHNOLOGY', 'INGENJOR'],
+            'PROGRAMMERING': ['CODE', 'JAVASCRIPT', 'PYTHON', 'JAVA', 'ALGORITM', 'CODING', 'REACT', 'HTML', 'CSS'],
+            'MEDICIN': ['LAKARE', 'SJUKDOM', 'MEDICIN', 'SYMTOM', 'BEHANDLING', 'KLINIK'],
+            'MARKNADSFÖRING': ['REKLAM', 'VARUMARKE', 'SOCIALA MEDIER', 'ANNONS', 'KUNDER'],
+            'VARD_OMSORG': ['OMVARDNAD', 'PATIENT', 'ETIK', 'ALDRANDE', 'SJUKSKOTERSKA']
         };
 
         for (const [subject, keywords] of Object.entries(subjectMap)) {
@@ -487,10 +536,13 @@ const PublishModal = ({ onClose, onPublished, userId, initialType = null, initia
                             selectedItem={selectedItem}
                             onSelectItem={handleSelectItem}
                             loading={loading}
+                            setStep={setStep}
                         />
                     ) : (
                         <Step2
                             mode={mode}
+                            contentType={contentType}
+                            selectedItem={selectedItem}
                             quizTitle={quizTitle}
                             questionCount={mode === 'csv' ? parsedQuestions.length : (selectedItem?.questions?.length || 0)}
                             subjects={subjects}
@@ -552,12 +604,12 @@ const PublishModal = ({ onClose, onPublished, userId, initialType = null, initia
     );
 };
 
-// Step 1: Choose source (CSV or existing)
 const Step1 = ({
     mode, setMode, contentType, setContentType,
     csvFile, parsedQuestions, csvError, quizTitle, setQuizTitle, fileInputRef, handleFileChange,
     subjects, formData, setFormData,
-    items, selectedItem, onSelectItem, loading
+    items, selectedItem, onSelectItem, loading,
+    setStep
 }) => {
     return (
         <div className="space-y-6">
@@ -572,7 +624,6 @@ const Step1 = ({
                         onClick={() => {
                             setMode('csv');
                             setContentType('QUIZ');
-                            setStep(2);
                         }}
                         className={`group relative p-5 rounded-2xl border-2 transition-all text-left overflow-hidden ${mode === 'csv'
                             ? 'border-indigo-500 bg-indigo-50/50 dark:bg-indigo-900/20'
@@ -596,7 +647,6 @@ const Step1 = ({
                         onClick={() => {
                             setMode('existing');
                             setContentType('QUIZ');
-                            setStep(2);
                         }}
                         className={`group relative p-5 rounded-2xl border-2 transition-all text-left overflow-hidden ${mode === 'existing' && contentType === 'QUIZ'
                             ? 'border-purple-500 bg-purple-50/50 dark:bg-purple-900/20'
@@ -620,7 +670,6 @@ const Step1 = ({
                         onClick={() => {
                             setMode('existing');
                             setContentType('LESSON');
-                            setStep(2);
                         }}
                         className={`group relative p-5 rounded-2xl border-2 transition-all text-left overflow-hidden ${mode === 'existing' && contentType === 'LESSON'
                             ? 'border-emerald-500 bg-emerald-50/50 dark:bg-emerald-900/20'
@@ -644,7 +693,6 @@ const Step1 = ({
                         onClick={() => {
                             setMode('existing');
                             setContentType('ASSIGNMENT');
-                            setStep(2);
                         }}
                         className={`group relative p-5 rounded-2xl border-2 transition-all text-left overflow-hidden ${mode === 'existing' && contentType === 'ASSIGNMENT'
                             ? 'border-amber-500 bg-amber-50/50 dark:bg-amber-900/20'
@@ -736,7 +784,7 @@ const Step1 = ({
                                 <label className="block font-medium text-gray-900 dark:text-white mb-2">
                                     Ämne *
                                 </label>
-                                <div className="grid grid-cols-4 gap-2 max-h-32 overflow-y-auto">
+                                <div className="grid grid-cols-2 md:grid-cols-4 gap-2 max-h-64 overflow-y-auto p-1 custom-scrollbar">
                                     {subjects.map((subject) => (
                                         <button
                                             key={subject.name}
@@ -851,7 +899,7 @@ const Step1 = ({
 
 // Step 2: Metadata
 const Step2 = ({
-    mode, quizTitle, questionCount,
+    mode, contentType, selectedItem, quizTitle, questionCount,
     subjects, formData, setFormData,
     tagInput, setTagInput, onAddTag, onRemoveTag
 }) => {
