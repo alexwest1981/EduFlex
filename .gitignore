@@ -30,6 +30,11 @@ config/onlyoffice/
 onlyoffice/
 onlyoffice-data/
 onlyoffice-logs/
+eduflex/src/main/resources/static/web-apps/
+eduflex/src/main/resources/static/sdkjs/
+eduflex/src/main/resources/static/sdkjs-plugins/
+eduflex/src/main/resources/static/fonts/
+eduflex/src/main/resources/static/cache/
 
 
 # Build & System

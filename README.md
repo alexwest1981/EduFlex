@@ -38,6 +38,12 @@
 ## 🇸🇪 Svenska
 
 ### ⚡ Senaste Uppdateringarna
+*   **🛠 Systemhärdning & Repository-städning (5 feb 2026):**
+    *   **GitHub Cleanup:** Rensat bort över 24 000 statiska OnlyOffice-filer från Git-indexet för att hålla repot snabbt och rent.
+    *   **EduFlex Control Center (Java):** Lanserat ett nytt fristående kontrollcenter byggt i Java (Swing) för att hantera Docker, loggar och backend-tjänster.
+    *   **Ämnesexpansion:** Lagt till 12 nya ämneskategorier inklusive Psykologi, Juridik, och Medicin.
+    *   **Hotfix: Database Constraint:** Åtgärdat fel i databasschemat som blockerade sparande av nya ämnena.
+
 *   **🎯 Quiz-modul & Community-förbättringar (4 feb 2026):**
     *   **Generera Quiz:** Återinfört och optimerat funktionen för att slumpmässigt skapa quiz från Frågebanken för lärare.
     *   **Hotfix: Premium UI Recovery:** Åtgärdat layout-fel i `QuizModule` där rubriker och knappar överlappade. Designen är nu fullt responsiv och premium-stajlad.
@@ -306,6 +312,12 @@ curl -X POST http://localhost:8080/api/tenants \
 ## 🇬🇧 English
 
 ### ⚡ Latest Updates
+*   **🛠 System Hardening & Repository Cleanup (Feb 5, 2026):**
+    *   **GitHub Cleanup:** Removed over 24,000 static OnlyOffice files from the Git index to keep the repository lean.
+    *   **EduFlex Control Center (Java):** Launched a new standalone Java-based control center (Swing) for managing Docker, logs, and backend services.
+    *   **Subject Expansion:** Added 12 new subject categories including Psychology, Law, and Medicine.
+    *   **Hotfix: Database Constraint:** Resolved a database schema error that prevented saving new subjects.
+
 *   **🎯 Quiz Module & Community Enhancements (Feb 4, 2026):**
     *   **Quiz Generator:** Restored and optimized the random quiz generation feature from the Question Bank for teachers.
     *   **Hotfix: Premium UI Recovery:** Resolved layout regressions in `QuizModule` ensuring a fully responsive and premium aesthetic without overlapping elements.
