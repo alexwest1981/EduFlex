@@ -431,7 +431,7 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=gotland81
       - POSTGRES_EXTRA_OPTS=-Z9 --schema=public --blobs
-      - SCHEDULE=@daily
+      - SCHEDULE=0 0,12 * * *
       - BACKUP_KEEP_DAYS=7
       - BACKUP_KEEP_WEEKS=4
       - BACKUP_KEEP_MONTHS=6

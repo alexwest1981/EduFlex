@@ -405,4 +405,36 @@ public class EbookService {
         // have it.
         return ttsService.generateSpeech(text, "nova");
     }
+
+    public Ebook regenerateAudiobook(Long ebookId) {
+        Ebook ebook = getEbookById(ebookId);
+        if (ebook.getType() != com.eduflex.backend.model.BookType.AUDIO) {
+            throw new RuntimeException("Book is not an audiobook");
+        }
+
+        logger.info("Regenerating audio for book: {}", ebook.getTitle());
+
+        // 1. Determine text to synthesize (Description if available, else title)
+        String textToSynthesize = ebook.getDescription();
+        if (textToSynthesize == null || textToSynthesize.trim().isEmpty()) {
+            textToSynthesize = "Detta är en ljudbok med titeln " + ebook.getTitle();
+        }
+
+        // 2. Generate audio
+        byte[] audioBytes = ttsService.generateSpeech(textToSynthesize, "nova");
+
+        // 3. Save to Storage (MinIO)
+        String fileName = ebook.getTitle().replaceAll("[^a-zA-Z0-9]", "_") + ".mp3";
+        String customId = "audiobooks/" + java.util.UUID.randomUUID().toString() + ".mp3";
+
+        String storageId = storageService.save(
+                new java.io.ByteArrayInputStream(audioBytes),
+                "audio/mpeg",
+                fileName,
+                customId);
+
+        // 4. Update Ebook record
+        ebook.setFileUrl("/api/storage/" + storageId);
+        return ebookRepository.save(ebook);
+    }
 }

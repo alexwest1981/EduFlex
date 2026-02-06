@@ -5,6 +5,8 @@ import io.minio.MakeBucketArgs;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
 import io.minio.SetBucketPolicyArgs;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
@@ -17,6 +19,7 @@ import java.util.UUID;
 @org.springframework.context.annotation.Primary
 public class MinioStorageService implements StorageService {
 
+    private static final Logger logger = LoggerFactory.getLogger(MinioStorageService.class);
     private final MinioClient minioClient;
     private final String bucketName;
     private final String publicUrl;
@@ -39,7 +42,7 @@ public class MinioStorageService implements StorageService {
                 minioClient.makeBucket(io.minio.MakeBucketArgs.builder().bucket(bucketName).build());
             }
         } catch (Exception e) {
-            System.err.println("MinIO Init Error: " + e.getMessage());
+            logger.error("MinIO Init Error: {}", e.getMessage());
         }
     }
 

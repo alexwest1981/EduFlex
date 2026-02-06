@@ -29,6 +29,7 @@ import SystemSettings from './features/system/SystemSettings';
 import { ThemeProvider } from './context/ThemeContext';
 import { Toaster } from 'react-hot-toast';
 import AchievementToast from './components/gamification/AchievementToast';
+import FloatingAudioPlayer from './components/common/FloatingAudioPlayer';
 
 // --- DE RIKTIGA SIDORNA ---
 import UserProfile from './features/profile/UserProfile';
@@ -318,6 +319,7 @@ const App = () => {
                                 <Toaster position="top-right" />
                                 <AchievementToast />
                                 <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+                                    <FloatingAudioPlayer />
                                     <AppRoutes />
                                 </Router>
                             </ErrorBoundary>

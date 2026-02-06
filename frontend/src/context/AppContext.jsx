@@ -16,7 +16,11 @@ const AppContext = createContext({
     toggleTheme: () => { },
     API_BASE: '',
     token: null,
-    api: {}
+    api: {},
+    activeAudiobook: null,
+    setActiveAudiobook: () => { },
+    isAudioPlayerMinimized: false,
+    setIsAudioPlayerMinimized: () => { }
 });
 
 export const AppProvider = ({ children }) => {
@@ -28,6 +32,8 @@ export const AppProvider = ({ children }) => {
     const [licenseStatus, setLicenseStatus] = useState('checking');
     const [licenseLocked, setLicenseLocked] = useState(false);
     const [token, setToken] = useState(localStorage.getItem('token'));
+    const [activeAudiobook, setActiveAudiobook] = useState(null);
+    const [isAudioPlayerMinimized, setIsAudioPlayerMinimized] = useState(false);
 
     const API_BASE = '/api';
 
@@ -174,7 +180,11 @@ export const AppProvider = ({ children }) => {
             licenseLocked,
             API_BASE,
             token,
-            api
+            api,
+            activeAudiobook,
+            setActiveAudiobook,
+            isAudioPlayerMinimized,
+            setIsAudioPlayerMinimized
         }}>
             {children}
         </AppContext.Provider>

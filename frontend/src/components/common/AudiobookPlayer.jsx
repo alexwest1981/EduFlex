@@ -51,6 +51,14 @@ const AudiobookPlayer = ({ book, onClose }) => {
         audioRef.current.currentTime += amount;
     };
 
+    const [error, setError] = useState(null);
+
+    const handleAudioError = (e) => {
+        console.error("Audio playback error:", e);
+        setError("Kunde inte ladda ljudfilen. Filen kan saknas på servern.");
+        setIsPlaying(false);
+    };
+
     return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-300">
             <div className="bg-white dark:bg-[#1E1F20] w-full max-w-md rounded-[40px] shadow-2xl overflow-hidden border border-white/10 relative">
@@ -73,13 +81,17 @@ const AudiobookPlayer = ({ book, onClose }) => {
                             onError={(e) => {
                                 e.target.onerror = null;
                                 e.target.style.display = 'none';
-                                // Show fallback icon
                                 e.target.nextSibling.style.display = 'flex';
                             }}
                         />
                         <div style={{ display: 'none' }} className="absolute inset-0 items-center justify-center">
                             <Music size={64} className="text-white/40" />
                         </div>
+                        {error && (
+                            <div className="absolute inset-0 bg-red-600/80 backdrop-blur-sm flex items-center justify-center p-6 text-center">
+                                <p className="text-white text-sm font-bold leading-tight">{error}</p>
+                            </div>
+                        )}
                         <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity" />
                     </div>
 
@@ -93,79 +105,94 @@ const AudiobookPlayer = ({ book, onClose }) => {
                         </p>
                     </div>
 
-                    {/* Progress Bar */}
-                    <div className="w-full mb-8">
-                        <input
-                            type="range"
-                            min="0"
-                            max="100"
-                            value={progress}
-                            onChange={handleSeek}
-                            className="w-full h-1.5 bg-gray-200 dark:bg-white/10 rounded-lg appearance-none cursor-pointer accent-indigo-500 mb-2"
-                        />
-                        <div className="flex justify-between text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest">
-                            <span>{formatTime(audioRef.current?.currentTime || 0)}</span>
-                            <span>{formatTime(duration)}</span>
-                        </div>
-                    </div>
-
-                    {/* Controls */}
-                    <div className="flex items-center justify-between w-full px-4 mb-8">
-                        <button
-                            onClick={() => skip(-15)}
-                            className="p-3 text-gray-400 hover:text-indigo-500 transition-colors"
-                            title="Back 15s"
-                        >
-                            <Rewind size={24} />
-                        </button>
-
-                        <div className="flex items-center gap-6">
+                    {/* Error State or Controls */}
+                    {error ? (
+                        <div className="w-full text-center">
+                            <p className="text-gray-500 text-sm mb-6 px-8">Testa att ladda om biblioteket och återskapa ljudfilen med "Återskapa"-knappen.</p>
                             <button
-                                onClick={togglePlay}
-                                className="w-20 h-20 rounded-full bg-indigo-600 text-white flex items-center justify-center hover:bg-indigo-700 hover:scale-105 transition-all shadow-xl shadow-indigo-500/25 active:scale-95"
+                                onClick={onClose}
+                                className="w-full py-4 rounded-2xl bg-gray-100 dark:bg-white/5 text-gray-900 dark:text-white font-bold hover:bg-gray-200 dark:hover:bg-white/10 transition-colors"
                             >
-                                {isPlaying ? <Pause size={32} fill="currentColor" /> : <Play size={32} fill="currentColor" className="ml-1" />}
+                                Stäng spelaren
                             </button>
                         </div>
+                    ) : (
+                        <>
+                            {/* Progress Bar */}
+                            <div className="w-full mb-8">
+                                <input
+                                    type="range"
+                                    min="0"
+                                    max="100"
+                                    value={progress}
+                                    onChange={handleSeek}
+                                    className="w-full h-1.5 bg-gray-200 dark:bg-white/10 rounded-lg appearance-none cursor-pointer accent-indigo-500 mb-2"
+                                />
+                                <div className="flex justify-between text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest">
+                                    <span>{formatTime(audioRef.current?.currentTime || 0)}</span>
+                                    <span>{formatTime(duration)}</span>
+                                </div>
+                            </div>
 
-                        <button
-                            onClick={() => skip(15)}
-                            className="p-3 text-gray-400 hover:text-indigo-500 transition-colors"
-                            title="Forward 15s"
-                        >
-                            <FastForward size={24} />
-                        </button>
-                    </div>
+                            {/* Controls */}
+                            <div className="flex items-center justify-between w-full px-4 mb-8">
+                                <button
+                                    onClick={() => skip(-15)}
+                                    className="p-3 text-gray-400 hover:text-indigo-500 transition-colors"
+                                    title="Back 15s"
+                                >
+                                    <Rewind size={24} />
+                                </button>
 
-                    {/* Bottom Settings */}
-                    <div className="flex items-center justify-between w-full bg-gray-50 dark:bg-white/5 rounded-3xl p-4">
-                        <div className="flex items-center gap-3">
-                            <Volume2 size={18} className="text-gray-400" />
-                            <input
-                                type="range"
-                                min="0"
-                                max="1"
-                                step="0.1"
-                                value={volume}
-                                onChange={(e) => {
-                                    setVolume(parseFloat(e.target.value));
-                                    audioRef.current.volume = parseFloat(e.target.value);
-                                }}
-                                className="w-20 h-1 bg-gray-200 dark:bg-white/10 rounded-lg appearance-none cursor-pointer accent-indigo-500"
-                            />
-                        </div>
+                                <div className="flex items-center gap-6">
+                                    <button
+                                        onClick={togglePlay}
+                                        className="w-20 h-20 rounded-full bg-indigo-600 text-white flex items-center justify-center hover:bg-indigo-700 hover:scale-105 transition-all shadow-xl shadow-indigo-500/25 active:scale-95"
+                                    >
+                                        {isPlaying ? <Pause size={32} fill="currentColor" /> : <Play size={32} fill="currentColor" className="ml-1" />}
+                                    </button>
+                                </div>
 
-                        <button
-                            onClick={() => {
-                                const speeds = [1, 1.25, 1.5, 2, 0.75];
-                                const nextIndex = (speeds.indexOf(playbackSpeed) + 1) % speeds.length;
-                                setPlaybackSpeed(speeds[nextIndex]);
-                            }}
-                            className="px-3 py-1.5 rounded-xl bg-white dark:bg-white/5 text-xs font-bold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/10 transition-colors border border-gray-100 dark:border-white/5"
-                        >
-                            {playbackSpeed}x
-                        </button>
-                    </div>
+                                <button
+                                    onClick={() => skip(15)}
+                                    className="p-3 text-gray-400 hover:text-indigo-500 transition-colors"
+                                    title="Forward 15s"
+                                >
+                                    <FastForward size={24} />
+                                </button>
+                            </div>
+
+                            {/* Bottom Settings */}
+                            <div className="flex items-center justify-between w-full bg-gray-50 dark:bg-white/5 rounded-3xl p-4">
+                                <div className="flex items-center gap-3">
+                                    <Volume2 size={18} className="text-gray-400" />
+                                    <input
+                                        type="range"
+                                        min="0"
+                                        max="1"
+                                        step="0.1"
+                                        value={volume}
+                                        onChange={(e) => {
+                                            setVolume(parseFloat(e.target.value));
+                                            audioRef.current.volume = parseFloat(e.target.value);
+                                        }}
+                                        className="w-20 h-1 bg-gray-200 dark:bg-white/10 rounded-lg appearance-none cursor-pointer accent-indigo-500"
+                                    />
+                                </div>
+
+                                <button
+                                    onClick={() => {
+                                        const speeds = [1, 1.25, 1.5, 2, 0.75];
+                                        const nextIndex = (speeds.indexOf(playbackSpeed) + 1) % speeds.length;
+                                        setPlaybackSpeed(speeds[nextIndex]);
+                                    }}
+                                    className="px-3 py-1.5 rounded-xl bg-white dark:bg-white/5 text-xs font-bold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/10 transition-colors border border-gray-100 dark:border-white/5"
+                                >
+                                    {playbackSpeed}x
+                                </button>
+                            </div>
+                        </>
+                    )}
                 </div>
 
                 <audio
@@ -174,6 +201,7 @@ const AudiobookPlayer = ({ book, onClose }) => {
                     onTimeUpdate={handleTimeUpdate}
                     onLoadedMetadata={handleLoadedMetadata}
                     onEnded={() => setIsPlaying(false)}
+                    onError={handleAudioError}
                 />
             </div>
         </div>

@@ -36,9 +36,8 @@ public class LicenseHeartbeatService {
             request.put("ip", getPublicIp());
             request.put("hostname", InetAddress.getLocalHost().getHostName());
 
-            ResponseEntity<Map<String, Object>> response = restTemplate.postForEntity(HEARTBEAT_URL, request,
-                    (Class<Map<String, Object>>) (Class<?>) Map.class);
-            Map<String, Object> body = response.getBody();
+            ResponseEntity<Map> response = restTemplate.postForEntity(HEARTBEAT_URL, request, Map.class);
+            Map<String, Object> body = (Map<String, Object>) response.getBody();
 
             if (body != null) {
                 String status = (String) body.get("status");

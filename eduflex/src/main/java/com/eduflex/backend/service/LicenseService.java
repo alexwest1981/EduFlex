@@ -21,6 +21,7 @@ public class LicenseService {
     private static final String LICENSE_FILE = Obfuscator.dec("ZWR1ZmxleC5saWNlbnNl");
 
     private final com.eduflex.backend.repository.PaymentSettingsRepository paymentSettingsRepository;
+    private final com.eduflex.backend.repository.LicenseAuditRepository licenseAuditRepository;
     private final org.springframework.core.env.Environment env;
 
     private com.eduflex.backend.model.LicenseType currentTier = com.eduflex.backend.model.LicenseType.ENTERPRISE;
@@ -32,8 +33,10 @@ public class LicenseService {
     private java.security.PublicKey publicKey;
 
     public LicenseService(com.eduflex.backend.repository.PaymentSettingsRepository paymentSettingsRepository,
+            com.eduflex.backend.repository.LicenseAuditRepository licenseAuditRepository,
             org.springframework.core.env.Environment env) {
         this.paymentSettingsRepository = paymentSettingsRepository;
+        this.licenseAuditRepository = licenseAuditRepository;
         this.env = env;
         this.isOfflineMode = "true".equalsIgnoreCase(env.getProperty("EDUFLEX_OFFLINE_MODE"));
     }
@@ -76,6 +79,7 @@ public class LicenseService {
         if (!file.exists()) {
             System.out.println("⚠️  LICENS: Ingen licensfil hittad. Systemet är låst.");
             this.isValid = false;
+            logAudit("N/A", "LOCKED", "Ingen licensfil hittad");
             return;
         }
 
@@ -146,11 +150,13 @@ public class LicenseService {
             this.expiryDate = expires;
             this.isValid = true;
             System.out.println("✅ LICENS GODKÄND (RSA): " + currentTier + " för " + customerName);
+            logAudit(customerName, "VALID", "Hjärtat klappar för: " + currentTier);
             return true;
 
         } catch (Exception e) {
             System.err.println("❌ LICENS NEKAD: " + e.getMessage());
             this.isValid = false;
+            logAudit(customerName, "INVALID", e.getMessage());
             return false;
         }
     }
@@ -213,5 +219,20 @@ public class LicenseService {
         return paymentSettingsRepository.findByIsActiveTrue()
                 .map(com.eduflex.backend.model.PaymentSettings::getDomainUrl)
                 .orElse(env.getProperty("EDUFLEX_DOMAIN_URL"));
+    }
+
+    private void logAudit(String customer, String status, String reason) {
+        try {
+            String hostname = java.net.InetAddress.getLocalHost().getHostName();
+            com.eduflex.backend.model.LicenseAudit audit = new com.eduflex.backend.model.LicenseAudit(
+                    customer, status, reason, "LOCAL", hostname);
+            licenseAuditRepository.save(audit);
+        } catch (Exception e) {
+            // Silently fail to not block license logic
+        }
+    }
+
+    public java.util.List<com.eduflex.backend.model.LicenseAudit> getAuditLogs() {
+        return licenseAuditRepository.findTop50ByOrderByTimestampDesc();
     }
 }

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Book, Upload, Search, Trash2, X, Maximize2, Library, Filter, Settings, Sparkles as SparklesIcon, Volume2, Music } from 'lucide-react';
+import { Book, Upload, Search, Trash2, X, Maximize2, Library, Filter, Settings, Sparkles as SparklesIcon, Volume2, Music, RefreshCw } from 'lucide-react';
 import { api } from '../../services/api';
 import EpubViewer from '../../components/common/EpubViewer';
 import PdfViewer from '../../components/common/PdfViewer';
@@ -23,6 +23,7 @@ const EbookLibrary = () => {
     const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [selectedBook, setSelectedBook] = useState(null);
+    const { setActiveAudiobook } = useAppContext();
     const [files, setFiles] = useState({ epub: null, cover: null });
     const [uploadProgress, setUploadProgress] = useState(0);
     const [uploadData, setUploadData] = useState({
@@ -260,8 +261,7 @@ const EbookLibrary = () => {
             if (response.ok) {
                 const blob = await response.blob();
                 const audioUrl = URL.createObjectURL(blob);
-                setSelectedBook({ ...book, fileUrl: audioUrl, type: 'AUDIO' });
-                setIsAudioPlayerOpen(true);
+                setActiveAudiobook({ ...book, fileUrl: audioUrl, type: 'AUDIO' });
                 toast.success('AI-rösten är redo! 🎧', { id: loadingToast });
             } else {
                 toast.error('Kunde inte generera AI-röst.', { id: loadingToast });
@@ -271,6 +271,29 @@ const EbookLibrary = () => {
             toast.error('Ett fel inträffade vid AI-uppläsning.', { id: loadingToast });
         } finally {
             setTtsLoading(false);
+        }
+    };
+
+    const handleRegenerateAudio = async (book) => {
+        const loadingToast = toast.loading('Genererar ljudbok till servern...');
+        try {
+            const response = await fetch(`/api/ebooks/${book.id}/regenerate-audio`, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+            });
+
+            if (response.ok) {
+                const updatedBook = await response.json();
+                toast.success('Ljudboken har återskapats och sparats! 🎧✅', { id: loadingToast });
+                fetchEbooks(); // Refresh list to get new URL
+                if (selectedBook?.id === book.id) setSelectedBook(updatedBook);
+            } else {
+                const err = await response.json();
+                toast.error('Misslyckades: ' + (err.message || 'Okänt fel'), { id: loadingToast });
+            }
+        } catch (error) {
+            console.error('Regeneration error:', error);
+            toast.error('Tekniskt fel vid återskapande.', { id: loadingToast });
         }
     };
 
@@ -285,15 +308,7 @@ const EbookLibrary = () => {
         }
     };
 
-    console.log('Current User Role:', currentUser?.role);
-    console.log('Role Check:', {
-        roleName: currentUser?.role?.name,
-        roleDirect: currentUser?.role,
-        isTeacherName: currentUser?.role?.name === 'ROLE_TEACHER',
-        isAdminName: currentUser?.role?.name === 'ROLE_ADMIN',
-        isTeacherDirect: currentUser?.role === 'TEACHER',
-        isAdminDirect: currentUser?.role === 'ADMIN'
-    });
+    // Role logging removed for production clarity
 
     return (
         <div className="p-6 max-w-7xl mx-auto min-h-screen bg-gray-50 dark:bg-[#131314]">
@@ -373,7 +388,13 @@ const EbookLibrary = () => {
                         <div className={viewMode === 'grid' ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6" : "space-y-4"}>
                             {ebooks.filter(book => (categoryFilter === 'Alla' || book.category === categoryFilter) && (book.title.toLowerCase().includes(searchTerm.toLowerCase()) || book.author.toLowerCase().includes(searchTerm.toLowerCase()))).map(book => (
                                 <div key={book.id} className={`group bg-white dark:bg-gray-800 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-gray-700 overflow-hidden ${viewMode === 'list' ? 'flex items-center gap-4 p-4' : 'flex flex-col'}`}>
-                                    <div className={`relative overflow-hidden cursor-pointer ${viewMode === 'list' ? 'w-24 h-32 rounded-lg flex-shrink-0' : 'aspect-[3/4] w-full'}`} onClick={() => { console.log('Opening book:', book.fileUrl); setSelectedBook(book); }}>
+                                    <div className={`relative overflow-hidden cursor-pointer ${viewMode === 'list' ? 'w-24 h-32 rounded-lg flex-grow-0' : 'aspect-[3/4] w-full'}`} onClick={() => {
+                                        if (book.type === 'AUDIO') {
+                                            setActiveAudiobook(book);
+                                        } else {
+                                            setSelectedBook(book);
+                                        }
+                                    }}>
                                         {/* Server-side Cached Cover */}
                                         <img
                                             src={`/api/ebooks/${book.id}/cover`}
@@ -403,6 +424,11 @@ const EbookLibrary = () => {
                                         <div className="mt-auto flex items-center gap-2 justify-end">
                                             {(currentUser?.role?.name === 'ROLE_TEACHER' || currentUser?.role?.name === 'ROLE_ADMIN' || currentUser?.role === 'TEACHER' || currentUser?.role === 'ADMIN' || currentUser?.username === 'admin') && (
                                                 <>
+                                                    {book.type === 'AUDIO' && (
+                                                        <button onClick={(e) => { e.stopPropagation(); handleRegenerateAudio(book); }} className="p-2 text-indigo-500 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg transition-colors" title="Återskapa Ljudfil (Fixa 404)">
+                                                            <RefreshCw size={18} />
+                                                        </button>
+                                                    )}
                                                     <button onClick={(e) => { e.stopPropagation(); handleListenWithAI(book); }} className="p-2 text-pink-500 hover:text-pink-600 hover:bg-pink-50 dark:hover:bg-pink-900/30 rounded-lg transition-colors" title="Lyssna med AI (TTS)">
                                                         <Volume2 size={18} />
                                                     </button>
@@ -606,7 +632,24 @@ const EbookLibrary = () => {
                             </div>
                             <div className="flex-1 bg-gray-100 dark:bg-gray-900 overflow-hidden relative">
                                 {selectedBook.type === 'AUDIO' ? (
-                                    <AudiobookPlayer book={selectedBook} onClose={() => setSelectedBook(null)} />
+                                    <div className="flex items-center justify-center h-full">
+                                        <div className="text-center">
+                                            <div className="w-20 h-20 bg-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse">
+                                                <Music className="text-white" size={40} />
+                                            </div>
+                                            <h3 className="text-xl font-bold dark:text-white mb-2">Ljudbok startad</h3>
+                                            <p className="text-gray-500">Spelaren syns i ett flytande fönster längst ner.</p>
+                                            <button
+                                                onClick={() => {
+                                                    setActiveAudiobook(selectedBook);
+                                                    setSelectedBook(null);
+                                                }}
+                                                className="mt-6 px-6 py-2 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 transition-colors"
+                                            >
+                                                Öppna biblioteket
+                                            </button>
+                                        </div>
+                                    </div>
                                 ) : (selectedBook.fileUrl && selectedBook.fileUrl.toLowerCase().endsWith('.epub')) || selectedBook.type === 'EPUB' ? (
                                     <EpubViewer url={selectedBook.fileUrl} title={selectedBook.title} />
                                 ) : (

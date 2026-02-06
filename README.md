@@ -38,6 +38,12 @@
 ## 🇸🇪 Svenska
 
 ### ⚡ Senaste Uppdateringarna
+*   **🎧 Ljudströmning & Roadmap-konsolidering (6 feb 2026):**
+    *   **Stabilisering av ljudböcker:** Åtgärdat "AbortError" och avbrott vid minimering av spelaren genom att införa ett persistent `audio`-element i `FloatingAudioPlayer.jsx`.
+    *   **HTTP Range-stöd:** Implementerat stöd för partiell innehållsleverans i `StorageController.java`, vilket möjliggör snabb spolning (seeking) och stabilare streaming av stora ljudfiler.
+    *   **Roadmap-unifiering:** Konsoliderat `ROADMAP_2026.md` till huvudfilen `ROADMAP.md` för en tydligare projektvision och enklare underhåll.
+    *   **Felhantering:** Förbättrad detektering av saknade filer och lagt till logik för manuell återskapning av AI-ljud direkt från biblioteket.
+
 *   **🛠 Systemhärdning & Repository-städning (5 feb 2026):**
     *   **GitHub Cleanup:** Rensat bort över 24 000 statiska OnlyOffice-filer från Git-indexet för att hålla repot snabbt och rent.
     *   **EduFlex Control Center (Java):** Lanserat ett nytt fristående kontrollcenter byggt i Java (Swing) för att hantera Docker, loggar och backend-tjänster.
@@ -312,6 +318,12 @@ curl -X POST http://localhost:8080/api/tenants \
 ## 🇬🇧 English
 
 ### ⚡ Latest Updates
+*   **🎧 Media Streaming & Roadmap Consolidation (Feb 6, 2026):**
+    *   **Audiobook Stabilization:** Resolved "AbortError" and playback interruptions during player minimization by unifying the `audio` element in `FloatingAudioPlayer.jsx`.
+    *   **HTTP Range Support:** Implemented partial content delivery in `StorageController.java`, enabling seeking and smoother streaming for large audio assets.
+    *   **Roadmap Unification:** Merged `ROADMAP_2026.md` into the primary `ROADMAP.md` for a streamlined project vision and better maintainability.
+    *   **Resilience:** Enhanced missing file detection and implemented a manual AI-audio regeneration flow directly from the E-book library.
+
 *   **🛠 System Hardening & Repository Cleanup (Feb 5, 2026):**
     *   **GitHub Cleanup:** Removed over 24,000 static OnlyOffice files from the Git index to keep the repository lean.
     *   **EduFlex Control Center (Java):** Launched a new standalone Java-based control center (Swing) for managing Docker, logs, and backend services.

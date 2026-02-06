@@ -72,27 +72,25 @@ export const GamificationProvider = ({ children }) => {
         }
     }, [isModuleActive]);
 
-    const fetchGamificationConfig = async () => {
+    const fetchGamificationConfig = React.useCallback(async () => {
         try {
-            console.log("Fetching gamification config...");
             const data = await api.gamification.getConfig();
-            console.log("Gamification config received:", data);
             setConfig(data);
         } catch (error) {
             console.error('Failed to fetch gamification config:', error);
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
 
     // Gamification is enabled if:
     // 1. Module is active in system modules panel
     // 2. Config enabled is true (optional, defaults to module status)
     const moduleActive = isModuleActive('GAMIFICATION');
     const configEnabled = config?.enabled !== false; // Default to true if config doesn't exist
-    const isEnabled = moduleActive && configEnabled;
+    const isEnabled = React.useMemo(() => moduleActive && configEnabled, [moduleActive, configEnabled]);
 
-    const value = {
+    const value = React.useMemo(() => ({
         isEnabled,
         config,
         loading,
@@ -112,7 +110,7 @@ export const GamificationProvider = ({ children }) => {
         // Notifications
         achievementNotification: notificationQueue.length > 0 ? notificationQueue[0] : null,
         dismissNotification: () => setNotificationQueue(q => q.slice(1))
-    };
+    }), [isEnabled, config, loading, fetchGamificationConfig, notificationQueue]);
 
     return (
         <GamificationContext.Provider value={value}>

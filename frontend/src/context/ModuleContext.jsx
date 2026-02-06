@@ -32,14 +32,21 @@ export const ModuleProvider = ({ children }) => {
     }, [currentUser]);
 
     // Hjälpfunktion för att kolla om en modul är på
-    const isModuleActive = (key) => {
+    const isModuleActive = React.useCallback((key) => {
         if (!Array.isArray(modules)) return false; // Safety check
         const mod = modules.find(m => m.moduleKey === key);
         return mod ? mod.active : false; // Default false om den inte finns
-    };
+    }, [modules]);
+
+    const contextValue = React.useMemo(() => ({
+        modules,
+        isModuleActive,
+        refreshModules,
+        loading
+    }), [modules, isModuleActive, loading]);
 
     return (
-        <ModuleContext.Provider value={{ modules, isModuleActive, refreshModules, loading }}>
+        <ModuleContext.Provider value={contextValue}>
             {children}
         </ModuleContext.Provider>
     );

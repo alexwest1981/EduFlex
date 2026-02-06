@@ -1,53 +1,89 @@
-# EduFlex Project Roadmap
+# 🚀 EduFlex Roadmap: Vision 2026
 
-This document outlines the high-level roadmap and future plans for the EduFlex learning management system.
+**Mål:** Transformera EduFlex från ett administrativt LMS till ett "Intelligent Learning Ecosystem" som är agent-redo, adaptivt och integrerat i arbetsflödet.
 
-## 🚀 Current Focus: Resource Bank & AI Expansion (Q1 2026)
+---
 
-We have successfully implemented the core structure for the **Resource Bank**, a unified hub for managing all educational materials.
+## 🧠 Kategori 1: AI & Agentisk Arkitektur
+*Marknaden 2026 kräver att AI inte bara är en "add-on" utan motorn i systemet.*
 
--   ✅ **Resource Bank UI**: A dedicated section for managing Quizzes, Assignments, and Lessons.
--   ✅ **AI-Powered Content Generation**: Integration with Gemini AI for pedagogical content.
--   ✅ **Advanced Security Hardening**: 
-    - Domän-låsning av licenssystem för anti-cloning.
-    - Fullständig AES-256 GCM kryptering av känslig användardata (PII).
-    - Rate-limiting (Brute-force skydd) på inloggning.
--   ✅ **Secure Configuration**: Migrering av alla API-nycklar till krypterad databaslagring.
+| Funktion | Beskrivning | Status |
+| :--- | :--- | :--- |
+| **Generativt Författande (Quiz)** | Skapa quiz från PDF/Text. | ✅ **Klar** |
+| **Generativt Författande (Kurser)** | "One-click course creation". Ladda upp PDF/PPT/Video och låt systemet generera kursstruktur, sammanfattningar och quiz automatiskt. | ✅ **Stabil** (V1) |
+| **AI-Tutor & Copilot** | En inbyggd chattbot som svarar på elevers frågor baserat enbart på kursmaterialet (RAG). Rollspelspartner för träning. | ✅ **Klar** (V1) |
+| **MCP-Server** | Gör EduFlex tillgängligt för externa AI-agenter (Model Context Protocol). | ✅ **Klar** (V1) |
+| **Prediktiv Personalisering** | Analyserar beteendedata för att identifiera "at-risk"-studenter och rekommenderar stödmaterial (Gemini-integration). | ✅ **Klar** (V1) |
 
-## 🔮 Future Plans (Q2 2026 and beyond)
+---
 
-### Community & Marketplace
--   [ ] **Community Marketplace**: A fully browsing-enabled UI for finding and importing shared resources.
--   [ ] **Rating & Reviews**: Allow teachers to rate and review shared materials.
--   [ ] **Author Profiles**: Showcase top contributors and their resources.
+## 🔗 Kategori 2: Integration & Ekosystem
+*Systemet får inte vara en isolerad ö. Det måste fungera där användaren är.*
 
-### Gamification V2.0 (Enhanced)
--   [ ] **Quest System**: Daily and weekly challenges for students.
--   [ ] **Expanded Shop**: More customizable avatars and themes.
--   [ ] **Leaderboards**: Class-wide and school-wide competitions.
+| Funktion | Beskrivning | Status |
+| :--- | :--- | :--- |
+| **LTI 1.3 Core** | Grundläggande launch-stöd för externa verktyg. | ✅ **Klar** |
+| **LTI 1.3 Advantage** | Stöd för AGS (Betyg) och NRPS (Roller/Namn). | 📅 **NÄSTA FOKUS** |
+| **xAPI & cmi5** | Modern spårning (LRS) för mobilt lärande och simuleringar. | 📅 **Pågående** |
+| **Workflow Integration** | Utbildning direkt i Slack/Teams/Salesforce ("Headless LMS"). | 📅 **Planerad** |
 
-### Advanced Analytics
--   [ ] **Predictive AI**: Early warning system for students at risk of falling behind.
--   [ ] **Learning Path Insights**: Visualizing student progression through course modules.
+---
 
-### Infrastructure
--   [ ] **Kubernetes Migration**: Prepare Helm charts for scalable deployment.
--   [ ] **CI/CD Pipeline**: fully automated testing and deployment workflows.
+## 👥 Kategori 3: Användarupplevelse & Engagemang
+*Fokus på "Learning Experience" (LXP) snarare än administration.*
+
+| Funktion | Beskrivning | Status |
+| :--- | :--- | :--- |
+| **Socialt Lärande (Basic)** | Community Hub / Marketplace. | ✅ **Klar** |
+| **Socialt Lärande (Avancerat)** | P2P-delning, kommentarer i kurser, "YouTube for Learning". | 📅 **Planerad** |
+| **Gamification (Basic)** | XP, Levlar, Badges, Streaks. | ✅ **Klar** |
+| **EduGame Expansion** | Shop för profil-teman, Sociala Streaks, "Buddy"-system. | 📅 **Pågående (Q1 2026)** |
+| **Mobil-först** | Responsiv webbdesign. | ✅ **Klar** |
+| **Media Streaming** | Stabil synkroniserad ljudboksuppspelning med Range-stöd. | ✅ **Klar** |
+| **Offline-läge / PWA** | Installera som app, ladda ner kurser för offline-bruk. | 📅 **Planerad** |
+
+---
+
+## 📊 Kategori 4: Analys & Affärsnytta
+*Från att mäta "Completion" till att mäta "ROI".*
+
+| Funktion | Beskrivning | Status |
+| :--- | :--- | :--- |
+| **Kursutvärdering & Insikter** | Komplett system för kurskvalitet, automatiserade studentnotiser och AI-analys av fritextsvar. | ✅ **Klar** |
+| **Skills Gap Analysis** | Visualisera kompetensluckor baserat på quiz/profiler. | 📅 **Planerad** |
+| **ROI-rapportering** | Koppla utbildning till affärsdata (t.ex. säljsiffror). | 📅 **Planerad** |
+
+---
+
+## 🛡️ Kategori 5: Infrastruktur & Säkerhet
+*Teknisk ryggrad och skydd av användardata.*
+
+| Funktion | Beskrivning | Status |
+| :--- | :--- | :--- |
+| **Advanced Security** | Domän-låsning, AES-256 GCM kryptering (PII) och Rate-limiting. | ✅ **Klar** |
+| **Unified Storage** | MinIO-integration för alla tillgångar. | ✅ **Klar** |
+| **CI/CD Pipeline** | Fullt automatiserade tester och deployment. | 📅 **Planerad** |
+| **Kubernetes Migration** | Helm-charts för skalbarhet. | 📅 **Planerad** |
+
+---
 
 ## 📝 Change Log
 
+### [v0.9.8] - 2026-02-06
+- **Media**: Implemented HTTP Range support in `StorageController` for seamless audio streaming.
+- **Media**: Refactored `FloatingAudioPlayer` to use a unified persistent `<audio>` element, fixing AbortErrors during minimization.
+- **UX**: Added manual audio regeneration flow for missing assets.
+- **Stability**: Fixed "Rules of Hooks" violation and improved player error handling.
+
 ### [v0.9.7] - 2026-02-04
--   **New Feature**: Restored and renamed **Quiz Generator** for random question bank selection.
--   **UX**: Complete redesign of **Community Publishing Modal** with 4 entry types.
--   **UI**: Fixed responsiveness and layout regressions in the Quiz Module.
--   **Fix**: Enhanced lesson discovery by aggregating standard and AI-generated lessons.
--   **Hotfix**: Resolved video connectivity issues for students and fixed Jitsi race condition.
--   **Hotfix**: Improved Jitsi stability by disabling P2P and forcing WebSockets (using `meet.jit.si`).
+- **New Feature**: Restored and renamed **Quiz Generator** for random question bank selection.
+- **UX**: Complete redesign of **Community Publishing Modal** with 4 entry types.
+- **UI**: Fixed responsiveness and layout regressions in the Quiz Module.
+- **Fix**: Enhanced lesson discovery by aggregating standard and AI-generated lessons.
+- **Hotfix**: Improved Jitsi stability by disabling P2P and forcing WebSockets.
 
 ### [v0.9.6] - 2026-02-03
--   **Security**: Implemented **Advanced License Protection** (Domain binding & Heartbeat).
--   **Security**: Implemented **Database Encryption** for SSN, phone, and address (AES-GCM).
--   **Security**: Added **Rate Limiting** to auth endpoints for brute-force prevention.
--   **New Feature**: AI Resource Generator and Resource Bank module.
--   **UX**: Consolidated all AI settings into the new "AI-inställningar" panel.
--   **Infrastructure**: Migrated sensitive keys from `.env` to secure database records.
+- **Security**: Implemented **Advanced License Protection** (Domain binding & Heartbeat).
+- **Security**: Implemented **Database Encryption** for SSN, phone, and address (AES-GCM).
+- **Security**: Added **Rate Limiting** to auth endpoints for brute-force prevention.
+- **Infrastructure**: Migrated sensitive keys from `.env` to secure database records.

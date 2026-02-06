@@ -23,7 +23,6 @@ public class LicenseController {
         try {
             Map<String, Object> response = new HashMap<>();
 
-            // FIX: Anropar nu isValid()
             System.out.println("DEBUG: Checking license status...");
             boolean valid = licenseService.isValid();
             System.out.println("DEBUG: License valid? " + valid);
@@ -51,12 +50,16 @@ public class LicenseController {
     public ResponseEntity<?> activate(@RequestBody Map<String, String> body) {
         String key = body.get("key");
         try {
-            // FIX: Anropar nu activateLicense()
             licenseService.activateLicense(key);
             return ResponseEntity.ok(Map.of("message", "Licens aktiverad!"));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Map.of("error", "Ogiltig licensnyckel"));
         }
+    }
+
+    @GetMapping("/audit")
+    public ResponseEntity<?> getAuditLogs() {
+        return ResponseEntity.ok(licenseService.getAuditLogs());
     }
 
 }

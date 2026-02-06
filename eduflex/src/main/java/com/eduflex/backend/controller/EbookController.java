@@ -154,4 +154,14 @@ public class EbookController {
             return ResponseEntity.internalServerError().build();
         }
     }
+
+    @PostMapping("/{id}/regenerate-audio")
+    public ResponseEntity<?> regenerateAudio(@PathVariable Long id) {
+        try {
+            Ebook ebook = ebookService.regenerateAudiobook(id);
+            return ResponseEntity.ok(ebook);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Regeneration failed: " + e.getMessage()));
+        }
+    }
 }

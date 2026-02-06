@@ -57,7 +57,6 @@ const AdminDashboard = () => {
             const coursesArray = Array.isArray(c) ? c : (c?.content || []);
             const docsArray = Array.isArray(d) ? d : (d?.content || []);
 
-            console.log('[AdminDashboard] Fetched data:', { users: usersArray.length, courses: coursesArray.length, docs: docsArray.length });
 
             setUsers(usersArray);
             setCourses(coursesArray);
