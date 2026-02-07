@@ -7,6 +7,8 @@ import com.eduflex.backend.repository.LtiKeyRepository;
 import com.eduflex.backend.repository.LtiPlatformRepository;
 import com.eduflex.backend.repository.UserRepository;
 import com.eduflex.backend.repository.RoleRepository;
+import com.eduflex.backend.repository.LtiLaunchRepository;
+import com.eduflex.backend.model.LtiLaunch;
 import com.eduflex.backend.security.JwtUtils;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.JWSHeader;
@@ -45,17 +47,23 @@ public class LtiService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final LtiKeyRepository ltiKeyRepository;
+    private final LtiLaunchRepository ltiLaunchRepository;
+    private final LtiNrpsService ltiNrpsService;
     private final TenantService tenantService;
     private final JwtUtils jwtUtils;
 
     @Autowired
     public LtiService(LtiPlatformRepository platformRepository, UserRepository userRepository,
             RoleRepository roleRepository, LtiKeyRepository ltiKeyRepository,
+            LtiLaunchRepository ltiLaunchRepository,
+            LtiNrpsService ltiNrpsService,
             TenantService tenantService, JwtUtils jwtUtils) {
         this.platformRepository = platformRepository;
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.ltiKeyRepository = ltiKeyRepository;
+        this.ltiLaunchRepository = ltiLaunchRepository;
+        this.ltiNrpsService = ltiNrpsService;
         this.tenantService = tenantService;
         this.jwtUtils = jwtUtils;
     }
@@ -167,6 +175,7 @@ public class LtiService {
 
             if ("LtiDeepLinkingRequest".equals(messageType)) {
                 // Deep Linking Launch
+                @SuppressWarnings("unchecked")
                 Map<String, Object> settings = (Map<String, Object>) claims
                         .getClaim("https://purl.imsglobal.org/spec/lti-dl/claim/deep_linking_settings");
                 String deploymentId = (String) claims
@@ -193,6 +202,59 @@ public class LtiService {
             } else {
                 // Standard Resource Link Launch
                 String token = provisionUserAndGenerateToken(claims);
+
+                // --- LTI ADVANTAGE: AGS & NRPS ---
+                try {
+                    String sub = claims.getSubject();
+
+                    @SuppressWarnings("unchecked")
+                    Map<String, Object> resourceLink = (Map<String, Object>) claims
+                            .getClaim("https://purl.imsglobal.org/spec/lti/claim/resource_link");
+                    String resLinkId = (String) resourceLink.get("id");
+
+                    User student = userRepository
+                            .findByEmail(claims.getClaim("email") != null ? (String) claims.getClaim("email")
+                                    : claims.getSubject() + "@lti.user")
+                            .orElse(null);
+
+                    LtiLaunch launch = ltiLaunchRepository
+                            .findByPlatformIssuerAndUserSubAndResourceLinkId(issuer, sub, resLinkId)
+                            .orElse(new LtiLaunch());
+
+                    launch.setPlatformIssuer(issuer);
+                    launch.setUserSub(sub);
+                    launch.setResourceLinkId(resLinkId);
+                    launch.setUser(student);
+                    launch.setTargetLinkUri(
+                            (String) claims.getClaim("https://purl.imsglobal.org/spec/lti/claim/target_link_uri"));
+                    launch.setDeploymentId(
+                            (String) claims.getClaim("https://purl.imsglobal.org/spec/lti/claim/deployment_id"));
+
+                    // AGS
+                    @SuppressWarnings("unchecked")
+                    Map<String, Object> agsEndpoint = (Map<String, Object>) claims
+                            .getClaim("https://purl.imsglobal.org/spec/lti-ags/claim/endpoint");
+                    if (agsEndpoint != null) {
+                        launch.setAgsLineItemUrl((String) agsEndpoint.get("lineitem"));
+                        launch.setAgsLineItemsUrl((String) agsEndpoint.get("lineitems"));
+                    }
+
+                    // NRPS
+                    @SuppressWarnings("unchecked")
+                    Map<String, Object> nrpsEndpoint = (Map<String, Object>) claims
+                            .getClaim("https://purl.imsglobal.org/spec/lti-nrps/claim/namesroleservice");
+                    if (nrpsEndpoint != null) {
+                        launch.setNrpsMembershipUrl((String) nrpsEndpoint.get("context_memberships_url"));
+                    }
+
+                    ltiLaunchRepository.save(launch);
+                    logger.info("💾 LTI Advantage context saved for user {} on platform {}", sub, issuer);
+
+                } catch (Exception ex) {
+                    logger.warn("⚠️ Failed to store LTI Advantage claims: {}", ex.getMessage());
+                    // Don't fail the whole launch if Advantage claims are missing or malformed
+                }
+
                 return "TOKEN:" + token;
             }
 
@@ -247,33 +309,34 @@ public class LtiService {
         String sub = claims.getSubject();
         String name = claims.getClaim("name") != null ? (String) claims.getClaim("name") : "LTI User";
 
-        // Basic LTI Role Mapping
-        // LTI roles are usually URIs. e.g.
-        // http://purl.imsglobal.org/vocab/lis/v2/membership#Instructor
         Object rolesObj = claims.getClaim("https://purl.imsglobal.org/spec/lti/claim/roles");
         List<String> roles = (rolesObj instanceof List) ? (List<String>) rolesObj : Collections.emptyList();
 
+        User user = provisionUser(email, sub, name, roles);
+
+        // Generate App Token
+        return jwtUtils.generateJwtToken(user.getUsername());
+    }
+
+    public User provisionUser(String email, String sub, String name, List<String> roles) {
         if (email == null) {
-            email = sub + "@lti.user"; // Fallback if email not provided
+            email = sub + "@lti.user";
         }
 
         final String finalEmail = email;
         final String finalName = name;
 
-        User user = userRepository.findByEmail(email).orElseGet(() -> {
-            // Create new user
+        return userRepository.findByEmail(email).orElseGet(() -> {
             User newUser = new User();
             newUser.setEmail(finalEmail);
             newUser.setUsername(finalEmail);
 
-            // Split name into First/Last
             String[] parts = finalName.split(" ", 2);
             newUser.setFirstName(parts[0]);
             newUser.setLastName(parts.length > 1 ? parts[1] : "");
 
-            newUser.setPassword(UUID.randomUUID().toString()); // Random password, they use LTI
+            newUser.setPassword(UUID.randomUUID().toString());
 
-            // Determine Role
             if (!roles.isEmpty() && (roles.contains("http://purl.imsglobal.org/vocab/lis/v2/membership#Instructor")
                     || roles.contains("Instructor"))) {
                 Role teacherRole = roleRepository.findByName("TEACHER").orElse(null);
@@ -285,9 +348,21 @@ public class LtiService {
 
             return userRepository.save(newUser);
         });
+    }
 
-        // Generate App Token
-        return jwtUtils.generateJwtToken(user.getUsername());
+    /**
+     * NRPS: Sync members from LMS to EduFlex
+     */
+    public void syncMembers(String platformIssuer, String membershipsUrl) {
+        com.eduflex.backend.dto.LtiMembershipResponse response = ltiNrpsService.getMemberships(platformIssuer,
+                membershipsUrl);
+        if (response != null && response.getMembers() != null) {
+            for (com.eduflex.backend.dto.LtiMembershipResponse.LtiMember member : response.getMembers()) {
+                provisionUser(member.getEmail(), member.getUser_id(), member.getName(), member.getRoles());
+            }
+            logger.info("✅ Sync completed. Processed {} members for platform {}", response.getMembers().size(),
+                    platformIssuer);
+        }
     }
 
     // Generate Deep Linking Response JWT

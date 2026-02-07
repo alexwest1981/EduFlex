@@ -3,10 +3,10 @@ import { useParams, useNavigate } from 'react-router-dom';
 import {
     ArrowLeft, Loader2, Download, BookOpen, MessageSquare,
     FileText, Users, HelpCircle, Video, Monitor, Camera,
-    Calendar, Package, Activity, LayoutDashboard as SummaryIcon, Sparkles
+    Calendar, Package, Activity, LayoutDashboard as SummaryIcon, Sparkles, Layers
 } from 'lucide-react';
 import StudentActivityBoard from '../../components/StudentActivityBoard';
-import ScormList from '../scorm/ScormList';
+import InteractiveModules from './components/InteractiveModules';
 import { useTranslation } from 'react-i18next';
 import { api } from '../../services/api';
 import SkolverketCourseInfo from '../../components/SkolverketCourseInfo';
@@ -97,11 +97,11 @@ const CourseDetail = ({ currentUser }) => {
             visibleFor: 'ALL'
         },
         {
-            key: 'scorm',
-            comp: ScormList,
-            meta: { name: 'Interactive Modules' },
-            icon: <Package size={18} />,
-            enabled: isModuleActive('SCORM'),
+            key: 'interactive-modules',
+            comp: InteractiveModules,
+            meta: { name: 'Interaktiva Moduler' },
+            icon: <Layers size={18} />,
+            enabled: isModuleActive('SCORM') || true, // Always enabled if we have LRS
             visibleFor: 'ALL'
         },
         {

@@ -36,4 +36,9 @@ public class TestFileStorageService implements StorageService {
     public void delete(String storageId) {
         // No-op for test implementation
     }
+
+    @Override
+    public void deleteByPrefix(String prefix) {
+        // No-op for test implementation
+    }
 }

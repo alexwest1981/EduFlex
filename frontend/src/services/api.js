@@ -579,12 +579,32 @@ export const api = {
     },
 
     scorm: {
-        getByCourse: (courseId) => fetch(`${API_BASE}/scorm/course/${courseId}`, { headers: getHeaders() }).then(handleResponse),
         upload: (courseId, formData) => fetch(`${API_BASE}/scorm/upload/${courseId}`, {
             method: 'POST',
             headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }, // Multipart handles content-type
             body: formData
-        }).then(handleResponse)
+        }).then(handleResponse),
+        getPackages: (courseId) => fetch(`${API_BASE}/scorm/course/${courseId}`, { headers: getHeaders() }).then(handleResponse),
+        getByCourse: (courseId) => fetch(`${API_BASE}/scorm/course/${courseId}`, { headers: getHeaders() }).then(handleResponse),
+        getOne: (id) => fetch(`${API_BASE}/scorm/${id}`, { headers: getHeaders() }).then(handleResponse),
+        update: (id, data) => api.put(`/scorm/${id}`, data),
+        delete: (id) => api.delete(`/scorm/${id}`)
+    },
+    cmi5: {
+        upload: (courseId, formData) => fetch(`${API_BASE}/cmi5/upload/${courseId}`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` },
+            body: formData
+        }).then(handleResponse),
+        getPackages: (courseId) => fetch(`${API_BASE}/cmi5/course/${courseId}`, { headers: getHeaders() }).then(handleResponse),
+        getByCourse: (courseId) => fetch(`${API_BASE}/cmi5/course/${courseId}`, { headers: getHeaders() }).then(handleResponse),
+        getOne: (id) => fetch(`${API_BASE}/cmi5/${id}`, { headers: getHeaders() }).then(handleResponse),
+        update: (id, data) => api.put(`/cmi5/${id}`, data),
+        delete: (id) => api.delete(`/cmi5/${id}`)
+    },
+
+    teacher: {
+        getCourseAnalytics: (courseId) => fetch(`${API_BASE}/teacher/analytics/course/${courseId}`, { headers: getHeaders() }).then(handleResponse),
     },
 
     activity: {

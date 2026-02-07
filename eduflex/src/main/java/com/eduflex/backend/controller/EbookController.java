@@ -121,7 +121,7 @@ public class EbookController {
             byte[] image = ebookService.getEbookCover(id);
             // Detect content type or default to jpeg
             MediaType mediaType = MediaType.IMAGE_JPEG;
-            if (image.length > 3 && image[0] == (byte) 0x89 && image[1] == (byte) 0x50)
+            if (image != null && image.length > 3 && image[0] == (byte) 0x89 && image[1] == (byte) 0x50)
                 mediaType = MediaType.IMAGE_PNG;
 
             return ResponseEntity.ok()
@@ -129,6 +129,8 @@ public class EbookController {
                     .cacheControl(CacheControl.maxAge(365, TimeUnit.DAYS).cachePublic().immutable())
                     .body(image);
         } catch (Exception e) {
+            org.slf4j.LoggerFactory.getLogger(EbookController.class)
+                    .error("Failed to get cover for ebook {}: {}", id, e.getMessage());
             return ResponseEntity.notFound().build();
         }
     }

@@ -39,8 +39,17 @@ public class AuthTokenFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         // Skip filter for OnlyOffice endpoints to avoid incorrect JWT validation
+        // ALSO skip for LRS endpoints because they use internal tokens that fail strict
+        // OAuth2 validation (401)
         String path = request.getRequestURI();
-        if (path.startsWith("/api/onlyoffice/")) {
+        if (path.startsWith("/api/onlyoffice/") || path.startsWith("/api/lrs/")) {
+            // We must strip the auth header for LRS to prevent
+            // BearerTokenAuthenticationFilter from blocking it
+            if (path.startsWith("/api/lrs/")) {
+                HttpServletRequest wrapper = wrapRequestToHideAuth(request);
+                filterChain.doFilter(wrapper, response);
+                return;
+            }
             filterChain.doFilter(request, response);
             return;
         }

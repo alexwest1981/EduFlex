@@ -76,6 +76,10 @@ public class Course {
 
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
+    private java.util.List<Cmi5Package> cmi5Packages = new java.util.ArrayList<>();
+
+    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private java.util.List<ForumCategory> forumCategories = new java.util.ArrayList<>();
 
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -343,6 +347,14 @@ public class Course {
 
     public void setScormPackages(java.util.List<ScormPackage> scormPackages) {
         this.scormPackages = scormPackages;
+    }
+
+    public java.util.List<Cmi5Package> getCmi5Packages() {
+        return cmi5Packages;
+    }
+
+    public void setCmi5Packages(java.util.List<Cmi5Package> cmi5Packages) {
+        this.cmi5Packages = cmi5Packages;
     }
 
     public java.util.List<ForumCategory> getForumCategories() {

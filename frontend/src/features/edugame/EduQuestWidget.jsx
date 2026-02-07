@@ -17,7 +17,7 @@ const EduQuestWidget = () => {
 
             try {
                 // Fetch daily quests
-                const daily = await eduGameService.getQuests('DAILY');
+                const daily = await eduGameService.getDailyQuests('DAILY');
                 setQuests(daily || []);
             } catch (error) {
                 console.error("Failed to fetch quests", error);

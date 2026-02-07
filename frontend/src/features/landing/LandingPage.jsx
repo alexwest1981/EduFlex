@@ -139,6 +139,18 @@ const LandingPage = () => {
             gradient: 'from-blue-600 to-indigo-600'
         },
         {
+            icon: <Database className="w-6 h-6" />,
+            title: 'xAPI & CMI5 LRS',
+            description: 'Nästa generations spårning. Kör simuleringar och offline-mobilkurser med full detaljrapportering via vårt inbyggda Learning Record Store.',
+            gradient: 'from-emerald-500 to-teal-600'
+        },
+        {
+            icon: <Server className="w-6 h-6" />,
+            title: 'MinIO & S3 Storage',
+            description: 'Skalbar Enterprise-lagring. All media (ljudböcker, video) streamas blixtsnabbt med stöd för uppspelning där du slutade.',
+            gradient: 'from-pink-500 to-rose-500'
+        },
+        {
             icon: <Trophy className="w-6 h-6" />,
             title: 'EduGame Engine',
             description: 'XP-system, Shop, Profilteman, dagliga utmaningar och streaks. Gör lärandet till ett äventyr.',

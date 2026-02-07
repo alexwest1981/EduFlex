@@ -102,6 +102,8 @@ public class StorageController {
                     .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + fileName + "\"")
                     .body(allBytes);
         } catch (Exception e) {
+            org.slf4j.LoggerFactory.getLogger(StorageController.class).error("Fetch failed for {}: {}", storageId,
+                    e.getMessage());
             return ResponseEntity.notFound().build();
         }
     }

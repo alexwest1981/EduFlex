@@ -2,9 +2,11 @@ package com.eduflex.backend.service;
 
 import com.eduflex.backend.model.*;
 import com.eduflex.backend.repository.*;
+import com.eduflex.backend.dto.LtiScoreDTO;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class QuizService {
@@ -18,6 +20,8 @@ public class QuizService {
     private final GamificationService gamificationService;
     private final StudentActivityService studentActivityService;
     private final com.eduflex.backend.service.ai.EduAIService eduAIService;
+    private final LtiAgsService ltiAgsService;
+    private final LtiLaunchRepository ltiLaunchRepository;
 
     public QuizService(QuizRepository quizRepository,
             QuizResultRepository resultRepository,
@@ -25,7 +29,9 @@ public class QuizService {
             UserRepository userRepository,
             GamificationService gamificationService,
             StudentActivityService studentActivityService,
-            com.eduflex.backend.service.ai.EduAIService eduAIService) {
+            com.eduflex.backend.service.ai.EduAIService eduAIService,
+            LtiAgsService ltiAgsService,
+            LtiLaunchRepository ltiLaunchRepository) {
         this.quizRepository = quizRepository;
         this.resultRepository = resultRepository;
         this.courseRepository = courseRepository;
@@ -33,6 +39,8 @@ public class QuizService {
         this.gamificationService = gamificationService;
         this.studentActivityService = studentActivityService;
         this.eduAIService = eduAIService;
+        this.ltiAgsService = ltiAgsService;
+        this.ltiLaunchRepository = ltiLaunchRepository;
     }
 
     public List<Quiz> getQuizzesByCourse(Long courseId) {
@@ -133,6 +141,37 @@ public class QuizService {
         eduAIService.checkAndCompleteQuest(studentId, com.eduflex.backend.model.EduAIQuest.QuestObjectiveType.QUIZ,
                 quizId);
         // ---------------------
+
+        // --- LTI ADVANTAGE AGS: Post Grade ---
+        try {
+            // Find LTI Launch for this student and this quiz
+            // We search for launches where targetLinkUri contains this quiz ID
+            String quizIdStr = "/quiz/" + quizId;
+            Optional<LtiLaunch> launchOpt = ltiLaunchRepository.findAll().stream()
+                    .filter(l -> l.getUser() != null && l.getUser().getId().equals(studentId))
+                    .filter(l -> l.getTargetLinkUri() != null && l.getTargetLinkUri().contains(quizIdStr))
+                    .findFirst();
+
+            if (launchOpt.isPresent()) {
+                LtiLaunch launch = launchOpt.get();
+                if (launch.getAgsLineItemUrl() != null && !launch.getAgsLineItemUrl().isEmpty()) {
+                    LtiScoreDTO ltiScore = LtiScoreDTO.builder()
+                            .userId(launch.getUserSub())
+                            .scoreGiven((double) score)
+                            .scoreMaximum((double) maxScore)
+                            .activityProgress("Completed")
+                            .gradingProgress("FullyGraded")
+                            .timestamp(java.time.Instant.now().toString())
+                            .build();
+
+                    ltiAgsService.postScore(launch.getPlatformIssuer(), launch.getAgsLineItemUrl(), ltiScore);
+                }
+            }
+        } catch (Exception ex) {
+            // Log but don't fail the submission
+            System.err.println("Failed to post LTI score: " + ex.getMessage());
+        }
+        // -------------------------------------
 
         return savedResult;
     }

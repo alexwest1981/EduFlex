@@ -14,6 +14,11 @@ public class XApiStatement {
     @Column(columnDefinition = "TEXT", nullable = false)
     private String rawStatement;
 
+    private String actorEmail;
+    private String verbId;
+    private String objectId;
+    private String registration;
+
     @Column(nullable = false)
     private LocalDateTime storedAt;
 
@@ -49,5 +54,37 @@ public class XApiStatement {
 
     public void setStoredAt(LocalDateTime storedAt) {
         this.storedAt = storedAt;
+    }
+
+    public String getActorEmail() {
+        return actorEmail;
+    }
+
+    public void setActorEmail(String actorEmail) {
+        this.actorEmail = actorEmail;
+    }
+
+    public String getVerbId() {
+        return verbId;
+    }
+
+    public void setVerbId(String verbId) {
+        this.verbId = verbId;
+    }
+
+    public String getObjectId() {
+        return objectId;
+    }
+
+    public void setObjectId(String objectId) {
+        this.objectId = objectId;
+    }
+
+    public String getRegistration() {
+        return registration;
+    }
+
+    public void setRegistration(String registration) {
+        this.registration = registration;
     }
 }

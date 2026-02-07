@@ -783,8 +783,8 @@ public class AnalyticsService {
                                 return activityLogRepository
                                                 .findByCourseIdAndUserIdOrderByTimestampDesc(courseId, student.getId())
                                                 .stream()
-                                                .anyMatch(l -> (l
-                                                                .getActivityType() == StudentActivityLog.ActivityType.VIEW_LESSON)
+                                                .anyMatch(l -> l.getActivityType() == StudentActivityLog.ActivityType.VIEW_LESSON
+                                                                && l.getDetails() != null
                                                                 && l.getDetails().contains(lesson.getTitle()));
                         }).count();
 
@@ -814,7 +814,7 @@ public class AnalyticsService {
 
                 // 3. ASSIGNMENTS
                 List<Assignment> assignments = assignmentRepository.findAll().stream()
-                                .filter(a -> a.getCourse().getId().equals(courseId))
+                                .filter(a -> a.getCourse() != null && a.getCourse().getId().equals(courseId))
                                 .collect(Collectors.toList());
 
                 for (Assignment assignment : assignments) {

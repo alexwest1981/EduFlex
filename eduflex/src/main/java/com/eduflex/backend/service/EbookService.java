@@ -207,74 +207,88 @@ public class EbookService {
 
     public byte[] getEbookCover(Long id) {
         Ebook ebook = getEbookById(id);
+        String coverUrl = ebook.getCoverUrl();
 
         // 1. If cover already exists (and is a local storage path), try to load it
-        if (ebook.getCoverUrl() != null && ebook.getCoverUrl().startsWith("/api/storage/")) {
-            // FIX: Use prefix length instead of lastIndexOf to preserve folder structure
-            String prefix = "/api/storage/";
-            String storageId = ebook.getCoverUrl().substring(ebook.getCoverUrl().indexOf(prefix) + prefix.length());
+        if (coverUrl != null && (coverUrl.contains("/api/storage/") || coverUrl.contains("/uploads/"))) {
+            String storageId = extractStorageId(coverUrl);
             try (InputStream is = storageService.load(storageId)) {
                 return StreamUtils.copyToByteArray(is);
             } catch (Exception e) {
-                System.err.println("Failed to load existing cover for book " + id + ": " + e.getMessage());
+                logger.warn("Failed to load existing cover for book {} from {}: {}", id, storageId, e.getMessage());
                 // Failed to load existing cover, try to extract again
             }
         }
 
-        // 2. Extract cover from file
-        // FIX: Handle ID extraction correctly here too
-        String fileUrl = ebook.getFileUrl();
-        String filePrefix = "/api/storage/";
-        String fileStorageId;
-        if (fileUrl.startsWith(filePrefix)) {
-            fileStorageId = fileUrl.substring(fileUrl.indexOf(filePrefix) + filePrefix.length());
-        } else {
-            // Fallback for older URLs if any
-            fileStorageId = fileUrl.substring(fileUrl.lastIndexOf("/") + 1);
-        }
-
+        // 2. Extract cover from file based on type
         byte[] coverBytes = null;
-        String contentType = "image/png";
+        String fileUrl = ebook.getFileUrl();
+        if (fileUrl != null) {
+            String fileStorageId = extractStorageId(fileUrl);
+            String contentType = "image/png";
 
-        try (InputStream inputStream = storageService.load(fileStorageId)) {
-            if (ebook.getFileUrl().toLowerCase().endsWith(".pdf")) {
-                try (PdfBookContent content = new PdfBookContent(inputStream)) {
-                    String base64Cover = content.getCoverImage();
-                    if (base64Cover != null) {
-                        String base64Data = base64Cover.split(",")[1];
-                        coverBytes = java.util.Base64.getDecoder().decode(base64Data);
+            try (InputStream inputStream = storageService.load(fileStorageId)) {
+                if (fileUrl.toLowerCase().endsWith(".pdf")) {
+                    try (PdfBookContent content = new PdfBookContent(inputStream)) {
+                        String base64Cover = content.getCoverImage();
+                        if (base64Cover != null && base64Cover.contains(",")) {
+                            String base64Data = base64Cover.split(",")[1];
+                            coverBytes = java.util.Base64.getDecoder().decode(base64Data);
+                        }
                     }
+                } else if (fileUrl.toLowerCase().endsWith(".epub")) {
+                    coverBytes = extractEpubCover(inputStream);
+                    contentType = "image/jpeg";
                 }
-            } else if (ebook.getFileUrl().toLowerCase().endsWith(".epub")) {
-                coverBytes = extractEpubCover(inputStream);
-                contentType = "image/jpeg"; // Usually JPEGs in EPUBs
-            }
-        } catch (Exception e) {
-            System.err
-                    .println("Failed to read ebook file for cover extraction (BookID: " + id + "): " + e.getMessage());
-            // Don't throw yet, verify if we can return default or throw
-            throw new RuntimeException("Failed to read ebook file", e);
-        }
-
-        // 3. Save and Cache if found
-        if (coverBytes != null && coverBytes.length > 0) {
-            try {
-                // User requested: library/covers/
-                String extension = contentType.equals("image/png") ? ".png" : ".jpg";
-                String customId = "library/covers/cover-" + id + "-" + System.currentTimeMillis() + extension;
-
-                String coverStorageId = storageService.save(new java.io.ByteArrayInputStream(coverBytes), contentType,
-                        "cover" + extension, customId);
-                ebook.setCoverUrl("/api/storage/" + coverStorageId);
-                ebookRepository.save(ebook);
-                return coverBytes;
+                // TODO: Add MP3 ID3 tag cover extraction if needed
             } catch (Exception e) {
-                System.err.println("Failed to save extracted cover: " + e.getMessage());
-                throw new RuntimeException("Failed to save extracted cover", e);
+                logger.error("Failed to extract cover from file for book {}: {}", id, e.getMessage());
+            }
+
+            // 3. Save and Cache if extracted
+            if (coverBytes != null && coverBytes.length > 0) {
+                try {
+                    String extension = contentType.equals("image/png") ? ".png" : ".jpg";
+                    String customId = "library/covers/cover-" + id + "-" + System.currentTimeMillis() + extension;
+                    String coverStorageId = storageService.save(new java.io.ByteArrayInputStream(coverBytes),
+                            contentType, "cover" + extension, customId);
+                    ebook.setCoverUrl("/api/storage/" + coverStorageId);
+                    ebookRepository.save(ebook);
+                    return coverBytes;
+                } catch (Exception e) {
+                    logger.error("Failed to save extracted cover for book {}: {}", id, e.getMessage());
+                }
             }
         }
 
-        throw new RuntimeException("No cover found");
+        // 4. Ultimate Fallback: Return a default image based on type metadata
+        return getFallbackCover(ebook.getType());
+    }
+
+    private String extractStorageId(String url) {
+        if (url == null)
+            return null;
+        String[] prefixes = { "/api/storage/", "/uploads/", "/api/files/fetch?filename=" };
+        for (String prefix : prefixes) {
+            int index = url.indexOf(prefix);
+            if (index != -1) {
+                return url.substring(index + prefix.length());
+            }
+        }
+        // Fallback to last part of path
+        return url.substring(url.lastIndexOf("/") + 1);
+    }
+
+    private byte[] getFallbackCover(com.eduflex.backend.model.BookType type) {
+        // Return a simple 1x1 transparent PNG or a small colored square as fallback
+        // In a real scenario, this would load a default-cover.png from resources
+        try {
+            // Minimal valid 1x1 transparent PNG
+            return java.util.Base64.getDecoder().decode(
+                    "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=");
+        } catch (Exception e) {
+            return new byte[0];
+        }
     }
 
     private byte[] extractEpubCover(InputStream epubStream) throws Exception {

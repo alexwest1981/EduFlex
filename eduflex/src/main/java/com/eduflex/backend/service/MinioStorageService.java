@@ -1,17 +1,20 @@
 package com.eduflex.backend.service;
 
-import io.minio.BucketExistsArgs;
-import io.minio.MakeBucketArgs;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
-import io.minio.SetBucketPolicyArgs;
+import io.minio.RemoveObjectsArgs;
+import io.minio.messages.DeleteObject;
+import io.minio.ListObjectsArgs;
+import io.minio.Result;
+import io.minio.messages.Item;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -36,6 +39,8 @@ public class MinioStorageService implements StorageService {
                 .endpoint(url)
                 .credentials(accessKey, secretKey)
                 .build();
+
+        logger.info("MinIO Storage Service initialized: URL={}, Bucket={}", url, bucketName);
 
         try {
             if (!minioClient.bucketExists(io.minio.BucketExistsArgs.builder().bucket(bucketName).build())) {
@@ -105,6 +110,34 @@ public class MinioStorageService implements StorageService {
                             .build());
         } catch (Exception e) {
             throw new RuntimeException("Delete failed: " + storageId, e);
+        }
+    }
+
+    @Override
+    public void deleteByPrefix(String prefix) {
+        try {
+            Iterable<Result<Item>> results = minioClient.listObjects(
+                    ListObjectsArgs.builder()
+                            .bucket(bucketName)
+                            .prefix(prefix)
+                            .recursive(true)
+                            .build());
+
+            List<DeleteObject> objectsToDelete = new ArrayList<>();
+            for (Result<Item> result : results) {
+                objectsToDelete.add(new DeleteObject(result.get().objectName()));
+            }
+
+            if (!objectsToDelete.isEmpty()) {
+                minioClient.removeObjects(
+                        RemoveObjectsArgs.builder()
+                                .bucket(bucketName)
+                                .objects(objectsToDelete)
+                                .build());
+                logger.info("Deleted {} objects with prefix: {}", objectsToDelete.size(), prefix);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Delete prefix failed: " + prefix, e);
         }
     }
 }

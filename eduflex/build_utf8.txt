@@ -1,0 +1,235 @@
+﻿[INFO] Scanning for projects...
+[INFO] 
+[INFO] ------------------------< com.eduflex:eduflex >-------------------------
+[INFO] Building eduflex 2.0.1-Beta
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ eduflex ---
+[INFO] Copying 1 resource from src\main\resources to target\classes
+[INFO] Copying 24204 resources from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.11.0:compile (default-compile) @ eduflex ---
+[INFO] Changes detected - recompiling the module! :source
+[INFO] Compiling 411 source files with javac [debug release 21] to target\classes
+[INFO] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/PaymentService.java: Some input files use or override a deprecated API.
+[INFO] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/PaymentService.java: Recompile with -Xlint:deprecation for details.
+[INFO] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/ai/GeminiService.java: Some input files use unchecked or unsafe operations.
+[INFO] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/ai/GeminiService.java: Recompile with -Xlint:unchecked for details.
+[INFO] -------------------------------------------------------------
+[ERROR] COMPILATION ERROR : 
+[INFO] -------------------------------------------------------------
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/LtiService.java:[224,27] cannot find symbol
+  symbol:   method setPlatformIssuer(java.lang.String)
+  location: variable launch of type com.eduflex.backend.model.LtiLaunch
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/LtiService.java:[225,27] cannot find symbol
+  symbol:   method setUserSub(java.lang.String)
+  location: variable launch of type com.eduflex.backend.model.LtiLaunch
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/LtiService.java:[226,27] cannot find symbol
+  symbol:   method setResourceLinkId(java.lang.String)
+  location: variable launch of type com.eduflex.backend.model.LtiLaunch
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/LtiService.java:[227,27] cannot find symbol
+  symbol:   method setUser(com.eduflex.backend.model.User)
+  location: variable launch of type com.eduflex.backend.model.LtiLaunch
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/LtiService.java:[228,27] cannot find symbol
+  symbol:   method setTargetLinkUri(java.lang.String)
+  location: variable launch of type com.eduflex.backend.model.LtiLaunch
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/LtiService.java:[230,27] cannot find symbol
+  symbol:   method setDeploymentId(java.lang.String)
+  location: variable launch of type com.eduflex.backend.model.LtiLaunch
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/LtiService.java:[238,31] cannot find symbol
+  symbol:   method setAgsLineItemUrl(java.lang.String)
+  location: variable launch of type com.eduflex.backend.model.LtiLaunch
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/LtiService.java:[239,31] cannot find symbol
+  symbol:   method setAgsLineItemsUrl(java.lang.String)
+  location: variable launch of type com.eduflex.backend.model.LtiLaunch
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/LtiService.java:[247,31] cannot find symbol
+  symbol:   method setNrpsMembershipUrl(java.lang.String)
+  location: variable launch of type com.eduflex.backend.model.LtiLaunch
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/LtiService.java:[359,41] cannot find symbol
+  symbol:   method getMembers()
+  location: variable response of type com.eduflex.backend.dto.LtiMembershipResponse
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/LtiService.java:[360,91] cannot find symbol
+  symbol:   method getMembers()
+  location: variable response of type com.eduflex.backend.dto.LtiMembershipResponse
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/LtiService.java:[361,37] cannot find symbol
+  symbol:   method getEmail()
+  location: variable member of type com.eduflex.backend.dto.LtiMembershipResponse.LtiMember
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/LtiService.java:[361,56] cannot find symbol
+  symbol:   method getUser_id()
+  location: variable member of type com.eduflex.backend.dto.LtiMembershipResponse.LtiMember
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/LtiService.java:[361,77] cannot find symbol
+  symbol:   method getName()
+  location: variable member of type com.eduflex.backend.dto.LtiMembershipResponse.LtiMember
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/LtiService.java:[361,95] cannot find symbol
+  symbol:   method getRoles()
+  location: variable member of type com.eduflex.backend.dto.LtiMembershipResponse.LtiMember
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/LtiService.java:[363,91] cannot find symbol
+  symbol:   method getMembers()
+  location: variable response of type com.eduflex.backend.dto.LtiMembershipResponse
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/LtiNrpsService.java:[56,43] cannot find symbol
+  symbol:   method getMembers()
+  location: class com.eduflex.backend.dto.LtiMembershipResponse
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/LtiAdvantageService.java:[57,26] cannot find symbol
+  symbol:   method getAccessToken()
+  location: variable cached of type com.eduflex.backend.dto.LtiTokenResponse
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/LtiAdvantageService.java:[82,37] cannot find symbol
+  symbol:   method getAccessToken()
+  location: variable tokenResponse of type com.eduflex.backend.dto.LtiTokenResponse
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/QuizService.java:[151,35] cannot find symbol
+  symbol:   method getUser()
+  location: variable l of type com.eduflex.backend.model.LtiLaunch
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/QuizService.java:[151,58] cannot find symbol
+  symbol:   method getUser()
+  location: variable l of type com.eduflex.backend.model.LtiLaunch
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/QuizService.java:[152,35] cannot find symbol
+  symbol:   method getTargetLinkUri()
+  location: variable l of type com.eduflex.backend.model.LtiLaunch
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/QuizService.java:[152,67] cannot find symbol
+  symbol:   method getTargetLinkUri()
+  location: variable l of type com.eduflex.backend.model.LtiLaunch
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/QuizService.java:[157,27] cannot find symbol
+  symbol:   method getAgsLineItemUrl()
+  location: variable launch of type com.eduflex.backend.model.LtiLaunch
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/QuizService.java:[157,66] cannot find symbol
+  symbol:   method getAgsLineItemUrl()
+  location: variable launch of type com.eduflex.backend.model.LtiLaunch
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/QuizService.java:[158,55] cannot find symbol
+  symbol:   method builder()
+  location: class com.eduflex.backend.dto.LtiScoreDTO
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/QuizService.java:[159,43] cannot find symbol
+  symbol:   method getUserSub()
+  location: variable launch of type com.eduflex.backend.model.LtiLaunch
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/QuizService.java:[167,51] cannot find symbol
+  symbol:   method getPlatformIssuer()
+  location: variable launch of type com.eduflex.backend.model.LtiLaunch
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/QuizService.java:[167,79] cannot find symbol
+  symbol:   method getAgsLineItemUrl()
+  location: variable launch of type com.eduflex.backend.model.LtiLaunch
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/LtiAgsService.java:[46,22] cannot find symbol
+  symbol:   method getTimestamp()
+  location: variable score of type com.eduflex.backend.dto.LtiScoreDTO
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/LtiAgsService.java:[47,22] cannot find symbol
+  symbol:   method setTimestamp(java.lang.String)
+  location: variable score of type com.eduflex.backend.dto.LtiScoreDTO
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/LtiAgsService.java:[64,96] cannot find symbol
+  symbol:   method getUserId()
+  location: variable score of type com.eduflex.backend.dto.LtiScoreDTO
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/Cmi5Service.java:[98,13] cannot find symbol
+  symbol:   variable logger
+  location: class com.eduflex.backend.service.Cmi5Service
+[INFO] 33 errors 
+[INFO] -------------------------------------------------------------
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  17.703 s
+[INFO] Finished at: 2026-02-06T09:22:22+01:00
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.11.0:compile (default-compile) on project eduflex: Compilation failure: Compilation failure: 
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/LtiService.java:[224,27] cannot find symbol
+[ERROR]   symbol:   method setPlatformIssuer(java.lang.String)
+[ERROR]   location: variable launch of type com.eduflex.backend.model.LtiLaunch
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/LtiService.java:[225,27] cannot find symbol
+[ERROR]   symbol:   method setUserSub(java.lang.String)
+[ERROR]   location: variable launch of type com.eduflex.backend.model.LtiLaunch
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/LtiService.java:[226,27] cannot find symbol
+[ERROR]   symbol:   method setResourceLinkId(java.lang.String)
+[ERROR]   location: variable launch of type com.eduflex.backend.model.LtiLaunch
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/LtiService.java:[227,27] cannot find symbol
+[ERROR]   symbol:   method setUser(com.eduflex.backend.model.User)
+[ERROR]   location: variable launch of type com.eduflex.backend.model.LtiLaunch
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/LtiService.java:[228,27] cannot find symbol
+[ERROR]   symbol:   method setTargetLinkUri(java.lang.String)
+[ERROR]   location: variable launch of type com.eduflex.backend.model.LtiLaunch
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/LtiService.java:[230,27] cannot find symbol
+[ERROR]   symbol:   method setDeploymentId(java.lang.String)
+[ERROR]   location: variable launch of type com.eduflex.backend.model.LtiLaunch
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/LtiService.java:[238,31] cannot find symbol
+[ERROR]   symbol:   method setAgsLineItemUrl(java.lang.String)
+[ERROR]   location: variable launch of type com.eduflex.backend.model.LtiLaunch
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/LtiService.java:[239,31] cannot find symbol
+[ERROR]   symbol:   method setAgsLineItemsUrl(java.lang.String)
+[ERROR]   location: variable launch of type com.eduflex.backend.model.LtiLaunch
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/LtiService.java:[247,31] cannot find symbol
+[ERROR]   symbol:   method setNrpsMembershipUrl(java.lang.String)
+[ERROR]   location: variable launch of type com.eduflex.backend.model.LtiLaunch
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/LtiService.java:[359,41] cannot find symbol
+[ERROR]   symbol:   method getMembers()
+[ERROR]   location: variable response of type com.eduflex.backend.dto.LtiMembershipResponse
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/LtiService.java:[360,91] cannot find symbol
+[ERROR]   symbol:   method getMembers()
+[ERROR]   location: variable response of type com.eduflex.backend.dto.LtiMembershipResponse
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/LtiService.java:[361,37] cannot find symbol
+[ERROR]   symbol:   method getEmail()
+[ERROR]   location: variable member of type com.eduflex.backend.dto.LtiMembershipResponse.LtiMember
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/LtiService.java:[361,56] cannot find symbol
+[ERROR]   symbol:   method getUser_id()
+[ERROR]   location: variable member of type com.eduflex.backend.dto.LtiMembershipResponse.LtiMember
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/LtiService.java:[361,77] cannot find symbol
+[ERROR]   symbol:   method getName()
+[ERROR]   location: variable member of type com.eduflex.backend.dto.LtiMembershipResponse.LtiMember
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/LtiService.java:[361,95] cannot find symbol
+[ERROR]   symbol:   method getRoles()
+[ERROR]   location: variable member of type com.eduflex.backend.dto.LtiMembershipResponse.LtiMember
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/LtiService.java:[363,91] cannot find symbol
+[ERROR]   symbol:   method getMembers()
+[ERROR]   location: variable response of type com.eduflex.backend.dto.LtiMembershipResponse
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/LtiNrpsService.java:[56,43] cannot find symbol
+[ERROR]   symbol:   method getMembers()
+[ERROR]   location: class com.eduflex.backend.dto.LtiMembershipResponse
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/LtiAdvantageService.java:[57,26] cannot find symbol
+[ERROR]   symbol:   method getAccessToken()
+[ERROR]   location: variable cached of type com.eduflex.backend.dto.LtiTokenResponse
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/LtiAdvantageService.java:[82,37] cannot find symbol
+[ERROR]   symbol:   method getAccessToken()
+[ERROR]   location: variable tokenResponse of type com.eduflex.backend.dto.LtiTokenResponse
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/QuizService.java:[151,35] cannot find symbol
+[ERROR]   symbol:   method getUser()
+[ERROR]   location: variable l of type com.eduflex.backend.model.LtiLaunch
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/QuizService.java:[151,58] cannot find symbol
+[ERROR]   symbol:   method getUser()
+[ERROR]   location: variable l of type com.eduflex.backend.model.LtiLaunch
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/QuizService.java:[152,35] cannot find symbol
+[ERROR]   symbol:   method getTargetLinkUri()
+[ERROR]   location: variable l of type com.eduflex.backend.model.LtiLaunch
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/QuizService.java:[152,67] cannot find symbol
+[ERROR]   symbol:   method getTargetLinkUri()
+[ERROR]   location: variable l of type com.eduflex.backend.model.LtiLaunch
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/QuizService.java:[157,27] cannot find symbol
+[ERROR]   symbol:   method getAgsLineItemUrl()
+[ERROR]   location: variable launch of type com.eduflex.backend.model.LtiLaunch
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/QuizService.java:[157,66] cannot find symbol
+[ERROR]   symbol:   method getAgsLineItemUrl()
+[ERROR]   location: variable launch of type com.eduflex.backend.model.LtiLaunch
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/QuizService.java:[158,55] cannot find symbol
+[ERROR]   symbol:   method builder()
+[ERROR]   location: class com.eduflex.backend.dto.LtiScoreDTO
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/QuizService.java:[159,43] cannot find symbol
+[ERROR]   symbol:   method getUserSub()
+[ERROR]   location: variable launch of type com.eduflex.backend.model.LtiLaunch
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/QuizService.java:[167,51] cannot find symbol
+[ERROR]   symbol:   method getPlatformIssuer()
+[ERROR]   location: variable launch of type com.eduflex.backend.model.LtiLaunch
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/QuizService.java:[167,79] cannot find symbol
+[ERROR]   symbol:   method getAgsLineItemUrl()
+[ERROR]   location: variable launch of type com.eduflex.backend.model.LtiLaunch
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/LtiAgsService.java:[46,22] cannot find symbol
+[ERROR]   symbol:   method getTimestamp()
+[ERROR]   location: variable score of type com.eduflex.backend.dto.LtiScoreDTO
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/LtiAgsService.java:[47,22] cannot find symbol
+[ERROR]   symbol:   method setTimestamp(java.lang.String)
+[ERROR]   location: variable score of type com.eduflex.backend.dto.LtiScoreDTO
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/LtiAgsService.java:[64,96] cannot find symbol
+[ERROR]   symbol:   method getUserId()
+[ERROR]   location: variable score of type com.eduflex.backend.dto.LtiScoreDTO
+[ERROR] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/Cmi5Service.java:[98,13] cannot find symbol
+[ERROR]   symbol:   variable logger
+[ERROR]   location: class com.eduflex.backend.service.Cmi5Service
+[ERROR] -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException

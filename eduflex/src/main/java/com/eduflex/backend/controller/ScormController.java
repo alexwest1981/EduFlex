@@ -7,7 +7,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -21,14 +20,14 @@ public class ScormController {
     }
 
     @PostMapping("/upload/{courseId}")
-    @PreAuthorize("hasRole('TEACHER') or hasRole('ADMIN')")
-    public ResponseEntity<ScormPackage> uploadScorm(
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN', 'TEACHER', 'ROLE_TEACHER')")
+    public ResponseEntity<List<ScormPackage>> uploadScorm(
             @PathVariable Long courseId,
-            @RequestParam("file") MultipartFile file) {
+            @RequestParam("files") MultipartFile[] files) {
         try {
-            ScormPackage savedPackage = scormService.uploadPackage(courseId, file);
-            return ResponseEntity.ok(savedPackage);
-        } catch (IOException e) {
+            List<ScormPackage> savedPackages = scormService.uploadPackages(courseId, files);
+            return ResponseEntity.ok(savedPackages);
+        } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
         }
     }
@@ -36,13 +35,25 @@ public class ScormController {
     @GetMapping("/course/{courseId}")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<ScormPackage>> getPackages(@PathVariable Long courseId) {
-        return ResponseEntity.ok(scormService.getPackagesForCourse(courseId));
+        return ResponseEntity.ok(scormService.getPackagesByCourse(courseId));
     }
 
-    // Future: Endpoint to save progress (CMI data)
-    @PostMapping("/{packageId}/track")
-    public ResponseEntity<?> saveProgress(@PathVariable Long packageId, @RequestBody Object cmiData) {
-        // TODO: Save to ScormProgress table
-        return ResponseEntity.ok().build();
+    @GetMapping("/{id}")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<ScormPackage> getPackage(@PathVariable Long id) {
+        return ResponseEntity.ok(scormService.getPackage(id));
+    }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN', 'TEACHER', 'ROLE_TEACHER')")
+    public ResponseEntity<ScormPackage> updatePackage(@PathVariable Long id, @RequestBody ScormPackage updates) {
+        return ResponseEntity.ok(scormService.updatePackage(id, updates));
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN', 'TEACHER', 'ROLE_TEACHER')")
+    public ResponseEntity<Void> deletePackage(@PathVariable Long id) {
+        scormService.deletePackage(id);
+        return ResponseEntity.noContent().build();
     }
 }

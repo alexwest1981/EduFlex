@@ -16,6 +16,9 @@ public class ScormPackage {
     private String title;
 
     @Column(nullable = false)
+    private String packageId; // Unique string identifier
+
+    @Column(nullable = false)
     private String directoryPath; // e.g. "scorm/101/"
 
     @Column(nullable = false)
@@ -52,6 +55,14 @@ public class ScormPackage {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public String getPackageId() {
+        return packageId;
+    }
+
+    public void setPackageId(String packageId) {
+        this.packageId = packageId;
     }
 
     public String getDirectoryPath() {

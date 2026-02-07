@@ -38,6 +38,20 @@
 ## 🇸🇪 Svenska
 
 ### ⚡ Senaste Uppdateringarna
+*   **🛠 MinIO & CMI5 Stabilisering (7 feb 2026):**
+    *   **Data Recovery:** Identifierat och åtgärdat "Split-Brain" konfiguration mellan Docker och lokal miljö för MinIO.
+    *   **CMI5 Launch:** Verifierat korrekt start av CMI5-paket utan JSON-fel.
+    *   **LRS:** Påbörjat implementering av "Completion Logic" för att registrera kursavslut via xAPI.
+*   **🔗 LTI 1.3 Advantage Integration (6 feb 2026):**
+    *   **LTI Advantage Services:** Implementerat fullt stöd för LTI 1.3 Advantage genom nya tjänster för OAuth2 Client Credentials-flöde (`LtiAdvantageService`).
+    *   **Betygsrapportering (AGS):** Integrerat automatisk betygsöverföring till LMS efter avslutade quiz via Assignment and Grade Services (`LtiAgsService`).
+    *   **Medlemssynkronisering (NRPS):** Implementerat Names and Role Provisioning Services (`LtiNrpsService`) för att automatiskt synkronisera klasslistor och användarroller från LMS.
+    *   **Launch Persistence:** Ny databasmodell (`LtiLaunch`) för att spara och spåra aktiva LTI-kontexter, vilket möjliggör sömlös kommunikation med externa plattformar under hela sessionen.
+*   **xAPI/cmi5 LRS Support & Analys (7 feb 2026):**
+    *   **Teacher Analytics:** Ny dashboard för lärare som visar kursens genomströmning, completion rates och drop-off analys för interaktiva moduler.
+    *   **LRS Core:** Förbättrat internt Learning Record Store med `cmi5.xml`-parsning, säker JWT-tokengenerering och indexerad lagring av statements.
+    *   **Frontend Integration:** Sömlös integration i "Seminarier & SCORM"-vyn med direkt tillgång till analysverktyg.
+
 *   **🎧 Ljudströmning & Roadmap-konsolidering (6 feb 2026):**
     *   **Stabilisering av ljudböcker:** Åtgärdat "AbortError" och avbrott vid minimering av spelaren genom att införa ett persistent `audio`-element i `FloatingAudioPlayer.jsx`.
     *   **HTTP Range-stöd:** Implementerat stöd för partiell innehållsleverans i `StorageController.java`, vilket möjliggör snabb spolning (seeking) och stabilare streaming av stora ljudfiler.
@@ -318,6 +332,11 @@ curl -X POST http://localhost:8080/api/tenants \
 ## 🇬🇧 English
 
 ### ⚡ Latest Updates
+*   **xAPI/cmi5 Analytics & LRS (Feb 7, 2026):**
+    *   **Teacher Analytics:** Comprehensive dashboard for tracking student progress, completion rates, and drop-off analysis in interactive modules.
+    *   **Secure LRS:** Enhanced Learning Record Store with token-based security (JWT) and robust cmi5 profile validation.
+    *   **Seamless UI:** Integrated analytics tools directly into the course module view.
+
 *   **🎧 Media Streaming & Roadmap Consolidation (Feb 6, 2026):**
     *   **Audiobook Stabilization:** Resolved "AbortError" and playback interruptions during player minimization by unifying the `audio` element in `FloatingAudioPlayer.jsx`.
     *   **HTTP Range Support:** Implemented partial content delivery in `StorageController.java`, enabling seeking and smoother streaming for large audio assets.

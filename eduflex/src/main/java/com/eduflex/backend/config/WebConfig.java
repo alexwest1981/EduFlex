@@ -13,9 +13,8 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        // Vi behåller enbart filhanteringen här
-        registry.addResourceHandler("/uploads/**")
-                .addResourceLocations("file:./uploads/");
+        // Vi hanterar nu /uploads/** via StorageController för att stödja både MinIO
+        // och streamning
     }
 
     // CORS hanteras nu centralt i SecurityConfig.java för att undvika konflikter

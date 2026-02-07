@@ -82,4 +82,28 @@ public class LocalFileStorageService implements StorageService {
             throw new RuntimeException("Could not delete file: " + storageId, e);
         }
     }
+
+    @Override
+    public void deleteByPrefix(String prefix) {
+        try {
+            Path prefixPath = this.fileStorageLocation.resolve(prefix).normalize();
+            if (Files.exists(prefixPath) && Files.isDirectory(prefixPath)) {
+                // Simplified recursive delete for directories
+                try (java.util.stream.Stream<Path> walk = Files.walk(prefixPath)) {
+                    walk.sorted(java.util.Comparator.reverseOrder())
+                            .forEach(path -> {
+                                try {
+                                    Files.delete(path);
+                                } catch (IOException e) {
+                                    // ignore
+                                }
+                            });
+                }
+            } else {
+                Files.deleteIfExists(prefixPath);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Could not delete by prefix: " + prefix, e);
+        }
+    }
 }

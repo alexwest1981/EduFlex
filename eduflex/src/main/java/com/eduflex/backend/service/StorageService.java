@@ -31,6 +31,11 @@ public interface StorageService {
     void delete(String storageId);
 
     /**
+     * Delete all files starting with a specific prefix.
+     */
+    void deleteByPrefix(String prefix);
+
+    /**
      * Compatibility bridge: deprecated, use save(MultipartFile) instead.
      */
     @Deprecated
