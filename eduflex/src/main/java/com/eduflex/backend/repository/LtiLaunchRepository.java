@@ -13,4 +13,8 @@ public interface LtiLaunchRepository extends JpaRepository<LtiLaunch, Long> {
             String resourceLinkId);
 
     Optional<LtiLaunch> findByUserAndResourceLinkId(User user, String resourceLinkId);
+
+    java.util.List<LtiLaunch> findByUser(User user);
+
+    Optional<LtiLaunch> findFirstByTargetLinkUriContainingAndNrpsMembershipUrlIsNotNull(String targetLinkUriFragment);
 }

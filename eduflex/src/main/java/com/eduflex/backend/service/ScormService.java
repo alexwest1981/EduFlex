@@ -37,10 +37,14 @@ public class ScormService {
 
     @Transactional
     public List<ScormPackage> uploadPackages(Long courseId, MultipartFile[] files) throws Exception {
+        logger.info("Starting SCORM package upload for course {}", courseId);
         Course course = courseRepository.findById(courseId).orElseThrow(() -> new RuntimeException("Course not found"));
         List<ScormPackage> savedPackages = new ArrayList<>();
 
         for (MultipartFile file : files) {
+            String originalFilename = file.getOriginalFilename();
+            logger.debug("Processing file: {} (Size: {} bytes)", originalFilename, file.getSize());
+
             String packageId = UUID.randomUUID().toString();
             String directoryPath = "scorm/" + packageId + "/";
 
@@ -51,10 +55,12 @@ public class ScormService {
             byte[] fileBytes = file.getBytes();
 
             // Pass 1: Extract all files to MinIO
+            int fileCount = 0;
             try (ZipInputStream zis = new ZipInputStream(new ByteArrayInputStream(fileBytes))) {
                 ZipEntry entry;
                 while ((entry = zis.getNextEntry()) != null) {
                     if (!entry.isDirectory()) {
+                        fileCount++;
                         // Normalize backslashes for Windows-zipped packages
                         String entryName = entry.getName().replace("\\", "/");
                         String contentType = URLConnection.guessContentTypeFromName(entryName);
@@ -65,6 +71,7 @@ public class ScormService {
 
                         // If it's the manifest, we need to read it for parsing later
                         if (entryName.equalsIgnoreCase("imsmanifest.xml")) {
+                            logger.debug("Found imsmanifest.xml in package {}", originalFilename);
                             ByteArrayOutputStream baos = new ByteArrayOutputStream();
                             byte[] buffer = new byte[8192];
                             int len;
@@ -84,9 +91,11 @@ public class ScormService {
                     zis.closeEntry();
                 }
             }
+            logger.debug("Extracted {} files for package {}", fileCount, originalFilename);
 
             // Pass 2: Identify launch file from manifest bytes
             String launchFile = identifyLaunchFile(manifestBytes, directoryPath);
+            logger.info("Identified launch file for {}: {}", originalFilename, launchFile);
 
             ScormPackage pkg = new ScormPackage();
             pkg.setCourse(course);
@@ -105,7 +114,7 @@ public class ScormService {
 
     private String identifyLaunchFile(byte[] manifestBytes, String directoryPath) {
         if (manifestBytes == null || manifestBytes.length == 0) {
-            logger.warn("No imsmanifest.xml provided for manifest parsing");
+            logger.warn("No imsmanifest.xml provided for manifest parsing. Defaulting to index.html");
             return "index.html";
         }
 
@@ -117,6 +126,8 @@ public class ScormService {
             JsonNode organizations = root.path("organizations");
             String defaultOrgId = organizations.path("default").asText();
             JsonNode organizationList = organizations.path("organization");
+
+            logger.debug("Parsing manifest. Default Org ID: {}", defaultOrgId);
 
             JsonNode targetOrg = null;
             if (organizationList.isArray()) {

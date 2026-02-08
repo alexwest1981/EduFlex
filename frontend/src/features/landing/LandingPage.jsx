@@ -70,7 +70,7 @@ const LandingPage = () => {
         },
         {
             icon: <Globe className="w-6 h-6" />,
-            title: t('landing.features.lti_ready.title'),
+            title: "LTI 1.3 Advantage",
             description: t('landing.features.lti_ready.desc'),
             gradient: 'from-blue-600 to-cyan-500'
         },
@@ -134,8 +134,8 @@ const LandingPage = () => {
         },
         {
             icon: <Globe className="w-6 h-6" />,
-            title: 'LTI 1.3 Core',
-            description: 'Fullt verifierat stöd för OIDC-lansering. Sömlös integration med Canvas, Moodle och Blackboard för säker autentisering.',
+            title: 'LTI 1.3 Advantage',
+            description: 'Fullt verifierat stöd för AGS (Betyg) och NRPS (Roller/Namn). Sömlös integration med Canvas, Moodle och Blackboard för säker autentisering och datautbyte.',
             gradient: 'from-blue-600 to-indigo-600'
         },
         {

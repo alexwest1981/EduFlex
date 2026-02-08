@@ -23,8 +23,8 @@
 | Funktion | Beskrivning | Status |
 | :--- | :--- | :--- |
 | **LTI 1.3 Core** | Grundläggande launch-stöd för externa verktyg. | ✅ **Klar** |
-| **LTI 1.3 Advantage** | Stöd för AGS (Betyg) och NRPS (Roller/Namn). | 📅 **NÄSTA FOKUS** |
-| **xAPI & cmi5** | Modern spårning (LRS) för mobilt lärande och simuleringar. | 🔄 **Verifiering (Completion Logic)** |
+| **LTI 1.3 Advantage** | Stöd för AGS (Betyg) och NRPS (Roller/Namn). | ✅ **Stabil / Verifierad** |
+| **xAPI & cmi5** | Modern spårning (LRS) för mobilt lärande och simuleringar. | ✅ **Verifierad** |
 | **Workflow Integration** | Utbildning direkt i Slack/Teams/Salesforce ("Headless LMS"). | 📅 **Planerad** |
 
 ---
@@ -68,6 +68,13 @@
 ---
 
 ## 📝 Change Log
+
+### [v0.9.9] - 2026-02-07
+- **LTI**: Successfully verified LTI 1.3 Advantage E2E flow with account provisioning and course enrollment.
+- **LTI**: Fixed circular dependency in `LtiService` using `@Lazy` injection.
+- **LTI**: Resolved `@EntityGraph` filtering issue by ensuring teacher assignments for courses.
+- **Infra**: Switched Docker DB mapping to port 5433 to resolve conflicts with local PostgreSQL processes.
+- **xAPI**: Implemented LRS proxy endpoints for cmi5 status updates and statement propagation.
 
 ### [v0.9.8] - 2026-02-06
 - **Media**: Implemented HTTP Range support in `StorageController` for seamless audio streaming.

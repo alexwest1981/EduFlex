@@ -17,9 +17,14 @@ public class LtiNrpsService {
     private final LtiAdvantageService advantageService;
     private final RestTemplate restTemplate;
 
+    @org.springframework.beans.factory.annotation.Autowired
     public LtiNrpsService(LtiAdvantageService advantageService) {
+        this(advantageService, new RestTemplate());
+    }
+
+    public LtiNrpsService(LtiAdvantageService advantageService, RestTemplate restTemplate) {
         this.advantageService = advantageService;
-        this.restTemplate = new RestTemplate();
+        this.restTemplate = restTemplate;
     }
 
     /**

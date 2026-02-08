@@ -18,7 +18,6 @@ import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.RemoteJWKSet;
 import com.nimbusds.jose.proc.JWSVerificationKeySelector;
 import com.nimbusds.jose.proc.SecurityContext;
-import com.nimbusds.jose.proc.SimpleSecurityContext;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import com.nimbusds.jwt.proc.DefaultJWTProcessor;
@@ -28,7 +27,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.URL;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.interfaces.RSAPrivateKey;
@@ -51,13 +49,15 @@ public class LtiService {
     private final LtiNrpsService ltiNrpsService;
     private final TenantService tenantService;
     private final JwtUtils jwtUtils;
+    private final CourseService courseService;
 
     @Autowired
     public LtiService(LtiPlatformRepository platformRepository, UserRepository userRepository,
             RoleRepository roleRepository, LtiKeyRepository ltiKeyRepository,
             LtiLaunchRepository ltiLaunchRepository,
-            LtiNrpsService ltiNrpsService,
-            TenantService tenantService, JwtUtils jwtUtils) {
+            @org.springframework.context.annotation.Lazy LtiNrpsService ltiNrpsService,
+            TenantService tenantService, JwtUtils jwtUtils,
+            CourseService courseService) {
         this.platformRepository = platformRepository;
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
@@ -66,6 +66,7 @@ public class LtiService {
         this.ltiNrpsService = ltiNrpsService;
         this.tenantService = tenantService;
         this.jwtUtils = jwtUtils;
+        this.courseService = courseService;
     }
 
     @PostConstruct
@@ -206,16 +207,49 @@ public class LtiService {
                 // --- LTI ADVANTAGE: AGS & NRPS ---
                 try {
                     String sub = claims.getSubject();
+                    String targetLinkUri = (String) claims
+                            .getClaim("https://purl.imsglobal.org/spec/lti/claim/target_link_uri");
+
+                    // 0. Resolve User FIRST so we can use it for enrollment
+                    User user = userRepository
+                            .findByEmail(claims.getClaim("email") != null ? (String) claims.getClaim("email")
+                                    : claims.getSubject() + "@lti.user")
+                            .orElse(null);
+
+                    // 1. Automatic Course Enrollment based on target_link_uri
+                    // Expected format: .../courses/{courseId}
+                    if (targetLinkUri != null && targetLinkUri.contains("/courses/")) {
+                        try {
+                            String[] parts = targetLinkUri.split("/courses/");
+                            if (parts.length > 1) {
+                                String courseIdStr = parts[1].split("/")[0]; // Handle trailing slashes or sub-paths
+                                Long courseId = Long.parseLong(courseIdStr);
+
+                                // Enroll Student
+                                // Only enroll if it's a student context or we differentiate roles in
+                                // addStudentToCourse
+                                // For now, we add them as student. Teachers are usually owners.
+                                // NOTE: LTI roles are a list, effectively handled by provisionUser, but course
+                                // enrollment is specific.
+                                if (user != null) {
+                                    courseService.addStudentToCourse(courseId, user.getId());
+                                    logger.info("🎓 Auto-enrolled user {} (ID: {}) into Course {}", sub, user.getId(),
+                                            courseId);
+                                } else {
+                                    logger.warn("⚠️ Cannot auto-enroll user {} because User entity was not found.",
+                                            sub);
+                                }
+                            }
+                        } catch (Exception e) {
+                            logger.warn("⚠️ Failed to auto-enroll user in course from URI: {}. Error: {}",
+                                    targetLinkUri, e.getMessage());
+                        }
+                    }
 
                     @SuppressWarnings("unchecked")
                     Map<String, Object> resourceLink = (Map<String, Object>) claims
                             .getClaim("https://purl.imsglobal.org/spec/lti/claim/resource_link");
                     String resLinkId = (String) resourceLink.get("id");
-
-                    User student = userRepository
-                            .findByEmail(claims.getClaim("email") != null ? (String) claims.getClaim("email")
-                                    : claims.getSubject() + "@lti.user")
-                            .orElse(null);
 
                     LtiLaunch launch = ltiLaunchRepository
                             .findByPlatformIssuerAndUserSubAndResourceLinkId(issuer, sub, resLinkId)
@@ -224,9 +258,8 @@ public class LtiService {
                     launch.setPlatformIssuer(issuer);
                     launch.setUserSub(sub);
                     launch.setResourceLinkId(resLinkId);
-                    launch.setUser(student);
-                    launch.setTargetLinkUri(
-                            (String) claims.getClaim("https://purl.imsglobal.org/spec/lti/claim/target_link_uri"));
+                    launch.setUser(user);
+                    launch.setTargetLinkUri(targetLinkUri);
                     launch.setDeploymentId(
                             (String) claims.getClaim("https://purl.imsglobal.org/spec/lti/claim/deployment_id"));
 
@@ -353,15 +386,27 @@ public class LtiService {
     /**
      * NRPS: Sync members from LMS to EduFlex
      */
-    public void syncMembers(String platformIssuer, String membershipsUrl) {
+    public void syncMembers(String platformIssuer, String membershipsUrl, Long courseId) {
         com.eduflex.backend.dto.LtiMembershipResponse response = ltiNrpsService.getMemberships(platformIssuer,
                 membershipsUrl);
+
+        com.eduflex.backend.service.CourseService courseService = org.springframework.web.context.ContextLoader
+                .getCurrentWebApplicationContext()
+                .getBean(com.eduflex.backend.service.CourseService.class);
+
         if (response != null && response.getMembers() != null) {
             for (com.eduflex.backend.dto.LtiMembershipResponse.LtiMember member : response.getMembers()) {
-                provisionUser(member.getEmail(), member.getUser_id(), member.getName(), member.getRoles());
+                User user = provisionUser(member.getEmail(), member.getUser_id(), member.getName(), member.getRoles());
+                // Enroll in course
+                try {
+                    courseService.addStudentToCourse(courseId, user.getId());
+                } catch (Exception e) {
+                    // Already enrolled or other minor issue
+                }
             }
-            logger.info("✅ Sync completed. Processed {} members for platform {}", response.getMembers().size(),
-                    platformIssuer);
+            logger.info("✅ Sync completed. Processed {} members for platform {} into Course {}",
+                    response.getMembers().size(),
+                    platformIssuer, courseId);
         }
     }
 

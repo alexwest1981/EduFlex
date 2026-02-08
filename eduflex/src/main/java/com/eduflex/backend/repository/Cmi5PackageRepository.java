@@ -9,4 +9,6 @@ import java.util.List;
 @Repository
 public interface Cmi5PackageRepository extends JpaRepository<Cmi5Package, Long> {
     List<Cmi5Package> findByCourseId(Long courseId);
+
+    java.util.Optional<Cmi5Package> findByPackageId(String packageId);
 }

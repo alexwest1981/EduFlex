@@ -38,6 +38,12 @@
 ## 🇸🇪 Svenska
 
 ### ⚡ Senaste Uppdateringarna
+*   **✅ LTI 1.3 Advantage Verifiering & Systemhärdning (7 feb 2026):**
+    *   **E2E Verifiering:** Fullt genomförd simulering av LTI 1.3 Advantage (AGS & NRPS) med automatisk användarprovisionering och kursinskrivning.
+    *   **Fix: Circular Dependency:** Åtgärdat cirkulärt beroende i `LtiService` via `@Lazy` injicering för stabilare uppstart.
+    *   **Fix: Course Filtering:** Löst problem med `@EntityGraph` som filtrerade bort kurser utan lärare vid auto-enrollment.
+    *   **Infra: Database Port:** Migrerat Docker-databasen till port 5433 för att undvika konflikt med lokala PostgreSQL-tjänster på host-maskinen.
+    *   **cmi5/xAPI:** Förbättrad completion-logik och LRS-proxy för sömlös uppföljning av externa moduler och statusuppdateringar.
 *   **🛠 MinIO & CMI5 Stabilisering (7 feb 2026):**
     *   **Data Recovery:** Identifierat och åtgärdat "Split-Brain" konfiguration mellan Docker och lokal miljö för MinIO.
     *   **CMI5 Launch:** Verifierat korrekt start av CMI5-paket utan JSON-fel.
@@ -209,7 +215,7 @@
 #### 🍎 Utbildning (Core)
 - **Kurshantering:** Rika kurser med text, video, bilagor och quiz
 - **AI Quiz & Lektioner:** Generera quiz, uppgifter och lektionsplaner automatiskt med Google Gemini
-- **SCORM / xAPI:** Stöd för Articulate/Captivate-paket
+- **SCORM / xAPI / LTI 1.3 Advantage:** Fullt stöd för Articulate/Captivate-paket samt LMS-integration (Canvas/Moodle/Blackboard).
 - **Uppgifter:** Filinlämningar med lärarbedömning
 - **Certifikat:** Automatiska, spårbara PDF-diplom
 - **E-boksbibliotek:** Fristående bibliotek för EPUB/PDF med kategorier
@@ -332,6 +338,12 @@ curl -X POST http://localhost:8080/api/tenants \
 ## 🇬🇧 English
 
 ### ⚡ Latest Updates
+*   **✅ LTI 1.3 Advantage Verification & System Hardening (Feb 7, 2026):**
+    *   **E2E Verification:** Successfully simulated LTI 1.3 Advantage (AGS & NRPS) flow, including automatic account provisioning and course enrollment.
+    *   **Circular Dependency Fix:** Resolved a startup-blocking circular dependency in `LtiService` using `@Lazy` injection.
+    *   **EntityGraph Optimization:** Fixed a filtering issue where courses without assigned teachers were hidden from auto-enrollment queries.
+    *   **Database Port Re-routing:** Switched Docker database mapping to port 5433 to bypass conflicts with local PostgreSQL processes.
+    *   **cmi5 Improvements:** Enhanced completion logic and LRS proxy endpoints for robust tracking of third-party educational content.
 *   **xAPI/cmi5 Analytics & LRS (Feb 7, 2026):**
     *   **Teacher Analytics:** Comprehensive dashboard for tracking student progress, completion rates, and drop-off analysis in interactive modules.
     *   **Secure LRS:** Enhanced Learning Record Store with token-based security (JWT) and robust cmi5 profile validation.
@@ -452,7 +464,7 @@ curl -X POST http://localhost:8080/api/tenants \
 | **Course Management** | Rich courses with text, video, attachments, and quizzes |
 | **Video Lessons** | Self-hosted video uploads with chapters, speed control, and analytics |
 | **Live Classrooms** | Jitsi-powered video conferencing with scheduling and dashboard widget |
-| **SCORM / xAPI Support** | Import packages from Articulate/Adobe Captivate |
+| **SCORM / xAPI / LTI 1.3 Advantage** | Import packages from Articulate/Adobe Captivate & LMS Integration |
 | **Assignment Engine** | File submissions with teacher grading and feedback |
 | **Certification** | Auto-generated verifiable PDF certificates |
 | **Lesson Progress** | Track student progress through course materials |

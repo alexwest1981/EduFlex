@@ -18,10 +18,20 @@ public class LtiAgsService {
     private static final Logger logger = LoggerFactory.getLogger(LtiAgsService.class);
     private final LtiAdvantageService advantageService;
     private final RestTemplate restTemplate;
+    private final com.eduflex.backend.repository.LtiLaunchRepository ltiLaunchRepository;
 
-    public LtiAgsService(LtiAdvantageService advantageService) {
+    @org.springframework.beans.factory.annotation.Autowired
+    public LtiAgsService(LtiAdvantageService advantageService,
+            com.eduflex.backend.repository.LtiLaunchRepository ltiLaunchRepository) {
+        this(advantageService, ltiLaunchRepository, new RestTemplate());
+    }
+
+    public LtiAgsService(LtiAdvantageService advantageService,
+            com.eduflex.backend.repository.LtiLaunchRepository ltiLaunchRepository,
+            RestTemplate restTemplate) {
         this.advantageService = advantageService;
-        this.restTemplate = new RestTemplate();
+        this.ltiLaunchRepository = ltiLaunchRepository;
+        this.restTemplate = restTemplate;
     }
 
     /**
@@ -74,5 +84,50 @@ public class LtiAgsService {
             logger.error("💥 Error posting LTI Score: {}", e.getMessage());
             return false;
         }
+    }
+
+    /**
+     * Sync a grade for a user and course to the LTI platform.
+     */
+    public void syncGrade(com.eduflex.backend.model.User user, com.eduflex.backend.model.Course course, Double score) {
+        // 1. Find the LTI Launch context for this user and course
+        // We need to find a launch that has agsLineItemUrl
+
+        // This is a simplification. A user might have launches from different
+        // platforms/resources for the same course?
+        // Ideally we link the Course enrollment to a specific LTI Launch or Deployment.
+        // For now, we look for *any* launch for this user where targetLinkUri matches
+        // the course.
+        // Or better: We find the latest launch for this user that has AGS endpoints.
+
+        java.util.List<com.eduflex.backend.model.LtiLaunch> launches = ltiLaunchRepository.findByUser(user);
+
+        com.eduflex.backend.model.LtiLaunch validLaunch = launches.stream()
+                .filter(l -> l.getAgsLineItemUrl() != null && !l.getAgsLineItemUrl().isEmpty())
+                // check if launch is relevant to this course?
+                // If targetLinkUri contains courseId, we can match.
+                .filter(l -> l.getTargetLinkUri() != null
+                        && l.getTargetLinkUri().contains("/courses/" + course.getId()))
+                .findFirst()
+                .orElse(null);
+
+        if (validLaunch == null) {
+            logger.warn("⚠️ No valid LTI AGS launch found for user {} in course {}. Cannot sync grade.", user.getId(),
+                    course.getId());
+            return;
+        }
+
+        LtiScoreDTO scoreDto = new LtiScoreDTO();
+        scoreDto.setUserId(validLaunch.getUserSub()); // Use the LMS User ID (sub)
+        scoreDto.setScoreGiven(score);
+        scoreDto.setScoreMaximum(1.0); // Assuming normalized 0-1 or 1.0 logic? Or 100?
+        // LTI 1.3 usually expects normalized 0.0-1.0 if not specified otherwise, but
+        // ActivityProgress/GradingProgress matter.
+        scoreDto.setActivityProgress("Completed");
+        scoreDto.setGradingProgress("FullyGraded");
+        scoreDto.setTimestamp(Instant.now().toString());
+
+        logger.info("🚀 Syncing grade for user {} to {}", user.getId(), validLaunch.getPlatformIssuer());
+        postScore(validLaunch.getPlatformIssuer(), validLaunch.getAgsLineItemUrl(), scoreDto);
     }
 }
