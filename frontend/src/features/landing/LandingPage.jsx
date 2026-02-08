@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
     BookOpen, Trophy, Shield, Users,
+    Globe, Database, Server, Zap, BarChart,
+    Check, ArrowRight, Menu, X, Play, Sparkles,
     Award, TrendingUp, Layers, Gamepad2, Brain, Map, Flame, MessageSquare
 } from 'lucide-react';
 
