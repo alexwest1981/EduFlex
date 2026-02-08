@@ -1,5 +1,5 @@
 // Use relative URL to leverage Vite's proxy for LAN access
-const API_BASE = '/api';
+export const API_BASE = '/api';
 
 export const getTenantFromUrl = () => {
     const hostname = window.location.hostname;
@@ -633,20 +633,23 @@ export const getSafeUrl = (url) => {
 
     // 1. Handle MinIO internal host reference
     if (finalUrl.includes('minio:9000')) {
-        // If we are on public domain, we should proxy MinIO or use public URL
-        // For now, assume a proxy /storage exists or fallback to origin
-        finalUrl = finalUrl.replace(/http:\/\/minio:9000/g, origin + '/storage');
+        // Replace minio:9000 with current origin + /api/files
+        finalUrl = finalUrl.replace(/http:\/\/minio:9000/g, origin + '/api/files');
     }
 
-    // 2. Handle root-relative paths by prepending origin (Vite proxy handles the rest)
+    // 2. Handle /api/storage legacy paths
+    if (finalUrl.includes('/api/storage/')) {
+        finalUrl = finalUrl.replace('/api/storage/', '/api/files/');
+    }
+
+    // 3. Handle root-relative paths by prepending origin (Vite proxy handles the rest)
     if (finalUrl.startsWith('/')) {
         return `${origin}${finalUrl}`;
     }
 
-    // 3. Handle any MinIO localhost/IP/Internal references (9000 is MinIO port)
-    // We regex match anything that looks like :9000 and replace with /storage proxy
+    // 4. Handle any MinIO localhost/IP/Internal references (9000 is MinIO port)
     if (finalUrl.includes(':9000')) {
-        return finalUrl.replace(/^http:\/\/[^/]+:9000/g, origin + '/storage');
+        return finalUrl.replace(/^http:\/\/[^/]+:9000/g, origin + '/api/files');
     }
 
     return finalUrl;

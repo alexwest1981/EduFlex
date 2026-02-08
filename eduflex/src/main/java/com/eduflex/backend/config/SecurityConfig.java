@@ -130,6 +130,7 @@ public class SecurityConfig {
                                                                 "/ws/**",
                                                                 "/ws-log/**",
                                                                 "/ws-forum/**",
+                                                                "/ws-social/**",
                                                                 "/actuator/**", "/lti/**", "/api/lti/**", "/error",
                                                                 "/web-apps/**", "/sdkjs/**", "/sdkjs-plugins/**",
                                                                 "/fonts/**", "/cache/**", // Static OO

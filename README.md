@@ -38,6 +38,11 @@
 ## 🇸🇪 Svenska
 
 ### ⚡ Senaste Uppdateringarna
+*   **💬 Social Learning Expansion (9 feb 2026):**
+    *   **Contextual Comments:** Möjliggjort diskussioner direkt i kurs/lektionsvyn med trådade kommentarer och likes.
+    *   **Real-time Interaction:** Integrerat STOMP/SockJS för omedelbara uppdateringar av sociala interaktioner.
+    *   **Backend Hardening:** Fixat kritiska proxy- och säkerhetsinställningar för WebSocket-trafik (`/ws-social`).
+    *   **Maven Sync:** Standardiserat `spring-boot-maven-plugin` för att säkerställa repeterbara byggen.
 *   **✅ Gamification 2.0 & Shop (8 feb 2026):**
     *   **EduGame Shop:** Lanserat en komplett butik där studenter kan köpa profilramar, bakgrunder och titlar för sina intjänade poäng.
     *   **Inventory & Utrustning:** Nytt gränssnitt för att hantera och utrusta köpta föremål.

@@ -6,6 +6,7 @@ import OnlyOfficeEditor from '../../features/documents/OnlyOfficeEditor';
 import VideoPlayer from './components/VideoPlayer';
 import EpubViewer from '../../components/common/EpubViewer';
 import PublishModal from '../../features/community/components/PublishModal';
+import CommentSection from '../../features/social/components/CommentSection';
 
 export const CourseContentModuleMetadata = {
     key: 'material',
@@ -707,8 +708,17 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
                         )}
 
                         {/* TEXT CONTENT */}
-                        <div className="prose dark:prose-invert max-w-none text-gray-700 dark:text-gray-300 whitespace-pre-wrap leading-relaxed">
+                        <div className="prose dark:prose-invert max-w-none text-gray-700 dark:text-gray-300 whitespace-pre-wrap leading-relaxed mb-12">
                             {selectedLesson.content}
+                        </div>
+
+                        {/* --- SOCIAL: COMMENTS --- */}
+                        <div className="border-t border-gray-100 dark:border-[#3c4043] pt-8">
+                            <CommentSection
+                                targetType="LESSON"
+                                targetId={selectedLesson.id}
+                                title="Diskussion & Frågor"
+                            />
                         </div>
                     </div>
                 ) : (

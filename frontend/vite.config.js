@@ -51,6 +51,11 @@ export default defineConfig(({ mode }) => {
                     ws: true,
                     changeOrigin: true
                 },
+                '/ws-social': {
+                    target: backendUrl,
+                    ws: true,
+                    changeOrigin: true
+                },
                 '/web-apps': {
                     target: 'http://localhost:8081',
                     changeOrigin: true,

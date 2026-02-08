@@ -35,7 +35,7 @@
 | Funktion | Beskrivning | Status |
 | :--- | :--- | :--- |
 | **Socialt Lärande (Basic)** | Community Hub / Marketplace. | ✅ **Klar** |
-| **Socialt Lärande (Avancerat)** | P2P-delning, kommentarer i kurser, "YouTube for Learning". | 📅 **Planerad** |
+| **Socialt Lärande (Avancerat)** | P2P-delning, kommentarer i kurser, "YouTube for Learning". | ✅ **Stabil** (V1) |
 | **Gamification (Basic)** | XP, Levlar, Badges, Streaks. | ✅ **Klar** |
 | **EduGame Expansion** | Shop för profil-teman, Sociala Streaks, "Buddy"-system. | ✅ **Stabil** (V1) |
 | **Mobil-först** | Responsiv webbdesign. | ✅ **Klar** |
@@ -68,6 +68,19 @@
 ---
 
 ## 📝 Change Log
+
+### [v0.9.12] - 2026-02-09
+- **Social Learning**: Full launch of **Contextual Comments** for lessons and courses with real-time support.
+- **Social Learning**: Resolved 500 errors and proxy conflicts for `/ws-social` endpoints.
+- **Security**: Hardened WebSocket access controls in `SecurityConfig.java`.
+- **System**: Fixed `spring-boot-maven-plugin` versioning issues in `pom.xml`.
+
+### [v0.9.11] - 2026-02-08
+- **Social Learning**: Implemented **Contextual Comments** for lessons and courses.
+- **Social Learning**: Added **Like/Heart** functionality for comments.
+- **Social Learning**: Integrated **User Avatars** with profile pictures in comment threads.
+- **Fix**: Resolved 404 errors for MinIO assets by auto-redirecting `/api/storage` to `/api/files`.
+- **Fix**: Fixed `UserAvatar` sizing issues in comment section.
 
 ### [v0.9.10] - 2026-02-08
 - **Gamification 2.0**: Full launch of Shop, Inventory, Profile Themes, and Social Streaks.

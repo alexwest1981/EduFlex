@@ -7,6 +7,9 @@ export default {
     darkMode: 'class',
     theme: {
         extend: {
+            fontFamily: {
+                'display': ['Lexend', 'system-ui', 'sans-serif'],
+            },
             borderRadius: {
                 'none': '0',
                 'sm': 'var(--radius-sm)',
@@ -27,8 +30,24 @@ export default {
                 'xl': 'var(--card-shadow)',
                 '2xl': 'var(--card-shadow)',
                 'btn': 'var(--button-shadow)',
+                'glow-teal': '0 0 40px -10px rgba(0, 212, 170, 0.3)',
+                'glow-gold': '0 0 40px -10px rgba(255, 183, 3, 0.3)',
             },
             colors: {
+                // EduFlex 2.0 Brand Colors
+                'brand': {
+                    teal: '#00d4aa',
+                    emerald: '#10b981',
+                    blue: '#0ea5e9',
+                    orange: '#ff9f1c',
+                    gold: '#ffb703',
+                },
+                'eduflex': {
+                    bg: '#06141b',
+                    'bg-light': '#0a1f2b',
+                    glass: 'rgba(0, 212, 170, 0.05)',
+                    'glass-border': 'rgba(0, 212, 170, 0.2)',
+                },
                 // Dynamic Theme Colors (Replaces default Indigo)
                 indigo: {
                     50: 'var(--color-primary-50)',

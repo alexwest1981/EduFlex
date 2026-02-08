@@ -31,5 +31,10 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         registry.addEndpoint("/ws-forum")
                 .setAllowedOriginPatterns("*")
                 .withSockJS();
+
+        // Endpoint for Social (Comments & Likes)
+        registry.addEndpoint("/ws-social")
+                .setAllowedOriginPatterns("*")
+                .withSockJS();
     }
 }
