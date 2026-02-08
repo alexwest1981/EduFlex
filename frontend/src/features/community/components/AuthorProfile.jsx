@@ -76,6 +76,9 @@ const AuthorProfile = ({ userId, onClose, onSelectItem }) => {
                                 <div>
                                     <h2 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
                                         {profile.name}
+                                        {profile.gamificationProfile?.forumRankIcon && (
+                                            <span>{profile.gamificationProfile.forumRankIcon}</span>
+                                        )}
                                         {profile.totalResources > 10 && (
                                             <Award alt="EduFlex Champion" className="text-amber-500" size={20} />
                                         )}

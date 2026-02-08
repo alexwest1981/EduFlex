@@ -23,12 +23,14 @@ public class ForumService {
 
     private final ForumReactionRepository reactionRepository;
     private final com.eduflex.backend.service.ai.GeminiService geminiService;
+    private final com.eduflex.backend.edugame.repository.EduGameProfileRepository eduGameProfileRepository;
 
     public ForumService(ForumThreadRepository threadRepository, ForumPostRepository postRepository,
             ForumCategoryRepository categoryRepository, CourseRepository courseRepository,
             UserRepository userRepository, GamificationService gamificationService,
             SimpMessagingTemplate messagingTemplate, ForumReactionRepository reactionRepository,
-            com.eduflex.backend.service.ai.GeminiService geminiService) {
+            com.eduflex.backend.service.ai.GeminiService geminiService,
+            com.eduflex.backend.edugame.repository.EduGameProfileRepository eduGameProfileRepository) {
         this.threadRepository = threadRepository;
         this.postRepository = postRepository;
         this.categoryRepository = categoryRepository;
@@ -38,6 +40,7 @@ public class ForumService {
         this.messagingTemplate = messagingTemplate;
         this.reactionRepository = reactionRepository;
         this.geminiService = geminiService;
+        this.eduGameProfileRepository = eduGameProfileRepository;
     }
 
     @Transactional
@@ -61,6 +64,7 @@ public class ForumService {
 
         // Gamification
         gamificationService.addPoints(userId, 20);
+        updateForumRank(userId, 20);
 
         // Real-time broadcast: New Thread in Course
         // Payload can be the full thread or a summary
@@ -88,6 +92,7 @@ public class ForumService {
 
         // Gamification
         gamificationService.addPoints(userId, 10);
+        updateForumRank(userId, 10);
 
         // Real-time broadcast: New Reply to Thread
         messagingTemplate.convertAndSend("/topic/thread/" + threadId, savedPost);
@@ -120,6 +125,7 @@ public class ForumService {
             ForumReaction reaction = new ForumReaction(post, user, reactionType);
             reactionRepository.save(reaction);
             gamificationService.addPoints(userId, 1); // Small bonus for engagement
+            updateForumRank(userId, 1);
         }
 
         // Broadcast event
@@ -166,5 +172,31 @@ public class ForumService {
                 + sb.toString();
 
         return geminiService.generateResponse(prompt);
+    }
+
+    private void updateForumRank(Long userId, int pointsToAdd) {
+        com.eduflex.backend.edugame.model.EduGameProfile profile = eduGameProfileRepository.findByUserId(userId)
+                .orElseGet(() -> {
+                    User user = userRepository.findById(userId).orElseThrow();
+                    return new com.eduflex.backend.edugame.model.EduGameProfile(user);
+                });
+
+        int newPoints = profile.getForumActivityPoints() + pointsToAdd;
+        profile.setForumActivityPoints(newPoints);
+
+        // Calculate Icon
+        String icon = null;
+        if (newPoints >= 5000) {
+            icon = "🏛️"; // Pillar
+        } else if (newPoints >= 1000) {
+            icon = "📚"; // Scholar
+        } else if (newPoints >= 200) {
+            icon = "🌿"; // Contributor
+        } else if (newPoints >= 50) {
+            icon = "🌱"; // Newcomer
+        }
+        profile.setForumRankIcon(icon);
+
+        eduGameProfileRepository.save(profile);
     }
 }

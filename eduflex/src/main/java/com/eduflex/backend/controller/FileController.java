@@ -44,6 +44,8 @@ public class FileController {
                     .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + fileName + "\"")
                     .body(resource);
         } catch (Exception e) {
+            System.err.println("FileController: Error serving file " + fileName + ": " + e.getMessage());
+            // It might be useful to try fallback locations if we suspect split-brain
             return ResponseEntity.notFound().build();
         }
     }

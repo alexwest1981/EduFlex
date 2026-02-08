@@ -40,6 +40,11 @@ public class QuizController {
         return quizRepository.findByCourseId(courseId);
     }
 
+    @GetMapping
+    public List<Quiz> getAllQuizzes() {
+        return quizRepository.findAll();
+    }
+
     @GetMapping("/my")
     public List<Quiz> getMyQuizzes(@RequestParam Long userId) {
         return quizRepository.findByAuthorId(userId);

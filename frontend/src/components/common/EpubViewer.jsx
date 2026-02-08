@@ -30,6 +30,8 @@ const EpubViewer = ({ url, title, location, onLocationChange }) => {
                     epubOptions={{
                         flow: 'paginated', // or scrolled
                         manager: 'default',
+                        allowScriptedContent: true,
+                        allowPopups: true,
                         requestHeaders: {
                             Authorization: `Bearer ${localStorage.getItem('token')}`
                         }

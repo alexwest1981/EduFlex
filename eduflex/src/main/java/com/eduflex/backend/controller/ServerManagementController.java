@@ -10,7 +10,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 
+import java.io.File;
 import java.util.List;
 import java.util.Map;
 
@@ -42,16 +47,30 @@ public class ServerManagementController {
         return ResponseEntity.ok(backupService.createBackup());
     }
 
-    @PostMapping("/backups/restore/{backupId}")
+    @PostMapping("/backups/restore/{*backupId}")
     public ResponseEntity<Map<String, String>> restoreBackup(@PathVariable String backupId) {
-        backupService.restoreBackup(backupId);
+        String cleanId = backupId.startsWith("/") ? backupId.substring(1) : backupId;
+        backupService.restoreBackup(cleanId);
         return ResponseEntity.ok(Map.of("message", "Backup restored successfully"));
     }
 
-    @DeleteMapping("/backups/{backupId}")
+    @DeleteMapping("/backups/{*backupId}")
     public ResponseEntity<Map<String, String>> deleteBackup(@PathVariable String backupId) {
-        backupService.deleteBackup(backupId);
+        String cleanId = backupId.startsWith("/") ? backupId.substring(1) : backupId;
+        backupService.deleteBackup(cleanId);
         return ResponseEntity.ok(Map.of("message", "Backup deleted successfully"));
+    }
+
+    @GetMapping("/backups/download/{*backupId}")
+    public ResponseEntity<Resource> downloadBackup(@PathVariable String backupId) {
+        String cleanId = backupId.startsWith("/") ? backupId.substring(1) : backupId;
+        File file = backupService.getBackupFile(cleanId);
+        Resource resource = new FileSystemResource(file);
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getName() + "\"")
+                .body(resource);
     }
 
     // ==================== DATABASE MANAGEMENT ENDPOINTS ====================

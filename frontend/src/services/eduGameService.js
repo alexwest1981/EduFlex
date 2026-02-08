@@ -3,41 +3,45 @@ import { api } from './api';
 const eduGameService = {
     // --- SHOP ---
     getShopItems: async () => {
-        return api.get('/gamification/shop/items');
+        return api.shop.getItems();
     },
 
     buyItem: async (itemId) => {
-        return api.post(`/gamification/shop/buy/${itemId}`, {});
+        return api.shop.buyItem(itemId);
     },
 
     equipItem: async (itemId) => {
-        return api.post(`/gamification/shop/equip/${itemId}`, {});
+        return api.shop.equipItem(itemId);
+    },
+
+    unequipItem: async (type) => {
+        return api.shop.unequipItem(type);
     },
 
     getMyInventory: async () => {
-        return api.get('/gamification/shop/inventory');
+        return api.shop.getInventory();
     },
 
     // --- QUESTS ---
     getDailyQuests: async () => {
-        return api.get('/gamification/quests/daily');
+        return api.gamification.getQuests('daily');
     },
 
     // --- SOCIAL ---
     getFriends: async () => {
-        return api.get('/gamification/social/friends');
+        return api.gamification.social.getFriends();
     },
 
     sendFriendRequest: async (targetUserId) => {
-        return api.post(`/gamification/social/request/${targetUserId}`, {});
+        return api.gamification.social.sendRequest(targetUserId);
     },
 
     getPendingRequests: async () => {
-        return api.get('/gamification/social/requests/pending');
+        return api.gamification.social.getPendingRequests();
     },
 
     acceptFriendRequest: async (requestId) => {
-        return api.post(`/gamification/social/request/${requestId}/accept`, {});
+        return api.gamification.social.acceptRequest(requestId);
     }
 };
 

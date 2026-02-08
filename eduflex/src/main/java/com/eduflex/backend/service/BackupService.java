@@ -51,20 +51,44 @@ public class BackupService {
             return Collections.emptyList();
         }
 
-        File[] files = backupDir.listFiles((dir, name) -> name.endsWith(".sql") || name.endsWith(".sql.gz"));
-        if (files == null) {
-            return Collections.emptyList();
+        List<BackupResponse> allBackups = new ArrayList<>();
+        String[] categories = { "manual", "daily", "weekly", "monthly", "last" };
+
+        for (String cat : categories) {
+            File catDir = new File(backupDir, cat);
+            if (catDir.exists() && catDir.isDirectory()) {
+                File[] files = catDir.listFiles(
+                        (dir, name) -> name.endsWith(".sql") || name.endsWith(".sql.gz") || name.endsWith(".sql.bz2"));
+                if (files != null) {
+                    for (File file : files) {
+                        BackupResponse response = new BackupResponse();
+                        // ID is the relative path from backupDirectory
+                        response.setId(cat + "/" + file.getName());
+                        response.setName(file.getName());
+                        response.setSize(file.length());
+                        response.setCreatedAt(new Date(file.lastModified()));
+                        response.setType(cat);
+                        allBackups.add(response);
+                    }
+                }
+            }
         }
 
-        return Arrays.stream(files)
-                .map(file -> {
-                    BackupResponse response = new BackupResponse();
-                    response.setId(file.getName());
-                    response.setName(file.getName());
-                    response.setSize(file.length());
-                    response.setCreatedAt(new Date(file.lastModified()));
-                    return response;
-                })
+        // Also check root for legacy backups
+        File[] rootFiles = backupDir.listFiles((dir, name) -> name.endsWith(".sql") || name.endsWith(".sql.gz"));
+        if (rootFiles != null) {
+            for (File file : rootFiles) {
+                BackupResponse response = new BackupResponse();
+                response.setId(file.getName());
+                response.setName(file.getName());
+                response.setSize(file.length());
+                response.setCreatedAt(new Date(file.lastModified()));
+                response.setType("other");
+                allBackups.add(response);
+            }
+        }
+
+        return allBackups.stream()
                 .sorted(Comparator.comparing(BackupResponse::getCreatedAt).reversed())
                 .collect(Collectors.toList());
     }
@@ -81,40 +105,25 @@ public class BackupService {
         try {
             logger.info("Creating manual backup...");
 
-            File backupDir = new File(backupDirectory);
-            if (!backupDir.exists()) {
-                backupDir.mkdirs();
+            File manualDir = new File(backupDirectory, "manual");
+            if (!manualDir.exists()) {
+                manualDir.mkdirs();
             }
 
             String timestamp = LocalDateTime.now().format(FORMATTER);
             String backupFileName = String.format("manual_backup_%s.sql", timestamp);
-            File backupFile = new File(backupDir, backupFileName);
+            File backupFile = new File(manualDir, backupFileName);
 
-            // Extract database name from JDBC URL
             String dbName = extractDatabaseName(datasourceUrl);
 
-            // Execute pg_dump command
-            ProcessBuilder processBuilder = new ProcessBuilder(
-                    "pg_dump",
-                    "-h", extractHost(datasourceUrl),
-                    "-p", extractPort(datasourceUrl),
-                    "-U", dbUsername,
-                    "-F", "p", // Plain text format
-                    "-f", backupFile.getAbsolutePath(),
-                    dbName);
-
-            // Set PGPASSWORD environment variable
-            Map<String, String> env = processBuilder.environment();
-            env.put("PGPASSWORD", dbPassword);
-
-            Process process = processBuilder.start();
-            int exitCode = process.waitFor();
-
-            if (exitCode != 0) {
-                BufferedReader errorReader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
-                String errorOutput = errorReader.lines().collect(Collectors.joining("\n"));
-                logger.error("Backup failed with exit code {}: {}", exitCode, errorOutput);
-                throw new RuntimeException("Backup failed: " + errorOutput);
+            try {
+                // Strategy 1: Native pg_dump
+                executePgDump(backupFile, dbName);
+            } catch (Exception e) {
+                logger.warn("Native backup failed (maybe pg_dump is missing?), trying Docker fallback: {}",
+                        e.getMessage());
+                // Strategy 2: Docker fallback (assuming db container is 'eduflex-db')
+                executeDockerPgDump(backupFile, dbName);
             }
 
             lastBackupTime = LocalDateTime.now();
@@ -134,6 +143,52 @@ public class BackupService {
         }
     }
 
+    private void executePgDump(File backupFile, String dbName) throws Exception {
+        ProcessBuilder pb = new ProcessBuilder(
+                "pg_dump",
+                "-h", extractHost(datasourceUrl),
+                "-p", extractPort(datasourceUrl),
+                "-U", dbUsername,
+                "-F", "p",
+                "-f", backupFile.getAbsolutePath(),
+                dbName);
+
+        pb.environment().put("PGPASSWORD", dbPassword);
+        Process process = pb.start();
+        int exitCode = process.waitFor();
+
+        if (exitCode != 0) {
+            BufferedReader errorReader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+            String errorOutput = errorReader.lines().collect(Collectors.joining("\n"));
+            throw new RuntimeException("pg_dump failed (code " + exitCode + "): " + errorOutput);
+        }
+    }
+
+    private void executeDockerPgDump(File backupFile, String dbName) throws Exception {
+        // Output redirection in ProcessBuilder is standard since Java 7
+        ProcessBuilder pb = new ProcessBuilder(
+                "docker", "exec",
+                "-e", "PGPASSWORD=" + dbPassword,
+                "eduflex-db",
+                "pg_dump",
+                "-U", dbUsername,
+                "-F", "p",
+                dbName);
+
+        // We pipe the output directly to the file to avoid memory issues and handle
+        // binary/large data correctly
+        pb.redirectOutput(backupFile);
+
+        Process process = pb.start();
+        int exitCode = process.waitFor();
+
+        if (exitCode != 0) {
+            BufferedReader errorReader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+            String errorOutput = errorReader.lines().collect(Collectors.joining("\n"));
+            throw new RuntimeException("Docker backup failed (code " + exitCode + "): " + errorOutput);
+        }
+    }
+
     public void restoreBackup(String backupId) {
         try {
             logger.info("Restoring backup: {}", backupId);
@@ -145,26 +200,11 @@ public class BackupService {
 
             String dbName = extractDatabaseName(datasourceUrl);
 
-            // Execute psql command to restore
-            ProcessBuilder processBuilder = new ProcessBuilder(
-                    "psql",
-                    "-h", extractHost(datasourceUrl),
-                    "-p", extractPort(datasourceUrl),
-                    "-U", dbUsername,
-                    "-d", dbName,
-                    "-f", backupFile.getAbsolutePath());
-
-            Map<String, String> env = processBuilder.environment();
-            env.put("PGPASSWORD", dbPassword);
-
-            Process process = processBuilder.start();
-            int exitCode = process.waitFor();
-
-            if (exitCode != 0) {
-                BufferedReader errorReader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
-                String errorOutput = errorReader.lines().collect(Collectors.joining("\n"));
-                logger.error("Restore failed with exit code {}: {}", exitCode, errorOutput);
-                throw new RuntimeException("Restore failed: " + errorOutput);
+            try {
+                executePsqlRestore(backupFile, dbName);
+            } catch (Exception e) {
+                logger.warn("Native restore failed, trying Docker fallback: {}", e.getMessage());
+                executeDockerPsqlRestore(backupFile, dbName);
             }
 
             logger.info("Backup restored successfully: {}", backupId);
@@ -175,6 +215,47 @@ public class BackupService {
         }
     }
 
+    private void executePsqlRestore(File backupFile, String dbName) throws Exception {
+        ProcessBuilder pb = new ProcessBuilder(
+                "psql",
+                "-h", extractHost(datasourceUrl),
+                "-p", extractPort(datasourceUrl),
+                "-U", dbUsername,
+                "-d", dbName,
+                "-f", backupFile.getAbsolutePath());
+
+        pb.environment().put("PGPASSWORD", dbPassword);
+        Process process = pb.start();
+        int exitCode = process.waitFor();
+
+        if (exitCode != 0) {
+            BufferedReader errorReader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+            String errorOutput = errorReader.lines().collect(Collectors.joining("\n"));
+            throw new RuntimeException("psql restore failed (code " + exitCode + "): " + errorOutput);
+        }
+    }
+
+    private void executeDockerPsqlRestore(File backupFile, String dbName) throws Exception {
+        // For restore, we need to feed the file content into stdin
+        ProcessBuilder pb = new ProcessBuilder(
+                "docker", "exec", "-i",
+                "-e", "PGPASSWORD=" + dbPassword,
+                "eduflex-db",
+                "psql",
+                "-U", dbUsername,
+                "-d", dbName);
+
+        pb.redirectInput(backupFile);
+        Process process = pb.start();
+        int exitCode = process.waitFor();
+
+        if (exitCode != 0) {
+            BufferedReader errorReader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+            String errorOutput = errorReader.lines().collect(Collectors.joining("\n"));
+            throw new RuntimeException("Docker restore failed (code " + exitCode + "): " + errorOutput);
+        }
+    }
+
     public void deleteBackup(String backupId) {
         File backupFile = new File(backupDirectory, backupId);
         if (backupFile.exists() && backupFile.delete()) {
@@ -182,6 +263,14 @@ public class BackupService {
         } else {
             throw new RuntimeException("Failed to delete backup: " + backupId);
         }
+    }
+
+    public File getBackupFile(String backupId) {
+        File file = new File(backupDirectory, backupId);
+        if (!file.exists()) {
+            throw new RuntimeException("Backup file not found: " + backupId);
+        }
+        return file;
     }
 
     // Scheduled backup at 2 AM every day

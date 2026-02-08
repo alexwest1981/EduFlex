@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { api } from '../../services/api.js';
+import { getGamificationAssetPath } from '../../utils/gamificationUtils';
+import { api, getSafeUrl } from '../../services/api';
 import { User, Mail, Phone, MapPin, Globe, Loader, Lock, Check, UserPlus, Clock, Instagram, Facebook, Linkedin, Twitter } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
@@ -53,30 +54,59 @@ const PublicProfile = ({ currentUser, showMessage }) => {
         <div className="animate-in fade-in max-w-4xl mx-auto pb-20 pt-10">
             <div className="bg-white dark:bg-[#1E1F20] rounded-2xl shadow-sm border border-gray-200 dark:border-[#3c4043] overflow-hidden">
                 {/* Header / Banner area could go here */}
-                <div className="h-32 bg-gradient-to-r from-gray-100 to-gray-200 dark:from-[#282a2c] dark:to-[#3c4043]"></div>
+                <div
+                    className="h-32 bg-gradient-to-r from-gray-100 to-gray-200 dark:from-[#282a2c] dark:to-[#3c4043] relative overflow-hidden"
+                    style={{
+                        backgroundImage: profileUser.gamificationProfile?.activeBackground ? `url(${getGamificationAssetPath(profileUser.gamificationProfile.activeBackground, 'BACKGROUND')})` : 'none',
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center'
+                    }}
+                >
+                    {/* Dark overlay if background exists */}
+                    {profileUser.gamificationProfile?.activeBackground && (
+                        <div className="absolute inset-0 bg-black/20 backdrop-blur-[1px]"></div>
+                    )}
+                </div>
 
                 <div className="px-8 pb-8">
                     <div className="relative flex justify-between items-end -mt-12 mb-6">
-                        <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-white dark:border-[#1E1F20] shadow-md bg-gray-50 dark:bg-[#131314] flex items-center justify-center">
-                            {profileUser.profilePictureUrl && !imgError ? (
+                        <div className="relative w-32 h-32 flex items-center justify-center -mt-6">
+                            {/* Avatar */}
+                            <div className="w-28 h-28 rounded-full overflow-hidden border-4 border-white dark:border-[#1E1F20] shadow-md bg-gray-50 dark:bg-[#131314] flex items-center justify-center z-10">
+                                {profileUser.profilePictureUrl && !imgError ? (
+                                    <img
+                                        src={(() => {
+                                            let url = profileUser.profilePictureUrl;
+                                            if (url.includes('minio:9000')) url = url.replace('minio:9000', 'localhost:9000');
+                                            if (url.startsWith('http')) return url;
+                                            if (!url.startsWith('/')) {
+                                                if (!url.includes('/')) url = '/uploads/' + url;
+                                                else url = '/' + url;
+                                            }
+                                            return `${window.location.origin}${url}`;
+                                        })()}
+                                        onError={() => setImgError(true)}
+                                        alt=""
+                                        className="w-full h-full object-cover"
+                                    />
+                                ) : (
+                                    <span className="text-4xl font-bold text-gray-400 dark:text-gray-500">{profileUser.firstName?.[0]}</span>
+                                )}
+                            </div>
+
+                            {/* Frame Overlay with Ring Mask */}
+                            {profileUser.gamificationProfile?.activeFrame && (
                                 <img
-                                    src={(() => {
-                                        let url = profileUser.profilePictureUrl;
-                                        if (url.includes('minio:9000')) url = url.replace('minio:9000', 'localhost:9000');
-                                        if (url.startsWith('http')) return url;
-                                        // Handle missing slash or missing /uploads/ prefix
-                                        if (!url.startsWith('/')) {
-                                            if (!url.includes('/')) url = '/uploads/' + url;
-                                            else url = '/' + url;
-                                        }
-                                        return `${window.location.origin}${url}`;
-                                    })()}
-                                    onError={() => setImgError(true)}
-                                    alt=""
-                                    className="w-full h-full object-cover"
+                                    src={getGamificationAssetPath(profileUser.gamificationProfile.activeFrame, 'FRAME')}
+                                    alt="Frame"
+                                    className="absolute inset-0 w-32 h-32 z-20 pointer-events-none rounded-full object-cover"
+                                    style={{
+                                        mixBlendMode: profileUser.gamificationProfile.activeFrame.includes('circular') ? 'multiply' : 'screen',
+                                        maskImage: 'radial-gradient(circle, transparent 72%, black 76%, black 92%, transparent 96%)',
+                                        WebkitMaskImage: 'radial-gradient(circle, transparent 72%, black 76%, black 92%, transparent 96%)',
+                                        filter: 'contrast(110%) brightness(1.1)'
+                                    }}
                                 />
-                            ) : (
-                                <span className="text-4xl font-bold text-gray-400 dark:text-gray-500">{profileUser.firstName?.[0]}</span>
                             )}
                         </div>
 
@@ -99,7 +129,12 @@ const PublicProfile = ({ currentUser, showMessage }) => {
 
                     <div className="space-y-6">
                         <div>
-                            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{profileUser.firstName} {profileUser.lastName}</h1>
+                            <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                                {profileUser.firstName} {profileUser.lastName}
+                                {profileUser.gamificationProfile?.forumRankIcon && (
+                                    <span title="Forum Rank">{profileUser.gamificationProfile.forumRankIcon}</span>
+                                )}
+                            </h1>
                             <p className="text-gray-500 dark:text-gray-400">@{profileUser.username} • {profileUser.role?.name}</p>
                         </div>
 

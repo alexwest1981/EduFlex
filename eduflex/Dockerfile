@@ -16,8 +16,14 @@ RUN mvn clean package -Dmaven.test.skip=true -B
 FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
 
-# Create non-root user
-RUN addgroup -S spring && adduser -S spring -G spring
+# Install postgresql-client for backups
+RUN apk add --no-cache postgresql-client
+
+# Create backups directory and set permissions
+RUN mkdir -p /app/backups && \
+  addgroup -S spring && adduser -S spring -G spring && \
+  chown -R spring:spring /app/backups
+
 USER spring:spring
 
 # Copy JAR from build stage

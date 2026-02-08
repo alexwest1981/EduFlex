@@ -118,226 +118,190 @@ const handleResponse = async (res) => {
 
 export const api = {
     get: (url) => fetch(`${API_BASE}${url}`, { headers: getHeaders() }).then(handleResponse),
-    post: (url, body) => fetch(`${API_BASE}${url}`, { method: 'POST', headers: getHeaders(), body: JSON.stringify(body) }).then(handleResponse),
-    put: (url, body) => fetch(`${API_BASE}${url}`, { method: 'PUT', headers: getHeaders(), body: JSON.stringify(body) }).then(handleResponse),
+    post: (url, body) => {
+        const isFormData = body instanceof FormData;
+        return fetch(`${API_BASE}${url}`, {
+            method: 'POST',
+            headers: getHeaders(isFormData ? null : 'application/json'),
+            body: isFormData ? body : JSON.stringify(body)
+        }).then(handleResponse);
+    },
+    put: (url, body) => {
+        const isFormData = body instanceof FormData;
+        return fetch(`${API_BASE}${url}`, {
+            method: 'PUT',
+            headers: getHeaders(isFormData ? null : 'application/json'),
+            body: isFormData ? body : JSON.stringify(body)
+        }).then(handleResponse);
+    },
     delete: (url) => fetch(`${API_BASE}${url}`, { method: 'DELETE', headers: getHeaders() }).then(handleResponse),
-    patch: (url, body) => fetch(`${API_BASE}${url}`, { method: 'PATCH', headers: getHeaders(), body: JSON.stringify(body) }).then(handleResponse),
+    patch: (url, body) => {
+        const isFormData = body instanceof FormData;
+        return fetch(`${API_BASE}${url}`, {
+            method: 'PATCH',
+            headers: getHeaders(isFormData ? null : 'application/json'),
+            body: isFormData ? body : JSON.stringify(body)
+        }).then(handleResponse);
+    },
 
     auth: {
-        login: (credentials) => {
-            // Vi använder getHeaders() här för att få med X-Tenant-ID automatiskt!
-            // Men vi måste vara noga med att INTE skicka en gammal "Bearer null"-token.
-            // Eftersom vi fixade getHeaders ovan är det nu säkert att använda den.
-            return fetch(`${API_BASE}/auth/login`, {
-                method: 'POST',
-                headers: getHeaders(), // Nu inkluderas Tenant ID här!
-                body: JSON.stringify(credentials)
-            }).then(handleResponse);
-        },
-        register: (data) => fetch(`${API_BASE}/auth/register`, {
-            method: 'POST',
-            headers: getHeaders(), // Samma här för registrering
-            body: JSON.stringify(data)
-        }).then(handleResponse),
+        login: (credentials) => api.post('/auth/login', credentials),
+        register: (data) => api.post('/auth/register', data),
     },
 
     // --- GLOBAL SÖK ---
     search: {
-        global: (query) => fetch(`${API_BASE}/search/global?q=${encodeURIComponent(query)}`, { headers: getHeaders() }).then(handleResponse),
+        global: (query) => api.get(`/search/global?q=${encodeURIComponent(query)}`),
     },
 
     // --- MODULHANTERING ---
     modules: {
-        getAll: () => fetch(`${API_BASE}/modules`, { headers: getHeaders() }).then(handleResponse),
-        toggle: (key, active) => fetch(`${API_BASE}/modules/${key}/toggle`, {
-            method: 'PUT',
-            headers: getHeaders(),
-            body: JSON.stringify({ active })
-        }).then(handleResponse),
-        init: () => fetch(`${API_BASE}/modules/init`, {
-            method: 'POST',
-            headers: getHeaders()
-        }).then(handleResponse),
+        getAll: () => api.get('/modules'),
+        toggle: (key, active) => api.put(`/modules/${key}/toggle`, { active }),
+        init: () => api.post('/modules/init'),
     },
 
     // --- FORUM ---
     forum: {
-        getCategories: (courseId) => fetch(`${API_BASE}/forum/course/${courseId}/categories`, { headers: getHeaders() }).then(handleResponse),
-        createCategory: (courseId, data) => fetch(`${API_BASE}/forum/course/${courseId}/categories`, {
-            method: 'POST',
-            headers: getHeaders(),
-            body: JSON.stringify(data)
-        }).then(handleResponse),
-        getThreads: (categoryId, page = 0, size = 10) => fetch(`${API_BASE}/forum/category/${categoryId}/threads?page=${page}&size=${size}`, { headers: getHeaders() }).then(handleResponse),
-        createThread: (categoryId, userId, title, content) => fetch(`${API_BASE}/forum/category/${categoryId}/thread`, {
-            method: 'POST',
-            headers: getHeaders(),
-            body: JSON.stringify({ userId, title, content })
-        }).then(handleResponse),
-        reply: (threadId, userId, content) => fetch(`${API_BASE}/forum/thread/${threadId}/reply`, {
-            method: 'POST',
-            headers: getHeaders(),
-            body: JSON.stringify({ userId, content })
-        }).then(handleResponse),
-        deleteThread: (threadId) => fetch(`${API_BASE}/forum/thread/${threadId}`, { method: 'DELETE', headers: getHeaders() }).then(handleResponse),
-        deletePost: (postId) => fetch(`${API_BASE}/forum/post/${postId}`, { method: 'DELETE', headers: getHeaders() }).then(handleResponse),
-        toggleLockThread: (threadId, isLocked) => fetch(`${API_BASE}/forum/thread/${threadId}/lock`, {
-            method: 'PUT',
-            headers: getHeaders(),
-            body: JSON.stringify({ locked: isLocked })
-        }).then(handleResponse),
+        getCategories: (courseId) => api.get(`/forum/course/${courseId}/categories`),
+        createCategory: (courseId, data) => api.post(`/forum/course/${courseId}/categories`, data),
+        getThreads: (categoryId, page = 0, size = 10) => api.get(`/forum/category/${categoryId}/threads?page=${page}&size=${size}`),
+        createThread: (categoryId, userId, title, content) => api.post(`/forum/category/${categoryId}/thread`, { userId, title, content }),
+        reply: (threadId, userId, content) => api.post(`/forum/thread/${threadId}/reply`, { userId, content }),
+        deleteThread: (threadId) => api.delete(`/forum/thread/${threadId}`),
+        deletePost: (postId) => api.delete(`/forum/post/${postId}`),
+        toggleLockThread: (threadId, isLocked) => api.put(`/forum/thread/${threadId}/lock`, { locked: isLocked }),
     },
 
     analytics: {
-        getOverview: () => fetch(`${API_BASE}/analytics/overview`, { headers: getHeaders() }).then(handleResponse),
-        getStudentProgress: (studentId) => fetch(`${API_BASE}/analytics/student/${studentId}`, { headers: getHeaders() }).then(handleResponse),
+        getOverview: () => api.get('/analytics/overview'),
+        getStudentProgress: (studentId) => api.get(`/analytics/student/${studentId}`),
         // NEW DASHBOARD ENDPOINTS
-        getActivityTrend: (range) => fetch(`${API_BASE}/analytics/activity-trend?range=${range || '30d'}`, { headers: getHeaders() }).then(handleResponse),
-        getCoursePerformance: () => fetch(`${API_BASE}/analytics/course-performance`, { headers: getHeaders() }).then(handleResponse),
-        getAtRiskStudents: () => fetch(`${API_BASE}/analytics/at-risk-students`, { headers: getHeaders() }).then(handleResponse),
-        getAtRiskAiSummary: (userId) => fetch(`${API_BASE}/analytics/at-risk/${userId}/ai-summary`, { headers: getHeaders() }).then(handleResponse),
-        getHeatmap: (userId) => fetch(`${API_BASE}/analytics/heatmap${userId ? `?userId=${userId}` : ''}`, { headers: getHeaders() }).then(handleResponse),
-        getDropOff: (courseId) => fetch(`${API_BASE}/analytics/drop-off/${courseId}`, { headers: getHeaders() }).then(handleResponse),
+        getActivityTrend: (range) => api.get(`/analytics/activity-trend?range=${range || '30d'}`),
+        getCoursePerformance: () => api.get('/analytics/course-performance'),
+        getAtRiskStudents: () => api.get('/analytics/at-risk-students'),
+        getAtRiskAiSummary: (userId) => api.get(`/analytics/at-risk/${userId}/ai-summary`),
+        getHeatmap: (userId) => api.get(`/analytics/heatmap${userId ? `?userId=${userId}` : ''}`),
+        getDropOff: (courseId) => api.get(`/analytics/drop-off/${courseId}`),
     },
 
     skolverket: {
-        getCourses: () => fetch(`${API_BASE}/skolverket/courses`, { headers: getHeaders() }).then(handleResponse),
-        search: (query) => fetch(`${API_BASE}/skolverket/courses/search?q=${query}`, { headers: getHeaders() }).then(handleResponse),
-        getBySubject: (subject) => fetch(`${API_BASE}/skolverket/courses/subject/${subject}`, { headers: getHeaders() }).then(handleResponse),
-        getSubjects: () => fetch(`${API_BASE}/skolverket/subjects`, { headers: getHeaders() }).then(handleResponse),
-        getStats: () => fetch(`${API_BASE}/skolverket/stats`, { headers: getHeaders() }).then(handleResponse)
+        getCourses: () => api.get('/skolverket/courses'),
+        search: (query) => api.get(`/skolverket/courses/search?q=${query}`),
+        getBySubject: (subject) => api.get(`/skolverket/courses/subject/${subject}`),
+        getSubjects: () => api.get('/skolverket/subjects'),
+        getStats: () => api.get('/skolverket/stats'),
+        getCriteria: (courseCode) => api.get(`/skolverket/courses/${courseCode}/criteria`),
+        updateDetails: (courseCode, details) => api.put(`/skolverket/courses/${courseCode}/details`, details),
+        saveCriteria: (courseCode, criteria) => api.post(`/skolverket/courses/${courseCode}/criteria`, criteria)
     },
 
     adaptiveLearning: {
-        getMyRecommendations: () => fetch(`${API_BASE}/adaptive-learning/recommendations`, { headers: getHeaders() }).then(handleResponse),
-        markAsViewed: (id) => fetch(`${API_BASE}/adaptive-learning/recommendations/${id}/view`, { method: 'PUT', headers: getHeaders() }).then(handleResponse),
-        triggerAnalysis: () => fetch(`${API_BASE}/adaptive-learning/trigger`, { method: 'POST', headers: getHeaders() }).then(handleResponse)
+        getMyRecommendations: () => api.get('/adaptive-learning/recommendations'),
+        markAsViewed: (id) => api.put(`/adaptive-learning/recommendations/${id}/view`),
+        triggerAnalysis: () => api.post('/adaptive-learning/trigger')
     },
 
     messages: {
-        getInbox: () => fetch(`${API_BASE}/messages/inbox`, { headers: getHeaders() }).then(handleResponse),
-        getFolder: (slug) => fetch(`${API_BASE}/messages/folder/${slug}`, { headers: getHeaders() }).then(handleResponse),
-        getSent: () => fetch(`${API_BASE}/messages/sent`, { headers: getHeaders() }).then(handleResponse),
-        getFolders: () => fetch(`${API_BASE}/messages/folders`, { headers: getHeaders() }).then(handleResponse),
-        createFolder: (name) => fetch(`${API_BASE}/messages/folders`, { method: 'POST', headers: getHeaders(), body: JSON.stringify({ name }) }).then(handleResponse),
-        moveMessage: (messageId, folderId) => fetch(`${API_BASE}/messages/${messageId}/move`, { method: 'PUT', headers: getHeaders(), body: JSON.stringify({ folderId }) }).then(handleResponse),
-        getUnreadCount: () => fetch(`${API_BASE}/messages/unread`, { headers: getHeaders() }).then(handleResponse),
-        markAsRead: (messageId) => fetch(`${API_BASE}/messages/${messageId}/read`, { method: 'PUT', headers: getHeaders() }).then(handleResponse),
-        getThread: (messageId) => fetch(`${API_BASE}/messages/thread/${messageId}`, { headers: getHeaders() }).then(handleResponse),
-        send: (formData) => fetch(`${API_BASE}/messages/send`, {
-            method: 'POST',
-            headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }, // No Content-Type for FormData!
-            body: formData
-        }).then(handleResponse),
-        getRecentContacts: (userId) => fetch(`${API_BASE}/messages/contacts/${userId}`, { headers: getHeaders() }).then(handleResponse).catch(() => []),
-        getContacts: () => fetch(`${API_BASE}/messages/contacts`, { headers: getHeaders() }).then(handleResponse),
+        getInbox: () => api.get('/messages/inbox'),
+        getFolder: (slug) => api.get(`/messages/folder/${slug}`),
+        getSent: () => api.get('/messages/sent'),
+        getFolders: () => api.get('/messages/folders'),
+        createFolder: (name) => api.post('/messages/folders', { name }),
+        moveMessage: (messageId, folderId) => api.put(`/messages/${messageId}/move`, { folderId }),
+        getUnreadCount: () => api.get('/messages/unread'),
+        markAsRead: (messageId) => api.put(`/messages/${messageId}/read`),
+        getThread: (messageId) => api.get(`/messages/thread/${messageId}`),
+        send: (formData) => api.post('/messages/send', formData),
+        getRecentContacts: (userId) => api.get(`/messages/contacts/${userId}`).catch(() => []),
+        getContacts: () => api.get('/messages/contacts'),
     },
 
 
 
     tenants: {
-        getAll: () => fetch(`${API_BASE}/tenants`, { headers: getHeaders() }).then(handleResponse),
-        create: (data) => fetch(`${API_BASE}/tenants`, { method: 'POST', headers: getHeaders(), body: JSON.stringify(data) }).then(handleResponse),
-        update: (id, data) => fetch(`${API_BASE}/tenants/${id}`, { method: 'PUT', headers: getHeaders(), body: JSON.stringify(data) }).then(handleResponse),
-        delete: (id) => fetch(`${API_BASE}/tenants/${id}`, { method: 'DELETE', headers: getHeaders() }).then(handleResponse),
-        initSchema: (id) => fetch(`${API_BASE}/tenants/${id}/init-schema`, { method: 'POST', headers: getHeaders() }).then(handleResponse),
+        getAll: () => api.get('/tenants'),
+        create: (data) => api.post('/tenants', data),
+        update: (id, data) => api.put(`/tenants/${id}`, data),
+        delete: (id) => api.delete(`/tenants/${id}`),
+        initSchema: (id) => api.post(`/tenants/${id}/init-schema`),
     },
 
     roles: {
-        getAll: () => fetch(`${API_BASE}/roles`, { headers: getHeaders() }).then(handleResponse),
-        getPermissions: () => fetch(`${API_BASE}/roles/permissions`, { headers: getHeaders() }).then(handleResponse),
-        create: (data) => fetch(`${API_BASE}/roles`, { method: 'POST', headers: getHeaders(), body: JSON.stringify(data) }).then(handleResponse),
-        update: (id, data) => fetch(`${API_BASE}/roles/${id}`, { method: 'PUT', headers: getHeaders(), body: JSON.stringify(data) }).then(handleResponse),
-        delete: (id) => fetch(`${API_BASE}/roles/${id}`, { method: 'DELETE', headers: getHeaders() }).then(handleResponse),
+        getAll: () => api.get('/roles'),
+        getPermissions: () => api.get('/roles/permissions'),
+        create: (data) => api.post('/roles', data),
+        update: (id, data) => api.put(`/roles/${id}`, data),
+        delete: (id) => api.delete(`/roles/${id}`),
     },
 
     connections: {
-        request: (receiverId) => fetch(`${API_BASE}/connections/request/${receiverId}`, { method: 'POST', headers: getHeaders() }).then(handleResponse),
-        accept: (connectionId) => fetch(`${API_BASE}/connections/accept/${connectionId}`, { method: 'POST', headers: getHeaders() }).then(handleResponse),
-        reject: (connectionId) => fetch(`${API_BASE}/connections/reject/${connectionId}`, { method: 'POST', headers: getHeaders() }).then(handleResponse),
-        getRequests: () => fetch(`${API_BASE}/connections/requests`, { headers: getHeaders() }).then(handleResponse),
-        getStatus: (otherUserId) => fetch(`${API_BASE}/connections/status/${otherUserId}`, { headers: getHeaders() }).then(handleResponse),
-        remove: (targetUserId) => fetch(`${API_BASE}/connections/${targetUserId}`, { method: 'DELETE', headers: getHeaders() }).then(handleResponse),
-        block: (targetUserId) => fetch(`${API_BASE}/connections/block/${targetUserId}`, { method: 'POST', headers: getHeaders() }).then(handleResponse),
-        unblock: (targetUserId) => fetch(`${API_BASE}/connections/unblock/${targetUserId}`, { method: 'POST', headers: getHeaders() }).then(handleResponse),
+        request: (receiverId) => api.post(`/connections/request/${receiverId}`),
+        accept: (connectionId) => api.post(`/connections/accept/${connectionId}`),
+        reject: (connectionId) => api.post(`/connections/reject/${connectionId}`),
+        getRequests: () => api.get('/connections/requests'),
+        getStatus: (otherUserId) => api.get(`/connections/status/${otherUserId}`),
+        remove: (targetUserId) => api.delete(`/connections/${targetUserId}`),
+        block: (targetUserId) => api.post(`/connections/block/${targetUserId}`),
+        unblock: (targetUserId) => api.post(`/connections/unblock/${targetUserId}`),
     },
 
     users: {
-        getAll: (page = 0, size = 20) => fetch(`${API_BASE}/users?page=${page}&size=${size}`, { headers: getHeaders() }).then(handleResponse),
-        getRelated: () => fetch(`${API_BASE}/users/related`, { headers: getHeaders() }).then(handleResponse),
-        search: (query) => fetch(`${API_BASE}/users/search?query=${encodeURIComponent(query)}`, { headers: getHeaders() }).then(handleResponse),
-        getById: (id) => fetch(`${API_BASE}/users/${id}?t=${new Date().getTime()}`, { headers: getHeaders() }).then(handleResponse),
-        register: (data) => fetch(`${API_BASE}/users/register`, { method: 'POST', headers: getHeaders(), body: JSON.stringify(data) }).then(handleResponse),
-        generateUsernames: (data) => fetch(`${API_BASE}/users/generate-usernames`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }).then(handleResponse),
-        delete: (id) => fetch(`${API_BASE}/users/${id}`, { method: 'DELETE', headers: getHeaders() }).then(handleResponse),
-        update: (id, data) => fetch(`${API_BASE}/users/${id}`, {
-            method: 'PUT',
-            headers: getHeaders(),
-            body: JSON.stringify(data)
-        }).then(handleResponse),
-        exportData: () => fetch(`${API_BASE}/users/me/export`, { headers: getHeaders() }).then(handleResponse),
-        ping: () => fetch(`${API_BASE}/users/ping`, { method: 'POST', headers: getHeaders() }).then(handleResponse),
+        getAll: (page = 0, size = 20) => api.get(`/users?page=${page}&size=${size}`),
+        getRelated: () => api.get('/users/related'),
+        search: (query) => api.get(`/users/search?query=${encodeURIComponent(query)}`),
+        getById: (id) => api.get(`/users/${id}?t=${new Date().getTime()}`),
+        register: (data) => api.post('/users/register', data),
+        generateUsernames: (data) => api.post('/users/generate-usernames', data),
+        delete: (id) => api.delete(`/users/${id}`),
+        update: (id, data) => api.put(`/users/${id}`, data),
+        exportData: () => api.get('/users/me/export'),
+        ping: () => api.post('/users/ping'),
     },
 
     courses: {
-        getAll: () => fetch(`${API_BASE}/courses`, { headers: getHeaders() }).then(handleResponse),
-        getOne: (id) => fetch(`${API_BASE}/courses/${id}`, { headers: getHeaders() }).then(handleResponse),
-        getMyCourses: (studentId) => fetch(`${API_BASE}/courses/student/${studentId}`, { headers: getHeaders() }).then(handleResponse),
-        create: (data, teacherId) => fetch(`${API_BASE}/courses`, {
-            method: 'POST',
-            headers: getHeaders(),
-            body: JSON.stringify({ ...data, teacherId: teacherId || 1 })
-        }).then(handleResponse),
-        enroll: (cid, uid) => fetch(`${API_BASE}/courses/${cid}/enroll/${uid}`, { method: 'POST', headers: getHeaders() }).then(handleResponse),
-        delete: (id) => fetch(`${API_BASE}/courses/${id}`, { method: 'DELETE', headers: getHeaders() }).then(handleResponse),
-        update: (id, data) => fetch(`${API_BASE}/courses/${id}`, {
-            method: 'PUT',
-            headers: getHeaders(),
-            body: JSON.stringify(data)
-        }).then(handleResponse),
+        getAll: () => api.get('/courses'),
+        getOne: (id) => api.get(`/courses/${id}`),
+        getMyCourses: (studentId) => api.get(`/courses/student/${studentId}`),
+        create: (data, teacherId) => api.post('/courses', { ...data, teacherId: teacherId || 1 }),
+        enroll: (cid, uid) => api.post(`/courses/${cid}/enroll/${uid}`),
+        delete: (id) => api.delete(`/courses/${id}`),
+        update: (id, data) => api.put(`/courses/${id}`, data),
         // Ansökan
-        apply: (courseId, studentId) => fetch(`${API_BASE}/courses/${courseId}/apply/${studentId}`, { method: 'POST', headers: getHeaders() }).then(handleResponse),
-        getApplications: (teacherId) => fetch(`${API_BASE}/courses/applications/teacher/${teacherId}`, { headers: getHeaders() }).then(handleResponse),
-        handleApplication: (appId, status) => fetch(`${API_BASE}/courses/applications/${appId}/${status}`, { method: 'POST', headers: getHeaders() }).then(handleResponse),
+        apply: (courseId, studentId) => api.post(`/courses/${courseId}/apply/${studentId}`),
+        getApplications: (teacherId) => api.get(`/courses/applications/teacher/${teacherId}`),
+        handleApplication: (appId, status) => api.post(`/courses/applications/${appId}/${status}`),
 
         // Resultat & Certifikat
-        checkCompletion: (id, studentId) => fetch(`${API_BASE}/courses/${id}/check-completion/${studentId}`, { headers: getHeaders() }).then(handleResponse),
-        claimCertificate: (id, studentId) => fetch(`${API_BASE}/courses/${id}/claim-certificate/${studentId}`, { method: 'POST', headers: getHeaders() }).then(handleResponse),
-        setResult: (courseId, studentId, status) => fetch(`${API_BASE}/courses/${courseId}/result/${studentId}`, {
-            method: 'POST',
-            headers: getHeaders(),
-            body: JSON.stringify({ status })
-        }).then(handleResponse),
-        getResult: (courseId, studentId) => fetch(`${API_BASE}/courses/${courseId}/result/${studentId}`, { headers: getHeaders() }).then(handleResponse),
-        getMyResults: (studentId) => fetch(`${API_BASE}/courses/results/student/${studentId}`, { headers: getHeaders() }).then(handleResponse),
-        getOptions: (userId, role) => fetch(`${API_BASE}/courses/options?userId=${userId}&role=${role}`, { headers: getHeaders() }).then(handleResponse),
+        checkCompletion: (id, studentId) => api.get(`/courses/${id}/check-completion/${studentId}`),
+        claimCertificate: (id, studentId) => api.post(`/courses/${id}/claim-certificate/${studentId}`),
+        setResult: (courseId, studentId, status) => api.post(`/courses/${courseId}/result/${studentId}`, { status }),
+        getResult: (courseId, studentId) => api.get(`/courses/${courseId}/result/${studentId}`),
+        getMyResults: (studentId) => api.get(`/courses/results/student/${studentId}`),
+        getOptions: (userId, role) => api.get(`/courses/options?userId=${userId}&role=${role}`),
+    },
+
+    shop: {
+        getItems: () => api.get('/edugame/shop/items'),
+        buyItem: (itemId) => api.post(`/edugame/shop/buy/${itemId}`, {}),
+        equipItem: (itemId) => api.post(`/edugame/shop/equip/${itemId}`, {}),
+        unequipItem: (type) => api.post(`/edugame/shop/unequip/${type}`, {}),
+        getInventory: () => api.get('/edugame/shop/inventory'),
     },
 
     // --- LEKTIONER / MATERIAL (FIXAD KOPPLING) ---
     lessons: {
-        getByCourse: (courseId) => fetch(`${API_BASE}/courses/${courseId}/materials`, { headers: getHeaders() }).then(handleResponse),
-        create: (courseId, userId, formData) => fetch(`${API_BASE}/courses/${courseId}/materials?userId=${userId}`, {
-            method: 'POST',
-            headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }, // Ingen Content-Type vid FormData!
-            body: formData
-        }).then(handleResponse),
-        createGlobal: (userId, formData) => fetch(`${API_BASE}/lessons/create?userId=${userId}`, {
-            method: 'POST',
-            headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` },
-            body: formData
-        }).then(handleResponse),
-        getMy: (userId) => fetch(`${API_BASE}/lessons/my?userId=${userId}`, { headers: getHeaders() }).then(handleResponse),
-        getOne: (id) => fetch(`${API_BASE}/courses/materials/${id}`, { headers: getHeaders() }).then(handleResponse),
-        update: (id, formData) => fetch(`${API_BASE}/courses/materials/${id}`, {
-            method: 'PUT',
-            headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` },
-            body: formData
-        }).then(handleResponse),
-        delete: (id) => fetch(`${API_BASE}/courses/materials/${id}`, { method: 'DELETE', headers: getHeaders() }).then(handleResponse),
+        getByCourse: (courseId) => api.get(`/courses/${courseId}/materials`),
+        create: (courseId, userId, formData) => api.post(`/courses/${courseId}/materials?userId=${userId}`, formData),
+        createGlobal: (userId, formData) => api.post(`/lessons/create?userId=${userId}`, formData),
+        getMy: (userId) => api.get(`/lessons/my?userId=${userId}`),
+        getOne: (id) => api.get(`/courses/materials/${id}`),
+        update: (id, formData) => api.put(`/courses/materials/${id}`, formData),
+        delete: (id) => api.delete(`/courses/materials/${id}`),
     },
 
     documents: {
-        getAll: () => fetch(`${API_BASE}/documents/all`, { headers: getHeaders() }).then(handleResponse),
+        getAll: () => api.get('/documents/all'),
         upload: (userId, formData, onProgress) => {
             return new Promise((resolve, reject) => {
                 const xhr = new XMLHttpRequest();
@@ -375,14 +339,14 @@ export const api = {
                 xhr.send(formData);
             });
         },
-        delete: (id) => fetch(`${API_BASE}/documents/${id}`, { method: 'DELETE', headers: getHeaders() }).then(handleResponse),
-        getUserDocs: (userId) => fetch(`${API_BASE}/documents/user/${userId}`, { headers: getHeaders() }).then(handleResponse),
-        getFolderDocs: (folderId, userId) => fetch(`${API_BASE}/documents/folder/${folderId}?userId=${userId}`, { headers: getHeaders() }).then(handleResponse),
-        getRootDocs: (userId) => fetch(`${API_BASE}/documents/user/${userId}/root`, { headers: getHeaders() }).then(handleResponse),
-        share: (docId, userId) => fetch(`${API_BASE}/documents/${docId}/share?userId=${userId}`, { method: 'POST', headers: getHeaders() }).then(handleResponse),
-        getUsage: (userId) => fetch(`${API_BASE}/documents/usage/${userId}`, { headers: getHeaders() }).then(handleResponse),
-        getAdminStats: () => fetch(`${API_BASE}/admin/storage-stats`, { headers: getHeaders() }).then(handleResponse),
-        getMerits: (userId) => fetch(`${API_BASE}/documents/merits/${userId}`, { headers: getHeaders() }).then(handleResponse),
+        delete: (id) => api.delete(`/documents/${id}`),
+        getUserDocs: (userId) => api.get(`/documents/user/${userId}`),
+        getFolderDocs: (folderId, userId) => api.get(`/documents/folder/${folderId}?userId=${userId}`),
+        getRootDocs: (userId) => api.get(`/documents/user/${userId}/root`),
+        share: (docId, userId) => api.post(`/documents/${docId}/share?userId=${userId}`),
+        getUsage: (userId) => api.get(`/documents/usage/${userId}`),
+        getAdminStats: () => api.get('/admin/storage-stats'),
+        getMerits: (userId) => api.get(`/documents/merits/${userId}`),
     },
 
     folders: {
@@ -400,453 +364,210 @@ export const api = {
         revoke: (id) => api.delete(`/shares/${id}`),
     },
 
-    // --- RESTORED SECTIONS ---
-    skolverket: {
-        getCourses: () => api.get('/skolverket/courses'),
-        search: (query) => api.get(`/skolverket/courses/search?q=${query}`),
-        getBySubject: (subject) => api.get(`/skolverket/courses/subject/${subject}`),
-        getSubjects: () => api.get('/skolverket/subjects'),
-        getStats: () => api.get('/skolverket/stats'),
-        getCriteria: (courseCode) => api.get(`/skolverket/courses/${courseCode}/criteria`),
-        updateDetails: (courseCode, details) => api.put(`/skolverket/courses/${courseCode}/details`, details),
-        saveCriteria: (courseCode, criteria) => api.post(`/skolverket/courses/${courseCode}/criteria`, criteria)
-    },
-
     system: {
         getModules: () => api.get('/modules'),
-        updateSetting: (key, value) => api.put(`/settings/${key}`, { value: value }),
+        updateSetting: (key, value) => api.put(`/settings/${key}`, { value }),
         getSettings: () => api.get('/settings'),
-        checkLicense: () => fetch(`${API_BASE}/system/license/status`).then(handleResponse),
-        activateLicense: (key) => fetch(`${API_BASE}/system/license/activate`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ key }) }).then(handleResponse)
+        checkLicense: () => api.get('/system/license/status'),
+        activateLicense: (key) => api.post('/system/license/activate', { key })
     },
 
     onlyoffice: {
         checkHealth: () => api.get('/onlyoffice/health'),
     },
 
-    // --- BACKUP & DATABAS ---
     admin: {
-        // Backups
-        listBackups: () => fetch(`${API_BASE}/admin/backups`, { headers: getHeaders() }).then(handleResponse),
-        getBackupStatus: () => fetch(`${API_BASE}/admin/backups/status`, { headers: getHeaders() }).then(handleResponse),
-        createBackup: () => fetch(`${API_BASE}/admin/backups/create`, { method: 'POST', headers: getHeaders() }).then(handleResponse),
-        restoreBackup: (backupId) => fetch(`${API_BASE}/admin/backups/restore/${backupId}`, { method: 'POST', headers: getHeaders() }).then(handleResponse),
-        deleteBackup: (backupId) => fetch(`${API_BASE}/admin/backups/${backupId}`, { method: 'DELETE', headers: getHeaders() }).then(handleResponse),
+        listBackups: () => api.get('/admin/backups'),
+        getBackupStatus: () => api.get('/admin/backups/status'),
+        createBackup: () => api.post('/admin/backups/create'),
+        restoreBackup: (backupId) => api.post(`/admin/backups/restore/${backupId}`),
+        deleteBackup: (backupId) => api.delete(`/admin/backups/${backupId}`),
         downloadBackup: (backupId) => `${API_BASE}/admin/backups/download/${backupId}`,
-
-        // Database connections
-        getDatabaseConnections: () => fetch(`${API_BASE}/admin/database/connections`, { headers: getHeaders() }).then(handleResponse),
-        switchDatabase: (connectionId, adminPassword) => fetch(`${API_BASE}/admin/database/switch/${connectionId}`, {
-            method: 'POST',
-            headers: getHeaders(),
-            body: JSON.stringify({ adminPassword })
-        }).then(handleResponse),
-        addDatabase: (data) => fetch(`${API_BASE}/admin/database/add`, {
-            method: 'POST',
-            headers: getHeaders(),
-            body: JSON.stringify(data)
-        }).then(handleResponse),
-
-        // Bulk Import
-        importUsers: (formData) => fetch(`${API_BASE}/admin/import/users`, {
-            method: 'POST',
-            headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }, // No Content-Type for FormData!
-            body: formData
-        }).then(handleResponse),
-
-        // Audit Logs
+        getDatabaseConnections: () => api.get('/admin/database/connections'),
+        switchDatabase: (connectionId, adminPassword) => api.post(`/admin/database/switch/${connectionId}`, { adminPassword }),
+        addDatabase: (data) => api.post('/admin/database/add', data),
+        importUsers: (formData) => api.post('/admin/import/users', formData),
         getAuditLogs: (params = {}) => {
             const searchParams = new URLSearchParams();
             if (params.user) searchParams.set('user', params.user);
             if (params.action) searchParams.set('action', params.action);
             if (params.entity) searchParams.set('entity', params.entity);
-            return fetch(`${API_BASE}/admin/audit?${searchParams}`, { headers: getHeaders() }).then(handleResponse);
+            return api.get(`/admin/audit?${searchParams}`);
         },
-        getAuditLog: (id) => fetch(`${API_BASE}/admin/audit/${id}`, { headers: getHeaders() }).then(handleResponse),
+        getAuditLog: (id) => api.get(`/admin/audit/${id}`),
     },
 
-    license: { // Keeping for backward compat if anyone calls it separately, but consolidated in system for UI
+    license: {
         getStatus: () => api.get('/system/license/status'),
         activate: (key) => api.post('/system/license/activate', { key }),
     },
 
     settings: {
-        getAll: () => fetch(`${API_BASE}/settings`, { headers: getHeaders() })
-            .then(handleResponse)
-            .then(data => {
-                // Transform Array [{key: 'k', value: 'v'}] to Object {k: 'v'}
-                if (Array.isArray(data)) {
-                    return data.reduce((acc, curr) => {
-                        acc[curr.key] = curr.value;
-                        return acc;
-                    }, {});
-                }
-                return data;
-            }),
-        update: (key, value) => fetch(`${API_BASE}/settings/${key}`, { method: 'PUT', headers: getHeaders(), body: JSON.stringify({ value }) }).then(handleResponse),
+        getAll: () => api.get('/settings').then(data => {
+            if (Array.isArray(data)) {
+                return data.reduce((acc, curr) => {
+                    acc[curr.key] = curr.value;
+                    return acc;
+                }, {});
+            }
+            return data;
+        }),
+        update: (key, value) => api.put(`/settings/${key}`, { value }),
     },
 
     notifications: {
-        getUserNotifs: (userId) => fetch(`${API_BASE}/notifications/user/${userId}`, { headers: getHeaders() }).then(handleResponse),
-        markRead: (id) => fetch(`${API_BASE}/notifications/${id}/read`, { method: 'PUT', headers: getHeaders() }),
-        getUnreadCount: (userId) => fetch(`${API_BASE}/notifications/user/${userId}/unread-count`, { headers: getHeaders() }).then(handleResponse),
-        markAllAsRead: (userId) => fetch(`${API_BASE}/notifications/user/${userId}/mark-all-read`, { method: 'PUT', headers: getHeaders() }),
+        getUserNotifs: (userId) => api.get(`/notifications/user/${userId}`),
+        markRead: (id) => api.put(`/notifications/${id}/read`),
+        getUnreadCount: (userId) => api.get(`/notifications/user/${userId}/unread-count`),
+        markAllAsRead: (userId) => api.put(`/notifications/user/${userId}/mark-all-read`),
     },
 
     assignments: {
-        getByCourse: (courseId) => fetch(`${API_BASE}/courses/${courseId}/assignments`, { headers: getHeaders() }).then(handleResponse),
-        getOne: (id) => fetch(`${API_BASE}/assignments/${id}`, { headers: getHeaders() }).then(handleResponse),
-        create: (courseId, userId, data) => fetch(`${API_BASE}/courses/${courseId}/assignments?userId=${userId}`, { method: 'POST', headers: getHeaders(), body: JSON.stringify(data) }).then(handleResponse),
-        createGlobal: (userId, data) => fetch(`${API_BASE}/assignments/create?userId=${userId}`, { method: 'POST', headers: getHeaders(), body: JSON.stringify(data) }).then(handleResponse),
-        update: (id, data) => fetch(`${API_BASE}/assignments/${id}`, { method: 'PUT', headers: getHeaders(), body: JSON.stringify(data) }).then(handleResponse),
-        delete: (id) => fetch(`${API_BASE}/assignments/${id}`, { method: 'DELETE', headers: getHeaders() }).then(handleResponse),
-        getMy: (userId) => fetch(`${API_BASE}/assignments/my?userId=${userId}`, { headers: getHeaders() }).then(handleResponse),
-        submit: (assignmentId, studentId, formData) => fetch(`${API_BASE}/assignments/${assignmentId}/submit/${studentId}`, { method: 'POST', headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }, body: formData }).then(handleResponse),
-        getSubmissions: (assignmentId) => fetch(`${API_BASE}/assignments/${assignmentId}/submissions`, { headers: getHeaders() }).then(handleResponse),
-        getMySubmission: (assignmentId, studentId) => fetch(`${API_BASE}/assignments/${assignmentId}/my-submission/${studentId}`, { headers: getHeaders() }).then(handleResponse),
-        grade: (subId, grade, feedback) => fetch(`${API_BASE}/submissions/${subId}/grade?grade=${grade}&feedback=${feedback || ''}`, { method: 'POST', headers: getHeaders() }).then(handleResponse),
-
-        // Attachments
-        addAttachmentFile: (assignmentId, formData) => fetch(`${API_BASE}/assignments/${assignmentId}/attachments/file`, { method: 'POST', headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }, body: formData }).then(handleResponse),
-        addAttachmentLink: (assignmentId, data) => fetch(`${API_BASE}/assignments/${assignmentId}/attachments/link`, { method: 'POST', headers: getHeaders(), body: JSON.stringify(data) }).then(handleResponse),
-        removeAttachment: (assignmentId, attachmentId) => fetch(`${API_BASE}/assignments/${assignmentId}/attachments/${attachmentId}`, { method: 'DELETE', headers: getHeaders() }).then(handleResponse),
+        getByCourse: (courseId) => api.get(`/courses/${courseId}/assignments`),
+        getOne: (id) => api.get(`/assignments/${id}`),
+        create: (courseId, userId, data) => api.post(`/courses/${courseId}/assignments?userId=${userId}`, data),
+        createGlobal: (userId, data) => api.post(`/assignments/create?userId=${userId}`, data),
+        update: (id, data) => api.put(`/assignments/${id}`, data),
+        delete: (id) => api.delete(`/assignments/${id}`),
+        getMy: (userId) => api.get(`/assignments/my?userId=${userId}`),
+        submit: (assignmentId, studentId, formData) => api.post(`/assignments/${assignmentId}/submit/${studentId}`, formData),
+        getSubmissions: (assignmentId) => api.get(`/assignments/${assignmentId}/submissions`),
+        getMySubmission: (assignmentId, studentId) => api.get(`/assignments/${assignmentId}/my-submission/${studentId}`),
+        grade: (subId, grade, feedback) => api.post(`/submissions/${subId}/grade?grade=${grade}&feedback=${feedback || ''}`),
+        addAttachmentFile: (assignmentId, formData) => api.post(`/assignments/${assignmentId}/attachments/file`, formData),
+        addAttachmentLink: (assignmentId, data) => api.post(`/assignments/${assignmentId}/attachments/link`, data),
+        removeAttachment: (assignmentId, attachmentId) => api.delete(`/assignments/${assignmentId}/attachments/${attachmentId}`),
     },
 
     events: {
-        getAll: () => fetch(`${API_BASE}/events`, { headers: getHeaders() }).then(handleResponse),
-        getDashboardSummary: () => fetch(`${API_BASE}/events/dashboard-summary`, { headers: getHeaders() }).then(handleResponse),
-        getByCourse: (courseId) => fetch(`${API_BASE}/events/course/${courseId}`, { headers: getHeaders() }).then(handleResponse),
-        create: (data) => fetch(`${API_BASE}/events`, {
-            method: 'POST',
-            headers: getHeaders(),
-            body: JSON.stringify(data)
-        }).then(handleResponse),
+        getAll: () => api.get('/events'),
+        getDashboardSummary: () => api.get('/events/dashboard-summary'),
+        getByCourse: (courseId) => api.get(`/events/course/${courseId}`),
+        create: (data) => api.post('/events', data),
     },
+
     attendance: {
-        getByEvent: (eventId) => fetch(`${API_BASE}/attendance/event/${eventId}`, { headers: getHeaders() }).then(handleResponse),
-        mark: (eventId, data) => fetch(`${API_BASE}/attendance/event/${eventId}/mark`, {
-            method: 'POST',
-            headers: getHeaders(),
-            body: JSON.stringify(data)
-        }).then(handleResponse),
+        getByEvent: (eventId) => api.get(`/attendance/event/${eventId}`),
+        mark: (eventId, data) => api.post(`/attendance/event/${eventId}/mark`, data),
     },
 
     quiz: {
-        getByCourse: (courseId) => fetch(`${API_BASE}/quizzes/course/${courseId}`, { headers: getHeaders() }).then(handleResponse),
-        create: (courseId, userId, quizData) => fetch(`${API_BASE}/quizzes/course/${courseId}?userId=${userId}`, {
-            method: 'POST',
-            headers: getHeaders(),
-            body: JSON.stringify(quizData)
-        }).then(handleResponse),
-        createGlobal: (userId, quizData) => fetch(`${API_BASE}/quizzes/create?userId=${userId}`, {
-            method: 'POST',
-            headers: getHeaders(),
-            body: JSON.stringify(quizData)
-        }).then(handleResponse),
-        getMy: (userId) => fetch(`${API_BASE}/quizzes/my?userId=${userId}`, { headers: getHeaders() }).then(handleResponse),
-        update: (id, quizData) => fetch(`${API_BASE}/quizzes/${id}`, {
-            method: 'PUT',
-            headers: getHeaders(),
-            body: JSON.stringify(quizData)
-        }).then(handleResponse),
-        submit: (quizId, resultData) => fetch(`${API_BASE}/quizzes/${quizId}/submit`, {
-            method: 'POST',
-            headers: getHeaders(),
-            body: JSON.stringify(resultData)
-        }).then(handleResponse),
-        delete: (id) => fetch(`${API_BASE}/quizzes/${id}`, { method: 'DELETE', headers: getHeaders() }).then(handleResponse),
-        generate: (data) => fetch(`${API_BASE}/quizzes/generate`, {
-            method: 'POST',
-            headers: getHeaders(),
-            body: JSON.stringify(data)
-        }).then(handleResponse),
+        getByCourse: (courseId) => api.get(`/quizzes/course/${courseId}`),
+        create: (courseId, userId, quizData) => api.post(`/quizzes/course/${courseId}?userId=${userId}`, quizData),
+        createGlobal: (userId, quizData) => api.post(`/quizzes/create?userId=${userId}`, quizData),
+        getMy: (userId) => api.get(`/quizzes/my?userId=${userId}`),
+        update: (id, quizData) => api.put(`/quizzes/${id}`, quizData),
+        submit: (quizId, resultData) => api.post(`/quizzes/${quizId}/submit`, resultData),
+        delete: (id) => api.delete(`/quizzes/${id}`),
+        generate: (data) => api.post('/quizzes/generate', data),
     },
 
     questionBank: {
-        getMy: (userId) => fetch(`${API_BASE}/question-bank/my?userId=${userId}`, { headers: getHeaders() }).then(handleResponse),
-        add: (userId, item) => fetch(`${API_BASE}/question-bank/add?userId=${userId}`, {
-            method: 'POST',
-            headers: getHeaders(),
-            body: JSON.stringify(item)
-        }).then(handleResponse),
-        import: (userId, items) => fetch(`${API_BASE}/question-bank/import?userId=${userId}`, {
-            method: 'POST',
-            headers: getHeaders(),
-            body: JSON.stringify(items)
-        }).then(handleResponse),
-        getCategories: (userId) => fetch(`${API_BASE}/question-bank/categories?userId=${userId}`, { headers: getHeaders() }).then(handleResponse),
-        delete: (id) => fetch(`${API_BASE}/question-bank/${id}`, { method: 'DELETE', headers: getHeaders() }).then(handleResponse),
+        getMy: (userId) => api.get(`/question-bank/my?userId=${userId}`),
+        add: (userId, item) => api.post(`/question-bank/add?userId=${userId}`, item),
+        import: (userId, items) => api.post(`/question-bank/import?userId=${userId}`, items),
+        getCategories: (userId) => api.get(`/question-bank/categories?userId=${userId}`),
+        delete: (id) => api.delete(`/question-bank/${id}`),
     },
 
     scorm: {
-        upload: (courseId, formData) => fetch(`${API_BASE}/scorm/upload/${courseId}`, {
-            method: 'POST',
-            headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }, // Multipart handles content-type
-            body: formData
-        }).then(handleResponse),
-        getPackages: (courseId) => fetch(`${API_BASE}/scorm/course/${courseId}`, { headers: getHeaders() }).then(handleResponse),
-        getByCourse: (courseId) => fetch(`${API_BASE}/scorm/course/${courseId}`, { headers: getHeaders() }).then(handleResponse),
-        getOne: (id) => fetch(`${API_BASE}/scorm/${id}`, { headers: getHeaders() }).then(handleResponse),
+        upload: (courseId, formData) => api.post(`/scorm/upload/${courseId}`, formData),
+        getPackages: (courseId) => api.get(`/scorm/course/${courseId}`),
+        getByCourse: (courseId) => api.get(`/scorm/course/${courseId}`),
+        getOne: (id) => api.get(`/scorm/${id}`),
         update: (id, data) => api.put(`/scorm/${id}`, data),
         delete: (id) => api.delete(`/scorm/${id}`)
     },
+
     cmi5: {
-        upload: (courseId, formData) => fetch(`${API_BASE}/cmi5/upload/${courseId}`, {
-            method: 'POST',
-            headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` },
-            body: formData
-        }).then(handleResponse),
-        getPackages: (courseId) => fetch(`${API_BASE}/cmi5/course/${courseId}`, { headers: getHeaders() }).then(handleResponse),
-        getByCourse: (courseId) => fetch(`${API_BASE}/cmi5/course/${courseId}`, { headers: getHeaders() }).then(handleResponse),
-        getOne: (id) => fetch(`${API_BASE}/cmi5/${id}`, { headers: getHeaders() }).then(handleResponse),
+        upload: (courseId, formData) => api.post(`/cmi5/upload/${courseId}`, formData),
+        getPackages: (courseId) => api.get(`/cmi5/course/${courseId}`),
+        getByCourse: (courseId) => api.get(`/cmi5/course/${courseId}`),
+        getOne: (id) => api.get(`/cmi5/${id}`),
         update: (id, data) => api.put(`/cmi5/${id}`, data),
         delete: (id) => api.delete(`/cmi5/${id}`)
     },
 
     teacher: {
-        getCourseAnalytics: (courseId) => fetch(`${API_BASE}/teacher/analytics/course/${courseId}`, { headers: getHeaders() }).then(handleResponse),
+        getCourseAnalytics: (courseId) => api.get(`/teacher/analytics/course/${courseId}`),
     },
 
     activity: {
-        log: (data) => fetch(`${API_BASE}/activity/log`, {
-            method: 'POST',
-            headers: getHeaders(),
-            body: JSON.stringify(data)
-        }).then(handleResponse),
-        getCourseLogs: (courseId) => fetch(`${API_BASE}/activity/course/${courseId}`, { headers: getHeaders() }).then(handleResponse),
-        getStudentLogs: (courseId, userId) => fetch(`${API_BASE}/activity/course/${courseId}/student/${userId}`, { headers: getHeaders() }).then(handleResponse),
-        getGlobalStudentLogs: (userId) => fetch(`${API_BASE}/activity/student/${userId}`, { headers: getHeaders() }).then(handleResponse)
+        log: (data) => api.post('/activity/log', data),
+        getCourseLogs: (courseId) => api.get(`/activity/course/${courseId}`),
+        getStudentLogs: (courseId, userId) => api.get(`/activity/course/${courseId}/student/${userId}`),
+        getGlobalStudentLogs: (userId) => api.get(`/activity/student/${userId}`)
     },
 
     logs: {
-        getFiles: () => fetch(`${API_BASE}/logs/files`, { headers: getHeaders() }).then(handleResponse),
-        getContent: (filename, lines) => fetch(`${API_BASE}/logs/content?filename=${filename || ''}&lines=${lines || 100}`, { headers: getHeaders() }).then(handleResponse),
-        reportError: (errorData) => fetch(`${API_BASE}/logs/client`, {
-            method: 'POST',
-            headers: getHeaders(),
-            body: JSON.stringify(errorData)
-        }),
+        getFiles: () => api.get('/logs/files'),
+        getContent: (filename, lines) => api.get(`/logs/content?filename=${filename || ''}&lines=${lines || 100}`),
+        reportError: (errorData) => api.post('/logs/client', errorData),
     },
 
-    // --- ENTERPRISE WHITELABEL / BRANDING ---
     branding: {
-        get: (organizationKey = 'default') => fetch(`${API_BASE}/branding?organizationKey=${organizationKey}`, { headers: getHeaders() }).then(handleResponse),
-        getAll: () => fetch(`${API_BASE}/branding/all`, { headers: getHeaders() }).then(handleResponse),
-        update: (updates, organizationKey = 'default') => fetch(`${API_BASE}/branding?organizationKey=${organizationKey}`, {
-            method: 'PUT',
-            headers: getHeaders(),
-            body: JSON.stringify(updates)
-        }).then(handleResponse),
-        uploadLogo: (formData, organizationKey = 'default') => fetch(`${API_BASE}/branding/logo?organizationKey=${organizationKey}`, {
-            method: 'POST',
-            headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` },
-            body: formData
-        }).then(handleResponse),
-        uploadFavicon: (formData, organizationKey = 'default') => fetch(`${API_BASE}/branding/favicon?organizationKey=${organizationKey}`, {
-            method: 'POST',
-            headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` },
-            body: formData
-        }).then(handleResponse),
-        uploadLoginBackground: (formData, organizationKey = 'default') => fetch(`${API_BASE}/branding/login-background?organizationKey=${organizationKey}`, {
-            method: 'POST',
-            headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` },
-            body: formData
-        }).then(handleResponse),
-        reset: (organizationKey = 'default') => fetch(`${API_BASE}/branding/reset?organizationKey=${organizationKey}`, {
-            method: 'POST',
-            headers: getHeaders()
-        }).then(handleResponse),
-        checkAccess: () => fetch(`${API_BASE}/branding/access`, { headers: getHeaders() }).then(handleResponse),
+        get: (organizationKey = 'default') => api.get(`/branding?organizationKey=${organizationKey}`),
+        getAll: () => api.get('/branding/all'),
+        update: (updates, organizationKey = 'default') => api.put(`/branding?organizationKey=${organizationKey}`, updates),
+        uploadLogo: (formData, organizationKey = 'default') => api.post(`/branding/logo?organizationKey=${organizationKey}`, formData),
+        uploadFavicon: (formData, organizationKey = 'default') => api.post(`/branding/favicon?organizationKey=${organizationKey}`, formData),
+        uploadLoginBackground: (formData, organizationKey = 'default') => api.post(`/branding/login-background?organizationKey=${organizationKey}`, formData),
+        reset: (organizationKey = 'default') => api.post(`/branding/reset?organizationKey=${organizationKey}`),
+        checkAccess: () => api.get('/branding/access'),
     },
 
     gamification: {
-        getConfig: () => fetch(`${API_BASE}/gamification/config/system`, { headers: getHeaders() }).then(handleResponse),
-        updateConfig: (data) => fetch(`${API_BASE}/gamification/config/system`, {
-            method: 'PUT',
-            headers: getHeaders(),
-            body: JSON.stringify(data)
-        }).then(handleResponse),
-        getDailyChallenges: (userId) => fetch(`${API_BASE}/gamification/challenges/daily/${userId}`, { headers: getHeaders() }).then(handleResponse),
-        claimChallenge: (challengeId) => fetch(`${API_BASE}/gamification/challenges/${challengeId}/claim`, { method: 'POST', headers: getHeaders() }).then(handleResponse),
-        getStreak: (userId) => fetch(`${API_BASE}/gamification/streak/login/${userId}`, { headers: getHeaders() }).then(handleResponse),
+        getConfig: () => api.get('/gamification/config/system'),
+        updateConfig: (data) => api.put('/gamification/config/system', data),
+        getDailyChallenges: (userId) => api.get(`/gamification/challenges/daily/${userId}`),
+        claimChallenge: (challengeId) => api.post(`/gamification/challenges/${challengeId}/claim`),
+        getStreak: (userId) => api.get(`/gamification/streak/login/${userId}`),
+        getMyStreak: () => api.get('/gamification/streak'),
+        getMyAchievements: () => api.get('/gamification/achievements/my'),
+        getQuests: (type = 'daily') => api.get(`/gamification/quests/${type}`),
+        social: {
+            getFriends: () => api.get('/gamification/social/friends'),
+            sendRequest: (targetUserId) => api.post(`/gamification/social/request/${targetUserId}`, {}),
+            getPendingRequests: () => api.get('/gamification/social/requests/pending'),
+            acceptRequest: (requestId) => api.post(`/gamification/social/request/${requestId}/accept`, {}),
+        }
     },
+
     evaluations: {
-        getMyActive: () => fetch(`${API_BASE}/evaluations/my-active`, { headers: getHeaders() }).then(handleResponse),
-        submit: (instanceId, answers) => fetch(`${API_BASE}/evaluations/instance/${instanceId}/submit`, {
-            method: 'POST',
-            headers: getHeaders(),
-            body: JSON.stringify(answers)
-        }).then(handleResponse),
+        getMyActive: () => api.get('/evaluations/my-active'),
+        submit: (instanceId, answers) => api.post(`/evaluations/instance/${instanceId}/submit`, answers),
     },
+
     support: {
-        createTicket: (data) => fetch(`${API_BASE}/support/tickets`, {
-            method: 'POST',
-            headers: getHeaders(),
-            body: JSON.stringify(data)
-        }).then(handleResponse),
-        getMyTickets: (userId) => fetch(`${API_BASE}/support/tickets/my?userId=${userId}`, { headers: getHeaders() }).then(handleResponse),
-        getAllTickets: () => fetch(`${API_BASE}/support/tickets`, { headers: getHeaders() }).then(handleResponse),
-        updateStatus: (id, status) => fetch(`${API_BASE}/support/tickets/${id}/status?status=${status}`, {
-            method: 'PATCH',
-            headers: getHeaders()
-        }).then(handleResponse),
-        respond: (id, response, severity) => fetch(`${API_BASE}/support/tickets/${id}/respond?response=${encodeURIComponent(response)}&severity=${severity}`, {
-            method: 'POST',
-            headers: getHeaders()
-        }).then(handleResponse)
+        createTicket: (data) => api.post('/support/tickets', data),
+        getMyTickets: (userId) => api.get(`/support/tickets/my?userId=${userId}`),
+        getAllTickets: () => api.get('/support/tickets'),
+        updateStatus: (id, status) => api.patch(`/support/tickets/${id}/status?status=${status}`),
+        respond: (id, response, severity) => api.post(`/support/tickets/${id}/respond?response=${encodeURIComponent(response)}&severity=${severity}`)
     },
 
     lti: {
-        getAll: () => fetch(`${API_BASE}/lti/platforms`, { headers: getHeaders() }).then(handleResponse),
-        save: (data) => fetch(`${API_BASE}/lti/platforms`, {
-            method: 'POST',
-            headers: getHeaders(),
-            body: JSON.stringify(data)
-        }).then(handleResponse),
-        delete: (id) => fetch(`${API_BASE}/lti/platforms/${id}`, { method: 'DELETE', headers: getHeaders() }).then(handleResponse)
+        getAll: () => api.get('/lti/platforms'),
+        save: (data) => api.post('/lti/platforms', data),
+        delete: (id) => api.delete(`/lti/platforms/${id}`)
     },
 
     ai: {
-        generatePractice: (data) => fetch(`${API_BASE}/ai/quiz/practice/generate`, {
-            method: 'POST',
-            headers: getHeaders(),
-            body: JSON.stringify(data)
-        }).then(handleResponse),
-        status: () => fetch(`${API_BASE}/ai/quiz/status`, { headers: getHeaders() }).then(handleResponse),
-        generateFromText: (data) => fetch(`${API_BASE}/ai/quiz/generate-from-text`, {
-            method: 'POST',
-            headers: getHeaders(),
-            body: JSON.stringify(data)
-        }).then(handleResponse),
-        save: (data) => fetch(`${API_BASE}/ai/quiz/save`, {
-            method: 'POST',
-            headers: getHeaders(),
-            body: JSON.stringify(data)
-        }).then(handleResponse),
-        completePractice: (data) => fetch(`${API_BASE}/ai/quiz/practice/complete`, {
-            method: 'POST',
-            headers: getHeaders(),
-            body: JSON.stringify(data)
-        }).then(handleResponse),
-
-        // AI Tutor (RAG)
+        generatePractice: (data) => api.post('/ai/quiz/practice/generate', data),
+        status: () => api.get('/ai/quiz/status'),
+        generateFromText: (data) => api.post('/ai/quiz/generate-from-text', data),
+        save: (data) => api.post('/ai/quiz/save', data),
+        completePractice: (data) => api.post('/ai/quiz/practice/complete', data),
         tutor: {
-            chat: (courseId, question) => fetch(`${API_BASE}/ai-tutor/chat`, {
-                method: 'POST',
-                headers: getHeaders(),
-                body: JSON.stringify({ courseId, question })
-            }).then(handleResponse),
-            ingest: (courseId, documentId) => fetch(`${API_BASE}/ai-tutor/ingest`, {
-                method: 'POST',
-                headers: getHeaders(),
-                body: JSON.stringify({ courseId, documentId })
-            }).then(handleResponse),
-            ingestCourse: (courseId) => fetch(`${API_BASE}/ai-tutor/ingest-course`, {
-                method: 'POST',
-                headers: getHeaders(),
-                body: JSON.stringify({ courseId })
-            }).then(handleResponse),
+            chat: (courseId, question) => api.post('/ai-tutor/chat', { courseId, question }),
+            ingest: (courseId, documentId) => api.post('/ai-tutor/ingest', { courseId, documentId }),
+            ingestCourse: (courseId) => api.post('/ai-tutor/ingest-course', { courseId }),
         },
-        resources: {
-            generate: (userId, type, prompt, context) => fetch(`${API_BASE}/ai/resources/generate?userId=${userId}&type=${type}&prompt=${encodeURIComponent(prompt)}${context ? `&context=${encodeURIComponent(context)}` : ''}`, {
-                method: 'POST',
-                headers: getHeaders()
-            }).then(handleResponse),
-        }
-    },
-
-    // --- RESOURCE BANK ---
-    resources: {
-        getMy: (userId) => api.get(`/resources/my?userId=${userId}`),
-        getCommunity: () => api.get('/resources/community'),
-        getOne: (id) => api.get(`/resources/${id}`),
-        create: (userId, data) => api.post(`/resources?userId=${userId}`, data),
-        update: (id, data) => api.put(`/resources/${id}`, data),
-        delete: (id) => api.delete(`/resources/${id}`),
-    },
-
-    // --- EDUFLEX COMMUNITY ---
-    community: {
-        // Browse & Search
-        browse: (params = {}) => {
-            const searchParams = new URLSearchParams();
-            if (params.subject) searchParams.set('subject', params.subject);
-            if (params.type) searchParams.set('type', params.type);
-            if (params.sort) searchParams.set('sort', params.sort);
-            if (params.page !== undefined) searchParams.set('page', params.page);
-            if (params.size) searchParams.set('size', params.size);
-            return fetch(`${API_BASE}/community/browse?${searchParams}`, { headers: getHeaders() }).then(handleResponse);
-        },
-        search: (query, page = 0, size = 20) => fetch(`${API_BASE}/community/search?q=${encodeURIComponent(query)}&page=${page}&size=${size}`, { headers: getHeaders() }).then(handleResponse),
-        getSubjects: () => fetch(`${API_BASE}/community/subjects`, { headers: getHeaders() }).then(handleResponse),
-
-        // Item Details
-        getItem: (itemId) => fetch(`${API_BASE}/community/items/${itemId}`, { headers: getHeaders() }).then(handleResponse),
-
-        // Publishing
-        publishQuiz: (quizId, data) => fetch(`${API_BASE}/community/publish/quiz/${quizId}`, {
-            method: 'POST',
-            headers: getHeaders(),
-            body: JSON.stringify(data)
-        }).then(handleResponse),
-        publishAssignment: (assignmentId, data) => fetch(`${API_BASE}/community/publish/assignment/${assignmentId}`, {
-            method: 'POST',
-            headers: getHeaders(),
-            body: JSON.stringify(data)
-        }).then(handleResponse),
-        publishLesson: (lessonId, data) => fetch(`${API_BASE}/community/publish/lesson/${lessonId}`, {
-            method: 'POST',
-            headers: getHeaders(),
-            body: JSON.stringify(data)
-        }).then(handleResponse),
-
-        // Install & Rate
-        install: (itemId, courseId = null) => fetch(`${API_BASE}/community/items/${itemId}/install${courseId ? `?courseId=${courseId}` : ''}`, {
-            method: 'POST',
-            headers: getHeaders()
-        }).then(handleResponse),
-        rate: (itemId, rating, comment) => fetch(`${API_BASE}/community/items/${itemId}/rate`, {
-            method: 'POST',
-            headers: getHeaders(),
-            body: JSON.stringify({ rating, comment })
-        }).then(handleResponse),
-
-        // My Published
-        getMyPublished: () => fetch(`${API_BASE}/community/my-published`, { headers: getHeaders() }).then(handleResponse),
-
-        // Author Profiles
-        getAuthorProfile: (userId) => fetch(`${API_BASE}/community/authors/${userId}`, { headers: getHeaders() }).then(handleResponse),
-
-        // Leaderboard
-        getLeaderboard: () => fetch(`${API_BASE}/community/leaderboard`, { headers: getHeaders() }).then(handleResponse),
-
-        // Admin Moderation
-        admin: {
-            getPending: (page = 0, size = 20) => fetch(`${API_BASE}/community/admin/pending?page=${page}&size=${size}`, { headers: getHeaders() }).then(handleResponse),
-            getPendingCount: () => fetch(`${API_BASE}/community/admin/pending/count`, { headers: getHeaders() }).then(handleResponse),
-            approve: (itemId) => fetch(`${API_BASE}/community/admin/approve/${itemId}`, { method: 'POST', headers: getHeaders() }).then(handleResponse),
-            reject: (itemId, reason) => fetch(`${API_BASE}/community/admin/reject/${itemId}`, {
-                method: 'POST',
-                headers: getHeaders(),
-                body: JSON.stringify({ reason })
-            }).then(handleResponse)
-        }
-    },
-
-    ai: {
         resources: {
             generate: (userId, type, prompt, context) => {
-                const params = new URLSearchParams({
-                    userId: userId.toString(),
-                    type: type,
-                    prompt: prompt
-                });
+                const params = new URLSearchParams({ userId: userId.toString(), type, prompt });
                 if (context) params.append('context', context);
-
-                return fetch(`${API_BASE}/ai/resources/generate?${params}`, {
-                    method: 'POST',
-                    headers: getHeaders()
-                }).then(handleResponse);
+                return api.post(`/ai/resources/generate?${params}`);
             }
         }
     },
@@ -855,34 +576,48 @@ export const api = {
         getMy: (userId, type) => {
             const params = new URLSearchParams({ userId: userId.toString() });
             if (type) params.append('type', type);
-            return fetch(`${API_BASE}/resources/my?${params}`, { headers: getHeaders() }).then(handleResponse);
+            return api.get(`/resources/my?${params}`);
         },
-        getCommunity: () => fetch(`${API_BASE}/resources/community`, { headers: getHeaders() }).then(handleResponse),
-        get: (id) => fetch(`${API_BASE}/resources/${id}`, { headers: getHeaders() }).then(handleResponse),
-        getOne: (id) => fetch(`${API_BASE}/resources/${id}`, { headers: getHeaders() }).then(handleResponse),
-        create: (userId, resource) => fetch(`${API_BASE}/resources?userId=${userId}`, {
-            method: 'POST',
-            headers: getHeaders(),
-            body: JSON.stringify(resource)
-        }).then(handleResponse),
-        update: (id, resource) => fetch(`${API_BASE}/resources/${id}`, {
-            method: 'PUT',
-            headers: getHeaders(),
-            body: JSON.stringify(resource)
-        }).then(handleResponse),
-        delete: (id) => fetch(`${API_BASE}/resources/${id}`, {
-            method: 'DELETE',
-            headers: getHeaders()
-        }).then(handleResponse),
-        updateVisibility: (id, visibility) => fetch(`${API_BASE}/resources/${id}/visibility?visibility=${visibility}`, {
-            method: 'PATCH',
-            headers: getHeaders()
-        }).then(handleResponse)
+        getCommunity: () => api.get('/resources/community'),
+        getOne: (id) => api.get(`/resources/${id}`),
+        create: (userId, resource) => api.post(`/resources?userId=${userId}`, resource),
+        update: (id, resource) => api.put(`/resources/${id}`, resource),
+        delete: (id) => api.delete(`/resources/${id}`),
+        updateVisibility: (id, visibility) => api.patch(`/resources/${id}/visibility?visibility=${visibility}`)
+    },
+
+    community: {
+        browse: (params = {}) => {
+            const searchParams = new URLSearchParams();
+            if (params.subject) searchParams.set('subject', params.subject);
+            if (params.type) searchParams.set('type', params.type);
+            if (params.sort) searchParams.set('sort', params.sort);
+            if (params.page !== undefined) searchParams.set('page', params.page);
+            if (params.size) searchParams.set('size', params.size);
+            return api.get(`/community/browse?${searchParams}`);
+        },
+        search: (query, page = 0, size = 20) => api.get(`/community/search?q=${encodeURIComponent(query)}&page=${page}&size=${size}`),
+        getSubjects: () => api.get('/community/subjects'),
+        getItem: (itemId) => api.get(`/community/items/${itemId}`),
+        publishQuiz: (quizId, data) => api.post(`/community/publish/quiz/${quizId}`, data),
+        publishAssignment: (assignmentId, data) => api.post(`/community/publish/assignment/${assignmentId}`, data),
+        publishLesson: (lessonId, data) => api.post(`/community/publish/lesson/${lessonId}`, data),
+        install: (itemId, courseId = null) => api.post(`/community/items/${itemId}/install${courseId ? `?courseId=${courseId}` : ''}`),
+        rate: (itemId, rating, comment) => api.post(`/community/items/${itemId}/rate`, { rating, comment }),
+        getMyPublished: () => api.get('/community/my-published'),
+        getAuthorProfile: (userId) => api.get('/community/authors/${userId}'),
+        getLeaderboard: () => api.get('/community/leaderboard'),
+        admin: {
+            getPending: (page = 0, size = 20) => api.get(`/community/admin/pending?page=${page}&size=${size}`),
+            getPendingCount: () => api.get('/community/admin/pending/count'),
+            approve: (itemId) => api.post(`/community/admin/approve/${itemId}`),
+            reject: (itemId, reason) => api.post(`/community/admin/reject/${itemId}`, { reason })
+        }
     },
 
     personalization: {
-        getMyAnalysis: () => fetch(`${API_BASE}/personalization/analyze`, { headers: getHeaders() }).then(handleResponse),
-        getUserAnalysis: (userId) => fetch(`${API_BASE}/personalization/analyze/${userId}`, { headers: getHeaders() }).then(handleResponse)
+        getMyAnalysis: () => api.get('/personalization/analyze'),
+        getUserAnalysis: (userId) => api.get(`/personalization/analyze/${userId}`)
     }
 };
 

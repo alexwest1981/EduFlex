@@ -11,11 +11,16 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import com.eduflex.backend.model.UserStreak;
+import com.eduflex.backend.service.UserStreakService;
 
 import com.eduflex.backend.model.Achievement;
 import com.eduflex.backend.model.UserAchievement;
 import com.eduflex.backend.service.AchievementService;
 import com.eduflex.backend.repository.UserRepository;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @RestController
 @RequestMapping("/api/gamification")
@@ -23,18 +28,22 @@ import com.eduflex.backend.repository.UserRepository;
 @org.springframework.security.access.prepost.PreAuthorize("isAuthenticated()")
 public class GamificationController {
 
+    private static final Logger logger = LoggerFactory.getLogger(GamificationController.class);
+
     private final GamificationService gamificationService;
     private final AchievementService achievementService;
     private final UserRepository userRepository;
+    private final UserStreakService userStreakService;
 
     @Autowired
     private DailyChallengeService dailyChallengeService;
 
     public GamificationController(GamificationService gamificationService, AchievementService achievementService,
-            UserRepository userRepository) {
+            UserRepository userRepository, UserStreakService userStreakService) {
         this.gamificationService = gamificationService;
         this.achievementService = achievementService;
         this.userRepository = userRepository;
+        this.userStreakService = userStreakService;
     }
 
     @GetMapping("/badges")
@@ -93,15 +102,41 @@ public class GamificationController {
         return ResponseEntity.ok(challenges);
     }
 
+    @GetMapping("/streak")
+    public ResponseEntity<Map<String, Object>> getMyStreak() {
+        try {
+            String username = org.springframework.security.core.context.SecurityContextHolder.getContext()
+                    .getAuthentication().getName();
+            User user = userRepository.findByUsername(username)
+                    .orElseGet(() -> userRepository.findByEmail(username).orElse(null));
+
+            if (user == null) {
+                logger.error("User not found for username: {}", username);
+                return ResponseEntity.status(404).build();
+            }
+
+            Integer streak = userStreakService.getStreak(user.getId(), "LOGIN")
+                    .map(UserStreak::getCurrentStreak)
+                    .orElse(0);
+
+            return ResponseEntity.ok(Map.of("streak", streak, "userId", user.getId()));
+        } catch (Exception e) {
+            logger.error("Error fetching streak", e);
+            return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
+        }
+    }
+
     @GetMapping("/streak/login/{userId}")
     public ResponseEntity<Map<String, Integer>> getLoginStreak(@PathVariable Long userId) {
-        Integer streak = dailyChallengeService.getUserLoginStreak(userId);
+        Integer streak = userStreakService.getStreak(userId, "LOGIN")
+                .map(UserStreak::getCurrentStreak)
+                .orElse(0);
         return ResponseEntity.ok(Map.of("streak", streak));
     }
 
     @PostMapping("/streak/login/{userId}")
     public ResponseEntity<?> updateLoginStreak(@PathVariable Long userId) {
-        dailyChallengeService.updateLoginStreak(userId);
+        userStreakService.updateLoginStreak(userId);
         return ResponseEntity.ok().build();
     }
 

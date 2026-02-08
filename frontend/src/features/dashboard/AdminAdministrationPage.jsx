@@ -3,13 +3,10 @@ import { useTranslation } from 'react-i18next';
 import { Loader2, Users, Settings, Database, Edit3, Server } from 'lucide-react';
 import { api } from '../../services/api';
 import AdministrationPanel from './AdministrationPanel';
-import SkolverketManager from '../admin/SkolverketManager';
 import SystemSettings from '../system/SystemSettings';
-import TenantManagement from '../admin/TenantManagement';
 import AdminNavbar from './components/admin/AdminNavbar';
 import AdminHeader from './components/admin/AdminHeader';
 import AdminTicketManager from '../support/AdminTicketManager';
-import AdminIntegrations from './admin/AdminIntegrations';
 import { useSearchParams } from 'react-router-dom';
 
 const AdminAdministrationPage = () => {
@@ -64,10 +61,7 @@ const AdminAdministrationPage = () => {
                         fetchStats={fetchStats}
                     />
                 )}
-                {activeTab === 'tenants' && <TenantManagement />}
                 {activeTab === 'system' && <SystemSettings asTab={true} />}
-                {activeTab === 'skolverket' && <SkolverketManager />}
-                {activeTab === 'integrations' && <AdminIntegrations />}
                 {activeTab === 'tickets' && <AdminTicketManager />}
             </div>
         </div>

@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { getSafeUrl } from '../../services/api';
 
 const UserAvatar = ({ user, size = "w-12 h-12", fontSize = "text-base" }) => {

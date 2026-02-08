@@ -352,6 +352,27 @@ const CourseDetail = ({ currentUser }) => {
                             {isTeacher && (
                                 <>
                                     <button
+                                        onClick={async () => {
+                                            if (!confirm("Vill du synka deltagare från LMS (t.ex. Canvas)?")) return;
+                                            try {
+                                                const res = await fetch(`${API_BASE}/lti/nrps/sync/${course.id}`, {
+                                                    method: 'POST',
+                                                    headers: { 'Authorization': `Bearer ${token}` }
+                                                });
+                                                const data = await res.json();
+                                                if (res.ok) alert(data.message || "Synk startad!");
+                                                else alert("Fel: " + data.message);
+                                            } catch (e) {
+                                                console.error(e);
+                                                alert("Kunde inte starta synk.");
+                                            }
+                                        }}
+                                        className="w-full bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 px-4 py-2 rounded-lg text-sm font-bold flex items-center justify-center gap-2 hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors shadow-sm mb-2"
+                                    >
+                                        <Users size={16} /> Synka Roster (LTI)
+                                    </button>
+
+                                    <button
                                         onClick={() => setShowTeacherEvaluationModal(true)}
                                         className="w-full bg-white dark:bg-[#282a2c] border border-gray-200 dark:border-[#3c4043] text-gray-700 dark:text-gray-300 px-4 py-2 rounded-lg text-sm font-bold flex items-center justify-center gap-2 hover:bg-gray-50 dark:hover:bg-[#303336] transition-colors shadow-sm mb-2"
                                     >

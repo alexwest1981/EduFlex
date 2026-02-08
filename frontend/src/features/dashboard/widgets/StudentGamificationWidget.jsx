@@ -23,13 +23,15 @@ const StudentGamificationWidget = ({ currentUser, isModuleActive }) => {
                     level: user?.level || 1
                 });
 
-                // Fetch achievements
-                const [all, my] = await Promise.all([
+                // Fetch achievements and streak
+                const [all, my, streakData] = await Promise.all([
                     api.get('/gamification/achievements').catch(() => []),
-                    api.get('/gamification/achievements/my').catch(() => [])
+                    api.get('/gamification/achievements/my').catch(() => []),
+                    api.gamification.getMyStreak().catch(() => ({ streak: 0 }))
                 ]);
                 setAchievements(all || []);
                 setUserProgress(my || []);
+                setUserData(prev => ({ ...prev, streak: streakData?.streak || 0 }));
             } catch (e) {
                 console.error("Failed to load gamification data", e);
             }
@@ -62,13 +64,25 @@ const StudentGamificationWidget = ({ currentUser, isModuleActive }) => {
             </div>
 
             <div className="relative z-10">
-                <div className="flex justify-between items-center mb-4">
+                <div className="flex justify-between items-start mb-4">
                     <div>
                         <p className="text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">{t('gamification.level_title')}</p>
                         <h2 className="text-4xl font-black text-gray-900 dark:text-white flex items-center gap-2">
                             {currentLevel}
                             <span className="text-sm font-medium text-gray-400 bg-white dark:bg-[#3c4043] px-2 py-0.5 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700">{t('gamification.student_rank')}</span>
                         </h2>
+                    </div>
+
+                    {/* Streak Flame */}
+                    <div className="flex flex-col items-end">
+                        <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border-2 transition-all duration-500 animate-in zoom-in-50 ${userData.streak > 0
+                            ? 'bg-orange-50 dark:bg-orange-950/20 border-orange-200 dark:border-orange-800 text-orange-600 dark:text-orange-400 shadow-sm shadow-orange-100'
+                            : 'bg-gray-50 dark:bg-gray-900/40 border-gray-100 dark:border-gray-800 text-gray-400'
+                            }`}>
+                            <Zap size={18} fill={userData.streak > 0 ? "currentColor" : "none"} className={userData.streak > 0 ? "animate-pulse" : ""} />
+                            <span className="text-lg font-black">{userData.streak}</span>
+                        </div>
+                        <p className="text-[10px] font-bold mt-1 text-gray-400 uppercase tracking-tighter">Day Streak</p>
                     </div>
                 </div>
 

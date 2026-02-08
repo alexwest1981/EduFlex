@@ -37,7 +37,7 @@
 | **Socialt Lärande (Basic)** | Community Hub / Marketplace. | ✅ **Klar** |
 | **Socialt Lärande (Avancerat)** | P2P-delning, kommentarer i kurser, "YouTube for Learning". | 📅 **Planerad** |
 | **Gamification (Basic)** | XP, Levlar, Badges, Streaks. | ✅ **Klar** |
-| **EduGame Expansion** | Shop för profil-teman, Sociala Streaks, "Buddy"-system. | 📅 **Pågående (Q1 2026)** |
+| **EduGame Expansion** | Shop för profil-teman, Sociala Streaks, "Buddy"-system. | ✅ **Stabil** (V1) |
 | **Mobil-först** | Responsiv webbdesign. | ✅ **Klar** |
 | **Media Streaming** | Stabil synkroniserad ljudboksuppspelning med Range-stöd. | ✅ **Klar** |
 | **Offline-läge / PWA** | Installera som app, ladda ner kurser för offline-bruk. | 📅 **Planerad** |
@@ -61,13 +61,21 @@
 | Funktion | Beskrivning | Status |
 | :--- | :--- | :--- |
 | **Advanced Security** | Domän-låsning, AES-256 GCM kryptering (PII) och Rate-limiting. | ✅ **Klar** |
-| **Unified Storage** | MinIO-integration för alla tillgångar. | ✅ **Klar** |
+| **Unified Storage** | MinIO-integration för alla tillgångar (Löste split-brain bugg). | ✅ **Klar** |
 | **CI/CD Pipeline** | Fullt automatiserade tester och deployment. | 📅 **Planerad** |
 | **Kubernetes Migration** | Helm-charts för skalbarhet. | 📅 **Planerad** |
 
 ---
 
 ## 📝 Change Log
+
+### [v0.9.10] - 2026-02-08
+- **Gamification 2.0**: Full launch of Shop, Inventory, Profile Themes, and Social Streaks.
+- **Admin**: New "Gamification Management" workspace for creating items and uploading assets.
+- **Ebook**: Fixed "Split-brain" storage bug causing 404s. Backend now forces usage of correct MinIO bucket.
+- **Ebook**: Implemented **Automated Cover Extraction** for PDFs/EPUBs upon upload.
+- **Ebook**: Fixed `about:srcdoc` sandbox error in EpubViewer.
+- **System**: Added automated Database Backups in Docker with download capability.
 
 ### [v0.9.9] - 2026-02-07
 - **LTI**: Successfully verified LTI 1.3 Advantage E2E flow with account provisioning and course enrollment.

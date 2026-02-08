@@ -1,6 +1,8 @@
 package com.eduflex.backend.edugame.model;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Entity
 @Table(name = "edugame_shop_items")
@@ -26,14 +28,22 @@ public class ShopItem {
     @Column(nullable = false)
     private ItemType type;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Rarity rarity = Rarity.COMMON;
+
     @Column(name = "is_limited")
     private boolean isLimited = false;
+
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "unlock_criteria", columnDefinition = "jsonb")
+    private String unlockCriteria;
 
     public ShopItem() {
     }
 
     public ShopItem(Long id, String name, String description, String imageUrl, Integer cost, ItemType type,
-            boolean isLimited) {
+            boolean isLimited, Rarity rarity, String unlockCriteria) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -41,6 +51,8 @@ public class ShopItem {
         this.cost = cost;
         this.type = type;
         this.isLimited = isLimited;
+        this.rarity = rarity != null ? rarity : Rarity.COMMON;
+        this.unlockCriteria = unlockCriteria;
     }
 
     public Long getId() {
@@ -91,6 +103,14 @@ public class ShopItem {
         this.type = type;
     }
 
+    public Rarity getRarity() {
+        return rarity;
+    }
+
+    public void setRarity(Rarity rarity) {
+        this.rarity = rarity;
+    }
+
     public boolean isLimited() {
         return isLimited;
     }
@@ -99,10 +119,25 @@ public class ShopItem {
         isLimited = limited;
     }
 
+    public String getUnlockCriteria() {
+        return unlockCriteria;
+    }
+
+    public void setUnlockCriteria(String unlockCriteria) {
+        this.unlockCriteria = unlockCriteria;
+    }
+
     public enum ItemType {
         FRAME,
         BACKGROUND,
         BADGE,
         TITLE
+    }
+
+    public enum Rarity {
+        COMMON,
+        RARE,
+        EPIC,
+        LEGENDARY
     }
 }

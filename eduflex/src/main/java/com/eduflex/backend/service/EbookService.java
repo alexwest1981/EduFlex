@@ -79,6 +79,22 @@ public class EbookService {
             ebook.setCourses(new java.util.HashSet<>(courses));
         }
 
+        // Auto-generate cover if not provided
+        if (coverUrl == null && file != null) {
+            try {
+                // We need to read the file again, but InputStream is consumed.
+                // Since StorageService saved it, we can load it back using storageId.
+                try (InputStream is = storageService.load(storageId)) {
+                    byte[] coverBytes = extractAndSaveCover(ebook, is, fileName);
+                    if (coverBytes != null && coverBytes.length > 0) {
+                        // extraction saves it and updates ebook object
+                    }
+                }
+            } catch (Exception e) {
+                logger.error("Failed to auto-extract cover for ebook: {}", title, e);
+            }
+        }
+
         return ebookRepository.save(ebook);
     }
 
@@ -176,6 +192,8 @@ public class EbookService {
         Ebook ebook = getEbookById(id);
         String storageId = ebook.getFileUrl().substring(ebook.getFileUrl().lastIndexOf("/") + 1);
 
+        logger.info("Fetching metadata for ebook ID: {}, Storage ID: {}, URL: {}", id, storageId, ebook.getFileUrl());
+
         try (InputStream inputStream = storageService.load(storageId);
                 PdfBookContent content = new PdfBookContent(inputStream)) {
 
@@ -187,6 +205,7 @@ public class EbookService {
 
             return metadata;
         } catch (Exception e) {
+            logger.error("Failed to load ebook metadata for ID: {}", id, e);
             throw new RuntimeException("Failed to load ebook metadata", e);
         }
     }
@@ -220,44 +239,19 @@ public class EbookService {
             }
         }
 
-        // 2. Extract cover from file based on type
+        // 2. Extract cover from file based on type (Fallback if not extracted on
+        // upload)
         byte[] coverBytes = null;
         String fileUrl = ebook.getFileUrl();
         if (fileUrl != null) {
             String fileStorageId = extractStorageId(fileUrl);
-            String contentType = "image/png";
-
             try (InputStream inputStream = storageService.load(fileStorageId)) {
-                if (fileUrl.toLowerCase().endsWith(".pdf")) {
-                    try (PdfBookContent content = new PdfBookContent(inputStream)) {
-                        String base64Cover = content.getCoverImage();
-                        if (base64Cover != null && base64Cover.contains(",")) {
-                            String base64Data = base64Cover.split(",")[1];
-                            coverBytes = java.util.Base64.getDecoder().decode(base64Data);
-                        }
-                    }
-                } else if (fileUrl.toLowerCase().endsWith(".epub")) {
-                    coverBytes = extractEpubCover(inputStream);
-                    contentType = "image/jpeg";
-                }
-                // TODO: Add MP3 ID3 tag cover extraction if needed
+                String fileName = ebook.getFileUrl().substring(ebook.getFileUrl().lastIndexOf("/") + 1);
+                coverBytes = extractAndSaveCover(ebook, inputStream, fileName);
+                if (coverBytes != null)
+                    return coverBytes;
             } catch (Exception e) {
                 logger.error("Failed to extract cover from file for book {}: {}", id, e.getMessage());
-            }
-
-            // 3. Save and Cache if extracted
-            if (coverBytes != null && coverBytes.length > 0) {
-                try {
-                    String extension = contentType.equals("image/png") ? ".png" : ".jpg";
-                    String customId = "library/covers/cover-" + id + "-" + System.currentTimeMillis() + extension;
-                    String coverStorageId = storageService.save(new java.io.ByteArrayInputStream(coverBytes),
-                            contentType, "cover" + extension, customId);
-                    ebook.setCoverUrl("/api/storage/" + coverStorageId);
-                    ebookRepository.save(ebook);
-                    return coverBytes;
-                } catch (Exception e) {
-                    logger.error("Failed to save extracted cover for book {}: {}", id, e.getMessage());
-                }
             }
         }
 
@@ -292,10 +286,6 @@ public class EbookService {
     }
 
     private byte[] extractEpubCover(InputStream epubStream) throws Exception {
-        // Read into memory to allow multiple passes (ZIP input stream can't reset
-        // easily)
-        // Or unzip to temp. Better: Load entire ZIP into memory map?
-        // Simplest: Copy to byte array first.
         byte[] epubBytes = StreamUtils.copyToByteArray(epubStream);
 
         try (java.util.zip.ZipInputStream zip = new java.util.zip.ZipInputStream(
@@ -303,10 +293,9 @@ public class EbookService {
             java.util.zip.ZipEntry entry;
             String opfPath = null;
 
-            // 1. Find OPF path from META-INF/container.xml
+            // 1. Find OPF path
             while ((entry = zip.getNextEntry()) != null) {
                 if (entry.getName().equals("META-INF/container.xml")) {
-                    // Simple parsing
                     byte[] containerBytes = StreamUtils.copyToByteArray(zip);
                     String xml = new String(containerBytes, java.nio.charset.StandardCharsets.UTF_8);
                     int start = xml.indexOf("full-path=\"");
@@ -318,96 +307,88 @@ public class EbookService {
                 }
             }
 
-            if (opfPath == null)
-                return null;
+            if (opfPath != null) {
+                // 2. Read OPF
+                try (java.util.zip.ZipInputStream zip2 = new java.util.zip.ZipInputStream(
+                        new java.io.ByteArrayInputStream(epubBytes))) {
+                    String coverHref = null;
+                    String opfDir = opfPath.contains("/") ? opfPath.substring(0, opfPath.lastIndexOf("/") + 1) : "";
 
-            // 2. Read OPF to find cover image href
-            // Need to reopen zip
-            try (java.util.zip.ZipInputStream zip2 = new java.util.zip.ZipInputStream(
-                    new java.io.ByteArrayInputStream(epubBytes))) {
-                String coverHref = null;
-                String opfDir = opfPath.contains("/") ? opfPath.substring(0, opfPath.lastIndexOf("/") + 1) : "";
+                    while ((entry = zip2.getNextEntry()) != null) {
+                        if (entry.getName().equals(opfPath)) {
+                            byte[] opfBytes = StreamUtils.copyToByteArray(zip2);
+                            String opfXml = new String(opfBytes, java.nio.charset.StandardCharsets.UTF_8);
 
-                while ((entry = zip2.getNextEntry()) != null) {
-                    if (entry.getName().equals(opfPath)) {
-                        byte[] opfBytes = StreamUtils.copyToByteArray(zip2);
-                        String opfXml = new String(opfBytes, java.nio.charset.StandardCharsets.UTF_8);
-
-                        // Look for <item properties="cover-image" href="..." />
-                        // OR <meta name="cover" content="cover-item-id" /> -> then find item with that
-                        // id
-
-                        // Strategy A: properties="cover-image"
-                        int propIndex = opfXml.indexOf("properties=\"cover-image\"");
-                        if (propIndex != -1) {
-                            // Find href in this tag
-                            // Search backwards for <item and forwards for >
-                            int tagStart = opfXml.lastIndexOf("<item", propIndex);
-                            int tagEnd = opfXml.indexOf(">", propIndex);
-                            if (tagStart != -1 && tagEnd != -1) {
-                                String tag = opfXml.substring(tagStart, tagEnd);
-                                int hrefStart = tag.indexOf("href=\"");
-                                if (hrefStart != -1) {
-                                    int hrefEnd = tag.indexOf("\"", hrefStart + 6);
-                                    coverHref = tag.substring(hrefStart + 6, hrefEnd);
-                                }
-                            }
-                        }
-
-                        // Strategy B: meta name="cover"
-                        if (coverHref == null) {
-                            int metaIndex = opfXml.indexOf("name=\"cover\"");
-                            if (metaIndex != -1) {
-                                int contentStart = opfXml.indexOf("content=\"", metaIndex); // simplified, assumes order
-                                if (contentStart == -1)
-                                    contentStart = opfXml.lastIndexOf("content=\"", metaIndex); // could be before
-
-                                // Actually, regex is safer here
+                            // Strategy A: properties="cover-image"
+                            if (opfXml.contains("properties=\"cover-image\"")) {
                                 java.util.regex.Pattern p = java.util.regex.Pattern
-                                        .compile("<meta\\s+name=\"cover\"\\s+content=\"([^\"]+)\"");
+                                        .compile("<item[^>]*href=\"([^\"]+)\"[^>]*properties=\"cover-image\"");
                                 java.util.regex.Matcher m = p.matcher(opfXml);
                                 if (m.find()) {
-                                    String coverId = m.group(1);
-                                    // Now find item with id=coverId
-                                    java.util.regex.Pattern p2 = java.util.regex.Pattern.compile("<item\\s+[^>]*id=\""
-                                            + java.util.regex.Pattern.quote(coverId) + "\"[^>]*href=\"([^\"]+)\"");
-                                    java.util.regex.Matcher m2 = p2.matcher(opfXml);
-                                    if (m2.find()) {
-                                        coverHref = m2.group(1);
-                                    } else {
-                                        // Try reverse order attributes
-                                        java.util.regex.Pattern p3 = java.util.regex.Pattern
-                                                .compile("<item\\s+[^>]*href=\"([^\"]+)\"[^>]*id=\""
-                                                        + java.util.regex.Pattern.quote(coverId) + "\"");
-                                        java.util.regex.Matcher m3 = p3.matcher(opfXml);
-                                        if (m3.find())
-                                            coverHref = m3.group(1);
-                                    }
+                                    coverHref = m.group(1);
+                                } else {
+                                    // Try reverse attr order
+                                    java.util.regex.Pattern pRev = java.util.regex.Pattern
+                                            .compile("<item[^>]*properties=\"cover-image\"[^>]*href=\"([^\"]+)\"");
+                                    java.util.regex.Matcher mRev = pRev.matcher(opfXml);
+                                    if (mRev.find())
+                                        coverHref = mRev.group(1);
                                 }
                             }
+
+                            // Strategy B: meta name="cover"
+                            if (coverHref == null) {
+                                java.util.regex.Pattern pMeta = java.util.regex.Pattern
+                                        .compile("<meta\\s+name=\"cover\"\\s+content=\"([^\"]+)\"");
+                                java.util.regex.Matcher mMeta = pMeta.matcher(opfXml);
+                                if (mMeta.find()) {
+                                    String coverId = mMeta.group(1);
+                                    // Find item with id
+                                    java.util.regex.Pattern pItem = java.util.regex.Pattern.compile("<item[^>]*id=\""
+                                            + java.util.regex.Pattern.quote(coverId) + "\"[^>]*href=\"([^\"]+)\"");
+                                    java.util.regex.Matcher mItem = pItem.matcher(opfXml);
+                                    if (mItem.find())
+                                        coverHref = mItem.group(1);
+                                }
+                            }
+                            break;
                         }
-                        break;
                     }
-                }
 
-                if (coverHref == null)
-                    return null;
-
-                // 3. Extract the cover image
-                // Href is relative to OPF
-                // If coverHref contains URL encoding, decode it? Usually simple files.
-                String fullCoverPath = opfDir + coverHref;
-
-                try (java.util.zip.ZipInputStream zip3 = new java.util.zip.ZipInputStream(
-                        new java.io.ByteArrayInputStream(epubBytes))) {
-                    while ((entry = zip3.getNextEntry()) != null) {
-                        if (entry.getName().equals(fullCoverPath)) {
-                            return StreamUtils.copyToByteArray(zip3);
+                    if (coverHref != null) {
+                        String fullCoverPath = opfDir + coverHref;
+                        logger.info("Found EPUB cover at: {}", fullCoverPath);
+                        try (java.util.zip.ZipInputStream zip3 = new java.util.zip.ZipInputStream(
+                                new java.io.ByteArrayInputStream(epubBytes))) {
+                            while ((entry = zip3.getNextEntry()) != null) {
+                                if (entry.getName().equals(fullCoverPath)) {
+                                    return StreamUtils.copyToByteArray(zip3);
+                                }
+                            }
                         }
                     }
                 }
             }
         }
+
+        // Strategy C: Common filenames fallback
+        logger.info("Metadata extraction failed, trying fallback filenames...");
+        String[] commonNames = { "cover.jpg", "cover.jpeg", "cover.png", "OEBPS/cover.jpg", "OPS/cover.jpg",
+                "images/cover.jpg" };
+        try (java.util.zip.ZipInputStream zipFallback = new java.util.zip.ZipInputStream(
+                new java.io.ByteArrayInputStream(epubBytes))) {
+            java.util.zip.ZipEntry entry;
+            while ((entry = zipFallback.getNextEntry()) != null) {
+                for (String name : commonNames) {
+                    if (entry.getName().equalsIgnoreCase(name)) {
+                        logger.info("Found fallback cover: {}", entry.getName());
+                        return StreamUtils.copyToByteArray(zipFallback);
+                    }
+                }
+            }
+        }
+
+        logger.warn("No cover found in EPUB.");
         return null;
     }
 
@@ -450,5 +431,50 @@ public class EbookService {
         // 4. Update Ebook record
         ebook.setFileUrl("/api/storage/" + storageId);
         return ebookRepository.save(ebook);
+    }
+
+    private byte[] extractAndSaveCover(Ebook ebook, InputStream inputStream, String fileName) {
+        byte[] coverBytes = null;
+        String contentType = "image/png";
+
+        try {
+            if (fileName.toLowerCase().endsWith(".pdf")) {
+                try (PdfBookContent content = new PdfBookContent(inputStream)) {
+                    String base64Cover = content.getCoverImage();
+                    if (base64Cover != null && base64Cover.contains(",")) {
+                        String base64Data = base64Cover.split(",")[1];
+                        coverBytes = java.util.Base64.getDecoder().decode(base64Data);
+                    }
+                }
+            } else if (fileName.toLowerCase().endsWith(".epub")) {
+                coverBytes = extractEpubCover(inputStream);
+                contentType = "image/jpeg";
+            }
+            // Add other types here
+        } catch (Exception e) {
+            logger.error("Error generating cover for {}: {}", ebook.getTitle(), e.getMessage());
+        }
+
+        if (coverBytes != null && coverBytes.length > 0) {
+            try {
+                String extension = contentType.equals("image/png") ? ".png" : ".jpg";
+                String customId = "library/covers/cover-" + ebook.getId() + "-" + System.currentTimeMillis()
+                        + extension;
+                String coverStorageId = storageService.save(new java.io.ByteArrayInputStream(coverBytes),
+                        contentType, "cover" + extension, customId);
+
+                ebook.setCoverUrl("/api/storage/" + coverStorageId);
+                // We don't save ebook here if called from uploadEbook (as it saves later),
+                // but if called from getEbookCover we might need to save.
+                // However, Java objects are references.
+                // getEbookCover explicitly calls save.
+                // uploadEbook calls save at the end.
+                // So we are good.
+                return coverBytes;
+            } catch (Exception e) {
+                logger.error("Failed to save extracted cover: {}", e.getMessage());
+            }
+        }
+        return null;
     }
 }

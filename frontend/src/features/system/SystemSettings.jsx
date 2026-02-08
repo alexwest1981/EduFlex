@@ -14,6 +14,9 @@ import { useBranding } from '../../context/BrandingContext';
 import ThemeModal from './ThemeModal';
 import { useModules } from '../../context/ModuleContext';
 import { api } from '../../services/api';
+import TenantManagement from '../admin/TenantManagement';
+import SkolverketManager from '../admin/SkolverketManager';
+import AdminIntegrations from '../dashboard/admin/AdminIntegrations';
 
 // Mappa modulnycklar till ikoner
 const moduleIcons = {
@@ -243,6 +246,16 @@ const SystemSettings = ({ asTab = false }) => {
 
     const menuItems = [
         {
+            category: 'Konfiguration',
+            items: [
+                ...(isAdmin ? [
+                    { id: 'tenants', label: 'Tenants', icon: Server },
+                    { id: 'skolverket', label: 'Skolverket', icon: Database },
+                    { id: 'integrations', label: 'Integrationer', icon: Globe }
+                ] : [])
+            ]
+        },
+        {
             category: 'Utseende',
             items: [
                 { id: 'theme', label: 'Tema & Utseende', icon: Palette },
@@ -272,6 +285,12 @@ const SystemSettings = ({ asTab = false }) => {
 
     const renderContent = () => {
         switch (activeTab) {
+            case 'tenants':
+                return <TenantManagement />;
+            case 'skolverket':
+                return <SkolverketManager />;
+            case 'integrations':
+                return <AdminIntegrations />;
             case 'theme':
                 return (
                     <div className="space-y-6">

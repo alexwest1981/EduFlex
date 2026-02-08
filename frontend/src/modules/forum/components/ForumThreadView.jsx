@@ -35,6 +35,11 @@ const ForumThreadView = ({ thread, currentUser, onBack, onReply, onReact }) => {
                     <h2 className="text-2xl font-bold truncate">{thread.title}</h2>
                     <p className="text-sm text-muted-foreground flex items-center gap-2">
                         Skapad av <span className="font-medium text-foreground">{thread.author?.firstName} {thread.author?.lastName}</span>
+                        {thread.author?.gamificationProfile?.forumRankIcon && (
+                            <span className="text-lg" title="Forum Rank">
+                                {thread.author.gamificationProfile.forumRankIcon}
+                            </span>
+                        )}
                         {/* Tags could go here */}
                     </p>
                 </div>
@@ -83,8 +88,13 @@ const ForumThreadView = ({ thread, currentUser, onBack, onReply, onReact }) => {
                         <div className="flex-1">
                             <div className="bg-muted/30 p-5 rounded-2xl rounded-tl-none border border-border/50">
                                 <div className="flex justify-between items-start mb-3">
-                                    <span className="font-semibold text-sm">
+                                    <span className="font-semibold text-sm flex items-center gap-1">
                                         {post.author?.firstName} {post.author?.lastName}
+                                        {post.author?.gamificationProfile?.forumRankIcon && (
+                                            <span className="text-base" title="Forum Rank">
+                                                {post.author.gamificationProfile.forumRankIcon}
+                                            </span>
+                                        )}
                                     </span>
                                     <span className="text-xs text-muted-foreground">
                                         {new Date(post.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}

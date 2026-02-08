@@ -203,6 +203,12 @@ const LandingPage = () => {
             title: 'Kursutvärdering & Insikter',
             description: 'Komplett system för kurskvalitet, automatiserade studentnotiser och AI-analys av fritextsvar för att mäta ROI.',
             gradient: 'from-indigo-600 to-blue-700'
+        },
+        {
+            icon: <BookOpen className="w-6 h-6" />,
+            title: 'Auto-Ebook Covers',
+            description: 'Ladda upp en PDF eller EPUB och låt systemet automatiskt extrahera och generera ett snyggt omslag direkt från filen.',
+            gradient: 'from-teal-500 to-green-500'
         }
     ];
 

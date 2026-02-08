@@ -98,6 +98,10 @@ public class EbookController {
         try {
             return ResponseEntity.ok(ebookService.getEbookMetadata(id));
         } catch (Exception e) {
+            // Log the error to understand why we return 404!
+            // System.out.println is safer if Logger is not configured in Controller
+            System.err.println("Error fetching metadata for ebook " + id + ": " + e.getMessage());
+            e.printStackTrace();
             return ResponseEntity.notFound().build();
         }
     }

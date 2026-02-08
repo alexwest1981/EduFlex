@@ -38,12 +38,19 @@
 ## 🇸🇪 Svenska
 
 ### ⚡ Senaste Uppdateringarna
+*   **✅ Gamification 2.0 & Shop (8 feb 2026):**
+    *   **EduGame Shop:** Lanserat en komplett butik där studenter kan köpa profilramar, bakgrunder och titlar för sina intjänade poäng.
+    *   **Inventory & Utrustning:** Nytt gränssnitt för att hantera och utrusta köpta föremål.
+    *   **Sociala Streaks:** Nytt system för att spåra daglig aktivitet med visuella eld-indikatorer.
+    *   **Admin Tools:** Fullständigt gränssnitt för att skapa och hantera butiksföremål samt ladda upp assets.
+*   **📚 E-boksförbättringar (8 feb 2026):**
+    *   **Auto-Cover Extraction:** Systemet extraherar nu automatiskt omslagsbilder från uppladdade PDF:er och EPUB-filer.
+    *   **Smart Metadata:** Förbättrad parsing av EPUB-metadata för att hitta titlar och författare.
+    *   **Storage Fix:** Löste kritiska problem med fillagring ("split-brain") genom att tvinga backend att använda korrekt MinIO-bucket.
 *   **✅ LTI 1.3 Advantage Verifiering & Systemhärdning (7 feb 2026):**
     *   **E2E Verifiering:** Fullt genomförd simulering av LTI 1.3 Advantage (AGS & NRPS) med automatisk användarprovisionering och kursinskrivning.
     *   **Fix: Circular Dependency:** Åtgärdat cirkulärt beroende i `LtiService` via `@Lazy` injicering för stabilare uppstart.
-    *   **Fix: Course Filtering:** Löst problem med `@EntityGraph` som filtrerade bort kurser utan lärare vid auto-enrollment.
     *   **Infra: Database Port:** Migrerat Docker-databasen till port 5433 för att undvika konflikt med lokala PostgreSQL-tjänster på host-maskinen.
-    *   **cmi5/xAPI:** Förbättrad completion-logik och LRS-proxy för sömlös uppföljning av externa moduler och statusuppdateringar.
 *   **🛠 MinIO & CMI5 Stabilisering (7 feb 2026):**
     *   **Data Recovery:** Identifierat och åtgärdat "Split-Brain" konfiguration mellan Docker och lokal miljö för MinIO.
     *   **CMI5 Launch:** Verifierat korrekt start av CMI5-paket utan JSON-fel.

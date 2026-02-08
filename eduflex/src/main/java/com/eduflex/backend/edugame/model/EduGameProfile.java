@@ -28,6 +28,15 @@ public class EduGameProfile {
     @Column(name = "current_title")
     private String currentTitle;
 
+    @Column(name = "forum_rank_icon")
+    private String forumRankIcon;
+
+    @Column(name = "forum_activity_points", columnDefinition = "integer default 0")
+    private int forumActivityPoints = 0;
+
+    public EduGameProfile() {
+    }
+
     public EduGameProfile(User user) {
         this.user = user;
     }
@@ -78,5 +87,21 @@ public class EduGameProfile {
 
     public void setCurrentTitle(String currentTitle) {
         this.currentTitle = currentTitle;
+    }
+
+    public String getForumRankIcon() {
+        return forumRankIcon;
+    }
+
+    public void setForumRankIcon(String forumRankIcon) {
+        this.forumRankIcon = forumRankIcon;
+    }
+
+    public int getForumActivityPoints() {
+        return forumActivityPoints;
+    }
+
+    public void setForumActivityPoints(int forumActivityPoints) {
+        this.forumActivityPoints = forumActivityPoints;
     }
 }

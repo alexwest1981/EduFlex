@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AppProvider, useAppContext } from './context/AppContext';
-import { ModuleProvider } from './context/ModuleContext';
+import { ModuleProvider, useModules } from './context/ModuleContext';
 import { GamificationProvider } from './context/GamificationContext';
 import { BrandingProvider } from './context/BrandingContext';
 import { DesignSystemProvider } from './context/DesignSystemContext';
@@ -45,6 +45,7 @@ import SkolverketModule from './modules/skolverket/SkolverketModule';
 import SupportPage from './features/support/SupportPage';
 import CommunityHub from './features/community/CommunityHub';
 import CommunityAdmin from './features/community/CommunityAdmin';
+import AdminShopDashboard from './features/admin/shop/AdminShopDashboard';
 import AIQuizGenerator from './features/ai/AIQuizGenerator';
 import EbookLibrary from './features/library/EbookLibrary';
 import EvaluationManager from './modules/evaluation/EvaluationManager';
@@ -98,6 +99,7 @@ const DashboardWrapper = ({ currentUser }) => {
 
 const AppRoutes = () => {
     const { currentUser, logout, licenseLocked, licenseStatus, refreshUser } = useAppContext();
+    const { isModuleActive } = useModules();
 
     // 1. GLOBAL LICENSE LOCK (Triggered by 402 or explicit lock)
     if (licenseLocked || licenseStatus === 'locked') {
@@ -139,6 +141,18 @@ const AppRoutes = () => {
                         <Layout currentUser={currentUser} handleLogout={logout}>
                             <AdminAdministrationPage />
                         </Layout>
+                    </ProtectedRoute>
+                } />
+
+                <Route path="/admin/gamification-management" element={
+                    <ProtectedRoute roles={['ADMIN']}>
+                        {isModuleActive('GAMIFICATION') ? (
+                            <Layout currentUser={currentUser} handleLogout={logout}>
+                                <AdminShopDashboard />
+                            </Layout>
+                        ) : (
+                            <Navigate to="/admin" replace />
+                        )}
                     </ProtectedRoute>
                 } />
 
@@ -244,9 +258,13 @@ const AppRoutes = () => {
 
                 <Route path="/shop" element={
                     <ProtectedRoute>
-                        <Layout currentUser={currentUser} handleLogout={logout}>
-                            <ShopView />
-                        </Layout>
+                        {isModuleActive('GAMIFICATION') ? (
+                            <Layout currentUser={currentUser} handleLogout={logout}>
+                                <ShopView />
+                            </Layout>
+                        ) : (
+                            <Navigate to="/" replace />
+                        )}
                     </ProtectedRoute>
                 } />
 

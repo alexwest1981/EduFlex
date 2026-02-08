@@ -45,6 +45,13 @@ public class EvaluationController {
         return ResponseEntity.ok(evaluationService.createTemplate(template, user));
     }
 
+    @PutMapping("/templates/{id}")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN', 'TEACHER', 'ROLE_TEACHER')")
+    public ResponseEntity<EvaluationTemplate> updateTemplate(@PathVariable Long id,
+            @RequestBody EvaluationTemplate template) {
+        return ResponseEntity.ok(evaluationService.updateTemplate(id, template));
+    }
+
     // --- Instance Endpoints ---
 
     @PostMapping("/activate")

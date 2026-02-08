@@ -7,6 +7,7 @@ public class BackupResponse {
     private String name;
     private long size;
     private Date createdAt;
+    private String type; // manual, daily, weekly, monthly, last
 
     public String getId() {
         return id;
@@ -38,5 +39,13 @@ public class BackupResponse {
 
     public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }

@@ -24,7 +24,7 @@ export const GamificationProvider = ({ children }) => {
         if (isModuleActive('GAMIFICATION')) {
             const pollAchievements = async () => {
                 try {
-                    const myAchievements = await api.get('/gamification/achievements/my');
+                    const myAchievements = await api.gamification.getMyAchievements();
                     if (myAchievements && Array.isArray(myAchievements)) {
                         const unlocked = myAchievements.filter(a => a.unlocked);
                         const currentIds = unlocked.map(a => a.achievementId);

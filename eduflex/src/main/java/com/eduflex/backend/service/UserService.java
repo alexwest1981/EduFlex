@@ -28,6 +28,7 @@ public class UserService {
     private final StorageService storageService;
     private final ConnectionRepository connectionRepository;
     private final AchievementService achievementService;
+    private final UserStreakService userStreakService;
 
     public UserService(UserRepository userRepository,
             com.eduflex.backend.repository.RoleRepository roleRepository,
@@ -35,7 +36,8 @@ public class UserService {
             com.eduflex.backend.repository.AuditLogRepository auditLogRepository,
             StorageService storageService,
             ConnectionRepository connectionRepository,
-            AchievementService achievementService) {
+            AchievementService achievementService,
+            UserStreakService userStreakService) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
@@ -44,6 +46,7 @@ public class UserService {
         this.storageService = storageService;
         this.connectionRepository = connectionRepository;
         this.achievementService = achievementService;
+        this.userStreakService = userStreakService;
     }
 
     public List<User> getAllUsers() {
@@ -125,7 +128,12 @@ public class UserService {
         userRepository.findById(userId).ifPresent(user -> {
             user.setLastLogin(LocalDateTime.now());
             user.setLoginCount(user.getLoginCount() + 1);
-            userRepository.save(user);
+            // Update login streak
+            try {
+                userStreakService.updateLoginStreak(userId);
+            } catch (Exception e) {
+                System.err.println("Failed to update login streak: " + e.getMessage());
+            }
 
             // Check for login-related achievements
             try {

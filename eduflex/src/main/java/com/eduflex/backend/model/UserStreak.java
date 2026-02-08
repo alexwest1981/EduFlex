@@ -92,4 +92,28 @@ public class UserStreak {
     public void setStreakType(String streakType) {
         this.streakType = streakType;
     }
+
+    public void setCurrentStreak(Integer currentStreak) {
+        this.currentStreak = currentStreak;
+    }
+
+    public Integer getLongestStreak() {
+        return longestStreak;
+    }
+
+    public void setLongestStreak(Integer longestStreak) {
+        this.longestStreak = longestStreak;
+    }
+
+    public void setLastActivityDate(LocalDate lastActivityDate) {
+        this.lastActivityDate = lastActivityDate;
+    }
+
+    public Integer getFreezesAvailable() {
+        return freezesAvailable;
+    }
+
+    public void setFreezesAvailable(Integer freezesAvailable) {
+        this.freezesAvailable = freezesAvailable;
+    }
 }

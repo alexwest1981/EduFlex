@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Server, Database, HardDrive, Download, Upload, RefreshCw, AlertTriangle, CheckCircle, Clock, Trash2, Plus, Settings } from 'lucide-react';
+import { Server, Database, HardDrive, Download, Upload, RefreshCw, AlertTriangle, CheckCircle, Clock, Trash2, Plus, Settings, Folder, User, Calendar, FileText } from 'lucide-react';
 import { api } from '../../services/api';
 import { useAppContext } from '../../context/AppContext';
 import AddDatabaseModal from '../../components/AddDatabaseModal';
@@ -68,7 +68,7 @@ const ServerSettings = () => {
     const loadBackups = async () => {
         try {
             const response = await api.get('/admin/backups');
-            setBackups(response.data || []);
+            setBackups(response || []);
         } catch (error) {
             console.error('Failed to load backups:', error);
         }
@@ -77,7 +77,7 @@ const ServerSettings = () => {
     const loadDatabaseConnections = async () => {
         try {
             const response = await api.get('/admin/database/connections');
-            const data = response.data || [];
+            const data = response || [];
             // Handle both object wrapper and direct array response
             const connections = Array.isArray(data) ? data : (data.connections || []);
             setDbConnections(connections);
@@ -94,7 +94,7 @@ const ServerSettings = () => {
     const loadBackupStatus = async () => {
         try {
             const response = await api.get('/admin/backups/status');
-            setBackupStatus(response.data || { running: false, lastBackup: null });
+            setBackupStatus(response || { running: false, lastBackup: null });
         } catch (error) {
             console.error('Failed to load backup status:', error);
         }
@@ -143,6 +143,10 @@ const ServerSettings = () => {
             console.error('Failed to delete backup:', error);
             alert('Misslyckades med att radera backup');
         }
+    };
+
+    const downloadBackup = (backupId) => {
+        window.open(api.admin.downloadBackup(backupId), '_blank');
     };
 
     const handleAddDatabase = async (formData) => {
@@ -272,41 +276,80 @@ const ServerSettings = () => {
                 </div>
 
                 {/* Backup List */}
-                <div className="space-y-3">
-                    <h4 className="font-semibold text-gray-900 dark:text-white">Tillgängliga Backups</h4>
+                <div className="space-y-6">
+                    <h4 className="font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+                        <Folder size={20} className="text-blue-600" />
+                        Tillgängliga Backups
+                    </h4>
+
                     {!backups || backups.length === 0 ? (
                         <p className="text-gray-500 dark:text-gray-400 text-center py-8">Inga backups tillgängliga</p>
                     ) : (
-                        <div className="space-y-2">
-                            {backups.map((backup) => (
-                                <div key={backup.id} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-[#282a2c] rounded-xl border border-gray-200 dark:border-[#3c4043]">
-                                    <div className="flex items-center gap-3">
-                                        <Database size={20} className="text-gray-600 dark:text-gray-400" />
-                                        <div>
-                                            <p className="font-medium text-gray-900 dark:text-white">{backup.name}</p>
-                                            <p className="text-xs text-gray-500 dark:text-gray-400">
-                                                {formatDate(backup.createdAt)} • {formatSize(backup.size)}
-                                            </p>
+                        <div className="space-y-8">
+                            {[
+                                { key: 'manual', label: 'Manuella Backupper', icon: <User size={18} /> },
+                                { key: 'daily', label: 'Dagliga (Auto)', icon: <Clock size={18} /> },
+                                { key: 'weekly', label: 'Veckovisa (Auto)', icon: <Calendar size={18} /> },
+                                { key: 'monthly', label: 'Månatliga (Auto)', icon: <Calendar size={18} /> },
+                                { key: 'last', label: 'Senaste (System)', icon: <Database size={18} /> },
+                                { key: 'other', label: 'Övriga', icon: <FileText size={18} /> }
+                            ].map(category => {
+                                const filtered = backups.filter(b => b.type === category.key || (!b.type && category.key === 'other'));
+                                if (filtered.length === 0) return null;
+
+                                return (
+                                    <div key={category.key} className="space-y-3">
+                                        <div className="flex items-center gap-2 pb-2 border-b border-gray-100 dark:border-[#3c4043]">
+                                            <div className="text-gray-600 dark:text-gray-400">
+                                                {category.icon}
+                                            </div>
+                                            <h5 className="font-bold text-sm uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                                                {category.label} ({filtered.length})
+                                            </h5>
+                                        </div>
+                                        <div className="space-y-2">
+                                            {filtered.map((backup) => (
+                                                <div key={backup.id} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-[#282a2c] rounded-xl border border-gray-200 dark:border-[#3c4043] hover:border-blue-400 dark:hover:border-blue-500 transition-colors group">
+                                                    <div className="flex items-center gap-3">
+                                                        <div className="w-10 h-10 bg-white dark:bg-[#1E1F20] rounded-lg flex items-center justify-center border border-gray-200 dark:border-[#3c4043] group-hover:bg-blue-50 dark:group-hover:bg-blue-900/20 transition-colors">
+                                                            <Database size={18} className="text-gray-600 dark:text-gray-400 group-hover:text-blue-600" />
+                                                        </div>
+                                                        <div>
+                                                            <p className="font-medium text-gray-900 dark:text-white">{backup.name}</p>
+                                                            <p className="text-xs text-gray-500 dark:text-gray-400">
+                                                                {formatDate(backup.createdAt)} • {formatSize(backup.size)}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                    <div className="flex items-center gap-2">
+                                                        <button
+                                                            onClick={() => downloadBackup(backup.id)}
+                                                            title="Ladda ner"
+                                                            className="p-2 text-blue-600 hover:bg-blue-100 dark:hover:bg-blue-900/30 rounded-lg transition"
+                                                        >
+                                                            <Download size={18} />
+                                                        </button>
+                                                        <button
+                                                            onClick={() => restoreBackup(backup.id)}
+                                                            title="Återställ"
+                                                            className="p-2 text-green-600 hover:bg-green-100 dark:hover:bg-green-900/30 rounded-lg transition"
+                                                        >
+                                                            <Upload size={18} />
+                                                        </button>
+                                                        <button
+                                                            onClick={() => deleteBackup(backup.id)}
+                                                            title="Radera"
+                                                            className="p-2 text-red-600 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-lg transition"
+                                                        >
+                                                            <Trash2 size={18} />
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            ))}
                                         </div>
                                     </div>
-                                    <div className="flex items-center gap-2">
-                                        <button
-                                            onClick={() => restoreBackup(backup.id)}
-                                            className="px-4 py-2 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition flex items-center gap-2 text-sm"
-                                        >
-                                            <Upload size={16} />
-                                            Återställ
-                                        </button>
-                                        <button
-                                            onClick={() => deleteBackup(backup.id)}
-                                            className="px-4 py-2 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition flex items-center gap-2 text-sm"
-                                        >
-                                            <Trash2 size={16} />
-                                            Radera
-                                        </button>
-                                    </div>
-                                </div>
-                            ))}
+                                );
+                            })}
                         </div>
                     )}
                 </div>

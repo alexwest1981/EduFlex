@@ -24,6 +24,9 @@ public class DailyChallengeService {
     @Autowired
     private UserStreakRepository userStreakRepository;
 
+    @Autowired
+    private UserStreakService userStreakService;
+
     /**
      * Get today's challenges for a user
      */
@@ -142,8 +145,9 @@ public class DailyChallengeService {
      * Get user's login streak
      */
     public Integer getUserLoginStreak(Long userId) {
-        Optional<UserStreak> streak = userStreakRepository.findByUserIdAndStreakType(userId, "LOGIN");
-        return streak.map(UserStreak::getCurrentStreak).orElse(0);
+        return userStreakService.getStreak(userId, "LOGIN")
+                .map(UserStreak::getCurrentStreak)
+                .orElse(0);
     }
 
     /**
@@ -151,38 +155,6 @@ public class DailyChallengeService {
      */
     @Transactional
     public UserStreak updateLoginStreak(Long userId) {
-        Optional<UserStreak> existingStreak = userStreakRepository.findByUserIdAndStreakType(userId, "LOGIN");
-
-        UserStreak streak;
-        if (existingStreak.isPresent()) {
-            streak = existingStreak.get();
-            LocalDate lastActivity = streak.getLastActivityDate();
-            LocalDate today = LocalDate.now();
-
-            if (lastActivity != null) {
-                long daysBetween = java.time.temporal.ChronoUnit.DAYS.between(lastActivity, today);
-
-                if (daysBetween == 1) {
-                    // Consecutive day - increment streak
-                    streak.incrementStreak();
-                } else if (daysBetween > 1) {
-                    // Streak broken - reset
-                    streak.resetStreak();
-                    streak.incrementStreak();
-                }
-                // If daysBetween == 0, already logged in today, do nothing
-            } else {
-                // First time tracking
-                streak.incrementStreak();
-            }
-        } else {
-            // Create new streak
-            streak = new UserStreak();
-            streak.setUserId(userId);
-            streak.setStreakType("LOGIN");
-            streak.incrementStreak();
-        }
-
-        return userStreakRepository.save(streak);
+        return userStreakService.updateLoginStreak(userId);
     }
 }

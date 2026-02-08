@@ -1,28 +1,29 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Users, Settings, Database, Edit3, Server, Globe, MessageSquare, Store } from 'lucide-react';
+import { Users, Settings, Database, Edit3, Server, Globe, MessageSquare, Store, Trophy } from 'lucide-react';
+import { useModules } from '../../../../context/ModuleContext';
 
 const AdminNavbar = () => {
     const { t } = useTranslation();
     const navigate = useNavigate();
     const location = useLocation();
+    const { isModuleActive } = useModules();
 
     // Parse query param or active route
     const searchParams = new URLSearchParams(location.search);
     const currentTab = searchParams.get('tab') || 'administration';
     const isWhitelabel = location.pathname.startsWith('/enterprise/whitelabel');
     const isCommunity = location.pathname === '/admin/community';
+    const isGamification = location.pathname === '/admin/gamification-management';
 
     const tabs = [
         { id: 'administration', label: t('admin_tabs.administration') || 'Administration', icon: Users, path: '/admin?tab=administration' },
-        { id: 'tenants', label: 'Tenants', icon: Server, path: '/admin?tab=tenants' },
         { id: 'system', label: t('admin_tabs.system_settings') || 'Systeminställningar', icon: Settings, path: '/admin?tab=system' },
-        { id: 'skolverket', label: 'Skolverket', icon: Database, path: '/admin?tab=skolverket' },
-        { id: 'integrations', label: 'Integrationer', icon: Globe, path: '/admin?tab=integrations' },
         { id: 'tickets', label: t('admin_tabs.tickets') || 'Ärenden', icon: MessageSquare, path: '/admin?tab=tickets' },
+        { id: 'gamification', label: 'Gamification', icon: Trophy, path: '/admin/gamification-management', visible: isModuleActive('GAMIFICATION') },
         { id: 'community', label: 'Community', icon: Store, path: '/admin/community' }
-    ];
+    ].filter(tab => tab.visible !== false);
 
     const handleNavigation = (tab) => {
         navigate(tab.path);
@@ -41,7 +42,9 @@ const AdminNavbar = () => {
                     isActive = isWhitelabel;
                 } else if (tab.id === 'community') {
                     isActive = isCommunity;
-                } else if (!isWhitelabel && !isCommunity) {
+                } else if (tab.id === 'gamification') {
+                    isActive = isGamification;
+                } else if (!isWhitelabel && !isCommunity && !isGamification) {
                     // Default to administration if no query param
                     isActive = currentTab === tab.id;
                     if (currentTab === 'administration' && !searchParams.get('tab') && tab.id === 'administration') {

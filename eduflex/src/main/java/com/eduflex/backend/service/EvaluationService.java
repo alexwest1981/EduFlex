@@ -57,6 +57,31 @@ public class EvaluationService {
         return templateRepository.findById(id);
     }
 
+    @Transactional
+    public EvaluationTemplate updateTemplate(Long id, EvaluationTemplate updatedTemplate) {
+        EvaluationTemplate existingTemplate = templateRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Template not found"));
+
+        existingTemplate.setName(updatedTemplate.getName());
+        existingTemplate.setDescription(updatedTemplate.getDescription());
+
+        // Handle questions: clear existing and add new ones
+        existingTemplate.getQuestions().clear();
+        if (updatedTemplate.getQuestions() != null) {
+            updatedTemplate.getQuestions().forEach(q -> {
+                // Create clean copy to avoid detached entity issues
+                EvaluationQuestion newQ = new EvaluationQuestion();
+                newQ.setQuestionText(q.getQuestionText());
+                newQ.setQuestionType(q.getQuestionType());
+                newQ.setOrderIndex(q.getOrderIndex());
+                newQ.setTemplate(existingTemplate);
+                existingTemplate.getQuestions().add(newQ);
+            });
+        }
+
+        return templateRepository.save(existingTemplate);
+    }
+
     // --- Evaluation Activation ---
 
     @Transactional

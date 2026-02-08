@@ -153,6 +153,7 @@ services:
     volumes:
       - ./uploads:/app/uploads # Sparar uppladdade filer på din hårddisk
       - ./eduflex.license:/app/eduflex.license
+      - ./backups:/app/backups
     depends_on:
       - db
       - redis

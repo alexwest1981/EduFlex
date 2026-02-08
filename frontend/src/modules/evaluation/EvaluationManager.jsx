@@ -11,6 +11,7 @@ const EvaluationManager = () => {
     const [newTemplate, setNewTemplate] = useState({ name: '', description: '', questions: [] });
     const [selectedCourse, setSelectedCourse] = useState('');
     const [selectedTemplate, setSelectedTemplate] = useState('');
+    const [editingId, setEditingId] = useState(null);
 
     useEffect(() => {
         fetchData();
@@ -32,14 +33,31 @@ const EvaluationManager = () => {
         }
     };
 
-    const handleCreateTemplate = async () => {
+    const handleSaveTemplate = async () => {
         try {
-            await api.post('/evaluations/templates', newTemplate);
+            if (editingId) {
+                await api.put(`/evaluations/templates/${editingId}`, newTemplate);
+            } else {
+                await api.post('/evaluations/templates', newTemplate);
+            }
             setShowCreateTemplate(false);
+            setEditingId(null);
+            setNewTemplate({ name: '', description: '', questions: [] });
             fetchData();
         } catch (err) {
-            alert('Kunde inte skapa mall.');
+            console.error(err);
+            alert('Kunde inte spara mall.');
         }
+    };
+
+    const handleEdit = (template) => {
+        setNewTemplate({
+            name: template.name,
+            description: template.description,
+            questions: template.questions || []
+        });
+        setEditingId(template.id);
+        setShowCreateTemplate(true);
     };
 
     const handleActivate = async () => {
@@ -83,7 +101,11 @@ const EvaluationManager = () => {
                     <p className="text-slate-500 dark:text-slate-400 font-medium ml-1">Hantera mallar och aktivera utvärderingar för dina kurser.</p>
                 </div>
                 <button
-                    onClick={() => setShowCreateTemplate(true)}
+                    onClick={() => {
+                        setNewTemplate({ name: '', description: '', questions: [] });
+                        setEditingId(null);
+                        setShowCreateTemplate(true);
+                    }}
                     className="flex items-center justify-center gap-2 px-6 py-3.5 bg-blue-600 hover:bg-blue-500 text-white rounded-2xl font-bold shadow-xl shadow-blue-600/20 transition-all active:scale-95"
                 >
                     <Plus className="w-5 h-5" /> Skapa ny mall
@@ -173,7 +195,9 @@ const EvaluationManager = () => {
                                         {template.questions?.length || 0} frågor
                                     </div>
                                     <div className="flex gap-2">
-                                        <button className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors text-slate-400 hover:text-blue-500">
+                                        <button
+                                            onClick={() => handleEdit(template)}
+                                            className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors text-slate-400 hover:text-blue-500">
                                             <Settings className="w-4 h-4" />
                                         </button>
                                         {!template.systemTemplate && (
@@ -203,7 +227,7 @@ const EvaluationManager = () => {
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md animate-in fade-in duration-300">
                     <div className="bg-white dark:bg-[#1e1f20] border border-gray-200 dark:border-gray-800 rounded-[2.5rem] w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col shadow-2xl">
                         <div className="p-8 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center bg-slate-50/50 dark:bg-slate-800/10">
-                            <h2 className="text-2xl font-black text-gray-900 dark:text-white tracking-tight">Ny utvärderingsmall</h2>
+                            <h2 className="text-2xl font-black text-gray-900 dark:text-white tracking-tight">{editingId ? 'Redigera utvärderingsmall' : 'Ny utvärderingsmall'}</h2>
                             <button onClick={() => setShowCreateTemplate(false)} className="p-2 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-full transition-colors">
                                 <X className="w-6 h-6 text-slate-500" />
                             </button>
@@ -313,7 +337,7 @@ const EvaluationManager = () => {
                                 Avbryt
                             </button>
                             <button
-                                onClick={handleCreateTemplate}
+                                onClick={handleSaveTemplate}
                                 disabled={!newTemplate.name || newTemplate.questions.length === 0}
                                 className="flex-1 py-4 bg-blue-600 hover:bg-blue-500 disabled:opacity-30 disabled:grayscale text-white rounded-2xl font-bold shadow-xl shadow-blue-600/20 transition-all active:scale-95"
                             >
