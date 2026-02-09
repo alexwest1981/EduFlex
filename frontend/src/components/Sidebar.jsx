@@ -28,8 +28,11 @@ const Sidebar = ({ currentUser, logout, siteName, version }) => {
 
     const getMenuItems = () => {
         const role = currentUser?.role?.name || currentUser?.role;
+        const principalRoles = ['ADMIN', 'ROLE_REKTOR', 'REKTOR', 'PRINCIPAL'];
+        const dashboardPath = principalRoles.includes(role) ? '/principal/dashboard' : '/';
+
         const items = [
-            { path: '/', label: t('sidebar.dashboard'), icon: <LayoutDashboard size={20} /> }
+            { path: dashboardPath, label: t('sidebar.dashboard'), icon: <LayoutDashboard size={20} /> }
         ];
 
         if (role === 'TEACHER' || role === 'ADMIN') {
@@ -55,7 +58,7 @@ const Sidebar = ({ currentUser, logout, siteName, version }) => {
         }
 
         // --- REKTOR / PRINCIPAL NAVIGATION ---
-        if (role === 'ADMIN' || role === 'ROLE_REKTOR' || role === 'REKTOR') {
+        if (principalRoles.includes(role)) {
             items.push({ path: '/principal/dashboard', label: 'Rektorspaket', icon: <ShieldCheck size={20} /> });
         }
         if (role !== 'ADMIN') {

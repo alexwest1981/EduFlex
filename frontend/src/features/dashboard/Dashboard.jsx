@@ -9,6 +9,7 @@ import TeacherDashboard from './TeacherDashboard';
 import StudentDashboard from './StudentDashboard';
 import PrincipalDashboard from './PrincipalDashboard';
 import MentorDashboard from './MentorDashboard';
+import RektorLanding from '../principal/RektorLanding';
 
 // Import Mobile Gateway
 import MobileThemeResolver from '../../components/MobileThemes/MobileThemeResolver';
@@ -55,7 +56,7 @@ const Dashboard = ({ currentUser, myCourses }) => {
             return <AdminDashboard />;
 
         case 'PRINCIPAL':
-            return <PrincipalDashboard />;
+            return <RektorLanding />;
 
         case 'MENTOR':
             return <MentorDashboard />;
