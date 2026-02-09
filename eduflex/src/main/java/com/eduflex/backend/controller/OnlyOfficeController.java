@@ -208,9 +208,8 @@ public class OnlyOfficeController {
 
         config.put("editorConfig", editorConfig);
 
-        // Use the client's base URL for the document server so the browser loads
-        // resources correctly
-        config.put("documentServerUrl", clientBaseUrl);
+        // Usage of main domain for OnlyOffice (routed via Cloudflare Tunnel paths)
+        config.put("documentServerUrl", "https://www.eduflexlms.se");
 
         // --- SIGN CONFIG WITH JWT ---
         String token = jwtUtils.generateOnlyOfficeToken(config);
@@ -231,7 +230,10 @@ public class OnlyOfficeController {
     public ResponseEntity<Resource> download(@PathVariable String type, @PathVariable Long id,
             HttpServletRequest request) {
         // Force log to stdout to ensure visibility in docker logs
-        System.out.println("🧾 ONLYOFFICE DOWNLOAD " + type + "/" + id);
+        System.out.println("🧾 ONLYOFFICE DOWNLOAD REQUEST received for " + type + "/" + id);
+        System.out.println("   -> URL: " + request.getRequestURL());
+        System.out.println("   -> Local Addr: " + request.getLocalAddr());
+        System.out.println("   -> Remote Addr: " + request.getRemoteAddr());
 
         // Log all headers to debug 401 issues
         java.util.Enumeration<String> headerNames = request.getHeaderNames();

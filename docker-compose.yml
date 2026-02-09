@@ -280,9 +280,12 @@ services:
       - AMQP_URI=amqp://guest:guest@localhost
       - REDIS_SERVER_HOST=localhost
       - REDIS_SERVER_PORT=6379
+      # Enable debug logging
+      - DS_LOG_LEVEL=DEBUG
     volumes:
       - onlyoffice_data:/var/www/onlyoffice/Data
       - onlyoffice_logs:/var/log/onlyoffice
+      - ./onlyoffice-config:/etc/onlyoffice/documentserver-example
     ports:
       - "8081:80"
       - "8443:443"

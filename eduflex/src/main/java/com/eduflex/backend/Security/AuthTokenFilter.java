@@ -42,15 +42,23 @@ public class AuthTokenFilter extends OncePerRequestFilter {
         // ALSO skip for LRS endpoints because they use internal tokens that fail strict
         // OAuth2 validation (401)
         String path = request.getRequestURI();
-        if (path.startsWith("/api/onlyoffice/") || path.startsWith("/api/lrs/")) {
-            // We must strip the auth header for LRS to prevent
-            // BearerTokenAuthenticationFilter from blocking it
-            if (path.startsWith("/api/lrs/")) {
+        if (path.startsWith("/api/onlyoffice/") || path.startsWith("/api/lrs/") ||
+                path.startsWith("/cache/") || path.startsWith("/coauthoring/") ||
+                path.startsWith("/spellcheck/") || path.startsWith("/ConvertService.ashx") ||
+                path.startsWith("/CommandService.ashx")) {
+            // We must strip the auth header for LRS and OnlyOffice to prevent
+            // BearerTokenAuthenticationFilter from blocking it with 401
+            // if the token is invalid/internal/expired
+            try {
                 HttpServletRequest wrapper = wrapRequestToHideAuth(request);
                 filterChain.doFilter(wrapper, response);
-                return;
+            } catch (Exception e) {
+                logger.error("Error filtering LRS/OnlyOffice request: {}", e.getMessage(), e);
+                // Attempt to continue with original request if wrapper failed, though risky
+                // filterChain.doFilter(request, response);
+                // Better to throw 500 or just return, as response might be committed
+                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Auth Filter Error");
             }
-            filterChain.doFilter(request, response);
             return;
         }
 
@@ -149,9 +157,18 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
             @Override
             public Enumeration<String> getHeaderNames() {
-                List<String> names = new ArrayList<>(Collections.list(super.getHeaderNames()));
-                names.removeIf(n -> "Authorization".equalsIgnoreCase(n));
-                return Collections.enumeration(names);
+                try {
+                    Enumeration<String> headerNames = super.getHeaderNames();
+                    if (headerNames == null) {
+                        return Collections.emptyEnumeration();
+                    }
+                    List<String> names = new ArrayList<>(Collections.list(headerNames));
+                    names.removeIf(n -> "Authorization".equalsIgnoreCase(n));
+                    return Collections.enumeration(names);
+                } catch (Exception e) {
+                    logger.error("Error wrapping request (getHeaderNames): {}", e.getMessage());
+                    return Collections.emptyEnumeration();
+                }
             }
 
             @Override

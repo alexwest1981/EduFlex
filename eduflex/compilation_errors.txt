@@ -1,0 +1,24 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] ------------------------< com.eduflex:eduflex >-------------------------
+[INFO] Building eduflex 2.0.1-Beta
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ eduflex ---
+[INFO] Copying 1 resource from src\main\resources to target\classes
+[INFO] Copying 24207 resources from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.13.0:compile (default-compile) @ eduflex ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 435 source files with javac [debug parameters release 21] to target\classes
+[INFO] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/RateLimitingService.java: Some input files use or override a deprecated API.
+[INFO] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/RateLimitingService.java: Recompile with -Xlint:deprecation for details.
+[INFO] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/ai/GeminiService.java: Some input files use unchecked or unsafe operations.
+[INFO] /E:/Projekt/EduFlex/eduflex/src/main/java/com/eduflex/backend/service/ai/GeminiService.java: Recompile with -Xlint:unchecked for details.
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  22.316 s
+[INFO] Finished at: 2026-02-09T19:14:40+01:00
+[INFO] ------------------------------------------------------------------------

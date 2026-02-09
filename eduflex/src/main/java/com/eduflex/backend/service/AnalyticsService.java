@@ -70,11 +70,8 @@ public class AnalyticsService {
                 long userCount = userRepository.count();
                 long courseCount = courseRepository.count();
 
-                // Active sessions (Login within last 30 min)
-                long activeSessions = userRepository.findAll().stream()
-                                .filter(u -> u.getLastLogin() != null
-                                                && u.getLastLogin().isAfter(LocalDateTime.now().minusMinutes(30)))
-                                .count();
+                // Active sessions (Login within last 30 min) - Optimized
+                long activeSessions = userRepository.countByLastLoginAfter(LocalDateTime.now().minusMinutes(30));
 
                 // Financials (Still projected based on users, as we have no payment gateway)
                 double mrr = userCount * 99.0;
@@ -581,41 +578,31 @@ public class AnalyticsService {
                         map.put("name", course.getName());
                         map.put("students", course.getStudents().size());
 
-                        // Avg Grade Calculation
-                        List<Submission> subs = submissionRepository.findAll().stream()
-                                        .filter(s -> s.getAssignment().getCourse().getId().equals(course.getId()))
+                        // Avg Grade Calculation (Optimized & Fixed NPE)
+                        List<Submission> allSubs = submissionRepository.findByAssignmentCourseId(course.getId());
+
+                        List<Submission> gradedSubs = allSubs.stream()
                                         .filter(s -> s.getGrade() != null)
                                         .collect(Collectors.toList());
 
-                        double avgGrade = subs.stream()
+                        double avgGrade = gradedSubs.stream()
                                         .mapToDouble(s -> gradeToNumeric(s.getGrade()))
                                         .filter(g -> g >= 0)
                                         .average().orElse(0);
 
                         map.put("avgGrade", avgGrade);
 
-                        // Completion Rate
-                        long completedStudents = course.getStudents().stream()
-                                        .filter(student -> {
-                                                // Simple check: Har studenten gjort alla uppgifter?
-                                                long totalAssignments = assignmentRepository.findAll().stream()
-                                                                .filter(a -> a.getCourse().getId()
-                                                                                .equals(course.getId()))
-                                                                .count();
-                                                if (totalAssignments == 0)
-                                                        return false;
+                        // Completion Rate (Granular)
+                        long totalAssignments = assignmentRepository.countByCourseId(course.getId());
+                        double avgCompletion = 0;
 
-                                                long mySubs = subs.stream()
-                                                                .filter(s -> s.getStudent().getId()
-                                                                                .equals(student.getId()))
-                                                                .count();
-                                                return mySubs >= totalAssignments;
-                                        }).count();
+                        if (totalAssignments > 0 && !course.getStudents().isEmpty()) {
+                                long totalPossibleSubmissions = totalAssignments * course.getStudents().size();
+                                long actualSubmissions = allSubs.size();
+                                avgCompletion = ((double) actualSubmissions / totalPossibleSubmissions) * 100;
+                        }
 
-                        double completionRate = course.getStudents().isEmpty() ? 0
-                                        : ((double) completedStudents / course.getStudents().size()) * 100;
-
-                        map.put("completionRate", (int) completionRate);
+                        map.put("completionRate", (int) Math.min(100, avgCompletion));
 
                         return map;
                 }).collect(Collectors.toList());

@@ -20,4 +20,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     java.util.List<User> findByRole_Name(String roleName);
 
     long countByRole(com.eduflex.backend.model.Role role);
+
+    long countByLastLoginAfter(java.time.LocalDateTime cutoff);
 }

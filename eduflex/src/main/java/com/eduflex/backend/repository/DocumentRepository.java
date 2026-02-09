@@ -3,6 +3,7 @@ package com.eduflex.backend.repository;
 import com.eduflex.backend.model.Document;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
+import java.util.Optional;
 
 public interface DocumentRepository extends JpaRepository<Document, Long> {
     List<Document> findByOwnerId(Long userId);
@@ -25,4 +26,9 @@ public interface DocumentRepository extends JpaRepository<Document, Long> {
     long countTotalDocuments();
 
     List<Document> findByOwnerIdAndOfficialTrue(Long userId);
+
+    List<Document> findByIsGlobalTrue();
+    
+    // Find document by verification code for QR code verification
+    Optional<Document> findByVerificationCode(String verificationCode);
 }

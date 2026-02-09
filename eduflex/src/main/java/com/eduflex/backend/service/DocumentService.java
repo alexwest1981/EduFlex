@@ -37,9 +37,13 @@ public class DocumentService {
         this.folderRepository = folderRepository;
     }
 
-    public Document uploadFile(Long userId, MultipartFile file, Long folderId, String category, boolean official)
+    public Document uploadFile(Long userId, MultipartFile file, Long folderId, String category, boolean official, boolean isGlobal)
             throws IOException {
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (isGlobal && (user.getRole().getName().equals("STUDENT"))) {
+             throw new RuntimeException("Students cannot upload global documents");
+        }
 
         // Check Quota
         long currentUsed = documentRepository.getTotalSizeByOwnerId(userId);
@@ -63,6 +67,7 @@ public class DocumentService {
         doc.setFolder(folder);
         doc.setCategory(category != null ? category : "GENERAL");
         doc.setOfficial(official);
+        doc.setGlobal(isGlobal);
 
         doc = documentRepository.save(doc);
 
@@ -148,5 +153,9 @@ public class DocumentService {
 
     public List<Document> getMerits(Long userId) {
         return documentRepository.findByOwnerIdAndOfficialTrue(userId);
+    }
+
+    public List<Document> getGlobalDocuments() {
+        return documentRepository.findByIsGlobalTrue();
     }
 }

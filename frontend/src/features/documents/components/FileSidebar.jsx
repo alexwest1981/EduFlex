@@ -7,7 +7,10 @@ import {
     Star,
     Plus,
     FolderPlus,
-    ArrowLeft
+    ArrowLeft,
+    GraduationCap,
+    Award,
+    BookOpen
 } from 'lucide-react';
 
 const FileSidebar = ({
@@ -33,10 +36,14 @@ const FileSidebar = ({
     const menuItems = [
         { id: 'my-drive', label: 'Min Drive', icon: HardDrive },
         { id: 'shared', label: 'Delat med mig', icon: Users },
+        { id: 'grades', label: 'Betyg', icon: GraduationCap },
+        { id: 'certificates', label: 'Intyg', icon: Award },
+        { id: 'manuals', label: 'Dokumentbank', icon: BookOpen },
         { id: 'recent', label: 'Senaste', icon: Clock },
         { id: 'starred', label: 'Stjärnmärkta', icon: Star },
         { id: 'trash', label: 'Papperskorg', icon: Trash2 },
     ];
+
 
     return (
         <div className="w-64 flex-shrink-0 bg-white dark:bg-slate-900 p-4 h-full flex flex-col">

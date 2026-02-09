@@ -347,6 +347,8 @@ export const api = {
         getUsage: (userId) => api.get(`/documents/usage/${userId}`),
         getAdminStats: () => api.get('/admin/storage-stats'),
         getMerits: (userId) => api.get(`/documents/merits/${userId}`),
+        getSystemDocs: () => api.get('/documents/system'),
+        getConsolidatedGradesUrl: (studentId) => `${API_BASE}/documents/grades/consolidated/${studentId}`,
     },
 
     folders: {

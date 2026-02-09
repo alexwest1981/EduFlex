@@ -133,8 +133,13 @@ public class SecurityConfig {
                                                                 "/ws-social/**",
                                                                 "/actuator/**", "/lti/**", "/api/lti/**", "/error",
                                                                 "/web-apps/**", "/sdkjs/**", "/sdkjs-plugins/**",
-                                                                "/fonts/**", "/cache/**", // Static OO
-                                                                                          // assets
+                                                                "/fonts/**", "/cache/**", "/coauthoring/**",
+                                                                "/spellcheck/**",
+                                                                "/ConvertService.ashx", "/CommandService.ashx", // Static
+                                                                                                                // and
+                                                                                                                // Dynamic
+                                                                                                                // OO
+                                                                                                                // assets
                                                                 "/src/**", "/assets/**", // Allow OnlyOffice and
                                                                                          // Frontend assets
                                                                 "/@vite/**", "/@fs/**", "/@id/**", "/node_modules/**", // Vite

@@ -2,7 +2,8 @@ package com.eduflex.backend.service;
 
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
-
+import org.springframework.context.ApplicationEventPublisher;
+import com.eduflex.backend.event.CourseResultGradedEvent;
 import com.eduflex.backend.dto.CourseDTO;
 import com.eduflex.backend.dto.CreateCourseDTO;
 import com.eduflex.backend.dto.UserSummaryDTO;
@@ -49,6 +50,7 @@ public class CourseService {
 
     private final StorageService storageService;
     private final LicenseService licenseService;
+    private final ApplicationEventPublisher eventPublisher;
 
     public CourseService(CourseRepository courseRepository,
             UserRepository userRepository,
@@ -62,7 +64,8 @@ public class CourseService {
             StorageService storageService,
             LicenseService licenseService,
             com.eduflex.backend.repository.UserLessonProgressRepository userLessonProgressRepository,
-            com.eduflex.backend.repository.StudentActivityLogRepository studentActivityLogRepository) {
+            com.eduflex.backend.repository.StudentActivityLogRepository studentActivityLogRepository,
+            ApplicationEventPublisher eventPublisher) {
         this.courseRepository = courseRepository;
         this.userRepository = userRepository;
         this.materialRepository = materialRepository;
@@ -76,6 +79,7 @@ public class CourseService {
         this.licenseService = licenseService;
         this.userLessonProgressRepository = userLessonProgressRepository;
         this.studentActivityLogRepository = studentActivityLogRepository;
+        this.eventPublisher = eventPublisher;
     }
 
     @EventListener(ApplicationReadyEvent.class)
@@ -490,7 +494,11 @@ public class CourseService {
         try {
             result.setStatus(CourseResult.Status.valueOf(statusStr.toUpperCase()));
             result.setGradedAt(java.time.LocalDateTime.now());
-            resultRepository.save(result);
+            CourseResult saved = resultRepository.save(result);
+            
+            // Publish event for automatic document generation
+            eventPublisher.publishEvent(new CourseResultGradedEvent(saved));
+            
         } catch (IllegalArgumentException e) {
             throw new RuntimeException("Ogiltig status. Använd 'PASSED', 'FAILED' eller 'PENDING'.");
         }

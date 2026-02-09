@@ -13,58 +13,74 @@ const OnlyOfficeEditor = ({ entityType = 'DOCUMENT', entityId, userId, onClose }
     const placeholderRef = useRef(null);
     const editorId = useRef(`oo-editor-${Date.now()}`);
 
-    // 1. Ladda config från backend
+    // 1. Load config AND script sequentially
     useEffect(() => {
-        const fetchConfig = async () => {
+        let isMounted = true;
+
+        const initOnlyOffice = async () => {
             try {
+                // Step 1: Fetch Config
                 const tenantId = getTenantFromUrl();
                 const tenantParam = tenantId ? `&tenantId=${tenantId}` : '';
-                const data = await api.get(`/onlyoffice/config/${entityType}/${entityId}?userId=${userId}${tenantParam}`);
+                const configData = await api.get(`/onlyoffice/config/${entityType}/${entityId}?userId=${userId}${tenantParam}`);
 
-                setConfig(data);
+                if (!isMounted) return;
+                setConfig(configData);
+                console.log("✅ Config loaded:", configData);
+
+                // Step 2: Load Script from the correct URL
+                if (window.DocsAPI) {
+                    setScriptLoaded(true);
+                    return;
+                }
+
+                const serverUrl = configData.documentServerUrl || '';
+                // Ensure no trailing slash
+                const baseUrl = serverUrl.endsWith('/') ? serverUrl.slice(0, -1) : serverUrl;
+                const scriptUrl = `${baseUrl}/web-apps/apps/api/documents/api.js`;
+
+                console.log("📥 Loading OnlyOffice script from:", scriptUrl);
+
+                const script = document.createElement("script");
+                script.src = scriptUrl;
+                script.async = true;
+                script.onload = () => {
+                    console.log("✅ OnlyOffice script loaded");
+                    if (isMounted) setScriptLoaded(true);
+                };
+                script.onerror = () => {
+                    console.error("❌ Failed to load OnlyOffice script from", scriptUrl);
+                    if (isMounted) {
+                        setError("Kunde inte ladda OnlyOffice. Kontrollera att servern är igång.");
+                        setIsLoading(false);
+                    }
+                };
+                document.body.appendChild(script);
+
             } catch (err) {
-                console.error("Failed to load config", err);
-                setError(err.message || "Kunde inte ladda dokumentkonfiguration");
-                setIsLoading(false);
+                console.error("Failed to initialize OnlyOffice", err);
+                if (isMounted) {
+                    setError(err.message || "Kunde inte initiera OnlyOffice");
+                    setIsLoading(false);
+                }
             }
         };
-        fetchConfig();
+
+        initOnlyOffice();
+
+        return () => { isMounted = false; };
     }, [entityType, entityId, userId]);
 
-    // 2. Ladda OnlyOffice script
-    useEffect(() => {
-        if (window.DocsAPI) {
-            setScriptLoaded(true);
-            return;
-        }
-
-        const script = document.createElement("script");
-        script.src = '/web-apps/apps/api/documents/api.js';
-        script.async = true;
-        script.onload = () => {
-            console.log("✅ OnlyOffice script loaded");
-            setScriptLoaded(true);
-        };
-        script.onerror = () => {
-            console.error("❌ Failed to load OnlyOffice script");
-            setError("Kunde inte ladda OnlyOffice. Kontrollera att servern är igång.");
-            setIsLoading(false);
-        };
-        document.body.appendChild(script);
-    }, []);
-
-    // 3. Initiera editor när både script och config är klara
+    // 2. Initialize Editor when ready
     useEffect(() => {
         if (!scriptLoaded || !config || !window.DocsAPI || !placeholderRef.current) return;
-        if (docEditorRef.current) return; // Redan initierad
+        if (docEditorRef.current) return;
 
         console.log("🚀 Creating OnlyOffice editor...");
-        console.log("🔍 DocsAPI object:", window.DocsAPI);
-        console.log("🔍 DocsAPI.DocEditor:", typeof window.DocsAPI.DocEditor);
 
         if (typeof window.DocsAPI.DocEditor !== 'function') {
             console.error("❌ DocsAPI.DocEditor is not a function!");
-            setError("OnlyOffice API är inte korrekt laddad. DocsAPI.DocEditor saknas.");
+            setError("OnlyOffice API loading failed.");
             setIsLoading(false);
             return;
         }

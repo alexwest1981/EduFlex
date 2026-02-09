@@ -12,7 +12,8 @@ import {
     Folder as FolderIcon,
     HardDrive,
     Award,
-    UploadCloud
+    UploadCloud,
+    Download
 } from 'lucide-react';
 import { api } from '../../services/api';
 import { useAppContext } from '../../context/AppContext';
@@ -43,6 +44,7 @@ const DocumentManager = () => {
     const [editingDoc, setEditingDoc] = useState(null);
     const [isDragging, setIsDragging] = useState(false);
     const [storageUsage, setStorageUsage] = useState(null);
+    const [previewImage, setPreviewImage] = useState(null);
 
     useEffect(() => {
         if (currentUser) {
@@ -64,6 +66,30 @@ const DocumentManager = () => {
             } else if (currentView === 'shared') {
                 const docs = await api.documents.getUserDocs(currentUser.id);
                 setDocuments(docs.filter(d => d.owner?.id !== currentUser.id));
+                setFolders([]);
+            } else if (currentView === 'grades') {
+                // Fetch grades - transform to document-like structure for display
+                const gradesData = await api.courses.getMyResults(currentUser.id);
+                const gradeDocs = (gradesData || []).map((grade, idx) => ({
+                    id: `grade-${idx}`,
+                    fileName: `${grade.courseName} - Betyg ${grade.grade}`,
+                    mimeType: 'grade/record',
+                    size: 0,
+                    uploadedAt: grade.date,
+                    isGrade: true,
+                    gradeData: grade
+                }));
+                setDocuments(gradeDocs);
+                setFolders([]);
+            } else if (currentView === 'certificates') {
+                // Fetch certificates/merits
+                const certs = await api.documents.getMerits(currentUser.id);
+                setDocuments(certs || []);
+                setFolders([]);
+            } else if (currentView === 'manuals') {
+                // Fetch system/global documents
+                const manuals = await api.documents.getSystemDocs();
+                setDocuments(manuals || []);
                 setFolders([]);
             }
         } catch (e) {
@@ -140,7 +166,13 @@ const DocumentManager = () => {
         switch (actionId) {
             case 'open':
                 if (item.type === 'folder') handleNavigate(item);
-                else window.open(item.fileUrl, '_blank');
+                else {
+                    if (item.fileType?.startsWith('image/')) {
+                        setPreviewImage(item.fileUrl);
+                    } else {
+                        window.open(item.fileUrl, '_blank');
+                    }
+                }
                 break;
             case 'share':
                 setShareModalItem(item);
@@ -169,11 +201,43 @@ const DocumentManager = () => {
                     link.click();
                 }
                 break;
+                break;
             case 'edit':
                 setEditingDoc(item);
                 setShowEditor(true);
                 break;
         }
+    };
+
+    const handleDownloadConsolidatedGrades = () => {
+        const url = api.documents.getConsolidatedGradesUrl(currentUser.id);
+        const token = localStorage.getItem('token');
+
+        // Since we need the token, we can use a small hack or an AJAX blob download
+        // Simple hack: window.open with token as query param (if backend supports it)
+        // Better: create a temporary link after fetching with auth headers
+
+        fetch(url, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'X-Tenant-ID': localStorage.getItem('tenant_id') || ''
+            }
+        })
+            .then(res => res.blob())
+            .then(blob => {
+                const blobUrl = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = blobUrl;
+                a.download = `Samlade_Betyg_${currentUser.firstName}_${currentUser.lastName}.pdf`;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(blobUrl);
+                document.body.removeChild(a);
+            })
+            .catch(err => {
+                console.error("Download failed", err);
+                alert("Kunde inte ladda ner betygsutdraget.");
+            });
     };
 
     const getFileIcon = (mimeType) => {
@@ -225,8 +289,20 @@ const DocumentManager = () => {
                         <h1 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">
                             {currentView === 'shared' ? 'Delat med mig' :
                                 currentView === 'trash' ? 'Papperskorg' :
-                                    currentFolder ? currentFolder.name : 'Min Drive'}
+                                    currentView === 'grades' ? 'Mina Betyg' :
+                                        currentView === 'certificates' ? 'Mina Intyg' :
+                                            currentView === 'manuals' ? 'Dokumentbank' :
+                                                currentFolder ? currentFolder.name : 'Min Drive'}
                         </h1>
+                        {currentView === 'grades' && (
+                            <button
+                                onClick={handleDownloadConsolidatedGrades}
+                                className="flex items-center gap-2 mt-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-black rounded-xl transition-all shadow-lg shadow-blue-500/20 active:scale-95"
+                            >
+                                <Download size={14} />
+                                LADDA NER SAMLAT BETYG (PDF)
+                            </button>
+                        )}
                     </div>
 
                     <div className="flex items-center gap-6 w-full md:w-auto">
@@ -293,7 +369,15 @@ const DocumentManager = () => {
                                     >
                                         <div className="aspect-square bg-slate-50 dark:bg-slate-900/50 rounded-xl mb-4 flex items-center justify-center overflow-hidden">
                                             {doc.fileType?.startsWith('image/') ? (
-                                                <img src={doc.fileUrl} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt={doc.fileName} />
+                                                <img
+                                                    src={doc.fileUrl}
+                                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                                    alt={doc.fileName}
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        setPreviewImage(doc.fileUrl);
+                                                    }}
+                                                />
                                             ) : (
                                                 <div className="group-hover:scale-105 transition-transform">{getFileIcon(doc.fileType)}</div>
                                             )}
@@ -349,6 +433,26 @@ const DocumentManager = () => {
                             }}
                         />
                     </ErrorBoundary>
+                </div>
+            )}
+
+            {previewImage && (
+                <div
+                    className="fixed inset-0 z-[10002] bg-black/90 flex items-center justify-center p-4 animate-in fade-in duration-200 backdrop-blur-sm"
+                    onClick={() => setPreviewImage(null)}
+                >
+                    <button
+                        className="absolute top-4 right-4 p-2 bg-white/10 hover:bg-white/20 rounded-full text-white transition-colors"
+                        onClick={() => setPreviewImage(null)}
+                    >
+                        <X size={24} />
+                    </button>
+                    <img
+                        src={previewImage}
+                        alt="Preview"
+                        className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl animate-in zoom-in-95 duration-200"
+                        onClick={(e) => e.stopPropagation()}
+                    />
                 </div>
             )}
         </div>

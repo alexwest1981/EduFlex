@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { LayoutDashboard, BookOpen, FolderOpen, Users, UserCircle, LogOut, ShieldCheck, Calendar, MessageSquare, Settings2, FileQuestion, Palette, Store, Sparkles, TrendingUp, Award } from 'lucide-react';
+import { LayoutDashboard, BookOpen, FolderOpen, Users, UserCircle, LogOut, ShieldCheck, Calendar, MessageSquare, Settings2, FileQuestion, Palette, Store, Sparkles, TrendingUp, Award, GraduationCap } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
@@ -58,8 +58,8 @@ const Sidebar = ({ currentUser, logout, siteName, version }) => {
         }
         items.push({ path: '/ebooks', label: t('sidebar.ebooks') || 'E-books', icon: <BookOpen size={20} /> });
         items.push({ path: '/calendar', label: t('sidebar.calendar'), icon: <Calendar size={20} /> });
-        items.push({ path: '/merits', label: 'Mina Meriter', icon: <Award size={20} /> });
         items.push({ path: '/support', label: t('sidebar.support'), icon: <FileQuestion size={20} /> });
+
 
         console.log('Sidebar Role:', role);
         console.log('Sidebar Items:', items);

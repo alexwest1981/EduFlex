@@ -13,4 +13,6 @@ public interface AssignmentRepository extends JpaRepository<Assignment, Long> {
 
     // För Resursbank
     List<Assignment> findByAuthorId(Long authorId);
+
+    long countByCourseId(Long courseId);
 }
