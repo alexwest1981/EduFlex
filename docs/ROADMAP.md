@@ -64,7 +64,7 @@
 | **Unified Storage** | MinIO-integration för alla tillgångar (Löste split-brain bugg). | ✅ **Klar** |
 | **CI/CD Pipeline** | Fullt automatiserade tester och deployment. | 📅 **Planerad** |
 | **Kubernetes Migration** | Helm-charts för skalbarhet. | 📅 **Planerad** |
-| **Rektorspaket (Phase 1-5)** | Komplett skolledningslager: Organisationshierarki, Dashboard för nyckeltal, Incidenthantering och Masskommunikation. | 📅 **Planerad** |
+| **Rektorspaket (Phase 1-5)** | Komplett skolledningslager: Organisationshierarki, Dashboard för nyckeltal, Incidenthantering och Masskommunikation. | ✅ **Klar (Backend)** |
 
 ---
 
