@@ -138,9 +138,9 @@ const ScormPlayer = ({ packageId, onClose }) => {
         // Aggressive Attachment with Polling
         const attach = () => {
             const targets = [window];
-            try { if (window.parent && window.parent !== window) targets.push(window.parent); } catch (e) { }
-            try { if (window.top && window.top !== window) targets.push(window.top); } catch (e) { }
-            try { if (window.opener) targets.push(window.opener); } catch (e) { }
+            try { if (window.parent && window.parent !== window) targets.push(window.parent); } catch (e) { /* ignore */ }
+            try { if (window.top && window.top !== window) targets.push(window.top); } catch (e) { /* ignore */ }
+            try { if (window.opener) targets.push(window.opener); } catch (e) { /* ignore */ }
 
             targets.forEach(t => {
                 try {
@@ -161,12 +161,12 @@ const ScormPlayer = ({ packageId, onClose }) => {
                 try {
                     if (h.API === api12) delete h.API;
                     if (h.API_1484_11 === api2004) delete h.API_1484_11;
-                } catch (e) { }
+                } catch (e) { /* ignore */ }
             };
             clear(window);
-            try { if (window.parent) clear(window.parent); } catch (e) { }
-            try { if (window.top) clear(window.top); } catch (e) { }
-            try { if (window.opener) clear(window.opener); } catch (e) { }
+            try { if (window.parent) clear(window.parent); } catch (e) { /* ignore */ }
+            try { if (window.top) clear(window.top); } catch (e) { /* ignore */ }
+            try { if (window.opener) clear(window.opener); } catch (e) { /* ignore */ }
         };
     }, [currentUser, addLog]);
 

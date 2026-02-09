@@ -251,7 +251,7 @@ const InvoiceManagement = () => {
                                                 </button>
                                             ) : (
                                                 <button
-                                                    onClick={() => handleGeneratePDF(invoice.id)}
+                                                    onClick={() => handleGeneratePdf(invoice.id)}
                                                     className="p-2 text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg transition-colors"
                                                     title="Generate PDF"
                                                 >

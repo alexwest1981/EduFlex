@@ -60,12 +60,12 @@ const MobileDashboardView = ({ currentUser, setView, themeMode = 'dark' }) => {
                     const subs = await api.assignments.getSubmissions(a.id);
                     ungraded.push(...subs.filter(s => !s.grade));
                 }
-            } catch (e) { }
+            } catch (e) { /* ignore */ }
         }
 
         // Applications
         let apps = [];
-        try { apps = await api.courses.getApplications(currentUser.id); } catch (e) { }
+        try { apps = await api.courses.getApplications(currentUser.id); } catch (e) { /* ignore */ }
 
         setData({
             type: 'TEACHER',
@@ -85,7 +85,7 @@ const MobileDashboardView = ({ currentUser, setView, themeMode = 'dark' }) => {
                 try {
                     const assigns = await api.assignments.getByCourse(c.id);
                     assignments.push(...assigns.map(a => ({ ...a, courseName: c.name })));
-                } catch (e) { }
+                } catch (e) { /* ignore */ }
             }
         }
 

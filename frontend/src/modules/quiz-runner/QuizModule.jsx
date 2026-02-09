@@ -66,7 +66,7 @@ const QuizModule = ({ courseId, currentUser, isTeacher, mode = 'COURSE' }) => {
 
     useEffect(() => {
         loadQuizzes();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+         
     }, [courseId, mode]);
 
     const loadQuizzes = async () => {

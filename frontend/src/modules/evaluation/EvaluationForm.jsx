@@ -4,6 +4,7 @@ import { api } from '../../services/api';
 import { Star, Send, ChevronRight, ChevronLeft, CheckCircle2, Info } from 'lucide-react';
 
 const EvaluationForm = ({ instanceId, onComplete }) => {
+    const navigate = useNavigate();
     const [instance, setInstance] = useState(null);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [answers, setAnswers] = useState({});
@@ -131,7 +132,7 @@ const EvaluationForm = ({ instanceId, onComplete }) => {
                         ))}
                     </div>
                 );
-            case 'EMOJI':
+            case 'EMOJI': {
                 const emojis = [
                     { val: '1', label: '😞', text: 'Inte alls' },
                     { val: '2', label: '😐', text: 'Sådär' },
@@ -155,6 +156,7 @@ const EvaluationForm = ({ instanceId, onComplete }) => {
                         ))}
                     </div>
                 );
+            }
             case 'TEXT':
                 return (
                     <textarea

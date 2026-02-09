@@ -4,7 +4,7 @@ import { Link, useLocation } from 'react-router-dom';
 import SockJS from 'sockjs-client';
 import Stomp from 'stompjs';
 import { useTranslation } from 'react-i18next';
-import { api } from '../../services/api';
+import { api, API_BASE } from '../../services/api';
 import { useAppContext } from '../../context/AppContext';
 
 const notifySound = new Audio('https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3');
@@ -75,7 +75,7 @@ const ChatOverlay = () => {
         if (!isChatOpen || (currentPartner && currentPartner.id !== newMsg.senderId)) {
             setUnreadCount(prev => prev + 1);
             setAnimateBadge(true);
-            try { notifySound.play().catch(() => { }); } catch (e) { }
+            try { notifySound.play().catch(() => { /* ignore */ }); } catch (e) { /* ignore */ }
         }
     };
 
@@ -223,7 +223,7 @@ const ChatOverlay = () => {
         try {
             const data = await api.documents.upload(currentUser.id, formData);
             if (data && data.fileUrl) sendMessage(data.fileUrl, 'IMAGE');
-        } catch (err) { }
+        } catch (err) { /* ignore */ }
     };
 
 

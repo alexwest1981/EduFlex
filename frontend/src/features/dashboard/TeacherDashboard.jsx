@@ -146,7 +146,7 @@ const TeacherDashboard = ({ currentUser }) => {
                             }
                         }
                     }
-                } catch (e) { }
+                } catch (e) { /* ignore */ }
             }));
             setUngradedSubmissions(ungraded);
 

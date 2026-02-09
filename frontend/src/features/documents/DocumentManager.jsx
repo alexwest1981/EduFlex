@@ -153,13 +153,14 @@ const DocumentManager = () => {
                     loadStorageUsage();
                 }
                 break;
-            case 'rename':
+            case 'rename': {
                 const newName = prompt("Nytt namn:", item.name || item.fileName);
                 if (newName) {
                     if (item.type === 'folder') await api.folders.rename(item.id, newName);
                     loadContent();
                 }
                 break;
+            }
             case 'download':
                 if (item.type !== 'folder') {
                     const link = document.createElement('a');

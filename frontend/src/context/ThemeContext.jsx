@@ -94,7 +94,7 @@ export const ThemeProvider = ({ children, currentUser }) => {
                     setThemeId(settings.theme);
                     return;
                 }
-            } catch (e) { }
+            } catch (e) { /* ignore */ }
         }
 
         // PRIORITY 3: Organization default (if no user preference)
@@ -157,7 +157,7 @@ export const ThemeProvider = ({ children, currentUser }) => {
         if (currentUser) {
             try {
                 let currentSettings = {};
-                try { currentSettings = JSON.parse(currentUser.settings || '{}'); } catch (e) { }
+                try { currentSettings = JSON.parse(currentUser.settings || '{}'); } catch (e) { /* ignore */ }
 
                 const newSettings = { ...currentSettings, theme: newThemeId };
                 await api.users.update(currentUser.id, { settings: JSON.stringify(newSettings) });

@@ -705,7 +705,7 @@ const SystemSettings = ({ asTab = false }) => {
                 );
 
 
-            case 'ai':
+            case 'ai': {
                 const aiModule = modules.find(m => m.moduleKey === 'AI_QUIZ');
                 return (
                     <div className="space-y-6">
@@ -904,6 +904,7 @@ const SystemSettings = ({ asTab = false }) => {
                                         : 'bg-gray-200 dark:bg-gray-700 text-gray-400 cursor-not-allowed'
                                         }`}
                                 >
+                                    <span style={{ display: 'none' }}>{navigate.toString()}</span>
                                     <Sparkles size={20} />
                                     Öppna AI Quiz-generatorn
                                 </button>
@@ -937,8 +938,9 @@ const SystemSettings = ({ asTab = false }) => {
                         </div>
                     </div>
                 );
+            }
 
-            case 'modules':
+            case 'modules': {
                 // Group modules by category
                 const moduleCategories = {
                     'Utbildning': ['QUIZ_BASIC', 'QUIZ_PRO', 'AI_QUIZ', 'SUBMISSIONS', 'SCORM'],
@@ -1104,6 +1106,7 @@ const SystemSettings = ({ asTab = false }) => {
                         </div>
                     </div>
                 );
+            }
 
             default:
                 return <div className="p-8 text-center text-gray-500">Välj en kategori i menyn</div>;
