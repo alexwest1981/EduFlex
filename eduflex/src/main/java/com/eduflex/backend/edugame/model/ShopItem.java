@@ -36,7 +36,7 @@ public class ShopItem {
     private boolean isLimited = false;
 
     @JdbcTypeCode(SqlTypes.JSON)
-    @Column(name = "unlock_criteria", columnDefinition = "jsonb")
+    @Column(name = "unlock_criteria")
     private String unlockCriteria;
 
     public ShopItem() {

@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.config.TopicBuilder;
 
 @Configuration
+@org.springframework.boot.autoconfigure.condition.ConditionalOnProperty(name = "spring.kafka.enabled", havingValue = "true")
 public class KafkaConfig {
 
     public static final String DOCUMENT_UPLOADED_TOPIC = "eduflex.documents.uploaded";
