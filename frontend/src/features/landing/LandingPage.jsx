@@ -217,6 +217,13 @@ const LandingPage = () => {
             description: 'Fortsätt din "Learning Streak" och lås upp exklusiva XP-bonusar och märken. Centraliserad spårning som motiverar dig varje dag.',
             color: 'text-brand-orange',
             bgColor: 'bg-brand-orange/10'
+        },
+        {
+            icon: <Globe className="w-6 h-6" />,
+            title: 'Rektorspaket (Principal Package)',
+            description: 'Fullständigt skolledningslager. Hantera organisationshierarki, se aggregerad statistik för hela skolan och hantera incidentrapportering i en unifierad vy.',
+            color: 'text-brand-teal',
+            bgColor: 'bg-brand-teal/10'
         }
     ];
 

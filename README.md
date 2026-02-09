@@ -44,6 +44,10 @@
     *   **Samlade Betyg:** Lagt till funktion för studenter att ladda ner ett konsoliderat betygsutdrag med alla avklarade kurser.
     *   **Förbättrad Dokumenthantering:** Nya flikar i studentvyn för "Mina Betyg", "Mina Intyg" och "Dokumentbank".
     *   **Systemhärdning:** Åtgärdat Hibernate-mappningsfel för autogenererade dokument vid uppstart.
+*   **📅 Planerat: Rektorspaket (Principal Package):**
+    *   **Skolledning:** Fullständig hierarki med Program, Klasser och Arbetslag.
+    *   **Dashboard:** Aggregerade nyckeltal för hela skolan (närvaro, betyg, trygghet).
+    *   **Kvalitetsuppföljning:** Incidentrapportering och pedagogiska observationer.
 *   **🚀 CI/CD Pipeline Härdning & ESLint (9 feb 2026):**
     *   **Backend H2 Stabilisering:** Gjort `QuestService`, `ShopService` och `DataInitializer` profil-medvetna för att undvika fel vid databasinitiering under tester.
     *   **Multi-Tenancy Fix:** Exkluderat `test`-profilen från `TenantConfig` för att förhindra H2-kompatibilitetsproblem med schema-baserad tenant-separation.
