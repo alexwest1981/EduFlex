@@ -651,12 +651,25 @@ export const api = {
         },
         // --- Quality & Safety ---
         quality: {
-            reportIncident: (data) => api.post('/admin/quality/incidents', data),
-            getIncidents: () => api.get('/admin/quality/incidents'),
-            updateIncident: (id, status, notes, actions) =>
-                api.patch(`/admin/quality/incidents/${id}?status=${status}&notes=${notes || ''}&actions=${actions || ''}`),
+            getIncidents: () => api.get('/principal/incidents'),
+            createIncident: (data) => api.post('/principal/incidents', data),
+            updateIncident: (id, data) => api.put(`/principal/incidents/${id}`, data),
+            getIncident: (id) => api.get(`/principal/incidents/${id}`),
             recordObservation: (data) => api.post('/admin/quality/observations', data),
             getObservationsByTeacher: (teacherId) => api.get(`/admin/quality/observations/teacher/${teacherId}`),
+        },
+        // --- Staffing & Substitutes ---
+        staffing: {
+            getSickLeave: () => api.get('/principal/staffing/sick-leave'),
+            reportSickLeave: (data) => api.post('/principal/staffing/sick-leave', data),
+            getSubstitutes: () => api.get('/principal/staffing/substitutes'),
+            bookSubstitute: (data) => api.post('/principal/staffing/substitutes/book', data),
+        },
+        // --- Report Library ---
+        reports: {
+            getAll: () => api.get('/principal/reports'),
+            generate: (type) => api.post(`/principal/reports/generate?type=${type}`),
+            download: (id) => `${API_BASE}/principal/reports/${id}/download`,
         }
     }
 };

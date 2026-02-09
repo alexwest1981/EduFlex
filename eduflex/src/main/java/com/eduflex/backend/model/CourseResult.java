@@ -30,6 +30,8 @@ public class CourseResult {
 
     private String note;
 
+    private String grade; // Betyg: A, B, C, D, E, F
+
     // --- Getters & Setters ---
     public Long getId() {
         return id;
@@ -77,5 +79,13 @@ public class CourseResult {
 
     public void setNote(String note) {
         this.note = note;
+    }
+
+    public String getGrade() {
+        return grade;
+    }
+
+    public void setGrade(String grade) {
+        this.grade = grade;
     }
 }

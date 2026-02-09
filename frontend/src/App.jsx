@@ -57,6 +57,9 @@ import AcademicGovernance from './features/principal/AcademicGovernance';
 import QualitySafetyManager from './features/principal/QualitySafetyManager';
 import PrincipalTools from './features/principal/PrincipalTools';
 import RektorLanding from './features/principal/RektorLanding';
+import IncidentManager from './features/principal/IncidentManager';
+import StaffingControl from './features/principal/StaffingControl';
+import ReportLibrary from './features/principal/ReportLibrary';
 
 // --- PROTECTED ROUTE ---
 const ProtectedRoute = ({ children, roles }) => {
@@ -176,15 +179,31 @@ const AppRoutes = () => {
                 } />
 
                 <Route path="/principal/quality" element={
-                    <ProtectedRoute roles={['ADMIN', 'ROLE_REKTOR', 'REKTOR']}>
+                    <ProtectedRoute roles={['ADMIN', 'ROLE_REKTOR', 'REKTOR', 'PRINCIPAL']}>
                         <Layout currentUser={currentUser} handleLogout={logout}>
-                            <QualitySafetyManager />
+                            <IncidentManager />
+                        </Layout>
+                    </ProtectedRoute>
+                } />
+
+                <Route path="/principal/staffing" element={
+                    <ProtectedRoute roles={['ADMIN', 'ROLE_REKTOR', 'REKTOR', 'PRINCIPAL']}>
+                        <Layout currentUser={currentUser} handleLogout={logout}>
+                            <StaffingControl />
+                        </Layout>
+                    </ProtectedRoute>
+                } />
+
+                <Route path="/principal/reports" element={
+                    <ProtectedRoute roles={['ADMIN', 'ROLE_REKTOR', 'REKTOR', 'PRINCIPAL']}>
+                        <Layout currentUser={currentUser} handleLogout={logout}>
+                            <ReportLibrary />
                         </Layout>
                     </ProtectedRoute>
                 } />
 
                 <Route path="/principal/tools" element={
-                    <ProtectedRoute roles={['ADMIN', 'ROLE_REKTOR', 'REKTOR']}>
+                    <ProtectedRoute roles={['ADMIN', 'ROLE_REKTOR', 'REKTOR', 'PRINCIPAL']}>
                         <Layout currentUser={currentUser} handleLogout={logout}>
                             <PrincipalTools />
                         </Layout>

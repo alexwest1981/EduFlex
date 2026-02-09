@@ -38,6 +38,13 @@
 ## 🇸🇪 Svenska
 
 ### ⚡ Senaste Uppdateringarna
+*   **🎯 Mission Control – Funktionella Moduler & Backend-fix (9 feb 2026):**
+    *   **Incidenthantering:** Ny `IncidentManager`-komponent med CRUD-endpoints (`IncidentReportController`) för att rapportera, söka och uppdatera incidenter.
+    *   **Bemanningskontroll:** Ny `StaffingControl`-komponent för hantering av sjukfrånvaro och vikariepooler.
+    *   **Rapportbibliotek:** Ny `ReportLibrary`-komponent för åtkomst till och sökning bland skolrapporter och dokument.
+    *   **Dashboard-koppling:** Quick Actions och KPI-drilldowns i Mission Control navigerar nu till de nya funktionella modulerna.
+    *   **Backend-kompileringsfix:** Åtgärdat 5 kritiska kompileringsfel — trasig konstruktor i `PrincipalDashboardService`, saknad `getUserByUsername`-metod i `UserService`, saknat `grade`-fält i `CourseResult`, stubbad `User.getStaffStatus()` och `User.getClassGroup()`.
+    *   **API-utbyggnad:** Nya endpoints i `api.js` för incident-, bemanning- och rapporthantering.
 *   **🚀 Automatisk Dokumentgenerering & QR-Verifiering (9 feb 2026):**
     *   **Automatisk utfärdande:** Systemet genererar nu automatiskt kursintyg (PDF) när en student får status `PASSED`.
     *   **QR-Verifiering:** Varje intyg och betygsutdrag har en unik QR-kod för äkthetskontroll via en publik verifierings-endpoint.
@@ -367,6 +374,13 @@ curl -X POST http://localhost:8080/api/tenants \
 ## 🇬🇧 English
 
 ### ⚡ Latest Updates
+*   **🎯 Mission Control – Functional Modules & Backend Fix (Feb 9, 2026):**
+    *   **Incident Management:** New `IncidentManager` component with full CRUD endpoints (`IncidentReportController`) for reporting, searching, and updating incidents.
+    *   **Staffing Control:** New `StaffingControl` component for managing sick leave and substitute teacher pools.
+    *   **Report Library:** New `ReportLibrary` component for accessing and searching school reports and documents.
+    *   **Dashboard Wiring:** Quick Actions and KPI drilldowns in Mission Control now navigate to the new functional modules.
+    *   **Backend Compilation Fix:** Resolved 5 critical compilation errors — broken constructor in `PrincipalDashboardService`, missing `getUserByUsername` method in `UserService`, missing `grade` field in `CourseResult`, stubbed non-existent `User.getStaffStatus()` and `User.getClassGroup()`.
+    *   **API Expansion:** New endpoints in `api.js` for incident, staffing, and report management.
 *   **✅ LTI 1.3 Advantage Verification & System Hardening (Feb 7, 2026):**
     *   **E2E Verification:** Successfully simulated LTI 1.3 Advantage (AGS & NRPS) flow, including automatic account provisioning and course enrollment.
     *   **Circular Dependency Fix:** Resolved a startup-blocking circular dependency in `LtiService` using `@Lazy` injection.

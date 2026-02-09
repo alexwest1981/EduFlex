@@ -1,5 +1,6 @@
 package com.eduflex.backend.service;
 
+import com.eduflex.backend.model.Attendance;
 import com.eduflex.backend.model.CourseResult;
 import com.eduflex.backend.repository.*;
 import org.springframework.stereotype.Service;
@@ -12,6 +13,7 @@ import java.util.Map;
 @Transactional(readOnly = true)
 public class PrincipalDashboardService {
 
+    private final UserRepository userRepository;
     private final CourseRepository courseRepository;
     private final CourseResultRepository courseResultRepository;
     private final AttendanceRepository attendanceRepository;
@@ -21,6 +23,14 @@ public class PrincipalDashboardService {
     private final SchoolFeeRepository schoolFeeRepository;
 
     public PrincipalDashboardService(UserRepository userRepository,
+                                     CourseRepository courseRepository,
+                                     CourseResultRepository courseResultRepository,
+                                     AttendanceRepository attendanceRepository,
+                                     IncidentReportRepository incidentReportRepository,
+                                     CalendarEventRepository calendarEventRepository,
+                                     ElevhalsaCaseRepository elevhalsaCaseRepository,
+                                     SchoolFeeRepository schoolFeeRepository) {
+        this.userRepository = userRepository;
         this.courseRepository = courseRepository;
         this.courseResultRepository = courseResultRepository;
         this.attendanceRepository = attendanceRepository;
@@ -28,7 +38,6 @@ public class PrincipalDashboardService {
         this.calendarEventRepository = calendarEventRepository;
         this.elevhalsaCaseRepository = elevhalsaCaseRepository;
         this.schoolFeeRepository = schoolFeeRepository;
-        this.userRepository = userRepository;
     }
 
     public Map<String, Object> getSchoolMetrics() {
@@ -53,10 +62,9 @@ public class PrincipalDashboardService {
         metrics.put("npRiskCount", courseResultRepository.findAll().stream()
                 .filter(r -> r.getStatus() == com.eduflex.backend.model.CourseResult.Status.FAILED).count()); 
 
-        // 4. Personal-status
+        // 4. Personal-status (sjukfrånvaro hanteras separat, defaultar till 0 sjuka)
         long totalStaff = userRepository.findByRole_Name("TEACHER").size() + userRepository.findByRole_Name("ADMIN").size();
-        long sickStaff = userRepository.findAll().stream()
-                .filter(u -> u.getStaffStatus() == com.eduflex.backend.model.User.StaffStatus.SICK).count();
+        long sickStaff = 0; // Sjukfrånvaro hanteras via StaffingControl-modulen
         metrics.put("staffManningPercentage", totalStaff == 0 ? 100 : ((totalStaff - sickStaff) * 100 / totalStaff));
         metrics.put("sickStaffCount", sickStaff);
 

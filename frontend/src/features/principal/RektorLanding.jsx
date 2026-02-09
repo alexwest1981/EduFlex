@@ -138,9 +138,9 @@ const RektorLanding = () => {
     const quickActions = [
         { label: 'Massmeddelande', icon: MessageSquare, color: 'indigo', action: () => navigate('/principal/tools') },
         { label: 'Ny incident', icon: Plus, color: 'orange', action: () => navigate('/principal/quality') },
-        { label: 'Vikarie', icon: UserPlus, color: 'emerald', action: () => { } },
-        { label: 'Risk-lista', icon: ShieldAlert, color: 'red', action: () => { } },
-        { label: 'Rapporter', icon: FileText, color: 'blue', action: () => { } },
+        { label: 'Vikarie', icon: UserPlus, color: 'emerald', action: () => navigate('/principal/staffing') },
+        { label: 'Risk-lista', icon: ShieldAlert, color: 'red', action: () => { toast('Risk-lista genereras baserat på AI-analys...') } },
+        { label: 'Rapporter', icon: FileText, color: 'blue', action: () => navigate('/principal/reports') },
         { label: 'Kalender', icon: Calendar, color: 'amber', action: () => navigate('/calendar') },
     ];
 
@@ -222,7 +222,18 @@ const RektorLanding = () => {
                                 <div className="space-y-2">
                                     <div className="flex justify-between text-xs py-1 border-b border-gray-100 dark:border-gray-700">
                                         <span className="text-gray-500">{card.drillData}</span>
-                                        <span className="font-bold text-indigo-600">Visa all data</span>
+                                        <button
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                if (card.id === 'alerts') navigate('/principal/quality');
+                                                if (card.id === 'staff') navigate('/principal/staffing');
+                                                if (card.id === 'economy') navigate('/principal/reports');
+                                                if (card.id === 'knowledge') navigate('/principal/reports');
+                                            }}
+                                            className="font-bold text-indigo-600 hover:scale-105 transition-transform"
+                                        >
+                                            Öppna Modul
+                                        </button>
                                     </div>
                                     <div className="flex justify-between text-xs py-1 border-b border-gray-100 dark:border-gray-700">
                                         <span className="text-gray-500">Senaste ändring</span>

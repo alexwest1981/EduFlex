@@ -11,7 +11,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/principal/dashboard")
-@PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN', 'REKTOR', 'ROLE_REKTOR')")
+@PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN', 'REKTOR', 'ROLE_REKTOR', 'PRINCIPAL', 'ROLE_PRINCIPAL')")
 public class PrincipalDashboardController {
 
     private final PrincipalDashboardService principalDashboardService;

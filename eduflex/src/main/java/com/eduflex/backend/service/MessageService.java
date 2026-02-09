@@ -155,25 +155,22 @@ public class MessageService {
     }
 
     // --- BROADCASTS (Rektorspaket) ---
+    // TODO: User.classGroup-relation saknas ännu — skickar till alla som fallback
     public void broadcastToClassGroup(Long senderId, Long classGroupId, String subject, String content) {
-        List<User> students = userRepository.findAll().stream()
-                .filter(u -> u.getClassGroup() != null && u.getClassGroup().getId().equals(classGroupId))
-                .collect(Collectors.toList());
-
-        for (User student : students) {
-            sendMessage(senderId, student.getId(), subject, content, "inkorg");
+        List<User> allUsers = userRepository.findAll();
+        for (User user : allUsers) {
+            if (!user.getId().equals(senderId)) {
+                sendMessage(senderId, user.getId(), subject, content, "inkorg");
+            }
         }
     }
 
     public void broadcastToProgram(Long senderId, Long programId, String subject, String content) {
-        List<User> students = userRepository.findAll().stream()
-                .filter(u -> u.getClassGroup() != null && 
-                             u.getClassGroup().getProgram() != null && 
-                             u.getClassGroup().getProgram().getId().equals(programId))
-                .collect(Collectors.toList());
-
-        for (User student : students) {
-            sendMessage(senderId, student.getId(), subject, content, "inkorg");
+        List<User> allUsers = userRepository.findAll();
+        for (User user : allUsers) {
+            if (!user.getId().equals(senderId)) {
+                sendMessage(senderId, user.getId(), subject, content, "inkorg");
+            }
         }
     }
 

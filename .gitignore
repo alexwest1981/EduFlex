@@ -89,3 +89,6 @@ build_log*.txt
 !ANTI_RE_PLAN.md
 !COMMUNITY_EXPANSION_PLAN.md
 !SECURITY_VERIFICATION_PLAN.md
+# Temporära byggloggar
+full_build_log.txt
+git_status.txt

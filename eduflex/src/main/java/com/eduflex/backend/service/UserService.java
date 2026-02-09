@@ -99,6 +99,12 @@ public class UserService {
         return userRepository.findByUsername(username);
     }
 
+    // Enkel hämtning av användare baserat på användarnamn
+    public User getUserByUsername(String username) {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Användare hittades inte: " + username));
+    }
+
     public User registerUser(User user) {
         // --- LICENSE LIMIT CHECK ---
         int maxUsers = licenseService.getTier().getMaxUsers();
