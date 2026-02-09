@@ -56,82 +56,82 @@ const RektorLanding = () => {
         {
             id: 'attendance',
             title: 'Närvaro idag',
-            value: `${metrics?.attendancePercentage || 92}%`,
-            sub: `${metrics?.presentCount || 1450}/${metrics?.totalAttendanceExpected || 1575} elever`,
-            trend: '+12 sena, 23 frånvaro',
+            value: `${metrics?.attendancePercentage ?? 0}%`,
+            sub: `${metrics?.presentCount ?? 0}/${metrics?.totalAttendanceExpected ?? 0} elever`,
+            trend: 'Live närvaro',
             icon: Users,
-            color: (metrics?.attendancePercentage || 92) > 95 ? 'green' : 'red',
-            drillData: 'Lista risk-elever, färgkodade per klass'
+            color: (metrics?.attendancePercentage ?? 0) > 90 ? 'green' : 'red',
+            drillData: 'Lista risk-elever'
         },
         {
             id: 'alerts',
             title: 'Kritiska alerts',
-            value: (metrics?.activeIncidents || 0) + (metrics?.unmannedLessons || 0),
-            sub: `${metrics?.activeIncidents || 3} incidenter, ${metrics?.unmannedLessons || 5} obemannade`,
-            trend: 'Röd status kräver åtgärd',
+            value: (metrics?.activeIncidents ?? 0) + (metrics?.unmannedLessons ?? 0),
+            sub: `${metrics?.activeIncidents ?? 0} incidenter, ${metrics?.unmannedLessons ?? 0} obemannade`,
+            trend: 'Prioriterad åtgärd',
             icon: ShieldAlert,
-            color: 'red',
-            drillData: 'Direkt till ärende, vikariebokning'
+            color: (metrics?.activeIncidents ?? 0) > 0 ? 'red' : 'green',
+            drillData: 'Ärendeöversikt'
         },
         {
             id: 'knowledge',
             title: 'Kunskapsstatus',
-            value: `${metrics?.gradingProgressPercentage || 87}%`,
-            sub: `${metrics?.npRiskCount || 12} NP-risk`,
-            trend: 'Jämfört mot skolans mål',
+            value: `${metrics?.gradingProgressPercentage ?? 0}%`,
+            sub: `${metrics?.npRiskCount ?? 0} NP-risk`,
+            trend: 'Total progression',
             icon: GraduationCap,
             color: 'blue',
-            drillData: 'Klasser med låg progression'
+            drillData: 'Progression per klass'
         },
         {
             id: 'staff',
             title: 'Personal-status',
-            value: `${metrics?.staffManningPercentage || 98}%`,
-            sub: `${metrics?.sickStaffCount || 2} sjuka, ${metrics?.unmannedLessons || 1} obemannad`,
-            trend: '98% bemanning idag',
+            value: `${metrics?.staffManningPercentage ?? 0}%`,
+            sub: `${metrics?.sickStaffCount ?? 0} sjuka / frånvarande`,
+            trend: 'Daglig bemanning',
             icon: UserCheck,
             color: 'green',
-            drillData: 'Vikarie-lista, frånvarohistorik'
+            drillData: 'Frånvarolista'
         },
         {
             id: 'grading',
             title: 'Betygstrender',
-            value: `${metrics?.gradesACPercentage || 82}%`,
-            sub: '4 lärare ej klara',
-            trend: 'Deadline imorgon',
+            value: `${metrics?.gradesACPercentage ?? 0}%`,
+            sub: 'A-C fördelning',
+            trend: 'Aggregerat resultat',
             icon: TrendingUp,
             color: 'orange',
-            drillData: 'Lärare-lista, påminnelser'
+            drillData: 'Resultatuppföljning'
         },
         {
             id: 'health',
             title: 'Elevhälsa',
-            value: metrics?.openHealthCases || 15,
-            sub: '3 möten idag',
-            trend: 'Prioriterade ärenden',
+            value: metrics?.openHealthCases ?? 0,
+            sub: 'Öppna EHT-ärenden',
+            trend: 'Aktiva utredningar',
             icon: Heart,
             color: 'red',
-            drillData: 'Hög risk-lista (EHT)'
+            drillData: 'EHT Dashboard'
         },
         {
             id: 'engagement',
             title: 'Engagemang',
-            value: metrics?.avgLoginsPerDay || 2.3,
-            sub: '65% gamification-akt.',
-            trend: 'Snitt logins/dag',
+            value: metrics?.avgLoginsPerDay ?? 0,
+            sub: 'Snitt logins/dag',
+            trend: 'Systemaktivitet',
             icon: BarChart3,
             color: 'indigo',
-            drillData: 'Låga klasser, AI-användning'
+            drillData: 'Aktivitetslogg'
         },
         {
             id: 'economy',
             title: 'Ekonomi/Avgifter',
-            value: `${metrics?.paymentPercentage || 94}%`,
-            sub: `${metrics?.unpaidFeesCount || 12} obetalda`,
-            trend: 'Betalda terminsavgifter',
+            value: `${metrics?.paymentPercentage ?? 0}%`,
+            sub: `${metrics?.unpaidFeesCount ?? 0} obetalda`,
+            trend: 'Faktureringsstatus',
             icon: CreditCard,
             color: 'emerald',
-            drillData: 'Faktura-lista, påminnelser'
+            drillData: 'Ekonomiöversikt'
         }
     ];
 
@@ -156,7 +156,7 @@ const RektorLanding = () => {
                     <div>
                         <h1 className="text-2xl font-black text-gray-900 dark:text-white tracking-tight">EduFlex Mission Control</h1>
                         <p className="text-xs font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2">
-                            Måndag 9 Feb • 21:55 • <span className="text-emerald-500 flex items-center gap-1"><span className="w-2 h-2 bg-emerald-500 rounded-full animate-ping"></span> Live System</span>
+                            {new Date().toLocaleDateString('sv-SE', { weekday: 'long', day: 'numeric', month: 'short' })} • <span className="text-emerald-500 flex items-center gap-1"><span className="w-2 h-2 bg-emerald-500 rounded-full animate-ping"></span> Live System</span>
                         </p>
                     </div>
                 </div>
@@ -252,8 +252,7 @@ const RektorLanding = () => {
                     </div>
 
                     <div className="h-64 flex items-end gap-4 px-4 overflow-x-auto no-scrollbar">
-                        {/* Fake chart visualization */}
-                        {[40, 65, 55, 80, 70, 95, 85, 60, 45, 75, 90, 80].map((h, i) => (
+                        {metrics?.trendData ? metrics.trendData.map((h, i) => (
                             <div key={i} className="flex-1 flex flex-col items-center gap-2 group min-w-[20px]">
                                 <div className="w-full relative bg-gray-50 dark:bg-gray-800/50 rounded-full overflow-hidden h-48">
                                     <div
@@ -265,7 +264,12 @@ const RektorLanding = () => {
                                 </div>
                                 <span className="text-[10px] font-bold text-gray-400 uppercase">{i + 1} Feb</span>
                             </div>
-                        ))}
+                        )) : (
+                            <div className="w-full h-full flex flex-col items-center justify-center text-gray-400 opacity-50 space-y-2">
+                                <TrendingUp size={48} className="animate-pulse" />
+                                <p className="text-sm font-bold uppercase tracking-widest">Samlar in Trenddata...</p>
+                            </div>
+                        )}
                     </div>
                 </div>
 
@@ -287,15 +291,17 @@ const RektorLanding = () => {
             </footer>
 
             {/* Floating Alert / Heatmap Context */}
-            <div className="fixed bottom-8 left-8 p-4 bg-red-600 text-white rounded-2xl shadow-2xl flex items-center gap-4 animate-bounce hover:animate-none cursor-pointer">
-                <div className="p-2 bg-white/20 rounded-xl">
-                    <ShieldAlert size={20} />
+            {metrics?.activeIncidents > 0 && (
+                <div className="fixed bottom-8 left-72 p-4 bg-red-600 text-white rounded-2xl shadow-2xl flex items-center gap-4 animate-bounce hover:animate-none cursor-pointer z-[100]">
+                    <div className="p-2 bg-white/20 rounded-xl">
+                        <ShieldAlert size={20} />
+                    </div>
+                    <div>
+                        <h4 className="text-xs font-black uppercase tracking-widest">Kritisk Alert</h4>
+                        <p className="text-sm font-medium">{metrics?.activeIncidents} incidenter kräver tillsyn</p>
+                    </div>
                 </div>
-                <div>
-                    <h4 className="text-xs font-black uppercase tracking-widest">Kritisk Alert</h4>
-                    <p className="text-sm font-medium">Matsalen: Hög ljudnivå & incidenter (v. 2)</p>
-                </div>
-            </div>
+            )}
 
         </div>
     );
