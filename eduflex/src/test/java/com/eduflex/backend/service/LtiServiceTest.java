@@ -32,77 +32,79 @@ import static org.mockito.Mockito.*;
 
 class LtiServiceTest {
 
-    @Mock
-    private LtiPlatformRepository platformRepository;
+        @Mock
+        private LtiPlatformRepository platformRepository;
 
-    @Mock
-    private UserRepository userRepository;
+        @Mock
+        private UserRepository userRepository;
 
-    @Mock
-    private RoleRepository roleRepository;
+        @Mock
+        private RoleRepository roleRepository;
 
-    @Mock
-    private JwtUtils jwtUtils;
+        @Mock
+        private JwtUtils jwtUtils;
 
-    @InjectMocks
-    private LtiService ltiService;
+        @InjectMocks
+        private LtiService ltiService;
 
-    private RSAKey lmsRsaKey;
+        private RSAKey lmsRsaKey;
 
-    @BeforeEach
-    void setUp() throws Exception {
-        MockitoAnnotations.openMocks(this);
-        ltiService.init();
+        @BeforeEach
+        void setUp() throws Exception {
+                MockitoAnnotations.openMocks(this);
+                ltiService.init();
 
-        KeyPairGenerator gen = KeyPairGenerator.getInstance("RSA");
-        gen.initialize(2048);
-        KeyPair keyPair = gen.generateKeyPair();
+                KeyPairGenerator gen = KeyPairGenerator.getInstance("RSA");
+                gen.initialize(2048);
+                KeyPair keyPair = gen.generateKeyPair();
 
-        lmsRsaKey = new RSAKey.Builder((RSAPublicKey) keyPair.getPublic())
-                .privateKey((RSAPrivateKey) keyPair.getPrivate())
-                .keyID("lms-key-id")
-                .build();
-    }
+                lmsRsaKey = new RSAKey.Builder((RSAPublicKey) keyPair.getPublic())
+                                .privateKey((RSAPrivateKey) keyPair.getPrivate())
+                                .keyID("lms-key-id")
+                                .build();
+        }
 
-    @Test
-    void testProcessLaunch_SuccessfulStudentLaunch() throws Exception {
-        LtiPlatform platform = new LtiPlatform();
-        platform.setIssuer("https://canvas.instructure.com");
-        platform.setClientId("mock-client-id");
+        @Test
+        void testProcessLaunch_SuccessfulStudentLaunch() throws Exception {
+                LtiPlatform platform = new LtiPlatform();
+                platform.setIssuer("https://canvas.instructure.com");
+                platform.setClientId("mock-client-id");
+                platform.setJwksUrl("https://canvas.instructure.com/api/lti/security/jwks");
 
-        when(platformRepository.findByIssuer(anyString())).thenReturn(Optional.of(platform));
+                when(platformRepository.findByIssuer(anyString())).thenReturn(Optional.of(platform));
 
-        Role studentRole = new Role();
-        studentRole.setName("STUDENT");
-        when(roleRepository.findByName("STUDENT")).thenReturn(Optional.of(studentRole));
+                Role studentRole = new Role();
+                studentRole.setName("STUDENT");
+                when(roleRepository.findByName("STUDENT")).thenReturn(Optional.of(studentRole));
 
-        when(userRepository.findByEmail(anyString())).thenReturn(Optional.empty());
-        when(userRepository.save(any(User.class))).thenAnswer(i -> i.getArguments()[0]);
-        when(jwtUtils.generateJwtToken(anyString())).thenReturn("mock-app-token");
+                when(userRepository.findByEmail(anyString())).thenReturn(Optional.empty());
+                when(userRepository.save(any(User.class))).thenAnswer(i -> i.getArguments()[0]);
+                when(jwtUtils.generateJwtToken(anyString())).thenReturn("mock-app-token");
 
-        JWTClaimsSet claims = new JWTClaimsSet.Builder()
-                .issuer("https://canvas.instructure.com")
-                .subject("user-123")
-                .audience("mock-client-id")
-                .expirationTime(new Date(new Date().getTime() + 3600 * 1000))
-                .claim("email", "student@test.com")
-                .claim("name", "Test Student")
-                .claim("https://purl.imsglobal.org/spec/lti/claim/message_type", "LtiResourceLinkRequest")
-                .claim("https://purl.imsglobal.org/spec/lti/claim/roles",
-                        List.of("http://purl.imsglobal.org/vocab/lis/v2/membership#Learner"))
-                .build();
+                JWTClaimsSet claims = new JWTClaimsSet.Builder()
+                                .issuer("https://canvas.instructure.com")
+                                .subject("user-123")
+                                .audience("mock-client-id")
+                                .expirationTime(new Date(new Date().getTime() + 3600 * 1000))
+                                .claim("email", "student@test.com")
+                                .claim("name", "Test Student")
+                                .claim("https://purl.imsglobal.org/spec/lti/claim/message_type",
+                                                "LtiResourceLinkRequest")
+                                .claim("https://purl.imsglobal.org/spec/lti/claim/roles",
+                                                List.of("http://purl.imsglobal.org/vocab/lis/v2/membership#Learner"))
+                                .build();
 
-        SignedJWT signedJWT = new SignedJWT(
-                new JWSHeader.Builder(JWSAlgorithm.RS256).keyID(lmsRsaKey.getKeyID()).build(),
-                claims);
-        signedJWT.sign(new RSASSASigner(lmsRsaKey));
-        String idToken = signedJWT.serialize();
+                SignedJWT signedJWT = new SignedJWT(
+                                new JWSHeader.Builder(JWSAlgorithm.RS256).keyID(lmsRsaKey.getKeyID()).build(),
+                                claims);
+                signedJWT.sign(new RSASSASigner(lmsRsaKey));
+                String idToken = signedJWT.serialize();
 
-        LtiService spyService = spy(ltiService);
-        doNothing().when(spyService).verifySignature(any(SignedJWT.class), anyString());
+                LtiService spyService = spy(ltiService);
+                doNothing().when(spyService).verifySignature(any(SignedJWT.class), anyString());
 
-        String result = spyService.processLaunch(idToken);
+                String result = spyService.processLaunch(idToken);
 
-        assertEquals("TOKEN:mock-app-token", result);
-    }
+                assertEquals("TOKEN:mock-app-token", result);
+        }
 }
