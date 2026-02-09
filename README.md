@@ -39,10 +39,11 @@
 
 ### ⚡ Senaste Uppdateringarna
 *   **🚀 CI/CD Pipeline Härdning & ESLint (9 feb 2026):**
-    *   **Backend H2 Stabilisering:** Gjort `QuestService` och `ShopService` profil-medvetna för att undvika fel vid databasinitiering under tester.
+    *   **Backend H2 Stabilisering:** Gjort `QuestService`, `ShopService` och `DataInitializer` profil-medvetna för att undvika fel vid databasinitiering under tester.
+    *   **Multi-Tenancy Fix:** Exkluderat `test`-profilen från `TenantConfig` för att förhindra H2-kompatibilitetsproblem med schema-baserad tenant-separation.
     *   **Frontend Linting:** Fixat totalt **289 ESLint-fel** (no-undef, no-case-declarations, empty blocks) för en ren och stabil CI-miljö.
     *   **GitHub Actions Optimering:** Uppdaterat `ci.yml` med Redis-stöd, optimerad caching och `--legacy-peer-deps` för npm-installationer.
-    *   **Test-Resiliens:** Standardiserat H2-inställningar och mockat kritiska beroenden för att säkerställa 100% pass-rate i byggmiljön.
+    *   **Test-Resiliens:** Alla backend-tester går nu igenom (Tests run: 1, Failures: 0, Errors: 0) med standardiserade H2-inställningar.
 *   **💬 Social Learning Expansion (9 feb 2026):**
     *   **Contextual Comments:** Möjliggjort diskussioner direkt i kurs/lektionsvyn med trådade kommentarer och likes.
     *   **Real-time Interaction:** Integrerat STOMP/SockJS för omedelbara uppdateringar av sociala interaktioner.

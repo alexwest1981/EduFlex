@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@org.springframework.context.annotation.Profile("!schema-gen")
+@org.springframework.context.annotation.Profile("!schema-gen & !test")
 public class TenantConfig {
 
     @Bean

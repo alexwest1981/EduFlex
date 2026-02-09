@@ -1,0 +1,49 @@
+spring:
+  main:
+    allow-circular-references: true
+  kafka:
+    enabled: false
+  datasource:
+    url: jdbc:h2:mem:testdb;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;INIT=CREATE SCHEMA IF NOT EXISTS public
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+    defer-datasource-initialization: true
+  sql:
+    init:
+      mode: always
+  flyway:
+    enabled: false
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://example.com
+          jwk-set-uri: https://example.com/.well-known/jwks.json
+
+eduflex:
+  auth:
+    mode: internal
+  jwt:
+    secret: test_jwt_secret_key_fixed_32_chars_long
+    expiration: 3600000
+  redis:
+    enabled: false
+  minio:
+    url: http://mock
+    public-url: http://mock
+    access-key: mock
+    secret-key: mock
+    bucket: mockbucket
+
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: DEBUG
+      flywaydb: DEBUG
