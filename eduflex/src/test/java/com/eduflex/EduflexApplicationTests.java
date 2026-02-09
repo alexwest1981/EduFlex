@@ -10,6 +10,9 @@ class EduflexApplicationTests {
 	@org.springframework.boot.test.mock.mockito.MockBean
 	private com.eduflex.backend.edugame.service.QuestService questService;
 
+	@org.springframework.boot.test.mock.mockito.MockBean
+	private com.eduflex.backend.edugame.service.ShopService shopService;
+
 	@Test
 	void contextLoads() {
 	}

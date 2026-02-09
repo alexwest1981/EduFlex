@@ -11,6 +11,9 @@ class SchemaGenTest {
     @org.springframework.boot.test.mock.mockito.MockBean
     private com.eduflex.backend.edugame.service.QuestService questService;
 
+    @org.springframework.boot.test.mock.mockito.MockBean
+    private com.eduflex.backend.edugame.service.ShopService shopService;
+
     @Test
     void contextLoads() {
         // Just loading context triggers schema generation if properties are set

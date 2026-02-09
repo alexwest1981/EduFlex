@@ -30,6 +30,7 @@ public class ShopService {
         private final CourseService courseService;
         private final QuizResultRepository quizResultRepository;
         private final ObjectMapper objectMapper;
+        private final org.springframework.core.env.Environment environment;
 
         public ShopService(ShopItemRepository shopItemRepository,
                         UserInventoryRepository userInventoryRepository,
@@ -37,7 +38,8 @@ public class ShopService {
                         UserRepository userRepository,
                         CourseService courseService,
                         QuizResultRepository quizResultRepository,
-                        ObjectMapper objectMapper) {
+                        ObjectMapper objectMapper,
+                        org.springframework.core.env.Environment environment) {
                 this.shopItemRepository = shopItemRepository;
                 this.userInventoryRepository = userInventoryRepository;
                 this.eduGameProfileRepository = eduGameProfileRepository;
@@ -45,6 +47,7 @@ public class ShopService {
                 this.courseService = courseService;
                 this.quizResultRepository = quizResultRepository;
                 this.objectMapper = objectMapper;
+                this.environment = environment;
         }
 
         public List<ShopItem> getAllItems() {
@@ -206,6 +209,9 @@ public class ShopService {
         // Initialize some default items if empty
         @PostConstruct
         public void initShop() {
+                if (java.util.Arrays.asList(environment.getActiveProfiles()).contains("test")) {
+                        return;
+                }
                 if (shopItemRepository.count() == 0) {
                         // FRAMES
                         shopItemRepository.save(
