@@ -21,14 +21,17 @@ public class QuestService {
     private final QuestRepository questRepository;
     private final QuestTemplateRepository questTemplateRepository;
     private final UserRepository userRepository;
+    private final org.springframework.core.env.Environment environment;
     private final Random random = new Random();
 
     public QuestService(QuestRepository questRepository,
             QuestTemplateRepository questTemplateRepository,
-            UserRepository userRepository) {
+            UserRepository userRepository,
+            org.springframework.core.env.Environment environment) {
         this.questRepository = questRepository;
         this.questTemplateRepository = questTemplateRepository;
         this.userRepository = userRepository;
+        this.environment = environment;
     }
 
     public List<Quest> getMyDailyQuests(Long userId) {
@@ -81,6 +84,9 @@ public class QuestService {
 
     @PostConstruct
     public void initTemplates() {
+        if (java.util.Arrays.asList(environment.getActiveProfiles()).contains("test")) {
+            return;
+        }
         if (questTemplateRepository.count() == 0) {
             QuestTemplate t1 = new QuestTemplate();
             t1.setTitleTemplate("Complete {count} Lesson(s)");

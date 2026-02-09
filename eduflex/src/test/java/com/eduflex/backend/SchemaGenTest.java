@@ -8,6 +8,9 @@ import org.springframework.test.context.ActiveProfiles;
 @ActiveProfiles({ "schema-gen", "test" })
 class SchemaGenTest {
 
+    @org.springframework.boot.test.mock.mockito.MockBean
+    private com.eduflex.backend.edugame.service.QuestService questService;
+
     @Test
     void contextLoads() {
         // Just loading context triggers schema generation if properties are set
