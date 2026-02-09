@@ -114,6 +114,10 @@ public class User implements Serializable {
     @Column(name = "storage_quota", columnDefinition = "bigint default 1073741824")
     private Long storageQuota = 1073741824L; // 1GB default (in bytes)
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "class_group_id")
+    private ClassGroup classGroup;
+
     // --- GETTERS & SETTERS ---
     public Long getStorageQuota() {
         return storageQuota;

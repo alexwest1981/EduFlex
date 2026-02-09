@@ -154,6 +154,29 @@ public class MessageService {
         }
     }
 
+    // --- BROADCASTS (Rektorspaket) ---
+    public void broadcastToClassGroup(Long senderId, Long classGroupId, String subject, String content) {
+        List<User> students = userRepository.findAll().stream()
+                .filter(u -> u.getClassGroup() != null && u.getClassGroup().getId().equals(classGroupId))
+                .collect(Collectors.toList());
+
+        for (User student : students) {
+            sendMessage(senderId, student.getId(), subject, content, "inkorg");
+        }
+    }
+
+    public void broadcastToProgram(Long senderId, Long programId, String subject, String content) {
+        List<User> students = userRepository.findAll().stream()
+                .filter(u -> u.getClassGroup() != null && 
+                             u.getClassGroup().getProgram() != null && 
+                             u.getClassGroup().getProgram().getId().equals(programId))
+                .collect(Collectors.toList());
+
+        for (User student : students) {
+            sendMessage(senderId, student.getId(), subject, content, "inkorg");
+        }
+    }
+
     private MessageDTO convertToDTO(Message msg) {
         return new MessageDTO(
                 msg.getId(),

@@ -135,6 +135,10 @@ public class Course {
     @OneToOne(mappedBy = "course", cascade = CascadeType.ALL)
     private CourseEvaluation evaluation;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "class_group_id")
+    private ClassGroup classGroup;
+
     @ManyToOne
     @JoinColumn(name = "skolverket_course_id")
     @JsonIgnoreProperties("createdAt")
