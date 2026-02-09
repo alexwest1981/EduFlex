@@ -53,6 +53,11 @@ const Sidebar = ({ currentUser, logout, siteName, version }) => {
             items.push({ path: '/analytics', label: t('sidebar.analytics'), icon: <TrendingUp size={20} /> });
             items.push({ path: '/system', label: t('sidebar.system') || 'System', icon: <Settings2 size={20} /> });
         }
+
+        // --- REKTOR / PRINCIPAL NAVIGATION ---
+        if (role === 'ADMIN' || role === 'ROLE_REKTOR' || role === 'REKTOR') {
+            items.push({ path: '/principal/dashboard', label: 'Rektorspaket', icon: <ShieldCheck size={20} /> });
+        }
         if (role !== 'ADMIN') {
             items.push({ path: '/documents', label: t('sidebar.documents'), icon: <FolderOpen size={20} /> });
         }

@@ -14,4 +14,6 @@ public interface CalendarEventRepository extends JpaRepository<CalendarEvent, Lo
     List<CalendarEvent> findByOwnerIdOrderByStartTimeAsc(Long ownerId);
 
     List<CalendarEvent> findByStartTimeBetweenOrderByStartTimeAsc(LocalDateTime start, LocalDateTime end);
+
+    long countByIsUnmanned(boolean isUnmanned);
 }

@@ -64,11 +64,18 @@
 | **Unified Storage** | MinIO-integration för alla tillgångar (Löste split-brain bugg). | ✅ **Klar** |
 | **CI/CD Pipeline** | Fullt automatiserade tester och deployment. | 📅 **Planerad** |
 | **Kubernetes Migration** | Helm-charts för skalbarhet. | 📅 **Planerad** |
-| **Rektorspaket (Phase 1-5)** | Komplett skolledningslager: Organisationshierarki, Dashboard för nyckeltal, Incidenthantering och Masskommunikation. | ✅ **Klar (Backend)** |
+| **Rektorspaket (Mission Control)** | Komplett skolledningslager: Organisationshierarki, Dashboard för nyckeltal (8 realtids-KPIer), Incidenthantering, Elevhälsa och Masskommunikation. | ✅ **Klar** |
 
 ---
 
 ## 📝 Change Log
+
+### [v1.0.0] - 2026-02-09
+- **New Feature**: **Rektorspaket (Phase 6)** - Full launch of the "Mission Control" Dashboard.
+- **New Feature**: Added 8 real-time KPIs and inline drill-down capabilities for school leadership.
+- **Backend**: New entities for `ElevhalsaCase` and `SchoolFee`.
+- **Backend**: Real-time manning overview and unmanned lesson tracking.
+- **UI**: High-density action-oriented landing page for principals.
 
 ### [v0.9.12] - 2026-02-09
 - **Social Learning**: Full launch of **Contextual Comments** for lessons and courses with real-time support.

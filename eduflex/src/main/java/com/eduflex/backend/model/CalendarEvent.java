@@ -43,6 +43,7 @@ public class CalendarEvent {
     private String meetingLink;
     private Boolean isMandatory = false;
     private String topic;
+    private Boolean isUnmanned = false; // NYTT: För Mission Control (obemannad lektion)
 
     // Optional: Event related to a course
     @ManyToOne
@@ -172,5 +173,13 @@ public class CalendarEvent {
 
     public void setAttendees(Set<User> attendees) {
         this.attendees = attendees;
+    }
+
+    public Boolean getIsUnmanned() {
+        return isUnmanned;
+    }
+
+    public void setIsUnmanned(Boolean unmanned) {
+        isUnmanned = unmanned;
     }
 }

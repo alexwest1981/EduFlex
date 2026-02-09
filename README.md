@@ -44,10 +44,11 @@
     *   **Samlade Betyg:** Lagt till funktion för studenter att ladda ner ett konsoliderat betygsutdrag med alla avklarade kurser.
     *   **Förbättrad Dokumenthantering:** Nya flikar i studentvyn för "Mina Betyg", "Mina Intyg" och "Dokumentbank".
     *   **Systemhärdning:** Åtgärdat Hibernate-mappningsfel för autogenererade dokument vid uppstart.
-*   **📅 Planerat: Rektorspaket (Principal Package):**
+*   **🚀 Rektorspaket (Principal Package) - Mission Control (9 feb 2026):**
+    *   **Mission Control Dashboard:** Ny central "RektorLanding" med 8 realtids-KPIer (Närvaro, Incidenter, Manning, Ekonomi, Elevhälsa).
     *   **Skolledning:** Fullständig hierarki med Program, Klasser och Arbetslag.
-    *   **Dashboard:** Aggregerade nyckeltal för hela skolan (närvaro, betyg, trygghet).
-    *   **Kvalitetsuppföljning:** Incidentrapportering och pedagogiska observationer.
+    *   **Kvalitetsuppföljning:** Incidentrapportering, elevhälsa-ärenden och pedagogiska observationer.
+    *   **Administrativa Verktyg:** Massmeddelande till årskurser/klasser och "Impersonate Mode" för support.
 *   **🚀 CI/CD Pipeline Härdning & ESLint (9 feb 2026):**
     *   **Backend H2 Stabilisering:** Gjort `QuestService`, `ShopService` och `DataInitializer` profil-medvetna för att undvika fel vid databasinitiering under tester.
     *   **Multi-Tenancy Fix:** Exkluderat `test`-profilen från `TenantConfig` för att förhindra H2-kompatibilitetsproblem med schema-baserad tenant-separation.

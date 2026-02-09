@@ -51,6 +51,12 @@ import EbookLibrary from './features/library/EbookLibrary';
 import EvaluationManager from './modules/evaluation/EvaluationManager';
 import EvaluationFormView from './modules/evaluation/EvaluationFormView';
 import MyDocuments from './features/documents/MyDocuments';
+import PrincipalDashboard from './features/principal/PrincipalDashboard';
+import SchoolStructureManagement from './features/principal/SchoolStructureManagement';
+import AcademicGovernance from './features/principal/AcademicGovernance';
+import QualitySafetyManager from './features/principal/QualitySafetyManager';
+import PrincipalTools from './features/principal/PrincipalTools';
+import RektorLanding from './features/principal/RektorLanding';
 
 // --- PROTECTED ROUTE ---
 const ProtectedRoute = ({ children, roles }) => {
@@ -140,6 +146,47 @@ const AppRoutes = () => {
                     <ProtectedRoute roles={['ADMIN']}>
                         <Layout currentUser={currentUser} handleLogout={logout}>
                             <AdminAdministrationPage />
+                        </Layout>
+                    </ProtectedRoute>
+                } />
+
+                {/* --- PRINCIPAL / REKTOR ROUTES --- */}
+                <Route path="/principal/dashboard" element={
+                    <ProtectedRoute roles={['ADMIN', 'ROLE_REKTOR', 'REKTOR']}>
+                        <Layout currentUser={currentUser} handleLogout={logout}>
+                            <RektorLanding />
+                        </Layout>
+                    </ProtectedRoute>
+                } />
+
+                <Route path="/principal/structure" element={
+                    <ProtectedRoute roles={['ADMIN', 'ROLE_REKTOR', 'REKTOR']}>
+                        <Layout currentUser={currentUser} handleLogout={logout}>
+                            <SchoolStructureManagement />
+                        </Layout>
+                    </ProtectedRoute>
+                } />
+
+                <Route path="/principal/governance" element={
+                    <ProtectedRoute roles={['ADMIN', 'ROLE_REKTOR', 'REKTOR']}>
+                        <Layout currentUser={currentUser} handleLogout={logout}>
+                            <AcademicGovernance />
+                        </Layout>
+                    </ProtectedRoute>
+                } />
+
+                <Route path="/principal/quality" element={
+                    <ProtectedRoute roles={['ADMIN', 'ROLE_REKTOR', 'REKTOR']}>
+                        <Layout currentUser={currentUser} handleLogout={logout}>
+                            <QualitySafetyManager />
+                        </Layout>
+                    </ProtectedRoute>
+                } />
+
+                <Route path="/principal/tools" element={
+                    <ProtectedRoute roles={['ADMIN', 'ROLE_REKTOR', 'REKTOR']}>
+                        <Layout currentUser={currentUser} handleLogout={logout}>
+                            <PrincipalTools />
                         </Layout>
                     </ProtectedRoute>
                 } />

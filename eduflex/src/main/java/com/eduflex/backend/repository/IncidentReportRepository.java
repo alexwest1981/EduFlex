@@ -9,4 +9,6 @@ import java.util.List;
 public interface IncidentReportRepository extends JpaRepository<IncidentReport, Long> {
     List<IncidentReport> findByStatus(IncidentReport.Status status);
     List<IncidentReport> findByInvolvedStudentId(Long studentId);
+
+    long countByStatusNot(IncidentReport.Status status);
 }

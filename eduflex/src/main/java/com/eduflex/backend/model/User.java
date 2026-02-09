@@ -118,6 +118,13 @@ public class User implements Serializable {
     @JoinColumn(name = "class_group_id")
     private ClassGroup classGroup;
 
+    @Enumerated(EnumType.STRING)
+    private StaffStatus staffStatus = StaffStatus.ACTIVE;
+
+    public enum StaffStatus {
+        ACTIVE, SICK, AWAY, ON_LEAVE
+    }
+
     // --- GETTERS & SETTERS ---
     public Long getStorageQuota() {
         return storageQuota;

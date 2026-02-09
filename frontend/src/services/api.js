@@ -620,6 +620,44 @@ export const api = {
     personalization: {
         getMyAnalysis: () => api.get('/personalization/analyze'),
         getUserAnalysis: (userId) => api.get(`/personalization/analyze/${userId}`)
+    },
+
+    principal: {
+        // --- School Structure ---
+        structure: {
+            getDepartments: () => api.get('/admin/structure/departments'),
+            createDepartment: (repo) => api.post('/admin/structure/departments', repo),
+            deleteDepartment: (id) => api.delete(`/admin/structure/departments/${id}`),
+            getPrograms: (deptId) => api.get(`/admin/structure/programs?departmentId=${deptId}`),
+            createProgram: (repo) => api.post('/admin/structure/programs', repo),
+            deleteProgram: (id) => api.delete(`/admin/structure/programs/${id}`),
+            getClasses: (progId) => api.get(`/admin/structure/classes?programId=${progId}`),
+            createClass: (repo) => api.post('/admin/structure/classes', repo),
+            deleteClass: (id) => api.delete(`/admin/structure/classes/${id}`),
+        },
+        // --- Academic Governance ---
+        governance: {
+            getTerms: () => api.get('/admin/governance/terms'),
+            createTerm: (data) => api.post('/admin/governance/terms', data),
+            lockTerm: (id, locked) => api.patch(`/admin/governance/terms/${id}/lock?locked=${locked}`),
+            getPolicies: () => api.get('/admin/governance/policies'),
+            createPolicy: (data) => api.post('/admin/governance/policies', data),
+            acceptPolicy: (id) => api.post(`/admin/governance/policies/${id}/accept`),
+            checkPolicy: (id) => api.get(`/admin/governance/policies/${id}/check`),
+        },
+        // --- Dashboard & Metrics ---
+        dashboard: {
+            getMetrics: () => api.get('/principal/dashboard/metrics'),
+        },
+        // --- Quality & Safety ---
+        quality: {
+            reportIncident: (data) => api.post('/admin/quality/incidents', data),
+            getIncidents: () => api.get('/admin/quality/incidents'),
+            updateIncident: (id, status, notes, actions) =>
+                api.patch(`/admin/quality/incidents/${id}?status=${status}&notes=${notes || ''}&actions=${actions || ''}`),
+            recordObservation: (data) => api.post('/admin/quality/observations', data),
+            getObservationsByTeacher: (teacherId) => api.get(`/admin/quality/observations/teacher/${teacherId}`),
+        }
     }
 };
 
