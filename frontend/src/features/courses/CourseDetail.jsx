@@ -114,8 +114,7 @@ const CourseDetail = ({ currentUser }) => {
         },
         {
             key: 'attendance',
-            comp: ({ courseId, isTeacher, currentUser, course }) => {
-                const { API_BASE, token } = useAppContext();
+            comp: ({ courseId, isTeacher, currentUser, course, API_BASE, token }) => {
                 // Visible only for teachers defined in config below, but double check safety
                 if (!isTeacher) return null;
 
@@ -476,7 +475,15 @@ const CourseDetail = ({ currentUser }) => {
                         </h2>
                         {modules.map(mod => (
                             activeTab === mod.key && mod.enabled && (
-                                <mod.comp key={mod.key} courseId={course.id} currentUser={currentUser} isTeacher={isTeacher} course={course} />
+                                <mod.comp
+                                    key={mod.key}
+                                    courseId={course.id}
+                                    currentUser={currentUser}
+                                    isTeacher={isTeacher}
+                                    course={course}
+                                    API_BASE={API_BASE}
+                                    token={token}
+                                />
                             )
                         ))}
                     </div>
