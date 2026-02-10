@@ -1,6 +1,10 @@
 package com.eduflex.backend.service;
 
-import com.eduflex.backend.model.*;
+import com.eduflex.backend.model.Course;
+import com.eduflex.backend.model.CourseResult;
+import com.eduflex.backend.model.Document;
+import com.eduflex.backend.model.SystemSetting;
+import com.eduflex.backend.model.User;
 import com.eduflex.backend.repository.*;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;

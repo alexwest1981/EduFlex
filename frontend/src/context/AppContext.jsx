@@ -20,7 +20,9 @@ const AppContext = createContext({
     activeAudiobook: null,
     setActiveAudiobook: () => { },
     isAudioPlayerMinimized: false,
-    setIsAudioPlayerMinimized: () => { }
+    setIsAudioPlayerMinimized: () => { },
+    activeCourseId: null,
+    setActiveCourseId: () => { }
 });
 
 export const AppProvider = ({ children }) => {
@@ -34,6 +36,7 @@ export const AppProvider = ({ children }) => {
     const [token, setToken] = useState(localStorage.getItem('token'));
     const [activeAudiobook, setActiveAudiobook] = useState(null);
     const [isAudioPlayerMinimized, setIsAudioPlayerMinimized] = useState(false);
+    const [activeCourseId, setActiveCourseId] = useState(null);
 
     const API_BASE = '/api';
 
@@ -184,7 +187,9 @@ export const AppProvider = ({ children }) => {
             activeAudiobook,
             setActiveAudiobook,
             isAudioPlayerMinimized,
-            setIsAudioPlayerMinimized
+            setIsAudioPlayerMinimized,
+            activeCourseId,
+            setActiveCourseId
         }}>
             {children}
         </AppContext.Provider>

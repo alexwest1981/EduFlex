@@ -92,3 +92,18 @@ build_log*.txt
 # Temporära byggloggar
 full_build_log.txt
 git_status.txt
+
+# Local & Sensitive Files
+.env
+*.lic
+*.license
+lti_token.txt
+start_backend.bat
+kill_java.bat
+cloudflared.exe
+cloudflared_config.yml
+*.json.tmp
+ebook11.json
+ebooks_list.json
+license_history.json
+table_list.txt

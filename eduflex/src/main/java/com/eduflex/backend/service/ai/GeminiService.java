@@ -360,7 +360,7 @@ public class GeminiService {
         }
     }
 
-    private static final String GEMINI_EMBEDDING_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/embedding-001:embedContent?key=%s";
+    private static final String GEMINI_EMBEDDING_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-embedding-001:embedContent?key=%s";
 
     /**
      * Generates a vector embedding for the given text using Gemini.
@@ -372,7 +372,7 @@ public class GeminiService {
 
         // Prepare request body
         Map<String, Object> requestBody = Map.of(
-                "model", "models/embedding-001",
+                "model", "models/gemini-embedding-001",
                 "content", Map.of(
                         "parts", List.of(
                                 Map.of("text", text))));

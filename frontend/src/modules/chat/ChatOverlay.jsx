@@ -11,7 +11,7 @@ const notifySound = new Audio('https://assets.mixkit.co/active_storage/sfx/2354/
 
 const ChatOverlay = () => {
     const { t } = useTranslation();
-    const { currentUser } = useAppContext();
+    const { currentUser, activeCourseId } = useAppContext();
     const location = useLocation(); // For detecting course
     const [isOpen, setIsOpen] = useState(false);
     const [activeChatUser, setActiveChatUser] = useState(null);
@@ -177,16 +177,18 @@ const ChatOverlay = () => {
     };
 
     const sendAIMessage = async (content) => {
-        // Extract course ID from URL if possible
-        // Format: /course/:id
-        const match = location.pathname.match(/\/course\/(\d+)/);
-        const courseId = match ? match[1] : null;
+        // Primary source: Global context (activeCourseId)
+        // Fallback: Extract course ID from URL if global context is not yet set
+        const match = location.pathname.match(/\/course\/([^\/]+)/);
+        const urlCourseIdentifier = match ? match[1] : null;
+
+        const effectiveCourseId = activeCourseId || urlCourseIdentifier;
 
         setAiMessages(prev => [...prev, { role: 'user', text: content }]);
         setMsgInput('');
         setAiLoading(true);
 
-        if (!courseId) {
+        if (!effectiveCourseId) {
             setTimeout(() => {
                 setAiMessages(prev => [...prev, { role: 'ai', text: '⚠️ Du måste vara inne på en kurssida för att jag ska kunna svara på frågor om kursen.' }]);
                 setAiLoading(false);
@@ -195,7 +197,7 @@ const ChatOverlay = () => {
         }
 
         try {
-            const response = await api.ai.tutor.chat(courseId, content);
+            const response = await api.ai.tutor.chat(effectiveCourseId, content);
             setAiMessages(prev => [...prev, { role: 'ai', text: response.answer }]);
         } catch (error) {
             console.error("Failed to chat with AI", error);

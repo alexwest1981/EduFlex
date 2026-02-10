@@ -46,7 +46,7 @@ const CourseDetail = ({ currentUser }) => {
     const [isSavingEvaluation, setIsSavingEvaluation] = useState(false); // New state
     const [myResult, setMyResult] = useState(null);
     const [canClaim, setCanClaim] = useState(false);
-    const { API_BASE, token } = useAppContext();
+    const { API_BASE, token, setActiveCourseId } = useAppContext();
 
     const userRole = currentUser?.role?.name || currentUser?.role;
     const isTeacher = currentUser && (userRole === 'TEACHER' || userRole === 'ADMIN' || userRole === 'REKTOR');
@@ -207,7 +207,17 @@ const CourseDetail = ({ currentUser }) => {
         if (id) {
             loadCourseData();
         }
-    }, [id, currentUser, isTeacher]);
+
+        return () => {
+            setActiveCourseId(null);
+        };
+    }, [id, currentUser, isTeacher, setActiveCourseId]);
+
+    useEffect(() => {
+        if (course && course.id) {
+            setActiveCourseId(course.id);
+        }
+    }, [course, setActiveCourseId]);
 
     useEffect(() => {
         const currentMod = modules.find(m => m.key === activeTab);

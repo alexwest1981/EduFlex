@@ -14,10 +14,14 @@ public class AITutorController {
 
     private final AITutorService aiTutorService;
     private final com.eduflex.backend.service.ModuleService moduleService;
+    private final com.eduflex.backend.repository.CourseRepository courseRepository;
 
-    public AITutorController(AITutorService aiTutorService, com.eduflex.backend.service.ModuleService moduleService) {
+    public AITutorController(AITutorService aiTutorService, 
+                           com.eduflex.backend.service.ModuleService moduleService,
+                           com.eduflex.backend.repository.CourseRepository courseRepository) {
         this.aiTutorService = aiTutorService;
         this.moduleService = moduleService;
+        this.courseRepository = courseRepository;
     }
 
     /**
@@ -85,7 +89,22 @@ public class AITutorController {
         if (courseIdObj == null) {
             return ResponseEntity.badRequest().body("Missing courseId");
         }
-        Long courseId = Long.valueOf(courseIdObj.toString());
+        
+        Long courseId = null;
+        String courseIdStr = courseIdObj.toString();
+        
+        try {
+            courseId = Long.valueOf(courseIdStr);
+        } catch (NumberFormatException e) {
+            // Not a number, try resolution by slug
+            courseId = courseRepository.findBySlug(courseIdStr)
+                    .map(com.eduflex.backend.model.Course::getId)
+                    .orElse(null);
+        }
+
+        if (courseId == null) {
+            return ResponseEntity.badRequest().body("Course not found: " + courseIdStr);
+        }
 
         String question = (String) payload.get("question");
 
@@ -113,10 +132,24 @@ public class AITutorController {
             return ResponseEntity.badRequest().body("Missing courseId");
         }
 
-        Long courseId = Long.valueOf(courseIdObj.toString());
+        Long courseId = null;
+        String courseIdStr = courseIdObj.toString();
+        
+        try {
+            courseId = Long.valueOf(courseIdStr);
+        } catch (NumberFormatException e) {
+            courseId = courseRepository.findBySlug(courseIdStr)
+                    .map(com.eduflex.backend.model.Course::getId)
+                    .orElse(null);
+        }
 
-        // Run async
-        new Thread(() -> aiTutorService.ingestCourse(courseId)).start();
+        if (courseId == null) {
+            return ResponseEntity.badRequest().body("Course not found for ingestion: " + courseIdStr);
+        }
+
+        // Run async - need final var for lambda
+        final Long finalCourseId = courseId;
+        new Thread(() -> aiTutorService.ingestCourse(finalCourseId)).start();
 
         return ResponseEntity.ok("Bulk ingestion started. Please wait a few minutes.");
     }
