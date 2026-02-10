@@ -71,7 +71,7 @@ const VoltageLayout = ({ children }) => {
             <div className="w-full min-h-screen max-w-[1600px] bg-[#F2F3F5] dark:bg-[#121212] rounded-[40px] shadow-2xl flex flex-row relative ring-4 ring-black/5 dark:ring-white/5">
 
                 {/* BLACK SIDEBAR - The "Console" Strip */}
-                <aside className="w-24 lg:w-72 bg-[#0A0A0A] text-white flex flex-col shrink-0 relative z-10 transition-all duration-300">
+                <aside className="w-24 lg:w-72 bg-[#0A0A0A] text-white flex flex-col shrink-0 relative z-10 transition-all duration-300 self-stretch">
 
                     {/* Brand / Logo */}
                     <div className="h-24 flex items-center justify-center lg:justify-start lg:px-8">

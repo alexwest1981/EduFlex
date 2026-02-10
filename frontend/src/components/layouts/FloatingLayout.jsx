@@ -65,7 +65,7 @@ const FloatingLayout = ({ children }) => {
             <aside className={`
                 ${sidebarOpen ? 'w-64' : 'w-20'} 
                 rounded-[30px] border-none shadow-none bg-white dark:bg-[#1E1F20]
-                transition-all duration-300 flex flex-col z-20
+                transition-all duration-300 flex flex-col z-20 self-stretch
             `}>
 
                 {/* LOGO AREA */}

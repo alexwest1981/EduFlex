@@ -116,11 +116,11 @@ const StandardLayout = ({ children }) => {
 
             {/* SIDEBAR - Always desktop-focused now */}
             <aside className={`
-                relative h-full transition-all duration-300 z-50 flex flex-col
+                relative transition-all duration-300 z-50 flex flex-col self-stretch
                 ${sidebarOpen ? 'w-72' : 'w-20'}
-                bg-white/80 dark:bg-[#1E1F20]/80 border-r border-gray-100 dark:border-[#282a2c]
+                bg-white dark:bg-[#1E1F20] border-r border-gray-100 dark:border-[#282a2c]
                 hidden lg:flex
-            `} style={{ backdropFilter: 'var(--card-backdrop)' }}>
+            `} style={{ backdropFilter: 'none' }}>
 
                 {/* LOGO AREA */}
                 <div className="h-16 flex items-center justify-between px-6 border-b border-gray-100 dark:border-[#282a2c] shrink-0">
@@ -242,15 +242,17 @@ const StandardLayout = ({ children }) => {
                 </div>
             </main>
 
-            {isModuleActive('CHAT') && (
-                <div className="hidden lg:block">
-                    <ChatModule
-                        currentUser={currentUser}
-                        API_BASE={API_BASE}
-                        token={token}
-                    />
-                </div>
-            )}
+            {
+                isModuleActive('CHAT') && (
+                    <div className="hidden lg:block">
+                        <ChatModule
+                            currentUser={currentUser}
+                            API_BASE={API_BASE}
+                            token={token}
+                        />
+                    </div>
+                )
+            }
         </div >
     );
 };

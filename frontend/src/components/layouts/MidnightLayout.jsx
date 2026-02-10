@@ -60,7 +60,7 @@ const MidnightLayout = ({ children }) => {
 `}</style>
 
             {/* FLOATING APP CONTAINER - Dark Zinc Card */}
-            <div className="w-full min-h-screen max-w-[1700px] bg-[#121212] rounded-[32px] shadow-2xl flex flex-col border border-white/10 relative">
+            <div className="w-full min-h-screen max-w-[1700px] bg-[#121212] rounded-[32px] shadow-2xl flex flex-col border border-white/10 relative items-stretch">
 
                 {/* HEADER - FinPoint Style */}
                 <header className="h-20 flex items-center justify-between px-8 shrink-0 border-b border-white/5 bg-[#121212]/50 backdrop-blur-md sticky top-0 z-50">

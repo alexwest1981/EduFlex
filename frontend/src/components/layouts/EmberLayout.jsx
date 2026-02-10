@@ -71,7 +71,7 @@ const EmberLayout = ({ children }) => {
             <div className="w-full min-h-screen max-w-[1800px] bg-white dark:bg-[#1E1F20] rounded-[30px] shadow-2xl flex flex-row border border-white/10 relative">
 
                 {/* LEFT SIDEBAR - Clean White */}
-                <aside className="w-64 lg:w-72 bg-white dark:bg-[#1E1F20] flex flex-col border-r border-gray-100 dark:border-gray-800 shrink-0">
+                <aside className="w-64 lg:w-72 bg-white dark:bg-[#1E1F20] flex flex-col border-r border-gray-100 dark:border-gray-800 shrink-0 self-stretch">
 
                     {/* Brand */}
                     <div className="h-24 flex items-center px-8">
