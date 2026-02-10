@@ -57,6 +57,7 @@ import AcademicGovernance from './features/principal/AcademicGovernance';
 import QualitySafetyManager from './features/principal/QualitySafetyManager';
 import PrincipalTools from './features/principal/PrincipalTools';
 import RektorLanding from './features/principal/RektorLanding';
+import MessageCenter from './features/messages/MessageCenter';
 import IncidentManager from './features/principal/IncidentManager';
 import StaffingControl from './features/principal/StaffingControl';
 import ReportLibrary from './features/principal/ReportLibrary';
@@ -158,6 +159,14 @@ const AppRoutes = () => {
                     <ProtectedRoute roles={['ADMIN', 'ROLE_REKTOR', 'REKTOR']}>
                         <Layout currentUser={currentUser} handleLogout={logout}>
                             <RektorLanding />
+                        </Layout>
+                    </ProtectedRoute>
+                } />
+
+                <Route path="/communication" element={
+                    <ProtectedRoute roles={['ADMIN', 'ROLE_REKTOR', 'REKTOR', 'PRINCIPAL', 'TEACHER']}>
+                        <Layout currentUser={currentUser} handleLogout={logout}>
+                            <MessageCenter />
                         </Layout>
                     </ProtectedRoute>
                 } />

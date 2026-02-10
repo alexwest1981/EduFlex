@@ -38,6 +38,10 @@
 ## 🇸🇪 Svenska
 
 ### ⚡ Senaste Uppdateringarna
+*   **📩 Kommunikation – Rektorsåtkomst till Meddelanden (10 feb 2026):**
+    *   **Full Inbox-åtkomst:** Rektorsrollen har nu full tillgång till det interna meddelandesystemet via en dedikerad `/communication`-route.
+    *   **Sidebar-integration:** Lagt till en direktlänk till "Kommunikation" i sidomenyn för alla rörda roller.
+    *   **Global Route:** Implementerat en central route för `MessageCenter` som fungerar oberoende av dashboard-tabbar för ökad flexibilitet.
 *   **🎯 Mission Control – Funktionella Moduler & Backend-fix (9 feb 2026):**
     *   **Incidenthantering:** Ny `IncidentManager`-komponent med CRUD-endpoints (`IncidentReportController`) för att rapportera, söka och uppdatera incidenter.
     *   **Bemanningskontroll:** Ny `StaffingControl`-komponent för hantering av sjukfrånvaro och vikariepooler.
@@ -374,6 +378,10 @@ curl -X POST http://localhost:8080/api/tenants \
 ## 🇬🇧 English
 
 ### ⚡ Latest Updates
+*   **📩 Communication – Principal Mailbox Access (Feb 10, 2026):**
+    *   **Full Inbox Access:** The Principal (Rektor) role now has full access to the internal messaging system via a dedicated `/communication` route.
+    *   **Sidebar Integration:** Added a direct "Communication" link in the sidebar for all relevant staff and administrative roles.
+    *   **Global Route:** Implemented a centralized `MessageCenter` route that works independently of dashboard tabs for increased flexibility.
 *   **🎯 Mission Control – Functional Modules & Backend Fix (Feb 9, 2026):**
     *   **Incident Management:** New `IncidentManager` component with full CRUD endpoints (`IncidentReportController`) for reporting, searching, and updating incidents.
     *   **Staffing Control:** New `StaffingControl` component for managing sick leave and substitute teacher pools.
