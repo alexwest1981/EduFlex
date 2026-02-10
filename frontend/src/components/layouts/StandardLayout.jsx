@@ -116,7 +116,7 @@ const StandardLayout = ({ children }) => {
 
             {/* SIDEBAR - Always desktop-focused now */}
             <aside className={`
-                relative transition-all duration-300 z-50 flex flex-col self-stretch
+                sticky top-0 h-screen transition-all duration-300 z-50 flex flex-col
                 ${sidebarOpen ? 'w-72' : 'w-20'}
                 bg-white dark:bg-[#1E1F20] border-r border-gray-100 dark:border-[#282a2c]
                 hidden lg:flex
@@ -134,7 +134,7 @@ const StandardLayout = ({ children }) => {
                     </div>
                 </div>
 
-                <nav className="flex-1 py-6 px-3 space-y-2 custom-scrollbar">
+                <nav className="flex-1 py-6 px-3 space-y-2 overflow-y-auto custom-scrollbar">
                     <SidebarSection
                         title={t('sidebar.categories.main')}
                         items={navItems.main}

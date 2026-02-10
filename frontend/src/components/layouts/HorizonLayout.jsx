@@ -58,7 +58,7 @@ const HorizonLayout = ({ children }) => {
             <div className={`fixed inset-0 -z-10 app-wrapper transition-colors duration-300 pointer-events-none`} />
 
             {/* TOP NAVIGATION BAR */}
-            <header className="h-20 px-8 flex items-center justify-between shrink-0">
+            <header className="h-20 px-8 flex items-center justify-between shrink-0 sticky top-0 z-50 bg-[var(--app-background)]/80 backdrop-blur-md transition-colors duration-300">
                 {/* Logo Area */}
                 <div className="flex items-center gap-3">
                     <div className="h-10 px-4 bg-white dark:bg-[#1E1F20] rounded-full flex items-center justify-center border border-gray-100 dark:border-[#3c4043] shadow-sm">

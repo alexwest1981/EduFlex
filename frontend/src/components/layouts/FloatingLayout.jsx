@@ -65,7 +65,7 @@ const FloatingLayout = ({ children }) => {
             <aside className={`
                 ${sidebarOpen ? 'w-64' : 'w-20'} 
                 rounded-[30px] border-none shadow-none bg-white dark:bg-[#1E1F20]
-                transition-all duration-300 flex flex-col z-20 self-stretch
+                transition-all duration-300 flex flex-col z-20 sticky top-4 h-[calc(100vh-2rem)]
             `}>
 
                 {/* LOGO AREA */}
@@ -80,7 +80,7 @@ const FloatingLayout = ({ children }) => {
 
                 {/* NO PROFILE IN SIDEBAR */}
 
-                <nav className="flex-1 py-6 px-4 space-y-2 custom-scrollbar">
+                <nav className="flex-1 py-6 px-4 space-y-2 overflow-y-auto custom-scrollbar">
                     {navItems.map((item) => {
                         return (
                             <NavLink

@@ -62,7 +62,7 @@ const PulseLayout = ({ children }) => {
             <div className="w-full min-h-screen max-w-[1500px] bg-[#F4F4F4] dark:bg-[#1E1E1E] rounded-[40px] shadow-2xl flex flex-row relative border border-white/40">
 
                 {/* SIDEBAR - Icon Only Strip */}
-                <aside className="w-24 bg-[#F4F4F4] dark:bg-[#1E1E1E] flex flex-col items-center py-8 shrink-0 z-20 self-stretch">
+                <aside className="w-24 bg-[#F4F4F4] dark:bg-[#1E1E1E] flex flex-col items-center py-8 shrink-0 z-20 sticky top-8 h-[calc(100vh-4rem)]">
 
                     {/* Brand Icon */}
                     <div className="w-12 h-12 bg-red-600 rounded-full flex items-center justify-center shadow-lg shadow-red-500/30 mb-8">

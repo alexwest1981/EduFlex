@@ -60,7 +60,7 @@ const NebulaLayout = ({ children }) => {
             <div className={`fixed inset - 0 - z - 10 app - wrapper transition - colors duration - 300 pointer - events - none`} />
 
             {/* NEBULA TOP BAR - Minimalist & Glassy */}
-            <header className="h-24 px-10 flex items-center justify-between shrink-0">
+            <header className="h-24 px-10 flex items-center justify-between shrink-0 sticky top-0 z-50 backdrop-blur-md bg-white/40 dark:bg-[#131314]/40 transition-colors duration-300">
                 {/* Logo Area */}
                 <div className="flex items-center gap-4">
                     <div className="flex items-center gap-2">
