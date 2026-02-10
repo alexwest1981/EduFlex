@@ -48,7 +48,7 @@ const NebulaLayout = ({ children }) => {
     ];
 
     return (
-        <div className="flex flex-col h-screen text-gray-800 dark:text-[#E3E3E3] font-sans transition-colors duration-300 overflow-hidden" style={{ background: 'var(--app-background)' }}>
+        <div className="flex flex-col min-h-screen w-full text-gray-800 dark:text-[#E3E3E3] font-sans transition-colors duration-300" style={{ background: 'var(--app-background)' }}>
             <style>{`
 @media(prefers - color - scheme: dark) {
                     .dark - mode - bg { background: var(--app - background - dark)!important; }
@@ -116,8 +116,8 @@ const NebulaLayout = ({ children }) => {
             </header>
 
             {/* MAIN CONTENT AREA - Infinite Glass Card */}
-            < main className="flex-1 px-6 pb-6 overflow-hidden flex flex-col" >
-                <div className="flex-1 bg-white/60 dark:bg-[#1E1F20]/60 backdrop-blur-3xl rounded-[40px] shadow-2xl shadow-purple-900/5 border border-white/60 dark:border-white/5 overflow-y-auto p-10 relative">
+            <main className="flex-1 px-6 pb-6" >
+                <div className="flex-1 bg-white/60 dark:bg-[#1E1F20]/60 backdrop-blur-3xl rounded-[40px] shadow-2xl shadow-purple-900/5 border border-white/60 dark:border-white/5 p-10 relative">
                     {children}
                 </div>
             </main >

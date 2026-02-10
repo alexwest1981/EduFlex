@@ -102,7 +102,7 @@ const StandardLayout = ({ children }) => {
     };
 
     return (
-        <div className="flex h-screen text-gray-900 dark:text-[#E3E3E3] font-sans transition-colors duration-300" style={{ background: 'var(--app-background)' }}>
+        <div className="flex min-h-screen text-gray-900 dark:text-[#E3E3E3] font-sans transition-colors duration-300" style={{ background: 'var(--app-background)' }}>
             <style>{`
                 @media (prefers-color-scheme: dark) {
                     .dark-mode-bg { background: var(--app-background-dark) !important; }
@@ -134,7 +134,7 @@ const StandardLayout = ({ children }) => {
                     </div>
                 </div>
 
-                <nav className="flex-1 py-6 px-3 space-y-2 overflow-y-auto custom-scrollbar">
+                <nav className="flex-1 py-6 px-3 space-y-2 custom-scrollbar">
                     <SidebarSection
                         title={t('sidebar.categories.main')}
                         items={navItems.main}
@@ -203,7 +203,7 @@ const StandardLayout = ({ children }) => {
             </aside>
 
             {/* Main content - responsive margins */}
-            <main className={`flex-1 transition-all duration-300 ml-0 p-0 h-full overflow-y-auto bg-gray-50 dark:bg-[#131314]`}>
+            <main className={`flex-1 transition-all duration-300 ml-0 p-0 bg-gray-50 dark:bg-[#131314]`}>
 
                 <header className={`h-16 flex items-center justify-between px-8 sticky top-0 z-40 transition-all ${scrolled ? 'bg-white/80 dark:bg-[#1E1F20]/80 backdrop-blur-md border-b border-gray-100 dark:border-[#282a2c]' : 'bg-transparent'
                     }`}>
@@ -237,7 +237,7 @@ const StandardLayout = ({ children }) => {
                     </div>
                 </header>
 
-                <div className="flex-1 overflow-y-auto p-4 lg:p-8 relative custom-scrollbar">
+                <div className="flex-1 p-4 lg:p-8 relative custom-scrollbar">
                     {children}
                 </div>
             </main>

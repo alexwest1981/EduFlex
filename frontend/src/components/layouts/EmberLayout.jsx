@@ -56,7 +56,7 @@ const EmberLayout = ({ children }) => {
 
 
     return (
-        <div className="flex items-center justify-center p-6 h-screen w-screen overflow-hidden text-[#1E1E1E] font-sans transition-colors duration-300" style={{ background: 'var(--app-background)' }}>
+        <div className="flex items-center justify-center p-6 min-h-screen w-full text-[#1E1E1E] font-sans transition-colors duration-300" style={{ background: 'var(--app-background)' }}>
             <style>{`
                 @media (prefers-color-scheme: dark) {
                     .dark-mode-bg { background: var(--app-background-dark) !important; }
@@ -68,10 +68,10 @@ const EmberLayout = ({ children }) => {
             <div className={`fixed inset-0 -z-10 app-wrapper transition-colors duration-300 pointer-events-none`} />
 
             {/* FLOATING APP CONTAINER */}
-            <div className="w-full h-full max-w-[1800px] bg-white dark:bg-[#1E1F20] rounded-[30px] shadow-2xl overflow-hidden flex flex-row border border-white/10 relative">
+            <div className="w-full min-h-screen max-w-[1800px] bg-white dark:bg-[#1E1F20] rounded-[30px] shadow-2xl flex flex-row border border-white/10 relative">
 
                 {/* LEFT SIDEBAR - Clean White */}
-                <aside className="w-64 lg:w-72 bg-white dark:bg-[#1E1F20] flex flex-col border-r border-gray-100 dark:border-gray-800 h-full shrink-0">
+                <aside className="w-64 lg:w-72 bg-white dark:bg-[#1E1F20] flex flex-col border-r border-gray-100 dark:border-gray-800 shrink-0">
 
                     {/* Brand */}
                     <div className="h-24 flex items-center px-8">
@@ -91,7 +91,7 @@ const EmberLayout = ({ children }) => {
                     </div>
 
                     {/* Navigation Scroll */}
-                    <div className="flex-1 overflow-y-auto px-6 py-4 space-y-2 scrollbar-hide">
+                    <div className="flex-1 px-6 py-4 space-y-2 scrollbar-hide">
                         <SidebarSection
                             title={t('sidebar.categories.main')}
                             items={navItems.main}
@@ -145,7 +145,7 @@ const EmberLayout = ({ children }) => {
                 </aside>
 
                 {/* MAIN CONTENT RIGHT */}
-                <div className="flex-1 flex flex-col h-full overflow-hidden bg-white dark:bg-[#1E1F20]">
+                <div className="flex-1 flex flex-col bg-white dark:bg-[#1E1F20]">
 
                     {/* Header */}
                     <header className="h-24 flex items-center justify-between px-8 border-b border-gray-50 dark:border-gray-800 shrink-0">
@@ -170,7 +170,7 @@ const EmberLayout = ({ children }) => {
                     </header>
 
                     {/* Content */}
-                    <main className="flex-1 overflow-y-auto p-8 relative">
+                    <main className="flex-1 p-8 relative">
                         {children}
                     </main>
 

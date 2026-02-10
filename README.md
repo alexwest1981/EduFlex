@@ -42,6 +42,10 @@
     *   **Full Inbox-åtkomst:** Rektorsrollen har nu full tillgång till det interna meddelandesystemet via en dedikerad `/communication`-route.
     *   **Sidebar-integration:** Lagt till en direktlänk till "Kommunikation" i sidomenyn för alla rörda roller.
     *   **Global Route:** Implementerat en central route för `MessageCenter` som fungerar oberoende av dashboard-tabbar för ökad flexibilitet.
+*   **💎 UI-Optimering – Full-Page Scroll & Sidebar-fix (10 feb 2026):**
+    *   **Eliminerat interna scrollister:** Alla 8 temalayouter har optimerats för att ta bort "iFrame-känslan" genom att ta bort fasta höjder (`h-screen`) och interna sidoskrollister.
+    *   **Single-Scroll Experience:** Hela sidan, inklusive sidomenyn när den är lång, använder nu webbläsarens huvudscrollbar för en mer naturlig och modern känsla.
+    *   **Dynamisk höjd:** `MessageCenter` och andra huvudkomponenter expanderar nu fritt på höjden istället för att vara låsta i små boxar.
 *   **🎯 Mission Control – Funktionella Moduler & Backend-fix (9 feb 2026):**
     *   **Incidenthantering:** Ny `IncidentManager`-komponent med CRUD-endpoints (`IncidentReportController`) för att rapportera, söka och uppdatera incidenter.
     *   **Bemanningskontroll:** Ny `StaffingControl`-komponent för hantering av sjukfrånvaro och vikariepooler.

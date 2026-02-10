@@ -50,7 +50,7 @@ const FloatingLayout = ({ children }) => {
     ];
 
     return (
-        <div className="flex h-screen text-gray-900 dark:text-[#E3E3E3] font-sans transition-colors duration-300 p-4 gap-4 overflow-hidden" style={{ background: 'var(--app-background)' }}>
+        <div className="flex min-h-screen w-full text-gray-900 dark:text-[#E3E3E3] font-sans transition-colors duration-300 p-4 gap-4" style={{ background: 'var(--app-background)' }}>
             <style>{`
                 @media (prefers-color-scheme: dark) {
                     .dark-mode-bg { background: var(--app-background-dark) !important; }
@@ -64,7 +64,7 @@ const FloatingLayout = ({ children }) => {
 
             <aside className={`
                 ${sidebarOpen ? 'w-64' : 'w-20'} 
-                rounded-[30px] border-none shadow-none h-full bg-white dark:bg-[#1E1F20]
+                rounded-[30px] border-none shadow-none bg-white dark:bg-[#1E1F20]
                 transition-all duration-300 flex flex-col z-20
             `}>
 
@@ -80,7 +80,7 @@ const FloatingLayout = ({ children }) => {
 
                 {/* NO PROFILE IN SIDEBAR */}
 
-                <nav className="flex-1 py-6 px-4 space-y-2 overflow-y-auto custom-scrollbar">
+                <nav className="flex-1 py-6 px-4 space-y-2 custom-scrollbar">
                     {navItems.map((item) => {
                         return (
                             <NavLink
@@ -123,7 +123,7 @@ const FloatingLayout = ({ children }) => {
             </aside>
 
             {/* MAIN CONTENT CARD */}
-            <main className="flex-1 transition-all duration-300 bg-white dark:bg-[#1E1F20] rounded-[30px] shadow-sm ml-0 overflow-y-auto h-full p-8">
+            <main className="flex-1 transition-all duration-300 bg-white dark:bg-[#1E1F20] rounded-[30px] shadow-sm ml-0 p-8">
 
                 {/* TOP HEADER */}
                 <div className="flex items-center justify-between mb-8">

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
-import { LayoutDashboard, FileText, User, Settings, LogOut, Layers, Menu, X, Award, Zap, Moon, Sun, Calendar, BookOpen, TrendingUp, HelpCircle, Store, Library, Shield, Folder, BarChart2, HardDrive, Wallet, Music, Play, Pause, Heart, Speaker, MessageSquare } from 'lucide-react';
+import { LayoutDashboard, FileText, User, Settings, LogOut, Layers, Menu, X, Award, Zap, Moon, Sun, Calendar, BookOpen, TrendingUp, HelpCircle, Store, Library, Shield, Folder, BarChart2, HardDrive, Wallet, Music, Play, Pause, Heart, Speaker, MessageSquare, Users } from 'lucide-react';
 import { useAppContext } from '../../context/AppContext';
 import { useModules } from '../../context/ModuleContext';
 import { useTranslation } from 'react-i18next';
@@ -47,7 +47,7 @@ const PulseLayout = ({ children }) => {
     ];
 
     return (
-        <div className="flex items-center justify-center p-8 h-screen w-screen overflow-hidden text-gray-800 font-sans transition-colors duration-300" style={{ background: 'var(--app-background)' }}> {/* Soft Grey BG */}
+        <div className="flex items-center justify-center p-8 min-h-screen w-full text-gray-800 font-sans transition-colors duration-300" style={{ background: 'var(--app-background)' }}> {/* Soft Grey BG */}
             <style>{`
                 @media (prefers-color-scheme: dark) {
                     .dark-mode-bg { background: var(--app-background-dark) !important; }
@@ -59,7 +59,7 @@ const PulseLayout = ({ children }) => {
             `}</style>
 
             {/* FLOATING APP CONTAINER - Soft Card */}
-            <div className="w-full h-full max-w-[1500px] bg-[#F4F4F4] dark:bg-[#1E1E1E] rounded-[40px] shadow-2xl overflow-hidden flex flex-row relative border border-white/40">
+            <div className="w-full min-h-screen max-w-[1500px] bg-[#F4F4F4] dark:bg-[#1E1E1E] rounded-[40px] shadow-2xl flex flex-row relative border border-white/40">
 
                 {/* SIDEBAR - Icon Only Strip */}
                 <aside className="w-24 bg-[#F4F4F4] dark:bg-[#1E1E1E] flex flex-col items-center py-8 shrink-0 z-20">
@@ -103,7 +103,7 @@ const PulseLayout = ({ children }) => {
                 </aside>
 
                 {/* MAIN CONTENT AREA */}
-                <div className="flex-1 flex flex-col h-full overflow-hidden relative bg-[#F4F4F4] dark:bg-[#1E1E1E]">
+                <div className="flex-1 flex flex-col relative bg-[#F4F4F4] dark:bg-[#1E1E1E]">
 
                     {/* Header - Transparent & Minimal */}
                     <header className="h-24 flex items-center justify-between px-8 shrink-0">
@@ -137,7 +137,7 @@ const PulseLayout = ({ children }) => {
                     </header>
 
                     {/* Content */}
-                    <main className="flex-1 overflow-y-auto px-8 pb-32 pulse-scroll">
+                    <main className="flex-1 px-8 pb-32 pulse-scroll">
                         {children}
                     </main>
 

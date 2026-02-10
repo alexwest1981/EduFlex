@@ -56,7 +56,7 @@ const VoltageLayout = ({ children }) => {
 
 
     return (
-        <div className="flex items-center justify-center p-8 h-screen w-screen overflow-hidden text-[#1E1E1E] font-sans transition-colors duration-300" style={{ background: 'var(--app-background)' }}>
+        <div className="flex items-center justify-center p-8 min-h-screen w-full text-[#1E1E1E] font-sans transition-colors duration-300" style={{ background: 'var(--app-background)' }}>
             <style>{`
 @media(prefers - color - scheme: dark) {
                     .dark - mode - bg { background: var(--app - background - dark)!important; }
@@ -68,10 +68,10 @@ const VoltageLayout = ({ children }) => {
             <div className={`fixed inset - 0 - z - 10 app - wrapper transition - colors duration - 300 pointer - events - none`} />
 
             {/* CONSOLE CONTAINER - High Contrast */}
-            <div className="w-full h-full max-w-[1600px] bg-[#F2F3F5] dark:bg-[#121212] rounded-[40px] shadow-2xl overflow-hidden flex flex-row relative ring-4 ring-black/5 dark:ring-white/5">
+            <div className="w-full min-h-screen max-w-[1600px] bg-[#F2F3F5] dark:bg-[#121212] rounded-[40px] shadow-2xl flex flex-row relative ring-4 ring-black/5 dark:ring-white/5">
 
                 {/* BLACK SIDEBAR - The "Console" Strip */}
-                <aside className="w-24 lg:w-72 bg-[#0A0A0A] text-white flex flex-col h-full shrink-0 relative z-10 transition-all duration-300">
+                <aside className="w-24 lg:w-72 bg-[#0A0A0A] text-white flex flex-col shrink-0 relative z-10 transition-all duration-300">
 
                     {/* Brand / Logo */}
                     <div className="h-24 flex items-center justify-center lg:justify-start lg:px-8">
@@ -91,7 +91,7 @@ const VoltageLayout = ({ children }) => {
                     </div>
 
                     {/* Navigation Items */}
-                    <div className="flex-1 overflow-y-auto px-4 lg:px-6 py-4 space-y-6 scrollbar-hide flex flex-col items-center lg:items-stretch transition-all duration-300">
+                    <div className="flex-1 px-4 lg:px-6 py-4 space-y-6 scrollbar-hide flex flex-col items-center lg:items-stretch transition-all duration-300">
                         <SidebarSection
                             title={t('sidebar.categories.main')}
                             items={navItems.main}
@@ -147,7 +147,7 @@ const VoltageLayout = ({ children }) => {
                 </aside>
 
                 {/* MAIN CONTENT RIGHT */}
-                <div className="flex-1 flex flex-col h-full overflow-hidden bg-[#F2F3F5] dark:bg-[#121212] relative">
+                <div className="flex-1 flex flex-col bg-[#F2F3F5] dark:bg-[#121212] relative">
 
                     {/* Header Strip - Minimal */}
                     <header className="h-20 flex items-center justify-between px-8 shrink-0 bg-transparent">
@@ -164,7 +164,7 @@ const VoltageLayout = ({ children }) => {
                     </header>
 
                     {/* CONTENT CANVAS */}
-                    <main className="flex-1 overflow-y-auto p-4 lg:p-8 relative">
+                    <main className="flex-1 p-4 lg:p-8 relative">
                         {children}
                     </main>
 

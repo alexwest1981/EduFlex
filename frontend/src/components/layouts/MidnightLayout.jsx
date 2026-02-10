@@ -45,7 +45,7 @@ const MidnightLayout = ({ children }) => {
     ];
 
     return (
-        <div className="flex items-center justify-center p-6 h-screen w-screen overflow-hidden text-zinc-300 font-sans transition-colors duration-300" style={{ background: 'var(--app-background)' }}> {/* Rich Zinc Black */}
+        <div className="flex items-center justify-center p-6 min-h-screen w-full text-zinc-300 font-sans transition-colors duration-300" style={{ background: 'var(--app-background)' }}> {/* Rich Zinc Black */}
             <style>{`
 @media(prefers - color - scheme: dark) {
                     .dark - mode - bg { background: var(--app - background - dark)!important; }
@@ -60,7 +60,7 @@ const MidnightLayout = ({ children }) => {
 `}</style>
 
             {/* FLOATING APP CONTAINER - Dark Zinc Card */}
-            <div className="w-full h-full max-w-[1700px] bg-[#121212] rounded-[32px] shadow-2xl overflow-hidden flex flex-col border border-white/10 relative">
+            <div className="w-full min-h-screen max-w-[1700px] bg-[#121212] rounded-[32px] shadow-2xl flex flex-col border border-white/10 relative">
 
                 {/* HEADER - FinPoint Style */}
                 <header className="h-20 flex items-center justify-between px-8 shrink-0 border-b border-white/5 bg-[#121212]/50 backdrop-blur-md sticky top-0 z-50">
@@ -132,7 +132,7 @@ const MidnightLayout = ({ children }) => {
                 </header>
 
                 {/* MAIN CONTENT - Dark Canvas */}
-                <main className="flex-1 overflow-y-auto px-8 py-6 midnight-scroll relative bg-gradient-to-b from-[#121212] to-[#0D0D0D]">
+                <main className="flex-1 px-8 py-6 midnight-scroll relative bg-gradient-to-b from-[#121212] to-[#0D0D0D]">
                     {/* Subtle Glows */}
                     <div className="absolute top-0 right-1/4 w-[600px] h-[400px] bg-[#00DC82] opacity-[0.02] blur-[120px] pointer-events-none rounded-full mix-blend-screen" />
                     <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-blue-500 opacity-[0.02] blur-[150px] pointer-events-none rounded-full mix-blend-screen" />
