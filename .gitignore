@@ -78,7 +78,7 @@ build_log*.txt
 !package.json
 !package-lock.json
 !stripe_prices.json
-!ScriptDescription.md
+!docs/ScriptDescription.md
 !ROADMAP.md
 !COMMERCIAL_PLAN.md
 !GAMIFICATION_PLAN.md
@@ -107,3 +107,6 @@ ebook11.json
 ebooks_list.json
 license_history.json
 table_list.txt
+
+# Scripts (Local only)
+scripts/

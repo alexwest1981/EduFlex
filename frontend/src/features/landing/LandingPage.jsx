@@ -224,6 +224,13 @@ const LandingPage = () => {
             description: 'Fullständigt skolledningslager. Hantera organisationshierarki, se aggregerad statistik för hela skolan och hantera incidentrapportering i en unifierad vy.',
             color: 'text-brand-teal',
             bgColor: 'bg-brand-teal/10'
+        },
+        {
+            icon: <Map className="w-6 h-6" />,
+            title: 'Rich Course Management',
+            description: 'Synkronisera manuellt skapade kurser med Skolverkets officiella data. Importera automatiskt kursbeskrivningar, centralt innehåll och betygskriterier direkt från källan.',
+            color: 'text-emerald-400',
+            bgColor: 'bg-emerald-500/10'
         }
     ];
 

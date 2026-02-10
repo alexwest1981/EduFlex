@@ -907,5 +907,13 @@
     "practice_type": "Övning",
     "rationale_prefix": "AI-resonemang:",
     "no_data": "Inte tillräckligt med data för AI-analys än. Fortsätt arbeta i kurserna!"
+  },
+  "gamification": {
+    "level_title": "Nuvarande Nivå",
+    "student_rank": "Elevranking",
+    "points_to_next": "poäng till nästa nivå",
+    "my_badges": "Mina Utmärkelser",
+    "no_awards": "Inga utmärkelser ännu. Fortsätt kämpa!",
+    "view_all": "Visa alla utmärkelser"
   }
 }

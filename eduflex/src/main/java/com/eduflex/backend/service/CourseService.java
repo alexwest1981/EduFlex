@@ -17,6 +17,7 @@ import com.eduflex.backend.repository.SkolverketCourseRepository;
 import com.eduflex.backend.repository.UserRepository;
 import com.eduflex.backend.repository.AssignmentRepository;
 import com.eduflex.backend.repository.SubmissionRepository;
+import com.eduflex.backend.repository.SkolverketGradingCriteriaRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,6 +39,8 @@ public class CourseService {
     private final CourseApplicationRepository applicationRepository;
     private final com.eduflex.backend.repository.CourseEvaluationResponseRepository evaluationResponseRepository;
     private final SkolverketCourseRepository skolverketCourseRepository;
+    private final SkolverketGradingCriteriaRepository gradingCriteriaRepository;
+    private final SkolverketApiClientService skolverketApiClient;
 
     private final com.eduflex.backend.repository.CourseResultRepository resultRepository;
     private final AssignmentRepository assignmentRepository;
@@ -61,6 +64,8 @@ public class CourseService {
             AssignmentRepository assignmentRepository,
             SubmissionRepository submissionRepository,
             SkolverketCourseRepository skolverketCourseRepository,
+            SkolverketGradingCriteriaRepository gradingCriteriaRepository,
+            SkolverketApiClientService skolverketApiClient,
             StorageService storageService,
             LicenseService licenseService,
             com.eduflex.backend.repository.UserLessonProgressRepository userLessonProgressRepository,
@@ -75,6 +80,8 @@ public class CourseService {
         this.assignmentRepository = assignmentRepository;
         this.submissionRepository = submissionRepository;
         this.skolverketCourseRepository = skolverketCourseRepository;
+        this.gradingCriteriaRepository = gradingCriteriaRepository;
+        this.skolverketApiClient = skolverketApiClient;
         this.storageService = storageService;
         this.licenseService = licenseService;
         this.userLessonProgressRepository = userLessonProgressRepository;
@@ -121,9 +128,18 @@ public class CourseService {
         course.setColor(dto.color() != null && !dto.color().isEmpty() ? dto.color() : "bg-indigo-600");
         course.setMaxStudents(dto.maxStudents() != null ? dto.maxStudents() : 30);
 
-        // Link to Skolverket course if provided
+        // Link to Skolverket course if provided + fetch rich data from API
         if (dto.skolverketCourseId() != null) {
-            skolverketCourseRepository.findById(dto.skolverketCourseId()).ifPresent(course::setSkolverketCourse);
+            skolverketCourseRepository.findById(dto.skolverketCourseId()).ifPresent(skCourse -> {
+                course.setSkolverketCourse(skCourse);
+                enrichSkolverketCourse(skCourse, course);
+            });
+        } else if (course.getCourseCode() != null && !course.getCourseCode().isBlank()) {
+            // Automatically try to link by course code if ID not provided (manual entry)
+            skolverketCourseRepository.findByCourseCode(course.getCourseCode()).ifPresent(skCourse -> {
+                course.setSkolverketCourse(skCourse);
+                enrichSkolverketCourse(skCourse, course);
+            });
         }
 
         // Create Group Rooms
@@ -169,6 +185,157 @@ public class CourseService {
             slug = baseSlug + "-" + count++;
         }
         return slug;
+    }
+
+    /**
+     * Fetch rich data from Skolverket API and enrich a SkolverketCourse with
+     * criteria, central content etc. Also links the EduFlex Course to the
+     * best individual course (the one that has criteria).
+     */
+    @SuppressWarnings("unchecked")
+    private void enrichSkolverketCourse(SkolverketCourse skCourse, Course course) {
+        try {
+            String initialCode = skCourse.getCourseCode();
+            Object apiResponse = skolverketApiClient.getSubject(initialCode);
+
+            // If the direct code fails (it's a course code, not a subject), try the subject
+            // name
+            if (apiResponse instanceof java.util.Map) {
+                java.util.Map<String, Object> data = (java.util.Map<String, Object>) apiResponse;
+                if (data.containsKey("error")) {
+                    // courseCode might be a subject code or a course code — try common prefixes
+                    if (initialCode.length() >= 3) {
+                        String subjectPrefix = initialCode.substring(0, 3);
+                        apiResponse = skolverketApiClient.getSubject(subjectPrefix);
+                        if (apiResponse instanceof java.util.Map) {
+                            data = (java.util.Map<String, Object>) apiResponse;
+                            if (data.containsKey("error"))
+                                return;
+                        } else {
+                            return;
+                        }
+                    } else {
+                        return;
+                    }
+                }
+
+                java.util.Map<String, Object> subjectData = (java.util.Map<String, Object>) data.get("subject");
+                if (subjectData == null)
+                    return;
+
+                // Update skCourse with API data if missing
+                if (skCourse.getDescription() == null || skCourse.getDescription().isEmpty()) {
+                    skCourse.setDescription((String) subjectData.get("description"));
+                }
+
+                // Copy description to course if course description is missing
+                if (course.getDescription() == null || course.getDescription().isBlank()) {
+                    course.setDescription(skCourse.getDescription());
+                }
+
+                if (skCourse.getSubjectPurpose() == null || skCourse.getSubjectPurpose().isEmpty()) {
+                    skCourse.setSubjectPurpose((String) subjectData.get("purpose"));
+                }
+                if (skCourse.getEnglishTitle() == null || skCourse.getEnglishTitle().isEmpty()) {
+                    skCourse.setEnglishTitle((String) subjectData.get("englishName"));
+                }
+
+                // Parse individual courses and find the one matching our courseCode
+                java.util.List<java.util.Map<String, Object>> courses = (java.util.List<java.util.Map<String, Object>>) subjectData
+                        .get("courses");
+                if (courses != null) {
+                    for (java.util.Map<String, Object> apiCourse : courses) {
+                        String courseCode = (String) apiCourse.get("code");
+                        if (courseCode == null)
+                            continue;
+
+                        // Find or create the individual SkolverketCourse
+                        SkolverketCourse skIndividual = skolverketCourseRepository
+                                .findByCourseCode(courseCode)
+                                .orElseGet(() -> {
+                                    SkolverketCourse sc = new SkolverketCourse();
+                                    sc.setCourseCode(courseCode);
+                                    sc.setCourseName((String) apiCourse.get("name"));
+                                    sc.setSubject(skCourse.getSubject());
+                                    return sc;
+                                });
+
+                        // Parse points
+                        Object pointsObj = apiCourse.get("points");
+                        if (pointsObj != null) {
+                            try {
+                                skIndividual.setPoints(Integer.parseInt(pointsObj.toString().trim()));
+                            } catch (NumberFormatException ignored) {
+                            }
+                        }
+
+                        skIndividual.setDescription((String) apiCourse.get("description"));
+                        skIndividual.setEnglishTitle((String) apiCourse.get("englishName"));
+                        skIndividual.setSubjectPurpose((String) subjectData.get("purpose"));
+
+                        java.util.Map<String, Object> centralContent = (java.util.Map<String, Object>) apiCourse
+                                .get("centralContent");
+                        if (centralContent != null) {
+                            skIndividual.setObjectives((String) centralContent.get("text"));
+                        }
+
+                        skolverketCourseRepository.save(skIndividual);
+
+                        // Save knowledge requirements (betygskriterier)
+                        java.util.List<java.util.Map<String, Object>> knowledgeReqs = (java.util.List<java.util.Map<String, Object>>) apiCourse
+                                .get("knowledgeRequirements");
+                        if (knowledgeReqs != null && !knowledgeReqs.isEmpty()) {
+                            gradingCriteriaRepository.deleteByCourse(skIndividual);
+
+                            java.util.Map<String, Integer> gradeOrder = java.util.Map.of(
+                                    "E", 1, "D", 2, "C", 3, "B", 4, "A", 5);
+
+                            for (java.util.Map<String, Object> req : knowledgeReqs) {
+                                String gradeStep = (String) req.get("gradeStep");
+                                String text = (String) req.get("text");
+                                if (gradeStep == null || text == null)
+                                    continue;
+
+                                SkolverketGradingCriteria criteria = new SkolverketGradingCriteria(
+                                        skIndividual, gradeStep, text,
+                                        gradeOrder.getOrDefault(gradeStep, 0));
+                                gradingCriteriaRepository.save(criteria);
+                            }
+                        }
+
+                        // If this individual course matches the selected one, link it
+                        if (courseCode.equals(skCourse.getCourseCode())) {
+                            course.setSkolverketCourse(skIndividual);
+                        }
+                    }
+
+                    // If the selected skCourse was the subject code (not a course code),
+                    // link to the first individual course instead
+                    if (course.getSkolverketCourse() == skCourse && !courses.isEmpty()) {
+                        String firstCode = (String) courses.get(0).get("code");
+                        if (firstCode != null) {
+                            skolverketCourseRepository.findByCourseCode(firstCode)
+                                    .ifPresent(sk -> {
+                                        course.setSkolverketCourse(sk);
+                                        if (course.getDescription() == null || course.getDescription().isBlank()) {
+                                            course.setDescription(sk.getDescription());
+                                        }
+                                    });
+                        }
+                    }
+                }
+
+                // Final check to sync description if still missing
+                if ((course.getDescription() == null || course.getDescription().isBlank())
+                        && skCourse.getDescription() != null) {
+                    course.setDescription(skCourse.getDescription());
+                }
+
+                skolverketCourseRepository.save(skCourse);
+            }
+        } catch (Exception e) {
+            System.err.println("Failed to enrich Skolverket course: " + e.getMessage());
+        }
     }
 
     @Transactional
@@ -495,10 +662,10 @@ public class CourseService {
             result.setStatus(CourseResult.Status.valueOf(statusStr.toUpperCase()));
             result.setGradedAt(java.time.LocalDateTime.now());
             CourseResult saved = resultRepository.save(result);
-            
+
             // Publish event for automatic document generation
             eventPublisher.publishEvent(new CourseResultGradedEvent(saved));
-            
+
         } catch (IllegalArgumentException e) {
             throw new RuntimeException("Ogiltig status. Använd 'PASSED', 'FAILED' eller 'PENDING'.");
         }

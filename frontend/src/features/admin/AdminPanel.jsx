@@ -17,6 +17,8 @@ import { GamificationModuleMetadata } from '../../modules/gamification/Gamificat
 import { useModules } from '../../context/ModuleContext';
 import UserImport from './UserImport';
 import AuditLogDashboard from './AuditLogDashboard';
+import DeployPanel from './DeployPanel';
+import SkolverketCourseSelector from '../../components/SkolverketCourseSelector';
 
 const AdminPanel = ({ currentUser }) => {
     const { t } = useTranslation();
@@ -64,9 +66,11 @@ const AdminPanel = ({ currentUser }) => {
 
     const [isCreatingCourse, setIsCreatingCourse] = useState(false);
     const [editingCourseId, setEditingCourseId] = useState(null);
+    const [showSkolverketSelector, setShowSkolverketSelector] = useState(false);
     const [courseForm, setCourseForm] = useState({
-        name: '', courseCode: '', category: 'IT', description: '',
-        startDate: '', endDate: '', teacherId: '', isOpen: true
+        name: '', courseCode: '', category: 'IT & Teknik', description: '',
+        startDate: '', endDate: '', teacherId: '', isOpen: true,
+        skolverketCourseId: null
     });
 
     const COURSE_CATEGORIES = ["IT & Teknik", "Ekonomi", "Design", "Språk", "Ledarskap", "Hälsa", "Övrigt"];
@@ -171,9 +175,19 @@ const AdminPanel = ({ currentUser }) => {
             if (editingCourseId) await api.courses.update(editingCourseId, payload);
             else await api.courses.create(payload, courseForm.teacherId);
             setIsCreatingCourse(false); setEditingCourseId(null);
-            setCourseForm({ name: '', courseCode: '', category: 'IT', description: '', startDate: '', endDate: '', teacherId: '', isOpen: true });
+            setCourseForm({ name: '', courseCode: '', category: 'IT & Teknik', description: '', startDate: '', endDate: '', teacherId: '', isOpen: true, skolverketCourseId: null });
             fetchData();
         } catch (e) { alert("Fel vid sparande."); }
+    };
+
+    const handleSkolverketSelect = (skCourse) => {
+        setCourseForm(prev => ({
+            ...prev,
+            name: skCourse.courseName,
+            courseCode: skCourse.courseCode,
+            category: skCourse.subject || prev.category,
+            skolverketCourseId: skCourse.id
+        }));
     };
 
     const handleDeleteCourse = async (id) => {
@@ -303,9 +317,9 @@ const AdminPanel = ({ currentUser }) => {
             </div>
 
             <div className="flex flex-wrap gap-2 mb-8 border-b border-gray-200 dark:border-[#282a2c] pb-1">
-                {['users', 'courses', 'content', 'audit', 'settings'].map(tab => (
+                {['users', 'courses', 'content', 'audit', 'settings', 'deploy'].map(tab => (
                     <button key={tab} onClick={() => setAdminTab(tab)} className={`px-4 py-2 rounded-t-lg font-medium text-sm transition-colors flex items-center gap-2 capitalize ${adminTab === tab ? 'bg-gray-100 dark:bg-[#282a2c] text-indigo-600 dark:text-white border-b-2 border-indigo-500' : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200'}`}>
-                        {tab === 'users' ? 'Användare' : tab === 'courses' ? 'Kurser' : tab === 'content' ? 'Innehåll' : tab === 'audit' ? 'Audit Log' : 'Inställningar'}
+                        {tab === 'users' ? 'Användare' : tab === 'courses' ? 'Kurser' : tab === 'content' ? 'Innehåll' : tab === 'audit' ? 'Audit Log' : tab === 'settings' ? 'Inställningar' : 'Deploy'}
                     </button>
                 ))}
             </div>
@@ -448,7 +462,17 @@ const AdminPanel = ({ currentUser }) => {
                     <div className="space-y-6">
                         <div className="flex justify-between items-center">
                             <h3 className="font-bold text-gray-900 dark:text-white text-lg">Kurshantering</h3>
-                            <button onClick={() => { setIsCreatingCourse(!isCreatingCourse); setEditingCourseId(null); setCourseForm({ name: '', courseCode: '', category: 'IT', description: '', startDate: '', endDate: '', teacherId: '', isOpen: true }); }} className="bg-gray-900 dark:bg-white text-white dark:text-black px-4 py-2 rounded-lg font-bold text-sm flex items-center gap-2">{isCreatingCourse ? <X size={16} /> : <Plus size={16} />} {isCreatingCourse ? 'Avbryt' : 'Skapa Kurs'}</button>
+                            <div className="flex gap-2">
+                                {isCreatingCourse && !editingCourseId && (
+                                    <button 
+                                        onClick={() => setShowSkolverketSelector(true)}
+                                        className="bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-900 px-4 py-2 rounded-lg font-bold text-sm flex items-center gap-2"
+                                    >
+                                        <Upload size={16} /> Hämta från Skolverket
+                                    </button>
+                                )}
+                                <button onClick={() => { setIsCreatingCourse(!isCreatingCourse); setEditingCourseId(null); setCourseForm({ name: '', courseCode: '', category: 'IT & Teknik', description: '', startDate: '', endDate: '', teacherId: '', isOpen: true, skolverketCourseId: null }); }} className="bg-gray-900 dark:bg-white text-white dark:text-black px-4 py-2 rounded-lg font-bold text-sm flex items-center gap-2">{isCreatingCourse ? <X size={16} /> : <Plus size={16} />} {isCreatingCourse ? 'Avbryt' : 'Skapa Kurs'}</button>
+                            </div>
                         </div>
                         {isCreatingCourse && (
                             <div className="bg-gray-50 dark:bg-[#282a2c] p-6 rounded-xl border border-gray-100 dark:border-[#3c4043] animate-in slide-in-from-top-4">
@@ -597,10 +621,21 @@ const AdminPanel = ({ currentUser }) => {
                         </div>
                     </div>
                 )}
+
+                {/* DEPLOY FLIK */}
+                {adminTab === 'deploy' && (
+                    <DeployPanel />
+                )}
             </div>
 
             <UserEditModal />
             <UserCoursesModal />
+            {showSkolverketSelector && (
+                <SkolverketCourseSelector 
+                    onSelect={handleSkolverketSelect} 
+                    onClose={() => setShowSkolverketSelector(false)} 
+                />
+            )}
         </div>
     );
 };

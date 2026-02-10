@@ -136,6 +136,24 @@ public class MessageService {
         });
     }
 
+    @org.springframework.transaction.annotation.Transactional
+    public int bulkMarkAsRead(Long userId, List<Long> ids) {
+        return messageRepository.bulkMarkAsRead(ids, userId);
+    }
+
+    @org.springframework.transaction.annotation.Transactional
+    public int markAllAsRead(Long userId, String folderSlug) {
+        if (folderSlug != null && !folderSlug.isBlank()) {
+            return messageRepository.markAllAsReadInFolder(userId, folderSlug);
+        }
+        return messageRepository.markAllAsReadInbox(userId);
+    }
+
+    @org.springframework.transaction.annotation.Transactional
+    public int bulkDelete(Long userId, List<Long> ids) {
+        return messageRepository.bulkDeleteByRecipient(ids, userId);
+    }
+
     public long getUnreadCount(Long userId) {
         return messageRepository.countByRecipientIdAndIsReadFalse(userId);
     }

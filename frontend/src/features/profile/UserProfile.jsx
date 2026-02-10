@@ -12,6 +12,7 @@ import UserBilling from '../billing/UserBilling';
 import { useModules } from '../../context/ModuleContext';
 
 import UserAvatar from '../../components/common/UserAvatar';
+import ImageCropDialog from '../../components/common/ImageCropDialog';
 import AchievementsGallery from '../../components/gamification/AchievementsGallery';
 import { getGamificationAssetPath } from '../../utils/gamificationUtils';
 import eduGameService from '../../services/eduGameService';
@@ -244,6 +245,8 @@ const UserProfile = ({ currentUser, showMessage, refreshUser, logout }) => {
 
     const [passData, setPassData] = useState({ current: '', new: '', confirm: '' });
     const [previewImage, setPreviewImage] = useState(null);
+    const [cropDialogOpen, setCropDialogOpen] = useState(false);
+    const [cropImageSrc, setCropImageSrc] = useState(null);
     const [fullUserData, setFullUserData] = useState(null);
 
     // --- GAMES / THEMES STATE ---
@@ -373,12 +376,20 @@ const UserProfile = ({ currentUser, showMessage, refreshUser, logout }) => {
         if (userLang !== i18n.language) i18n.changeLanguage(userLang);
     };
 
-    const handleImageChange = async (e) => {
+    const handleImageChange = (e) => {
         const file = e.target.files[0];
         if (!file) return;
-        setPreviewImage(URL.createObjectURL(file));
+        setCropImageSrc(URL.createObjectURL(file));
+        setCropDialogOpen(true);
+        e.target.value = '';
+    };
+
+    const handleCroppedImage = async (blob) => {
+        setCropDialogOpen(false);
+        setCropImageSrc(null);
+        setPreviewImage(URL.createObjectURL(blob));
         const formDataUpload = new FormData();
-        formDataUpload.append('file', file);
+        formDataUpload.append('file', blob, 'avatar.jpg');
         try {
             const token = localStorage.getItem('token');
             const res = await fetch(`${window.location.origin}/api/users/${currentUser.id}/avatar`, {
@@ -866,6 +877,17 @@ const UserProfile = ({ currentUser, showMessage, refreshUser, logout }) => {
                     </div>
                 </div>
             </div>
+
+            {cropDialogOpen && cropImageSrc && (
+                <ImageCropDialog
+                    imageSrc={cropImageSrc}
+                    onComplete={handleCroppedImage}
+                    onCancel={() => {
+                        setCropDialogOpen(false);
+                        setCropImageSrc(null);
+                    }}
+                />
+            )}
         </div>
     );
 };

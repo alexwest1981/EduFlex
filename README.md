@@ -38,6 +38,10 @@
 ## 🇸🇪 Svenska
 
 ### ⚡ Senaste Uppdateringarna
+*   **🎓 Rich Course Management – Skolverket-integration (10 feb 2026):**
+    *   **Officiell data-synk:** Manuellt skapade kurser kan nu berikas med officiell data från Skolverket. Systemet hämtar automatiskt kursbeskrivningar, centralt innehåll och betygskriterier.
+    *   **Skolverket Course Selector:** Integrerat en ny väljare i kurshanteringen för att enkelt koppla lokala kurser till Skolverkets databas.
+    *   **Automatisk Berikning:** Backend-logik som automatisk synkroniserar och fyller i saknad information baserat på kurskod både vid skapande och import.
 *   **📩 Kommunikation – Rektorsåtkomst till Meddelanden (10 feb 2026):**
     *   **Full Inbox-åtkomst:** Rektorsrollen har nu full tillgång till det interna meddelandesystemet via en dedikerad `/communication`-route.
     *   **Sidebar-integration:** Lagt till en direktlänk till "Kommunikation" i sidomenyn för alla rörda roller.
@@ -241,6 +245,10 @@ curl -X POST http://localhost:8080/api/tenants \
 ## 🇬🇧 English
 
 ### ⚡ Latest Updates
+*   **🎓 Rich Course Management – Skolverket Integration (Feb 10, 2026):**
+    *   **Official Data Sync:** Manually created courses can now be enriched with official data from Skolverket. The system automatically fetches course descriptions, central content, and grading criteria.
+    *   **Skolverket Course Selector:** Integrated a new selector in course management to easily link local courses to the Skolverket database.
+    *   **Automatic Enrichment:** Backend logic that automatically synchronizes and populates missing information based on course code for both creation and import.
 *   **📩 Communication – Principal Mailbox Access (Feb 10, 2026):**
     *   **Full Inbox Access:** The Principal (Rektor) role now has full access to the internal messaging system via a dedicated `/communication` route.
     *   **Sidebar Integration:** Added a direct "Communication" link in the sidebar for all relevant staff and administrative roles.

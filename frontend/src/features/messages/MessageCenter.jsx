@@ -32,6 +32,9 @@ const MessageCenter = ({ preSelectedRecipient = null }) => {
     // NYTT: State för att hantera "Svara"-läget specifikt
     const [replyModeUser, setReplyModeUser] = useState(null); // { id, name, parentId }
 
+    // Bulk-selektion
+    const [selectedIds, setSelectedIds] = useState(new Set());
+
     useEffect(() => {
         if (activeTab === 'COMPOSE') {
             loadUsers();
@@ -50,6 +53,7 @@ const MessageCenter = ({ preSelectedRecipient = null }) => {
             setRecipientId('');
             setSubject('');
             setContent('');
+            setSelectedIds(new Set());
             loadMessages();
         }
         loadFolders();
@@ -184,6 +188,54 @@ const MessageCenter = ({ preSelectedRecipient = null }) => {
         setContent('');
         setFiles([]);
         setActiveTab('COMPOSE');
+    };
+
+    // --- BULK-OPERATIONER ---
+    const toggleSelect = (msgId, e) => {
+        e.stopPropagation();
+        setSelectedIds(prev => {
+            const next = new Set(prev);
+            if (next.has(msgId)) next.delete(msgId);
+            else next.add(msgId);
+            return next;
+        });
+    };
+
+    const toggleSelectAll = () => {
+        if (selectedIds.size === messages.length) {
+            setSelectedIds(new Set());
+        } else {
+            setSelectedIds(new Set(messages.map(m => m.id)));
+        }
+    };
+
+    const handleBulkMarkAsRead = async () => {
+        if (selectedIds.size === 0) return;
+        try {
+            await api.messages.bulkMarkAsRead([...selectedIds]);
+            setMessages(prev => prev.map(m => selectedIds.has(m.id) ? { ...m, isRead: true } : m));
+            setSelectedIds(new Set());
+        } catch (e) { console.error("Kunde inte markera som lästa", e); }
+    };
+
+    const handleMarkAllAsRead = async () => {
+        const folderSlug = activeTab.startsWith('FOLDER_') ? activeTab.replace('FOLDER_', '') : null;
+        try {
+            await api.messages.markAllAsRead(folderSlug);
+            setMessages(prev => prev.map(m => ({ ...m, isRead: true })));
+            setSelectedIds(new Set());
+        } catch (e) { console.error("Kunde inte markera alla som lästa", e); }
+    };
+
+    const handleBulkDelete = async () => {
+        if (selectedIds.size === 0) return;
+        if (!confirm(`Ta bort ${selectedIds.size} meddelande(n) permanent?`)) return;
+        try {
+            await api.messages.bulkDelete([...selectedIds]);
+            setMessages(prev => prev.filter(m => !selectedIds.has(m.id)));
+            setSelectedIds(new Set());
+            setSelectedMessage(null);
+        } catch (e) { console.error("Kunde inte ta bort meddelanden", e); }
     };
 
     const linkify = (text) => {
@@ -346,7 +398,47 @@ const MessageCenter = ({ preSelectedRecipient = null }) => {
                     // INKORG / SKICKAT LISTA
                     <div className="flex h-full">
                         {/* MEDDELANDELISTA */}
-                        <div className={`w-full md:w-1/3 border-r border-gray-100 dark:border-[#3c4043] ${selectedMessage ? 'hidden md:block' : 'block'}`}>
+                        <div className={`w-full md:w-1/3 border-r border-gray-100 dark:border-[#3c4043] flex flex-col ${selectedMessage ? 'hidden md:flex' : 'flex'}`}>
+                            {/* BULK-TOOLBAR */}
+                            {activeTab !== 'SENT' && messages.length > 0 && (
+                                <div className="px-3 py-2 border-b border-gray-100 dark:border-[#3c4043] bg-gray-50/80 dark:bg-[#131314] flex items-center gap-2 flex-wrap">
+                                    <label className="flex items-center gap-1.5 cursor-pointer text-xs font-bold text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200">
+                                        <input
+                                            type="checkbox"
+                                            checked={selectedIds.size === messages.length && messages.length > 0}
+                                            onChange={toggleSelectAll}
+                                            className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                                        />
+                                        Alla
+                                    </label>
+                                    <div className="h-4 w-px bg-gray-200 dark:bg-gray-700" />
+                                    <button
+                                        onClick={handleMarkAllAsRead}
+                                        className="text-xs font-bold text-gray-500 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 flex items-center gap-1 transition-colors"
+                                        title="Markera alla som lästa"
+                                    >
+                                        <CheckCircle size={13} /> Läs alla
+                                    </button>
+                                    {selectedIds.size > 0 && (
+                                        <>
+                                            <div className="h-4 w-px bg-gray-200 dark:bg-gray-700" />
+                                            <button
+                                                onClick={handleBulkMarkAsRead}
+                                                className="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 flex items-center gap-1 transition-colors"
+                                            >
+                                                <CheckCircle size={13} /> Markera ({selectedIds.size})
+                                            </button>
+                                            <button
+                                                onClick={handleBulkDelete}
+                                                className="text-xs font-bold text-red-500 hover:text-red-700 flex items-center gap-1 transition-colors"
+                                            >
+                                                <Trash2 size={13} /> Ta bort ({selectedIds.size})
+                                            </button>
+                                        </>
+                                    )}
+                                </div>
+                            )}
+                            <div className="flex-1 overflow-y-auto">
                             {isLoading ? <div className="p-10 text-center text-gray-400">Laddar meddelanden...</div> : (
                                 messages.length === 0 ? <div className="p-10 text-center text-gray-400">Inga meddelanden här.</div> :
                                     <ul className="divide-y divide-gray-100 dark:divide-[#3c4043]">
@@ -354,20 +446,34 @@ const MessageCenter = ({ preSelectedRecipient = null }) => {
                                             <li
                                                 key={msg.id}
                                                 onClick={() => handleReadMessage(msg)}
-                                                className={`p-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-[#282a2c] transition-colors ${selectedMessage?.id === msg.id ? 'bg-indigo-50 dark:bg-indigo-900/20' : ''} ${!msg.isRead && activeTab === 'INBOX' ? 'border-l-4 border-indigo-500 bg-gray-50/50' : ''}`}
+                                                className={`p-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-[#282a2c] transition-colors flex gap-3 ${selectedMessage?.id === msg.id ? 'bg-indigo-50 dark:bg-indigo-900/20' : ''} ${!msg.isRead && activeTab !== 'SENT' ? 'border-l-4 border-indigo-500 bg-gray-50/50' : ''}`}
                                             >
-                                                <div className="flex justify-between mb-1">
-                                                    <span className={`text-sm font-bold ${!msg.isRead && activeTab === 'INBOX' ? 'text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-400'}`}>
-                                                        {activeTab === 'INBOX' ? msg.senderName : `Till: ${msg.recipientName}`}
-                                                    </span>
-                                                    <span className="text-[10px] text-gray-400">{new Date(msg.timestamp).toLocaleDateString()}</span>
+                                                {activeTab !== 'SENT' && (
+                                                    <div className="pt-0.5 flex-shrink-0">
+                                                        <input
+                                                            type="checkbox"
+                                                            checked={selectedIds.has(msg.id)}
+                                                            onChange={(e) => toggleSelect(msg.id, e)}
+                                                            onClick={(e) => e.stopPropagation()}
+                                                            className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                                                        />
+                                                    </div>
+                                                )}
+                                                <div className="flex-1 min-w-0">
+                                                    <div className="flex justify-between mb-1">
+                                                        <span className={`text-sm font-bold truncate ${!msg.isRead && activeTab !== 'SENT' ? 'text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-400'}`}>
+                                                            {activeTab === 'SENT' ? `Till: ${msg.recipientName}` : msg.senderName}
+                                                        </span>
+                                                        <span className="text-[10px] text-gray-400 flex-shrink-0 ml-2">{new Date(msg.timestamp).toLocaleDateString()}</span>
+                                                    </div>
+                                                    <p className={`text-sm mb-1 truncate ${!msg.isRead && activeTab !== 'SENT' ? 'font-bold text-gray-800 dark:text-gray-200' : 'text-gray-600 dark:text-gray-400'}`}>{msg.subject}</p>
+                                                    <p className="text-xs text-gray-400 line-clamp-1">{msg.content}</p>
                                                 </div>
-                                                <p className={`text-sm mb-1 ${!msg.isRead && activeTab === 'INBOX' ? 'font-bold text-gray-800 dark:text-gray-200' : 'text-gray-600 dark:text-gray-400'}`}>{msg.subject}</p>
-                                                <p className="text-xs text-gray-400 line-clamp-1">{msg.content}</p>
                                             </li>
                                         ))}
                                     </ul>
                             )}
+                            </div>
                         </div>
 
                         {/* LÄSVY */}

@@ -124,6 +124,11 @@ public class EvaluationService {
         return instanceRepository.findByCourseId(courseId);
     }
 
+    public EvaluationInstance getInstanceDetails(Long instanceId) {
+        return instanceRepository.findById(instanceId)
+                .orElseThrow(() -> new RuntimeException("Evaluation instance not found"));
+    }
+
     // --- Response Submission ---
 
     @Transactional

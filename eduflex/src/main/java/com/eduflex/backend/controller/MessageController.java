@@ -92,6 +92,41 @@ public class MessageController {
         return ResponseEntity.ok().build();
     }
 
+    @PutMapping("/bulk/read")
+    public ResponseEntity<Map<String, Object>> bulkMarkAsRead(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestBody Map<String, List<Long>> payload) {
+        User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow();
+        List<Long> ids = payload.get("ids");
+        int updated = messageService.bulkMarkAsRead(user.getId(), ids);
+        Map<String, Object> result = new HashMap<>();
+        result.put("updated", updated);
+        return ResponseEntity.ok(result);
+    }
+
+    @PutMapping("/read-all")
+    public ResponseEntity<Map<String, Object>> markAllAsRead(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestParam(value = "folder", required = false) String folder) {
+        User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow();
+        int updated = messageService.markAllAsRead(user.getId(), folder);
+        Map<String, Object> result = new HashMap<>();
+        result.put("updated", updated);
+        return ResponseEntity.ok(result);
+    }
+
+    @PostMapping("/bulk/delete")
+    public ResponseEntity<Map<String, Object>> bulkDelete(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestBody Map<String, List<Long>> payload) {
+        User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow();
+        List<Long> ids = payload.get("ids");
+        int deleted = messageService.bulkDelete(user.getId(), ids);
+        Map<String, Object> result = new HashMap<>();
+        result.put("deleted", deleted);
+        return ResponseEntity.ok(result);
+    }
+
     @GetMapping("/unread")
     public ResponseEntity<Long> getUnreadCount(@AuthenticationPrincipal UserDetails userDetails) {
         User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow();

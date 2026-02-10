@@ -70,6 +70,12 @@
 
 ## 📝 Change Log
 
+### [v1.0.1] - 2026-02-10
+- **New Feature**: **Rich Course Management** - Manual course creation now integrates directly with Skolverket data.
+- **Frontend**: Integrated `SkolverketCourseSelector` into the "New Course" form for easy data fetching.
+- **Backend**: Enhanced `CourseService` to automatically sync descriptions, central content, and grading criteria when a course code is linked.
+- **Enrichment**: Support for automatic enrichment via course code for manual entries without a direct Skolverket ID.
+
 ### [v1.0.0] - 2026-02-09
 - **New Feature**: **Rektorspaket (Phase 6)** - Full launch of the "Mission Control" Dashboard.
 - **New Feature**: Added 8 real-time KPIs and inline drill-down capabilities for school leadership.

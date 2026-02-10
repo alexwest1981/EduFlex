@@ -215,6 +215,9 @@ export const api = {
         send: (formData) => api.post('/messages/send', formData),
         getRecentContacts: (userId) => api.get(`/messages/contacts/${userId}`).catch(() => []),
         getContacts: () => api.get('/messages/contacts'),
+        bulkMarkAsRead: (ids) => api.put('/messages/bulk/read', { ids }),
+        markAllAsRead: (folder) => api.put(`/messages/read-all${folder ? `?folder=${folder}` : ''}`),
+        bulkDelete: (ids) => api.post('/messages/bulk/delete', { ids }),
     },
 
 
@@ -526,12 +529,12 @@ export const api = {
         getStreak: (userId) => api.get(`/gamification/streak/login/${userId}`),
         getMyStreak: () => api.get('/gamification/streak'),
         getMyAchievements: () => api.get('/gamification/achievements/my'),
-        getQuests: (type = 'daily') => api.get(`/gamification/quests/${type}`),
+        getQuests: (type = 'daily') => api.get(`/edugame/quests/${type}`),
         social: {
-            getFriends: () => api.get('/gamification/social/friends'),
-            sendRequest: (targetUserId) => api.post(`/gamification/social/request/${targetUserId}`, {}),
-            getPendingRequests: () => api.get('/gamification/social/requests/pending'),
-            acceptRequest: (requestId) => api.post(`/gamification/social/request/${requestId}/accept`, {}),
+            getFriends: () => api.get('/edugame/social/friends'),
+            sendRequest: (targetUserId) => api.post(`/edugame/social/request/${targetUserId}`, {}),
+            getPendingRequests: () => api.get('/edugame/social/requests/pending'),
+            acceptRequest: (requestId) => api.post(`/edugame/social/request/${requestId}/accept`, {}),
         }
     },
 

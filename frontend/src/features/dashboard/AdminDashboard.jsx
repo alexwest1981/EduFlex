@@ -95,9 +95,9 @@ const AdminDashboard = () => {
                         onClick={() => setActiveTab('communication')}
                         className={`pb-3 flex items-center gap-2 font-bold text-lg transition-colors border-b-2 whitespace-nowrap capitalize ${activeTab === 'communication' ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200'}`}
                     >
-                        <div className="relative">
+                        <div className="relative overflow-visible">
                             <MessageSquare size={20} />
-                            {unreadCount > 0 && <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full font-bold">{unreadCount}</span>}
+                            {unreadCount > 0 && <span className="absolute -top-2 -right-3 bg-red-500 text-white text-[10px] min-w-[18px] h-[18px] px-1 flex items-center justify-center rounded-full font-bold">{unreadCount}</span>}
                         </div>
                         {t('dashboard.tabs.communication')}
                     </button>
@@ -120,6 +120,7 @@ const AdminDashboard = () => {
                     fetchStats={fetchStats}
                     setActiveTab={setActiveTab}
                     widgets={widgets}
+                    unreadCount={unreadCount}
                 />
             )}
 

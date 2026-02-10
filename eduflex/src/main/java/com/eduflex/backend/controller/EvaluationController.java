@@ -77,6 +77,16 @@ public class EvaluationController {
         return ResponseEntity.ok(evaluationService.getActiveEvaluationsForStudent(user));
     }
 
+    @GetMapping("/instance/{instanceId}/details")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<?> getInstanceDetails(@PathVariable Long instanceId) {
+        try {
+            return ResponseEntity.ok(evaluationService.getInstanceDetails(instanceId));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
     // --- Response Endpoints ---
 
     @PostMapping("/instance/{instanceId}/submit")
