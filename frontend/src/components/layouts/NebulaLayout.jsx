@@ -74,7 +74,7 @@ const NebulaLayout = ({ children }) => {
                 </div>
 
                 {/* Center Navigation - Floating Pills */}
-                <nav className="hidden lg:flex items-center gap-6">
+                <nav className="hidden lg:flex items-center gap-4">
                     {navItems.map((item) => {
                         const isActive = location.pathname === item.path || (item.path === '/admin' && location.pathname.startsWith('/enterprise'));
                         return (

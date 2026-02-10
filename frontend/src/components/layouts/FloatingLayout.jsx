@@ -80,7 +80,7 @@ const FloatingLayout = ({ children }) => {
 
                 {/* NO PROFILE IN SIDEBAR */}
 
-                <nav className="flex-1 py-6 px-4 space-y-2 overflow-y-auto custom-scrollbar">
+                <nav className="flex-1 py-3 px-4 space-y-1 overflow-y-auto custom-scrollbar">
                     {navItems.map((item) => {
                         return (
                             <NavLink

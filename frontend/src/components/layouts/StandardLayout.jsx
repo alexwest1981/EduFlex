@@ -134,7 +134,7 @@ const StandardLayout = ({ children }) => {
                     </div>
                 </div>
 
-                <nav className="flex-1 py-6 px-3 space-y-2 overflow-y-auto custom-scrollbar">
+                <nav className="flex-1 py-2 px-3 space-y-1 overflow-y-auto custom-scrollbar">
                     <SidebarSection
                         title={t('sidebar.categories.main')}
                         items={navItems.main}

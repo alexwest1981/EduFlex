@@ -12,7 +12,7 @@ const SidebarSection = ({ title, items, sidebarOpen, roleName }) => {
     if (items.length === 0) return null;
 
     return (
-        <div className="mb-6">
+        <div className="mb-3">
             {/* SECTION HEADER */}
             {sidebarOpen ? (
                 <button
@@ -23,7 +23,7 @@ const SidebarSection = ({ title, items, sidebarOpen, roleName }) => {
                     {isCollapsed ? <ChevronRight size={14} /> : <ChevronDown size={14} />}
                 </button>
             ) : (
-                <div className="my-4 border-t border-gray-100 dark:border-gray-800 mx-4"></div>
+                <div className="my-2 border-t border-gray-100 dark:border-gray-800 mx-4"></div>
             )}
 
             {/* SECTION ITEMS */}
@@ -38,7 +38,7 @@ const SidebarSection = ({ title, items, sidebarOpen, roleName }) => {
                             to={item.path}
                             className={({ isActive: navActive }) => {
                                 const active = navActive || (item.path === '/admin' && location.pathname.startsWith('/enterprise'));
-                                return `relative flex items-center px-4 py-3 rounded-xl transition-all duration-200 group ${active
+                                return `relative flex items-center px-4 py-2 rounded-xl transition-all duration-200 group ${active
                                     ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300 shadow-sm'
                                     : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-[#282a2c] hover:text-gray-900 dark:hover:text-gray-200'
                                     }`;

@@ -46,6 +46,9 @@
     *   **Sticky Navigation:** Sidomenyn är nu fixerad (`sticky`) i viewporten. Detta garanterar att Profil, Logout och Mörkt läge alltid är åtkomliga utan att man behöver scrolla upp.
     *   **Eliminerat interna scrollister:** Alla 8 temalayouter använder nu webbläsarens huvudscrollbar för hela sidan, vilket tar bort "iFrame-känslan".
     *   **Single-Scroll Experience:** Dynamisk höjd på `MessageCenter` och andra moduler gör att hela plattformen känns mer integrerad och modern.
+*   **📐 Kompakt Sidomeny (10 feb 2026):**
+    *   **Reducerat mellanrum:** Minskat vertikalt avstånd mellan ikoner och sektioner i sidomenyn för att rymma mer innehåll utan att behöva scrolla internt.
+    *   **High-Density Design:** Optimerat `SidebarSection` och navigationscontainrar i samtliga 8 layouter för en mer effektiv informationsyta.
 *   **🎯 Mission Control – Funktionella Moduler & Backend-fix (9 feb 2026):**
     *   **Incidenthantering:** Ny `IncidentManager`-komponent med CRUD-endpoints (`IncidentReportController`) för att rapportera, söka och uppdatera incidenter.
     *   **Bemanningskontroll:** Ny `StaffingControl`-komponent för hantering av sjukfrånvaro och vikariepooler.

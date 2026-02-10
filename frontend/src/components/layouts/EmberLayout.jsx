@@ -91,7 +91,7 @@ const EmberLayout = ({ children }) => {
                     </div>
 
                     {/* Navigation Scroll */}
-                    <div className="flex-1 overflow-y-auto px-6 py-4 space-y-2 scrollbar-hide">
+                    <div className="flex-1 overflow-y-auto px-6 py-2 space-y-1 scrollbar-hide">
                         <SidebarSection
                             title={t('sidebar.categories.main')}
                             items={navItems.main}

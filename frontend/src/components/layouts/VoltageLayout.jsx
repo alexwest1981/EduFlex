@@ -91,7 +91,7 @@ const VoltageLayout = ({ children }) => {
                     </div>
 
                     {/* Navigation Items */}
-                    <div className="flex-1 overflow-y-auto px-4 lg:px-6 py-4 space-y-6 scrollbar-hide flex flex-col items-center lg:items-stretch transition-all duration-300">
+                    <div className="flex-1 overflow-y-auto px-4 lg:px-6 py-2 space-y-2 scrollbar-hide flex flex-col items-center lg:items-stretch transition-all duration-300">
                         <SidebarSection
                             title={t('sidebar.categories.main')}
                             items={navItems.main}

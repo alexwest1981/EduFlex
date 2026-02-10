@@ -70,7 +70,7 @@ const PulseLayout = ({ children }) => {
                     </div>
 
                     {/* Nav Items */}
-                    <nav className="flex flex-col gap-6 w-full items-center">
+                    <nav className="flex flex-col gap-4 w-full items-center">
                         {navItems.map((item) => (
                             <NavLink
                                 key={item.path}
