@@ -203,7 +203,7 @@ const MessageCenter = ({ preSelectedRecipient = null }) => {
     };
 
     return (
-        <div className="bg-white dark:bg-[#1E1F20] rounded-2xl border border-gray-200 dark:border-[#3c4043] shadow-sm overflow-hidden flex flex-col md:flex-row h-[600px]">
+        <div className="bg-white dark:bg-[#1E1F20] rounded-2xl border border-gray-200 dark:border-[#3c4043] shadow-sm overflow-hidden flex flex-col md:flex-row min-h-[600px]">
 
             {/* SIDEBAR */}
             <div className="w-full md:w-64 bg-gray-50 dark:bg-[#131314] border-r border-gray-200 dark:border-[#3c4043] flex flex-col">
@@ -256,7 +256,7 @@ const MessageCenter = ({ preSelectedRecipient = null }) => {
 
                 {/* SKRIV-LÄGE (COMPOSE) */}
                 {activeTab === 'COMPOSE' ? (
-                    <div className="p-8 flex-1 overflow-y-auto animate-in fade-in">
+                    <div className="p-8 flex-1 animate-in fade-in">
                         <div className="flex justify-between items-center mb-6">
                             <h2 className="text-xl font-bold text-gray-900 dark:text-white">
                                 {replyModeUser ? 'Svara på meddelande' : 'Skriv nytt meddelande'}
@@ -346,7 +346,7 @@ const MessageCenter = ({ preSelectedRecipient = null }) => {
                     // INKORG / SKICKAT LISTA
                     <div className="flex h-full">
                         {/* MEDDELANDELISTA */}
-                        <div className={`w-full md:w-1/3 border-r border-gray-100 dark:border-[#3c4043] overflow-y-auto ${selectedMessage ? 'hidden md:block' : 'block'}`}>
+                        <div className={`w-full md:w-1/3 border-r border-gray-100 dark:border-[#3c4043] ${selectedMessage ? 'hidden md:block' : 'block'}`}>
                             {isLoading ? <div className="p-10 text-center text-gray-400">Laddar meddelanden...</div> : (
                                 messages.length === 0 ? <div className="p-10 text-center text-gray-400">Inga meddelanden här.</div> :
                                     <ul className="divide-y divide-gray-100 dark:divide-[#3c4043]">
@@ -371,7 +371,7 @@ const MessageCenter = ({ preSelectedRecipient = null }) => {
                         </div>
 
                         {/* LÄSVY */}
-                        <div className={`flex-1 overflow-y-auto p-8 bg-gray-50/30 dark:bg-[#1E1F20] ${!selectedMessage ? 'hidden md:flex items-center justify-center' : 'block'}`}>
+                        <div className={`flex-1 p-8 bg-gray-50/30 dark:bg-[#1E1F20] ${!selectedMessage ? 'hidden md:flex items-center justify-center' : 'block'}`}>
                             {!selectedMessage ? (
                                 <div className="text-center text-gray-400">
                                     <Mail size={64} className="mx-auto mb-4 opacity-10" />
