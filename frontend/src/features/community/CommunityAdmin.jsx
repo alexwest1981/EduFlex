@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {
     CheckCircle, XCircle, Eye, Clock, FileQuestion,
     ClipboardList, BookOpen, Loader2, AlertTriangle, RefreshCw,
-    User, Building2, Calendar
+    User, Building2, Calendar, Trash2
 } from 'lucide-react';
 import { api } from '../../services/api';
 import SubjectIcon from './components/SubjectIcon';
@@ -16,6 +16,7 @@ const CommunityAdmin = () => {
     const [selectedItem, setSelectedItem] = useState(null);
     const [rejectReason, setRejectReason] = useState('');
     const [showRejectModal, setShowRejectModal] = useState(false);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [pendingCount, setPendingCount] = useState(0);
 
     useEffect(() => {
@@ -68,10 +69,33 @@ const CommunityAdmin = () => {
         }
     };
 
+    const handleDelete = async () => {
+        if (!selectedItem) return;
+
+        setActionLoading(selectedItem.id);
+        try {
+            await api.community.delete(selectedItem.id);
+            setPendingItems(prev => prev.filter(item => item.id !== selectedItem.id));
+            setPendingCount(prev => prev - 1);
+            setShowDeleteModal(false);
+            setSelectedItem(null);
+        } catch (err) {
+            console.error('Failed to delete item:', err);
+            alert('Kunde inte ta bort: ' + err.message);
+        } finally {
+            setActionLoading(null);
+        }
+    };
+
     const openRejectModal = (item) => {
         setSelectedItem(item);
         setRejectReason('');
         setShowRejectModal(true);
+    };
+
+    const openDeleteModal = (item) => {
+        setSelectedItem(item);
+        setShowDeleteModal(true);
     };
 
     const getTypeIcon = (type) => {
@@ -229,6 +253,14 @@ const CommunityAdmin = () => {
                                                 <XCircle size={18} />
                                                 Avvisa
                                             </button>
+                                            <button
+                                                onClick={() => openDeleteModal(item)}
+                                                disabled={actionLoading === item.id}
+                                                className="flex items-center gap-2 px-4 py-2.5 bg-gray-100 dark:bg-[#282a2c] text-gray-600 dark:text-gray-400 rounded-xl hover:bg-gray-200 dark:hover:bg-[#3c4043] disabled:opacity-50 transition-colors font-medium"
+                                            >
+                                                <Trash2 size={18} />
+                                                Ta bort
+                                            </button>
                                         </div>
                                     </div>
 
@@ -307,6 +339,56 @@ const CommunityAdmin = () => {
                                         <XCircle size={18} />
                                     )}
                                     Avvisa
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* Delete Modal */}
+                {showDeleteModal && selectedItem && (
+                    <div
+                        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+                        onClick={() => setShowDeleteModal(false)}
+                    >
+                        <div
+                            className="bg-white dark:bg-[#1E1F20] w-full max-w-md rounded-2xl shadow-2xl"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <div className="p-6 border-b border-gray-200 dark:border-[#3c4043]">
+                                <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                                    <Trash2 className="text-red-500" size={20} />
+                                    Ta bort innehåll
+                                </h3>
+                                <p className="text-sm text-gray-500 mt-1">
+                                    Är du säker på att du vill ta bort "{selectedItem.title}"?
+                                </p>
+                            </div>
+
+                            <div className="p-6">
+                                <p className="text-sm text-gray-600 dark:text-gray-300">
+                                    Detta kommer att permanent ta bort innehållet från communityn. Denna åtgärd kan inte ångras.
+                                </p>
+                            </div>
+
+                            <div className="p-6 border-t border-gray-200 dark:border-[#3c4043] flex justify-end gap-3">
+                                <button
+                                    onClick={() => setShowDeleteModal(false)}
+                                    className="px-4 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#282a2c] rounded-xl transition-colors"
+                                >
+                                    Avbryt
+                                </button>
+                                <button
+                                    onClick={handleDelete}
+                                    disabled={actionLoading === selectedItem.id}
+                                    className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-xl hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                >
+                                    {actionLoading === selectedItem.id ? (
+                                        <Loader2 size={18} className="animate-spin" />
+                                    ) : (
+                                        <Trash2 size={18} />
+                                    )}
+                                    Ta bort
                                 </button>
                             </div>
                         </div>

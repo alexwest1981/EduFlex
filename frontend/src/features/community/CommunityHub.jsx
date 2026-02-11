@@ -118,9 +118,23 @@ const CommunityHub = ({ minimal = false }) => {
         }
     };
 
+    const handleDelete = async (itemId) => {
+        if (!window.confirm('Är du säker på att du vill ta bort detta innehåll?')) return;
+        try {
+            await api.community.delete(itemId);
+            setSelectedItem(null);
+            loadItems();
+        } catch (err) {
+            console.error('Failed to delete:', err);
+            alert('Kunde inte ta bort: ' + err.message);
+        }
+    };
+
     const isTeacherOrAdmin = currentUser?.role?.name?.includes('TEACHER') ||
         currentUser?.role?.name?.includes('ADMIN') ||
         currentUser?.role?.isSuperAdmin;
+
+    const isAdmin = currentUser?.role?.name?.includes('ADMIN') || currentUser?.role?.isSuperAdmin;
 
     return (
         <div className={`max-w-7xl mx-auto animate-in fade-in pb-20 ${minimal ? '' : 'p-4 md:p-8'}`}>
@@ -280,6 +294,7 @@ const CommunityHub = ({ minimal = false }) => {
                     itemId={selectedItem.id}
                     onClose={() => setSelectedItem(null)}
                     onInstall={handleInstall}
+                    onDelete={isAdmin ? handleDelete : undefined}
                     onViewAuthor={(authorId) => {
                         setSelectedItem(null);
                         setSelectedAuthorId(authorId);

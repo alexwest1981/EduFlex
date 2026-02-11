@@ -123,9 +123,13 @@ public class TenantService {
         try (java.sql.Connection connection = dataSource.getConnection();
                 java.sql.Statement statement = connection.createStatement()) {
 
-            // 1. Create Schema
-            statement.execute("CREATE SCHEMA IF NOT EXISTS \"" + schema + "\"");
-            logger.info("Schema {} created (or already exists).", schema);
+            // 1. Create Schema (Skip for 'public' as it always exists)
+            if (!"public".equalsIgnoreCase(schema)) {
+                statement.execute("CREATE SCHEMA IF NOT EXISTS \"" + schema + "\"");
+                logger.info("Schema {} created (or already exists).", schema);
+            } else {
+                logger.info("Skipping CREATE SCHEMA for 'public' schema.");
+            }
 
             // 2. Run Flyway Migration
             Flyway flyway = Flyway.configure()

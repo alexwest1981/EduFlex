@@ -20,6 +20,8 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
     // Räkna olästa meddelanden
     long countByRecipientIdAndIsReadFalse(Long recipientId);
 
+    long countBySenderIdAndRecipientIdAndIsRead(Long senderId, Long recipientId, boolean isRead);
+
     // Hämta specifikt mappinnehåll
     List<Message> findByRecipientIdAndFolder_SlugOrderByTimestampDesc(Long recipientId, String slug);
 

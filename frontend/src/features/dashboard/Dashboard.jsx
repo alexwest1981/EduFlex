@@ -7,9 +7,9 @@ import { Loader2, AlertCircle } from 'lucide-react';
 import AdminDashboard from './AdminDashboard';
 import TeacherDashboard from './TeacherDashboard';
 import StudentDashboard from './StudentDashboard';
-import PrincipalDashboard from './PrincipalDashboard';
+import MissionControl from '../principal/PrincipalDashboard';
 import MentorDashboard from './MentorDashboard';
-import RektorLanding from '../principal/RektorLanding';
+import HealthTeamDashboard from '../health/HealthTeamDashboard';
 
 // Import Mobile Gateway
 import MobileThemeResolver from '../../components/MobileThemes/MobileThemeResolver';
@@ -56,7 +56,10 @@ const Dashboard = ({ currentUser, myCourses }) => {
             return <AdminDashboard />;
 
         case 'PRINCIPAL':
-            return <RektorLanding />;
+            return <MissionControl />;
+
+        case 'HALSOTEAM':
+            return <HealthTeamDashboard />;
 
         case 'MENTOR':
             return <MentorDashboard />;

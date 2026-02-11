@@ -223,6 +223,40 @@ public class MentorController {
         }
     }
 
+    /**
+     * Get overview for the mentor's assigned class
+     * GET /api/mentors/class-overview
+     */
+    @GetMapping("/class-overview")
+    public ResponseEntity<?> getClassOverview() {
+        try {
+            User currentUser = getCurrentUser();
+            return ResponseEntity.ok(mentorService.getClassOverview(currentUser.getId()));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    /**
+     * Get pupils in the mentor's assigned class with detailed stats
+     * GET /api/mentors/my-class/pupils
+     */
+    @GetMapping("/my-class/pupils")
+    public ResponseEntity<?> getMyClassPupils() {
+        try {
+            User currentUser = getCurrentUser();
+            return ResponseEntity.ok(mentorService.getPupilsInClass(currentUser.getId()));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", e.getMessage()));
+        }
+    }
+
     // DTOs for request bodies
     static class AssignmentRequest {
         private Long studentId;

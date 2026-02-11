@@ -765,6 +765,57 @@ public class CommunityService {
         }
     }
 
+    // ==================== DELETE & UPDATE ====================
+
+    @Transactional
+    public void deleteItem(String itemId) {
+        String originalTenant = TenantContext.getCurrentTenant();
+        try {
+            TenantContext.setCurrentTenant("public");
+            CommunityItem item = itemRepository.findById(itemId)
+                    .orElseThrow(() -> new RuntimeException("Community item not found: " + itemId));
+
+            // Delete associated ratings and downloads first if needed, or rely on cascade
+            // For now, we assume cascade or manual cleanup if needed.
+            // But since we are in public schema, we should be careful.
+            // Let's just delete the item.
+            itemRepository.delete(item);
+            logger.info("Community item {} deleted", itemId);
+        } finally {
+            TenantContext.setCurrentTenant(originalTenant);
+        }
+    }
+
+    @Transactional
+    public CommunityItem updateItem(String itemId, CommunityPublishRequest request, User currentUser) {
+        String originalTenant = TenantContext.getCurrentTenant();
+        try {
+            TenantContext.setCurrentTenant("public");
+            CommunityItem item = itemRepository.findById(itemId)
+                    .orElseThrow(() -> new RuntimeException("Community item not found: " + itemId));
+
+            // Verify ownership or admin rights
+            boolean isAdmin = currentUser.getRole().getName().contains("ADMIN") || currentUser.getRole().isSuperAdmin();
+            if (!isAdmin && !item.getAuthorUserId().equals(currentUser.getId())) {
+                 throw new RuntimeException("You can only update your own items");
+            }
+
+            if (request.subject() != null) item.setSubject(parseSubject(request.subject()));
+            if (request.difficulty() != null) item.setDifficulty(request.difficulty());
+            if (request.gradeLevel() != null) item.setGradeLevel(request.gradeLevel());
+            if (request.publicDescription() != null) item.setDescription(request.publicDescription());
+            if (request.tags() != null) item.setTags(request.tags());
+
+            // If updated, maybe reset status to PENDING?
+            // For now, let's keep it as is or maybe PENDING if significant changes.
+            // Let's keep it simple: updates don't change status unless specified.
+
+            return itemRepository.save(item);
+        } finally {
+            TenantContext.setCurrentTenant(originalTenant);
+        }
+    }
+
     // ==================== SUBJECTS ====================
 
     public List<SubjectDTO> getSubjectsWithCounts() {

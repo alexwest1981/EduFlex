@@ -79,4 +79,18 @@ public class Program implements Serializable {
     public void setClasses(Set<ClassGroup> classes) {
         this.classes = classes;
     }
+
+    // Convenience for API
+    public Long getDepartmentId() {
+        return department != null ? department.getId() : null;
+    }
+
+    public void setDepartmentId(Long departmentId) {
+        if (departmentId == null) {
+            this.department = null;
+        } else {
+            this.department = new Department();
+            this.department.setId(departmentId);
+        }
+    }
 }

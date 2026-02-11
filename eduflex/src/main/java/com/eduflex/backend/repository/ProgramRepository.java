@@ -7,5 +7,5 @@ import java.util.List;
 
 @Repository
 public interface ProgramRepository extends JpaRepository<Program, Long> {
-    List<Program> findByDepartmentId(Long departmentId);
+    List<Program> findByDepartment_Id(Long departmentId);
 }

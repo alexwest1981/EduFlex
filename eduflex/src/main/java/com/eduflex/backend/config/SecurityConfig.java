@@ -209,6 +209,12 @@ public class SecurityConfig {
                                                 .authenticated()
                                                 .requestMatchers("/api/community/admin/**")
                                                 .hasAnyAuthority("ADMIN", "ROLE_ADMIN")
+                                                
+                                                // NEW: Allow DELETE and PUT for community items (Admin/Teacher)
+                                                .requestMatchers(HttpMethod.DELETE, "/api/community/items/**")
+                                                .hasAnyAuthority("ADMIN", "ROLE_ADMIN")
+                                                .requestMatchers(HttpMethod.PUT, "/api/community/items/**")
+                                                .hasAnyAuthority("ADMIN", "ROLE_ADMIN", "TEACHER", "ROLE_TEACHER")
 
                                                 // 6. AI Quiz Generation endpoints
                                                 .requestMatchers(HttpMethod.POST, "/api/ai/quiz/practice/**")

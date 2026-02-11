@@ -15,7 +15,8 @@ import PaymentGatewaySettings from '../admin/PaymentGatewaySettings';
 import PromoCodeManagement from '../admin/PromoCodeManagement';
 import LogDashboard from '../system/LogDashboard';
 import RealTimeLogViewer from '../system/RealTimeLogViewer';
-import { HardDrive } from 'lucide-react';
+import { HardDrive, Building2 } from 'lucide-react';
+import SchoolStructureManagement from '../principal/SchoolStructureManagement';
 
 const AdminStorageStats = () => {
     const [stats, setStats] = useState(null);
@@ -111,6 +112,7 @@ const AdministrationPanel = ({ users, courses, teachers, fetchStats }) => {
             items: [
                 { id: 'users', label: 'Användare', icon: Users },
                 { id: 'courses', label: 'Kurser', icon: BookOpen },
+                { id: 'structure', label: 'Skolstruktur', icon: Building2 },
                 { id: 'merits', label: 'Meriter', icon: Award },
                 { id: 'roles', label: 'Roller', icon: Shield },
             ]
@@ -153,6 +155,7 @@ const AdministrationPanel = ({ users, courses, teachers, fetchStats }) => {
                 />
             );
             case 'merits': return <AdminMeritManager users={users} />;
+            case 'structure': return <SchoolStructureManagement />;
             case 'roles': return <RolesAdmin />;
             case 'storage': return <AdminStorageStats />;
             case 'logs': return <LogDashboard />;

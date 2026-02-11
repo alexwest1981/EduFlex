@@ -114,7 +114,8 @@ const RolesAdmin = () => {
         'SETTINGS': 'Systeminställningar',
         'MODULE': 'Kursmoduler',
         'AUDIT': 'Loggar & Revision',
-        'SCORM': 'SCORM & Externa Paket'
+        'SCORM': 'SCORM & Externa Paket',
+        'ELEVHALSA': 'Elevhälsa'
     };
 
     const permissionTranslations = {
@@ -143,7 +144,11 @@ const RolesAdmin = () => {
         'ROLE_MANAGE': 'Hantera Roller & Behörigheter',
 
         // SETTINGS
-        'SETTINGS_MANAGE': 'Ändra Systeminställningar'
+        'SETTINGS_MANAGE': 'Ändra Systeminställningar',
+
+        // ELEVHALSA
+        'ELEVHALSA_VIEW': 'Visa Elevhälsa (Dashboard)',
+        'ELEVHALSA_MANAGE': 'Hantera Elevhälsocase'
     };
 
     const getPermissionLabel = (perm) => {
@@ -263,6 +268,7 @@ const RolesAdmin = () => {
                                     <option value="PRINCIPAL">PRINCIPAL (Analys & Skolöversikt)</option>
                                     <option value="TEACHER">TEACHER (Lärarpanel)</option>
                                     <option value="MENTOR">MENTOR (Mentoröversikt)</option>
+                                    <option value="HALSOTEAM">HALSOTEAM (Studenthälsa)</option>
                                     <option value="STUDENT">STUDENT (Studentpanel)</option>
                                 </select>
                                 <p className="text-xs text-gray-500 mt-1">Styr vilken startvy användarna med denna roll får.</p>

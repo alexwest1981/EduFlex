@@ -1,10 +1,8 @@
 package com.eduflex.backend.service;
 
-import com.eduflex.backend.model.MentorAssignment;
+import com.eduflex.backend.model.*;
 import com.eduflex.backend.model.MentorAssignment.AssignmentStatus;
-import com.eduflex.backend.model.User;
-import com.eduflex.backend.repository.MentorAssignmentRepository;
-import com.eduflex.backend.repository.UserRepository;
+import com.eduflex.backend.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,6 +10,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.ArrayList;
 
 @Service
 public class MentorService {
@@ -21,6 +22,109 @@ public class MentorService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private ClassGroupRepository classGroupRepository;
+
+    @Autowired
+    private AttendanceRepository attendanceRepository;
+
+    @Autowired
+    private CourseResultRepository courseResultRepository;
+
+    @Autowired
+    private ClassWellbeingSurveyRepository wellbeingSurveyRepository;
+
+    @Autowired
+    private MessageRepository messageRepository;
+
+    /**
+     * Get a comprehensive overview of the class assigned to this mentor
+     */
+    public Map<String, Object> getClassOverview(Long mentorId) {
+        ClassGroup classGroup = classGroupRepository.findByMentor_Id(mentorId)
+                .orElseThrow(() -> new IllegalArgumentException("No class assigned to this mentor"));
+
+        List<User> students = userRepository.findByClassGroup_Id(classGroup.getId());
+
+        Map<String, Object> overview = new HashMap<>();
+        overview.put("className", classGroup.getName());
+        overview.put("studentCount", students.size());
+
+        // 1. Attendance Today
+        double avgAttendance = students.stream()
+                .mapToDouble(s -> calculateAttendanceRate(s.getId()))
+                .average().orElse(100.0);
+        overview.put("attendanceToday", Math.round(avgAttendance) + "%");
+
+        // 2. Wellbeing Index
+        Double avgWellbeing = wellbeingSurveyRepository.getAverageRatingByClassGroupId(classGroup.getId());
+        overview.put("wellbeingIndex", avgWellbeing != null ? Math.round(avgWellbeing * 20) : 0); // Scale to 100%
+        overview.put("avgWellbeing", avgWellbeing != null ? avgWellbeing : 0.0);
+
+        // 3. Risk Students
+        List<Map<String, Object>> riskStudents = new ArrayList<>();
+        for (User student : students) {
+            int riskScore = calculateRiskScore(student);
+            if (riskScore >= 2) {
+                Map<String, Object> rs = new HashMap<>();
+                rs.put("id", student.getId());
+                rs.put("name", student.getFullName());
+                rs.put("riskScore", riskScore);
+                riskStudents.add(rs);
+            }
+        }
+        overview.put("atRiskCount", riskStudents.size());
+        overview.put("riskStudents", riskStudents);
+
+        // 4. Grade Progress
+        long gradedCourses = students.stream()
+                .flatMap(s -> courseResultRepository.findByStudentId(s.getId()).stream())
+                .filter(r -> r.getStatus() == CourseResult.Status.PASSED || r.getStatus() == CourseResult.Status.FAILED)
+                .count();
+        overview.put("gradeStatus", gradedCourses > 0 ? "Aktiv" : "Inga betyg ännu");
+
+        // 5. Contact Needs
+        long unreadCount = students.stream()
+                .mapToLong(s -> messageRepository.countBySenderIdAndRecipientIdAndIsRead(s.getId(), mentorId, false))
+                .sum();
+        overview.put("contactNeeds", unreadCount);
+
+        return overview;
+    }
+
+    private double calculateAttendanceRate(Long studentId) {
+        long total = attendanceRepository.countByStudentId(studentId);
+        if (total == 0)
+            return 100.0;
+        long present = attendanceRepository.countByStudentIdAndIsPresent(studentId, true);
+        return (double) present / total * 100.0;
+    }
+
+    private int calculateRiskScore(User student) {
+        int score = 1;
+        double attendance = calculateAttendanceRate(student.getId());
+        if (attendance < 90.0)
+            score++;
+        if (attendance < 75.0)
+            score++;
+
+        long fGrades = courseResultRepository.countByStudentIdAndGrade(student.getId(), "F");
+        if (fGrades > 0)
+            score++;
+        if (fGrades > 2)
+            score++;
+
+        // Check latest wellbeing survey
+        List<ClassWellbeingSurvey> surveys = wellbeingSurveyRepository
+                .findByClassGroupIdOrderByCreatedAtDesc(student.getClassGroup().getId());
+        Optional<ClassWellbeingSurvey> latest = surveys.stream()
+                .filter(s -> s.getStudent().getId().equals(student.getId())).findFirst();
+        if (latest.isPresent() && latest.get().getRating() < 3)
+            score++;
+
+        return Math.min(score, 5);
+    }
 
     /**
      * Assign a student to a mentor
@@ -153,5 +257,37 @@ public class MentorService {
         return studentIds.stream()
                 .map(studentId -> assignStudentToMentor(mentorId, studentId, createdById))
                 .collect(Collectors.toList());
+    }
+
+    public List<Map<String, Object>> getPupilsInClass(Long mentorId) {
+        ClassGroup classGroup = classGroupRepository.findByMentor_Id(mentorId)
+                .orElseThrow(() -> new IllegalArgumentException("No class assigned to this mentor"));
+
+        List<User> students = userRepository.findByClassGroup_Id(classGroup.getId());
+        List<Map<String, Object>> result = new ArrayList<>();
+
+        for (User pupil : students) {
+            Map<String, Object> p = new HashMap<>();
+            p.put("id", pupil.getId());
+            p.put("name", pupil.getFullName());
+            p.put("photo", pupil.getProfilePictureUrl());
+            p.put("attendance", calculateAttendanceRate(pupil.getId()));
+            p.put("riskScore", calculateRiskScore(pupil));
+
+            // Count passed courses vs total assigned
+            List<CourseResult> results = courseResultRepository.findByStudentId(pupil.getId());
+            long passed = results.stream().filter(r -> r.getStatus() == CourseResult.Status.PASSED).count();
+            p.put("grades", passed + "/" + (pupil.getCourses() != null ? pupil.getCourses().size() : 0));
+
+            // Wellbeing (latest rating)
+            List<ClassWellbeingSurvey> surveys = wellbeingSurveyRepository
+                    .findByClassGroupIdOrderByCreatedAtDesc(classGroup.getId());
+            Optional<ClassWellbeingSurvey> latest = surveys.stream()
+                    .filter(s -> s.getStudent().getId().equals(pupil.getId())).findFirst();
+            p.put("wellbeing", latest.isPresent() ? latest.get().getRating() : 0);
+
+            result.add(p);
+        }
+        return result;
     }
 }

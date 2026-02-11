@@ -14,6 +14,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Simple in-memory rate limiter for login attempts.
+ * TEMPORARILY DISABLED to fix 429 error.
  */
 @Component
 public class RateLimitingFilter extends OncePerRequestFilter {
@@ -34,19 +35,25 @@ public class RateLimitingFilter extends OncePerRequestFilter {
             if (attempt != null) {
                 System.out.println("DEBUG: RateLimiter - IP: " + clientIp + ", Count: " + attempt.count.get() + "/"
                         + MAX_ATTEMPTS);
-                if (attempt.count.get() >= MAX_ATTEMPTS) {
-                    if (System.currentTimeMillis() - attempt.lastAttemptTime < BLOCK_DURATION_MS) {
-                        System.out.println("DEBUG: RateLimiter - BLOCKING IP: " + clientIp);
-                        response.setStatus(429); // Too Many Requests
-                        response.setContentType("application/json");
-                        response.getWriter().write(
-                                "{\"error\": \"TOO_MANY_ATTEMPTS\", \"message\": \"Too many login attempts. Please try again later.\"}");
-                        return;
-                    } else {
-                        // Reset if duration passed
-                        attempts.remove(clientIp);
-                    }
-                }
+
+                // Rate limiting logic temporarily disabled below
+                /*
+                 * if (attempt.count.get() >= MAX_ATTEMPTS) {
+                 * if (System.currentTimeMillis() - attempt.lastAttemptTime < BLOCK_DURATION_MS)
+                 * {
+                 * System.out.println("DEBUG: RateLimiter - BLOCKING IP: " + clientIp);
+                 * response.setStatus(429); // Too Many Requests
+                 * response.setContentType("application/json");
+                 * response.getWriter().write(
+                 * "{\"error\": \"TOO_MANY_ATTEMPTS\", \"message\": \"Too many login attempts. Please try again later.\"}"
+                 * );
+                 * return;
+                 * } else {
+                 * // Reset if duration passed
+                 * attempts.remove(clientIp);
+                 * }
+                 * }
+                 */
             }
         }
 

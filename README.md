@@ -38,6 +38,11 @@
 ## 🇸🇪 Svenska
 
 ### ⚡ Senaste Uppdateringarna
+*   **🎯 Principal Mission Control – Live Dashboard & Organisationshantering (11 feb 2026):**
+    *   **100% Live Data:** Dashboarden för rektorer är nu helt befriad från mockups och drivs av realtidsdata för närvaro, incidenter och resultat.
+    *   **System Intelligence:** Lagt till en ny header-bar som ger direkt insikt i totalt antal elever och aktiva varningsflaggor.
+    *   **Skolstruktur & Mentorering:** Fullt stöd för att skapa och hantera avdelningar, program och klasser med ett intuitivt gränssnitt för mentorskoppling.
+    *   **Stabilitetsfix:** Eliminerat samtliga 404-fel i konsolen relaterade till legacy-komponenter och flyttade filer.
 *   **🎓 Rich Course Management – Skolverket-integration (10 feb 2026):**
     *   **Officiell data-synk:** Manuellt skapade kurser kan nu berikas med officiell data från Skolverket. Systemet hämtar automatiskt kursbeskrivningar, centralt innehåll och betygskriterier.
     *   **Skolverket Course Selector:** Integrerat en ny väljare i kurshanteringen för att enkelt koppla lokala kurser till Skolverkets databas.
@@ -245,6 +250,11 @@ curl -X POST http://localhost:8080/api/tenants \
 ## 🇬🇧 English
 
 ### ⚡ Latest Updates
+*   **🎯 Principal Mission Control – Live Dashboard & Org Management (Feb 11, 2026):**
+    *   **100% Live Data:** The Principal dashboard is now free of mockups, powered by real-time data for attendance, incidents, and academic performance.
+    *   **System Intelligence:** Added a new header bar providing instant insights into total student counts and active warning flags.
+    *   **School Structure & Mentoring:** Full support for managing departments, programs, and classes with an intuitive interface for mentor assignments.
+    *   **Stability Fix:** Resolved all residual 404 console errors related to legacy component renaming and refactoring.
 *   **🎓 Rich Course Management – Skolverket Integration (Feb 10, 2026):**
     *   **Official Data Sync:** Manually created courses can now be enriched with official data from Skolverket. The system automatically fetches course descriptions, central content, and grading criteria.
     *   **Skolverket Course Selector:** Integrated a new selector in course management to easily link local courses to the Skolverket database.

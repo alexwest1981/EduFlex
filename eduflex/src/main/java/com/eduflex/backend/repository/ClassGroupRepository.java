@@ -7,5 +7,7 @@ import java.util.List;
 
 @Repository
 public interface ClassGroupRepository extends JpaRepository<ClassGroup, Long> {
-    List<ClassGroup> findByProgramId(Long programId);
+    List<ClassGroup> findByProgram_Id(Long programId);
+
+    java.util.Optional<ClassGroup> findByMentor_Id(Long mentorId);
 }

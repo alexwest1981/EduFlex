@@ -110,3 +110,7 @@ table_list.txt
 
 # Scripts (Local only)
 scripts/
+
+# Tools (Local only)
+tools/
+Tools/

@@ -70,6 +70,12 @@
 
 ## 📝 Change Log
 
+### [v1.0.2] - 2026-02-11
+- **New Feature**: **Principal Mission Control (Final)** - Refactored dashboard with 100% live data, dynamic initials, and "System Intelligence" bar.
+- **New Feature**: **School Structure Management** - Complete system for creating departments, programs, and classes with optimized mentor assignment.
+- **Stability**: Resolved all legacy 404 console errors for `RektorLanding` and redundant components.
+- **Design**: Completed the comprehensive specification for the upcoming **Guardian Dashboard**.
+
 ### [v1.0.1] - 2026-02-10
 - **New Feature**: **Rich Course Management** - Manual course creation now integrates directly with Skolverket data.
 - **Frontend**: Integrated `SkolverketCourseSelector` into the "New Course" form for easy data fetching.

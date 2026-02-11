@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
-import { LayoutDashboard, FileText, User, Settings, LogOut, Layers, Menu, X, Award, Zap, Moon, Sun, Calendar, BookOpen, TrendingUp, Users, HelpCircle, Store, Library, ClipboardList, ShieldCheck, MessageSquare } from 'lucide-react';
+import { LayoutDashboard, FileText, User, Settings, LogOut, Layers, Menu, X, Award, Zap, Moon, Sun, Calendar, BookOpen, TrendingUp, Users, HelpCircle, Store, Library, ClipboardList, ShieldCheck, MessageSquare, Heart } from 'lucide-react';
 import { useAppContext } from '../../context/AppContext';
 import { useModules } from '../../context/ModuleContext';
 import { useTranslation } from 'react-i18next';
@@ -97,6 +97,7 @@ const StandardLayout = ({ children }) => {
         ],
         admin: [
             ...(roleName === 'ADMIN' ? [{ path: '/admin', icon: <Settings size={20} />, label: t('sidebar.admin') }] : []),
+            ...(currentUser?.permissions?.includes('ELEVHALSA_VIEW') || roleName === 'ADMIN' || roleName === 'HALSOTEAM' || roleName === 'ROLE_HALSOTEAM' || roleName === 'REKTOR' || roleName === 'PRINCIPAL' || roleName === 'ROLE_REKTOR' ? [{ path: '/health-dashboard', icon: <Heart size={20} />, label: 'Well-being Center' }] : []),
             ...(analyticsActive && roleName === 'ADMIN' ? [{ path: '/analytics', icon: <TrendingUp size={20} />, label: t('sidebar.analytics') }] : []),
         ]
     };

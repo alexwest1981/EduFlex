@@ -220,8 +220,8 @@ const LandingPage = () => {
         },
         {
             icon: <Globe className="w-6 h-6" />,
-            title: 'Rektorspaket (Principal Package)',
-            description: 'Fullständigt skolledningslager. Hantera organisationshierarki, se aggregerad statistik för hela skolan och hantera incidentrapportering i en unifierad vy.',
+            title: 'Rektorspaket (Mission Control)',
+            description: 'Fullständigt skolledningslager med realtids-KPIer. Hantera organisationshierarki (Avdelning, Program, Klass), se aggregerad statistik och hantera incidenter i en unifierad, live-vy.',
             color: 'text-brand-teal',
             bgColor: 'bg-brand-teal/10'
         },

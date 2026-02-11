@@ -206,6 +206,28 @@ public class CommunityController {
         return ResponseEntity.ok(CommunityItemDTO.fromEntity(item, Map.of()));
     }
 
+    // ==================== DELETE & UPDATE ====================
+
+    @DeleteMapping("/items/{itemId}")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN')")
+    @Operation(summary = "Delete item", description = "Delete a community item (Admin only)")
+    public ResponseEntity<Void> deleteItem(@PathVariable String itemId) {
+        communityService.deleteItem(itemId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/items/{itemId}")
+    @PreAuthorize("hasAnyAuthority('TEACHER', 'ROLE_TEACHER', 'ADMIN', 'ROLE_ADMIN')")
+    @Operation(summary = "Update item", description = "Update metadata for a community item")
+    public ResponseEntity<CommunityItemDTO> updateItem(
+            @PathVariable String itemId,
+            @RequestBody CommunityPublishRequest request,
+            Authentication authentication) {
+        User currentUser = getCurrentUser(authentication);
+        CommunityItem item = communityService.updateItem(itemId, request, currentUser);
+        return ResponseEntity.ok(CommunityItemDTO.fromEntity(item, Map.of()));
+    }
+
     // ==================== AUTHOR PROFILES ====================
 
     @GetMapping("/authors/{userId}")

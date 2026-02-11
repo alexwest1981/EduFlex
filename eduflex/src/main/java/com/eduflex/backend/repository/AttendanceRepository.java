@@ -6,5 +6,10 @@ import java.util.List;
 
 public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
     Attendance findByEventIdAndStudentId(Long eventId, Long studentId);
+
     List<Attendance> findByEventId(Long eventId);
+
+    long countByStudentId(Long studentId);
+
+    long countByStudentIdAndIsPresent(Long studentId, boolean isPresent);
 }

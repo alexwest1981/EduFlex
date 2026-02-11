@@ -22,4 +22,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
     long countByRole(com.eduflex.backend.model.Role role);
 
     long countByLastLoginAfter(java.time.LocalDateTime cutoff);
+
+    java.util.List<User> findByClassGroup_Id(Long classGroupId);
+
+    long countByRole_NameAndStaffStatus(String roleName, User.StaffStatus status);
+
+    long countByLastActiveAfter(java.time.LocalDateTime cutoff);
 }

@@ -393,4 +393,12 @@ public class User implements Serializable {
     public void setCoursesCreated(Set<Course> coursesCreated) {
         this.coursesCreated = coursesCreated;
     }
+
+    public ClassGroup getClassGroup() {
+        return classGroup;
+    }
+
+    public void setClassGroup(ClassGroup classGroup) {
+        this.classGroup = classGroup;
+    }
 }

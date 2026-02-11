@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { User, FileText, File as FileIcon, Search, Plus, Edit2, Trash2, FileCode, Image, BookOpen } from 'lucide-react';
+import { User, FileText, File as FileIcon, Search, Plus, Edit2, Trash2, FileCode, Image, BookOpen, ChevronUp, ChevronDown, ArrowUpDown } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { api } from '../../../../services/api';
 // ... (skip down to AdminCourseRegistry signature)
@@ -227,6 +227,7 @@ export const AdminUserTable = ({ users, onNewUser, onEdit, onDelete }) => {
     const [filterRole, setFilterRole] = React.useState('ALL');
     const [availableRoles, setAvailableRoles] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
+    const [sortConfig, setSortConfig] = useState({ key: null, direction: 'DEFAULT' }); // DEFAULT, ASC, DESC
     const itemsPerPage = 10;
 
     useEffect(() => {
@@ -239,10 +240,68 @@ export const AdminUserTable = ({ users, onNewUser, onEdit, onDelete }) => {
         return matchesSearch && matchesRole;
     }) || [];
 
+    const sortedUsers = React.useMemo(() => {
+        let sortableUsers = [...filteredUsers];
+        if (sortConfig.key && sortConfig.direction !== 'DEFAULT') {
+            sortableUsers.sort((a, b) => {
+                let aValue, bValue;
+
+                switch (sortConfig.key) {
+                    case 'user':
+                        aValue = (a.firstName + ' ' + a.lastName).toLowerCase();
+                        bValue = (b.firstName + ' ' + b.lastName).toLowerCase();
+                        break;
+                    case 'email':
+                        aValue = (a.email || '').toLowerCase();
+                        bValue = (b.email || '').toLowerCase();
+                        break;
+                    case 'role':
+                        aValue = (a.role?.name || a.role || '').toLowerCase();
+                        bValue = (b.role?.name || b.role || '').toLowerCase();
+                        break;
+                    case 'status':
+                        aValue = t('dashboard.active'); // Currently hardcoded/simple
+                        bValue = t('dashboard.active');
+                        break;
+                    default:
+                        aValue = a.id;
+                        bValue = b.id;
+                }
+
+                if (aValue < bValue) {
+                    return sortConfig.direction === 'ASC' ? -1 : 1;
+                }
+                if (aValue > bValue) {
+                    return sortConfig.direction === 'ASC' ? 1 : -1;
+                }
+                return 0;
+            });
+        } else {
+            // Default: Newest first (ID DESC)
+            sortableUsers.sort((a, b) => b.id - a.id);
+        }
+        return sortableUsers;
+    }, [filteredUsers, sortConfig, t]);
+
     // Pagination Logic
-    const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
+    const totalPages = Math.ceil(sortedUsers.length / itemsPerPage);
     const startIndex = (currentPage - 1) * itemsPerPage;
-    const currentItems = filteredUsers.slice(startIndex, startIndex + itemsPerPage);
+    const currentItems = sortedUsers.slice(startIndex, startIndex + itemsPerPage);
+
+    const handleSort = (key) => {
+        let direction = 'ASC';
+        if (sortConfig.key === key) {
+            if (sortConfig.direction === 'ASC') direction = 'DESC';
+            else if (sortConfig.direction === 'DESC') direction = 'DEFAULT';
+        }
+        setSortConfig({ key, direction });
+        setCurrentPage(1);
+    };
+
+    const getSortIcon = (key) => {
+        if (sortConfig.key !== key || sortConfig.direction === 'DEFAULT') return <ArrowUpDown size={14} className="opacity-30" />;
+        return sortConfig.direction === 'ASC' ? <ChevronUp size={14} className="text-indigo-600" /> : <ChevronDown size={14} className="text-indigo-600" />;
+    };
 
     return (
         <div className="bg-card dark:bg-card-dark rounded-[var(--radius-xl)] border border-card dark:border-card-dark shadow-sm overflow-hidden animate-in slide-in-from-bottom-8" style={{ backdropFilter: 'var(--card-backdrop)' }}>
@@ -288,10 +347,30 @@ export const AdminUserTable = ({ users, onNewUser, onEdit, onDelete }) => {
                 <table className="w-full text-left text-sm">
                     <thead className="bg-gray-50 dark:bg-[#282a2c] text-gray-500 dark:text-gray-400 border-b dark:border-[#3c4043]">
                         <tr>
-                            <th className="p-4">{t('dashboard.table.user')}</th>
-                            <th className="p-4">{t('dashboard.table.email')}</th>
-                            <th className="p-4">{t('dashboard.table.role')}</th>
-                            <th className="p-4">{t('dashboard.table.status')}</th>
+                            <th className="p-4 cursor-pointer hover:bg-gray-100 dark:hover:bg-[#323436] transition-colors group" onClick={() => handleSort('user')}>
+                                <div className="flex items-center gap-1">
+                                    {t('dashboard.table.user')}
+                                    {getSortIcon('user')}
+                                </div>
+                            </th>
+                            <th className="p-4 cursor-pointer hover:bg-gray-100 dark:hover:bg-[#323436] transition-colors group" onClick={() => handleSort('email')}>
+                                <div className="flex items-center gap-1">
+                                    {t('dashboard.table.email')}
+                                    {getSortIcon('email')}
+                                </div>
+                            </th>
+                            <th className="p-4 cursor-pointer hover:bg-gray-100 dark:hover:bg-[#323436] transition-colors group" onClick={() => handleSort('role')}>
+                                <div className="flex items-center gap-1">
+                                    {t('dashboard.table.role')}
+                                    {getSortIcon('role')}
+                                </div>
+                            </th>
+                            <th className="p-4 cursor-pointer hover:bg-gray-100 dark:hover:bg-[#323436] transition-colors group" onClick={() => handleSort('status')}>
+                                <div className="flex items-center gap-1">
+                                    {t('dashboard.table.status')}
+                                    {getSortIcon('status')}
+                                </div>
+                            </th>
                             <th className="p-4 text-right">{t('dashboard.table.action')}</th>
                         </tr>
                     </thead>

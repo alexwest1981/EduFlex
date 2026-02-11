@@ -54,13 +54,12 @@ import MyDocuments from './features/documents/MyDocuments';
 import PrincipalDashboard from './features/principal/PrincipalDashboard';
 import SchoolStructureManagement from './features/principal/SchoolStructureManagement';
 import AcademicGovernance from './features/principal/AcademicGovernance';
-import QualitySafetyManager from './features/principal/QualitySafetyManager';
 import PrincipalTools from './features/principal/PrincipalTools';
-import RektorLanding from './features/principal/RektorLanding';
 import MessageCenter from './features/messages/MessageCenter';
 import IncidentManager from './features/principal/IncidentManager';
 import StaffingControl from './features/principal/StaffingControl';
 import ReportLibrary from './features/principal/ReportLibrary';
+import HealthTeamDashboard from './features/health/HealthTeamDashboard';
 
 // --- PROTECTED ROUTE ---
 const ProtectedRoute = ({ children, roles }) => {
@@ -158,7 +157,7 @@ const AppRoutes = () => {
                 <Route path="/principal/dashboard" element={
                     <ProtectedRoute roles={['ADMIN', 'ROLE_REKTOR', 'REKTOR']}>
                         <Layout currentUser={currentUser} handleLogout={logout}>
-                            <RektorLanding />
+                            <PrincipalDashboard />
                         </Layout>
                     </ProtectedRoute>
                 } />
@@ -215,6 +214,14 @@ const AppRoutes = () => {
                     <ProtectedRoute roles={['ADMIN', 'ROLE_REKTOR', 'REKTOR', 'PRINCIPAL']}>
                         <Layout currentUser={currentUser} handleLogout={logout}>
                             <PrincipalTools />
+                        </Layout>
+                    </ProtectedRoute>
+                } />
+
+                <Route path="/health-dashboard" element={
+                    <ProtectedRoute roles={['ADMIN', 'ROLE_HALSOTEAM', 'HALSOTEAM', 'ROLE_REKTOR', 'REKTOR', 'PRINCIPAL']}>
+                        <Layout currentUser={currentUser} handleLogout={logout}>
+                            <HealthTeamDashboard />
                         </Layout>
                     </ProtectedRoute>
                 } />

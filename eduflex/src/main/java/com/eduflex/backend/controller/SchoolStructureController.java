@@ -73,10 +73,58 @@ public class SchoolStructureController {
         return ResponseEntity.ok(schoolStructureService.saveClassGroup(classGroup));
     }
 
+    @PutMapping("/classes/{id}")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN', 'REKTOR', 'ROLE_REKTOR')")
+    public ResponseEntity<ClassGroup> updateClassGroup(@PathVariable Long id, @RequestBody ClassGroup classGroup) {
+        return ResponseEntity.ok(schoolStructureService.updateClassGroup(id, classGroup));
+    }
+
     @DeleteMapping("/classes/{id}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN', 'REKTOR', 'ROLE_REKTOR')")
     public ResponseEntity<Void> deleteClassGroup(@PathVariable Long id) {
         schoolStructureService.deleteClassGroup(id);
         return ResponseEntity.noContent().build();
+    }
+
+    // --- Class Student Management ---
+    @GetMapping("/classes/{id}/students")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN', 'REKTOR', 'ROLE_REKTOR')")
+    public ResponseEntity<List<com.eduflex.backend.model.User>> getStudentsInClass(@PathVariable Long id) {
+        return ResponseEntity.ok(schoolStructureService.getStudentsInClass(id));
+    }
+
+    @PostMapping("/classes/{id}/students/{studentId}")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN', 'REKTOR', 'ROLE_REKTOR')")
+    public ResponseEntity<Void> addStudentToClass(@PathVariable Long id, @PathVariable Long studentId) {
+        schoolStructureService.addStudentToClass(id, studentId);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/classes/{id}/students/{studentId}")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN', 'REKTOR', 'ROLE_REKTOR')")
+    public ResponseEntity<Void> removeStudentFromClass(@PathVariable Long id, @PathVariable Long studentId) {
+        schoolStructureService.removeStudentFromClass(studentId);
+        return ResponseEntity.ok().build();
+    }
+
+    // --- Class Teacher Management ---
+    @GetMapping("/classes/{id}/teachers")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN', 'REKTOR', 'ROLE_REKTOR')")
+    public ResponseEntity<List<com.eduflex.backend.model.User>> getTeachersInClass(@PathVariable Long id) {
+        return ResponseEntity.ok(schoolStructureService.getTeachersInClass(id));
+    }
+
+    @PostMapping("/classes/{id}/teachers/{teacherId}")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN', 'REKTOR', 'ROLE_REKTOR')")
+    public ResponseEntity<Void> addTeacherToClass(@PathVariable Long id, @PathVariable Long teacherId) {
+        schoolStructureService.addTeacherToClass(id, teacherId);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/classes/{id}/teachers/{teacherId}")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN', 'REKTOR', 'ROLE_REKTOR')")
+    public ResponseEntity<Void> removeTeacherFromClass(@PathVariable Long id, @PathVariable Long teacherId) {
+        schoolStructureService.removeTeacherFromClass(id, teacherId);
+        return ResponseEntity.ok().build();
     }
 }

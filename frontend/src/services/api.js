@@ -456,6 +456,13 @@ export const api = {
         mark: (eventId, data) => api.post(`/attendance/event/${eventId}/mark`, data),
     },
 
+    elevhalsa: {
+        getMetrics: () => api.get('/elevhalsa/metrics'),
+        getRisks: () => api.get('/elevhalsa/risks'),
+        getCases: () => api.get('/elevhalsa/cases'),
+        createCase: (data) => api.post('/elevhalsa/cases', data),
+    },
+
     quiz: {
         getByCourse: (courseId) => api.get(`/quizzes/course/${courseId}`),
         create: (courseId, userId, quizData) => api.post(`/quizzes/course/${courseId}?userId=${userId}`, quizData),
@@ -495,6 +502,14 @@ export const api = {
 
     teacher: {
         getCourseAnalytics: (courseId) => api.get(`/teacher/analytics/course/${courseId}`),
+    },
+
+    mentors: {
+        getClassOverview: () => api.get('/mentors/class-overview'),
+        getMyClassPupils: () => api.get('/mentors/my-class/pupils'),
+        // Reuse existing mentor methods if needed
+        getMyStudents: () => api.get('/mentors/my-students'),
+        getAssignments: () => api.get('/mentors/assignments'),
     },
 
     activity: {
@@ -604,6 +619,8 @@ export const api = {
         search: (query, page = 0, size = 20) => api.get(`/community/search?q=${encodeURIComponent(query)}&page=${page}&size=${size}`),
         getSubjects: () => api.get('/community/subjects'),
         getItem: (itemId) => api.get(`/community/items/${itemId}`),
+        delete: (itemId) => api.delete(`/community/items/${itemId}`),
+        update: (itemId, data) => api.put(`/community/items/${itemId}`, data),
         publishQuiz: (quizId, data) => api.post(`/community/publish/quiz/${quizId}`, data),
         publishAssignment: (assignmentId, data) => api.post(`/community/publish/assignment/${assignmentId}`, data),
         publishLesson: (lessonId, data) => api.post(`/community/publish/lesson/${lessonId}`, data),
@@ -636,7 +653,14 @@ export const api = {
             deleteProgram: (id) => api.delete(`/admin/structure/programs/${id}`),
             getClasses: (progId) => api.get(`/admin/structure/classes?programId=${progId}`),
             createClass: (repo) => api.post('/admin/structure/classes', repo),
+            updateClass: (id, data) => api.put(`/admin/structure/classes/${id}`, data),
             deleteClass: (id) => api.delete(`/admin/structure/classes/${id}`),
+            getStudents: (classId) => api.get(`/admin/structure/classes/${classId}/students`),
+            addStudent: (classId, studentId) => api.post(`/admin/structure/classes/${classId}/students/${studentId}`),
+            removeStudent: (classId, studentId) => api.delete(`/admin/structure/classes/${classId}/students/${studentId}`),
+            getTeachers: (classId) => api.get(`/admin/structure/classes/${classId}/teachers`),
+            addTeacher: (classId, teacherId) => api.post(`/admin/structure/classes/${classId}/teachers/${teacherId}`),
+            removeTeacher: (classId, teacherId) => api.delete(`/admin/structure/classes/${classId}/teachers/${teacherId}`),
         },
         // --- Academic Governance ---
         governance: {
