@@ -14,6 +14,8 @@ import java.util.Map;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 @RestController
 @RequestMapping("/api/users")
@@ -88,10 +90,21 @@ public class UserController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<User>> searchUsers(@RequestParam("query") String query) {
-        if (query == null || query.trim().length() < 2) {
+    public ResponseEntity<List<User>> searchUsers(
+            @RequestParam("query") String query,
+            @RequestParam(value = "role", required = false) String role) {
+        if (query == null || query.trim().length() < 1) {
             return ResponseEntity.badRequest().build();
         }
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        boolean isAdmin = auth != null && auth.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ADMIN") || a.getAuthority().equals("ROLE_ADMIN"));
+
+        if (isAdmin) {
+            return ResponseEntity.ok(userService.searchUsersForAdmin(query, role));
+        }
+
         return ResponseEntity.ok(userService.searchUsers(query));
     }
 

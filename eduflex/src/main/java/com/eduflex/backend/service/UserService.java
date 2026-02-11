@@ -64,6 +64,18 @@ public class UserService {
                 .collect(java.util.stream.Collectors.toList());
     }
 
+    public List<User> searchUsersForAdmin(String query, String roleName) {
+        String q = query.toLowerCase();
+        return userRepository.findAll().stream()
+                .filter(u -> roleName == null
+                        || (u.getRole() != null && u.getRole().getName().equalsIgnoreCase(roleName)))
+                .filter(u -> (u.getFullName() != null && u.getFullName().toLowerCase().contains(q)) ||
+                        (u.getUsername() != null && u.getUsername().toLowerCase().contains(q)) ||
+                        (u.getEmail() != null && u.getEmail().toLowerCase().contains(q)))
+                .limit(20)
+                .collect(java.util.stream.Collectors.toList());
+    }
+
     private boolean isPublicProfile(User user) {
         if (user.getSettings() == null || user.getSettings().isEmpty())
             return true; // Default public

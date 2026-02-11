@@ -17,6 +17,7 @@ import { api } from '../../services/api';
 import TenantManagement from '../admin/TenantManagement';
 import SkolverketManager from '../admin/SkolverketManager';
 import AdminIntegrations from '../dashboard/admin/AdminIntegrations';
+import PdfTemplateEditor from '../admin/PdfTemplateEditor';
 
 // Mappa modulnycklar till ikoner
 const moduleIcons = {
@@ -259,7 +260,10 @@ const SystemSettings = ({ asTab = false }) => {
             category: 'Utseende',
             items: [
                 { id: 'theme', label: 'Tema & Utseende', icon: Palette },
-                ...(isAdmin ? [{ id: 'whitelabel', label: 'Enterprise Whitelabel', icon: Sparkles }] : []),
+                ...(isAdmin ? [
+                    { id: 'pdf-templates', label: 'PDF-mallar', icon: FileText },
+                    { id: 'whitelabel', label: 'Enterprise Whitelabel', icon: Sparkles }
+                ] : []),
             ]
         },
         {
@@ -327,6 +331,9 @@ const SystemSettings = ({ asTab = false }) => {
                         </div>
                     </div>
                 );
+
+            case 'pdf-templates':
+                return <PdfTemplateEditor />;
 
             case 'whitelabel':
                 return (

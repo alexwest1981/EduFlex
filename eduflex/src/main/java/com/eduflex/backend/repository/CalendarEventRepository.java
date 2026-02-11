@@ -2,6 +2,8 @@ package com.eduflex.backend.repository;
 
 import com.eduflex.backend.model.CalendarEvent;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
@@ -14,6 +16,10 @@ public interface CalendarEventRepository extends JpaRepository<CalendarEvent, Lo
     List<CalendarEvent> findByOwnerIdOrderByStartTimeAsc(Long ownerId);
 
     List<CalendarEvent> findByStartTimeBetweenOrderByStartTimeAsc(LocalDateTime start, LocalDateTime end);
+
+    @Query("SELECT e FROM CalendarEvent e JOIN e.attendees a WHERE a.id = :userId AND e.startTime BETWEEN :start AND :end ORDER BY e.startTime ASC")
+    List<CalendarEvent> findByAttendeeIdAndStartTimeBetween(@Param("userId") Long userId,
+            @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 
     long countByIsUnmanned(boolean isUnmanned);
 }

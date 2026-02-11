@@ -60,6 +60,10 @@ import IncidentManager from './features/principal/IncidentManager';
 import StaffingControl from './features/principal/StaffingControl';
 import ReportLibrary from './features/principal/ReportLibrary';
 import HealthTeamDashboard from './features/health/HealthTeamDashboard';
+import SurveyBuilder from './features/health/SurveyBuilder';
+import SurveyResponseForm from './features/health/SurveyResponseForm';
+import SurveyResults from './features/health/SurveyResults';
+import SickLeaveForm from './features/health/SickLeaveForm';
 
 // --- PROTECTED ROUTE ---
 const ProtectedRoute = ({ children, roles }) => {
@@ -222,6 +226,46 @@ const AppRoutes = () => {
                     <ProtectedRoute roles={['ADMIN', 'ROLE_HALSOTEAM', 'HALSOTEAM', 'ROLE_REKTOR', 'REKTOR', 'PRINCIPAL']}>
                         <Layout currentUser={currentUser} handleLogout={logout}>
                             <HealthTeamDashboard />
+                        </Layout>
+                    </ProtectedRoute>
+                } />
+
+                <Route path="/health-dashboard/survey/new" element={
+                    <ProtectedRoute roles={['ADMIN', 'ROLE_HALSOTEAM', 'HALSOTEAM']}>
+                        <Layout currentUser={currentUser} handleLogout={logout}>
+                            <SurveyBuilder />
+                        </Layout>
+                    </ProtectedRoute>
+                } />
+
+                <Route path="/health-dashboard/survey/edit/:id" element={
+                    <ProtectedRoute roles={['ADMIN', 'ROLE_HALSOTEAM', 'HALSOTEAM']}>
+                        <Layout currentUser={currentUser} handleLogout={logout}>
+                            <SurveyBuilder />
+                        </Layout>
+                    </ProtectedRoute>
+                } />
+
+                <Route path="/health-dashboard/survey/results/:distributionId" element={
+                    <ProtectedRoute roles={['ADMIN', 'ROLE_HALSOTEAM', 'HALSOTEAM', 'ROLE_REKTOR', 'REKTOR']}>
+                        <Layout currentUser={currentUser} handleLogout={logout}>
+                            <SurveyResults />
+                        </Layout>
+                    </ProtectedRoute>
+                } />
+
+                <Route path="/survey/:distributionId" element={
+                    <ProtectedRoute>
+                        <Layout currentUser={currentUser} handleLogout={logout}>
+                            <SurveyResponseForm />
+                        </Layout>
+                    </ProtectedRoute>
+                } />
+
+                <Route path="/sick-leave" element={
+                    <ProtectedRoute>
+                        <Layout currentUser={currentUser} handleLogout={logout}>
+                            <SickLeaveForm />
                         </Layout>
                     </ProtectedRoute>
                 } />

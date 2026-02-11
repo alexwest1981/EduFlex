@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react';
 import {
     Activity, ShieldAlert, Users, TrendingUp, AlertTriangle,
     CheckCircle, Plus, Search, Clock,
-    ChevronRight, Info, Heart, FileText
+    ChevronRight, Info, Heart, FileText, ClipboardList
 } from 'lucide-react';
 import { api } from '../../services/api';
 import { useAppContext } from '../../context/AppContext';
 import toast from 'react-hot-toast';
+import SurveyDistributionManager from './SurveyDistributionManager';
 
 const statusLabels = {
     OPEN: 'Öppet',
@@ -45,6 +46,7 @@ const formatTimeAgo = (dateStr) => {
 
 const HealthTeamDashboard = () => {
     const { currentUser } = useAppContext();
+    const [activeTab, setActiveTab] = useState('overview');
     const [metrics, setMetrics] = useState(null);
     const [risks, setRisks] = useState([]);
     const [cases, setCases] = useState([]);
@@ -141,6 +143,27 @@ const HealthTeamDashboard = () => {
                 </div>
             </div>
 
+            {/* Tabs */}
+            <div className="flex gap-1 bg-slate-100 dark:bg-black/20 p-1 rounded-xl w-fit">
+                {[
+                    { id: 'overview', label: 'Översikt', icon: <Activity className="w-4 h-4" /> },
+                    { id: 'surveys', label: 'Enkäter', icon: <ClipboardList className="w-4 h-4" /> },
+                ].map(tab => (
+                    <button key={tab.id} onClick={() => setActiveTab(tab.id)}
+                        className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all
+                            ${activeTab === tab.id
+                                ? 'bg-white dark:bg-[#1E1F20] text-slate-800 dark:text-white shadow-sm'
+                                : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                            }`}>
+                        {tab.icon}
+                        {tab.label}
+                    </button>
+                ))}
+            </div>
+
+            {activeTab === 'surveys' && <SurveyDistributionManager />}
+
+            {activeTab === 'overview' && <>
             {/* KPI Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {kpis.map((kpi, idx) => (
@@ -311,6 +334,7 @@ const HealthTeamDashboard = () => {
                     </div>
                 </div>
             </div>
+            </>}
         </div>
     );
 };

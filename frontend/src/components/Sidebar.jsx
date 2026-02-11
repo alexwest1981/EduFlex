@@ -61,11 +61,16 @@ const Sidebar = ({ currentUser, logout, siteName, version }) => {
         if (principalRoles.includes(role)) {
             items.push({ path: '/principal/dashboard', label: 'Rektorspaket', icon: <ShieldCheck size={20} /> });
         }
-        if (role !== 'ADMIN') {
+        if (role === 'GUARDIAN') {
+            items.push({ path: '/', label: 'Barnens Dashboard', icon: <Users size={20} /> });
+        }
+        if (role !== 'ADMIN' && role !== 'GUARDIAN') {
             items.push({ path: '/documents', label: t('sidebar.documents'), icon: <FolderOpen size={20} /> });
         }
         items.push({ path: '/communication', label: t('shortcuts.messages') || 'Kommunikation', icon: <MessageSquare size={20} /> });
-        items.push({ path: '/ebooks', label: t('sidebar.ebooks') || 'E-books', icon: <BookOpen size={20} /> });
+        if (role !== 'GUARDIAN') {
+            items.push({ path: '/ebooks', label: t('sidebar.ebooks') || 'E-books', icon: <BookOpen size={20} /> });
+        }
         items.push({ path: '/calendar', label: t('sidebar.calendar'), icon: <Calendar size={20} /> });
         items.push({ path: '/support', label: t('sidebar.support'), icon: <FileQuestion size={20} /> });
 

@@ -401,4 +401,12 @@ public class User implements Serializable {
     public void setClassGroup(ClassGroup classGroup) {
         this.classGroup = classGroup;
     }
+
+    public StaffStatus getStaffStatus() {
+        return staffStatus;
+    }
+
+    public void setStaffStatus(StaffStatus staffStatus) {
+        this.staffStatus = staffStatus;
+    }
 }

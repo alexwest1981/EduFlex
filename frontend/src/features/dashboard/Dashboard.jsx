@@ -7,6 +7,7 @@ import { Loader2, AlertCircle } from 'lucide-react';
 import AdminDashboard from './AdminDashboard';
 import TeacherDashboard from './TeacherDashboard';
 import StudentDashboard from './StudentDashboard';
+import GuardianDashboard from './GuardianDashboard';
 import MissionControl from '../principal/PrincipalDashboard';
 import MentorDashboard from './MentorDashboard';
 import HealthTeamDashboard from '../health/HealthTeamDashboard';
@@ -57,6 +58,9 @@ const Dashboard = ({ currentUser, myCourses }) => {
 
         case 'PRINCIPAL':
             return <MissionControl />;
+
+        case 'GUARDIAN':
+            return <GuardianDashboard currentUser={currentUser} />;
 
         case 'HALSOTEAM':
             return <HealthTeamDashboard />;

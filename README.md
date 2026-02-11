@@ -38,8 +38,12 @@
 ## 🇸🇪 Svenska
 
 ### ⚡ Senaste Uppdateringarna
+*   **⭐ Guardian Mission Control – Föräldraportal & Hantering (11 feb 2026):**
+    *   **Vårdnadshavardashboard:** En helt ny vy för föräldrar med realtidsdata för barnens närvaro, schema och resultat.
+    *   **Admin-hantering:** Nytt gränssnitt för administratörer att lista vårdnadshavare och hantera kopplingar till elever.
+    *   **100% Live Data:** Samtliga dashboards (Rektor & Vårdnadshavare) är nu helt drivna av live-data utan mockups.
 *   **🎯 Principal Mission Control – Live Dashboard & Organisationshantering (11 feb 2026):**
-    *   **100% Live Data:** Dashboarden för rektorer är nu helt befriad från mockups och drivs av realtidsdata för närvaro, incidenter och resultat.
+    *   **Live Metrics:** Dashboarden för rektorer är nu helt befriad från mockups och drivs av realtidsdata för närvaro, incidenter och resultat.
     *   **System Intelligence:** Lagt till en ny header-bar som ger direkt insikt i totalt antal elever och aktiva varningsflaggor.
     *   **Skolstruktur & Mentorering:** Fullt stöd för att skapa och hantera avdelningar, program och klasser med ett intuitivt gränssnitt för mentorskoppling.
     *   **Stabilitetsfix:** Eliminerat samtliga 404-fel i konsolen relaterade till legacy-komponenter och flyttade filer.

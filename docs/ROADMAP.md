@@ -50,6 +50,7 @@
 | Funktion | Beskrivning | Status |
 | :--- | :--- | :--- |
 | **Kursutvärdering & Insikter** | Komplett system för kurskvalitet, automatiserade studentnotiser och AI-analys av fritextsvar. | ✅ **Klar** |
+| **Enkätsystem (Elevhälsa)** | Dynamiska enkäter med 4 frågetyper, massdistribution per roll, intern notifiering och statistikaggregering. | ✅ **Klar** |
 | **Skills Gap Analysis** | Visualisera kompetensluckor baserat på quiz/profiler. | 📅 **Planerad** |
 | **ROI-rapportering** | Koppla utbildning till affärsdata (t.ex. säljsiffror). | 📅 **Planerad** |
 
@@ -65,10 +66,22 @@
 | **CI/CD Pipeline** | Fullt automatiserade tester och deployment. | 📅 **Planerad** |
 | **Kubernetes Migration** | Helm-charts för skalbarhet. | 📅 **Planerad** |
 | **Rektorspaket (Mission Control)** | Komplett skolledningslager: Organisationshierarki, Dashboard för nyckeltal (8 realtids-KPIer), Incidenthantering, Elevhälsa och Masskommunikation. | ✅ **Klar** |
+| **PDF Whitelabeling** | Visuell editor för certifikat- och betygsmallar. Ladda upp logotyp, bakgrundsbild, konfigurera färger, texter, QR-position och layout. Live-förhandsvisning. | ✅ **Klar** |
+| **Sjukanmälan** | Komplett sjukanmälningssystem med statusuppdateringar, mentorsnotifieringar och historikspårning. | ✅ **Klar** |
 
 ---
 
 ## 📝 Change Log
+
+### [v1.0.3] - 2026-02-11
+- **New Feature**: **PDF Template Editor (Whitelabel)** - Visuell editor i Admin → Utseende för att anpassa certifikat- och betygsmallar. Stöd för logotyp, bakgrundsbild, färger, texter, QR-kodposition, orientering och fontstorlekar med live-förhandsvisning.
+- **New Feature**: **Enkätsystem (Elevhälsa)** - Skapa dynamiska enkäter med 4 frågetyper (fritext, betyg, flerval, ja/nej). Massdistribution per roll med automatisk notifiering via internmeddelanden. Komplett statistikvy med aggregerade resultat.
+- **New Feature**: **Sjukanmälan** - Elever kan sjukanmäla sig digitalt. Mentorer får automatisk notifiering. Historikspårning och statushantering (sjuk, frisk, pågående).
+- **Backend**: Ny `PdfTemplate`-modell med migration, repository, service och REST-controller för mallhantering.
+- **Backend**: `CertificateService` och `AutoDocumentService` läser nu från konfigurerbara mallar istället för hårdkodade värden.
+- **Backend**: Dynamisk QR-kodpositionering (4 positioner) i genererade PDF:er.
+- **Frontend**: Ny `PdfTemplateEditor.jsx` med drag-and-drop bilduppladdning, färgväljare, textinställningar och CSS-baserad live-förhandsvisning.
+- **Frontend**: Ny elevhälsa-modul med enkäthantering och sjukanmälan.
 
 ### [v1.0.2] - 2026-02-11
 - **New Feature**: **Principal Mission Control (Final)** - Refactored dashboard with 100% live data, dynamic initials, and "System Intelligence" bar.

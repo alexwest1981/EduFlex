@@ -5,7 +5,8 @@ import {
     BookOpen, Trophy, Shield, Users,
     Globe, Database, Server, Zap, BarChart,
     Check, ArrowRight, Menu, X, Play, Sparkles,
-    Award, TrendingUp, Layers, Gamepad2, Brain, Map, Flame, MessageSquare
+    Award, TrendingUp, Layers, Gamepad2, Brain, Map, Flame, MessageSquare,
+    FileText, ClipboardList, Thermometer
 } from 'lucide-react';
 
 // Assets
@@ -231,6 +232,34 @@ const LandingPage = () => {
             description: 'Synkronisera manuellt skapade kurser med Skolverkets officiella data. Importera automatiskt kursbeskrivningar, centralt innehåll och betygskriterier direkt från källan.',
             color: 'text-emerald-400',
             bgColor: 'bg-emerald-500/10'
+        },
+        {
+            icon: <FileText className="w-6 h-6" />,
+            title: 'PDF Whitelabeling',
+            description: 'Anpassa certifikat och betygsrapporter med er egen profil. Ladda upp logotyp, bakgrundsbild, ändra färger, texter och layout — allt med live-förhandsvisning direkt i admin-panelen.',
+            color: 'text-amber-400',
+            bgColor: 'bg-amber-500/10'
+        },
+        {
+            icon: <ClipboardList className="w-6 h-6" />,
+            title: 'Enkätsystem (Elevhälsa)',
+            description: 'Skapa dynamiska enkäter med fritext, betyg, flerval och ja/nej-frågor. Distribuera till hela roller med ett klick och följ upp med aggregerad statistik i realtid.',
+            color: 'text-violet-400',
+            bgColor: 'bg-violet-500/10'
+        },
+        {
+            icon: <Thermometer className="w-6 h-6" />,
+            title: 'Digital Sjukanmälan',
+            description: 'Elever sjukanmäler sig digitalt. Mentorer notifieras automatiskt via internmeddelanden. Komplett historik och statusspårning för elevhälsoteamet.',
+            color: 'text-red-400',
+            bgColor: 'bg-red-500/10'
+        },
+        {
+            icon: <Users className="w-6 h-6" />,
+            title: 'Guardian Mission Control',
+            description: 'Vårdnadshavarportal med realtidsdata för barnens närvaro, schema och resultat. Administrativa verktyg för att enkelt hantera och länk barn till föräldrar.',
+            color: 'text-brand-teal',
+            bgColor: 'bg-brand-teal/10'
         }
     ];
 
@@ -347,7 +376,8 @@ const LandingPage = () => {
                 .stagger-animation.animate-in > *:nth-child(7) { animation: staggerFadeIn 0.6s 0.7s forwards; }
                 .stagger-animation.animate-in > *:nth-child(8) { animation: staggerFadeIn 0.6s 0.8s forwards; }
                 .stagger-animation.animate-in > *:nth-child(9) { animation: staggerFadeIn 0.6s 0.9s forwards; }
-                .stagger-animation.animate-in > *:nth-child(n+10) { animation: staggerFadeIn 0.6s 1s forwards; }
+                .stagger-animation.animate-in > *:nth-child(10) { animation: staggerFadeIn 0.6s 1s forwards; }
+                .stagger-animation.animate-in > *:nth-child(n+11) { animation: staggerFadeIn 0.6s 1.1s forwards; }
 
                 @keyframes staggerFadeIn {
                     to {

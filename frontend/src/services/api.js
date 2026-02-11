@@ -461,6 +461,41 @@ export const api = {
         getRisks: () => api.get('/elevhalsa/risks'),
         getCases: () => api.get('/elevhalsa/cases'),
         createCase: (data) => api.post('/elevhalsa/cases', data),
+
+        // Survey system
+        getTemplates: () => api.get('/elevhalsa/surveys/templates'),
+        createTemplate: (data) => api.post('/elevhalsa/surveys/templates', data),
+        updateTemplate: (id, data) => api.put(`/elevhalsa/surveys/templates/${id}`, data),
+        deleteTemplate: (id) => api.delete(`/elevhalsa/surveys/templates/${id}`),
+
+        distribute: (data) => api.post('/elevhalsa/surveys/distribute', data),
+        getDistributions: () => api.get('/elevhalsa/surveys/distributions'),
+        closeDistribution: (id) => api.post(`/elevhalsa/surveys/distributions/${id}/close`),
+
+        getMyPendingSurveys: () => api.get('/elevhalsa/surveys/my-pending'),
+        getSurveyDetails: (id) => api.get(`/elevhalsa/surveys/distributions/${id}/details`),
+        submitSurvey: (id, answers) => api.post(`/elevhalsa/surveys/distributions/${id}/submit`, answers),
+
+        getSurveyResults: (id) => api.get(`/elevhalsa/surveys/distributions/${id}/results`),
+        getSurveyRoles: () => api.get('/elevhalsa/surveys/roles'),
+    },
+
+    sickLeave: {
+        report: (data) => api.post('/sick-leave/report', data),
+        cancel: (id) => api.delete(`/sick-leave/${id}`),
+        getMy: () => api.get('/sick-leave/my'),
+        getActive: () => api.get('/sick-leave/active'),
+        getToday: () => api.get('/sick-leave/today'),
+    },
+
+    pdfTemplates: {
+        getAll: () => api.get('/pdf-templates'),
+        get: (id) => api.get(`/pdf-templates/${id}`),
+        getActive: (type) => api.get(`/pdf-templates/active/${type}`),
+        update: (id, data) => api.put(`/pdf-templates/${id}`, data),
+        uploadLogo: (id, file) => { const fd = new FormData(); fd.append('file', file); return api.post(`/pdf-templates/${id}/logo`, fd, { headers: { 'Content-Type': 'multipart/form-data' } }); },
+        uploadBackground: (id, file) => { const fd = new FormData(); fd.append('file', file); return api.post(`/pdf-templates/${id}/background`, fd, { headers: { 'Content-Type': 'multipart/form-data' } }); },
+        remove: (id) => api.delete(`/pdf-templates/${id}`),
     },
 
     quiz: {
@@ -698,7 +733,22 @@ export const api = {
             generate: (type) => api.post(`/principal/reports/generate?type=${type}`),
             download: (id) => `${API_BASE}/principal/reports/${id}/download`,
         }
-    }
+    },
+
+    guardian: {
+        getChildren: () => api.get('/guardian/children'),
+        getDashboard: (studentId) => api.get(`/guardian/dashboard/${studentId}`),
+    },
+
+    admin: {
+        guardians: {
+            getAll: () => api.get('/admin/guardians'),
+            getDetails: (id) => api.get(`/admin/guardians/${id}/details`),
+            link: (id, studentId) => api.post(`/admin/guardians/${id}/link/${studentId}`),
+            unlink: (linkId) => api.delete(`/admin/guardians/links/${linkId}`),
+            searchStudents: (query) => api.get(`/users/search?role=STUDENT&query=${query}`), // Fixed: q -> query
+        }
+    },
 };
 
 /**
