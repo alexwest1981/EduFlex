@@ -86,6 +86,10 @@ public class ModuleService {
                                 "Avancerad spelmotor med quests, shop och sociala funktioner. Kräver Gamification Engine.",
                                 "1.0.0", false, true);
 
+                createIfNotExists("WELLBEING_CENTER", "Well-being Center",
+                                "Konfidentiell kontaktmodul för studenter med direktkoppling till hälsoteamet. Strikt tystnadsplikt.",
+                                "1.0.0", false, true);
+
                 logger.info("=== ModuleService: Module initialization complete. Total modules: {} ===",
                                 moduleRepository.count());
         }
