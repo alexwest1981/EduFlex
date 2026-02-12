@@ -121,20 +121,25 @@ public class ElevhalsaService {
         Map<String, Object> drilldown = new HashMap<>();
 
         // History: last 6 months
-        List<Map<String, Object>> monthly = surveyAnswerRepository.getMonthlyAverageRatings();
-        // Convert to percentage
-        monthly.forEach(m -> {
+        List<Map<String, Object>> rawMonthly = surveyAnswerRepository.getMonthlyAverageRatings();
+        List<Map<String, Object>> monthly = new ArrayList<>();
+        for (Map<String, Object> raw : rawMonthly) {
+            Map<String, Object> m = new HashMap<>(raw);
             Double avg = (Double) m.get("average");
             m.put("index", avg != null ? (int) Math.round(avg / 5.0 * 100) : 0);
-        });
+            monthly.add(m);
+        }
         drilldown.put("history", monthly);
 
         // Class distribution
-        List<Map<String, Object>> classWise = surveyAnswerRepository.getClassAverageRatings();
-        classWise.forEach(m -> {
+        List<Map<String, Object>> rawClassWise = surveyAnswerRepository.getClassAverageRatings();
+        List<Map<String, Object>> classWise = new ArrayList<>();
+        for (Map<String, Object> raw : rawClassWise) {
+            Map<String, Object> m = new HashMap<>(raw);
             Double avg = (Double) m.get("average");
             m.put("index", avg != null ? (int) Math.round(avg / 5.0 * 100) : 0);
-        });
+            classWise.add(m);
+        }
         drilldown.put("classDistribution", classWise);
 
         return drilldown;
