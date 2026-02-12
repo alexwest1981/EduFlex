@@ -243,7 +243,7 @@ const LandingPage = () => {
         {
             icon: <ClipboardList className="w-6 h-6" />,
             title: 'Enkätsystem (Elevhälsa)',
-            description: 'Skapa dynamiska enkäter med fritext, betyg, flerval och ja/nej-frågor. Distribuera till hela roller med ett klick och följ upp med aggregerad statistik i realtid.',
+            description: 'Skapa dynamiska enkäter med avancerade frågetyper. Inkluderar Survey Notification Widgets för alla dashboards och automatiska påminnelser för att säkerställa maximalt elevengagemang.',
             color: 'text-violet-400',
             bgColor: 'bg-violet-500/10'
         },

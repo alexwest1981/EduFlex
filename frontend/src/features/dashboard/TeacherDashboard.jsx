@@ -11,6 +11,7 @@ import MessageCenter from '../messages/MessageCenter';
 import RecentMessagesWidget from './components/RecentMessagesWidget';
 import TeacherAtRiskWidget from './widgets/TeacherAtRiskWidget';
 import OnlineFriendsWidget from './widgets/OnlineFriendsWidget';
+import SurveyNotificationWidget from './widgets/SurveyNotificationWidget';
 
 // --- IMPORTERA KOMPONENTER (NYTT!) ---
 import TeacherStats from './components/TeacherStats'; // Keep for backward compatibility if needed, or remove? I will remove usage.
@@ -209,6 +210,8 @@ const TeacherDashboard = ({ currentUser }) => {
 
             {activeTab === 'OVERVIEW' && (
                 <div className="space-y-8 animate-in slide-in-from-bottom-2 duration-300">
+
+                    <SurveyNotificationWidget />
 
                     {/* STATS ROW */}
                     <div className="flex flex-wrap gap-6">

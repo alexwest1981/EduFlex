@@ -15,9 +15,9 @@ import PaymentGatewaySettings from '../admin/PaymentGatewaySettings';
 import PromoCodeManagement from '../admin/PromoCodeManagement';
 import LogDashboard from '../system/LogDashboard';
 import RealTimeLogViewer from '../system/RealTimeLogViewer';
-import { HardDrive, Building2, Palette } from 'lucide-react';
+import { HardDrive, Building2 } from 'lucide-react';
 import SchoolStructureManagement from '../principal/SchoolStructureManagement';
-import PdfTemplateEditor from '../admin/PdfTemplateEditor';
+
 import GuardianManager from './components/admin/GuardianManager';
 
 const AdminStorageStats = () => {
@@ -134,7 +134,6 @@ const AdministrationPanel = ({ users, courses, teachers, fetchStats }) => {
         {
             category: 'System',
             items: [
-                { id: 'appearance', label: 'Utseende', icon: Palette },
                 { id: 'storage', label: 'Lagring', icon: HardDrive },
                 { id: 'logs', label: 'Systemloggar (Fil)', icon: FileText },
                 { id: 'terminal', label: 'Debug Terminal (Live)', icon: Terminal },
@@ -162,7 +161,6 @@ const AdministrationPanel = ({ users, courses, teachers, fetchStats }) => {
             case 'structure': return <SchoolStructureManagement />;
             case 'guardians': return <GuardianManager />;
             case 'roles': return <RolesAdmin />;
-            case 'appearance': return <PdfTemplateEditor />;
             case 'storage': return <AdminStorageStats />;
             case 'logs': return <LogDashboard />;
             case 'terminal': return <RealTimeLogViewer />;

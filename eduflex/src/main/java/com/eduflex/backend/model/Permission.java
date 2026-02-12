@@ -46,5 +46,9 @@ public enum Permission {
 
     // ELEVHALSA (STUDENT HEALTH)
     ELEVHALSA_VIEW,
-    ELEVHALSA_MANAGE
+    ELEVHALSA_MANAGE,
+
+    // MODULE ACCESS (Configurable)
+    ACCESS_EBOOKS,
+    ACCESS_SHOP
 }

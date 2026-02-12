@@ -10,6 +10,8 @@ import com.eduflex.backend.repository.MessageFolderRepository;
 import com.eduflex.backend.repository.MessageFolderRepository;
 import com.eduflex.backend.repository.MessageRepository;
 import com.eduflex.backend.repository.UserRepository;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import com.eduflex.backend.service.StorageService;
@@ -35,10 +37,12 @@ public class MessageService {
         this.storageService = storageService;
     }
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public MessageDTO sendMessage(Long senderId, Long recipientId, String subject, String content, String folderSlug) {
         return sendMessage(senderId, recipientId, subject, content, folderSlug, null, null);
     }
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public MessageDTO sendMessage(Long senderId, Long recipientId, String subject, String content, String folderSlug,
             Long parentId, List<MultipartFile> files) {
         User sender = senderId != null
@@ -50,7 +54,14 @@ public class MessageService {
         Message msg = new Message();
         msg.setSender(sender);
         msg.setRecipient(recipient);
-        msg.setSubject(subject);
+
+        // Defensive truncation for subject (max 255 chars commonly)
+        String safeSubject = subject;
+        if (safeSubject != null && safeSubject.length() > 250) {
+            safeSubject = safeSubject.substring(0, 247) + "...";
+        }
+        msg.setSubject(safeSubject);
+
         msg.setContent(content);
         msg.setParentId(parentId);
 

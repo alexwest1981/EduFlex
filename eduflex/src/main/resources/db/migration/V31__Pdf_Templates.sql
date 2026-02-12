@@ -1,4 +1,4 @@
-CREATE TABLE pdf_templates (
+CREATE TABLE IF NOT EXISTS pdf_templates (
     id BIGSERIAL PRIMARY KEY,
     template_type VARCHAR(50) NOT NULL,
     name VARCHAR(255) NOT NULL DEFAULT 'Standard',

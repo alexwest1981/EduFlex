@@ -6,11 +6,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import jakarta.annotation.PostConstruct;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class PdfTemplateService {
+
+    private static final Logger log = LoggerFactory.getLogger(PdfTemplateService.class);
 
     private final PdfTemplateRepository repository;
     private final StorageService storageService;
@@ -18,6 +24,26 @@ public class PdfTemplateService {
     public PdfTemplateService(PdfTemplateRepository repository, StorageService storageService) {
         this.repository = repository;
         this.storageService = storageService;
+    }
+
+    @PostConstruct
+    @Transactional
+    public void initDefaultTemplates() {
+        if (repository.count() == 0) {
+            log.info("Inga PDF-mallar hittades — skapar standardmallar...");
+
+            PdfTemplate cert = new PdfTemplate();
+            cert.setTemplateType("CERTIFICATE");
+            cert.setName("Standard Certifikat");
+            repository.save(cert);
+
+            PdfTemplate grade = new PdfTemplate();
+            grade.setTemplateType("GRADE_REPORT");
+            grade.setName("Standard Betygsrapport");
+            repository.save(grade);
+
+            log.info("Standardmallar för PDF skapade (CERTIFICATE + GRADE_REPORT)");
+        }
     }
 
     public Optional<PdfTemplate> getActiveTemplate(String templateType) {

@@ -73,6 +73,11 @@
 
 ## 📝 Change Log
 
+### [v1.0.4] - 2026-02-12
+- **New Feature**: **Survey Notification Widget** - Realtidsaviseringar för elever, lärare och mentorer om väntande enkäter direkt på deras dashboards.
+- **Optimization**: Förbättrad datahämtning för `SurveyDistribution` med unifierade ID:n för enklare navigering och felhantering.
+- **Frontend**: Integrerat `SurveyNotificationWidget` i samtliga elev- och lärardashboards.
+
 ### [v1.0.3] - 2026-02-11
 - **New Feature**: **PDF Template Editor (Whitelabel)** - Visuell editor i Admin → Utseende för att anpassa certifikat- och betygsmallar. Stöd för logotyp, bakgrundsbild, färger, texter, QR-kodposition, orientering och fontstorlekar med live-förhandsvisning.
 - **New Feature**: **Enkätsystem (Elevhälsa)** - Skapa dynamiska enkäter med 4 frågetyper (fritext, betyg, flerval, ja/nej). Massdistribution per roll med automatisk notifiering via internmeddelanden. Komplett statistikvy med aggregerade resultat.

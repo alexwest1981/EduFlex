@@ -13,6 +13,7 @@ import {
     Cell, LineChart, Line
 } from 'recharts';
 import { api } from '../../services/api';
+import SurveyNotificationWidget from './widgets/SurveyNotificationWidget';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 
@@ -171,6 +172,8 @@ const MentorDashboard = () => {
                     detail="Från elever"
                 />
             </div>
+
+            <SurveyNotificationWidget />
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
                 {/* STUDENT GRID */}

@@ -1,9 +1,18 @@
--- Add mentor association to ClassGroup
-ALTER TABLE class_groups ADD COLUMN mentor_id BIGINT;
-ALTER TABLE class_groups ADD CONSTRAINT fk_class_groups_mentor FOREIGN KEY (mentor_id) REFERENCES app_users(id);
+-- Add mentor association to ClassGroup (idempotent)
+DO $$ BEGIN
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='class_groups' AND column_name='mentor_id') THEN
+        ALTER TABLE class_groups ADD COLUMN mentor_id BIGINT;
+    END IF;
+END $$;
+
+DO $$ BEGIN
+    IF NOT EXISTS (SELECT 1 FROM information_schema.table_constraints WHERE constraint_name='fk_class_groups_mentor') THEN
+        ALTER TABLE class_groups ADD CONSTRAINT fk_class_groups_mentor FOREIGN KEY (mentor_id) REFERENCES app_users(id);
+    END IF;
+END $$;
 
 -- Create table for Pupil Well-being Surveys
-CREATE TABLE class_wellbeing_surveys (
+CREATE TABLE IF NOT EXISTS class_wellbeing_surveys (
     id BIGSERIAL PRIMARY KEY,
     student_id BIGINT NOT NULL REFERENCES app_users(id),
     class_group_id BIGINT NOT NULL REFERENCES class_groups(id),
@@ -12,6 +21,5 @@ CREATE TABLE class_wellbeing_surveys (
     created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- Index for performance on aggregation
-CREATE INDEX idx_wellbeing_class ON class_wellbeing_surveys(class_group_id);
-CREATE INDEX idx_wellbeing_student ON class_wellbeing_surveys(student_id);
+CREATE INDEX IF NOT EXISTS idx_wellbeing_class ON class_wellbeing_surveys(class_group_id);
+CREATE INDEX IF NOT EXISTS idx_wellbeing_student ON class_wellbeing_surveys(student_id);

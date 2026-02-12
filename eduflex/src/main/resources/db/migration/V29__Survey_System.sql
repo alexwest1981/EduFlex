@@ -1,5 +1,5 @@
 -- Survey Templates
-CREATE TABLE survey_templates (
+CREATE TABLE IF NOT EXISTS survey_templates (
     id BIGSERIAL PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
     description TEXT,
@@ -10,7 +10,7 @@ CREATE TABLE survey_templates (
 );
 
 -- Survey Questions
-CREATE TABLE survey_questions (
+CREATE TABLE IF NOT EXISTS survey_questions (
     id BIGSERIAL PRIMARY KEY,
     template_id BIGINT NOT NULL REFERENCES survey_templates(id) ON DELETE CASCADE,
     question_text VARCHAR(1000) NOT NULL,
@@ -21,7 +21,7 @@ CREATE TABLE survey_questions (
 );
 
 -- Survey Distributions
-CREATE TABLE survey_distributions (
+CREATE TABLE IF NOT EXISTS survey_distributions (
     id BIGSERIAL PRIMARY KEY,
     template_id BIGINT NOT NULL REFERENCES survey_templates(id),
     target_role VARCHAR(100) NOT NULL,
@@ -33,7 +33,7 @@ CREATE TABLE survey_distributions (
 );
 
 -- Survey Responses
-CREATE TABLE survey_responses (
+CREATE TABLE IF NOT EXISTS survey_responses (
     id BIGSERIAL PRIMARY KEY,
     distribution_id BIGINT NOT NULL REFERENCES survey_distributions(id) ON DELETE CASCADE,
     respondent_id BIGINT NOT NULL REFERENCES app_users(id) ON DELETE CASCADE,
@@ -42,7 +42,7 @@ CREATE TABLE survey_responses (
 );
 
 -- Survey Answers
-CREATE TABLE survey_answers (
+CREATE TABLE IF NOT EXISTS survey_answers (
     id BIGSERIAL PRIMARY KEY,
     response_id BIGINT NOT NULL REFERENCES survey_responses(id) ON DELETE CASCADE,
     question_id BIGINT NOT NULL REFERENCES survey_questions(id) ON DELETE CASCADE,

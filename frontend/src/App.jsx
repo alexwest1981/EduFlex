@@ -66,7 +66,7 @@ import SurveyResults from './features/health/SurveyResults';
 import SickLeaveForm from './features/health/SickLeaveForm';
 
 // --- PROTECTED ROUTE ---
-const ProtectedRoute = ({ children, roles }) => {
+const ProtectedRoute = ({ children, roles, permission }) => {
     const { currentUser, licenseStatus } = useAppContext();
 
     // Om vi fortfarande kollar status
@@ -84,7 +84,16 @@ const ProtectedRoute = ({ children, roles }) => {
         return <Navigate to="/login" replace />;
     }
 
-    // Roll-kontroll
+    // Specifik rättighetskontroll (t.ex. ACCESS_EBOOKS)
+    if (permission) {
+        const hasPermission = currentUser.role?.isSuperAdmin ||
+            currentUser.role?.superAdmin ||
+            currentUser.role?.permissions?.includes(permission);
+        if (!hasPermission) {
+            return <Navigate to="/" replace />;
+        }
+    }
+
     // Roll-kontroll
     const userRole = currentUser.role?.name || currentUser.role;
     if (roles && !roles.includes(userRole)) {
@@ -167,7 +176,7 @@ const AppRoutes = () => {
                 } />
 
                 <Route path="/communication" element={
-                    <ProtectedRoute roles={['ADMIN', 'ROLE_REKTOR', 'REKTOR', 'PRINCIPAL', 'TEACHER']}>
+                    <ProtectedRoute>
                         <Layout currentUser={currentUser} handleLogout={logout}>
                             <MessageCenter />
                         </Layout>
@@ -343,7 +352,7 @@ const AppRoutes = () => {
 
 
                 <Route path="/ebooks" element={
-                    <ProtectedRoute>
+                    <ProtectedRoute permission="ACCESS_EBOOKS">
                         <Layout currentUser={currentUser} handleLogout={logout}>
                             <EbookLibrary />
                         </Layout>
@@ -376,7 +385,7 @@ const AppRoutes = () => {
                 } />
 
                 <Route path="/shop" element={
-                    <ProtectedRoute>
+                    <ProtectedRoute permission="ACCESS_SHOP">
                         {isModuleActive('GAMIFICATION') ? (
                             <Layout currentUser={currentUser} handleLogout={logout}>
                                 <ShopView />

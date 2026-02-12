@@ -38,6 +38,10 @@
 ## 🇸🇪 Svenska
 
 ### ⚡ Senaste Uppdateringarna
+*   **📋 Health Survey & Notification System (12 feb 2026):**
+    *   **Survey Notification Widget:** Nytt gränssnitt för elever, lärare och mentorer som visar väntande enkäter direkt på dashboarden.
+    *   **Automatiska Påminnelser:** Integration med det interna meddelandesystemet för att säkerställa hög svarsfrekvens.
+    *   **Dashboard Integration:** Sömlös inbäddning i `StudentDashboard`, `TeacherDashboard` och `MentorDashboard`.
 *   **⭐ Guardian Mission Control – Föräldraportal & Hantering (11 feb 2026):**
     *   **Vårdnadshavardashboard:** En helt ny vy för föräldrar med realtidsdata för barnens närvaro, schema och resultat.
     *   **Admin-hantering:** Nytt gränssnitt för administratörer att lista vårdnadshavare och hantera kopplingar till elever.
@@ -254,6 +258,10 @@ curl -X POST http://localhost:8080/api/tenants \
 ## 🇬🇧 English
 
 ### ⚡ Latest Updates
+*   **📋 Health Survey & Notification System (Feb 12, 2026):**
+    *   **Survey Notification Widget:** New interface for students, teachers, and mentors that displays pending surveys directly on the dashboard.
+    *   **Automatic Reminders:** Integration with the internal messaging system to ensure high response rates.
+    *   **Dashboard Integration:** Seamless embedding in `StudentDashboard`, `TeacherDashboard`, and `MentorDashboard`.
 *   **🎯 Principal Mission Control – Live Dashboard & Org Management (Feb 11, 2026):**
     *   **100% Live Data:** The Principal dashboard is now free of mockups, powered by real-time data for attendance, incidents, and academic performance.
     *   **System Intelligence:** Added a new header bar providing instant insights into total student counts and active warning flags.

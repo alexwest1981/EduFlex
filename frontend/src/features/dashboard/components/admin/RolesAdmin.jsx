@@ -115,7 +115,8 @@ const RolesAdmin = () => {
         'MODULE': 'Kursmoduler',
         'AUDIT': 'Loggar & Revision',
         'SCORM': 'SCORM & Externa Paket',
-        'ELEVHALSA': 'Elevhälsa'
+        'ELEVHALSA': 'Elevhälsa',
+        'ACCESS': 'Modultillgång (Valbara Moduler)'
     };
 
     const permissionTranslations = {
@@ -148,7 +149,11 @@ const RolesAdmin = () => {
 
         // ELEVHALSA
         'ELEVHALSA_VIEW': 'Visa Elevhälsa (Dashboard)',
-        'ELEVHALSA_MANAGE': 'Hantera Elevhälsocase'
+        'ELEVHALSA_MANAGE': 'Hantera Elevhälsocase',
+
+        // ACCESS
+        'ACCESS_EBOOKS': 'Tillgång till E-böcker',
+        'ACCESS_SHOP': 'Tillgång till Butik (Shop)'
     };
 
     const getPermissionLabel = (perm) => {
@@ -270,6 +275,7 @@ const RolesAdmin = () => {
                                     <option value="MENTOR">MENTOR (Mentoröversikt)</option>
                                     <option value="HALSOTEAM">HALSOTEAM (Studenthälsa)</option>
                                     <option value="STUDENT">STUDENT (Studentpanel)</option>
+                                    <option value="GUARDIAN">GUARDIAN (Vårdnadshavare)</option>
                                 </select>
                                 <p className="text-xs text-gray-500 mt-1">Styr vilken startvy användarna med denna roll får.</p>
                             </div>

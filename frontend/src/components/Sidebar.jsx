@@ -64,13 +64,25 @@ const Sidebar = ({ currentUser, logout, siteName, version }) => {
         if (role === 'GUARDIAN') {
             items.push({ path: '/', label: 'Barnens Dashboard', icon: <Users size={20} /> });
         }
+        // Helper to check permissions
+        const hasPermission = (perm) => {
+            if (currentUser?.role?.isSuperAdmin || currentUser?.role?.superAdmin) return true;
+            return currentUser?.role?.permissions?.includes(perm);
+        };
+
         if (role !== 'ADMIN' && role !== 'GUARDIAN') {
             items.push({ path: '/documents', label: t('sidebar.documents'), icon: <FolderOpen size={20} /> });
         }
         items.push({ path: '/communication', label: t('shortcuts.messages') || 'Kommunikation', icon: <MessageSquare size={20} /> });
-        if (role !== 'GUARDIAN') {
+
+        if (hasPermission('ACCESS_EBOOKS')) {
             items.push({ path: '/ebooks', label: t('sidebar.ebooks') || 'E-books', icon: <BookOpen size={20} /> });
         }
+
+        if (hasPermission('ACCESS_SHOP') && isModuleActive('GAMIFICATION')) {
+            items.push({ path: '/shop', label: t('sidebar.shop') || 'Butik', icon: <Store size={20} /> });
+        }
+
         items.push({ path: '/calendar', label: t('sidebar.calendar'), icon: <Calendar size={20} /> });
         items.push({ path: '/support', label: t('sidebar.support'), icon: <FileQuestion size={20} /> });
 

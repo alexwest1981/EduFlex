@@ -18,6 +18,7 @@ import StudentGamificationWidget from './widgets/StudentGamificationWidget';
 import AchievementsWidget from './widgets/AchievementsWidget';
 import WidgetWrapper from './components/WidgetWrapper';
 import EvaluationNotificationWidget from './widgets/EvaluationNotificationWidget';
+import SurveyNotificationWidget from './widgets/SurveyNotificationWidget';
 import EduQuestWidget from '../edugame/EduQuestWidget';
 
 // --- SHARED ---
@@ -171,6 +172,7 @@ const StudentDashboard = ({ currentUser }) => {
                     {/* LEFT COLUMN (Content) */}
                     <div className="lg:col-span-2 space-y-6">
 
+                        <SurveyNotificationWidget />
                         <EvaluationNotificationWidget />
 
                         {widgets.aiInsights && (

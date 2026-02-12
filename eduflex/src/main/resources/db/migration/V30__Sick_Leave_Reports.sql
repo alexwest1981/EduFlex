@@ -1,4 +1,4 @@
-CREATE TABLE sick_leave_reports (
+CREATE TABLE IF NOT EXISTS sick_leave_reports (
     id BIGSERIAL PRIMARY KEY,
     user_id BIGINT NOT NULL REFERENCES app_users(id) ON DELETE CASCADE,
     start_date DATE NOT NULL,
