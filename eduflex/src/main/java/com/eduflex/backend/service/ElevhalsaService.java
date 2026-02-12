@@ -7,6 +7,7 @@ import com.eduflex.backend.repository.UserRepository;
 import com.eduflex.backend.repository.AttendanceRepository;
 import com.eduflex.backend.repository.CourseResultRepository;
 import com.eduflex.backend.repository.ClassWellbeingSurveyRepository;
+import com.eduflex.backend.repository.SurveyAnswerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,6 +34,9 @@ public class ElevhalsaService {
     @Autowired
     private ClassWellbeingSurveyRepository surveyRepository;
 
+    @Autowired
+    private SurveyAnswerRepository surveyAnswerRepository;
+
     public Map<String, Object> getMetrics() {
         Map<String, Object> metrics = new HashMap<>();
 
@@ -53,7 +57,12 @@ public class ElevhalsaService {
         metrics.put("atRiskStudentsCount", getAtRiskStudents().size());
 
         // Wellbeing index from survey data (1-5 scale → percentage)
-        Double avgRating = surveyRepository.getOverallAverageRating();
+        // Try new system first, fallback to old if no data
+        Double avgRating = surveyAnswerRepository.getOverallAverageRating();
+        if (avgRating == null) {
+            avgRating = surveyRepository.getOverallAverageRating();
+        }
+
         int wellbeingIndex = avgRating != null ? (int) Math.round(avgRating / 5.0 * 100) : 0;
         metrics.put("wellbeingIndex", wellbeingIndex);
 
@@ -106,5 +115,28 @@ public class ElevhalsaService {
     @Transactional
     public ElevhalsaCase createCase(ElevhalsaCase healthCase) {
         return caseRepository.save(healthCase);
+    }
+
+    public Map<String, Object> getWellbeingDrilldown() {
+        Map<String, Object> drilldown = new HashMap<>();
+
+        // History: last 6 months
+        List<Map<String, Object>> monthly = surveyAnswerRepository.getMonthlyAverageRatings();
+        // Convert to percentage
+        monthly.forEach(m -> {
+            Double avg = (Double) m.get("average");
+            m.put("index", avg != null ? (int) Math.round(avg / 5.0 * 100) : 0);
+        });
+        drilldown.put("history", monthly);
+
+        // Class distribution
+        List<Map<String, Object>> classWise = surveyAnswerRepository.getClassAverageRatings();
+        classWise.forEach(m -> {
+            Double avg = (Double) m.get("average");
+            m.put("index", avg != null ? (int) Math.round(avg / 5.0 * 100) : 0);
+        });
+        drilldown.put("classDistribution", classWise);
+
+        return drilldown;
     }
 }

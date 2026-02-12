@@ -40,4 +40,10 @@ public class ElevhalsaController {
     public ResponseEntity<ElevhalsaCase> createCase(@RequestBody ElevhalsaCase healthCase) {
         return ResponseEntity.ok(elevhalsaService.createCase(healthCase));
     }
+
+    @GetMapping("/wellbeing/drilldown")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN', 'REKTOR', 'ROLE_REKTOR', 'HALSOTEAM', 'ROLE_HALSOTEAM')")
+    public ResponseEntity<Map<String, Object>> getWellbeingDrilldown() {
+        return ResponseEntity.ok(elevhalsaService.getWellbeingDrilldown());
+    }
 }

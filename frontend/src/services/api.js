@@ -478,6 +478,7 @@ export const api = {
 
         getSurveyResults: (id) => api.get(`/elevhalsa/surveys/distributions/${id}/results`),
         getSurveyRoles: () => api.get('/elevhalsa/surveys/roles'),
+        getWellbeingDrilldown: () => api.get('/elevhalsa/wellbeing/drilldown'),
     },
 
     sickLeave: {
