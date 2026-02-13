@@ -42,12 +42,15 @@ const MainTabNavigator: React.FC = () => {
         headerShown: false,
         tabBarStyle: {
           ...styles.tabBar,
-          backgroundColor: '#1F2937', // Dark gray
-          borderTopColor: '#374151',
+          backgroundColor: colors.isDark ? colors.surface : '#FFFFFF',
+          borderTopColor: colors.border,
         },
-        tabBarActiveTintColor: '#FFFFFF', // White for active
-        tabBarInactiveTintColor: '#9CA3AF', // Light gray for inactive
-        tabBarLabelStyle: styles.tabLabel,
+        tabBarActiveTintColor: colors.isDark ? '#FFFFFF' : colors.primary,
+        tabBarInactiveTintColor: colors.secondary,
+        tabBarLabelStyle: {
+          ...styles.tabLabel,
+          fontFamily: 'Lexend_600SemiBold',
+        },
         tabBarHideOnKeyboard: true,
       }}
     >

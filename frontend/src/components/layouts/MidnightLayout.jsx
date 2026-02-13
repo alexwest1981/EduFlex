@@ -35,7 +35,7 @@ const MidnightLayout = ({ children }) => {
         { path: '/', icon: <LayoutDashboard size={18} />, label: t('sidebar.dashboard') },
         { path: '/catalog', icon: <Wallet size={18} />, label: t('sidebar.catalog') },
         { path: '/my-courses', icon: <BookOpen size={18} />, label: t('sidebar.my_courses') },
-        { path: '/ebooks', icon: <Library size={18} />, label: t('sidebar.ebooks') },
+        ...(['STUDENT', 'TEACHER', 'ADMIN'].includes(roleName) ? [{ path: '/ebooks', icon: <Library size={18} />, label: t('sidebar.ebooks') }] : []),
         { path: '/calendar', icon: <Calendar size={18} />, label: t('sidebar.calendar') },
         { path: '/documents', icon: <FileText size={18} />, label: t('sidebar.documents') },
         { path: '/communication', icon: <MessageSquare size={18} />, label: t('shortcuts.messages') || 'Meddelanden' },

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { LayoutDashboard, BookOpen, FolderOpen, Users, UserCircle, LogOut, ShieldCheck, Calendar, MessageSquare, Settings2, FileQuestion, Palette, Store, Sparkles, TrendingUp, Award, GraduationCap } from 'lucide-react';
+import { LayoutDashboard, BookOpen, FolderOpen, Users, UserCircle, LogOut, ShieldCheck, Calendar, MessageSquare, Settings2, FileQuestion, Palette, Store, Sparkles, TrendingUp, Award, GraduationCap, Heart } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
@@ -12,6 +12,7 @@ const Sidebar = ({ currentUser, logout, siteName, version }) => {
     const location = useLocation();
     const currentPath = location.pathname;
     const [requestCount, setRequestCount] = useState(0);
+    const [unreadMessages, setUnreadMessages] = useState(0);
     const { isModuleActive } = useModules();
 
     useEffect(() => {
@@ -21,8 +22,20 @@ const Sidebar = ({ currentUser, logout, siteName, version }) => {
                 setRequestCount(requests.length);
             } catch (e) { console.error(e); }
         };
+
+        const fetchUnreadMessages = async () => {
+            try {
+                const count = await api.messages.getUnreadCount();
+                setUnreadMessages(count);
+            } catch (e) { console.error(e); }
+        };
+
         fetchRequests();
-        const interval = setInterval(fetchRequests, 60000); // Poll count
+        fetchUnreadMessages();
+        const interval = setInterval(() => {
+            fetchRequests();
+            fetchUnreadMessages();
+        }, 60000); // Poll count
         return () => clearInterval(interval);
     }, []);
 
@@ -73,14 +86,34 @@ const Sidebar = ({ currentUser, logout, siteName, version }) => {
         if (role !== 'ADMIN' && role !== 'GUARDIAN') {
             items.push({ path: '/documents', label: t('sidebar.documents'), icon: <FolderOpen size={20} /> });
         }
-        items.push({ path: '/communication', label: t('shortcuts.messages') || 'Kommunikation', icon: <MessageSquare size={20} /> });
 
-        if (hasPermission('ACCESS_EBOOKS')) {
+        // Communication with unread badge
+        items.push({
+            path: '/communication',
+            label: t('shortcuts.messages') || 'Kommunikation',
+            icon: <MessageSquare size={20} />,
+            badge: unreadMessages > 0 ? unreadMessages : null
+        });
+
+        // E-books: Only for STUDENT, ADMIN, TEACHER
+        const roleName = role ? role.toUpperCase() : '';
+        const allowedEbookRoles = ['STUDENT', 'ADMIN', 'TEACHER', 'ROLE_STUDENT', 'ROLE_ADMIN', 'ROLE_TEACHER'];
+        
+        if (hasPermission('ACCESS_EBOOKS') && allowedEbookRoles.includes(roleName)) {
             items.push({ path: '/ebooks', label: t('sidebar.ebooks') || 'E-books', icon: <BookOpen size={20} /> });
         }
 
         if (hasPermission('ACCESS_SHOP') && isModuleActive('GAMIFICATION')) {
             items.push({ path: '/shop', label: t('sidebar.shop') || 'Butik', icon: <Store size={20} /> });
+        }
+
+        if (isModuleActive('WELLBEING_CENTER')) {
+            if (role === 'STUDENT') {
+                items.push({ path: '/wellbeing-center', label: 'Well-being Center', icon: <Heart size={20} className="text-brand-teal" /> });
+            }
+            if (roleName === 'HALSOTEAM' || roleName === 'ROLE_HALSOTEAM') {
+                items.push({ path: '/wellbeing-center/inbox', label: 'E-hälsa Inbox', icon: <Heart size={20} className="text-brand-teal" /> });
+            }
         }
 
         items.push({ path: '/calendar', label: t('sidebar.calendar'), icon: <Calendar size={20} /> });
@@ -142,16 +175,23 @@ const Sidebar = ({ currentUser, logout, siteName, version }) => {
                     <button
                         key={item.path}
                         onClick={() => navigate(item.path)}
-                        className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 font-medium text-sm
+                        className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-200 font-medium text-sm
                             ${currentPath === item.path
                                 ? 'bg-indigo-50 text-indigo-700 shadow-sm border border-indigo-100'
                                 : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'
                             }`}
                     >
-                        <div className={`${currentPath === item.path ? 'text-indigo-600' : 'text-gray-400'}`}>
-                            {item.icon}
+                        <div className="flex items-center gap-3">
+                            <div className={`${currentPath === item.path ? 'text-indigo-600' : 'text-gray-400'}`}>
+                                {item.icon}
+                            </div>
+                            {item.label}
                         </div>
-                        {item.label}
+                        {item.badge && (
+                            <span className="bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                                {item.badge}
+                            </span>
+                        )}
                     </button>
                 ))}
             </nav>

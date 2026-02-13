@@ -37,7 +37,7 @@ const PulseLayout = ({ children }) => {
         { path: '/documents', icon: <FileText size={20} />, label: t('sidebar.documents') },
         { path: '/catalog', icon: <BookOpen size={20} />, label: t('sidebar.courses') },
         { path: '/catalog', icon: <Layers size={18} />, label: t('sidebar.catalog') },
-        { path: '/ebooks', icon: <Library size={18} />, label: t('sidebar.library') || 'Bibliotek' },
+        ...(['STUDENT', 'TEACHER', 'ADMIN'].includes(roleName) ? [{ path: '/ebooks', icon: <Library size={18} />, label: t('sidebar.library') || 'Bibliotek' }] : []),
         { path: '/calendar', icon: <Calendar size={18} />, label: t('sidebar.calendar') || 'Kalender' },
         { path: '/communication', icon: <MessageSquare size={18} />, label: t('shortcuts.messages') || 'Meddelanden' },
         { path: '/support', icon: <HelpCircle size={20} />, label: t('sidebar.support') || 'Kontakt & Support' },

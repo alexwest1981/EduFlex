@@ -38,6 +38,11 @@
 ## 🇸🇪 Svenska
 
 ### ⚡ Senaste Uppdateringarna
+*   **🛠️ Systemåterställning & Sjukanmälan (13 feb 2026):**
+    *   **Dataåterställning:** Återställt databasen från nattlig backup efter ett kritiskt Docker-fel. Samtliga 18 användare och 20 kurser är nu återställda.
+    *   **Wellbeing Center Integration:** Fullständig integration av "Sjukanmälan" med automatisk datumvalidering.
+    *   **Docker-stabilisering:** Implementerat ett nytt fix-protokoll för att hantera låsta portar och WSL-datakorruption.
+    *   **Frontend-cleanup:** Eliminerat dubblett-routes i `App.jsx` för ökad stabilitet.
 *   **📋 Health Survey & Notification System (12 feb 2026):**
     *   **Survey Notification Widget:** Nytt gränssnitt för elever, lärare och mentorer som visar väntande enkäter direkt på dashboarden.
     *   **Automatiska Påminnelser:** Integration med det interna meddelandesystemet för att säkerställa hög svarsfrekvens.

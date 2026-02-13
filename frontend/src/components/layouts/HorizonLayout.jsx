@@ -39,7 +39,7 @@ const HorizonLayout = ({ children }) => {
         ...(roleName === 'ADMIN' ? [{ path: '/admin', icon: <Settings size={18} />, label: t('sidebar.admin') }] : []),
         ...(analyticsActive && roleName === 'ADMIN' ? [{ path: '/analytics', icon: <TrendingUp size={18} />, label: t('sidebar.analytics') }] : []),
         { path: '/catalog', icon: <Layers size={18} />, label: t('sidebar.catalog') },
-        { path: '/ebooks', icon: <Library size={18} />, label: t('sidebar.library') || 'Bibliotek' },
+        ...(['STUDENT', 'TEACHER', 'ADMIN'].includes(roleName) ? [{ path: '/ebooks', icon: <Library size={18} />, label: t('sidebar.library') || 'Bibliotek' }] : []),
         { path: '/documents', icon: <FileText size={18} />, label: t('sidebar.documents') },
         { path: '/communication', icon: <MessageSquare size={18} />, label: t('shortcuts.messages') || 'Meddelanden' },
         { path: '/support', icon: <HelpCircle size={18} />, label: t('sidebar.support') || 'Kontakt & Support' },

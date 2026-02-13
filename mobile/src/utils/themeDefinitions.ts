@@ -85,6 +85,18 @@ export const MOBILE_THEMES: MobileThemeConfig[] = [
         borderRadius: '8px',
         animationPreset: 'minimal',
         componentDepth: 'flat'
+    },
+    {
+        id: 'stitch-dark',
+        name: 'Stitch Dark',
+        description: 'Modernt mörkt tema med glassmorphism, inspirerat av Stitch-designen.',
+        backgroundColor: '#0a0e17',
+        activeColor: '#135bec',
+        inactiveColor: '#64748b',
+        glassmorphism: true,
+        borderRadius: '16px',
+        animationPreset: 'smooth',
+        componentDepth: 'glass'
     }
 ];
 

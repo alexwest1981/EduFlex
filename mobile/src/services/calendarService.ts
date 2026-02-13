@@ -11,6 +11,17 @@ export const calendarService = {
     },
 
     /**
+     * Get today's schedule (events for current date)
+     */
+    getTodaySchedule: async (): Promise<CalendarEvent[]> => {
+        const today = new Date().toISOString().split('T')[0];
+        const response = await api.get<CalendarEvent[]>('/events', {
+            params: { date: today },
+        });
+        return response.data;
+    },
+
+    /**
      * Create an event
      */
     createEvent: async (eventData: Partial<CalendarEvent>): Promise<{ id: number; message: string }> => {

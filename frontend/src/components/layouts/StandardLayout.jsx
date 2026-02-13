@@ -86,19 +86,19 @@ const StandardLayout = ({ children }) => {
             ...(roleName === 'TEACHER' || roleName === 'ADMIN' ? [{ path: '/evaluations/manage', icon: <ClipboardList size={20} />, label: 'Utvärderingar' }] : []),
             ...(roleName === 'TEACHER' ? [{ path: '/?tab=COURSES', icon: <BookOpen size={20} />, label: t('sidebar.my_courses') || 'Mina kurser' }] : []),
             ...(roleName === 'STUDENT' ? [{ path: '/my-courses', icon: <BookOpen size={20} />, label: t('sidebar.my_courses') || 'Mina kurser' }] : []),
-            { path: '/ebooks', icon: <Library size={20} />, label: t('sidebar.ebooks') },
+            ...(['STUDENT', 'TEACHER', 'ADMIN'].includes(roleName) ? [{ path: '/ebooks', icon: <Library size={20} />, label: t('sidebar.ebooks') }] : []),
         ],
         tools: [
             { path: '/calendar', icon: <Calendar size={20} />, label: t('sidebar.calendar') },
             { path: '/documents', icon: <FileText size={20} />, label: t('sidebar.documents') },
             { path: '/communication', icon: <MessageSquare size={20} />, label: t('shortcuts.messages') || 'Meddelanden' },
-            { path: '/sick-leave', icon: <Thermometer size={20} />, label: 'Sjukanmälan' },
             { path: '/support', icon: <HelpCircle size={20} />, label: t('sidebar.support') },
-            ...(isModuleActive('EDUGAME') ? [{ path: '/shop', icon: <Store size={20} />, label: 'Butik' }] : [])
+            ...(isModuleActive('EDUGAME') ? [{ path: '/shop', icon: <Store size={20} />, label: 'Butik' }] : []),
+            ...(isModuleActive('WELLBEING_CENTER') && roleName === 'STUDENT' ? [{ path: '/wellbeing-center', icon: <Heart size={20} />, label: 'Well-being Center' }] : [])
         ],
         admin: [
             ...(roleName === 'ADMIN' ? [{ path: '/admin', icon: <Settings size={20} />, label: t('sidebar.admin') }] : []),
-            ...(currentUser?.permissions?.includes('ELEVHALSA_VIEW') || roleName === 'ADMIN' || roleName === 'HALSOTEAM' || roleName === 'ROLE_HALSOTEAM' || roleName === 'REKTOR' || roleName === 'PRINCIPAL' || roleName === 'ROLE_REKTOR' ? [{ path: '/health-dashboard', icon: <Heart size={20} />, label: 'Well-being Center' }] : []),
+            ...(isModuleActive('WELLBEING_CENTER') && (roleName === 'HALSOTEAM' || roleName === 'ROLE_HALSOTEAM') ? [{ path: '/wellbeing-center/inbox', icon: <Heart size={20} />, label: 'E-hälsa Inbox' }] : []),
             ...(analyticsActive && roleName === 'ADMIN' ? [{ path: '/analytics', icon: <TrendingUp size={20} />, label: t('sidebar.analytics') }] : []),
         ]
     };

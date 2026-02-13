@@ -63,7 +63,8 @@ import HealthTeamDashboard from './features/health/HealthTeamDashboard';
 import SurveyBuilder from './features/health/SurveyBuilder';
 import SurveyResponseForm from './features/health/SurveyResponseForm';
 import SurveyResults from './features/health/SurveyResults';
-import SickLeaveForm from './features/health/SickLeaveForm';
+import WellbeingCenter from './features/health/WellbeingCenter';
+import WellbeingInbox from './features/health/WellbeingInbox';
 
 // --- PROTECTED ROUTE ---
 const ProtectedRoute = ({ children, roles, permission }) => {
@@ -271,13 +272,31 @@ const AppRoutes = () => {
                     </ProtectedRoute>
                 } />
 
-                <Route path="/sick-leave" element={
-                    <ProtectedRoute>
-                        <Layout currentUser={currentUser} handleLogout={logout}>
-                            <SickLeaveForm />
-                        </Layout>
+
+                <Route path="/wellbeing-center" element={
+                    <ProtectedRoute roles={['ADMIN', 'STUDENT', 'ROLE_STUDENT']}>
+                        {isModuleActive('WELLBEING_CENTER') ? (
+                            <Layout currentUser={currentUser} handleLogout={logout}>
+                                <WellbeingCenter />
+                            </Layout>
+                        ) : (
+                            <Navigate to="/" replace />
+                        )}
                     </ProtectedRoute>
                 } />
+
+                <Route path="/wellbeing-center/inbox" element={
+                    <ProtectedRoute roles={['ADMIN', 'HALSOTEAM', 'ROLE_HALSOTEAM']}>
+                        {isModuleActive('WELLBEING_CENTER') ? (
+                            <Layout currentUser={currentUser} handleLogout={logout}>
+                                <WellbeingInbox />
+                            </Layout>
+                        ) : (
+                            <Navigate to="/" replace />
+                        )}
+                    </ProtectedRoute>
+                } />
+
 
                 <Route path="/admin/gamification-management" element={
                     <ProtectedRoute roles={['ADMIN']}>

@@ -40,7 +40,7 @@ const FloatingLayout = ({ children }) => {
         { path: '/', icon: <LayoutDashboard size={20} />, label: t('sidebar.dashboard') },
         { path: '/documents', icon: <FileText size={20} />, label: t('sidebar.documents') },
         { path: '/catalog', icon: <BookOpen size={20} />, label: t('sidebar.catalog') },
-        { path: '/ebooks', icon: <Library size={20} />, label: t('sidebar.library') || 'Bibliotek' },
+        ...(['STUDENT', 'TEACHER', 'ADMIN'].includes(roleName) ? [{ path: '/ebooks', icon: <Library size={20} />, label: t('sidebar.library') || 'Bibliotek' }] : []),
         { path: '/calendar', icon: <Calendar size={20} />, label: t('sidebar.calendar') || 'Kalender' },
         { path: '/communication', icon: <MessageSquare size={20} />, label: t('shortcuts.messages') || 'Meddelanden' },
         ...(roleName === 'TEACHER' || roleName === 'ADMIN' ? [{ path: '/resources', icon: <Layers size={20} />, label: t('sidebar.resource_bank') }] : []),

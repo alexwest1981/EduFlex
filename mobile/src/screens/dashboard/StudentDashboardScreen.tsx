@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import {
     View,
     Text,
@@ -8,24 +8,29 @@ import {
     TouchableOpacity,
     ActivityIndicator,
     Alert,
+    Image,
+    Linking,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../../context/AuthContext';
-import { courseService, gamificationService, notificationService } from '../../services';
-import { Course, DailyChallenge, Streak } from '../../types';
+import { useTheme } from '../../context/ThemeContext';
+import { getThemeColors } from '../../utils/themeStyles';
+import { courseService, gamificationService, notificationService, calendarService } from '../../services';
+import { Course, DailyChallenge, Streak, CalendarEvent } from '../../types';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../navigation/types';
-import { useThemedStyles } from '../../hooks';
 
-// Import existing components
-import GamificationCard from '../../components/GamificationCard';
-import CourseCard from '../../components/CourseCard';
-import DailyChallengeCard from '../../components/DailyChallengeCard';
+import NextClassCard from '../../components/NextClassCard';
+import ScheduleItem, { ScheduleStatus } from '../../components/ScheduleItem';
+import AssignmentCard from '../../components/AssignmentCard';
 
 const StudentDashboardScreen: React.FC = () => {
     const { user, refreshUser } = useAuth();
+    const { currentTheme } = useTheme();
+    const colors = getThemeColors(currentTheme);
     const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-    const { colors, styles: themedStyles } = useThemedStyles();
+
     const [isRefreshing, setIsRefreshing] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -34,79 +39,45 @@ const StudentDashboardScreen: React.FC = () => {
     const [challenges, setChallenges] = useState<DailyChallenge[]>([]);
     const [streak, setStreak] = useState<Streak | null>(null);
     const [upcomingAssignments, setUpcomingAssignments] = useState<any[]>([]);
-    const [unreadCount, setUnreadCount] = useState<number>(0); // Added for unread notifications
+    const [unreadCount, setUnreadCount] = useState<number>(0);
+    const [todaySchedule, setTodaySchedule] = useState<CalendarEvent[]>([]);
 
     const loadData = async () => {
-        console.log('📱 StudentDashboard: loadData called');
-        console.log('   User:', user ? `${user.firstName} (ID: ${user.id})` : 'NULL');
-
-        if (!user) {
-            console.warn('⚠️ No user, skipping data load');
-            return;
-        }
+        if (!user) return;
 
         try {
-            console.log('🔄 Fetching courses...');
-            const coursesData = await courseService.getStudentCourses(user.id).catch(e => {
-                console.error('❌ getStudentCourses failed:', e.message);
-                return [];
-            });
+            const [coursesData, challengesData, streakData, notifCount, scheduleData] = await Promise.all([
+                courseService.getStudentCourses(user.id).catch(() => []),
+                gamificationService.getDailyChallenges(user.id).catch(() => []),
+                gamificationService.getStreak(user.id).catch(() => null),
+                notificationService.getUnreadCount(user.id).catch(() => 0),
+                calendarService.getTodaySchedule().catch(() => []),
+            ]);
 
-            console.log('🔄 Fetching daily challenges...');
-            const challengesData = await gamificationService.getDailyChallenges(user.id).catch(e => {
-                console.error('❌ getDailyChallenges failed:', e.message);
-                return [];
-            });
-
-            console.log('🔄 Fetching streak...');
-            const streakData = await gamificationService.getStreak(user.id).catch(e => {
-                console.error('❌ getStreak failed:', e.message);
-                return null;
-            });
-
-            console.log('🔄 Fetching notification count...');
-            const notifCount = await notificationService.getUnreadCount(user.id).catch(e => {
-                console.error('❌ getUnreadCount failed:', e.message);
-                return 0;
-            });
-
-            console.log('✅ Student dashboard data loaded:', {
-                courses: coursesData.length,
-                challenges: challengesData.length,
-                streak: streakData?.currentStreak,
-                notifications: notifCount,
-            });
-
-            setCourses(coursesData.slice(0, 6)); // Show max 6 courses
+            setCourses(coursesData.slice(0, 6));
             setChallenges(challengesData);
             setStreak(streakData);
             setUnreadCount(notifCount);
+            setTodaySchedule(scheduleData);
 
-            // Fetch assignments from courses
+            // Fetch upcoming assignments from courses
             const allAssignments: any[] = [];
             for (const course of coursesData) {
                 try {
                     const assignments = await courseService.getCourseAssignments(course.id);
-                    // Note: The original code added courseName here. The instruction removes it.
-                    // If courseName is needed in rendering, it should be re-added here.
-                    allAssignments.push(...assignments);
-                } catch (error) {
-                    console.error(`Failed to fetch assignments for course ${course.id}`, error);
-                }
+                    allAssignments.push(...assignments.map((a: any) => ({ ...a, courseName: course.name })));
+                } catch { /* skip */ }
             }
 
-            // Filter upcoming assignments (due within 7 days)
             const now = new Date();
             const sevenDaysFromNow = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
             const upcoming = allAssignments
                 .filter((a: any) => a.dueDate && new Date(a.dueDate) >= now && new Date(a.dueDate) <= sevenDaysFromNow)
                 .sort((a: any, b: any) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime())
-                .slice(0, 5);
+                .slice(0, 4);
 
             setUpcomingAssignments(upcoming);
-
         } catch (error: any) {
-            console.error('💥 Failed to load dashboard data:', error?.message || error);
             Alert.alert('Fel', 'Kunde inte ladda dashboard-data');
         } finally {
             setIsLoading(false);
@@ -130,268 +101,309 @@ const StudentDashboardScreen: React.FC = () => {
         return 'God kväll';
     };
 
-    const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#F9FAFB',
-    },
-    contentContainer: {
-        padding: 20,
-        paddingTop: 60,
-        paddingBottom: 100,
-    },
-    loadingContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#F9FAFB',
-    },
-    loadingText: {
-        marginTop: 16,
-        fontSize: 16,
-        color: '#6B7280',
-    },
-    header: {
-        marginBottom: 24,
-        flexDirection: 'row', // Added
-        justifyContent: 'space-between', // Added
-        alignItems: 'center', // Added
-    },
-    greeting: {
-        fontSize: 16,
-        color: '#6B7280',
-    },
-    userName: {
-        fontSize: 28,
-        fontWeight: '700',
-        color: '#1F2937',
-        marginTop: 4,
-    },
-    section: {
-        marginTop: 24,
-    },
-    sectionTitle: {
-        fontSize: 20,
-        fontWeight: '700',
-        color: '#1F2937',
-        marginBottom: 16,
-    },
-    assignmentCard: {
-        backgroundColor: '#FFFFFF',
-        borderRadius: 12,
-        padding: 16,
-        marginBottom: 12,
-        borderWidth: 1,
-        borderColor: '#E5E7EB',
-    },
-    assignmentHeader: {
-        marginBottom: 8,
-    },
-    assignmentTitle: {
-        fontSize: 16,
-        fontWeight: '600',
-        color: '#1F2937',
-        marginBottom: 4,
-    },
-    assignmentCourse: {
-        fontSize: 14,
-        color: '#6B7280',
-    },
-    assignmentDueDate: {
-        fontSize: 14,
-        color: '#4F46E5',
-        fontWeight: '500',
-    },
-    emptyState: {
-        backgroundColor: '#FFFFFF',
-        borderRadius: 16,
-        padding: 32,
-        alignItems: 'center',
-        borderWidth: 1,
-        borderColor: '#E5E7EB',
-    },
-    emptyStateIcon: {
-        fontSize: 48,
-        marginBottom: 12,
-    },
-    emptyStateText: {
-        fontSize: 16,
-        color: '#6B7280',
-        textAlign: 'center',
-    },
-    statsRow: {
-        flexDirection: 'row',
-        gap: 12,
-        marginTop: 24,
-    },
-    statCard: {
-        flex: 1,
-        backgroundColor: '#FFFFFF',
-        borderRadius: 12,
-        padding: 16,
-        alignItems: 'center',
-        borderWidth: 1,
-        borderColor: '#E5E7EB',
-    },
-    statValue: {
-        fontSize: 28,
-        fontWeight: '700',
-        color: '#4F46E5',
-        marginBottom: 4,
-    },
-    statLabel: {
-        fontSize: 12,
-        color: '#6B7280',
-        textAlign: 'center',
-    },
-    // Added styles for notification button
-    notificationButton: {
-        padding: 8,
-        position: 'relative',
-        backgroundColor: '#FFFFFF',
-        borderRadius: 12,
-        width: 48,
-        height: 48,
-        justifyContent: 'center',
-        alignItems: 'center',
-        elevation: 2,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.1,
-        shadowRadius: 2,
-    },
-    bellIcon: {
-        fontSize: 24,
-    },
-    badge: {
-        position: 'absolute',
-        top: -4,
-        right: -4,
-        backgroundColor: '#EF4444',
-        borderRadius: 10,
-        width: 20,
-        height: 20,
-        justifyContent: 'center',
-        alignItems: 'center',
-        borderWidth: 1.5,
-        borderColor: '#FFFFFF',
-    },
-    badgeText: {
-        color: '#FFFFFF',
-        fontSize: 10,
-        fontWeight: '700',
-    },
-});
+    // Determine next class and schedule status
+    const { nextClass, scheduleItems } = useMemo(() => {
+        const now = new Date();
+        let next: CalendarEvent | null = null;
+        const items = todaySchedule
+            .sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime())
+            .map(event => {
+                const start = new Date(event.startTime);
+                const end = new Date(event.endTime);
+                let status: ScheduleStatus = 'upcoming';
+
+                if (now >= start && now <= end) {
+                    status = 'ongoing';
+                    if (!next) next = event;
+                } else if (now > end) {
+                    status = 'completed';
+                } else {
+                    if (!next) next = event;
+                }
+
+                return {
+                    event,
+                    time: start.toLocaleTimeString('sv-SE', { hour: '2-digit', minute: '2-digit' }),
+                    status,
+                };
+            });
+
+        return { nextClass: next, scheduleItems: items };
+    }, [todaySchedule]);
+
+    const styles = useMemo(() => createStyles(colors), [colors]);
 
     if (isLoading) {
         return (
             <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color="#4F46E5" />
+                <ActivityIndicator size="large" color={colors.primary} />
                 <Text style={styles.loadingText}>Laddar din instrumentpanel...</Text>
             </View>
         );
     }
-
 
     return (
         <ScrollView
             style={styles.container}
             contentContainerStyle={styles.contentContainer}
             refreshControl={
-                <RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} tintColor={'#4F46E5'} />
+                <RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} tintColor={colors.primary} />
             }
         >
-            {/* Header */}
-            <View style={styles.header}>
-                <View>
-                    <Text style={styles.greeting}>{getGreeting()},</Text>
-                    <Text style={styles.userName}>{user?.firstName || 'Student'} 👋</Text>
+            {/* Top App Bar */}
+            <View style={styles.topBar}>
+                <View style={styles.topBarLeft}>
+                    <View style={styles.avatar}>
+                        {user?.profilePictureUrl ? (
+                            <Image source={{ uri: user.profilePictureUrl }} style={styles.avatarImage} />
+                        ) : (
+                            <Text style={styles.avatarText}>
+                                {(user?.firstName?.[0] || 'S').toUpperCase()}
+                            </Text>
+                        )}
+                    </View>
+                    <View>
+                        <Text style={styles.greeting}>{getGreeting()},</Text>
+                        <Text style={styles.userName}>{user?.firstName || 'Student'}</Text>
+                    </View>
                 </View>
                 <TouchableOpacity
                     style={styles.notificationButton}
                     onPress={() => navigation.navigate('Notifications')}
                 >
-                    <Text style={styles.bellIcon}>🔔</Text>
+                    <Ionicons name="notifications-outline" size={22} color={colors.text} />
                     {unreadCount > 0 && (
-                        <View style={styles.badge}>
-                            <Text style={styles.badgeText}>{unreadCount}</Text>
+                        <View style={styles.notifBadge}>
+                            <Text style={styles.notifBadgeText}>{unreadCount > 9 ? '9+' : unreadCount}</Text>
                         </View>
                     )}
                 </TouchableOpacity>
             </View>
 
-            {/* Gamification Overview */}
-            <GamificationCard
-                level={user?.level || 1}
-                points={user?.points || 0}
-                streak={streak?.currentStreak || 0}
-                onPress={() => { }}
+            {/* Next Class Card */}
+            <NextClassCard
+                nextClass={nextClass}
+                onJoin={() => {
+                    if (nextClass?.meetingLink) {
+                        Linking.openURL(nextClass.meetingLink);
+                    }
+                }}
             />
 
-            {/* Daily Challenges */}
-            {challenges.length > 0 && (
+            {/* Today's Schedule */}
+            {scheduleItems.length > 0 && (
                 <View style={styles.section}>
-                    <Text style={styles.sectionTitle}>Dagens Utmaningar 🎯</Text>
-                    {challenges.map((challenge) => (
-                        <DailyChallengeCard key={challenge.id} challenge={challenge} />
+                    <View style={styles.sectionHeader}>
+                        <Text style={styles.sectionTitle}>Dagens Schema</Text>
+                        <TouchableOpacity onPress={() => navigation.navigate('Calendar' as any)}>
+                            <Text style={styles.sectionLink}>Visa alla</Text>
+                        </TouchableOpacity>
+                    </View>
+                    {scheduleItems.slice(0, 4).map(({ event, time, status }) => (
+                        <ScheduleItem
+                            key={event.id}
+                            time={time}
+                            subject={event.title}
+                            room={event.location}
+                            status={status}
+                        />
                     ))}
                 </View>
             )}
 
-            {/* Upcoming Assignments */}
+            {/* Pending Assignments — 2 column grid */}
             {upcomingAssignments.length > 0 && (
                 <View style={styles.section}>
-                    <Text style={styles.sectionTitle}>Kommande Inlämningar 📝</Text>
-                    {upcomingAssignments.map((assignment, index) => (
-                        <View key={index} style={styles.assignmentCard}>
-                            <View style={styles.assignmentHeader}>
-                                <Text style={styles.assignmentTitle}>{assignment.title}</Text>
-                                <Text style={styles.assignmentCourse}>{assignment.courseName}</Text>
+                    <View style={styles.sectionHeader}>
+                        <Text style={styles.sectionTitle}>Väntande Uppgifter</Text>
+                        <TouchableOpacity>
+                            <Text style={styles.sectionLink}>Visa alla</Text>
+                        </TouchableOpacity>
+                    </View>
+                    <View style={styles.assignmentGrid}>
+                        {upcomingAssignments.map((assignment, index) => (
+                            <View key={index} style={styles.assignmentGridItem}>
+                                <AssignmentCard
+                                    subject={assignment.courseName || 'Kurs'}
+                                    title={assignment.title}
+                                    progress={0}
+                                    deadline={assignment.dueDate}
+                                />
                             </View>
-                            <Text style={styles.assignmentDueDate}>
-                                Förfaller: {new Date(assignment.dueDate).toLocaleDateString('sv-SE')}
-                            </Text>
-                        </View>
-                    ))}
+                        ))}
+                    </View>
                 </View>
             )}
-
-            {/* My Courses */}
-            <View style={styles.section}>
-                <Text style={styles.sectionTitle}>Mina Kurser 📚</Text>
-                {courses.length > 0 ? (
-                    courses.map((course) => (
-                        <CourseCard
-                            key={course.id}
-                            course={course}
-                            onPress={() => { }}
-                        />
-                    ))
-                ) : (
-                    <View style={styles.emptyState}>
-                        <Text style={styles.emptyStateIcon}>📖</Text>
-                        <Text style={styles.emptyStateText}>Du är inte registrerad på några kurser än</Text>
-                    </View>
-                )}
-            </View>
 
             {/* Quick Stats */}
             <View style={styles.statsRow}>
-                <View style={styles.statCard}>
-                    <Text style={styles.statValue}>{courses.length}</Text>
+                <View style={[styles.statCard, { backgroundColor: colors.surfaceGlass, borderColor: colors.glassBorder }]}>
+                    <Text style={[styles.statValue, { color: colors.primary }]}>{courses.length}</Text>
                     <Text style={styles.statLabel}>Aktiva Kurser</Text>
                 </View>
-                <View style={styles.statCard}>
-                    <Text style={styles.statValue}>{upcomingAssignments.length}</Text>
+                <View style={[styles.statCard, { backgroundColor: colors.surfaceGlass, borderColor: colors.glassBorder }]}>
+                    <Text style={[styles.statValue, { color: colors.warning }]}>{upcomingAssignments.length}</Text>
                     <Text style={styles.statLabel}>Inlämningar</Text>
                 </View>
-                <View style={styles.statCard}>
-                    <Text style={styles.statValue}>{challenges.length}</Text>
-                    <Text style={styles.statLabel}>Utmaningar</Text>
+                <View style={[styles.statCard, { backgroundColor: colors.surfaceGlass, borderColor: colors.glassBorder }]}>
+                    <Text style={[styles.statValue, { color: colors.danger }]}>{streak?.currentStreak || 0}</Text>
+                    <Text style={styles.statLabel}>Streak</Text>
                 </View>
             </View>
         </ScrollView>
     );
 };
+
+const createStyles = (colors: ReturnType<typeof getThemeColors>) =>
+    StyleSheet.create({
+        container: {
+            flex: 1,
+            backgroundColor: colors.background,
+        },
+        contentContainer: {
+            padding: 20,
+            paddingTop: 60,
+            paddingBottom: 100,
+        },
+        loadingContainer: {
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+            backgroundColor: colors.background,
+        },
+        loadingText: {
+            fontFamily: 'Lexend_400Regular',
+            marginTop: 16,
+            fontSize: 16,
+            color: colors.textMuted,
+        },
+
+        // Top Bar
+        topBar: {
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: 24,
+        },
+        topBarLeft: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: 12,
+        },
+        avatar: {
+            width: 44,
+            height: 44,
+            borderRadius: 22,
+            backgroundColor: colors.surfaceGlass,
+            borderWidth: 1,
+            borderColor: colors.glassBorder,
+            alignItems: 'center',
+            justifyContent: 'center',
+            overflow: 'hidden',
+        },
+        avatarImage: {
+            width: 44,
+            height: 44,
+            borderRadius: 22,
+        },
+        avatarText: {
+            fontFamily: 'Lexend_700Bold',
+            fontSize: 18,
+            color: colors.primary,
+        },
+        greeting: {
+            fontFamily: 'Lexend_400Regular',
+            fontSize: 13,
+            color: colors.textMuted,
+        },
+        userName: {
+            fontFamily: 'Lexend_700Bold',
+            fontSize: 20,
+            color: colors.text,
+        },
+        notificationButton: {
+            width: 44,
+            height: 44,
+            borderRadius: 14,
+            backgroundColor: colors.surfaceGlass,
+            borderWidth: 1,
+            borderColor: colors.glassBorder,
+            alignItems: 'center',
+            justifyContent: 'center',
+        },
+        notifBadge: {
+            position: 'absolute',
+            top: -4,
+            right: -4,
+            backgroundColor: colors.danger,
+            borderRadius: 10,
+            minWidth: 20,
+            height: 20,
+            alignItems: 'center',
+            justifyContent: 'center',
+            paddingHorizontal: 4,
+        },
+        notifBadgeText: {
+            fontFamily: 'Lexend_700Bold',
+            color: '#FFFFFF',
+            fontSize: 10,
+        },
+
+        // Sections
+        section: {
+            marginBottom: 24,
+        },
+        sectionHeader: {
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: 12,
+        },
+        sectionTitle: {
+            fontFamily: 'Lexend_600SemiBold',
+            fontSize: 18,
+            color: colors.text,
+        },
+        sectionLink: {
+            fontFamily: 'Lexend_500Medium',
+            fontSize: 13,
+            color: colors.primary,
+        },
+
+        // Assignment Grid
+        assignmentGrid: {
+            flexDirection: 'row',
+            flexWrap: 'wrap',
+            gap: 12,
+        },
+        assignmentGridItem: {
+            width: '48%' as any,
+        },
+
+        // Stats Row
+        statsRow: {
+            flexDirection: 'row',
+            gap: 12,
+            marginTop: 8,
+        },
+        statCard: {
+            flex: 1,
+            borderRadius: 16,
+            padding: 16,
+            alignItems: 'center',
+            borderWidth: 1,
+        },
+        statValue: {
+            fontFamily: 'Lexend_700Bold',
+            fontSize: 24,
+            marginBottom: 4,
+        },
+        statLabel: {
+            fontFamily: 'Lexend_400Regular',
+            fontSize: 11,
+            color: colors.textMuted,
+            textAlign: 'center',
+        },
+    });
 
 export default StudentDashboardScreen;

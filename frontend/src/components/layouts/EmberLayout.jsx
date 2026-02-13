@@ -40,7 +40,7 @@ const EmberLayout = ({ children }) => {
             ...(roleName === 'TEACHER' || roleName === 'ADMIN' ? [{ path: '/evaluations/manage', icon: <ClipboardList size={18} />, label: 'Utvärderingar' }] : []),
             ...(roleName === 'TEACHER' ? [{ path: '/?tab=COURSES', icon: <BookOpen size={18} />, label: t('sidebar.my_courses') || 'Mina kurser' }] : []),
             ...(roleName === 'STUDENT' ? [{ path: '/my-courses', icon: <BookOpen size={18} />, label: t('sidebar.my_courses') || 'Mina kurser' }] : []),
-            { path: '/ebooks', icon: <Library size={18} />, label: t('sidebar.ebooks') },
+            ...(['STUDENT', 'TEACHER', 'ADMIN'].includes(roleName) ? [{ path: '/ebooks', icon: <Library size={18} />, label: t('sidebar.ebooks') }] : []),
         ],
         tools: [
             { path: '/calendar', icon: <Calendar size={18} />, label: t('sidebar.calendar') },

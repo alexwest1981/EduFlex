@@ -374,7 +374,8 @@ export const api = {
         updateSetting: (key, value) => api.put(`/settings/${key}`, { value }),
         getSettings: () => api.get('/settings'),
         checkLicense: () => api.get('/system/license/status'),
-        activateLicense: (key) => api.post('/system/license/activate', { key })
+        activateLicense: (key) => api.post('/system/license/activate', { key }),
+        healthCheck: () => api.get('/system/health'),
     },
 
     onlyoffice: {
@@ -382,6 +383,7 @@ export const api = {
     },
 
     admin: {
+        // Backup & System
         listBackups: () => api.get('/admin/backups'),
         getBackupStatus: () => api.get('/admin/backups/status'),
         createBackup: () => api.post('/admin/backups/create'),
@@ -400,6 +402,15 @@ export const api = {
             return api.get(`/admin/audit?${searchParams}`);
         },
         getAuditLog: (id) => api.get(`/admin/audit/${id}`),
+
+        // Guardians
+        guardians: {
+            getAll: () => api.get('/admin/guardians'),
+            getDetails: (id) => api.get(`/admin/guardians/${id}/details`),
+            link: (id, studentId) => api.post(`/admin/guardians/${id}/link/${studentId}`),
+            unlink: (linkId) => api.delete(`/admin/guardians/links/${linkId}`),
+            searchStudents: (query) => api.get(`/users/search?role=STUDENT&query=${query}`),
+        }
     },
 
     license: {
@@ -739,16 +750,6 @@ export const api = {
     guardian: {
         getChildren: () => api.get('/guardian/children'),
         getDashboard: (studentId) => api.get(`/guardian/dashboard/${studentId}`),
-    },
-
-    admin: {
-        guardians: {
-            getAll: () => api.get('/admin/guardians'),
-            getDetails: (id) => api.get(`/admin/guardians/${id}/details`),
-            link: (id, studentId) => api.post(`/admin/guardians/${id}/link/${studentId}`),
-            unlink: (linkId) => api.delete(`/admin/guardians/links/${linkId}`),
-            searchStudents: (query) => api.get(`/users/search?role=STUDENT&query=${query}`), // Fixed: q -> query
-        }
     },
 };
 

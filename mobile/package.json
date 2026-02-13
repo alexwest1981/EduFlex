@@ -11,6 +11,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "@expo-google-fonts/lexend": "^0.4.1",
     "@react-native-async-storage/async-storage": "^2.1.0",
     "@react-navigation/bottom-tabs": "^7.2.0",
     "@react-navigation/native": "^7.0.14",
