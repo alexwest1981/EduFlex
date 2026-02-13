@@ -96,9 +96,16 @@ const ProtectedRoute = ({ children, roles, permission }) => {
     }
 
     // Roll-kontroll
-    const userRole = currentUser.role?.name || currentUser.role;
-    if (roles && !roles.includes(userRole)) {
-        return <Navigate to="/" replace />;
+    const userRole = (currentUser.role?.name || currentUser.role || '').toUpperCase();
+    if (roles) {
+        const uppercaseRoles = roles.map(r => r.toUpperCase());
+        const hasRole = uppercaseRoles.includes(userRole) ||
+            (userRole === 'ROLE_ADMIN' && uppercaseRoles.includes('ADMIN')) ||
+            (userRole === 'ADMIN' && uppercaseRoles.includes('ROLE_ADMIN'));
+
+        if (!hasRole) {
+            return <Navigate to="/" replace />;
+        }
     }
 
     return children;
@@ -274,7 +281,7 @@ const AppRoutes = () => {
 
 
                 <Route path="/wellbeing-center" element={
-                    <ProtectedRoute roles={['ADMIN', 'STUDENT', 'ROLE_STUDENT']}>
+                    <ProtectedRoute roles={['ADMIN', 'STUDENT', 'ROLE_STUDENT', 'REKTOR', 'ROLE_REKTOR']}>
                         {isModuleActive('WELLBEING_CENTER') ? (
                             <Layout currentUser={currentUser} handleLogout={logout}>
                                 <WellbeingCenter />

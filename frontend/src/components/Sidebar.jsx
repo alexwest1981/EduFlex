@@ -40,9 +40,10 @@ const Sidebar = ({ currentUser, logout, siteName, version }) => {
     }, []);
 
     const getMenuItems = () => {
-        const role = currentUser?.role?.name || currentUser?.role;
-        const principalRoles = ['ADMIN', 'ROLE_REKTOR', 'REKTOR', 'PRINCIPAL'];
-        const dashboardPath = principalRoles.includes(role) ? '/principal/dashboard' : '/';
+        const role = currentUser?.role?.name || currentUser?.role || '';
+        const roleName = role.toUpperCase();
+        const principalRoles = ['ADMIN', 'ROLE_ADMIN', 'ROLE_REKTOR', 'REKTOR', 'PRINCIPAL'];
+        const dashboardPath = principalRoles.includes(roleName) ? '/principal/dashboard' : '/';
 
         const items = [
             { path: dashboardPath, label: t('sidebar.dashboard'), icon: <LayoutDashboard size={20} /> }
@@ -96,9 +97,8 @@ const Sidebar = ({ currentUser, logout, siteName, version }) => {
         });
 
         // E-books: Only for STUDENT, ADMIN, TEACHER
-        const roleName = role ? role.toUpperCase() : '';
         const allowedEbookRoles = ['STUDENT', 'ADMIN', 'TEACHER', 'ROLE_STUDENT', 'ROLE_ADMIN', 'ROLE_TEACHER'];
-        
+
         if (hasPermission('ACCESS_EBOOKS') && allowedEbookRoles.includes(roleName)) {
             items.push({ path: '/ebooks', label: t('sidebar.ebooks') || 'E-books', icon: <BookOpen size={20} /> });
         }
@@ -108,10 +108,11 @@ const Sidebar = ({ currentUser, logout, siteName, version }) => {
         }
 
         if (isModuleActive('WELLBEING_CENTER')) {
-            if (role === 'STUDENT') {
+            const wellbeingRoles = ['STUDENT', 'ROLE_STUDENT', 'ADMIN', 'ROLE_ADMIN', 'ROLE_REKTOR', 'REKTOR'];
+            if (wellbeingRoles.includes(roleName)) {
                 items.push({ path: '/wellbeing-center', label: 'Well-being Center', icon: <Heart size={20} className="text-brand-teal" /> });
             }
-            if (roleName === 'HALSOTEAM' || roleName === 'ROLE_HALSOTEAM') {
+            if (roleName === 'HALSOTEAM' || roleName === 'ROLE_HALSOTEAM' || roleName === 'ADMIN' || roleName === 'ROLE_ADMIN') {
                 items.push({ path: '/wellbeing-center/inbox', label: 'E-hälsa Inbox', icon: <Heart size={20} className="text-brand-teal" /> });
             }
         }
