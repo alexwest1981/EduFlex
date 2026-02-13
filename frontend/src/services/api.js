@@ -690,7 +690,7 @@ export const api = {
         install: (itemId, courseId = null) => api.post(`/community/items/${itemId}/install${courseId ? `?courseId=${courseId}` : ''}`),
         rate: (itemId, rating, comment) => api.post(`/community/items/${itemId}/rate`, { rating, comment }),
         getMyPublished: () => api.get('/community/my-published'),
-        getAuthorProfile: (userId) => api.get('/community/authors/${userId}'),
+        getAuthorProfile: (userId) => api.get(`/community/authors/${userId}`),
         getLeaderboard: () => api.get('/community/leaderboard'),
         admin: {
             getPending: (page = 0, size = 20) => api.get(`/community/admin/pending?page=${page}&size=${size}`),
