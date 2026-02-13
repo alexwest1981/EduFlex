@@ -208,6 +208,13 @@ public class SkolverketCourseService {
     public void syncFromSkolverket(String code) {
         Object apiResponse = apiClientService.getSubject(code);
         if (!(apiResponse instanceof Map)) {
+            // If it's a course code like "ANIA1N0", let's try to sync its parent subject
+            // "ANI"
+            if (code.length() > 3) {
+                String potentialSubject = code.substring(0, 3);
+                syncFromSkolverket(potentialSubject);
+                return;
+            }
             throw new RuntimeException("Unexpected API response format for code: " + code);
         }
 
@@ -217,6 +224,12 @@ public class SkolverketCourseService {
         Map<String, Object> subjectData = (Map<String, Object>) data.get("subject");
 
         if (subjectData == null) {
+            // Same here, try to fallback to subject code if possible
+            if (code.length() > 3) {
+                String potentialSubject = code.substring(0, 3);
+                syncFromSkolverket(potentialSubject);
+                return;
+            }
             throw new RuntimeException("Subject data not found in API response for code: " + code);
         }
 

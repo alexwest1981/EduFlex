@@ -7,7 +7,6 @@ import com.eduflex.backend.repository.UserRepository;
 import com.eduflex.backend.service.SkolverketApiClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
@@ -66,7 +65,6 @@ public class SkolverketApiController {
     }
 
     @PostMapping("/import")
-    @Transactional
     public ResponseEntity<?> importCourse(@RequestBody Map<String, Object> courseData) {
         try {
             String code = (String) courseData.get("code"); // Subject code e.g. "ADI"
@@ -137,34 +135,46 @@ public class SkolverketApiController {
     }
 
     @PostMapping("/sync-all")
-    @Transactional
     public ResponseEntity<?> syncAll() {
         List<com.eduflex.backend.model.SkolverketCourse> allCourses = skolverketCourseService.getAllCourses();
+        java.util.Set<String> subjectCodes = new java.util.HashSet<>();
+
+        // Optimize: Collect unique subjects to avoid redundant API calls
+        // Usually subject is the first 3-4 chars of a course code, but it's safer to
+        // use the 'subject' field
+        // or prioritize subject codes in the system.
+        for (com.eduflex.backend.model.SkolverketCourse sc : allCourses) {
+            String code = sc.getCourseCode();
+            if (code.length() <= 4) {
+                subjectCodes.add(code);
+            } else {
+                // Try to guess subject from course code or just use the whole code if it's
+                // treated as subject in API
+                subjectCodes.add(code.substring(0, 3));
+            }
+        }
+
         int count = 0;
         int failed = 0;
 
-        for (com.eduflex.backend.model.SkolverketCourse sc : allCourses) {
+        for (String code : subjectCodes) {
             try {
-                // We only sync subjects (short codes) or first-level courses that might have
-                // children
-                // In this system, skolverket_courses table contains both.
-                // Syncing individual children is fine too.
-                skolverketCourseService.syncFromSkolverket(sc.getCourseCode());
+                skolverketCourseService.syncFromSkolverket(code);
                 count++;
             } catch (Exception e) {
+                System.err.println("Sync failed for " + code + ": " + e.getMessage());
                 failed++;
             }
         }
 
         return ResponseEntity.ok(Map.of(
                 "success", true,
-                "synced", count,
+                "subjectsSynced", count,
                 "failed", failed,
-                "message", "Sync completed"));
+                "message", "Sync completed. Check logs for details on failed codes."));
     }
 
     @PostMapping("/sync/{courseCode}")
-    @Transactional
     public ResponseEntity<?> syncOne(@PathVariable String courseCode) {
         try {
             skolverketCourseService.syncFromSkolverket(courseCode);
