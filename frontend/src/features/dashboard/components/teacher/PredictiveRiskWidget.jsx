@@ -1,4 +1,3 @@
-```
 import React, { useState, useEffect } from 'react';
 import { api } from '../../../../services/api';
 import { AlertTriangle, Info, Brain, ChevronRight, User, RefreshCw } from 'lucide-react';
@@ -69,7 +68,7 @@ const PredictiveRiskWidget = ({ mentorId }) => {
                     className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors text-gray-400 group"
                     title="Kör ny batch-analys"
                 >
-                    <RefreshCw size={16} className={`${ analyzing ? 'animate-spin' : 'group-hover:rotate-180 transition-transform duration-500' } `} />
+                    <RefreshCw size={16} className={`${analyzing ? 'animate-spin' : 'group-hover:rotate-180 transition-transform duration-500'}`} />
                 </button>
             }
         >
@@ -101,7 +100,7 @@ const PredictiveRiskWidget = ({ mentorId }) => {
                                             {risk.student.fullName}
                                         </h4>
                                         <div className="flex items-center gap-1.5 mt-0.5">
-                                            <span className={`text - [10px] px - 1.5 py - 0.5 rounded - full font - medium flex items - center gap - 1 ${ getRiskColor(risk.riskLevel) } `}>
+                                            <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium flex items-center gap-1 ${getRiskColor(risk.riskLevel)}`}>
                                                 {getRiskIcon(risk.riskLevel)}
                                                 {risk.riskLevel}
                                             </span>
