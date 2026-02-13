@@ -747,6 +747,10 @@ export const api = {
             getIncident: (id) => api.get(`/principal/incidents/${id}`),
             recordObservation: (data) => api.post('/admin/quality/observations', data),
             getObservationsByTeacher: (teacherId) => api.get(`/admin/quality/observations/teacher/${teacherId}`),
+            // SKA 2.0
+            getGoals: () => api.get('/quality/goals'),
+            createGoal: (data) => api.post('/quality/goals', data),
+            calculateIndicators: (goalId) => api.post(`/quality/goals/${goalId}/calculate`),
         },
         // --- Staffing & Substitutes ---
         staffing: {

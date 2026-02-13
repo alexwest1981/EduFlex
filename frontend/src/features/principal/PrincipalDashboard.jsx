@@ -22,6 +22,7 @@ import {
     MoreHorizontal
 } from 'lucide-react';
 import PrincipalCoachWidget from '../dashboard/components/teacher/PrincipalCoachWidget';
+import SKADashboard from './components/SKADashboard';
 import { api } from '../../services/api';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
@@ -138,6 +139,12 @@ const PrincipalDashboard = () => {
         }
     ];
 
+    const tabs = [
+        { id: 'intel', label: 'Quick Intel', icon: Activity },
+        { id: 'ska', label: 'Kvalitetsarbete (SKA)', icon: Target },
+        { id: 'kpi', label: 'Key Metrics', icon: TrendingUp },
+    ];
+
     const quickActions = [
         { label: 'Massmeddelande', icon: MessageSquare, color: 'indigo', action: () => navigate('/principal/tools') },
         { label: 'Ny incident', icon: Plus, color: 'orange', action: () => navigate('/principal/quality') },
@@ -224,71 +231,99 @@ const PrincipalDashboard = () => {
                 </div>
             </div>
 
-            {/* --- MITTEN: KPI-GRID (60%) --- */}
-            <main className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {kpiCards.map((card) => (
-                    <div
-                        key={card.id}
-                        onClick={() => setDrillDown(drillDown === card.id ? null : card.id)}
-                        className={`bg-white dark:bg-[#1c1c1e] p-6 rounded-[2rem] border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer group relative overflow-hidden ${drillDown === card.id ? 'ring-2 ring-indigo-500 shadow-indigo-100' : ''}`}
+            {/* --- TAB NAVIGATION --- */}
+            <div className="flex items-center gap-4 border-b border-gray-200 dark:border-gray-800 pb-4 overflow-x-auto no-scrollbar">
+                {tabs.map((tab) => (
+                    <button
+                        key={tab.id}
+                        onClick={() => setActiveTab(tab.id)}
+                        className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold transition-all duration-200
+                            ${activeTab === tab.id
+                                ? 'bg-indigo-600 text-white shadow-md'
+                                : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
+                            }`}
                     >
-                        {/* Decorative background element */}
-                        <div className={`absolute -right-4 -bottom-4 opacity-[0.03] group-hover:scale-125 transition-transform text-current text-${card.color}-500`}>
-                            <card.icon size={120} />
-                        </div>
-
-                        <div className="flex justify-between items-start mb-4 relative z-10">
-                            <div className={`p-3 rounded-2xl bg-${card.color}-50 dark:bg-${card.color}-900/10 text-${card.color}-600 dark:text-${card.color}-400 group-hover:scale-110 transition-transform`}>
-                                <card.icon size={22} />
-                            </div>
-                            <button className="text-gray-300 hover:text-gray-500 transition-colors">
-                                <MoreHorizontal size={20} />
-                            </button>
-                        </div>
-
-                        <div className="relative z-10">
-                            <h3 className="text-4xl font-black text-gray-900 dark:text-white tracking-tighter mb-1">{card.value}</h3>
-                            <p className="text-xs font-black text-gray-400 uppercase tracking-widest">{card.title}</p>
-
-                            <div className="mt-6 space-y-1">
-                                <div className="flex items-center justify-between">
-                                    <span className="text-sm font-bold text-gray-800 dark:text-gray-200">{card.sub}</span>
-                                    {card.id === 'attendance' && <ArrowUpRight size={16} className="text-emerald-500" />}
-                                    {card.id === 'knowledge' && <ArrowDownRight size={16} className="text-red-500" />}
-                                </div>
-                                <p className="text-[10px] font-bold text-gray-400">{card.trend}</p>
-                            </div>
-                        </div>
-
-                        {/* Inline Drilldown Placeholder */}
-                        {drillDown === card.id && (
-                            <div className="mt-6 pt-6 border-t border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/20 -mx-6 -mb-6 p-6 animate-in slide-in-from-top-4 duration-300">
-                                <p className="text-xs font-bold text-indigo-600 mb-2 uppercase tracking-wider">Expandrad vy</p>
-                                <div className="space-y-2">
-                                    <div className="flex justify-between text-xs py-1 border-b border-gray-100 dark:border-gray-700">
-                                        <span className="text-gray-500">{card.drillData}</span>
-                                        <button
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                if (card.id === 'alerts') navigate('/principal/quality');
-                                                if (card.id === 'staff') navigate('/principal/staffing');
-                                                if (card.id === 'economy') navigate('/principal/reports');
-                                                if (card.id === 'knowledge') navigate('/principal/reports');
-                                            }}
-                                            className="font-bold text-indigo-600 hover:scale-105 transition-transform"
-                                        >
-                                            Öppna Modul
-                                        </button>
-                                    </div>
-                                    <div className="flex justify-between text-xs py-1 border-b border-gray-100 dark:border-gray-700">
-                                        <span className="text-gray-500">Senaste uppdatering</span>
-                                        <span className="font-bold">Realtid</span>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-                    </div>
+                        <tab.icon size={18} />
+                        {tab.label}
+                    </button>
                 ))}
+            </div>
+
+            {/* --- MITTEN: KPI-GRID (60%) / SKA DASHBOARD --- */}
+            <main className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {(activeTab === 'intel' || activeTab === 'kpi') && (
+                    <div className="lg:col-span-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 animate-in slide-in-from-bottom-4 duration-700">
+                        {kpiCards.map((card) => (
+                            <div
+                                key={card.id}
+                                onClick={() => setDrillDown(drillDown === card.id ? null : card.id)}
+                                className={`bg-white dark:bg-[#1c1c1e] p-6 rounded-[2rem] border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer group relative overflow-hidden ${drillDown === card.id ? 'ring-2 ring-indigo-500 shadow-indigo-100' : ''}`}
+                            >
+                                {/* Decorative background element */}
+                                <div className={`absolute -right-4 -bottom-4 opacity-[0.03] group-hover:scale-125 transition-transform text-current text-${card.color}-500`}>
+                                    <card.icon size={120} />
+                                </div>
+
+                                <div className="flex justify-between items-start mb-4 relative z-10">
+                                    <div className={`p-3 rounded-2xl bg-${card.color}-50 dark:bg-${card.color}-900/10 text-${card.color}-600 dark:text-${card.color}-400 group-hover:scale-110 transition-transform`}>
+                                        <card.icon size={22} />
+                                    </div>
+                                    <button className="text-gray-300 hover:text-gray-500 transition-colors">
+                                        <MoreHorizontal size={20} />
+                                    </button>
+                                </div>
+
+                                <div className="relative z-10">
+                                    <h3 className="text-4xl font-black text-gray-900 dark:text-white tracking-tighter mb-1">{card.value}</h3>
+                                    <p className="text-xs font-black text-gray-400 uppercase tracking-widest">{card.title}</p>
+
+                                    <div className="mt-6 space-y-1">
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-sm font-bold text-gray-800 dark:text-gray-200">{card.sub}</span>
+                                            {card.id === 'attendance' && <ArrowUpRight size={16} className="text-emerald-500" />}
+                                            {card.id === 'knowledge' && <ArrowDownRight size={16} className="text-red-500" />}
+                                        </div>
+                                        <p className="text-[10px] font-bold text-gray-400">{card.trend}</p>
+                                    </div>
+                                </div>
+
+                                {/* Inline Drilldown Placeholder */}
+                                {drillDown === card.id && (
+                                    <div className="mt-6 pt-6 border-t border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/20 -mx-6 -mb-6 p-6 animate-in slide-in-from-top-4 duration-300">
+                                        <p className="text-xs font-bold text-indigo-600 mb-2 uppercase tracking-wider">Expandrad vy</p>
+                                        <div className="space-y-2">
+                                            <div className="flex justify-between text-xs py-1 border-b border-gray-100 dark:border-gray-700">
+                                                <span className="text-gray-500">{card.drillData}</span>
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        if (card.id === 'alerts') navigate('/principal/quality');
+                                                        if (card.id === 'staff') navigate('/principal/staffing');
+                                                        if (card.id === 'economy') navigate('/principal/reports');
+                                                        if (card.id === 'knowledge') navigate('/principal/reports');
+                                                    }}
+                                                    className="font-bold text-indigo-600 hover:scale-105 transition-transform"
+                                                >
+                                                    Öppna Modul
+                                                </button>
+                                            </div>
+                                            <div className="flex justify-between text-xs py-1 border-b border-gray-100 dark:border-gray-700">
+                                                <span className="text-gray-500">Senaste uppdatering</span>
+                                                <span className="font-bold">Realtid</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                )}
+
+                {activeTab === 'ska' && (
+                    <div className="lg:col-span-4">
+                        <SKADashboard />
+                    </div>
+                )}
             </main>
 
             {/* --- BOTTEN: TRENDS & QUICK ACTIONS (30%) --- */}
