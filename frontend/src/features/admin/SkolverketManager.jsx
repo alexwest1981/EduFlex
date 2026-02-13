@@ -1,28 +1,12 @@
 import React, { useState } from 'react';
-import { Download, Edit3, Globe, RefreshCw } from 'lucide-react';
+import { Download, Edit3, Globe } from 'lucide-react';
 import { api } from '../../services/api';
-import toast from 'react-hot-toast';
 // import SkolverketImport from './SkolverketImport'; // Legacy CSV Import
 import SkolverketModule from '../../modules/skolverket/SkolverketModule';
 import SkolverketDataEntry from './SkolverketDataEntry';
 
 const SkolverketManager = () => {
     const [subTab, setSubTab] = useState('import');
-    const [syncing, setSyncing] = useState(false);
-
-    const handleSyncAll = async () => {
-        if (!confirm('Detta kommer att synka ALLA kurser i katalogen med Skolverkets API. Detta kan ta några minuter. Vill du fortsätta?')) return;
-
-        setSyncing(true);
-        try {
-            const res = await api.post('/skolverket/api/sync-all');
-            toast.success(`Synk slutförd! ${res.synced} kurser uppdaterades.`);
-        } catch (error) {
-            toast.error('Synk misslyckades: ' + error.message);
-        } finally {
-            setSyncing(false);
-        }
-    };
 
     return (
         <div className="space-y-6">
@@ -48,15 +32,6 @@ const SkolverketManager = () => {
                     Hantera Data Manuellt
                 </button>
             </div>
-
-            <button
-                onClick={handleSyncAll}
-                disabled={syncing}
-                className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-medium disabled:opacity-50 shadow-sm transition-all"
-            >
-                <RefreshCw size={16} className={syncing ? 'animate-spin' : ''} />
-                {syncing ? 'Synkar katalog...' : 'Synka All Kurskatalog'}
-            </button>
 
             <div className="animate-in fade-in slide-in-from-bottom-2 duration-300 min-h-[600px]">
                 {/* We wrap SkolverketModule to constrain its height if needed, but it handles its own scaffolding. 

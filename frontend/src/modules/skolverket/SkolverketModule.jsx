@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, BookOpen, ChevronRight, Loader2, Download, Check } from 'lucide-react';
+import { Search, BookOpen, ChevronRight, Loader2, Download, Check, RefreshCw } from 'lucide-react';
 import { useAppContext } from '../../context/AppContext';
 import { api } from '../../services/api';
 import toast from 'react-hot-toast';
@@ -14,6 +14,21 @@ const SkolverketModule = () => {
     const [selectedSubject, setSelectedSubject] = useState(null);
     const [detailsLoading, setDetailsLoading] = useState(false);
     const [showImportModal, setShowImportModal] = useState(false);
+    const [syncing, setSyncing] = useState(false);
+
+    const handleSyncAll = async () => {
+        if (!confirm('Detta kommer att synka ALLA kurser i katalogen med Skolverkets API. Detta kan ta några minuter. Vill du fortsätta?')) return;
+
+        setSyncing(true);
+        try {
+            const res = await api.post('/skolverket/api/sync-all');
+            toast.success(`Synk slutförd! ${res.synced} kurser uppdaterades.`);
+        } catch (error) {
+            toast.error('Synk misslyckades: ' + error.message);
+        } finally {
+            setSyncing(false);
+        }
+    };
 
     useEffect(() => {
         fetchSubjects();
@@ -95,8 +110,18 @@ const SkolverketModule = () => {
                     <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Skolverket Integration</h1>
                     <p className="text-gray-500 dark:text-gray-400">Utforska kursplaner och ämnen direkt från Skolverkets API</p>
                 </div>
-                <div className="bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 px-4 py-2 rounded-lg text-sm font-medium">
-                    API Status: {loading ? 'Checking...' : 'Connected'}
+                <div className="flex items-center gap-3">
+                    <button
+                        onClick={handleSyncAll}
+                        disabled={syncing}
+                        className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-medium disabled:opacity-50 shadow-sm transition-all"
+                    >
+                        <RefreshCw size={16} className={syncing ? 'animate-spin' : ''} />
+                        {syncing ? 'Synkar katalog...' : 'Synka All Kurskatalog'}
+                    </button>
+                    <div className="bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 px-4 py-2 rounded-lg text-sm font-medium">
+                        API Status: {loading ? 'Checking...' : 'Connected'}
+                    </div>
                 </div>
             </div>
 
