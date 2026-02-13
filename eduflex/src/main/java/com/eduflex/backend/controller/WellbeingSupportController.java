@@ -52,6 +52,7 @@ public class WellbeingSupportController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<WellbeingSupportRequest> getRequest(
             @PathVariable Long id,
             @AuthenticationPrincipal UserDetails userDetails) {

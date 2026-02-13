@@ -107,7 +107,8 @@ public class SickLeaveService {
                 String dateRange = startDate.format(fmt)
                         + (endDate != null ? " — " + endDate.format(fmt) : " (tills vidare)");
                 String content = "<p><b>" + student.getFullName() + "</b> har sjukanmält sig.</p>"
-                        + "<p>Period: " + dateRange + "</p>";
+                        + "<p>Period: " + dateRange + "</p>"
+                        + "<p><i>Detaljerad information och anledning finns tillgänglig för hälsoteamet i systemet.</i></p>";
 
                 messageService.sendMessage(null, mentor.getId(), subject, content, null);
             }

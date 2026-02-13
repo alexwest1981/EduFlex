@@ -1,5 +1,6 @@
 package com.eduflex.backend.model;
 
+import com.eduflex.backend.util.EncryptedStringConverter;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import java.time.LocalDate;
@@ -24,7 +25,8 @@ public class SickLeaveReport {
 
     private LocalDate endDate;
 
-    @Column(length = 500)
+    @Column(columnDefinition = "TEXT")
+    @Convert(converter = EncryptedStringConverter.class)
     private String reason;
 
     @Enumerated(EnumType.STRING)

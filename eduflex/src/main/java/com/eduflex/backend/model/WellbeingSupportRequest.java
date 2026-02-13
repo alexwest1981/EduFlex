@@ -26,6 +26,7 @@ public class WellbeingSupportRequest implements Serializable {
     @Enumerated(EnumType.STRING)
     private RequestType type = RequestType.OTHER;
 
+    @Convert(converter = EncryptedStringConverter.class)
     private String subject;
 
     @Column(columnDefinition = "TEXT")
