@@ -227,11 +227,22 @@ const LandingPage = () => {
             bgColor: 'bg-brand-teal/10'
         },
         {
-            icon: <Map className="w-6 h-6" />,
-            title: 'Skolverket Sync 2.0',
-            description: 'Synkronisera din kurskatalog i realtid. Importera automatiskt kursbeskrivningar, centralt innehåll och betygskriterier direkt från källan för alla kurser på en gång.',
-            color: 'text-emerald-400',
-            bgColor: 'bg-emerald-500/10'
+            title: "Prediktiv AI-Analys 2.0",
+            description: "Identifierar elever i riskzonen innan de själva vet det. Deep learning mönsteranalys av närvaro, aktivitet och resultat.",
+            icon: <Brain className="text-pink-500" />,
+            tag: "Roadmap 2026+"
+        },
+        {
+            title: "Skolverket Sync 2.0",
+            description: "Sömlös integration med hela Skolverkets kurskatalog. Automatiserad uppdatering av kursmål och betygskriterier.",
+            icon: <Target className="text-indigo-500" />,
+            tag: "v1.0.5"
+        },
+        {
+            title: "Gamification Expansion",
+            description: "Nya Quest-system, Social-hub och utökad Shop. Öka engagemanget genom meningsfullt spelifierat lärande.",
+            icon: <Trophy className="text-orange-500" />,
+            tag: "Stable"
         },
         {
             icon: <Trophy className="w-6 h-6" />,

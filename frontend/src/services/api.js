@@ -183,6 +183,12 @@ export const api = {
         getAtRiskAiSummary: (userId) => api.get(`/analytics/at-risk/${userId}/ai-summary`),
         getHeatmap: (userId) => api.get(`/analytics/heatmap${userId ? `?userId=${userId}` : ''}`),
         getDropOff: (courseId) => api.get(`/analytics/drop-off/${courseId}`),
+        predictive: {
+            getHighRisk: () => api.get('/analytics/predictive/high-risk'),
+            getHighRiskForMentor: (mentorId) => api.get(`/analytics/predictive/mentor/${mentorId}/high-risk`),
+            analyzeStudent: (studentId) => api.post(`/analytics/predictive/analyze/${studentId}`),
+            analyzeAll: () => api.post('/analytics/predictive/analyze-all'),
+        }
     },
 
     skolverket: {

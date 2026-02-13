@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { api } from '../../services/api';
 import MessageCenter from '../messages/MessageCenter';
 import RecentMessagesWidget from './components/RecentMessagesWidget';
-import TeacherAtRiskWidget from './widgets/TeacherAtRiskWidget';
+import PredictiveRiskWidget from './components/teacher/PredictiveRiskWidget';
 import OnlineFriendsWidget from './widgets/OnlineFriendsWidget';
 import SurveyNotificationWidget from './widgets/SurveyNotificationWidget';
 
@@ -269,7 +269,7 @@ const TeacherDashboard = ({ currentUser }) => {
 
                         {/* Meddelanden (Höger - 1 kolumn) */}
                         <div className="lg:col-span-1 h-full space-y-6">
-                            {widgets.showRiskWidget && <TeacherAtRiskWidget currentUser={currentUser} settings={{ enabled: true }} onSelectStudent={(s) => setMessageRecipient(s)} />}
+                            {widgets.showRiskWidget && <PredictiveRiskWidget mentorId={currentUser.id} />}
                             {widgets.showOnlineFriends && (
                                 <div className="h-80">
                                     <OnlineFriendsWidget />
