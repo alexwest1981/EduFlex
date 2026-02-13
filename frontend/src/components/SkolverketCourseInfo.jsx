@@ -138,7 +138,10 @@ const SkolverketCourseInfo = ({ skolverketCourse }) => {
                                     <Award size={20} />
                                     <h3 className="font-bold text-lg">Betyget {criterion.gradeLevel}</h3>
                                 </div>
-                                <p className="text-sm whitespace-pre-wrap">{criterion.criteriaText}</p>
+                                <div
+                                    className="text-sm prose dark:prose-invert max-w-none"
+                                    dangerouslySetInnerHTML={{ __html: criterion.criteriaText }}
+                                />
                             </div>
                         ))}
                     </div>
