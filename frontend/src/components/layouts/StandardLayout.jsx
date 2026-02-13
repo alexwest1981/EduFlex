@@ -4,6 +4,7 @@ import { LayoutDashboard, FileText, User, Settings, LogOut, Layers, Menu, X, Awa
 import { useAppContext } from '../../context/AppContext';
 import { useModules } from '../../context/ModuleContext';
 import { useTranslation } from 'react-i18next';
+import { getSafeUrl } from '../../services/api';
 
 import ChatModule from '../../modules/chat/ChatModule';
 import GlobalSearch from '../GlobalSearch';
@@ -25,10 +26,7 @@ const StandardLayout = ({ children }) => {
     const handleLogout = () => { logout(); navigate('/login'); };
 
     const getProfileUrl = () => {
-        if (!currentUser?.profilePictureUrl) return null;
-        let url = currentUser.profilePictureUrl;
-        if (url.includes('minio:9000')) url = url.replace('minio:9000', 'localhost:9000');
-        return url.startsWith('http') ? url : `${window.location.origin}${url}`;
+        return getSafeUrl(currentUser?.profilePictureUrl);
     };
     const profileImgUrl = getProfileUrl();
 

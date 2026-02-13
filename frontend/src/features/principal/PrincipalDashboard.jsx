@@ -36,6 +36,7 @@ const PrincipalDashboard = () => {
     const [metrics, setMetrics] = useState(null);
     const [loading, setLoading] = useState(true);
     const [drillDown, setDrillDown] = useState(null);
+    const [activeTab, setActiveTab] = useState('intel');
 
     useEffect(() => {
         loadMetrics();
