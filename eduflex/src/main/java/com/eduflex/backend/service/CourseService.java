@@ -700,7 +700,7 @@ public class CourseService {
         setCourseResult(courseId, studentId, "PASSED");
     }
 
-    private CourseDTO convertToDTO(Course c) {
+    public CourseDTO convertToDTO(Course c) {
         UserSummaryDTO teacherDTO = null;
         if (c.getTeacher() != null) {
             teacherDTO = new UserSummaryDTO(

@@ -23,17 +23,20 @@ public class StudentActivityService {
     private final CourseRepository courseRepository;
     private final CourseMaterialRepository materialRepository;
     private final com.eduflex.backend.repository.StudentQuizLogRepository studentQuizLogRepository;
+    private final GamificationService gamificationService;
 
     public StudentActivityService(StudentActivityLogRepository activityLogRepository,
             UserRepository userRepository,
             CourseRepository courseRepository,
             CourseMaterialRepository materialRepository,
-            com.eduflex.backend.repository.StudentQuizLogRepository studentQuizLogRepository) {
+            com.eduflex.backend.repository.StudentQuizLogRepository studentQuizLogRepository,
+            GamificationService gamificationService) {
         this.activityLogRepository = activityLogRepository;
         this.userRepository = userRepository;
         this.courseRepository = courseRepository;
         this.materialRepository = materialRepository;
         this.studentQuizLogRepository = studentQuizLogRepository;
+        this.gamificationService = gamificationService;
     }
 
     @Transactional
@@ -53,6 +56,23 @@ public class StudentActivityService {
 
         StudentActivityLog log = new StudentActivityLog(user, course, material, type, details);
         activityLogRepository.save(log);
+
+        // --- GAMIFICATION TRIGGERS ---
+        awardPointsForActivity(userId, type);
+    }
+
+    private void awardPointsForActivity(Long userId, StudentActivityLog.ActivityType type) {
+        int points = switch (type) {
+            case VIEW_LESSON -> 5;
+            case WATCH_VIDEO -> 10;
+            case DOWNLOAD_FILE -> 5;
+            case EBOOK_READ -> 15;
+            default -> 0;
+        };
+
+        if (points > 0) {
+            gamificationService.addPoints(userId, points);
+        }
     }
 
     @Transactional(readOnly = true)

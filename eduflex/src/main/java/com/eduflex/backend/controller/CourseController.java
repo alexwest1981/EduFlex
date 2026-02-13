@@ -69,10 +69,12 @@ public class CourseController {
                 Long id = Long.parseLong(idOrSlug);
                 return ResponseEntity.ok(courseService.getCourseDTOById(id));
             } catch (NumberFormatException e) {
-                // Not a number, try Slug
-                Course course = courseRepository.findBySlug(idOrSlug)
-                        .orElseThrow(() -> new RuntimeException("Kurs ej funnen"));
-                return ResponseEntity.ok(courseService.getCourseDTOById(course.getId()));
+                // Not a number, try Slug first, then CourseCode
+                return courseRepository.findBySlug(idOrSlug)
+                        .map(course -> ResponseEntity.ok(courseService.convertToDTO(course)))
+                        .orElseGet(() -> courseRepository.findByCourseCode(idOrSlug)
+                                .map(course -> ResponseEntity.ok(courseService.convertToDTO(course)))
+                                .orElse(ResponseEntity.notFound().build()));
             }
         } catch (Exception e) {
             return ResponseEntity.notFound().build();

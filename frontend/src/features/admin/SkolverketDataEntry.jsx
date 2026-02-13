@@ -100,6 +100,26 @@ const SkolverketDataEntry = () => {
         }
     };
 
+    const handleSync = async () => {
+        if (!selectedCourse) return;
+
+        setLoading(true);
+        try {
+            await api.post(`/skolverket/api/sync/${selectedCourse.courseCode}`);
+            // Reload course data to show updated fields
+            const updatedCourses = await api.get('/skolverket/courses');
+            setCourses(updatedCourses);
+            const freshCourse = updatedCourses.find(c => c.courseCode === selectedCourse.courseCode);
+            if (freshCourse) loadCourseData(freshCourse);
+
+            toast?.success ? toast.success('Data synkad med Skolverket!') : alert('Data synkad med Skolverket!');
+        } catch (error) {
+            alert('Kunde inte synka: ' + error.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const updateCriteria = (index, field, value) => {
         const updated = [...criteria];
         updated[index][field] = value;
@@ -170,8 +190,8 @@ const SkolverketDataEntry = () => {
                                 key={tab.id}
                                 onClick={() => setActiveTab(tab.id)}
                                 className={`px-4 py-2 font-medium transition-colors border-b-2 ${activeTab === tab.id
-                                        ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400'
-                                        : 'border-transparent text-gray-600 dark:text-gray-400'
+                                    ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400'
+                                    : 'border-transparent text-gray-600 dark:text-gray-400'
                                     }`}
                             >
                                 {tab.label}
@@ -259,6 +279,14 @@ const SkolverketDataEntry = () => {
                         >
                             <Save size={20} />
                             {saving ? 'Sparar...' : 'Spara'}
+                        </button>
+                        <button
+                            onClick={handleSync}
+                            disabled={loading}
+                            className="flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium disabled:opacity-50"
+                        >
+                            <Book size={20} />
+                            {loading ? 'Synkar...' : 'Synka med Skolverket'}
                         </button>
                         <button
                             onClick={() => setSelectedCourse(null)}

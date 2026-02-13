@@ -2,10 +2,7 @@ package com.eduflex.backend.controller;
 
 import com.eduflex.backend.model.Course;
 import com.eduflex.backend.model.User;
-import com.eduflex.backend.model.SkolverketCourse;
-import com.eduflex.backend.model.SkolverketGradingCriteria;
 import com.eduflex.backend.repository.CourseRepository;
-import com.eduflex.backend.repository.SkolverketGradingCriteriaRepository;
 import com.eduflex.backend.repository.UserRepository;
 import com.eduflex.backend.service.SkolverketApiClientService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,22 +18,20 @@ import java.util.UUID;
 @RequestMapping("/api/skolverket/api")
 public class SkolverketApiController {
 
-    private final SkolverketApiClientService skolverketService;
+    private final SkolverketApiClientService skolverketApiService;
+    private final com.eduflex.backend.service.SkolverketCourseService skolverketCourseService;
     private final CourseRepository courseRepository;
     private final UserRepository userRepository;
-    private final com.eduflex.backend.repository.SkolverketCourseRepository skolverketCourseRepository;
-    private final SkolverketGradingCriteriaRepository gradingCriteriaRepository;
 
     @Autowired
-    public SkolverketApiController(SkolverketApiClientService skolverketService, CourseRepository courseRepository,
-            UserRepository userRepository,
-            com.eduflex.backend.repository.SkolverketCourseRepository skolverketCourseRepository,
-            SkolverketGradingCriteriaRepository gradingCriteriaRepository) {
-        this.skolverketService = skolverketService;
+    public SkolverketApiController(SkolverketApiClientService skolverketApiService,
+            com.eduflex.backend.service.SkolverketCourseService skolverketCourseService,
+            CourseRepository courseRepository,
+            UserRepository userRepository) {
+        this.skolverketApiService = skolverketApiService;
+        this.skolverketCourseService = skolverketCourseService;
         this.courseRepository = courseRepository;
         this.userRepository = userRepository;
-        this.skolverketCourseRepository = skolverketCourseRepository;
-        this.gradingCriteriaRepository = gradingCriteriaRepository;
     }
 
     private String generateUniqueSlug(String name) {
@@ -62,12 +57,12 @@ public class SkolverketApiController {
 
     @GetMapping("/subjects")
     public ResponseEntity<Object> getSubjects() {
-        return ResponseEntity.ok(skolverketService.getAllSubjects());
+        return ResponseEntity.ok(skolverketApiService.getAllSubjects());
     }
 
     @GetMapping("/subjects/{code}")
     public ResponseEntity<Object> getSubject(@PathVariable String code) {
-        return ResponseEntity.ok(skolverketService.getSubject(code));
+        return ResponseEntity.ok(skolverketApiService.getSubject(code));
     }
 
     @PostMapping("/import")
@@ -119,140 +114,63 @@ public class SkolverketApiController {
 
             // --- RICH DATA FETCH & LINKING ---
             try {
-                Object apiResponse = skolverketService.getSubject(code);
-                if (apiResponse instanceof Map) {
-                    @SuppressWarnings("unchecked")
-                    Map<String, Object> data = (Map<String, Object>) apiResponse;
-                    @SuppressWarnings("unchecked")
-                    Map<String, Object> subjectData = (Map<String, Object>) data.get("subject");
+                skolverketCourseService.syncFromSkolverket(code);
 
-                    if (subjectData != null) {
-                        // Save subject-level SkolverketCourse
-                        Optional<SkolverketCourse> skCourseOpt = skolverketCourseRepository.findByCourseCode(code);
-                        SkolverketCourse skCourse;
-
-                        if (skCourseOpt.isPresent()) {
-                            skCourse = skCourseOpt.get();
-                        } else {
-                            skCourse = new SkolverketCourse();
-                            skCourse.setCourseCode(code);
-                            skCourse.setCourseName(name);
-                            skCourse.setSubject(name);
-                            skCourse.setPoints(100);
-                        }
-
-                        skCourse.setDescription((String) subjectData.get("description"));
-                        skCourse.setSubjectPurpose((String) subjectData.get("purpose"));
-                        skCourse.setEnglishTitle((String) subjectData.get("englishName"));
-
-                        skolverketCourseRepository.save(skCourse);
-
-                        if (skCourse.getDescription() != null && !skCourse.getDescription().isEmpty()) {
-                            course.setDescription(skCourse.getDescription());
-                        }
-
-                        // --- Parse individual courses within the subject ---
-                        @SuppressWarnings("unchecked")
-                        List<Map<String, Object>> courses = (List<Map<String, Object>>) subjectData.get("courses");
-                        SkolverketCourse linkedCourse = skCourse; // Default: link to subject-level
-
-                        if (courses != null) {
-                            boolean isFirstCourse = true;
-                            for (Map<String, Object> apiCourse : courses) {
-                                String courseCode = (String) apiCourse.get("code");
-                                String courseName = (String) apiCourse.get("name");
-                                if (courseCode == null) continue;
-
-                                // Find or create SkolverketCourse for this specific course
-                                Optional<SkolverketCourse> existingSkCourse = skolverketCourseRepository
-                                        .findByCourseCode(courseCode);
-                                SkolverketCourse skIndividualCourse;
-
-                                if (existingSkCourse.isPresent()) {
-                                    skIndividualCourse = existingSkCourse.get();
-                                } else {
-                                    skIndividualCourse = new SkolverketCourse();
-                                    skIndividualCourse.setCourseCode(courseCode);
-                                    skIndividualCourse.setCourseName(courseName);
-                                    skIndividualCourse.setSubject(name);
-                                }
-
-                                // Parse points
-                                Object pointsObj = apiCourse.get("points");
-                                if (pointsObj != null) {
-                                    try {
-                                        skIndividualCourse
-                                                .setPoints(Integer.parseInt(pointsObj.toString().trim()));
-                                    } catch (NumberFormatException ignored) {
-                                    }
-                                }
-
-                                // Map course-level fields
-                                skIndividualCourse.setDescription((String) apiCourse.get("description"));
-                                skIndividualCourse
-                                        .setEnglishTitle((String) apiCourse.get("englishName"));
-                                skIndividualCourse.setSubjectPurpose(
-                                        (String) subjectData.get("purpose"));
-
-                                // Extract centralContent
-                                @SuppressWarnings("unchecked")
-                                Map<String, Object> centralContent = (Map<String, Object>) apiCourse
-                                        .get("centralContent");
-                                if (centralContent != null) {
-                                    skIndividualCourse
-                                            .setObjectives((String) centralContent.get("text"));
-                                }
-
-                                skolverketCourseRepository.save(skIndividualCourse);
-
-                                // Link the EduFlex Course to the FIRST individual course
-                                // (this is where criteria, centralContent, etc. live)
-                                if (isFirstCourse) {
-                                    linkedCourse = skIndividualCourse;
-                                    isFirstCourse = false;
-                                }
-
-                                // --- Extract and save knowledgeRequirements (betygskriterier) ---
-                                @SuppressWarnings("unchecked")
-                                List<Map<String, Object>> knowledgeReqs = (List<Map<String, Object>>) apiCourse
-                                        .get("knowledgeRequirements");
-                                if (knowledgeReqs != null && !knowledgeReqs.isEmpty()) {
-                                    // Clear old criteria for this course
-                                    gradingCriteriaRepository.deleteByCourse(skIndividualCourse);
-
-                                    Map<String, Integer> gradeOrder = Map.of(
-                                            "E", 1, "D", 2, "C", 3, "B", 4, "A", 5);
-
-                                    for (Map<String, Object> req : knowledgeReqs) {
-                                        String gradeStep = (String) req.get("gradeStep");
-                                        String text = (String) req.get("text");
-                                        if (gradeStep == null || text == null) continue;
-
-                                        SkolverketGradingCriteria criteria = new SkolverketGradingCriteria(
-                                                skIndividualCourse,
-                                                gradeStep,
-                                                text,
-                                                gradeOrder.getOrDefault(gradeStep, 0));
-                                        gradingCriteriaRepository.save(criteria);
-                                    }
-                                }
-                            }
-                        }
-
-                        // Link Course to the best SkolverketCourse (individual > subject)
-                        course.setSkolverketCourse(linkedCourse);
+                // Link the EduFlex Course to the SkolverketCourse
+                skolverketCourseService.getCourseByCode(code); // Verify it exists
+                com.eduflex.backend.model.SkolverketCourse skCourse = skolverketCourseService.getCourseByCode(code);
+                if (skCourse != null) {
+                    course.setSkolverketCourse(skCourse);
+                    if (skCourse.getDescription() != null && !skCourse.getDescription().isEmpty()) {
+                        course.setDescription(skCourse.getDescription());
                     }
                 }
             } catch (Exception e) {
-                System.err.println("Failed to fetch/save Skolverket rich data: " + e.getMessage());
-                e.printStackTrace();
+                System.err.println("Failed to fetch/sync Skolverket rich data: " + e.getMessage());
             }
 
             courseRepository.save(course);
-
             return ResponseEntity.ok(Map.of("success", true, "id", course.getId()));
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @PostMapping("/sync-all")
+    @Transactional
+    public ResponseEntity<?> syncAll() {
+        List<com.eduflex.backend.model.SkolverketCourse> allCourses = skolverketCourseService.getAllCourses();
+        int count = 0;
+        int failed = 0;
+
+        for (com.eduflex.backend.model.SkolverketCourse sc : allCourses) {
+            try {
+                // We only sync subjects (short codes) or first-level courses that might have
+                // children
+                // In this system, skolverket_courses table contains both.
+                // Syncing individual children is fine too.
+                skolverketCourseService.syncFromSkolverket(sc.getCourseCode());
+                count++;
+            } catch (Exception e) {
+                failed++;
+            }
+        }
+
+        return ResponseEntity.ok(Map.of(
+                "success", true,
+                "synced", count,
+                "failed", failed,
+                "message", "Sync completed"));
+    }
+
+    @PostMapping("/sync/{courseCode}")
+    @Transactional
+    public ResponseEntity<?> syncOne(@PathVariable String courseCode) {
+        try {
+            skolverketCourseService.syncFromSkolverket(courseCode);
+            return ResponseEntity.ok(Map.of("success", true, "message", "Course synced successfully"));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
     }
 }

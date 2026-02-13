@@ -26,6 +26,7 @@ public class AITutorService {
     private final EmbeddingRepository embeddingRepository;
     private final CourseMaterialRepository materialRepository;
     private final StorageService storageService;
+    private final com.eduflex.backend.service.GamificationService gamificationService;
     private final Tika tika = new Tika();
 
     private final com.eduflex.backend.repository.EbookRepository ebookRepository;
@@ -34,12 +35,14 @@ public class AITutorService {
             EmbeddingRepository embeddingRepository,
             CourseMaterialRepository materialRepository,
             StorageService storageService,
-            com.eduflex.backend.repository.EbookRepository ebookRepository) {
+            com.eduflex.backend.repository.EbookRepository ebookRepository,
+            com.eduflex.backend.service.GamificationService gamificationService) {
         this.geminiService = geminiService;
         this.embeddingRepository = embeddingRepository;
         this.materialRepository = materialRepository;
         this.storageService = storageService;
         this.ebookRepository = ebookRepository;
+        this.gamificationService = gamificationService;
     }
 
     private static final int CHUNK_SIZE = 1000;
@@ -178,7 +181,7 @@ public class AITutorService {
         }
     }
 
-    public String askTutor(Long courseId, String question) {
+    public String askTutor(Long courseId, String question, Long userId) {
         try {
             List<Double> questionVector = geminiService.generateEmbedding(question);
             List<VectorStoreEntry> courseEmbeddings = embeddingRepository.findByCourseId(courseId);
@@ -198,6 +201,11 @@ public class AITutorService {
                             "Om svaret inte finns i sammanhanget, säg att du inte vet baserat på kursmaterialet.\n\n" +
                             "Sammanhang:\n%s\n\nFråga: %s",
                     context, question);
+
+            // Award points for AI engagement
+            if (userId != null) {
+                gamificationService.addPoints(userId, 2);
+            }
 
             return geminiService.generateResponse(prompt);
 

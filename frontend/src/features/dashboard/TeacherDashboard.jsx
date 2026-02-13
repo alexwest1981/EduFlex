@@ -143,7 +143,14 @@ const TeacherDashboard = ({ currentUser }) => {
                             const subs = await api.assignments.getSubmissions(assign.id);
                             if (Array.isArray(subs)) {
                                 const pending = subs.filter(s => !s.grade);
-                                pending.forEach(p => ungraded.push({ ...p, courseName: course.name, assignmentTitle: assign.title }));
+                                pending.forEach(p => ungraded.push({
+                                    ...p,
+                                    courseName: course.name,
+                                    assignmentTitle: assign.title,
+                                    courseId: course.id,
+                                    courseSlug: course.slug,
+                                    courseCode: course.courseCode
+                                }));
                             }
                         }
                     }

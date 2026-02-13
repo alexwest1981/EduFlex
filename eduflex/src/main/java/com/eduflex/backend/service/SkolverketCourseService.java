@@ -24,6 +24,9 @@ public class SkolverketCourseService {
     @Autowired
     private SkolverketGradingCriteriaRepository criteriaRepository;
 
+    @Autowired
+    private SkolverketApiClientService apiClientService;
+
     public List<SkolverketCourse> getAllCourses() {
         return repository.findAll();
     }
@@ -196,5 +199,109 @@ public class SkolverketCourseService {
         }
 
         return criteriaRepository.saveAll(criteria);
+    }
+
+    /**
+     * Sync rich data from Skolverket API for a specific subject/course code.
+     */
+    @org.springframework.transaction.annotation.Transactional
+    public void syncFromSkolverket(String code) {
+        Object apiResponse = apiClientService.getSubject(code);
+        if (!(apiResponse instanceof Map)) {
+            throw new RuntimeException("Unexpected API response format for code: " + code);
+        }
+
+        @SuppressWarnings("unchecked")
+        Map<String, Object> data = (Map<String, Object>) apiResponse;
+        @SuppressWarnings("unchecked")
+        Map<String, Object> subjectData = (Map<String, Object>) data.get("subject");
+
+        if (subjectData == null) {
+            throw new RuntimeException("Subject data not found in API response for code: " + code);
+        }
+
+        String name = (String) subjectData.get("name");
+
+        // 1. Update/Create subject-level SkolverketCourse
+        SkolverketCourse skCourse = repository.findByCourseCode(code)
+                .orElseGet(() -> {
+                    SkolverketCourse s = new SkolverketCourse();
+                    s.setCourseCode(code);
+                    s.setCourseName(name);
+                    s.setSubject(name);
+                    s.setPoints(100); // Subject placeholder point
+                    return s;
+                });
+
+        skCourse.setDescription((String) subjectData.get("description"));
+        skCourse.setSubjectPurpose((String) subjectData.get("purpose"));
+        skCourse.setEnglishTitle((String) subjectData.get("englishName"));
+        repository.save(skCourse);
+
+        // 2. Parse individual courses within the subject
+        @SuppressWarnings("unchecked")
+        List<Map<String, Object>> courses = (List<Map<String, Object>>) subjectData.get("courses");
+        if (courses != null) {
+            for (Map<String, Object> apiCourse : courses) {
+                String courseCode = (String) apiCourse.get("code");
+                String courseName = (String) apiCourse.get("name");
+                if (courseCode == null)
+                    continue;
+
+                SkolverketCourse skIndividualCourse = repository.findByCourseCode(courseCode)
+                        .orElseGet(() -> {
+                            SkolverketCourse s = new SkolverketCourse();
+                            s.setCourseCode(courseCode);
+                            s.setCourseName(courseName);
+                            s.setSubject(name);
+                            return s;
+                        });
+
+                // Parse points
+                Object pointsObj = apiCourse.get("points");
+                if (pointsObj != null) {
+                    try {
+                        skIndividualCourse.setPoints(Integer.parseInt(pointsObj.toString().trim()));
+                    } catch (NumberFormatException ignored) {
+                    }
+                }
+
+                skIndividualCourse.setDescription((String) apiCourse.get("description"));
+                skIndividualCourse.setEnglishTitle((String) apiCourse.get("englishName"));
+                skIndividualCourse.setSubjectPurpose((String) subjectData.get("purpose"));
+
+                @SuppressWarnings("unchecked")
+                Map<String, Object> centralContent = (Map<String, Object>) apiCourse.get("centralContent");
+                if (centralContent != null) {
+                    skIndividualCourse.setObjectives((String) centralContent.get("text"));
+                }
+
+                repository.save(skIndividualCourse);
+
+                // 3. Extract and save knowledgeRequirements
+                @SuppressWarnings("unchecked")
+                List<Map<String, Object>> knowledgeReqs = (List<Map<String, Object>>) apiCourse
+                        .get("knowledgeRequirements");
+                if (knowledgeReqs != null && !knowledgeReqs.isEmpty()) {
+                    criteriaRepository.deleteByCourse(skIndividualCourse);
+                    Map<String, Integer> gradeOrder = Map.of("E", 1, "D", 2, "C", 3, "B", 4, "A", 5);
+
+                    List<SkolverketGradingCriteria> criteriaList = new ArrayList<>();
+                    for (Map<String, Object> req : knowledgeReqs) {
+                        String gradeStep = (String) req.get("gradeStep");
+                        String text = (String) req.get("text");
+                        if (gradeStep == null || text == null)
+                            continue;
+
+                        criteriaList.add(new SkolverketGradingCriteria(
+                                skIndividualCourse,
+                                gradeStep,
+                                text,
+                                gradeOrder.getOrDefault(gradeStep, 0)));
+                    }
+                    criteriaRepository.saveAll(criteriaList);
+                }
+            }
+        }
     }
 }

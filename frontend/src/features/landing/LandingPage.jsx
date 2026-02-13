@@ -228,36 +228,22 @@ const LandingPage = () => {
         },
         {
             icon: <Map className="w-6 h-6" />,
-            title: 'Rich Course Management',
-            description: 'Synkronisera manuellt skapade kurser med Skolverkets officiella data. Importera automatiskt kursbeskrivningar, centralt innehåll och betygskriterier direkt från källan.',
+            title: 'Skolverket Sync 2.0',
+            description: 'Synkronisera din kurskatalog i realtid. Importera automatiskt kursbeskrivningar, centralt innehåll och betygskriterier direkt från källan för alla kurser på en gång.',
             color: 'text-emerald-400',
             bgColor: 'bg-emerald-500/10'
         },
         {
-            icon: <FileText className="w-6 h-6" />,
-            title: 'PDF Whitelabeling',
-            description: 'Anpassa certifikat och betygsrapporter med er egen profil. Ladda upp logotyp, bakgrundsbild, ändra färger, texter och layout — allt med live-förhandsvisning direkt i admin-panelen.',
-            color: 'text-amber-400',
-            bgColor: 'bg-amber-500/10'
+            icon: <Trophy className="w-6 h-6" />,
+            title: 'Expansiv Gamification',
+            description: 'XP för allt! Tjäna poäng genom AI-chatt, lektionsvisningar och utmaningar. Profilteman, shop, streaks och badges gör lärandet beroendeframkallande.',
+            color: 'text-brand-gold',
+            bgColor: 'bg-brand-gold/10'
         },
         {
-            icon: <ClipboardList className="w-6 h-6" />,
-            title: 'Enkätsystem (Elevhälsa)',
-            description: 'Skapa dynamiska enkäter med avancerade frågetyper. Inkluderar Survey Notification Widgets för alla dashboards och automatiska påminnelser för att säkerställa maximalt elevengagemang.',
-            color: 'text-violet-400',
-            bgColor: 'bg-violet-500/10'
-        },
-        {
-            icon: <Thermometer className="w-6 h-6" />,
-            title: 'Digital Sjukanmälan',
-            description: 'Elever sjukanmäler sig digitalt. Mentorer notifieras automatiskt via internmeddelanden. Komplett historik och statusspårning för elevhälsoteamet.',
-            color: 'text-red-400',
-            bgColor: 'bg-red-500/10'
-        },
-        {
-            icon: <Users className="w-6 h-6" />,
-            title: 'Guardian Mission Control',
-            description: 'Vårdnadshavarportal med realtidsdata för barnens närvaro, schema och resultat. Administrativa verktyg för att enkelt hantera och länk barn till föräldrar.',
+            icon: <Shield className="w-6 h-6" />,
+            title: 'Guardian & Health Control',
+            description: 'Vårdnadshavarportal, digital sjukanmälan och enkäter för elevhälsa. Allt samlat med AES-256 kryptering och sekretessvakter för säker datahantering.',
             color: 'text-brand-teal',
             bgColor: 'bg-brand-teal/10'
         }

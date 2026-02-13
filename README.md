@@ -37,17 +37,14 @@
 
 ## 🇸🇪 Svenska
 
-### ⚡ Senaste Uppdateringarna
-*   **🔗 Dashboard Redirection & Tab Sync (13 feb 2026):**
-    *   **Fix:** Åtgärdat felet där "Gå till rättning" på lärardashboarden omdirigerade till kursöversikten istället för inlämningar.
-    *   **Tab Sync:** Implementerat URL-parameterstyrning (`?tab=assignments`) i `CourseDetail.jsx` för att automatiskt aktivera rätt flik vid navigering.
-    *   **UI Consistency:** Säkerställt att sidomeny och rubriker synkroniseras korrekt med den aktiva fliken.
-*   **🛡️ Säkerhetshärdning & Systemåterställning (13 feb 2026):**
-    *   **Kryptering (Tystnadsplikt):** Implementerat fältkryptering (AES-256) för känslig data i Wellbeing Center och Sjukanmälan.
-    *   **Sekretessvakter:** Begränsat information i notiser till mentorer för att följa sekretesskrav – endast hälsoteamet ser fullständiga detaljer.
-    *   **RBAC-skydd:** Stärkt behörighetskontrollen för supportärenden.
-    *   **Dataåterställning:** Återställt 18 användare och 20 kurser från backup efter kritiskt Docker-fel.
-    *   **Frontend-fix:** Eliminerat dubblett-routes i `App.jsx`.
+### ⚡ Senaste Uppdateringarna (v1.0.5)
+> **2026-02-13: Deployment Optimization & Engagement Boost**
+*   **🔄 Skolverket Sync 2.0:** Batch-synk av hela katalogen med officiell data. Refaktorerad service för 100% driftsäkerhet.
+*   **🎮 Gamification Expanded:** XP-poäng för AI-chatt, lektionsvisningar, videos och filnedladdningar. 
+*   **🛡️ System Resilience:** Fixad aktivitetsloggning (DB-constraint fix) och säkerhetshärdning med AES-256 kryptering.
+*   **🔗 Dashboard Sync:** Fixade omdirigeringar ("Gå till rättning") och implementerat smart flik-hantering via URL-parametrar.
+
+*Tidigare releaser (Februari): Vårdnadshavarportal, Elevhälsa-enkäter, Sjukanmälan, Rektors Mission Control och LTI 1.3 Advantage.*
 *   **📋 Health Survey & Notification System (12 feb 2026):**
     *   **Survey Notification Widget:** Nytt gränssnitt för elever, lärare och mentorer som visar väntande enkäter direkt på dashboarden.
     *   **Automatiska Påminnelser:** Integration med det interna meddelandesystemet för att säkerställa hög svarsfrekvens.
@@ -267,24 +264,14 @@ curl -X POST http://localhost:8080/api/tenants \
 
 ## 🇬🇧 English
 
-### ⚡ Latest Updates
-*   **🔗 Dashboard Redirection & Tab Sync (Feb 13, 2026):**
-    *   **Fix:** Resolved the issue where "Go to Grading" on the teacher dashboard incorrectly redirected to the course summary instead of assignments.
-    *   **Tab Sync:** Implemented URL parameter control (`?tab=assignments`) in `CourseDetail.jsx` to automatically activate the correct tab upon navigation.
-    *   **UI Consistency:** Ensured sidebar highlights and main headings are correctly synchronized with the active tab.
-*   **📋 Health Survey & Notification System (Feb 12, 2026):**
-    *   **Survey Notification Widget:** New interface for students, teachers, and mentors that displays pending surveys directly on the dashboard.
-    *   **Automatic Reminders:** Integration with the internal messaging system to ensure high response rates.
-    *   **Dashboard Integration:** Seamless embedding in `StudentDashboard`, `TeacherDashboard`, and `MentorDashboard`.
-*   **🎯 Principal Mission Control – Live Dashboard & Org Management (Feb 11, 2026):**
-    *   **100% Live Data:** The Principal dashboard is now free of mockups, powered by real-time data for attendance, incidents, and academic performance.
-    *   **System Intelligence:** Added a new header bar providing instant insights into total student counts and active warning flags.
-    *   **School Structure & Mentoring:** Full support for managing departments, programs, and classes with an intuitive interface for mentor assignments.
-    *   **Stability Fix:** Resolved all residual 404 console errors related to legacy component renaming and refactoring.
-*   **🎓 Rich Course Management – Skolverket Integration (Feb 10, 2026):**
-    *   **Official Data Sync:** Manually created courses can now be enriched with official data from Skolverket. The system automatically fetches course descriptions, central content, and grading criteria.
-    *   **Skolverket Course Selector:** Integrated a new selector in course management to easily link local courses to the Skolverket database.
-    *   **Automatic Enrichment:** Backend logic that automatically synchronizes and populates missing information based on course code for both creation and import.
+### ⚡ Latest Updates (v1.0.5)
+> **2026-02-13: Deployment Optimization & Engagement Boost**
+*   **🔄 Skolverket Sync 2.0:** Batch-sync capabilities for the entire catalog. Refactored service for maximum reliability.
+*   **🎮 Gamification Expanded:** XP rewards for AI Tutor chat, lesson views, video playbacks, and downloads.
+*   **🛡️ System Resilience:** Fixed activity logging (DB constraint fix) and AES-256 GCM encryption hardening.
+*   **🔗 Dashboard Sync:** Resolved "Go to Grading" redirects and implemented smart tab-aware navigation.
+
+*Previous February releases: Guardian Portal, Health Surveys, Sick Leave Management, Principal Mission Control, and LTI 1.3 Advantage.*
 *   **📩 Communication – Principal Mailbox Access (Feb 10, 2026):**
     *   **Full Inbox Access:** The Principal (Rektor) role now has full access to the internal messaging system via a dedicated `/communication` route.
     *   **Sidebar Integration:** Added a direct "Communication" link in the sidebar for all relevant staff and administrative roles.

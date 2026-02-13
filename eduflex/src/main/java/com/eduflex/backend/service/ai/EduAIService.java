@@ -23,13 +23,16 @@ public class EduAIService {
     private final GeminiService geminiService;
     private final EduAIQuestRepository questRepository;
     private final UserRepository userRepository;
+    private final com.eduflex.backend.service.GamificationService gamificationService;
     private final ObjectMapper objectMapper;
 
     public EduAIService(GeminiService geminiService, EduAIQuestRepository questRepository,
-            UserRepository userRepository, ObjectMapper objectMapper) {
+            UserRepository userRepository, com.eduflex.backend.service.GamificationService gamificationService,
+            ObjectMapper objectMapper) {
         this.geminiService = geminiService;
         this.questRepository = questRepository;
         this.userRepository = userRepository;
+        this.gamificationService = gamificationService;
         this.objectMapper = objectMapper;
     }
 
@@ -133,11 +136,10 @@ public class EduAIService {
         quest.setCompletedAt(LocalDateTime.now());
         questRepository.save(quest);
 
-        // Det är bättre att anropa gamificationService härifrån om möjligt,
-        // annars får controllern göra det. Men för auto-completion måste vi göra det
-        // här.
-        // Vi behöver injicera GamificationService i denna Service (circular dependency
-        // risk, se upp!)
+        // Award XP
+        if (quest.getRewardXp() > 0) {
+            gamificationService.addPoints(quest.getUserId(), quest.getRewardXp());
+        }
 
         return quest;
     }

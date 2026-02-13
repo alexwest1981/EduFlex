@@ -16,9 +16,9 @@ public class AITutorController {
     private final com.eduflex.backend.service.ModuleService moduleService;
     private final com.eduflex.backend.repository.CourseRepository courseRepository;
 
-    public AITutorController(AITutorService aiTutorService, 
-                           com.eduflex.backend.service.ModuleService moduleService,
-                           com.eduflex.backend.repository.CourseRepository courseRepository) {
+    public AITutorController(AITutorService aiTutorService,
+            com.eduflex.backend.service.ModuleService moduleService,
+            com.eduflex.backend.repository.CourseRepository courseRepository) {
         this.aiTutorService = aiTutorService;
         this.moduleService = moduleService;
         this.courseRepository = courseRepository;
@@ -89,10 +89,10 @@ public class AITutorController {
         if (courseIdObj == null) {
             return ResponseEntity.badRequest().body("Missing courseId");
         }
-        
+
         Long courseId = null;
         String courseIdStr = courseIdObj.toString();
-        
+
         try {
             courseId = Long.valueOf(courseIdStr);
         } catch (NumberFormatException e) {
@@ -107,12 +107,13 @@ public class AITutorController {
         }
 
         String question = (String) payload.get("question");
+        Long userId = payload.containsKey("userId") ? Long.valueOf(payload.get("userId").toString()) : null;
 
         if (courseId == null || question == null || question.isBlank()) {
             return ResponseEntity.badRequest().body("Missing courseId or question");
         }
 
-        String answer = aiTutorService.askTutor(courseId, question);
+        String answer = aiTutorService.askTutor(courseId, question, userId);
         return ResponseEntity.ok(Map.of("answer", answer));
     }
 
@@ -134,7 +135,7 @@ public class AITutorController {
 
         Long courseId = null;
         String courseIdStr = courseIdObj.toString();
-        
+
         try {
             courseId = Long.valueOf(courseIdStr);
         } catch (NumberFormatException e) {
