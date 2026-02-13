@@ -16,6 +16,8 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
 
     long countByStudentIdAndIsPresent(Long studentId, boolean isPresent);
 
+    long countByIsPresent(boolean isPresent);
+
     @Query("SELECT a FROM Attendance a WHERE a.student.id = :studentId AND CAST(a.event.startTime AS date) = :date")
     List<Attendance> findByStudentIdAndDate(@Param("studentId") Long studentId, @Param("date") LocalDate date);
 }

@@ -70,10 +70,11 @@
 ## 📝 Change Log
 
 ### [v1.0.5] - 2026-02-13
+- **New Feature**: **AI Management Reports** - Automated deep-dive reports with long-term data snapshots and role-based archival.
 - **New Feature**: **Skolverket Sync 2.0** - Full refactoring and batch-sync capabilities. Admins can now update the entire course catalog with official data in one click.
 - **Engagement**: **Gamification Expansion** - XP rewards integrated for AI Tutor chat, lesson views, video playbacks, and file downloads.
 - **Fix**: **Activity Log Resilience** - Resolved database constraint errors and expanded activity tracking to support all core student interactions.
-- **Improvement**: **Dashboard Sync** - Fixed "Gå till rättning" redirection and implemented tab-aware navigation.
+- **Improvement**: **Dashboard Sync** - Fixed sidebar visibility for Principals and corrected tab-aware navigation.
 
 ### [v1.0.4] - 2026-02-12
 - **New Feature**: **Survey Notification Widget** - Realtidsaviseringar för elever, lärare och mentorer om väntande enkäter direkt på deras dashboards.

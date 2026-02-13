@@ -37,13 +37,11 @@
 
 ## 🇸🇪 Svenska
 
-### ⚡ Senaste Uppdateringarna (v1.0.5)
-> **2026-02-13: Deployment Optimization & Engagement Boost**
-*   **⚡ Stability & Multi-Tenancy (13 feb 2026):** Fixade Flyway migrationsfel genom att göra samtliga SQL-script schema-medvetna (`current_schema()`). Detta säkerställer att både `public` och tenant-specifika scheman (t.ex. `west_code`) uppdateras korrekt utan konflikter.
-*   **🔄 Skolverket Sync 2.0:** Batch-synk av hela katalogen med officiell data. Refaktorerad service för 100% driftsäkerhet.
-*   **🎮 Gamification Expanded:** XP-poäng för AI-chatt, lektionsvisningar, videos och filnedladdningar. 
-*   **🛡️ System Resilience:** Fixad aktivitetsloggning (DB-constraint fix) och säkerhetshärdning med AES-256 kryptering.
-*   **🔗 Dashboard Sync:** Fixade omdirigeringar ("Gå till rättning") och implementerat smart flik-hantering via URL-parametrar.
+*   **📊 AI Management Reports (13 feb 2026):**
+    *   **Rektorspaket (Mission Control):** Implementerat en dedikerad sidomeny-sektion för skolledningen.
+    *   **Automatiserade Rapporter:** Integrerat AI-genererade ledningsrapporter med automatiska data-snapshots.
+    *   **Felhantering:** Åtgärdat `PSQLException` vid sparning av JSONB-data genom Hibernate 6-anpassning.
+    *   **UI/UX:** Ny status-indikator i dashboardens header och mer framträdande "Action"-knapp i AI-coachen.
 
 *Tidigare releaser (Februari): Vårdnadshavarportal, Elevhälsa-enkäter, Sjukanmälan, Rektors Mission Control och LTI 1.3 Advantage.*
 *   **📋 Health Survey & Notification System (12 feb 2026):**

@@ -34,6 +34,7 @@ const PrincipalDashboard = () => {
     const { currentUser } = useAppContext();
     const navigate = useNavigate();
     const [metrics, setMetrics] = useState(null);
+    const [latestReport, setLatestReport] = useState(null);
     const [loading, setLoading] = useState(true);
     const [drillDown, setDrillDown] = useState(null);
     const [activeTab, setActiveTab] = useState('intel');
@@ -46,8 +47,14 @@ const PrincipalDashboard = () => {
 
     const loadMetrics = async () => {
         try {
-            const data = await api.principal.dashboard.getMetrics();
-            setMetrics(data);
+            const [metricsData, reports] = await Promise.all([
+                api.principal.dashboard.getMetrics(),
+                api.get('/reports') // Use the existing report fetcher
+            ]);
+            setMetrics(metricsData);
+            if (reports && reports.length > 0) {
+                setLatestReport(reports[0]); // Archive is sorted by date desc
+            }
         } catch (err) {
             console.error(err);
         } finally {
@@ -153,7 +160,8 @@ const PrincipalDashboard = () => {
         { label: 'Ny incident', icon: Plus, color: 'orange', action: () => navigate('/principal/quality') },
         { label: 'Vikarie', icon: UserPlus, color: 'emerald', action: () => navigate('/principal/staffing') },
         { label: 'Risk-lista', icon: ShieldAlert, color: 'red', action: () => navigate('/principal/reports') },
-        { label: 'Rapporter', icon: FileText, color: 'blue', action: () => navigate('/principal/reports') },
+        { label: 'Ledningsrapport', icon: TrendingUp, color: 'blue', action: () => navigate('/principal/management-reports') },
+        { label: 'Arkiv', icon: FileText, color: 'indigo', action: () => navigate('/principal/reports') },
         { label: 'Kalender', icon: Calendar, color: 'amber', action: () => navigate('/calendar') },
     ];
 
@@ -224,8 +232,10 @@ const PrincipalDashboard = () => {
                         <span className="text-sm font-black text-gray-900 dark:text-white">{metrics?.totalStudents ?? 0}</span>
                     </div>
                     <div className="flex items-center gap-2 whitespace-nowrap">
-                        <span className="text-xs font-bold text-gray-500 dark:text-gray-400">Aktiva varningsflaggor:</span>
-                        <span className="text-sm font-black text-red-500">{metrics?.fWarningCount ?? 0}</span>
+                        <span className="text-xs font-bold text-gray-500 dark:text-gray-400">Senaste Rapport:</span>
+                        <span className={`text-sm font-black ${latestReport ? 'text-indigo-600' : 'text-amber-500'}`}>
+                            {latestReport ? latestReport.title : 'Ingen skapad'}
+                        </span>
                     </div>
                     <div className="flex items-center gap-2 whitespace-nowrap text-[10px] font-bold text-emerald-500 uppercase tracking-wider">
                         <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span>

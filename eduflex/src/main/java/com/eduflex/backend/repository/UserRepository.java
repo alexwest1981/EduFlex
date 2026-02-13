@@ -21,6 +21,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     long countByRole(com.eduflex.backend.model.Role role);
 
+    long countByRole_Name(String roleName);
+
     long countByLastLoginAfter(java.time.LocalDateTime cutoff);
 
     java.util.List<User> findByClassGroup_Id(Long classGroupId);

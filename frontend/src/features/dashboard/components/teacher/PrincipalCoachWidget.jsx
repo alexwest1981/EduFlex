@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../../../../services/api';
+import { useNavigate } from 'react-router-dom';
 import { Brain, TrendingUp, Target, Zap, ChevronRight, Loader2 } from 'lucide-react';
 import WidgetWrapper from '../WidgetWrapper';
 
 const PrincipalCoachWidget = () => {
     const [insight, setInsight] = useState(null);
     const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
 
     useEffect(() => {
         fetchInsight();
@@ -62,9 +64,14 @@ const PrincipalCoachWidget = () => {
                             </div>
                         </div>
 
-                        <button className="w-full flex items-center justify-center gap-2 py-2.5 text-xs font-bold text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-xl transition-colors border border-dashed border-purple-200 dark:border-purple-800">
-                            Öppna Ledningsrapport <ChevronRight size={14} />
-                        </button>
+                        <div className="pt-2 mt-auto">
+                            <button
+                                onClick={() => navigate('/principal/management-reports')}
+                                className="w-full flex items-center justify-center gap-2 py-3 text-xs font-black uppercase tracking-widest text-white bg-purple-600 hover:bg-purple-700 rounded-xl transition-all shadow-lg shadow-purple-200 dark:shadow-none"
+                            >
+                                Öppna Ledningsrapport <ChevronRight size={14} />
+                            </button>
+                        </div>
                     </>
                 ) : (
                     <div className="text-center py-6">

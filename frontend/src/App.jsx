@@ -65,6 +65,7 @@ import SurveyResponseForm from './features/health/SurveyResponseForm';
 import SurveyResults from './features/health/SurveyResults';
 import WellbeingCenter from './features/health/WellbeingCenter';
 import WellbeingInbox from './features/health/WellbeingInbox';
+import ManagementReportCenter from './features/principal/ManagementReportCenter';
 
 // --- PROTECTED ROUTE ---
 const ProtectedRoute = ({ children, roles, permission }) => {
@@ -227,6 +228,14 @@ const AppRoutes = () => {
                     <ProtectedRoute roles={['ADMIN', 'ROLE_REKTOR', 'REKTOR', 'PRINCIPAL']}>
                         <Layout currentUser={currentUser} handleLogout={logout}>
                             <ReportLibrary />
+                        </Layout>
+                    </ProtectedRoute>
+                } />
+
+                <Route path="/principal/management-reports" element={
+                    <ProtectedRoute roles={['ADMIN', 'ROLE_REKTOR', 'REKTOR', 'PRINCIPAL']}>
+                        <Layout currentUser={currentUser} handleLogout={logout}>
+                            <ManagementReportCenter />
                         </Layout>
                     </ProtectedRoute>
                 } />

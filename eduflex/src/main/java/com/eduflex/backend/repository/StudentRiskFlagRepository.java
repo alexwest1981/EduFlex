@@ -13,6 +13,8 @@ public interface StudentRiskFlagRepository extends JpaRepository<StudentRiskFlag
 
     List<StudentRiskFlag> findByStudentId(Long studentId);
 
+    long countByRiskLevel(StudentRiskFlag.RiskLevel riskLevel);
+
     Optional<StudentRiskFlag> findTopByStudentIdOrderByLastCalculatedDesc(Long studentId);
 
     @Query("SELECT r FROM StudentRiskFlag r WHERE r.riskLevel IN ('HIGH', 'CRITICAL') ORDER BY r.lastCalculated DESC")
