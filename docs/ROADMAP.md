@@ -13,14 +13,10 @@
 | **Generativt Författande (Kurser)** | "One-click course creation". Ladda upp PDF/PPT/Video och låt systemet generera kursstruktur, sammanfattningar och quiz automatiskt. | ✅ **Stabil** (V1) |
 | **AI-Tutor & Copilot** | En inbyggd chattbot som svarar på elevers frågor baserat enbart på kursmaterialet (RAG). Rollspelspartner för träning. | ✅ **Klar** (V1) |
 | **MCP-Server** | Gör EduFlex tillgängligt för externa AI-agenter (Model Context Protocol). | ✅ **Klar** (V1) |
-| **Prediktiv Personalisering** | Analyserar beteendedata för att identifiera "at-risk"-studenter och rekommenderar stödmaterial (Gemini-integration). | ✅ **Stable/Completed** (Phase 1) |
-
----
-
-## 🔗 Kategori 2: Integration & Ekosystem
-*Systemet får inte vara en isolerad ö. Det måste fungera där användaren är.*
-
-| Funktion | Beskrivning | Status |
+| **Prediktiv Personalisering** | Analyserar beteendedata för att identifiera "at-risk"-studenter och rekommenderar stödmateri| Fas 1 | **Prediktiv AI-Analys Engine** | Backend-motor färdig | Stable/Completed (Phase 1) |
+| Fas 2 | **Rollspecifika AI-coacher** | Rektor & Mentorsstöd | Stable/Completed (Phase 2) |
+| Fas 3 | **SKA-motor 2.0** | Planering/Uppföljning | In Progress |
+| Fas 4 | **Adaptive Learning Flow** | Elev-anpassning | Planned |
 | :--- | :--- | :--- |
 | **LTI 1.3 Core** | Grundläggande launch-stöd för externa verktyg. | ✅ **Klar** |
 | **LTI 1.3 Advantage** | Stöd för AGS (Betyg) och NRPS (Roller/Namn). | ✅ **Stabil / Verifierad** |

@@ -14,9 +14,24 @@ import java.util.Map;
 public class PredictiveAnalyticsController {
 
     private final PredictiveAnalysisService predictiveAnalysisService;
+    private final com.eduflex.backend.service.AICoachingService aiCoachingService;
 
-    public PredictiveAnalyticsController(PredictiveAnalysisService predictiveAnalysisService) {
+    public PredictiveAnalyticsController(PredictiveAnalysisService predictiveAnalysisService,
+            com.eduflex.backend.service.AICoachingService aiCoachingService) {
         this.predictiveAnalysisService = predictiveAnalysisService;
+        this.aiCoachingService = aiCoachingService;
+    }
+
+    @GetMapping("/coach/principal")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PRINCIPAL')")
+    public ResponseEntity<Map<String, Object>> getPrincipalCoach() {
+        return ResponseEntity.ok(aiCoachingService.getPrincipalWeeklyFocus());
+    }
+
+    @GetMapping("/coach/mentor/{mentorId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER', 'PRINCIPAL')")
+    public ResponseEntity<Map<String, Object>> getMentorCoach(@PathVariable Long mentorId) {
+        return ResponseEntity.ok(aiCoachingService.getMentorStudentOverview(mentorId));
     }
 
     @GetMapping("/high-risk")

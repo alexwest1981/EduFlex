@@ -21,6 +21,7 @@ import {
     ArrowDownRight,
     MoreHorizontal
 } from 'lucide-react';
+import PrincipalCoachWidget from '../dashboard/components/teacher/PrincipalCoachWidget';
 import { api } from '../../services/api';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
@@ -328,20 +329,23 @@ const PrincipalDashboard = () => {
                     </div>
                 </div>
 
-                {/* Quick Actions (1/4 width) */}
-                <div className="grid grid-cols-2 gap-4">
-                    {quickActions.map((action, i) => (
-                        <button
-                            key={i}
-                            onClick={action.action}
-                            className="bg-white dark:bg-[#1c1c1e] p-4 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-center justify-center gap-3 group"
-                        >
-                            <div className={`p-4 rounded-2xl bg-${action.color}-50 dark:bg-${action.color}-900/10 text-${action.color}-600 dark:text-${action.color}-400 group-hover:scale-110 transition-transform`}>
-                                <action.icon size={24} />
-                            </div>
-                            <span className="text-xs font-black text-gray-900 dark:text-white uppercase tracking-tighter">{action.label}</span>
-                        </button>
-                    ))}
+                {/* Quick Actions & AI Coach (1/4 width) */}
+                <div className="space-y-4">
+                    <PrincipalCoachWidget />
+                    <div className="grid grid-cols-2 gap-4">
+                        {quickActions.map((action, i) => (
+                            <button
+                                key={i}
+                                onClick={action.action}
+                                className="bg-white dark:bg-[#1c1c1e] p-4 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-center justify-center gap-3 group"
+                            >
+                                <div className={`p-4 rounded-2xl bg-${action.color}-50 dark:bg-${action.color}-900/10 text-${action.color}-600 dark:text-${action.color}-400 group-hover:scale-110 transition-transform`}>
+                                    <action.icon size={24} />
+                                </div>
+                                <span className="text-xs font-black text-gray-900 dark:text-white uppercase tracking-tighter">{action.label}</span>
+                            </button>
+                        ))}
+                    </div>
                 </div>
             </footer>
 

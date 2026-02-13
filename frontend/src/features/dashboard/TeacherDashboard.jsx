@@ -12,6 +12,7 @@ import RecentMessagesWidget from './components/RecentMessagesWidget';
 import PredictiveRiskWidget from './components/teacher/PredictiveRiskWidget';
 import OnlineFriendsWidget from './widgets/OnlineFriendsWidget';
 import SurveyNotificationWidget from './widgets/SurveyNotificationWidget';
+import MentorCoachWidget from './components/teacher/MentorCoachWidget';
 
 // --- IMPORTERA KOMPONENTER (NYTT!) ---
 import TeacherStats from './components/TeacherStats'; // Keep for backward compatibility if needed, or remove? I will remove usage.
@@ -269,7 +270,12 @@ const TeacherDashboard = ({ currentUser }) => {
 
                         {/* Meddelanden (Höger - 1 kolumn) */}
                         <div className="lg:col-span-1 h-full space-y-6">
-                            {widgets.showRiskWidget && <PredictiveRiskWidget mentorId={currentUser.id} />}
+                            {widgets.showRiskWidget && (
+                                <>
+                                    <MentorCoachWidget mentorId={currentUser.id} />
+                                    <PredictiveRiskWidget mentorId={currentUser.id} />
+                                </>
+                            )}
                             {widgets.showOnlineFriends && (
                                 <div className="h-80">
                                     <OnlineFriendsWidget />

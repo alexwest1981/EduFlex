@@ -188,6 +188,8 @@ export const api = {
             getHighRiskForMentor: (mentorId) => api.get(`/analytics/predictive/mentor/${mentorId}/high-risk`),
             analyzeStudent: (studentId) => api.post(`/analytics/predictive/analyze/${studentId}`),
             analyzeAll: () => api.post('/analytics/predictive/analyze-all'),
+            getPrincipalCoach: () => api.get('/analytics/predictive/coach/principal'),
+            getMentorCoach: (mentorId) => api.get(`/analytics/predictive/coach/mentor/${mentorId}`),
         }
     },
 

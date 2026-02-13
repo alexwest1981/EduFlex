@@ -178,7 +178,8 @@
 
 #### 🏢 Multi-Tenancy
 - **Schema-isolering:** Varje organisation i eget PostgreSQL-schema
-- **Automatisk Provisionering:** Schema + migrationer + admin vid registrering
+- **v1.0.7** (2026-02-13): **Role-Specific AI Coachers** (Phase 2 Implementerad). Specialiserat beslutsstöd för Rektorer och Mentorer.
+- **v1.0.6** (2026-02-13): **Predictive AI Engine** (Fas 1 Roadmap 2026+). Deep pattern analysis och riskidentifiering.
 - **Request-routing:** `X-Tenant-ID` header för organisation-val
 
 ---
@@ -650,6 +651,11 @@ X-Tenant-ID: acme
    | **Grafana** | http://localhost:3000 | admin / admin |
    | **Keycloak** | http://localhost:8180 | admin / admin |
    | **Prometheus** | http://localhost:9090 | – |
+## Phase 2: Role-Specific AI Coachers [x]
+- [x] **Principal Coach**: KPI-driven priorities & Weekly Focus <!-- id: 105 -->
+- [x] **Mentor Coach**: Development talk preparation & Guardian comms prep <!-- id: 106 -->
+- [x] **EHT Coach**: Group-level pattern identification <!-- id: 107 -->
+- [x] **Student Coach**: Study planning based on schedule/deadlines <!-- id: 108 -->
 
 #### Local Development
 
