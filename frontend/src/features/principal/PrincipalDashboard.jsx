@@ -19,7 +19,9 @@ import {
     ChevronDown,
     ArrowUpRight,
     ArrowDownRight,
-    MoreHorizontal
+    MoreHorizontal,
+    Target,
+    Activity
 } from 'lucide-react';
 import PrincipalCoachWidget from '../dashboard/components/teacher/PrincipalCoachWidget';
 import SKADashboard from './components/SKADashboard';

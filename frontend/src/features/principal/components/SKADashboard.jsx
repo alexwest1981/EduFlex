@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Target, TrendingUp, Calendar, CheckCircle2, AlertCircle, Plus, RefreshCw, ChevronRight } from 'lucide-react';
-import { api } from '../../services/api';
+import { api } from '../../../services/api';
 
 const SKADashboard = () => {
     const [goals, setGoals] = useState([]);
