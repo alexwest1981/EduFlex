@@ -1,3 +1,21 @@
+-- Aggressively drop any check constraints on role_permissions before inserting new permissions.
+-- Different schemas might have different auto-generated names for the check constraint.
+DO $$ 
+DECLARE 
+    r RECORD;
+BEGIN
+    FOR r IN (
+        SELECT conname 
+        FROM pg_constraint con
+        INNER JOIN pg_class rel ON rel.oid = con.conrelid
+        WHERE rel.relname = 'role_permissions' 
+          AND con.contype = 'c'
+    ) 
+    LOOP
+        EXECUTE 'ALTER TABLE role_permissions DROP CONSTRAINT IF EXISTS ' || quote_ident(r.conname);
+    END LOOP;
+END $$;
+
 -- Init ROLE_PRINCIPAL and Permissions
 INSERT INTO roles (name, description, default_dashboard, is_super_admin)
 VALUES ('ROLE_REKTOR', 'Skolledning / Rektor', 'PRINCIPAL', FALSE)

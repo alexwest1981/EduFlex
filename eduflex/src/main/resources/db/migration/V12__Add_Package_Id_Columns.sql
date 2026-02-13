@@ -16,8 +16,10 @@ CREATE TABLE IF NOT EXISTS cmi5_packages (
 
 -- Add package_id to cmi5_packages if table existed but column was missing
 DO $$ 
-BEGIN 
-    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='cmi5_packages' AND column_name='package_id') THEN
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                   WHERE table_name='cmi5_packages' 
+                     AND column_name='package_id' 
+                     AND table_schema = current_schema()) THEN
         ALTER TABLE cmi5_packages ADD COLUMN package_id VARCHAR(255);
     END IF;
 END $$;

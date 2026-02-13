@@ -1,12 +1,16 @@
--- Add main teacher (huvudansvarig lärare) to class_groups (idempotent)
 DO $$ BEGIN
-    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='class_groups' AND column_name='main_teacher_id') THEN
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                   WHERE table_name='class_groups' 
+                     AND column_name='main_teacher_id' 
+                     AND table_schema = current_schema()) THEN
         ALTER TABLE class_groups ADD COLUMN main_teacher_id BIGINT;
     END IF;
 END $$;
 
 DO $$ BEGIN
-    IF NOT EXISTS (SELECT 1 FROM information_schema.table_constraints WHERE constraint_name='fk_class_groups_main_teacher') THEN
+    IF NOT EXISTS (SELECT 1 FROM information_schema.table_constraints 
+                   WHERE constraint_name='fk_class_groups_main_teacher' 
+                     AND table_schema = current_schema()) THEN
         ALTER TABLE class_groups ADD CONSTRAINT fk_class_groups_main_teacher
             FOREIGN KEY (main_teacher_id) REFERENCES app_users(id) ON DELETE SET NULL;
     END IF;

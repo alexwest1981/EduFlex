@@ -1,5 +1,15 @@
--- Fix constraints to allow user deletion (idempotent)
--- 1. Class groups should have mentor_id set to NULL if the user is deleted
+-- Fix constraints to allow user deletion (idempotent and schema-aware)
+-- 1. Ensure mentor_id exists in class_groups
+DO $$ BEGIN
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                   WHERE table_name='class_groups' 
+                     AND column_name='mentor_id' 
+                     AND table_schema = current_schema()) THEN
+        ALTER TABLE class_groups ADD COLUMN mentor_id BIGINT;
+    END IF;
+END $$;
+
+-- 2. Class groups should have mentor_id set to NULL if the user is deleted
 ALTER TABLE class_groups DROP CONSTRAINT IF EXISTS fk_class_groups_mentor;
 ALTER TABLE class_groups ADD CONSTRAINT fk_class_groups_mentor FOREIGN KEY (mentor_id) REFERENCES app_users(id) ON DELETE SET NULL;
 

@@ -209,7 +209,7 @@ public class SecurityConfig {
                                                 .authenticated()
                                                 .requestMatchers("/api/community/admin/**")
                                                 .hasAnyAuthority("ADMIN", "ROLE_ADMIN")
-                                                
+
                                                 // NEW: Allow DELETE and PUT for community items (Admin/Teacher)
                                                 .requestMatchers(HttpMethod.DELETE, "/api/community/items/**")
                                                 .hasAnyAuthority("ADMIN", "ROLE_ADMIN")
@@ -244,7 +244,8 @@ public class SecurityConfig {
                                                                 "/api/analytics/heatmap")
                                                 .authenticated()
                                                 .requestMatchers("/api/analytics/**")
-                                                .hasAnyAuthority("ADMIN", "ROLE_ADMIN", "TEACHER", "ROLE_TEACHER")
+                                                .hasAnyAuthority("ADMIN", "ROLE_ADMIN", "TEACHER", "ROLE_TEACHER",
+                                                                "PRINCIPAL", "ROLE_PRINCIPAL")
 
                                                 // 10. Module management endpoints
                                                 .requestMatchers(HttpMethod.GET, "/api/modules").authenticated()
@@ -255,6 +256,10 @@ public class SecurityConfig {
 
                                                 // 11. Resource Bank endpoints
                                                 .requestMatchers("/api/resources/**").authenticated()
+
+                                                // 12. Quality Work endpoints
+                                                .requestMatchers("/api/quality/**")
+                                                .hasAnyAuthority("ADMIN", "ROLE_ADMIN", "PRINCIPAL", "ROLE_PRINCIPAL")
 
                                                 // All other requests require authentication
                                                 .anyRequest().authenticated())

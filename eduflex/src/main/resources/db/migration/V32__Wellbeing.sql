@@ -1,4 +1,4 @@
-CREATE TABLE wellbeing_support_requests (
+CREATE TABLE IF NOT EXISTS wellbeing_support_requests (
     id BIGSERIAL PRIMARY KEY,
     student_id BIGINT NOT NULL,
     staff_id BIGINT,
@@ -11,5 +11,7 @@ CREATE TABLE wellbeing_support_requests (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+DROP INDEX IF EXISTS idx_well_student;
 CREATE INDEX idx_well_student ON wellbeing_support_requests(student_id);
+DROP INDEX IF EXISTS idx_well_status;
 CREATE INDEX idx_well_status ON wellbeing_support_requests(status);

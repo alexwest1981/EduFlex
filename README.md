@@ -39,6 +39,7 @@
 
 ### ⚡ Senaste Uppdateringarna (v1.0.5)
 > **2026-02-13: Deployment Optimization & Engagement Boost**
+*   **⚡ Stability & Multi-Tenancy (13 feb 2026):** Fixade Flyway migrationsfel genom att göra samtliga SQL-script schema-medvetna (`current_schema()`). Detta säkerställer att både `public` och tenant-specifika scheman (t.ex. `west_code`) uppdateras korrekt utan konflikter.
 *   **🔄 Skolverket Sync 2.0:** Batch-synk av hela katalogen med officiell data. Refaktorerad service för 100% driftsäkerhet.
 *   **🎮 Gamification Expanded:** XP-poäng för AI-chatt, lektionsvisningar, videos och filnedladdningar. 
 *   **🛡️ System Resilience:** Fixad aktivitetsloggning (DB-constraint fix) och säkerhetshärdning med AES-256 kryptering.

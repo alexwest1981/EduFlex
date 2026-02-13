@@ -17,19 +17,19 @@ public class QualityWorkController {
     private final QualityWorkService qualityWorkService;
 
     @GetMapping("/goals")
-    @PreAuthorize("hasAnyRole('ADMIN', 'PRINCIPAL')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN', 'PRINCIPAL', 'ROLE_PRINCIPAL')")
     public ResponseEntity<List<QualityGoal>> getGoals() {
         return ResponseEntity.ok(qualityWorkService.getAllActiveGoals());
     }
 
     @PostMapping("/goals")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN')")
     public ResponseEntity<QualityGoal> createGoal(@RequestBody QualityGoal goal) {
         return ResponseEntity.ok(qualityWorkService.createGoal(goal));
     }
 
     @PostMapping("/goals/{id}/calculate")
-    @PreAuthorize("hasAnyRole('ADMIN', 'PRINCIPAL')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN', 'PRINCIPAL', 'ROLE_PRINCIPAL')")
     public ResponseEntity<Void> triggerCalculation(@PathVariable Long id) {
         qualityWorkService.calculateIndicators(id);
         return ResponseEntity.ok().build();
