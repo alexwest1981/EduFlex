@@ -190,7 +190,7 @@ const CommunityHub = ({ minimal = false }) => {
             {/* Main Content */}
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
                 {/* Sidebar - Subjects & Leaderboard */}
-                <div className="lg:col-span-1 space-y-6">
+                <div className="lg:col-span-1 space-y-6 sticky top-4 self-start">
                     <SubjectSidebar
                         subjects={subjects}
                         selectedSubject={selectedSubject}
