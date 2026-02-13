@@ -770,6 +770,7 @@ export const api = {
     guardian: {
         getChildren: () => api.get('/guardian/children'),
         getDashboard: (studentId) => api.get(`/guardian/dashboard/${studentId}`),
+        getAiSummary: (studentId) => api.get(`/guardian/dashboard/${studentId}/ai-summary`),
     },
 };
 
@@ -789,12 +790,17 @@ export const getSafeUrl = (url) => {
         finalUrl = finalUrl.replace(/http:\/\/minio:9000/g, origin + '/api/files');
     }
 
-    // 2. Handle /api/storage legacy paths
+    // 2. Handle legacy /api/storage paths
     if (finalUrl.includes('/api/storage/')) {
         finalUrl = finalUrl.replace('/api/storage/', '/api/files/');
     }
 
-    // 3. Handle root-relative paths by prepending origin (Vite proxy handles the rest)
+    // 3. Ensure uploads/ are also mapped to api/files
+    if (finalUrl.includes('/uploads/')) {
+        finalUrl = finalUrl.replace('/uploads/', '/api/files/');
+    }
+
+    // 4. Handle root-relative paths by prepending origin (Vite proxy handles the rest)
     if (finalUrl.startsWith('/')) {
         return `${origin}${finalUrl}`;
     }

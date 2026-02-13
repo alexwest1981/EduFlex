@@ -226,7 +226,7 @@ const ScormPlayer = ({ packageId, onClose }) => {
         );
     }
 
-    const launchUrl = `${window.location.origin}/uploads/${pkg.directoryPath}${pkg.launchFile}`;
+    const launchUrl = `${window.location.origin}/api/files/${pkg.directoryPath}${pkg.launchFile}`;
 
     return (
         <div ref={containerRef} className="h-full w-full flex flex-col bg-white dark:bg-[#1e1e1e] overflow-hidden relative">

@@ -9,9 +9,11 @@ import {
     TrendingUp,
     MessageSquare,
     ChevronRight,
-    Search
+    Search,
+    Sparkles
 } from 'lucide-react';
 import { api } from '../../services/api';
+import ReactMarkdown from 'react-markdown';
 import { useTranslation } from 'react-i18next';
 import WidgetWrapper from './components/WidgetWrapper';
 import { useDesignSystem } from '../../context/DesignSystemContext';
@@ -22,7 +24,9 @@ const GuardianDashboard = ({ currentUser }) => {
     const [children, setChildren] = useState([]);
     const [selectedChild, setSelectedChild] = useState(null);
     const [metrics, setMetrics] = useState(null);
+    const [aiSummary, setAiSummary] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [isAiLoading, setIsAiLoading] = useState(false);
 
     useEffect(() => {
         fetchChildren();
@@ -31,6 +35,7 @@ const GuardianDashboard = ({ currentUser }) => {
     useEffect(() => {
         if (selectedChild) {
             fetchMetrics(selectedChild.id);
+            fetchAiSummary(selectedChild.id);
         }
     }, [selectedChild]);
 
@@ -55,6 +60,19 @@ const GuardianDashboard = ({ currentUser }) => {
             setMetrics(data);
         } catch (error) {
             console.error("Failed to fetch dashboard metrics:", error);
+        }
+    };
+
+    const fetchAiSummary = async (childId) => {
+        setIsAiLoading(true);
+        setAiSummary(null);
+        try {
+            const data = await api.guardian.getAiSummary(childId);
+            setAiSummary(data.summary);
+        } catch (error) {
+            console.error("Failed to fetch AI summary:", error);
+        } finally {
+            setIsAiLoading(false);
         }
     };
 
@@ -104,6 +122,35 @@ const GuardianDashboard = ({ currentUser }) => {
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     {/* Main Content Column */}
                     <div className="lg:col-span-2 space-y-6">
+                        {/* AI Summary Section */}
+                        <div className="relative overflow-hidden bg-gradient-to-br from-brand-teal/10 via-white to-blue-50/10 dark:from-brand-teal/20 dark:via-[#1a1c1e] dark:to-blue-900/10 p-1 rounded-2xl border border-brand-teal/20 shadow-lg group">
+                            <div className="bg-white/80 dark:bg-[#1a1c1e]/80 backdrop-blur-sm p-6 rounded-[14px]">
+                                <div className="flex items-center justify-between mb-4">
+                                    <div className="flex items-center gap-2 text-brand-teal">
+                                        <div className="p-2 bg-brand-teal/10 rounded-lg animate-pulse">
+                                            <Sparkles size={20} className="text-brand-teal" />
+                                        </div>
+                                        <h2 className="font-bold text-lg tracking-tight">AI Statusinsikt</h2>
+                                    </div>
+                                    <div className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Genererad av Gemini AI</div>
+                                </div>
+
+                                {isAiLoading ? (
+                                    <div className="space-y-3">
+                                        <div className="h-4 bg-gray-100 dark:bg-gray-800 rounded animate-pulse w-3/4"></div>
+                                        <div className="h-4 bg-gray-100 dark:bg-gray-800 rounded animate-pulse w-full"></div>
+                                        <div className="h-4 bg-gray-100 dark:bg-gray-800 rounded animate-pulse w-5/6"></div>
+                                    </div>
+                                ) : (
+                                    <div className="prose dark:prose-invert prose-sm max-w-none text-gray-700 dark:text-gray-300">
+                                        <ReactMarkdown>
+                                            {aiSummary || "Analyserar nuvarande status och framsteg..."}
+                                        </ReactMarkdown>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
                         {/* Highlights Grid */}
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                             <MetricCard

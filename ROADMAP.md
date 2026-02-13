@@ -8,7 +8,7 @@ Denna roadmap beskriver den strategiska utvecklingen av EduFlex LMS för att mö
 *Målet är att gå från statiskt innehåll till en dynamisk lärandeupplevelse som anpassar sig i realtid.*
 
 - [ ] **Personliga lärvägar:** Systemet justerar automatiskt innehåll, svårighetsgrad och tempo baserat på elevens resultat, beteende och preferenser.
-- [ ] **Prediktiv riskmodell:** AI-analys av datapunkter (närvaro, betyg, inlämningar, engagemang) för att identifiera elever i riskzonen och proaktivt föreslå åtgärder till mentor/elevhälsa.
+- [x] **Prediktiv riskmodell:** AI-analys av datapunkter (närvaro, betyg, inlämningar, engagemang) för att identifiera elever i riskzonen och proaktivt föreslå åtgärder via AI Statusinsikt. <!-- id: 101 -->
 - [ ] **Adaptiva prov/quiz:** Frågor anpassas i realtid efter elevens prestationsnivå för att skapa mer precisa kunskapsprofiler.
 
 ## 2. Specialiserade AI-Coacher per Roll
@@ -43,7 +43,7 @@ Denna roadmap beskriver den strategiska utvecklingen av EduFlex LMS för att mö
 ## 6. Vårdnadshavarupplevelse 2.0
 *Förenkla och förbättra kommunikationen med hemmet.*
 
-- [ ] **Guidade Lägesrapporter:** Veckovisa, lättlästa sammanfattningar av elevens status (närvaro, inlämningar, fokusområden).
+- [x] **Guidade Lägesrapporter:** Veckovisa, lättlästa sammanfattningar av elevens status (närvaro, inlämningar, fokusområden) genererade av Gemini AI. <!-- id: 114 -->
 - [ ] **Smart Filter:** "Action Center" som endast visar det som kräver åtgärd (signering, betalning, frånvaroanmälan).
 - [ ] **Interaktiv Onboarding:** Guidad tur vid första inloggning för att säkerställa att vårdnadshavare förstår gränssnittet.
 

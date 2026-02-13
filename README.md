@@ -37,6 +37,12 @@
 
 ## 🇸🇪 Svenska
 
+*   **🛠️ Systemstabilitet & AI-insikter (13 feb 2026 - Kväll):**
+    *   **Backend-fix:** Åtgärdat kompileringsfel i `CourseController` genom att korrigera åtkomstnivåer i `CourseService`.
+    *   **Vårdnadshavare AI:** Fixat bugg i student-lookup för AI-sammanfattningar och verifierat full funktionalitet.
+    *   **Flyway-härdning:** Säkerställt att migrationsskrit (`V18`, `V32`) är idempotenta och tål avbrott vid uppstart.
+    *   **Frontend-synk:** Automatiserat bygge och distribution av frontend direkt i backendens statiska resurser.
+
 *   **📊 AI Management Reports (13 feb 2026):**
     *   **Rektorspaket (Mission Control):** Implementerat en dedikerad sidomeny-sektion för skolledningen.
     *   **Automatiserade Rapporter:** Integrerat AI-genererade ledningsrapporter med automatiska data-snapshots.

@@ -91,7 +91,6 @@ const StandardLayout = ({ children }) => {
             { path: '/documents', icon: <FileText size={20} />, label: t('sidebar.documents') },
             { path: '/communication', icon: <MessageSquare size={20} />, label: t('shortcuts.messages') || 'Meddelanden' },
             { path: '/support', icon: <HelpCircle size={20} />, label: t('sidebar.support') },
-            ...(['ADMIN', 'ROLE_ADMIN', 'REKTOR', 'ROLE_REKTOR', 'PRINCIPAL', 'ROLE_PRINCIPAL'].includes(roleName) ? [{ path: '/principal/management-reports', icon: <BarChart2 size={20} />, label: 'Ledningsrapport' }] : []),
             ...(isModuleActive('EDUGAME') ? [{ path: '/shop', icon: <Store size={20} />, label: 'Butik' }] : []),
             ...(isModuleActive('WELLBEING_CENTER') && ['STUDENT', 'ROLE_STUDENT', 'ADMIN', 'ROLE_ADMIN', 'REKTOR', 'ROLE_REKTOR', 'PRINCIPAL', 'ROLE_PRINCIPAL'].includes(roleName) ? [{ path: '/wellbeing-center', icon: <Heart size={20} />, label: 'Well-being Center' }] : [])
         ],
@@ -101,7 +100,7 @@ const StandardLayout = ({ children }) => {
             ...(isModuleActive('ANALYTICS') && (roleName === 'ADMIN' || roleName === 'ROLE_ADMIN') ? [{ path: '/analytics', icon: <BarChart2 size={20} />, label: t('sidebar.analytics') }] : []),
         ],
         rektor: [
-            ...(['ADMIN', 'ROLE_ADMIN', 'REKTOR', 'ROLE_REKTOR', 'PRINCIPAL', 'ROLE_PRINCIPAL'].includes(roleName) ? [
+            ...(['REKTOR', 'ROLE_REKTOR', 'PRINCIPAL', 'ROLE_PRINCIPAL'].includes(roleName) ? [
                 { path: '/principal/dashboard', icon: <ShieldCheck size={20} />, label: 'Rektorspaket' },
                 { path: '/principal/management-reports', icon: <TrendingUp size={20} />, label: 'Ledningsrapport' },
                 { path: '/principal/tools', icon: <Settings size={20} />, label: 'Verktyg & Admin' }

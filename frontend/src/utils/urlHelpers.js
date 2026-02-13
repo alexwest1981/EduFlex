@@ -18,8 +18,8 @@ export const getStorageUrl = (url, siteUrl = 'https://www.eduflexlms.se') => {
 
     // Hantera relativa paths
     if (!url.startsWith('/')) {
-        if (!url.includes('/')) url = '/uploads/' + url;
-        else url = '/' + url;
+        // Ensure all relative paths are prefixed with /api/files/
+        url = '/api/files/' + url;
     }
 
     return `${siteUrl}${url}`;

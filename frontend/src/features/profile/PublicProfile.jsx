@@ -75,16 +75,7 @@ const PublicProfile = ({ currentUser, showMessage }) => {
                             <div className="w-28 h-28 rounded-full overflow-hidden border-4 border-white dark:border-[#1E1F20] shadow-md bg-gray-50 dark:bg-[#131314] flex items-center justify-center z-10">
                                 {profileUser.profilePictureUrl && !imgError ? (
                                     <img
-                                        src={(() => {
-                                            let url = profileUser.profilePictureUrl;
-                                            if (url.includes('minio:9000')) url = url.replace('minio:9000', 'localhost:9000');
-                                            if (url.startsWith('http')) return url;
-                                            if (!url.startsWith('/')) {
-                                                if (!url.includes('/')) url = '/uploads/' + url;
-                                                else url = '/' + url;
-                                            }
-                                            return `${window.location.origin}${url}`;
-                                        })()}
+                                        src={getSafeUrl(profileUser.profilePictureUrl)}
                                         onError={() => setImgError(true)}
                                         alt=""
                                         className="w-full h-full object-cover"
