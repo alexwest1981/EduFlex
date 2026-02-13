@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
-import { LayoutDashboard, FileText, User, Settings, LogOut, Layers, Menu, X, Award, Zap, Moon, Sun, Calendar, BookOpen, TrendingUp, Bell, Search, Plus, HelpCircle, Shield, Folder, BarChart2, HardDrive, Wallet, PieChart, Activity, Store, Library, MessageSquare } from 'lucide-react';
+import { LayoutDashboard, FileText, User, Settings, LogOut, Layers, Menu, X, Award, Zap, Moon, Sun, Calendar, BookOpen, TrendingUp, Bell, Search, Plus, HelpCircle, Shield, Folder, BarChart2, HardDrive, Wallet, PieChart, Activity, Store, Library, MessageSquare, Heart } from 'lucide-react';
 import { useAppContext } from '../../context/AppContext';
 import { useModules } from '../../context/ModuleContext';
 import { useTranslation } from 'react-i18next';
@@ -39,9 +39,11 @@ const MidnightLayout = ({ children }) => {
         { path: '/calendar', icon: <Calendar size={18} />, label: t('sidebar.calendar') },
         { path: '/documents', icon: <FileText size={18} />, label: t('sidebar.documents') },
         { path: '/communication', icon: <MessageSquare size={18} />, label: t('shortcuts.messages') || 'Meddelanden' },
+        ...(isModuleActive('WELLBEING_CENTER') && ['STUDENT', 'ROLE_STUDENT', 'ADMIN', 'ROLE_ADMIN', 'REKTOR', 'ROLE_REKTOR'].includes(roleName) ? [{ path: '/wellbeing-center', icon: <Heart size={18} />, label: 'Well-being Center' }] : []),
+        ...(isModuleActive('WELLBEING_CENTER') && (roleName === 'HALSOTEAM' || roleName === 'ROLE_HALSOTEAM') ? [{ path: '/wellbeing-center/inbox', icon: <Heart size={18} />, label: 'E-hälsa Inbox' }] : []),
         ...(roleName === 'TEACHER' || roleName === 'ADMIN' ? [{ path: '/resources', icon: <BookOpen size={18} />, label: t('sidebar.resource_bank') }] : []),
-        ...(roleName === 'ADMIN' ? [{ path: '/analytics', icon: <Activity size={18} />, label: t('sidebar.analytics') }] : []),
-        ...(roleName === 'ADMIN' ? [{ path: '/admin', icon: <Settings size={18} />, label: t('sidebar.admin') }] : []),
+        ...(isModuleActive('ANALYTICS') && (roleName === 'ADMIN' || roleName === 'ROLE_ADMIN') ? [{ path: '/analytics', icon: <Activity size={18} />, label: t('sidebar.analytics') }] : []),
+        ...(roleName === 'ADMIN' || roleName === 'ROLE_ADMIN' ? [{ path: '/admin', icon: <Settings size={18} />, label: t('sidebar.admin') }] : []),
     ];
 
     return (

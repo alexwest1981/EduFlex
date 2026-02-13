@@ -9,21 +9,39 @@ export const ModuleProvider = ({ children }) => {
     const [modules, setModules] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    const refreshModules = async () => {
-        if (!currentUser) return; // Hämta inte om utloggad
+    const refreshModules = async (retryCount = 0) => {
+        if (!currentUser) return;
+
+        // Wait a tiny bit if this is the first attempt, to ensure token is in localStorage
+        if (retryCount === 0) {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                // If no token yet, wait 300ms and try one more time
+                setTimeout(() => refreshModules(1), 300);
+                return;
+            }
+        }
+
         try {
             const data = await api.modules.getAll();
             if (Array.isArray(data)) {
                 setModules(data);
+                setLoading(false);
             } else {
                 console.warn("API returned non-array for modules:", data);
                 setModules([]);
+                setLoading(false);
             }
         } catch (e) {
             console.error("Kunde inte hämta moduler", e);
-            setModules([]);
-        } finally {
-            setLoading(false);
+
+            // If it was a 401 and we haven't retried yet, try once more after a delay
+            if (e.message?.includes('UNAUTHORIZED') && retryCount < 1) {
+                setTimeout(() => refreshModules(retryCount + 1), 1000);
+            } else {
+                setModules([]);
+                setLoading(false);
+            }
         }
     };
 

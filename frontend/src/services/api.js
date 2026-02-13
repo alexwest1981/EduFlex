@@ -610,7 +610,15 @@ export const api = {
         getMyTickets: (userId) => api.get(`/support/tickets/my?userId=${userId}`),
         getAllTickets: () => api.get('/support/tickets'),
         updateStatus: (id, status) => api.patch(`/support/tickets/${id}/status?status=${status}`),
-        respond: (id, response, severity) => api.post(`/support/tickets/${id}/respond?response=${encodeURIComponent(response)}&severity=${severity}`)
+        respond: (id, response, severity) => api.post(`/support/tickets/${id}/respond?response=${encodeURIComponent(response)}&severity=${severity}`),
+
+        // Wellbeing (Encrypted)
+        getWellbeingRequests: () => api.get('/wellbeing/requests/my'),
+        getWellbeingInbox: () => api.get('/wellbeing/requests/inbox'),
+        getWellbeingRequest: (id) => api.get(`/wellbeing/requests/${id}`),
+        updateWellbeingStatus: (id, status) => api.patch(`/wellbeing/requests/${id}/status`, { status }),
+        getWellbeingMessages: (id) => api.get(`/wellbeing/requests/${id}/messages`),
+        sendWellbeingMessage: (id, content) => api.post(`/wellbeing/requests/${id}/messages`, { content }),
     },
 
     lti: {

@@ -2,6 +2,7 @@ package com.eduflex.backend.controller;
 
 import com.eduflex.backend.model.User;
 import com.eduflex.backend.repository.UserRepository;
+import com.eduflex.backend.model.WellbeingSupportMessage;
 import com.eduflex.backend.model.WellbeingSupportRequest;
 import com.eduflex.backend.service.WellbeingSupportService;
 import org.springframework.http.ResponseEntity;
@@ -72,5 +73,26 @@ public class WellbeingSupportController {
         WellbeingSupportRequest.RequestStatus status = WellbeingSupportRequest.RequestStatus
                 .valueOf(payload.get("status"));
         return ResponseEntity.ok(service.updateStatus(id, status, staff));
+    }
+
+    @PostMapping("/{id}/messages")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<WellbeingSupportMessage> addMessage(
+            @PathVariable Long id,
+            @RequestBody Map<String, String> payload,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        User sender = userRepository.findByUsername(userDetails.getUsername())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        return ResponseEntity.ok(service.addMessage(id, payload.get("content"), sender));
+    }
+
+    @GetMapping("/{id}/messages")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<List<WellbeingSupportMessage>> getMessages(
+            @PathVariable Long id,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        User currentUser = userRepository.findByUsername(userDetails.getUsername())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        return ResponseEntity.ok(service.getMessages(id, currentUser));
     }
 }

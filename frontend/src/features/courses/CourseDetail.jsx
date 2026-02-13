@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import {
     ArrowLeft, Loader2, Download, BookOpen, MessageSquare,
     FileText, Users, HelpCircle, Video, Monitor, Camera,
@@ -34,6 +34,7 @@ import StudyPalWidget from '../../components/common/StudyPalWidget';
 const CourseDetail = ({ currentUser }) => {
     const { id } = useParams();
     const navigate = useNavigate();
+    const location = useLocation();
     const { t } = useTranslation();
     const { isModuleActive } = useModules();
 
@@ -218,6 +219,15 @@ const CourseDetail = ({ currentUser }) => {
             setActiveCourseId(course.id);
         }
     }, [course, setActiveCourseId]);
+
+    // Sync tab with URL
+    useEffect(() => {
+        const query = new URLSearchParams(location.search);
+        const tab = query.get('tab');
+        if (tab && tab !== activeTab) {
+            setActiveTab(tab);
+        }
+    }, [location.search, activeTab]);
 
     useEffect(() => {
         const currentMod = modules.find(m => m.key === activeTab);
@@ -481,7 +491,7 @@ const CourseDetail = ({ currentUser }) => {
                     {/* Active Module Content */}
                     <div className="bg-white dark:bg-[#1E1F20] rounded-2xl shadow-sm border border-gray-200 dark:border-[#3c4043] p-6 lg:p-8 min-h-[1000px]">
                         <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 pb-4 border-b border-gray-100 dark:border-[#3c4043]">
-                            {modules.find(m => m.key === activeTab)?.meta.name || t(`course.${activeTab}`)}
+                            {t(`course.${activeTab}`, modules.find(m => m.key === activeTab)?.meta.name)}
                         </h2>
                         {modules.map(mod => (
                             activeTab === mod.key && mod.enabled && (

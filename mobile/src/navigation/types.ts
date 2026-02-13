@@ -84,6 +84,9 @@ export type RootStackParamList = {
   Principal: NavigatorScreenParams<PrincipalStackParamList>; // Added
   Notifications: undefined;
   Leaderboard: { courseId?: number };
+  EbookLibrary: undefined;
+  WellbeingCenter: undefined;
+  FileManager: undefined;
 };
 
 // Declare global types for navigation

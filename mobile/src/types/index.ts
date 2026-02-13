@@ -215,6 +215,29 @@ export interface CalendarEvent {
 
 export type EventType = 'LESSON' | 'WORKSHOP' | 'EXAM' | 'DEADLINE' | 'OTHER' | 'MEETING';
 
+// Ebook Types
+export interface Ebook {
+  id: number;
+  title: string;
+  author: string;
+  category?: string;
+  description?: string;
+  language?: string;
+  isbn?: string;
+  filePath?: string;
+  coverUrl?: string;
+  courses?: { id: number; name: string }[];
+  readingProgress?: number;
+  currentChapter?: string;
+}
+
+export type EbookCategory = {
+  name: string;
+  icon: string;
+  color: string;
+  bgColor: string;
+};
+
 // Analytics Types
 export interface StudentProgress {
   courseId: number;

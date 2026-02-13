@@ -13,9 +13,13 @@ const WellbeingCenter = () => {
     const { currentUser } = useAppContext();
     const [requests, setRequests] = useState([]);
     const [activeTab, setActiveTab] = useState('support'); // 'support' or 'sickleave'
-    const [loading, setLoading] = useState(true); // Added missing loading state
-    const [showForm, setShowForm] = useState(false); // Added missing showForm state
-    const [agreedToConfidentiality, setAgreedToConfidentiality] = useState(false); // Added missing state
+    const [loading, setLoading] = useState(true);
+    const [showForm, setShowForm] = useState(false);
+    const [agreedToConfidentiality, setAgreedToConfidentiality] = useState(false);
+    const [selectedRequest, setSelectedRequest] = useState(null);
+    const [messages, setMessages] = useState([]);
+    const [loadingMessages, setLoadingMessages] = useState(false);
+    const [newMessage, setNewMessage] = useState('');
 
     // Support Form State
     const [formData, setFormData] = useState({
@@ -54,10 +58,35 @@ const WellbeingCenter = () => {
 
     const fetchRequests = async () => {
         try {
-            const data = await api.get('/wellbeing/requests/my');
+            const data = await api.support.getWellbeingRequests();
             setRequests(data);
         } catch (e) {
             console.error("Failed to fetch requests", e);
+        }
+    };
+
+    const fetchMessages = async (requestId) => {
+        setLoadingMessages(true);
+        try {
+            const data = await api.support.getWellbeingMessages(requestId);
+            setMessages(data);
+        } catch (e) {
+            toast.error("Kunde inte hämta meddelanden");
+        } finally {
+            setLoadingMessages(false);
+        }
+    };
+
+    const handleSendMessage = async (e) => {
+        e.preventDefault();
+        if (!newMessage.trim()) return;
+
+        try {
+            await api.support.sendWellbeingMessage(selectedRequest.id, newMessage);
+            setNewMessage('');
+            fetchMessages(selectedRequest.id);
+        } catch (e) {
+            toast.error("Kunde inte skicka meddelande");
         }
     };
 
@@ -302,49 +331,136 @@ const WellbeingCenter = () => {
                                         Tidigare ärenden
                                     </h3>
 
-                                    {requests.length === 0 ? (
-                                        <div className="bg-white/50 dark:bg-[#1E1F20]/50 rounded-3xl p-12 border border-dashed border-slate-200 dark:border-white/10 text-center">
-                                            <Info className="mx-auto mb-4 text-slate-300" size={48} />
-                                            <p className="text-slate-500 dark:text-slate-400 font-medium">Du har inga tidigare kontaktförfrågningar.</p>
-                                        </div>
-                                    ) : (
-                                        <div className="grid gap-4">
-                                            {requests.map(req => (
-                                                <div key={req.id} className="bg-white dark:bg-[#1E1F20] rounded-2xl p-5 border border-slate-100 dark:border-white/5 shadow-sm hover:shadow-md transition-all group flex items-center justify-between">
-                                                    <div className="flex items-center gap-4">
-                                                        <div className={`p-3 rounded-xl ${req.status === 'PENDING' ? 'bg-amber-100 dark:bg-amber-900/20 text-amber-600' :
-                                                            req.status === 'ACTIVE' ? 'bg-blue-100 dark:bg-blue-900/20 text-blue-600' :
-                                                                'bg-green-100 dark:bg-green-900/20 text-green-600'
-                                                            }`}>
-                                                            {req.status === 'PENDING' ? <Clock size={20} /> :
-                                                                req.status === 'ACTIVE' ? <MessageCircle size={20} /> :
-                                                                    <CheckCircle2 size={20} />}
-                                                        </div>
-                                                        <div>
-                                                            <h4 className="font-bold text-slate-800 dark:text-white capitalize">
-                                                                {req.type.toLowerCase()} - {req.subject || 'Inget ämne'}
-                                                            </h4>
-                                                            <p className="text-xs text-slate-400 font-medium mt-1">
-                                                                Skapad: {new Date(req.createdAt).toLocaleDateString('sv-SE')}
-                                                            </p>
-                                                        </div>
-                                                    </div>
-
-                                                    <div className="flex items-center gap-6">
-                                                        <div className="text-right hidden sm:block">
-                                                            <span className={`px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider ${req.status === 'PENDING' ? 'bg-amber-100 text-amber-700' :
-                                                                req.status === 'ACTIVE' ? 'bg-blue-100 text-blue-700' :
-                                                                    'bg-green-100 text-green-700'
-                                                                }`}>
-                                                                {req.status === 'PENDING' ? 'Mottagen' :
-                                                                    req.status === 'ACTIVE' ? 'Pågående' : 'Avslutad'}
-                                                            </span>
-                                                        </div>
-                                                        <ChevronRight className="text-slate-300 group-hover:text-brand-teal group-hover:translate-x-1 transition-all" size={20} />
+                                    {selectedRequest ? (
+                                        <div className="bg-white dark:bg-[#1E1F20] rounded-3xl border border-slate-100 dark:border-white/5 shadow-xl overflow-hidden animate-in slide-in-from-right-4">
+                                            <div className="p-6 border-b border-slate-100 dark:border-white/5 flex items-center justify-between">
+                                                <div className="flex items-center gap-4">
+                                                    <button
+                                                        onClick={() => setSelectedRequest(null)}
+                                                        className="p-2 hover:bg-slate-100 dark:hover:bg-white/5 rounded-xl transition-colors"
+                                                    >
+                                                        <ChevronRight className="rotate-180" size={20} />
+                                                    </button>
+                                                    <div>
+                                                        <h3 className="font-bold text-lg">{selectedRequest.subject || 'Ärende #' + selectedRequest.id}</h3>
+                                                        <span className="text-xs text-slate-400">Kontakttyp: {selectedRequest.type}</span>
                                                     </div>
                                                 </div>
-                                            ))}
+                                                <span className={`px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider ${selectedRequest.status === 'PENDING' ? 'bg-amber-100 text-amber-700' :
+                                                    selectedRequest.status === 'ACTIVE' ? 'bg-blue-100 text-blue-700' :
+                                                        'bg-green-100 text-green-700'
+                                                    }`}>
+                                                    {selectedRequest.status === 'PENDING' ? 'Mottagen' :
+                                                        selectedRequest.status === 'ACTIVE' ? 'Pågående' : 'Avslutad'}
+                                                </span>
+                                            </div>
+
+                                            <div className="h-[400px] overflow-y-auto p-6 space-y-4 bg-slate-50/50 dark:bg-black/10">
+                                                {/* Original Message */}
+                                                <div className="flex justify-end">
+                                                    <div className="bg-brand-teal text-white p-4 rounded-2xl rounded-tr-none max-w-[80%] shadow-sm">
+                                                        <p className="text-sm whitespace-pre-wrap">{selectedRequest.message}</p>
+                                                        <p className="text-[10px] mt-2 opacity-70 text-right">
+                                                            {new Date(selectedRequest.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                        </p>
+                                                    </div>
+                                                </div>
+
+                                                {/* Thread Messages */}
+                                                {loadingMessages ? (
+                                                    <div className="flex justify-center py-8">
+                                                        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-brand-teal"></div>
+                                                    </div>
+                                                ) : (
+                                                    messages.map(msg => (
+                                                        <div key={msg.id} className={`flex ${msg.sender.id === currentUser.id ? 'justify-end' : 'justify-start'}`}>
+                                                            <div className={`p-4 rounded-2xl max-w-[80%] shadow-sm ${msg.sender.id === currentUser.id
+                                                                ? 'bg-brand-teal text-white rounded-tr-none'
+                                                                : 'bg-white dark:bg-white/5 text-slate-800 dark:text-white rounded-tl-none border border-slate-100 dark:border-white/5'}`}>
+                                                                <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
+                                                                <p className={`text-[10px] mt-2 opacity-70 ${msg.sender.id === currentUser.id ? 'text-right' : 'text-left'}`}>
+                                                                    {msg.sender.id !== currentUser.id && <span className="font-bold mr-1">Hälsoteamet •</span>}
+                                                                    {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                    ))
+                                                )}
+                                            </div>
+
+                                            <div className="p-4 border-t border-slate-100 dark:border-white/5">
+                                                <form onSubmit={handleSendMessage} className="flex gap-2">
+                                                    <input
+                                                        type="text"
+                                                        value={newMessage}
+                                                        onChange={(e) => setNewMessage(e.target.value)}
+                                                        placeholder="Skriv ett meddelande..."
+                                                        className="flex-1 bg-slate-50 dark:bg-white/5 border-none rounded-xl px-4 py-3 focus:ring-2 focus:ring-brand-teal"
+                                                    />
+                                                    <button
+                                                        type="submit"
+                                                        disabled={!newMessage.trim()}
+                                                        className="p-3 bg-brand-teal text-white rounded-xl hover:bg-brand-teal-dark disabled:opacity-50 transition-colors"
+                                                    >
+                                                        <Send size={20} />
+                                                    </button>
+                                                </form>
+                                            </div>
                                         </div>
+                                    ) : (
+                                        <>
+                                            {requests.length === 0 ? (
+                                                <div className="bg-white/50 dark:bg-[#1E1F20]/50 rounded-3xl p-12 border border-dashed border-slate-200 dark:border-white/10 text-center">
+                                                    <Info className="mx-auto mb-4 text-slate-300" size={48} />
+                                                    <p className="text-slate-500 dark:text-slate-400 font-medium">Du har inga tidigare kontaktförfrågningar.</p>
+                                                </div>
+                                            ) : (
+                                                <div className="grid gap-4">
+                                                    {requests.map(req => (
+                                                        <button
+                                                            key={req.id}
+                                                            onClick={() => {
+                                                                setSelectedRequest(req);
+                                                                fetchMessages(req.id);
+                                                            }}
+                                                            className="w-full text-left bg-white dark:bg-[#1E1F20] rounded-2xl p-5 border border-slate-100 dark:border-white/5 shadow-sm hover:shadow-md transition-all group flex items-center justify-between"
+                                                        >
+                                                            <div className="flex items-center gap-4">
+                                                                <div className={`p-3 rounded-xl ${req.status === 'PENDING' ? 'bg-amber-100 dark:bg-amber-900/20 text-amber-600' :
+                                                                    req.status === 'ACTIVE' ? 'bg-blue-100 dark:bg-blue-900/20 text-blue-600' :
+                                                                        'bg-green-100 dark:bg-green-900/20 text-green-600'
+                                                                    }`}>
+                                                                    {req.status === 'PENDING' ? <Clock size={20} /> :
+                                                                        req.status === 'ACTIVE' ? <MessageCircle size={20} /> :
+                                                                            <CheckCircle2 size={20} />}
+                                                                </div>
+                                                                <div>
+                                                                    <h4 className="font-bold text-slate-800 dark:text-white capitalize">
+                                                                        {req.type.toLowerCase()} - {req.subject || 'Inget ämne'}
+                                                                    </h4>
+                                                                    <p className="text-xs text-slate-400 font-medium mt-1">
+                                                                        Skapad: {new Date(req.createdAt).toLocaleDateString('sv-SE')}
+                                                                    </p>
+                                                                </div>
+                                                            </div>
+
+                                                            <div className="flex items-center gap-6">
+                                                                <div className="text-right hidden sm:block">
+                                                                    <span className={`px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider ${req.status === 'PENDING' ? 'bg-amber-100 text-amber-700' :
+                                                                        req.status === 'ACTIVE' ? 'bg-blue-100 text-blue-700' :
+                                                                            'bg-green-100 text-green-700'
+                                                                        }`}>
+                                                                        {req.status === 'PENDING' ? 'Mottagen' :
+                                                                            req.status === 'ACTIVE' ? 'Pågående' : 'Avslutad'}
+                                                                    </span>
+                                                                </div>
+                                                                <ChevronRight className="text-slate-300 group-hover:text-brand-teal group-hover:translate-x-1 transition-all" size={20} />
+                                                            </div>
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            )}
+                                        </>
                                     )}
                                 </div>
                             )}

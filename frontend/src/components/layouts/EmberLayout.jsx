@@ -47,10 +47,12 @@ const EmberLayout = ({ children }) => {
             { path: '/documents', icon: <FileText size={18} />, label: t('sidebar.documents') },
             { path: '/communication', icon: <MessageSquare size={18} />, label: t('shortcuts.messages') || 'Meddelanden' },
             { path: '/support', icon: <HelpCircle size={18} />, label: t('sidebar.support') },
+            ...(isModuleActive('WELLBEING_CENTER') && ['STUDENT', 'ROLE_STUDENT', 'ADMIN', 'ROLE_ADMIN', 'REKTOR', 'ROLE_REKTOR'].includes(roleName) ? [{ path: '/wellbeing-center', icon: <Heart size={18} />, label: 'Well-being Center' }] : [])
         ],
         admin: [
-            ...(roleName === 'ADMIN' ? [{ path: '/admin', icon: <Settings size={18} />, label: t('sidebar.admin') }] : []),
-            ...(isModuleActive('ANALYTICS') && roleName === 'ADMIN' ? [{ path: '/analytics', icon: <TrendingUp size={18} />, label: t('sidebar.analytics') }] : []),
+            ...(roleName === 'ADMIN' || roleName === 'ROLE_ADMIN' ? [{ path: '/admin', icon: <Settings size={18} />, label: t('sidebar.admin') }] : []),
+            ...(isModuleActive('WELLBEING_CENTER') && (roleName === 'HALSOTEAM' || roleName === 'ROLE_HALSOTEAM') ? [{ path: '/wellbeing-center/inbox', icon: <Heart size={18} />, label: 'E-hälsa Inbox' }] : []),
+            ...(isModuleActive('ANALYTICS') && (roleName === 'ADMIN' || roleName === 'ROLE_ADMIN') ? [{ path: '/analytics', icon: <TrendingUp size={18} />, label: t('sidebar.analytics') }] : []),
         ]
     };
 

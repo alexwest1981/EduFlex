@@ -1,7 +1,9 @@
 package com.eduflex.backend.service;
 
 import com.eduflex.backend.model.User;
+import com.eduflex.backend.model.WellbeingSupportMessage;
 import com.eduflex.backend.model.WellbeingSupportRequest;
+import com.eduflex.backend.repository.WellbeingSupportMessageRepository;
 import com.eduflex.backend.repository.WellbeingSupportRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,9 +15,12 @@ import java.util.List;
 public class WellbeingSupportService {
 
     private final WellbeingSupportRepository repository;
+    private final WellbeingSupportMessageRepository messageRepository;
 
-    public WellbeingSupportService(WellbeingSupportRepository repository) {
+    public WellbeingSupportService(WellbeingSupportRepository repository,
+            WellbeingSupportMessageRepository messageRepository) {
         this.repository = repository;
+        this.messageRepository = messageRepository;
     }
 
     @Transactional
@@ -51,15 +56,51 @@ public class WellbeingSupportService {
         WellbeingSupportRequest request = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Request not found"));
 
-        // Isolation check: Only student or Health Team
-        boolean isOwner = request.getStudent().getId().equals(currentUser.getId());
-        boolean isHealthTeam = currentUser.getRole().getName().endsWith("HALSOTEAM")
-                || currentUser.getRole().getName().equals("ADMIN");
+        validateAccess(request, currentUser);
+        return request;
+    }
+
+    @Transactional
+    public WellbeingSupportMessage addMessage(Long requestId, String content, User sender) {
+        WellbeingSupportRequest request = repository.findById(requestId)
+                .orElseThrow(() -> new RuntimeException("Request not found"));
+
+        validateAccess(request, sender);
+
+        WellbeingSupportMessage message = new WellbeingSupportMessage(request, sender, content);
+
+        // Auto-assign staff and update status if Health Team replies
+        boolean isHealthTeam = sender.getRole().getName().endsWith("HALSOTEAM")
+                || sender.getRole().getName().equals("ADMIN");
+
+        if (isHealthTeam) {
+            if (request.getAssignedStaff() == null) {
+                request.setAssignedStaff(sender);
+            }
+            if (request.getStatus() == WellbeingSupportRequest.RequestStatus.PENDING) {
+                request.setStatus(WellbeingSupportRequest.RequestStatus.ACTIVE);
+            }
+            repository.save(request);
+        }
+
+        return messageRepository.save(message);
+    }
+
+    public List<WellbeingSupportMessage> getMessages(Long requestId, User currentUser) {
+        WellbeingSupportRequest request = repository.findById(requestId)
+                .orElseThrow(() -> new RuntimeException("Request not found"));
+
+        validateAccess(request, currentUser);
+        return messageRepository.findByRequestIdOrderByCreatedAtAsc(requestId);
+    }
+
+    private void validateAccess(WellbeingSupportRequest request, User user) {
+        boolean isOwner = request.getStudent().getId().equals(user.getId());
+        boolean isHealthTeam = user.getRole().getName().endsWith("HALSOTEAM")
+                || user.getRole().getName().equals("ADMIN");
 
         if (!isOwner && !isHealthTeam) {
             throw new RuntimeException("Unauthorized access to confidential support request");
         }
-
-        return request;
     }
 }

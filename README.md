@@ -38,6 +38,10 @@
 ## 🇸🇪 Svenska
 
 ### ⚡ Senaste Uppdateringarna
+*   **🔗 Dashboard Redirection & Tab Sync (13 feb 2026):**
+    *   **Fix:** Åtgärdat felet där "Gå till rättning" på lärardashboarden omdirigerade till kursöversikten istället för inlämningar.
+    *   **Tab Sync:** Implementerat URL-parameterstyrning (`?tab=assignments`) i `CourseDetail.jsx` för att automatiskt aktivera rätt flik vid navigering.
+    *   **UI Consistency:** Säkerställt att sidomeny och rubriker synkroniseras korrekt med den aktiva fliken.
 *   **🛡️ Säkerhetshärdning & Systemåterställning (13 feb 2026):**
     *   **Kryptering (Tystnadsplikt):** Implementerat fältkryptering (AES-256) för känslig data i Wellbeing Center och Sjukanmälan.
     *   **Sekretessvakter:** Begränsat information i notiser till mentorer för att följa sekretesskrav – endast hälsoteamet ser fullständiga detaljer.
@@ -264,6 +268,10 @@ curl -X POST http://localhost:8080/api/tenants \
 ## 🇬🇧 English
 
 ### ⚡ Latest Updates
+*   **🔗 Dashboard Redirection & Tab Sync (Feb 13, 2026):**
+    *   **Fix:** Resolved the issue where "Go to Grading" on the teacher dashboard incorrectly redirected to the course summary instead of assignments.
+    *   **Tab Sync:** Implemented URL parameter control (`?tab=assignments`) in `CourseDetail.jsx` to automatically activate the correct tab upon navigation.
+    *   **UI Consistency:** Ensured sidebar highlights and main headings are correctly synchronized with the active tab.
 *   **📋 Health Survey & Notification System (Feb 12, 2026):**
     *   **Survey Notification Widget:** New interface for students, teachers, and mentors that displays pending surveys directly on the dashboard.
     *   **Automatic Reminders:** Integration with the internal messaging system to ensure high response rates.
