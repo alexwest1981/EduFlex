@@ -24,4 +24,11 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
     Optional<Course> findByCourseCode(String courseCode);
 
     Optional<Course> findBySlug(String slug);
+
+    // Health Check Queries
+    // Note: finding courses with NO students might require a custom query or stream
+    // filtering in service if JPQL is tricky with collections.
+    // Let's try a derived query or JPQL.
+    @org.springframework.data.jpa.repository.Query("SELECT c FROM Course c WHERE c.students IS EMPTY")
+    List<Course> findCoursesWithNoStudents();
 }

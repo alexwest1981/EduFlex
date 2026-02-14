@@ -40,6 +40,8 @@ public class SecurityConfig {
         private final KeycloakJwtAuthConverter keycloakJwtAuthConverter;
         private final TenantFilter tenantFilter;
         private final com.eduflex.backend.security.RateLimitingFilter rateLimitingFilter;
+        private final PasswordEncoder passwordEncoder;
+        private final com.eduflex.backend.security.ApiKeyAuthFilter apiKeyAuthFilter;
 
         @Value("${eduflex.auth.mode:hybrid}")
         private String authMode;
@@ -57,9 +59,13 @@ public class SecurityConfig {
                         TenantFilter tenantFilter,
                         com.eduflex.backend.security.OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler,
                         com.eduflex.backend.security.OAuth2LoginFailureHandler oAuth2LoginFailureHandler,
+
                         com.eduflex.backend.security.CustomOidcUserService customOidcUserService,
+
                         com.eduflex.backend.security.LoggingAuthenticationEntryPoint loggingAuthenticationEntryPoint,
-                        com.eduflex.backend.security.RateLimitingFilter rateLimitingFilter) {
+                        com.eduflex.backend.security.RateLimitingFilter rateLimitingFilter,
+                        PasswordEncoder passwordEncoder,
+                        com.eduflex.backend.security.ApiKeyAuthFilter apiKeyAuthFilter) {
                 this.userDetailsService = userDetailsService;
                 this.customOAuth2UserService = customOAuth2UserService;
                 this.authTokenFilter = authTokenFilter;
@@ -71,24 +77,21 @@ public class SecurityConfig {
                 this.customOidcUserService = customOidcUserService;
                 this.loggingAuthenticationEntryPoint = loggingAuthenticationEntryPoint;
                 this.rateLimitingFilter = rateLimitingFilter;
+                this.passwordEncoder = passwordEncoder;
+                this.apiKeyAuthFilter = apiKeyAuthFilter;
         }
 
         @Bean
         public DaoAuthenticationProvider authenticationProvider() {
                 DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
                 authProvider.setUserDetailsService(userDetailsService);
-                authProvider.setPasswordEncoder(passwordEncoder());
+                authProvider.setPasswordEncoder(passwordEncoder);
                 return authProvider;
         }
 
         @Bean
         public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
                 return authConfig.getAuthenticationManager();
-        }
-
-        @Bean
-        public PasswordEncoder passwordEncoder() {
-                return new BCryptPasswordEncoder();
         }
 
         @Bean
@@ -284,6 +287,8 @@ public class SecurityConfig {
                 }
                 http.addFilterBefore(licenseFilter, UsernamePasswordAuthenticationFilter.class);
                 http.addFilterBefore(rateLimitingFilter, UsernamePasswordAuthenticationFilter.class);
+                // API Key Filter (Before UsernamePassword, after RateLimit/License)
+                http.addFilterBefore(apiKeyAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
                 // OAuth2 Login (for social login and Keycloak browser-based SSO)
                 http.oauth2Login(oauth2 -> oauth2

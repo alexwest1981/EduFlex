@@ -30,4 +30,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
     long countByRole_NameAndStaffStatus(String roleName, User.StaffStatus status);
 
     long countByLastActiveAfter(java.time.LocalDateTime cutoff);
+
+    // Health Check Queries
+    java.util.List<User> findByClassGroupIsNullAndRole_Name(String roleName);
+
+    // Users without email (if allowed)
+    java.util.List<User> findByEmailIsNull();
 }

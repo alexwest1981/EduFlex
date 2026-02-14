@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../../services/api';
-import { useAuth } from '../../context/AuthContext';
+import { useAppContext } from '../../context/AppContext';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Legend } from 'recharts';
 import { TrendingUp, Users, CheckCircle, AlertTriangle, Brain } from 'lucide-react';
 
 const ImpactDashboard = () => {
-    const { user } = useAuth();
+    const { currentUser } = useAppContext();
     const [metrics, setMetrics] = useState(null);
     const [loading, setLoading] = useState(true);
 

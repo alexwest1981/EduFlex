@@ -71,6 +71,8 @@ import AdaptiveLearningDashboard from './features/adaptive/AdaptiveLearningDashb
 
 import ManagementReportCenter from './features/principal/ManagementReportCenter';
 import ImpactDashboard from './features/impact/ImpactDashboard';
+import HealthCheckDashboard from './features/admin/HealthCheckDashboard';
+import DeveloperSettings from './features/settings/DeveloperSettings';
 
 // --- PROTECTED ROUTE ---
 const ProtectedRoute = ({ children, roles, permission }) => {
@@ -364,6 +366,31 @@ const AppRoutes = () => {
                     <ProtectedRoute roles={['ADMIN']}>
                         <Layout currentUser={currentUser} handleLogout={logout}>
                             <EnterpriseWhitelabel />
+                        </Layout>
+                    </ProtectedRoute>
+                {/* ENTERPRISE WHITELABEL (ADMIN ONLY) */}
+                <Route path="/enterprise/whitelabel" element={
+                    <ProtectedRoute roles={['ADMIN']}>
+                        <Layout currentUser={currentUser} handleLogout={logout}>
+                            <EnterpriseWhitelabel />
+                        </Layout>
+                    </ProtectedRoute>
+                } />
+
+                {/* HEALTH CHECK (ADMIN ONLY) */}
+                <Route path="/admin/health" element={
+                    <ProtectedRoute roles={['ADMIN']}>
+                        <Layout currentUser={currentUser} handleLogout={logout}>
+                            <HealthCheckDashboard />
+                        </Layout>
+                    </ProtectedRoute>
+                } />
+
+                {/* DEVELOPER API KEYS */}
+                <Route path="/settings/developer" element={
+                    <ProtectedRoute>
+                        <Layout currentUser={currentUser} handleLogout={logout}>
+                            <DeveloperSettings />
                         </Layout>
                     </ProtectedRoute>
                 } />
