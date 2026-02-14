@@ -226,16 +226,15 @@ curl -X POST http://localhost:8080/api/tenants \
 
 ---
 
-### Senaste Uppdateringar (2026-01-27)
-- **Advanced Analytics Dashboard:**
-  - Implementerat en omfattande analyspanel för Admins och Lärare.
-  - Innehåller grafer för användaraktivitet, kursgenomströmning och betygsfördelning.
-  - Automatisk identifiering av "At-Risk" studenter.
-  - Backend-stöd via nya endpoints i `AnalyticsController`.
+### Senaste Uppdateringar (v1.1.1 - 2026-02-14)
+- **Wellbeing Center Fix:** Åtgärdade omdirigeringsproblem för administratörer.
+- **Guardian UX:** Förbättrad meny för vårdnadshavare (döljer onödiga verktyg).
+- **Säkerhet:** Utökad rollbaserad åtkomstkontroll för E-hälsa.
+- **Adaptive Learning:** Startskott för Fas 4 (AI-driven adaptivitet).
 
-- **OnlyOffice Integration:**
-  - Löste startup-problem med Docker-containern (`eduflex-onlyoffice`).
-  - Verifierade att API:et svarar korrekt (200 OK) och att integrationen är stabil.
+#### Tidigare (v1.1.0)
+- **System Restoration:** Full återställning av Jitsi/OnlyOffice och Cloudflare-tunnel.
+- **SKA-Motor:** Lansering av systematiskt kvalitetsarbete för rektorer.
 
 ---
 

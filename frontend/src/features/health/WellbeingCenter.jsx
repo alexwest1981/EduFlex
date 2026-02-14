@@ -8,6 +8,7 @@ import {
 import { api } from '../../services/api';
 import { useAppContext } from '../../context/AppContext';
 import toast from 'react-hot-toast';
+import BookingSystem from './components/BookingSystem';
 
 const WellbeingCenter = () => {
     const { currentUser } = useAppContext();
@@ -224,6 +225,13 @@ const WellbeingCenter = () => {
                 >
                     <Thermometer size={18} />
                     Sjukanmälan
+                </button>
+                <button
+                    onClick={() => { setActiveTab('booking'); setShowForm(false); }}
+                    className={`px-6 py-3 rounded-xl text-sm font-bold transition-all flex items-center gap-2 ${activeTab === 'booking' ? 'bg-white dark:bg-[#1E1F20] text-indigo-500 shadow-md shadow-indigo-500/5' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
+                >
+                    <Calendar size={18} />
+                    Boka tid
                 </button>
             </div>
 
@@ -465,7 +473,7 @@ const WellbeingCenter = () => {
                                 </div>
                             )}
                         </>
-                    ) : (
+                    ) : activeTab === 'sickleave' ? (
                         <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-500">
                             {/* Active Sick Leave */}
                             {activeSickLeave && (
@@ -586,6 +594,16 @@ const WellbeingCenter = () => {
                                     </div>
                                 </div>
                             )}
+                        </div>
+                    ) : (
+                        <div className="bg-white dark:bg-[#1E1F20] p-8 rounded-3xl border border-slate-100 dark:border-white/5 shadow-xl animate-in fade-in slide-in-from-right-4 duration-500">
+                            <div className="flex items-center gap-3 mb-6">
+                                <div className="p-2 bg-indigo-500/10 rounded-xl text-indigo-500">
+                                    <Clock size={24} />
+                                </div>
+                                <h3 className="text-xl font-bold text-slate-800 dark:text-white">Boka tid hos Elevhälsan</h3>
+                            </div>
+                            <BookingSystem />
                         </div>
                     )}
                 </div>

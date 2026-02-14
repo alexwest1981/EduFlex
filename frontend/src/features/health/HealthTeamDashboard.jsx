@@ -11,6 +11,9 @@ import {
 import { api } from '../../services/api';
 import { useAppContext } from '../../context/AppContext';
 import toast from 'react-hot-toast';
+import JournalSystem from './components/JournalSystem';
+import BookingSystem from './components/BookingSystem';
+import WellbeingDrilldown from './components/WellbeingDrilldown';
 import SurveyDistributionManager from './SurveyDistributionManager';
 
 const statusLabels = {
@@ -48,81 +51,14 @@ const formatTimeAgo = (dateStr) => {
     return date.toLocaleDateString('sv-SE');
 };
 
-const WellbeingDrilldown = ({ data, onClose }) => {
-    if (!data) return null;
-
-    return (
-        <div className="bg-white/80 dark:bg-[#1E1F20]/80 backdrop-blur-xl rounded-3xl border border-white/20 dark:border-white/5 shadow-2xl p-8 animate-in zoom-in-95 duration-300">
-            <div className="flex justify-between items-center mb-8">
-                <div>
-                    <h2 className="text-2xl font-bold text-slate-800 dark:text-white flex items-center gap-2">
-                        <TrendingUp className="w-6 h-6 text-indigo-500" />
-                        Välmående-analys
-                    </h2>
-                    <p className="text-sm text-slate-500 dark:text-gray-400 mt-1">Djupdykning i trender och fördelning</p>
-                </div>
-                <button onClick={onClose} className="p-2 hover:bg-slate-100 dark:hover:bg-white/10 rounded-xl transition-colors">
-                    <Search className="w-5 h-5 text-gray-500 rotate-45" /> {/* Use search as close icon or use another if available */}
-                </button>
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                {/* Historik */}
-                <div className="bg-slate-50/50 dark:bg-black/20 rounded-2xl p-6 border border-slate-100 dark:border-white/5">
-                    <h3 className="text-sm font-bold text-slate-700 dark:text-gray-300 mb-6 flex items-center gap-2">
-                        <Clock className="w-4 h-4 text-brand-teal" />
-                        Index-trend (6 månader)
-                    </h3>
-                    <div className="h-[300px] w-full">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <LineChart data={data.history}>
-                                <CartesianGrid strokeDasharray="3 3" stroke="#88888822" vertical={false} />
-                                <XAxis dataKey="month" stroke="#888" fontSize={12} tickLine={false} axisLine={false} />
-                                <YAxis domain={[0, 100]} stroke="#888" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(val) => `${val}%`} />
-                                <Tooltip
-                                    contentStyle={{ backgroundColor: '#1E1F20', border: 'none', borderRadius: '12px', color: '#fff' }}
-                                    itemStyle={{ color: '#fff' }}
-                                />
-                                <Line type="monotone" dataKey="index" stroke="#6366f1" strokeWidth={4} dot={{ r: 6, fill: '#6366f1' }} activeDot={{ r: 8 }} />
-                            </LineChart>
-                        </ResponsiveContainer>
-                    </div>
-                </div>
-
-                {/* Klassfördelning */}
-                <div className="bg-slate-50/50 dark:bg-black/20 rounded-2xl p-6 border border-slate-100 dark:border-white/5">
-                    <h3 className="text-sm font-bold text-slate-700 dark:text-gray-300 mb-6 flex items-center gap-2">
-                        <Users className="w-4 h-4 text-indigo-500" />
-                        Fördelning per klass
-                    </h3>
-                    <div className="h-[300px] w-full">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={data.classDistribution}>
-                                <CartesianGrid strokeDasharray="3 3" stroke="#88888822" vertical={false} />
-                                <XAxis dataKey="className" stroke="#888" fontSize={10} tickLine={false} axisLine={false} />
-                                <YAxis domain={[0, 100]} stroke="#888" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(val) => `${val}%`} />
-                                <Tooltip
-                                    contentStyle={{ backgroundColor: '#1E1F20', border: 'none', borderRadius: '12px', color: '#fff' }}
-                                />
-                                <Bar dataKey="index" radius={[6, 6, 0, 0]}>
-                                    {data.classDistribution.map((entry, index) => (
-                                        <Cell key={`cell-${index}`} fill={entry.index < 50 ? '#f43f5e' : entry.index < 75 ? '#f59e0b' : '#10b981'} />
-                                    ))}
-                                </Bar>
-                            </BarChart>
-                        </ResponsiveContainer>
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
-};
+// WellbeingDrilldown moved to external component
 
 const HealthTeamDashboard = () => {
     const { currentUser } = useAppContext();
     const [activeTab, setActiveTab] = useState('overview');
     const [metrics, setMetrics] = useState(null);
     const [risks, setRisks] = useState([]);
+    const [selectedCase, setSelectedCase] = useState(null);
     const [cases, setCases] = useState([]);
     const [loading, setLoading] = useState(true);
     const [riskSearch, setRiskSearch] = useState('');
@@ -223,6 +159,18 @@ const HealthTeamDashboard = () => {
         );
     }
 
+
+
+    // ... (keep existing useEffect)
+
+    const handleCaseClick = (c) => {
+        setSelectedCase(c);
+    };
+
+    const handleCloseCase = () => {
+        setSelectedCase(null);
+    };
+
     return (
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
             {/* Header */}
@@ -232,10 +180,10 @@ const HealthTeamDashboard = () => {
                         <div className="p-2 bg-brand-teal/20 rounded-xl">
                             <Heart className="w-8 h-8 text-brand-teal fill-brand-teal/20" />
                         </div>
-                        Elevhälsa
+                        Elevhälsa & EHT
                     </h1>
                     <p className="text-slate-500 dark:text-gray-400 mt-1">
-                        Övervakning och proaktivt stöd för elevhälsan.
+                        Övervakning, journalföring och proaktivt stöd.
                     </p>
                 </div>
             </div>
@@ -245,6 +193,7 @@ const HealthTeamDashboard = () => {
                 {[
                     { id: 'overview', label: 'Översikt', icon: <Activity className="w-4 h-4" /> },
                     { id: 'surveys', label: 'Enkäter', icon: <ClipboardList className="w-4 h-4" /> },
+                    { id: 'bookings', label: 'Bokningar', icon: <Clock className="w-4 h-4" /> },
                 ].map(tab => (
                     <button key={tab.id} onClick={() => setActiveTab(tab.id)}
                         className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all
@@ -260,8 +209,15 @@ const HealthTeamDashboard = () => {
 
             {activeTab === 'surveys' && <SurveyDistributionManager />}
 
+            {activeTab === 'bookings' && (
+                <div className="bg-white dark:bg-[#1E1F20] p-6 rounded-2xl border border-slate-100 dark:border-white/5">
+                    <BookingSystem />
+                </div>
+            )}
+
             {activeTab === 'overview' && <>
                 {/* KPI Grid */}
+                {/* ... (Keep existing KPI Grid) ... */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     {kpis.map((kpi, idx) => (
                         <div key={idx}
@@ -296,6 +252,7 @@ const HealthTeamDashboard = () => {
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     {/* Risk Grid */}
                     <div className="lg:col-span-2 bg-white dark:bg-[#1E1F20] rounded-2xl border border-slate-100 dark:border-white/5 shadow-sm overflow-hidden">
+                        {/* ... (Keep Risk Grid Header & Table) ... */}
                         <div className="p-6 border-b border-slate-100 dark:border-white/5 flex justify-between items-center">
                             <h2 className="text-xl font-bold text-slate-800 dark:text-white flex items-center gap-2">
                                 <ShieldAlert className="w-5 h-5 text-rose-500" />
@@ -372,7 +329,7 @@ const HealthTeamDashboard = () => {
                         </div>
                     </div>
 
-                    {/* Sidebar: Recent Cases */}
+                    {[/* Sidebar: Recent Cases */]}
                     <div className="space-y-6">
                         <div className="bg-white dark:bg-[#1E1F20] p-6 rounded-2xl border border-slate-100 dark:border-white/5 shadow-sm">
                             <h2 className="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2 mb-4">
@@ -384,10 +341,12 @@ const HealthTeamDashboard = () => {
                                     <p className="text-sm text-gray-400 italic py-4 text-center">Inga ärenden registrerade.</p>
                                 ) : (
                                     recentCases.map(c => (
-                                        <div key={c.id} className="p-3 rounded-xl bg-slate-50 dark:bg-black/20 border border-slate-100 dark:border-white/5 hover:border-brand-teal/30 transition-colors">
+                                        <div key={c.id}
+                                            onClick={() => handleCaseClick(c)}
+                                            className="p-3 rounded-xl bg-slate-50 dark:bg-black/20 border border-slate-100 dark:border-white/5 hover:border-brand-teal/30 transition-colors cursor-pointer group">
                                             <div className="flex items-start justify-between gap-2">
                                                 <div className="min-w-0 flex-1">
-                                                    <p className="text-sm font-bold text-slate-800 dark:text-white truncate">
+                                                    <p className="text-sm font-bold text-slate-800 dark:text-white truncate group-hover:text-brand-teal transition-colors">
                                                         {c.title || 'Namnlöst ärende'}
                                                     </p>
                                                     <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
@@ -415,8 +374,9 @@ const HealthTeamDashboard = () => {
                             </div>
                         </div>
 
-                        {/* Case Summary */}
+                        {/* Case Summary (Pie Chart replacement) */}
                         <div className="bg-white dark:bg-[#1E1F20] p-6 rounded-2xl border border-slate-100 dark:border-white/5 shadow-sm">
+                            {/* ... (Keep Case Summary) ... */}
                             <h2 className="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2 mb-4">
                                 <TrendingUp className="w-5 h-5 text-indigo-500" />
                                 Ärendeöversikt
@@ -446,6 +406,52 @@ const HealthTeamDashboard = () => {
                     </div>
                 </div>
             </>}
+
+            {/* Case Detail Modal */}
+            {selectedCase && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200">
+                    <div className="bg-white dark:bg-[#1E1F20] w-full max-w-4xl max-h-[90vh] rounded-2xl shadow-2xl overflow-hidden flex flex-col animate-in scale-95 duration-200 border border-slate-100 dark:border-white/5">
+                        <div className="p-6 border-b border-gray-100 dark:border-white/5 flex justify-between items-center bg-gray-50/50 dark:bg-black/20">
+                            <div>
+                                <h2 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                                    <FileText className="w-5 h-5 text-brand-teal" />
+                                    {selectedCase.title || 'Namnlöst Ärende'}
+                                </h2>
+                                <p className="text-sm text-gray-500 dark:text-gray-400">
+                                    {selectedCase.student ? `${selectedCase.student.firstName} ${selectedCase.student.lastName}` : 'Okänd elev'} • {categoryLabels[selectedCase.category] || selectedCase.category}
+                                </p>
+                            </div>
+                            <button onClick={handleCloseCase} className="p-2 hover:bg-gray-100 dark:hover:bg-white/10 rounded-full transition-colors">
+                                <Search className="w-5 h-5 rotate-45 text-gray-500" />
+                            </button>
+                        </div>
+
+                        <div className="flex-1 overflow-y-auto p-6 space-y-8">
+                            {/* Case Description */}
+                            <div className="bg-blue-50/50 dark:bg-blue-900/10 p-4 rounded-xl border border-blue-100 dark:border-blue-900/30">
+                                <h3 className="text-xs font-bold text-blue-600 dark:text-blue-400 uppercase tracking-widest mb-2">Beskrivning</h3>
+                                <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
+                                    {selectedCase.description || 'Ingen beskrivning angiven.'}
+                                </p>
+                            </div>
+
+                            {/* Journal System */}
+                            <div className="border-t border-gray-100 dark:border-white/5 pt-6">
+                                <JournalSystem caseId={selectedCase.id} />
+                            </div>
+                        </div>
+
+                        <div className="p-4 border-t border-gray-100 dark:border-white/5 bg-gray-50/50 dark:bg-black/20 flex justify-end gap-3">
+                            <button onClick={handleCloseCase} className="px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors">
+                                Stäng
+                            </button>
+                            <button className="px-4 py-2 bg-brand-teal text-white text-sm font-medium rounded-lg hover:bg-teal-600 transition-colors shadow-sm">
+                                Uppdatera Status
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

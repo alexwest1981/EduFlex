@@ -227,6 +227,12 @@ const LandingPage = () => {
             bgColor: 'bg-brand-teal/10'
         },
         {
+            title: "Säker Elevhälsa",
+            description: "Rollbaserad åtkomstkontroll och krypterade journaler för maximal sekretess och trygghet.",
+            icon: <Shield className="text-emerald-500" />,
+            tag: "v1.1.1"
+        },
+        {
             title: "Prediktiv AI-Analys 2.0",
             description: "Identifierar elever i riskzonen innan de själva vet det. Deep learning mönsteranalys av närvaro, aktivitet och resultat.",
             icon: <Brain className="text-pink-500" />,

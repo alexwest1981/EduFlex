@@ -8,6 +8,10 @@ import com.eduflex.backend.repository.AttendanceRepository;
 import com.eduflex.backend.repository.CourseResultRepository;
 import com.eduflex.backend.repository.ClassWellbeingSurveyRepository;
 import com.eduflex.backend.repository.SurveyAnswerRepository;
+import com.eduflex.backend.repository.ElevhalsaJournalEntryRepository;
+import com.eduflex.backend.repository.ElevhalsaBookingRepository;
+import com.eduflex.backend.model.ElevhalsaJournalEntry;
+import com.eduflex.backend.model.ElevhalsaBooking;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,6 +40,68 @@ public class ElevhalsaService {
 
     @Autowired
     private SurveyAnswerRepository surveyAnswerRepository;
+
+    @Autowired
+    private ElevhalsaJournalEntryRepository journalEntryRepository;
+
+    @Autowired
+    private ElevhalsaBookingRepository bookingRepository;
+
+    public ElevhalsaJournalEntry addJournalEntry(Long caseId, User author, String content, String visibility) {
+        ElevhalsaCase eCase = caseRepository.findById(caseId).orElseThrow(() -> new RuntimeException("Case not found"));
+
+        ElevhalsaJournalEntry entry = new ElevhalsaJournalEntry();
+        entry.setElevhalsaCase(eCase);
+        entry.setAuthor(author);
+        entry.setContent(content);
+        entry.setVisibilityLevel(ElevhalsaJournalEntry.VisibilityLevel.valueOf(visibility));
+
+        return journalEntryRepository.save(entry);
+    }
+
+    public List<ElevhalsaJournalEntry> getCaseJournal(Long caseId, User requestor) {
+        List<ElevhalsaJournalEntry> allEntries = journalEntryRepository
+                .findByElevhalsaCaseIdOrderByCreatedAtAsc(caseId);
+
+        // Strict filtering based on role
+        boolean isStaff = requestor.getRole().getName().contains("ADMIN") ||
+                requestor.getRole().getName().contains("REKTOR") ||
+                requestor.getRole().getName().contains("HALSOTEAM");
+
+        if (isStaff) {
+            return allEntries;
+        } else {
+            // Student/Guardian can ONLY see SHARED entries
+            return allEntries.stream()
+                    .filter(entry -> entry.getVisibilityLevel() == ElevhalsaJournalEntry.VisibilityLevel.SHARED ||
+                            entry.getVisibilityLevel() == ElevhalsaJournalEntry.VisibilityLevel.PUBLIC)
+                    .toList();
+        }
+    }
+
+    public ElevhalsaBooking createBooking(Long studentId, Long staffId, LocalDateTime start, LocalDateTime end,
+            String type, String notes) {
+        User student = userRepository.findById(studentId).orElseThrow(() -> new RuntimeException("Student not found"));
+        User staff = staffId != null ? userRepository.findById(staffId).orElse(null) : null;
+
+        ElevhalsaBooking booking = new ElevhalsaBooking();
+        booking.setStudent(student);
+        booking.setStaffMember(staff);
+        booking.setStartTime(start);
+        booking.setEndTime(end);
+        booking.setType(ElevhalsaBooking.BookingType.valueOf(type));
+        booking.setNotes(notes);
+
+        return bookingRepository.save(booking);
+    }
+
+    public List<ElevhalsaBooking> getBookingsForStaff(Long staffId) {
+        return bookingRepository.findByStaffMemberIdOrderByStartTimeAsc(staffId);
+    }
+
+    public List<ElevhalsaBooking> getBookingsForStudent(Long studentId) {
+        return bookingRepository.findByStudentIdOrderByStartTimeAsc(studentId);
+    }
 
     public Map<String, Object> getMetrics() {
         Map<String, Object> metrics = new HashMap<>();

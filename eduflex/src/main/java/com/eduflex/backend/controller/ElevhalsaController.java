@@ -46,4 +46,60 @@ public class ElevhalsaController {
     public ResponseEntity<Map<String, Object>> getWellbeingDrilldown() {
         return ResponseEntity.ok(elevhalsaService.getWellbeingDrilldown());
     }
+
+    // --- Journal System ---
+
+    @PostMapping("/cases/{id}/journal")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN', 'REKTOR', 'ROLE_REKTOR', 'HALSOTEAM', 'ROLE_HALSOTEAM')")
+    public ResponseEntity<com.eduflex.backend.model.ElevhalsaJournalEntry> addJournalEntry(
+            @PathVariable Long id,
+            @RequestBody Map<String, String> body,
+            @org.springframework.security.core.annotation.AuthenticationPrincipal com.eduflex.backend.model.User user) {
+
+        return ResponseEntity.ok(elevhalsaService.addJournalEntry(
+                id,
+                user,
+                body.get("content"),
+                body.get("visibility")));
+    }
+
+    @GetMapping("/cases/{id}/journal")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN', 'REKTOR', 'ROLE_REKTOR', 'HALSOTEAM', 'ROLE_HALSOTEAM', 'STUDENT', 'ROLE_STUDENT', 'GUARDIAN', 'ROLE_GUARDIAN')")
+    public ResponseEntity<List<com.eduflex.backend.model.ElevhalsaJournalEntry>> getCaseJournal(
+            @PathVariable Long id,
+            @org.springframework.security.core.annotation.AuthenticationPrincipal com.eduflex.backend.model.User user) {
+
+        return ResponseEntity.ok(elevhalsaService.getCaseJournal(id, user));
+    }
+
+    // --- Booking System ---
+
+    @PostMapping("/bookings")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<com.eduflex.backend.model.ElevhalsaBooking> createBooking(
+            @RequestBody Map<String, String> body) {
+        Long studentId = Long.parseLong(body.get("studentId"));
+        Long staffId = body.containsKey("staffId") ? Long.parseLong(body.get("staffId")) : null;
+        java.time.LocalDateTime start = java.time.LocalDateTime.parse(body.get("startTime"));
+        java.time.LocalDateTime end = java.time.LocalDateTime.parse(body.get("endTime"));
+
+        return ResponseEntity.ok(elevhalsaService.createBooking(
+                studentId,
+                staffId,
+                start,
+                end,
+                body.get("type"),
+                body.get("notes")));
+    }
+
+    @GetMapping("/bookings/my")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<List<com.eduflex.backend.model.ElevhalsaBooking>> getMyBookings(@RequestParam Long userId,
+            @RequestParam String role) {
+        if (role.toUpperCase().contains("STUDENT") || role.toUpperCase().contains("ELEV")) {
+            return ResponseEntity.ok(elevhalsaService.getBookingsForStudent(userId));
+        } else {
+            return ResponseEntity.ok(elevhalsaService.getBookingsForStaff(userId));
+        }
+    }
 }

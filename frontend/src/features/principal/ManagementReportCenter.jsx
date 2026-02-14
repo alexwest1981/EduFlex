@@ -17,7 +17,7 @@ import {
 import { api } from '../../services/api';
 import { useAppContext } from '../../context/AppContext';
 import toast from 'react-hot-toast';
-import ReactMarkdown from 'react-markdown';
+import MarkdownRenderer from '../../components/common/MarkdownRenderer';
 
 const ManagementReportCenter = () => {
     const { currentUser } = useAppContext();
@@ -161,19 +161,13 @@ const ManagementReportCenter = () => {
                     </div>
                 ) : (
                     <>
-                        <div className="p-8 border-b border-gray-50 dark:border-gray-800 flex justify-between items-center bg-gray-50/50 dark:bg-gray-800/20">
-                            <div>
-                                <h1 className="text-2xl font-black text-gray-900 dark:text-white tracking-tight">{selectedReport.title}</h1>
-                                <div className="flex items-center gap-4 mt-1">
-                                    <span className="flex items-center gap-1.5 text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-widest">
-                                        <Clock size={14} /> {selectedReport.period}
-                                    </span>
-                                    <span className="text-xs text-gray-400 font-bold">•</span>
-                                    <span className="text-xs text-gray-400 font-medium">Författare: {selectedReport.author?.fullName || 'System'}</span>
-                                </div>
+                        {/* Toolbar */}
+                        <div className="p-4 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center bg-white dark:bg-[#1c1c1e] sticky top-0 z-10">
+                            <div className="flex items-center gap-2 text-sm text-gray-500 font-medium">
+                                <span className="uppercase tracking-widest text-[10px] font-bold">Förhandsgranskning</span>
                             </div>
                             <div className="flex gap-3">
-                                <button className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-xs font-bold hover:bg-gray-50 dark:hover:bg-gray-700 transition-all">
+                                <button className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-xs font-bold hover:bg-gray-50 dark:hover:bg-gray-700 transition-all text-gray-700 dark:text-gray-300">
                                     <Download size={16} /> Exportera PDF
                                 </button>
                                 {selectedReport.status === 'DRAFT' && (
@@ -184,7 +178,7 @@ const ManagementReportCenter = () => {
                                             setSelectedReport(updated);
                                             toast.success("Rapport arkiverad som slutgiltig");
                                         }}
-                                        className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-xl text-xs font-bold hover:bg-indigo-700 transition-all"
+                                        className="flex items-center gap-2 px-4 py-2 bg-brand-teal text-white rounded-xl text-xs font-bold hover:bg-teal-600 transition-all shadow-lg shadow-teal-500/20"
                                     >
                                         <CheckCircle size={16} /> Slutför & Arkivera
                                     </button>
@@ -192,22 +186,49 @@ const ManagementReportCenter = () => {
                             </div>
                         </div>
 
-                        <div className="flex-1 overflow-y-auto p-12 prose dark:prose-invert max-w-none prose-headings:font-black prose-headings:tracking-tight custom-scrollbar">
-                            <ReactMarkdown>{selectedReport.content}</ReactMarkdown>
-
-                            {/* Raw Data Snapshot (Collapsible) */}
-                            <div className="mt-12 pt-8 border-t border-gray-100 dark:border-gray-800 pb-12">
-                                <details className="group">
-                                    <summary className="flex items-center gap-2 text-xs font-black text-gray-400 uppercase tracking-[0.2em] cursor-pointer hover:text-indigo-500 transition-colors list-none">
-                                        <ChevronRight size={14} className="group-open:rotate-90 transition-transform" />
-                                        Visa underliggande data-snapshot
-                                    </summary>
-                                    <div className="mt-4 p-6 bg-gray-50 dark:bg-gray-800 rounded-2xl">
-                                        <pre className="text-[10px] text-gray-500 overflow-x-auto">
-                                            {JSON.stringify(JSON.parse(selectedReport.dataSnapshot || '{}'), null, 2)}
-                                        </pre>
+                        {/* Document View */}
+                        <div className="flex-1 overflow-y-auto bg-gray-100 dark:bg-black/50 p-8 custom-scrollbar">
+                            <div className="w-full max-w-[210mm] min-h-[297mm] h-auto bg-white shadow-2xl rounded-sm p-[20mm] mx-auto text-slate-900 flex flex-col mb-20">
+                                {/* Document Header */}
+                                <div className="mb-12 border-b-2 border-slate-100 pb-8">
+                                    <div className="flex justify-between items-start mb-6 w-full">
+                                        <h1 className="text-4xl font-black text-slate-900 tracking-tight leading-tight max-w-2xl">{selectedReport.title}</h1>
+                                        <div className="text-right shrink-0 ml-8">
+                                            <div className="flex items-center justify-end gap-2 text-slate-500 font-bold uppercase tracking-widest text-[10px] mb-1">
+                                                <Calendar size={12} /> {selectedReport.period}
+                                            </div>
+                                            <div className="text-slate-400 text-xs font-medium">
+                                                {new Date(selectedReport.createdAt).toLocaleDateString()}
+                                            </div>
+                                        </div>
                                     </div>
-                                </details>
+                                    <div className="flex items-center gap-3 text-sm text-slate-600 font-medium bg-slate-50 inline-flex px-4 py-2 rounded-lg">
+                                        <span className="uppercase tracking-widest text-[10px] font-bold text-slate-400">Författare:</span>
+                                        {selectedReport.author?.fullName || 'System'}
+                                    </div>
+                                </div>
+
+                                <div className="prose prose-slate max-w-none prose-headings:font-display prose-headings:text-slate-900 prose-p:text-slate-700 prose-li:text-slate-700 prose-strong:text-slate-900 flex-1">
+                                    <MarkdownRenderer
+                                        content={selectedReport.content.replace(/^```markdown\n/, '').replace(/^```\n/, '').replace(/\n```$/, '')}
+                                        isDocument={true}
+                                    />
+                                </div>
+
+                                {/* Raw Data Snapshot (Collapsible) */}
+                                <div className="mt-16 pt-8 border-t border-slate-100 print:hidden opacity-50 hover:opacity-100 transition-opacity">
+                                    <details className="group">
+                                        <summary className="flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest cursor-pointer hover:text-indigo-600 transition-colors list-none">
+                                            <ChevronRight size={12} className="group-open:rotate-90 transition-transform" />
+                                            Visa underliggande data
+                                        </summary>
+                                        <div className="mt-4 p-4 bg-slate-50 rounded-lg border border-slate-100">
+                                            <pre className="text-[10px] text-slate-500 overflow-x-auto font-mono">
+                                                {JSON.stringify(JSON.parse(selectedReport.dataSnapshot || '{}'), null, 2)}
+                                            </pre>
+                                        </div>
+                                    </details>
+                                </div>
                             </div>
                         </div>
                     </>

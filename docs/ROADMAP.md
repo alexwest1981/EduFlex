@@ -69,6 +69,12 @@
 
 ## 📝 Change Log
 
+### [v1.1.1] - 2026-02-14
+- **Wellbeing Center**: Fixed infinite redirection loop for Admins.
+- **UX/UI**: **Role-Based Sidebar** - Hidden "Documents" and "Tools" menus for Guardians.
+- **Security**: **Role Guarding** - Strengthened frontend route protection for EHT and Guardian pages.
+- **Roadmap**: Pivot to **Phase 4: Adaptive Learning**.
+
 ### [v1.1.0] - 2026-02-14
 - **Platform Recovery**: **Native Mode Transition** - Fully bypassed Docker Desktop API issues by pivoting to host-based services (PostgreSQL 5432, Redis 6379, Standalone MinIO).
 - **Connectivity**: **Cloudflare Tunnel Restoration** - Fixed 502 errors and restored public access to `www.eduflexlms.se`.

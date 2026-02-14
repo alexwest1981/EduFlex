@@ -131,11 +131,21 @@ const DashboardWrapper = ({ currentUser }) => {
 
 const AppRoutes = () => {
     const { currentUser, logout, licenseLocked, licenseStatus, refreshUser } = useAppContext();
-    const { isModuleActive } = useModules();
+    const { isModuleActive, loading: modulesLoading } = useModules();
 
     // 1. GLOBAL LICENSE LOCK (Triggered by 402 or explicit lock)
     if (licenseLocked || licenseStatus === 'locked') {
         return <LicenseLock />;
+    }
+
+    // 2. WAIT FOR MODULES (Prevent race condition on protected routes)
+    if (currentUser && modulesLoading) {
+        return (
+            <div className="h-screen flex flex-col items-center justify-center bg-gray-50 dark:bg-[#131314] text-gray-400">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 mb-2"></div>
+                <span className="text-sm">Startar systemet...</span>
+            </div>
+        );
     }
 
     return (
@@ -250,7 +260,7 @@ const AppRoutes = () => {
                 } />
 
                 <Route path="/health-dashboard" element={
-                    <ProtectedRoute roles={['HALSOTEAM', 'ROLE_HALSOTEAM']}>
+                    <ProtectedRoute roles={['HALSOTEAM', 'ROLE_HALSOTEAM', 'ADMIN']}>
                         <Layout currentUser={currentUser} handleLogout={logout}>
                             <HealthTeamDashboard />
                         </Layout>

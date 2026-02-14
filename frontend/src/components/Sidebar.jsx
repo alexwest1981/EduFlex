@@ -78,16 +78,18 @@ const Sidebar = ({ currentUser, logout, siteName, version }) => {
             items.push({ path: '/principal/management-reports', label: 'Ledningsrapport', icon: <TrendingUp size={20} /> });
             items.push({ path: '/principal/tools', label: 'Verktyg & Admin', icon: <Settings2 size={20} /> });
         }
-        if (role === 'GUARDIAN') {
+        if (roleName === 'GUARDIAN' || roleName === 'ROLE_GUARDIAN') {
             items.push({ path: '/', label: 'Barnens Dashboard', icon: <Users size={20} /> });
         }
+
         // Helper to check permissions
         const hasPermission = (perm) => {
             if (currentUser?.role?.isSuperAdmin || currentUser?.role?.superAdmin) return true;
             return currentUser?.role?.permissions?.includes(perm);
         };
 
-        if (role !== 'ADMIN' && role !== 'GUARDIAN') {
+        const isGuardian = roleName === 'GUARDIAN' || roleName === 'ROLE_GUARDIAN';
+        if (roleName !== 'ADMIN' && roleName !== 'ROLE_ADMIN' && !isGuardian) {
             items.push({ path: '/documents', label: t('sidebar.documents'), icon: <FolderOpen size={20} /> });
         }
 
