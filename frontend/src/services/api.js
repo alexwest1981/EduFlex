@@ -488,6 +488,14 @@ export const api = {
         getCases: () => api.get('/elevhalsa/cases'),
         createCase: (data) => api.post('/elevhalsa/cases', data),
 
+        // Journal
+        addJournalEntry: (caseId, content, visibility) => api.post(`/elevhalsa/cases/${caseId}/journal`, { content, visibility }),
+        getJournal: (caseId) => api.get(`/elevhalsa/cases/${caseId}/journal`),
+
+        // Booking
+        createBooking: (bookingData) => api.post('/elevhalsa/bookings', bookingData),
+        getMyBookings: (userId, role) => api.get(`/elevhalsa/bookings/my?userId=${userId}&role=${role}`), // Keep params for now/compatibility, though backend ignores them now
+
         // Survey system
         getTemplates: () => api.get('/elevhalsa/surveys/templates'),
         createTemplate: (data) => api.post('/elevhalsa/surveys/templates', data),

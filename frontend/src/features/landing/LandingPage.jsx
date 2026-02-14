@@ -438,9 +438,9 @@ const LandingPage = () => {
 
                     <div className="hidden md:flex items-center gap-8 text-slate-300">
                         <a className="text-sm font-medium hover:text-brand-teal transition-colors" href="#features">{t('landing.nav.features')}</a>
-                        <a className="text-sm font-medium hover:text-brand-teal transition-colors" href="#showcase">Showcase</a>
-                        <a className="text-sm font-medium hover:text-brand-teal transition-colors" href="#gamification">Gamification</a>
-                        <a className="text-sm font-medium hover:text-brand-teal transition-colors" href="#highlights">Teknologi</a>
+                        <button onClick={() => navigate('/features#gamification')} className="text-sm font-medium hover:text-brand-teal transition-colors">Gamification</button>
+                        <button onClick={() => navigate('/features#showcase')} className="text-sm font-medium hover:text-brand-teal transition-colors">Showcase</button>
+                        <button onClick={() => navigate('/features#highlights')} className="text-sm font-medium hover:text-brand-teal transition-colors">Teknologi</button>
                     </div>
 
                     <div className="flex items-center gap-3">
@@ -494,10 +494,10 @@ const LandingPage = () => {
             {/* Mobile Menu */}
             <div className={`md:hidden fixed inset-x-4 top-20 z-40 glass-card-dark rounded-2xl transition-all duration-300 ${isMobileMenuOpen ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4 pointer-events-none'}`}>
                 <div className="p-4 space-y-2">
-                    <a href="#features" onClick={() => setIsMobileMenuOpen(false)} className="block py-3 px-4 text-slate-300 hover:bg-white/5 rounded-lg transition-colors">{t('landing.nav.features')}</a>
-                    <a href="#showcase" onClick={() => setIsMobileMenuOpen(false)} className="block py-3 px-4 text-slate-300 hover:bg-white/5 rounded-lg transition-colors">Showcase</a>
-                    <a href="#gamification" onClick={() => setIsMobileMenuOpen(false)} className="block py-3 px-4 text-slate-300 hover:bg-white/5 rounded-lg transition-colors">Gamification</a>
-                    <a href="#highlights" onClick={() => setIsMobileMenuOpen(false)} className="block py-3 px-4 text-slate-300 hover:bg-white/5 rounded-lg transition-colors">Teknologi</a>
+                    <button onClick={() => { navigate('/features'); setIsMobileMenuOpen(false); }} className="block w-full text-left py-3 px-4 text-slate-300 hover:bg-white/5 rounded-lg transition-colors">{t('landing.nav.features')}</button>
+                    <button onClick={() => { navigate('/features#showcase'); setIsMobileMenuOpen(false); }} className="block w-full text-left py-3 px-4 text-slate-300 hover:bg-white/5 rounded-lg transition-colors">Showcase</button>
+                    <button onClick={() => { navigate('/features#gamification'); setIsMobileMenuOpen(false); }} className="block w-full text-left py-3 px-4 text-slate-300 hover:bg-white/5 rounded-lg transition-colors">Gamification</button>
+                    <button onClick={() => { navigate('/features#highlights'); setIsMobileMenuOpen(false); }} className="block w-full text-left py-3 px-4 text-slate-300 hover:bg-white/5 rounded-lg transition-colors">Teknologi</button>
 
                     <div className="flex items-center gap-2 px-4 py-3 border-t border-white/10 mt-2">
                         <button
@@ -533,7 +533,7 @@ const LandingPage = () => {
 
             <main>
                 {/* --- HERO SECTION --- */}
-                <section className="py-16 lg:py-28 grid lg:grid-cols-2 gap-12 items-center">
+                <section className="max-w-7xl mx-auto px-6 py-16 lg:py-28 grid lg:grid-cols-2 gap-12 items-center">
                     <div className="space-y-8">
                         {/* Badge */}
                         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-teal/10 border border-brand-teal/20 text-brand-teal text-xs font-bold uppercase tracking-widest">
@@ -634,7 +634,7 @@ const LandingPage = () => {
                 </section>
 
                 {/* --- SHORT FEATURES SECTION --- */}
-                <section id="features" className="py-16 space-y-12 fade-in-section">
+                <section id="features" className="max-w-7xl mx-auto px-6 py-16 space-y-12 fade-in-section">
                     <div className="text-center max-w-3xl mx-auto space-y-4">
                         <h2 className="text-3xl lg:text-5xl font-black">{t('landing.features.title')}</h2>
                         <p className="text-slate-400 text-lg">{t('landing.features.subtitle')}</p>

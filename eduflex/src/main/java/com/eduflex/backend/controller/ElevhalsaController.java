@@ -15,7 +15,19 @@ import java.util.Map;
 public class ElevhalsaController {
 
     @Autowired
+    private com.eduflex.backend.repository.UserRepository userRepository;
+
+    @Autowired
     private ElevhalsaService elevhalsaService;
+
+    private com.eduflex.backend.model.User getCurrentUser() {
+        org.springframework.security.core.Authentication auth = org.springframework.security.core.context.SecurityContextHolder
+                .getContext().getAuthentication();
+        String username = auth.getName();
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(
+                        org.springframework.http.HttpStatus.NOT_FOUND, "User not found"));
+    }
 
     @GetMapping("/metrics")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN', 'REKTOR', 'ROLE_REKTOR', 'HALSOTEAM', 'ROLE_HALSOTEAM')")
@@ -53,23 +65,21 @@ public class ElevhalsaController {
     @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN', 'REKTOR', 'ROLE_REKTOR', 'HALSOTEAM', 'ROLE_HALSOTEAM')")
     public ResponseEntity<com.eduflex.backend.model.ElevhalsaJournalEntry> addJournalEntry(
             @PathVariable Long id,
-            @RequestBody Map<String, String> body,
-            @org.springframework.security.core.annotation.AuthenticationPrincipal com.eduflex.backend.model.User user) {
+            @RequestBody com.eduflex.backend.dto.JournalEntryRequestDTO request) {
 
         return ResponseEntity.ok(elevhalsaService.addJournalEntry(
                 id,
-                user,
-                body.get("content"),
-                body.get("visibility")));
+                getCurrentUser(),
+                request.getContent(),
+                request.getVisibility()));
     }
 
     @GetMapping("/cases/{id}/journal")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN', 'REKTOR', 'ROLE_REKTOR', 'HALSOTEAM', 'ROLE_HALSOTEAM', 'STUDENT', 'ROLE_STUDENT', 'GUARDIAN', 'ROLE_GUARDIAN')")
     public ResponseEntity<List<com.eduflex.backend.model.ElevhalsaJournalEntry>> getCaseJournal(
-            @PathVariable Long id,
-            @org.springframework.security.core.annotation.AuthenticationPrincipal com.eduflex.backend.model.User user) {
+            @PathVariable Long id) {
 
-        return ResponseEntity.ok(elevhalsaService.getCaseJournal(id, user));
+        return ResponseEntity.ok(elevhalsaService.getCaseJournal(id, getCurrentUser()));
     }
 
     // --- Booking System ---
@@ -77,29 +87,26 @@ public class ElevhalsaController {
     @PostMapping("/bookings")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<com.eduflex.backend.model.ElevhalsaBooking> createBooking(
-            @RequestBody Map<String, String> body) {
-        Long studentId = Long.parseLong(body.get("studentId"));
-        Long staffId = body.containsKey("staffId") ? Long.parseLong(body.get("staffId")) : null;
-        java.time.LocalDateTime start = java.time.LocalDateTime.parse(body.get("startTime"));
-        java.time.LocalDateTime end = java.time.LocalDateTime.parse(body.get("endTime"));
+            @RequestBody com.eduflex.backend.dto.BookingRequestDTO request) {
 
         return ResponseEntity.ok(elevhalsaService.createBooking(
-                studentId,
-                staffId,
-                start,
-                end,
-                body.get("type"),
-                body.get("notes")));
+                request.getStudentId(),
+                request.getStaffId(),
+                request.getStartTime(),
+                request.getEndTime(),
+                request.getType(),
+                request.getNotes()));
     }
 
     @GetMapping("/bookings/my")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<List<com.eduflex.backend.model.ElevhalsaBooking>> getMyBookings(@RequestParam Long userId,
-            @RequestParam String role) {
-        if (role.toUpperCase().contains("STUDENT") || role.toUpperCase().contains("ELEV")) {
-            return ResponseEntity.ok(elevhalsaService.getBookingsForStudent(userId));
+    public ResponseEntity<List<com.eduflex.backend.model.ElevhalsaBooking>> getMyBookings() {
+        com.eduflex.backend.model.User user = getCurrentUser();
+
+        if (user.getRole().getName().contains("STUDENT") || user.getRole().getName().contains("ELEV")) {
+            return ResponseEntity.ok(elevhalsaService.getBookingsForStudent(user.getId()));
         } else {
-            return ResponseEntity.ok(elevhalsaService.getBookingsForStaff(userId));
+            return ResponseEntity.ok(elevhalsaService.getBookingsForStaff(user.getId()));
         }
     }
 }

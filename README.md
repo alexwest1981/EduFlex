@@ -37,6 +37,13 @@
 
 ## 🇸🇪 Svenska
 
+*   **🏥 E-hälsa Motor & Bokningssystem (14 feb 2026 - Kväll):**
+    *   **Fullständig Bokningsmotor:** Implementerat backend-logik för bokningar mellan elev och hälsoteam med strikt behörighetskontroll.
+    *   **Journalsystem:** Refaktorerat journalhantering till dedikerade controllers för ökad säkerhet och prestanda.
+    *   **Säkerhetsfix:** Åtgärdat kritisk bugg där `User Principal` inte mappades korrekt vid autentisering, vilket löste 500-fel i Elevhälsa-modulen.
+    *   **Landing Page 2.0:** Uppdaterat Hero-sektionen med nytt engagerande copy ("Det kompletta systemet...") för ökad konvertering.
+    *   **Frontend API:** Standardiserat API-anrop för journaler och bokningar i `api.js`.
+
 *   **🧠 Adaptive Learning (Fas 4) - Startskott (14 feb 2026):**
     *   **"Min Lärväg" Dashboard:** En ny vy för studenter som visualiserar deras unika inlärningsprofil (Stil, Takt, Fokusområden).
     *   **AI-Driven Analys:** Systemet analyserar prestationer i realtid och genererar personliga rekommendationer via Google Gemini.
@@ -232,7 +239,12 @@ curl -X POST http://localhost:8080/api/tenants \
 
 ---
 
-### Senaste Uppdateringar (v1.1.1 - 2026-02-14)
+### Senaste Uppdateringar (v1.1.2 - 2026-02-14)
+- **E-hälsa Motor:** Komplett backend för bokningar och journaler.
+- **Säkerhet:** Fixat User Principal bugg i Auth-filtret.
+- **Content:** Ny Hero-copy för Landing Page.
+
+#### Tidigare (v1.1.1)
 - **Wellbeing Center Fix:** Åtgärdade omdirigeringsproblem för administratörer.
 - **Guardian UX:** Förbättrad meny för vårdnadshavare (döljer onödiga verktyg).
 - **Säkerhet:** Utökad rollbaserad åtkomstkontroll för E-hälsa.
@@ -291,6 +303,13 @@ curl -X POST http://localhost:8080/api/tenants \
 ## 🇬🇧 English
 
 ### ⚡ Latest Updates (v1.0.5)
+### ⚡ Latest Updates (v1.0.6)
+> **2026-02-14: E-Health Motor & Booking System**
+*   **🏥 Booking Engine Implemented:** Full backend logic for student-counselor bookings with strict RBAC.
+*   **Journal System Refactor:** Decoupled journal management into dedicated secure controllers.
+*   **Security Patch:** Fixed critical User Principal mapping bug preventing access to health modules.
+*   **Hero Refresh:** Updated Landing Page copy for better engagement.
+
 > **2026-02-14: System Restoration & SKA Integration**
 *   **🛠️ Full Stability:** Resolved Docker connectivity issues and restored Jitsi/OnlyOffice services.
 *   **📈 SKA Motor:** Released Systematic Quality Work engine with Goals, Indicators, and Year Cycle.

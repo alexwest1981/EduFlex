@@ -12,6 +12,7 @@ import Layout from './components/Layout';
 
 // --- FEATURES ---
 import LandingPage from './features/landing/LandingPage';
+import FeaturesPage from './features/landing/FeaturesPage';
 import Login from './features/auth/Login';
 import RegisterOrganization from './features/auth/RegisterOrganization';
 import OAuth2Callback from './features/auth/OAuth2Callback';

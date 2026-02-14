@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
     BookOpen, Trophy, Shield, Users,
@@ -24,6 +24,7 @@ import ScreenshotSlider from '../../components/landing/ScreenshotSlider';
 
 const FeaturesPage = () => {
     const navigate = useNavigate();
+    const { hash } = useLocation();
     const { t } = useTranslation();
     const [scrolled, setScrolled] = useState(false);
 
@@ -32,6 +33,17 @@ const FeaturesPage = () => {
         window.addEventListener('scroll', handleScroll);
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
+
+    useEffect(() => {
+        if (hash) {
+            const element = document.getElementById(hash.replace('#', ''));
+            if (element) {
+                setTimeout(() => {
+                    element.scrollIntoView({ behavior: 'smooth' });
+                }, 100);
+            }
+        }
+    }, [hash]);
 
     const features = [
         {
@@ -287,7 +299,7 @@ const FeaturesPage = () => {
                 </div>
 
                 {/* Core Features */}
-                <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <section id="gamification" className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     {features.map((feature, idx) => (
                         <div key={idx} className={`glass-card p-8 rounded-3xl group ${feature.hoverBorder} transition-all duration-300`}>
                             <div className={`size-14 ${feature.bgColor} rounded-2xl flex items-center justify-center mb-6`}>
@@ -300,7 +312,7 @@ const FeaturesPage = () => {
                 </section>
 
                 {/* Detailed Highlights Grid */}
-                <section>
+                <section id="highlights">
                     <h2 className="text-3xl font-bold mb-8 flex items-center gap-3">
                         <Zap className="text-brand-gold" /> Teknologiska Höjdpunkter
                     </h2>
@@ -318,7 +330,7 @@ const FeaturesPage = () => {
                 </section>
 
                 {/* Screenshot Showcase */}
-                <section>
+                <section id="showcase">
                     <h2 className="text-3xl font-bold mb-8 text-center">Systemöversikt</h2>
                     <ScreenshotSlider screenshots={screenshotData} />
                 </section>

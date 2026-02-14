@@ -763,9 +763,9 @@
     },
     "hero": {
       "badge": "v2.0 Nu Tillgänglig",
-      "title_start": "LMS:et som ",
-      "title_highlight": "Studenter Älskar",
-      "subtitle": "EduFlex överbryggar klyftan mellan enterprise-LMS och moderna konsumentappar. Gamifierat, snabbt och vackert lärande för nästa generation.",
+      "title_start": "Det kompletta systemet ",
+      "title_highlight": "för din skolverksamhet",
+      "subtitle": "Ta din skola in i framtiden med EduFlex. Vi samlar administration, lärande och elevhälsa i en modern plattform som både lärare och elever älskar. Upplev skillnaden med AI-drivet stöd och gamifierat lärande.",
       "cta_trial": "Boka Demo",
       "cta_docs": "Visa API-dokumentation"
     },

@@ -44,13 +44,7 @@ const JournalSystem = ({ caseId }) => {
 
         try {
             setSubmitting(true);
-            const payload = {
-                content: newEntry,
-                visibility: visibility,
-                authorId: currentUser.id // In a real app, backend should extract this from token
-            };
-
-            await api.post(`/elevhalsa/cases/${caseId}/journal`, payload);
+            const entry = await api.elevhalsa.addJournalEntry(caseId, newEntry, visibility);
 
             setNewEntry('');
             await fetchJournal(); // Refresh list
