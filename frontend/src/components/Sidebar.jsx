@@ -63,6 +63,7 @@ const Sidebar = ({ currentUser, logout, siteName, version }) => {
 
         if (role === 'STUDENT') {
             items.push({ path: '/my-courses', label: t('sidebar.my_courses'), icon: <BookOpen size={20} /> });
+            items.push({ path: '/adaptive-learning', label: 'Min Lärväg', icon: <TrendingUp size={20} /> });
             items.push({ path: '/catalog', label: t('sidebar.catalog'), icon: <BookOpen size={20} /> });
         }
         if (role === 'ADMIN' || role === 'TEACHER') {

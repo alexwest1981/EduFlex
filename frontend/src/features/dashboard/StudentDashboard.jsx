@@ -25,6 +25,7 @@ import EduQuestWidget from '../edugame/EduQuestWidget';
 import { useDashboardWidgets } from '../../hooks/useDashboardWidgets';
 import DashboardCustomizer from '../../components/dashboard/DashboardCustomizer';
 import AIPersonalizationWidget from './widgets/AIPersonalizationWidget';
+import AdaptiveWidget from '../adaptive/AdaptiveWidget';
 import EduAIDashboard from '../../components/gamification/EduAIDashboard';
 
 const StudentDashboard = ({ currentUser }) => {
@@ -175,9 +176,11 @@ const StudentDashboard = ({ currentUser }) => {
                         <SurveyNotificationWidget />
                         <EvaluationNotificationWidget />
 
+
+
                         {widgets.aiInsights && (
                             <WidgetWrapper className="h-auto">
-                                <AIPersonalizationWidget variant="compact" />
+                                <AdaptiveWidget />
                             </WidgetWrapper>
                         )}
 

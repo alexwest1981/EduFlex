@@ -531,330 +531,143 @@ const LandingPage = () => {
                 </div>
             </div>
 
-            <main className="max-w-7xl mx-auto px-4 sm:px-6">
-                {/* --- HERO SECTION --- */}
-                <section className="py-16 lg:py-28 grid lg:grid-cols-2 gap-12 items-center">
-                    <div className="space-y-8">
-                        {/* Badge */}
-                        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-teal/10 border border-brand-teal/20 text-brand-teal text-xs font-bold uppercase tracking-widest">
-                            <span className="relative flex h-2 w-2">
-                                <span className="animate-ping-slow absolute inline-flex h-full w-full rounded-full bg-brand-teal opacity-75"></span>
-                                <span className="relative inline-flex rounded-full h-2 w-2 bg-brand-teal"></span>
-                            </span>
-                            {t('landing.hero.badge')}
-                        </div>
+            {/* --- HERO SECTION --- */}
+            <section className="py-16 lg:py-28 grid lg:grid-cols-2 gap-12 items-center">
+                <div className="space-y-8">
+                    {/* Badge */}
+                    <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-teal/10 border border-brand-teal/20 text-brand-teal text-xs font-bold uppercase tracking-widest">
+                        <span className="relative flex h-2 w-2">
+                            <span className="animate-ping-slow absolute inline-flex h-full w-full rounded-full bg-brand-teal opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-2 w-2 bg-brand-teal"></span>
+                        </span>
+                        {t('landing.hero.badge')}
+                    </div>
 
-                        {/* Heading */}
-                        <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-black leading-[1.1] tracking-tight">
-                            {t('landing.hero.title_start')} <span className="text-gradient">{t('landing.hero.title_highlight')}</span>
-                        </h1>
+                    {/* Heading */}
+                    <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-black leading-[1.1] tracking-tight">
+                        {t('landing.hero.title_start')} <span className="text-gradient">{t('landing.hero.title_highlight')}</span>
+                    </h1>
 
-                        {/* Subtitle */}
-                        <p className="text-lg text-slate-400 max-w-xl leading-relaxed">
-                            {t('landing.hero.subtitle')}
-                        </p>
+                    {/* Subtitle */}
+                    <p className="text-lg text-slate-400 max-w-xl leading-relaxed">
+                        {t('landing.hero.subtitle')}
+                    </p>
 
-                        {/* CTA Buttons */}
-                        <div className="flex flex-wrap gap-4">
-                            <button
-                                onClick={() => navigate('/register-org')}
-                                className="brand-gradient text-white font-bold px-8 py-4 rounded-xl hover:scale-105 transition-transform text-lg shadow-xl shadow-brand-teal/30 flex items-center gap-2"
-                            >
-                                Kom igång gratis <ArrowRight className="w-5 h-5" />
-                            </button>
-                            <button
-                                onClick={() => setIsContactModalOpen(true)}
-                                className="glass-card font-bold px-8 py-4 rounded-xl hover:bg-white/10 transition-all text-lg flex items-center gap-2 text-slate-200"
-                            >
-                                <Play className="w-5 h-5 text-brand-teal" /> Se demo
-                            </button>
-                        </div>
+                    {/* CTA Buttons */}
+                    <div className="flex flex-wrap gap-4">
+                        <button
+                            onClick={() => navigate('/register-org')}
+                            className="brand-gradient text-white font-bold px-8 py-4 rounded-xl hover:scale-105 transition-transform text-lg shadow-xl shadow-brand-teal/30 flex items-center gap-2"
+                        >
+                            Kom igång gratis <ArrowRight className="w-5 h-5" />
+                        </button>
+                        <button
+                            onClick={() => navigate('/features')}
+                            className="glass-card font-bold px-8 py-4 rounded-xl hover:bg-white/10 transition-all text-lg flex items-center gap-2 text-slate-200"
+                        >
+                            <Sparkles className="w-5 h-5 text-brand-teal" /> Utforska Funktioner
+                        </button>
+                    </div>
 
-                        {/* Tech Stack */}
-                        <div className="flex flex-col gap-4 pt-4">
-                            <p className="text-xs font-bold uppercase tracking-[0.2em] text-slate-500">Drivs av modern AI & beprövad pedagogik</p>
-                            <div className="flex flex-wrap items-center gap-6 opacity-60 hover:opacity-100 transition-all duration-500">
-                                <div className="flex items-center gap-2 group">
-                                    <Brain className="w-5 h-5 text-blue-400 group-hover:scale-110 transition-transform" />
-                                    <span className="text-sm font-semibold text-slate-400 group-hover:text-slate-200">Google Gemini</span>
-                                </div>
-                                <div className="flex items-center gap-2 group">
-                                    <Database className="w-5 h-5 text-emerald-400 group-hover:scale-110 transition-transform" />
-                                    <span className="text-sm font-semibold text-slate-400 group-hover:text-slate-200">PostgreSQL</span>
-                                </div>
-                                <div className="flex items-center gap-2 group">
-                                    <Sparkles className="w-5 h-5 text-brand-teal group-hover:scale-110 transition-transform" />
-                                    <span className="text-sm font-semibold text-slate-400 group-hover:text-slate-200">OpenAI API</span>
-                                </div>
+                    {/* Tech Stack */}
+                    <div className="flex flex-col gap-4 pt-4">
+                        <p className="text-xs font-bold uppercase tracking-[0.2em] text-slate-500">Drivs av modern AI & beprövad pedagogik</p>
+                        <div className="flex flex-wrap items-center gap-6 opacity-60 hover:opacity-100 transition-all duration-500">
+                            <div className="flex items-center gap-2 group">
+                                <Brain className="w-5 h-5 text-blue-400 group-hover:scale-110 transition-transform" />
+                                <span className="text-sm font-semibold text-slate-400 group-hover:text-slate-200">Google Gemini</span>
+                            </div>
+                            <div className="flex items-center gap-2 group">
+                                <Database className="w-5 h-5 text-emerald-400 group-hover:scale-110 transition-transform" />
+                                <span className="text-sm font-semibold text-slate-400 group-hover:text-slate-200">PostgreSQL</span>
+                            </div>
+                            <div className="flex items-center gap-2 group">
+                                <Sparkles className="w-5 h-5 text-brand-teal group-hover:scale-110 transition-transform" />
+                                <span className="text-sm font-semibold text-slate-400 group-hover:text-slate-200">OpenAI API</span>
                             </div>
                         </div>
                     </div>
+                </div>
 
-                    {/* Hero Visual */}
-                    <div className="relative">
-                        <div className="absolute -inset-4 brand-gradient blur-3xl rounded-full opacity-20"></div>
-                        <div className="relative glass-card rounded-3xl p-4 glow-teal overflow-hidden">
-                            <div className="relative rounded-2xl overflow-hidden">
-                                <img
-                                    src={heroImage}
-                                    alt="EduFlex Student"
-                                    className="w-full aspect-square object-cover"
-                                />
-                                {/* Overlay gradient */}
-                                <div className="absolute inset-0 bg-gradient-to-t from-[#06141b] via-transparent to-transparent" />
+                {/* Hero Visual */}
+                <div className="relative">
+                    <div className="absolute -inset-4 brand-gradient blur-3xl rounded-full opacity-20"></div>
+                    <div className="relative glass-card rounded-3xl p-4 glow-teal overflow-hidden">
+                        <div className="relative rounded-2xl overflow-hidden">
+                            <img
+                                src={heroImage}
+                                alt="EduFlex Student"
+                                className="w-full aspect-square object-cover"
+                            />
+                            {/* Overlay gradient */}
+                            <div className="absolute inset-0 bg-gradient-to-t from-[#06141b] via-transparent to-transparent" />
 
-                                {/* Floating Stats Card */}
-                                <div className="absolute bottom-4 left-4 glass-card rounded-xl p-4">
-                                    <div className="flex items-center space-x-3">
-                                        <div className="w-10 h-10 brand-gradient rounded-xl flex items-center justify-center">
-                                            <TrendingUp className="w-5 h-5 text-white" />
-                                        </div>
-                                        <div>
-                                            <p className="text-xl font-bold text-white">+47%</p>
-                                            <p className="text-xs text-slate-400">Engagemang</p>
-                                        </div>
+                            {/* Floating Stats Card */}
+                            <div className="absolute bottom-4 left-4 glass-card rounded-xl p-4">
+                                <div className="flex items-center space-x-3">
+                                    <div className="w-10 h-10 brand-gradient rounded-xl flex items-center justify-center">
+                                        <TrendingUp className="w-5 h-5 text-white" />
                                     </div>
-                                </div>
-
-                                {/* Floating Achievement Card */}
-                                <div className="absolute top-4 right-4 glass-card rounded-xl p-3">
-                                    <div className="flex items-center space-x-2">
-                                        <div className="w-8 h-8 bg-brand-gold/20 rounded-lg flex items-center justify-center">
-                                            <Award className="w-4 h-4 text-brand-gold" />
-                                        </div>
-                                        <div>
-                                            <p className="text-sm font-bold text-white">Ny nivå!</p>
-                                            <p className="text-xs text-slate-400">Level 12</p>
-                                        </div>
+                                    <div>
+                                        <p className="text-xl font-bold text-white">+47%</p>
+                                        <p className="text-xs text-slate-400">Engagemang</p>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                </section>
 
-                {/* --- FEATURES SECTION --- */}
-                <section id="features" className="py-16 lg:py-24 space-y-12 fade-in-section">
-                    <div className="text-center max-w-3xl mx-auto space-y-4">
-                        <h2 className="text-3xl lg:text-5xl font-black">{t('landing.features.title')}</h2>
-                        <p className="text-slate-400 text-lg">{t('landing.features.subtitle')}</p>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 stagger-animation fade-in-section">
-                        {features.map((feature, idx) => (
-                            <div
-                                key={idx}
-                                className={`glass-card p-8 rounded-3xl group ${feature.hoverBorder} transition-all duration-300 feature-card`}
-                            >
-                                <div className={`size-14 ${feature.bgColor} rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform`}>
-                                    <span className={feature.color}>{feature.icon}</span>
-                                </div>
-                                <h3 className="text-2xl font-bold mb-3">{feature.title}</h3>
-                                <p className="text-slate-400 leading-relaxed">{feature.description}</p>
-                            </div>
-                        ))}
-                    </div>
-                </section>
-
-                {/* --- SCREENSHOT SHOWCASE --- */}
-                <section id="showcase" className="py-16 lg:py-24 fade-in-section">
-                    <div className="text-center mb-12">
-                        <div className="inline-flex items-center px-4 py-2 rounded-full bg-brand-teal/10 border border-brand-teal/20 mb-4">
-                            <Play className="w-4 h-4 text-brand-teal mr-2" />
-                            <span className="text-sm font-semibold text-brand-teal">Showcase</span>
-                        </div>
-                        <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black mb-4">
-                            Upplev EduFlex i Aktion
-                        </h2>
-                    </div>
-
-                    <ScreenshotSlider screenshots={screenshotData} />
-                </section>
-
-                {/* --- GAMIFICATION SHOWCASE --- */}
-                <section id="gamification" className="py-16 lg:py-24 relative overflow-hidden rounded-3xl fade-in-section">
-                    <div className="absolute inset-0 brand-gradient opacity-5 -z-10"></div>
-                    <div className="grid lg:grid-cols-2 gap-16 items-center px-6 lg:px-10">
-                        <div className="space-y-6">
-                            <h2 className="text-3xl lg:text-4xl font-bold leading-tight">Gör lärandet till ett äventyr</h2>
-                            <p className="text-slate-400 text-lg">
-                                Med EduFlex 2.0 försvinner tröskeln för att börja plugga. Genom att implementera spelmekanik på djupet skapar vi ett naturligt driv hos användaren.
-                            </p>
-                            <ul className="space-y-4">
-                                <li className="flex items-center gap-3">
-                                    <Check className="w-5 h-5 text-brand-teal" />
-                                    <span>Dagliga uppdrag och streaks</span>
-                                </li>
-                                <li className="flex items-center gap-3">
-                                    <Check className="w-5 h-5 text-brand-teal" />
-                                    <span>Globala och interna topplistor</span>
-                                </li>
-                                <li className="flex items-center gap-3">
-                                    <Check className="w-5 h-5 text-brand-teal" />
-                                    <span>Unik avatar-anpassning</span>
-                                </li>
-                                <li className="flex items-center gap-3">
-                                    <Check className="w-5 h-5 text-brand-teal" />
-                                    <span>XP, nivåer och märken</span>
-                                </li>
-                            </ul>
-                        </div>
-
-                        {/* Gamification Card Preview */}
-                        <div className="relative py-10">
-                            <div className="glass-card rounded-2xl p-6 glow-teal max-w-sm ml-auto relative z-10">
-                                <div className="flex items-center justify-between mb-8">
-                                    <div className="flex items-center gap-3">
-                                        <div className="size-12 rounded-full brand-gradient border-2 border-white/20"></div>
-                                        <div>
-                                            <p className="font-bold">Mikael K.</p>
-                                            <p className="text-xs text-slate-400">Level 24 Explorer</p>
-                                        </div>
+                            {/* Floating Achievement Card */}
+                            <div className="absolute top-4 right-4 glass-card rounded-xl p-3">
+                                <div className="flex items-center space-x-2">
+                                    <div className="w-8 h-8 bg-brand-gold/20 rounded-lg flex items-center justify-center">
+                                        <Award className="w-4 h-4 text-brand-gold" />
                                     </div>
-                                    <div className="text-right">
-                                        <Flame className="w-6 h-6 text-brand-orange mx-auto" />
-                                        <p className="text-xs font-bold text-brand-orange">12 DAGAR STREAK</p>
-                                    </div>
-                                </div>
-                                <div className="space-y-6">
-                                    <div className="space-y-2">
-                                        <div className="flex justify-between text-xs font-bold text-slate-300">
-                                            <span>PROGRESS XP</span>
-                                            <span>1,240 / 2,000</span>
-                                        </div>
-                                        <div className="h-3 bg-white/10 rounded-full overflow-hidden">
-                                            <div className="h-full brand-gradient rounded-full shadow-[0_0_15px_rgba(0,212,170,0.4)]" style={{ width: '62%' }}></div>
-                                        </div>
-                                    </div>
-                                    <div className="grid grid-cols-3 gap-2">
-                                        <div className="bg-white/5 p-3 rounded-lg border border-white/10 flex flex-col items-center gap-2">
-                                            <Trophy className="w-5 h-5 text-brand-gold" />
-                                            <span className="text-[10px] font-bold">BÄSTA ELEV</span>
-                                        </div>
-                                        <div className="bg-white/5 p-3 rounded-lg border border-white/10 flex flex-col items-center gap-2">
-                                            <Brain className="w-5 h-5 text-brand-blue" />
-                                            <span className="text-[10px] font-bold">SNABBTÄNKT</span>
-                                        </div>
-                                        <div className="bg-white/10 p-3 rounded-lg border border-brand-teal/40 flex flex-col items-center gap-2">
-                                            <Award className="w-5 h-5 text-brand-teal" />
-                                            <span className="text-[10px] font-bold">TOPP 1%</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="absolute top-0 right-10 glass-card rounded-2xl p-6 w-full max-w-xs opacity-40 translate-x-12 translate-y-12 -z-10"></div>
-                        </div>
-                    </div>
-                </section>
-
-                {/* --- SWEDISH INTEGRATION --- */}
-                <section className="py-16 lg:py-24 border-t border-white/10 fade-in-section">
-                    <div className="grid lg:grid-cols-2 gap-20 items-center">
-                        <div className="order-2 lg:order-1 relative">
-                            <div className="glass-card rounded-3xl p-4 aspect-[4/3] flex items-center justify-center relative overflow-hidden">
-                                <img
-                                    src={eduflexConnectImg}
-                                    alt="EduFlex Connect"
-                                    className="w-full h-full object-cover rounded-2xl"
-                                />
-                                <div className="absolute inset-0 bg-gradient-to-t from-[#06141b]/80 via-transparent to-transparent rounded-2xl" />
-                                <div className="absolute bottom-6 right-6">
-                                    <div className="glass-card p-4 rounded-xl border-brand-teal/30 border bg-[#06141b]/80">
-                                        <div className="flex items-center gap-2 text-brand-teal font-bold mb-1">
-                                            <Database className="w-4 h-4" /> Skolverket Sync
-                                        </div>
-                                        <p className="text-[10px] text-slate-400 uppercase tracking-tighter">Status: Realtid aktiv</p>
+                                    <div>
+                                        <p className="text-sm font-bold text-white">Ny nivå!</p>
+                                        <p className="text-xs text-slate-400">Level 12</p>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div className="order-1 lg:order-2 space-y-6">
-                            <div className="size-12 bg-brand-teal/20 rounded-xl flex items-center justify-center">
-                                <Map className="w-6 h-6 text-brand-teal" />
+                    </div>
+                </div>
+            </section>
+
+            {/* --- SHORT FEATURES SECTION --- */}
+            <section id="features" className="py-16 space-y-12 fade-in-section">
+                <div className="text-center max-w-3xl mx-auto space-y-4">
+                    <h2 className="text-3xl lg:text-5xl font-black">{t('landing.features.title')}</h2>
+                    <p className="text-slate-400 text-lg">{t('landing.features.subtitle')}</p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 stagger-animation fade-in-section">
+                    {features.slice(0, 3).map((feature, idx) => (
+                        <div
+                            key={idx}
+                            className={`glass-card p-8 rounded-3xl group ${feature.hoverBorder} transition-all duration-300 feature-card`}
+                        >
+                            <div className={`size-14 ${feature.bgColor} rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform`}>
+                                <span className={feature.color}>{feature.icon}</span>
                             </div>
-                            <h2 className="text-3xl font-bold">Sömlös integration med Svenska skolsystemet</h2>
-                            <p className="text-slate-400 text-lg leading-relaxed">
-                                Vi har byggt EduFlex med fokus på den svenska läroplanen. Full integration med Skolverkets API:er och stöd för BankID gör oss till det självklara valet för svenska kommuner och friskolor.
-                            </p>
-                            <div className="grid grid-cols-2 gap-6 pt-4">
-                                <div>
-                                    <p className="text-3xl font-black text-white">100%</p>
-                                    <p className="text-sm text-slate-400">GDPR Compliance</p>
-                                </div>
-                                <div>
-                                    <p className="text-3xl font-black text-white">Byggd för</p>
-                                    <p className="text-sm text-slate-400">Framtidens utbildare</p>
-                                </div>
-                            </div>
+                            <h3 className="text-2xl font-bold mb-3">{feature.title}</h3>
+                            <p className="text-slate-400 leading-relaxed">{feature.description}</p>
                         </div>
-                    </div>
-                </section>
+                    ))}
+                </div>
 
-                {/* --- HIGHLIGHTS / TECH SHOWCASE --- */}
-                <section id="highlights" className="py-16 lg:py-24 fade-in-section">
-                    <div className="text-center mb-16">
-                        <div className="inline-flex items-center px-4 py-2 rounded-full bg-purple-500/10 border border-purple-500/20 mb-4">
-                            <Zap className="w-4 h-4 text-purple-400 mr-2" />
-                            <span className="text-sm font-semibold text-purple-400">Tekniska Höjdpunkter</span>
-                        </div>
-                        <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black mb-4">
-                            Byggd med Modern Teknologi
-                        </h2>
-                        <p className="text-lg text-slate-400 max-w-2xl mx-auto">
-                            React 19, Spring Boot 3.4, PostgreSQL 15 och en komplett DevOps-stack för enterprise-klass prestanda
-                        </p>
-                    </div>
+                <div className="flex justify-center mt-8">
+                    <button
+                        onClick={() => navigate('/features')}
+                        className="bg-white/5 hover:bg-white/10 text-white font-bold px-8 py-3 rounded-xl transition-all border border-white/10 flex items-center gap-2"
+                    >
+                        Se alla funktioner <ArrowRight className="w-4 h-4" />
+                    </button>
+                </div>
+            </section>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 stagger-animation fade-in-section">
-                        {highlights.map((item, idx) => (
-                            <div
-                                key={idx}
-                                className="glass-card p-6 rounded-2xl group hover:border-white/20 transition-all duration-300 feature-card"
-                            >
-                                <div className={`size-12 ${item.bgColor} rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
-                                    <span className={item.color}>{item.icon}</span>
-                                </div>
-                                <h3 className="text-lg font-bold mb-2 group-hover:text-brand-teal transition-colors">
-                                    {item.title}
-                                </h3>
-                                <p className="text-slate-400 text-sm leading-relaxed">
-                                    {item.description}
-                                </p>
-                            </div>
-                        ))}
-                    </div>
 
-                    {/* Tech Stack Banner */}
-                    <div className="mt-16 glass-card rounded-2xl p-8 md:p-12 fade-in-section">
-                        <div className="text-center mb-8">
-                            <h3 className="text-2xl font-bold text-white mb-2">Full Technology Stack</h3>
-                            <p className="text-slate-400">Enterprise-grade open source teknologier</p>
-                        </div>
-                        <div className="flex flex-wrap justify-center gap-3 stagger-animation fade-in-section">
-                            {[
-                                { name: 'React 19', color: 'bg-cyan-500/20 text-cyan-400 border-cyan-500/30' },
-                                { name: 'Spring Boot 3.4', color: 'bg-green-500/20 text-green-400 border-green-500/30' },
-                                { name: 'PostgreSQL 15', color: 'bg-blue-500/20 text-blue-400 border-blue-500/30' },
-                                { name: 'Redis 7', color: 'bg-red-500/20 text-red-400 border-red-500/30' },
-                                { name: 'MinIO S3', color: 'bg-pink-500/20 text-pink-400 border-pink-500/30' },
-                                { name: 'Keycloak 24', color: 'bg-orange-500/20 text-orange-400 border-orange-500/30' },
-                                { name: 'Docker', color: 'bg-sky-500/20 text-sky-400 border-sky-500/30' },
-                                { name: 'Kubernetes', color: 'bg-indigo-500/20 text-indigo-400 border-indigo-500/30' },
-                                { name: 'Prometheus', color: 'bg-amber-500/20 text-amber-400 border-amber-500/30' },
-                                { name: 'Grafana', color: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30' },
-                                { name: 'Tailwind CSS', color: 'bg-teal-500/20 text-teal-400 border-teal-500/30' },
-                                { name: 'Vite 5', color: 'bg-purple-500/20 text-purple-400 border-purple-500/30' }
-                            ].map((tech, idx) => (
-                                <span key={idx} className={`px-4 py-2 rounded-full text-sm font-medium border ${tech.color}`}>
-                                    {tech.name}
-                                </span>
-                            ))}
-                        </div>
-                    </div>
-                </section>
-
-                {/* --- CTA SECTION --- */}
-                <section className="py-16 lg:py-24 fade-in-section">
+            {/* --- CTA SECTION --- */}
+            <section className="py-16 lg:py-24 fade-in-section">
+                <div className="max-w-7xl mx-auto px-6">
                     <div className="brand-gradient rounded-3xl p-12 lg:p-20 text-center space-y-8 shadow-2xl shadow-brand-teal/30 relative overflow-hidden">
                         <div className="absolute -top-12 -right-12 w-64 h-64 bg-white/10 rounded-full blur-3xl"></div>
                         <div className="absolute -bottom-12 -left-12 w-48 h-48 bg-brand-blue/20 rounded-full blur-3xl"></div>
@@ -879,80 +692,73 @@ const LandingPage = () => {
                             </button>
                         </div>
                     </div>
-                </section>
-            </main>
-
-            {/* --- FOOTER --- */}
-            <footer className="bg-[#040c11] pt-20 pb-10 mt-20 border-t border-white/10">
-                <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
-                    <div className="space-y-6">
-                        <div className="flex items-center gap-3">
-                            <div className="brand-gradient p-2 rounded-lg">
-                                <img src={logoMain} alt="EduFlex" className="w-5 h-5 brightness-0 invert" />
-                            </div>
-                            <span className="text-xl font-bold">EduFlex <span className="text-brand-teal">2.0</span></span>
-                        </div>
-                        <p className="text-slate-500 text-sm leading-relaxed">
-                            {t('landing.footer.tagline')}
-                        </p>
-                        <div className="flex gap-4">
-                            <a className="text-slate-500 hover:text-brand-teal transition-colors" href="#">
-                                <svg className="size-6" fill="currentColor" viewBox="0 0 24 24"><path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"></path></svg>
-                            </a>
-                            <a className="text-slate-500 hover:text-brand-teal transition-colors" href="#">
-                                <svg className="size-6" fill="currentColor" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"></path></svg>
-                            </a>
-                        </div>
-                    </div>
-                    <div>
-                        <h4 className="font-bold mb-6">{t('landing.footer.product')}</h4>
-                        <ul className="space-y-4 text-sm text-slate-500">
-                            <li><a className="hover:text-brand-teal transition-colors" href="#features">{t('landing.footer.features')}</a></li>
-                            <li><a className="hover:text-brand-teal transition-colors" href="#">Säkerhet</a></li>
-                            <li><a className="hover:text-brand-teal transition-colors" href="#">API</a></li>
-                            <li><a className="hover:text-brand-teal transition-colors" href="#">{t('landing.footer.roadmap')}</a></li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h4 className="font-bold mb-6">Support</h4>
-                        <ul className="space-y-4 text-sm text-slate-500">
-                            <li><a className="hover:text-brand-teal transition-colors" href="#">Hjälpcenter</a></li>
-                            <li><a className="hover:text-brand-teal transition-colors" href="#">{t('landing.footer.documentation')}</a></li>
-                            <li><a className="hover:text-brand-teal transition-colors" href="#">{t('landing.footer.system_status')}</a></li>
-                            <li><a className="hover:text-brand-teal transition-colors" href="#">{t('landing.footer.contact_sales')}</a></li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h4 className="font-bold mb-6">Nyhetsbrev</h4>
-                        <p className="text-sm text-slate-500 mb-4">Få de senaste insikterna om digitalt lärande.</p>
-                        <div className="flex gap-2">
-                            <input
-                                className="bg-white/5 border border-white/10 rounded-xl text-sm flex-1 px-4 py-2.5 focus:ring-brand-teal focus:border-brand-teal placeholder:text-slate-600 text-white"
-                                placeholder="Din e-post"
-                                type="email"
-                            />
-                            <button className="brand-gradient p-2.5 rounded-xl shadow-lg shadow-brand-teal/20">
-                                <ArrowRight className="w-5 h-5 text-white" />
-                            </button>
-                        </div>
-                    </div>
                 </div>
-                <div className="max-w-7xl mx-auto px-6 pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-slate-600">
-                    <p>{t('landing.footer.copyright')}</p>
-                    <div className="flex gap-6">
-                        <a className="hover:text-white transition-colors" href="#">Integritetspolicy</a>
-                        <a className="hover:text-white transition-colors" href="#">Användarvillkor</a>
-                        <a className="hover:text-white transition-colors" href="#">Cookie-inställningar</a>
-                    </div>
-                </div>
-            </footer>
+            </section>
+        </main>
 
-            {/* Contact Modal */}
-            <ContactModal
-                isOpen={isContactModalOpen}
-                onClose={() => setIsContactModalOpen(false)}
-            />
+            {/* --- FOOTER --- */ }
+    <footer className="bg-[#040c11] pt-20 pb-10 mt-20 border-t border-white/10">
+        <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
+            <div className="space-y-6">
+                <div className="flex items-center gap-3">
+                    <div className="brand-gradient p-2 rounded-lg">
+                        <img src={logoMain} alt="EduFlex" className="w-5 h-5 brightness-0 invert" />
+                    </div>
+                    <span className="text-xl font-bold">EduFlex <span className="text-brand-teal">2.0</span></span>
+                </div>
+                <p className="text-slate-500 text-sm leading-relaxed">
+                    {t('landing.footer.tagline')}
+                </p>
+            </div>
+            <div>
+                <h4 className="font-bold mb-6">{t('landing.footer.product')}</h4>
+                <ul className="space-y-4 text-sm text-slate-500">
+                    <li><a className="hover:text-brand-teal transition-colors" href="#features">{t('landing.footer.features')}</a></li>
+                    <li><a className="hover:text-brand-teal transition-colors" href="#">Säkerhet</a></li>
+                    <li><a className="hover:text-brand-teal transition-colors" href="#">API</a></li>
+                    <li><a className="hover:text-brand-teal transition-colors" href="#">{t('landing.footer.roadmap')}</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 className="font-bold mb-6">Support</h4>
+                <ul className="space-y-4 text-sm text-slate-500">
+                    <li><a className="hover:text-brand-teal transition-colors" href="#">Hjälpcenter</a></li>
+                    <li><a className="hover:text-brand-teal transition-colors" href="#">{t('landing.footer.documentation')}</a></li>
+                    <li><a className="hover:text-brand-teal transition-colors" href="#">{t('landing.footer.system_status')}</a></li>
+                    <li><a className="hover:text-brand-teal transition-colors" href="#">{t('landing.footer.contact_sales')}</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 className="font-bold mb-6">Nyhetsbrev</h4>
+                <p className="text-sm text-slate-500 mb-4">Få de senaste insikterna om digitalt lärande.</p>
+                <div className="flex gap-2">
+                    <input
+                        className="bg-white/5 border border-white/10 rounded-xl text-sm flex-1 px-4 py-2.5 focus:ring-brand-teal focus:border-brand-teal placeholder:text-slate-600 text-white"
+                        placeholder="Din e-post"
+                        type="email"
+                    />
+                    <button className="brand-gradient p-2.5 rounded-xl shadow-lg shadow-brand-teal/20">
+                        <ArrowRight className="w-5 h-5 text-white" />
+                    </button>
+                </div>
+            </div>
         </div>
+        <div className="max-w-7xl mx-auto px-6 pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-slate-600">
+            <p>{t('landing.footer.copyright')}</p>
+            <div className="flex gap-6">
+                <a className="hover:text-white transition-colors" href="#">Integritetspolicy</a>
+                <a className="hover:text-white transition-colors" href="#">Användarvillkor</a>
+                <a className="hover:text-white transition-colors" href="#">Cookie-inställningar</a>
+            </div>
+        </div>
+    </footer>
+
+    {/* Contact Modal */ }
+    <ContactModal
+        isOpen={isContactModalOpen}
+        onClose={() => setIsContactModalOpen(false)}
+    />
+        </div >
     );
 };
 

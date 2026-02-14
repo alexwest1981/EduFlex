@@ -84,6 +84,7 @@ const StandardLayout = ({ children }) => {
             ...(roleName === 'TEACHER' || roleName === 'ADMIN' ? [{ path: '/evaluations/manage', icon: <ClipboardList size={20} />, label: 'Utvärderingar' }] : []),
             ...(roleName === 'TEACHER' ? [{ path: '/?tab=COURSES', icon: <BookOpen size={20} />, label: t('sidebar.my_courses') || 'Mina kurser' }] : []),
             ...(roleName === 'STUDENT' ? [{ path: '/my-courses', icon: <BookOpen size={20} />, label: t('sidebar.my_courses') || 'Mina kurser' }] : []),
+            ...(roleName === 'STUDENT' ? [{ path: '/adaptive-learning', icon: <TrendingUp size={20} />, label: 'Min Lärväg' }] : []),
             ...(['STUDENT', 'TEACHER', 'ADMIN'].includes(roleName) ? [{ path: '/ebooks', icon: <Library size={20} />, label: t('sidebar.ebooks') }] : []),
         ],
         tools: [

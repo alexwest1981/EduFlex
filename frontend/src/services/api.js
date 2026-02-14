@@ -476,6 +476,12 @@ export const api = {
         mark: (eventId, data) => api.post(`/attendance/event/${eventId}/mark`, data),
     },
 
+    adaptive: {
+        getDashboard: () => api.get('/adaptive/dashboard'),
+        analyze: () => api.post('/adaptive/analyze', {}),
+        updateStatus: (id, status) => api.patch(`/adaptive/recommendations/${id}/status`, { status })
+    },
+
     elevhalsa: {
         getMetrics: () => api.get('/elevhalsa/metrics'),
         getRisks: () => api.get('/elevhalsa/risks'),

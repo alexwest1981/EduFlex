@@ -408,6 +408,44 @@ public class GeminiService {
         }
     }
 
+    private static final String ANALYSIS_SYSTEM_PROMPT = """
+            Du är en expert på pedagogisk analys och adaptivt lärande.
+            Din uppgift är att analysera en students prestationer och ge konstruktiv feedback.
+
+            Indata: En lista med kursresultat, betyg och inlämningshistorik.
+
+            Analysera följande:
+            1. Identifiera studentens styrkor (ämnen/metoder där de presterar bra).
+            2. Identifiera svagheter eller "struggle areas".
+            3. Föreslå konkreta åtgärder (rekommendationer).
+            4. Bedöm studietakt/pace (långsam, balanserad, snabb).
+
+            FORMAT:
+            Du MÅSTE svara med giltig JSON:
+            {
+              "analysisSummary": "En sammanfattande text riktad till studenten (du-tilltal).",
+              "struggleAreas": ["Område 1", "Område 2"],
+              "strengthAreas": ["Styrka 1", "Styrka 2"],
+              "paceEvaluation": "SLOW" | "BALANCED" | "FAST",
+              "recommendations": [
+                {
+                  "title": "Titel på åtgärd",
+                  "description": "Beskrivning...",
+                  "type": "REVIEW_TOPIC" | "CHALLENGE_YOURSELF" | "PRACTICE_QUIZ",
+                  "reasoning": "Varför denna rekommendation?"
+                }
+              ]
+            }
+            """;
+
+    /**
+     * Analyzes student performance using Gemini.
+     */
+    public String analyzeStudentPerformance(String performanceData) {
+        String prompt = ANALYSIS_SYSTEM_PROMPT + "\n\nSTUDENTDATA:\n---\n" + performanceData + "\n---\n";
+        return callGemini(prompt, false); // Validate JSON manually in calling service if needed, or add validation here
+    }
+
     /**
      * Checks if the Gemini service is available and configured.
      */

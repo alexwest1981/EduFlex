@@ -66,6 +66,8 @@ import SurveyResponseForm from './features/health/SurveyResponseForm';
 import SurveyResults from './features/health/SurveyResults';
 import WellbeingCenter from './features/health/WellbeingCenter';
 import WellbeingInbox from './features/health/WellbeingInbox';
+import AdaptiveLearningDashboard from './features/adaptive/AdaptiveLearningDashboard';
+
 import ManagementReportCenter from './features/principal/ManagementReportCenter';
 
 // --- PROTECTED ROUTE ---
@@ -156,6 +158,7 @@ const AppRoutes = () => {
                 <Route path="/oauth2/callback" element={<OAuth2Callback />} />
                 <Route path="/lti-success" element={<LtiSuccess />} />
                 <Route path="/lti/deep-link" element={<LtiDeepLinking />} />
+                <Route path="/features" element={<FeaturesPage />} />
 
                 {/* ROOT ROUTE: Landing for Guests / Dashboard for Users */}
                 <Route path="/" element={
@@ -492,6 +495,14 @@ const AppRoutes = () => {
 
                 <Route path="/community" element={
                     <Navigate to="/resources?tab=community" replace />
+                } />
+
+                <Route path="/adaptive-learning" element={
+                    <ProtectedRoute roles={['STUDENT', 'ROLE_STUDENT', 'ADMIN']}>
+                        <Layout currentUser={currentUser} handleLogout={logout}>
+                            <AdaptiveLearningDashboard />
+                        </Layout>
+                    </ProtectedRoute>
                 } />
 
                 <Route path="*" element={<Navigate to="/" replace />} />

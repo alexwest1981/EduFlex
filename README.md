@@ -37,6 +37,12 @@
 
 ## 🇸🇪 Svenska
 
+*   **🧠 Adaptive Learning (Fas 4) - Startskott (14 feb 2026):**
+    *   **"Min Lärväg" Dashboard:** En ny vy för studenter som visualiserar deras unika inlärningsprofil (Stil, Takt, Fokusområden).
+    *   **AI-Driven Analys:** Systemet analyserar prestationer i realtid och genererar personliga rekommendationer via Google Gemini.
+    *   **Interaktiva Åtgärder:** Studenter kan markera rekommendationer som "Påbörjade" och se dem flyttas till "Pågående"-status.
+    *   **Live Data:** Allt drivs av faktiska kursresultat och användardata – inga mockups.
+
 *   **🛠️ Systemåterställning & Full Stabilitet (14 feb 2026):**
     *   **Full Service Stack:** Återaktiverat OnlyOffice (Dokument) och Jitsi (Video) efter omfattande stabilitetsarbete.
     *   **Docker-optimering:** Löste kritiska "Connection refused"-fel genom att separera backend-start från container-orkestrering.
