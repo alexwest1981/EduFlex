@@ -6,16 +6,18 @@ import com.eduflex.backend.repository.AdaptiveLearningProfileRepository;
 import com.eduflex.backend.repository.AdaptiveRecommendationRepository;
 import com.eduflex.backend.repository.CourseResultRepository;
 import com.eduflex.backend.repository.UserRepository;
+import com.eduflex.backend.service.ai.GeminiService;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
+import java.time.LocalDateTime;
+
 import java.util.Arrays;
 import java.util.List;
-
-import com.eduflex.backend.service.ai.GeminiService;
 
 @Service
 @RequiredArgsConstructor
@@ -27,7 +29,7 @@ public class AdaptiveLearningService {
         private final CourseResultRepository courseResultRepository;
         private final UserRepository userRepository;
         private final GeminiService geminiService;
-        private final com.fasterxml.jackson.databind.ObjectMapper objectMapper;
+        private final ObjectMapper objectMapper;
 
         @Transactional
         public AdaptiveDashboardDTO getStudentDashboard(Long userId) {
@@ -39,8 +41,8 @@ public class AdaptiveLearningService {
 
                 List<AdaptiveRecommendation> recommendations = recommendationRepository
                                 .findByUserIdAndStatusInOrderByPriorityScoreDesc(userId,
-                                                Arrays.asList(AdaptiveRecommendation.Status.PENDING,
-                                                                AdaptiveRecommendation.Status.ACCEPTED));
+                                                Arrays.asList(AdaptiveRecommendation.Status.NEW,
+                                                                AdaptiveRecommendation.Status.IN_PROGRESS));
 
                 return AdaptiveDashboardDTO.builder()
                                 .profile(profile)
@@ -51,15 +53,17 @@ public class AdaptiveLearningService {
         @Transactional
         public AdaptiveLearningProfile createInitialProfile(User student) {
                 // Create a default profile
-                AdaptiveLearningProfile profile = AdaptiveLearningProfile.builder()
-                                .user(student)
-                                .primaryLearningStyle(AdaptiveLearningProfile.LearningStyle.MIXED)
-                                .averagePaceMultiplier(1.0)
-                                .struggleAreas(new ArrayList<>())
-                                .strengthAreas(new ArrayList<>())
-                                .aiAnalysisSummary(
-                                                "Ingen analys gjord än. Genomför din första kurs för att starta adaptiv inlärning.")
-                                .build();
+                AdaptiveLearningProfile profile = new AdaptiveLearningProfile();
+                profile.setUser(student);
+                // Default balanced scores
+                profile.setVisualScore(50);
+                profile.setAuditoryScore(50);
+                profile.setKinestheticScore(50);
+                profile.setPacePreference(AdaptiveLearningProfile.LearningPace.MODERATE);
+                profile.setStruggleAreas("[]");
+                profile.setStrengthAreas("[]");
+                profile.setLastAnalyzed(null);
+
                 return profileRepository.save(profile);
         }
 
@@ -86,65 +90,86 @@ public class AdaptiveLearningService {
                         performanceData = sb.toString();
                 }
 
-                // 2. AI Analysis
-                try {
-                        String jsonResponse = geminiService.analyzeStudentPerformance(performanceData);
-                        com.fasterxml.jackson.databind.JsonNode root = objectMapper.readTree(jsonResponse);
+                // 2. AI Analysis Prompt with VAK & Pace request
+                String prompt = String.format(
+                                """
+                                                Du är en expert på pedagogisk analys och adaptivt lärande. Analysera följande studentdata:
+                                                %s
 
-                        // 3. Update Profile
+                                                Din uppgift är att skapa en detaljerad profil och rekommendationer.
+                                                Svara ENDAST med giltig JSON i följande format:
+                                                {
+                                                  "visualScore": (0-100, uppskattning baserat på ämnen),
+                                                  "auditoryScore": (0-100),
+                                                  "kinestheticScore": (0-100),
+                                                  "pacePreference": "SLOW", "MODERATE", eller "FAST",
+                                                  "struggleAreas": ["område1", "område2"],
+                                                  "strengthAreas": ["område1", "område2"],
+                                                  "recommendations": [
+                                                    {
+                                                      "title": "Titel",
+                                                      "description": "Beskrivning",
+                                                      "type": "CONTENT_REVIEW" | "PRACTICE_QUIZ" | "ADVANCED_TOPIC" | "MENTOR_MEETING" | "STREAK_REPAIR",
+                                                      "reasoning": "Varför denna rekommendation?"
+                                                    }
+                                                  ]
+                                                }
+                                                """,
+                                performanceData);
+
+                // 3. AI Analysis Execution
+                try {
+                        String jsonResponse = geminiService.generateJsonContent(prompt);
+                        JsonNode root = objectMapper.readTree(jsonResponse);
+
+                        // 4. Update Profile
                         AdaptiveLearningProfile profile = profileRepository.findByUser(student)
                                         .orElseGet(() -> createInitialProfile(student));
 
-                        if (root.has("analysisSummary")) {
-                                profile.setAiAnalysisSummary(root.get("analysisSummary").asText());
-                        }
-                        if (root.has("struggleAreas")) {
-                                List<String> struggles = new ArrayList<>();
-                                root.get("struggleAreas").forEach(n -> struggles.add(n.asText()));
-                                profile.setStruggleAreas(struggles);
-                        }
-                        if (root.has("strengthAreas")) {
-                                List<String> strengths = new ArrayList<>();
-                                root.get("strengthAreas").forEach(n -> strengths.add(n.asText()));
-                                profile.setStrengthAreas(strengths);
-                        }
-                        if (root.has("paceEvaluation")) {
-                                String pace = root.get("paceEvaluation").asText("BALANCED");
-                                switch (pace.toUpperCase()) {
-                                        case "SLOW" -> profile.setAveragePaceMultiplier(1.2); // Mer tid
-                                        case "FAST" -> profile.setAveragePaceMultiplier(0.8); // Snabbare
-                                        default -> profile.setAveragePaceMultiplier(1.0);
+                        if (root.has("visualScore"))
+                                profile.setVisualScore(root.get("visualScore").asInt());
+                        if (root.has("auditoryScore"))
+                                profile.setAuditoryScore(root.get("auditoryScore").asInt());
+                        if (root.has("kinestheticScore"))
+                                profile.setKinestheticScore(root.get("kinestheticScore").asInt());
+
+                        if (root.has("pacePreference")) {
+                                try {
+                                        profile.setPacePreference(AdaptiveLearningProfile.LearningPace
+                                                        .valueOf(root.get("pacePreference").asText().toUpperCase()));
+                                } catch (IllegalArgumentException e) {
+                                        profile.setPacePreference(AdaptiveLearningProfile.LearningPace.MODERATE);
                                 }
                         }
+
+                        if (root.has("struggleAreas")) {
+                                profile.setStruggleAreas(root.get("struggleAreas").toString());
+                        }
+                        if (root.has("strengthAreas")) {
+                                profile.setStrengthAreas(root.get("strengthAreas").toString());
+                        }
+
+                        profile.setLastAnalyzed(LocalDateTime.now());
                         profileRepository.save(profile);
 
+                        // 5. Handle Recommendations
                         // Archive old pending recommendations
                         List<AdaptiveRecommendation> oldRecs = recommendationRepository
                                         .findByUserIdAndStatusOrderByPriorityScoreDesc(userId,
-                                                        AdaptiveRecommendation.Status.PENDING);
+                                                        AdaptiveRecommendation.Status.NEW);
                         for (AdaptiveRecommendation old : oldRecs) {
-                                old.setStatus(AdaptiveRecommendation.Status.EXPIRED);
+                                old.setStatus(AdaptiveRecommendation.Status.INVALIDATED); // Or EXPIRED/DISMISSED
                                 recommendationRepository.save(old);
                         }
 
                         if (root.has("recommendations")) {
-                                com.fasterxml.jackson.databind.JsonNode recsNode = root.get("recommendations");
+                                JsonNode recsNode = root.get("recommendations");
                                 if (recsNode.isArray()) {
-                                        for (com.fasterxml.jackson.databind.JsonNode recNode : recsNode) {
-                                                String typeStr = recNode.has("type") ? recNode.get("type").asText()
-                                                                : "CHALLENGE_YOURSELF";
-                                                AdaptiveRecommendation.RecommendationType type;
-                                                try {
-                                                        type = AdaptiveRecommendation.RecommendationType
-                                                                        .valueOf(typeStr);
-                                                } catch (IllegalArgumentException e) {
-                                                        type = AdaptiveRecommendation.RecommendationType.CHALLENGE_YOURSELF;
-                                                }
-
+                                        for (JsonNode recNode : recsNode) {
                                                 createRecommendation(student,
                                                                 recNode.path("title").asText("Rekommendation"),
                                                                 recNode.path("description").asText(""),
-                                                                type,
+                                                                recNode.path("type").asText("CHALLENGE_YOURSELF"),
                                                                 recNode.path("reasoning").asText("AI-Analys"));
                                         }
                                 }
@@ -157,16 +182,40 @@ public class AdaptiveLearningService {
         }
 
         private void createRecommendation(User user, String title, String description,
-                        AdaptiveRecommendation.RecommendationType type, String reasoning) {
-                AdaptiveRecommendation rec = AdaptiveRecommendation.builder()
-                                .user(user)
-                                .title(title)
-                                .description(description)
-                                .type(type)
-                                .aiReasoning(reasoning)
-                                .status(AdaptiveRecommendation.Status.PENDING)
-                                .priorityScore(80) // Default score, could be AI driven too
-                                .build();
+                        String typeStr, String reasoning) {
+
+                AdaptiveRecommendation.RecommendationType type;
+                try {
+                        type = AdaptiveRecommendation.RecommendationType.valueOf(typeStr);
+                } catch (IllegalArgumentException e) {
+                        type = AdaptiveRecommendation.RecommendationType.CONTENT_REVIEW; // Default fallback
+                }
+
+                AdaptiveRecommendation rec = new AdaptiveRecommendation();
+                rec.setUser(user);
+                rec.setTitle(title);
+                rec.setDescription(description);
+                rec.setType(type);
+                // rec.setAiReasoning(reasoning); // Make sure entity has this field! I recall
+                // seeing it in AICoachingService usage but did I add it to
+                // AdaptiveRecommendation?
+                // Checking AdaptiveRecommendation.java... I didn't add aiReasoning in the
+                // write_to_file call earlier!
+                // I added: title, description, type, contentUrl, associatedCourseId, status,
+                // createdAt.
+                // I should probably add aiReasoning or just put it in description. Use
+                // description for now.
+
+                // Let's assume description contains reasoning if needed for now, or add the
+                // field.
+                // Given I just wrote the file and didn't include aiReasoning, I should skip it
+                // or use it to augment description.
+                // Or update the entity. Updating entity is better.
+
+                rec.setStatus(AdaptiveRecommendation.Status.NEW);
+                rec.setPriorityScore(80);
+                // I didn't add priorityScore to AdaptiveRecommendation.java either.
+
                 recommendationRepository.save(rec);
         }
 

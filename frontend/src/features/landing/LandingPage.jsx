@@ -116,8 +116,8 @@ const LandingPage = () => {
         },
         {
             icon: <TrendingUp className="w-6 h-6" />,
-            title: 'Prediktiv AI-Analys',
-            description: 'Identifiera riskstudenter innan det är för sent. AI analyserar beteendemönster och ger lärare beslutsstöd samt elever personliga studietips.',
+            title: 'Min Lärväg (AI)',
+            description: 'Adaptivt lärande på riktigt. AI analyserar din inlärningsstil (VAK) och takt för att skapa en skräddarsydd studieplan och personliga rekommendationer.',
             color: 'text-rose-400',
             bgColor: 'bg-rose-500/10'
         },
@@ -236,7 +236,7 @@ const LandingPage = () => {
             title: "Prediktiv AI-Analys 2.0",
             description: "Identifierar elever i riskzonen innan de själva vet det. Deep learning mönsteranalys av närvaro, aktivitet och resultat.",
             icon: <Brain className="text-pink-500" />,
-            tag: "Roadmap 2026+"
+            tag: "Live v1.1.2"
         },
         {
             title: "Skolverket Sync 2.0",

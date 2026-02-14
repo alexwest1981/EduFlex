@@ -1,75 +1,147 @@
 package com.eduflex.backend.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
-
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "adaptive_recommendations")
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
 public class AdaptiveRecommendation {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Enumerated(EnumType.STRING)
-    private RecommendationType type;
-
-    @Column(nullable = false)
     private String title;
 
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    @Column(columnDefinition = "TEXT")
-    private String aiReasoning; // "Why this was recommended?"
-
-    // Links to content (nullable, as recommendation might be generic "Rest more")
-    private Long courseId;
-    private Long lessonId;
-    private Long assignmentId;
-
-    // External link or internal route
-    private String actionUrl;
-    private String actionLabel;
-
+    // Type of recommendation: CONTENT_REVIEW, PRACTICE_QUIZ, ADVANCED_TOPIC,
+    // MENTOR_MEETING
     @Enumerated(EnumType.STRING)
-    private Status status;
+    private RecommendationType type;
 
-    @Column(name = "priority_score")
-    private Integer priorityScore; // 1-100, for sorting
+    // Optional link to content
+    private String contentUrl; // Internal or external link
 
-    @CreationTimestamp
+    // Reasoning from AI
+    @Column(columnDefinition = "TEXT")
+    private String aiReasoning;
+
+    private int priorityScore = 0; // 0-100
+
+    private Long associatedCourseId; // Optional link to a course
+
+    // Status: NEW, IN_PROGRESS, COMPLETED, DISMISSED, INVALIDATED
+    @Enumerated(EnumType.STRING)
+    private Status status = Status.NEW;
+
     private LocalDateTime createdAt;
 
-    private LocalDateTime completedAt;
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
 
     public enum RecommendationType {
-        REVIEW_TOPIC, // e.g. "Review Algebra Basics"
-        CHALLENGE_YOURSELF, // e.g. "Try Advanced Quiz"
-        WELLBEING_CHECK, // e.g. "Take a break"
-        PEER_SUPPORT, // e.g. "Ask a friend"
-        CONTENT_CONSUMPTION // e.g. "Watch this video"
+        CONTENT_REVIEW, PRACTICE_QUIZ, ADVANCED_TOPIC, MENTOR_MEETING, STREAK_REPAIR, CHALLENGE_YOURSELF
     }
 
     public enum Status {
-        PENDING,
-        ACCEPTED,
-        COMPLETED,
-        DISMISSED,
-        EXPIRED
+        NEW, IN_PROGRESS, COMPLETED, DISMISSED, EXPIRED, INVALIDATED
+    }
+
+    // Getters and Setters
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public RecommendationType getType() {
+        return type;
+    }
+
+    public void setType(RecommendationType type) {
+        this.type = type;
+    }
+
+    public String getContentUrl() {
+        return contentUrl;
+    }
+
+    public void setContentUrl(String contentUrl) {
+        this.contentUrl = contentUrl;
+    }
+
+    public String getAiReasoning() {
+        return aiReasoning;
+    }
+
+    public void setAiReasoning(String aiReasoning) {
+        this.aiReasoning = aiReasoning;
+    }
+
+    public int getPriorityScore() {
+        return priorityScore;
+    }
+
+    public void setPriorityScore(int priorityScore) {
+        this.priorityScore = priorityScore;
+    }
+
+    public Long getAssociatedCourseId() {
+        return associatedCourseId;
+    }
+
+    public void setAssociatedCourseId(Long associatedCourseId) {
+        this.associatedCourseId = associatedCourseId;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 }

@@ -10,8 +10,18 @@ import {
     BarChart2,
     BookOpen,
     Clock,
-    Layers
+    Layers,
+    Activity
 } from 'lucide-react';
+import {
+    Radar,
+    RadarChart,
+    PolarGrid,
+    PolarAngleAxis,
+    PolarRadiusAxis,
+    ResponsiveContainer,
+    Tooltip as RechartsTooltip
+} from 'recharts';
 import { api } from '../../services/api';
 import { useAppContext } from '../../context/AppContext';
 
@@ -76,6 +86,35 @@ const AdaptiveLearningDashboard = () => {
 
     const { profile, recommendations } = dashboardData || {};
 
+    // Parse JSON strings if they come as strings
+    const parseList = (jsonStr) => {
+        if (!jsonStr) return [];
+        if (Array.isArray(jsonStr)) return jsonStr;
+        try {
+            return JSON.parse(jsonStr);
+        } catch (e) {
+            return [];
+        }
+    };
+
+    const struggleAreas = parseList(profile?.struggleAreas);
+    const strengthAreas = parseList(profile?.strengthAreas);
+
+    // Prepare VAK Data
+    const vakData = [
+        { subject: 'Visuellt', A: profile?.visualScore || 0, fullMark: 100 },
+        { subject: 'Auditivt', A: profile?.auditoryScore || 0, fullMark: 100 },
+        { subject: 'Kinestetiskt', A: profile?.kinestheticScore || 0, fullMark: 100 },
+    ];
+
+    const getPaceLabel = (pace) => {
+        switch (pace) {
+            case 'FAST': return 'Snabb';
+            case 'SLOW': return 'Grundlig';
+            default: return 'Balanserad';
+        }
+    };
+
     return (
         <div className="space-y-6 p-6 max-w-7xl mx-auto">
             {/* Header */}
@@ -110,31 +149,39 @@ const AdaptiveLearningDashboard = () => {
 
             {/* Profile Overview Grid */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {/* Learning Style Card */}
-                <div className="bg-white dark:bg-slate-800 rounded-xl p-6 border border-slate-200 dark:border-slate-700 shadow-sm relative overflow-hidden">
-                    <div className="absolute top-0 right-0 p-4 opacity-10">
-                        <Layers size={64} className="text-brand-purple" />
+                {/* VAK Chart Card */}
+                <div className="bg-white dark:bg-slate-800 rounded-xl p-4 border border-slate-200 dark:border-slate-700 shadow-sm relative overflow-hidden flex flex-col">
+                    <h3 className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-2">Inlärningsprofil (VAK)</h3>
+                    <div className="flex-1 w-full h-full min-h-[160px]">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <RadarChart cx="50%" cy="50%" outerRadius="80%" data={vakData}>
+                                <PolarGrid stroke="#e2e8f0" />
+                                <PolarAngleAxis dataKey="subject" tick={{ fill: '#64748b', fontSize: 12 }} />
+                                <PolarRadiusAxis angle={30} domain={[0, 100]} tick={false} axisLine={false} />
+                                <Radar
+                                    name="Profil"
+                                    dataKey="A"
+                                    stroke="#8884d8"
+                                    fill="#8884d8"
+                                    fillOpacity={0.6}
+                                />
+                                <RechartsTooltip />
+                            </RadarChart>
+                        </ResponsiveContainer>
                     </div>
-                    <h3 className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-2">Inlärningsstil</h3>
-                    <div className="text-2xl font-bold text-slate-900 dark:text-white mb-1">
-                        {profile?.primaryLearningStyle || 'Okänd'}
-                    </div>
-                    <p className="text-xs text-slate-500">
-                        Baserat på hur du interagerar med materialet.
-                    </p>
                 </div>
 
                 {/* Pace Card */}
-                <div className="bg-white dark:bg-slate-800 rounded-xl p-6 border border-slate-200 dark:border-slate-700 shadow-sm relative overflow-hidden">
+                <div className="bg-white dark:bg-slate-800 rounded-xl p-6 border border-slate-200 dark:border-slate-700 shadow-sm relative overflow-hidden flex flex-col justify-center">
                     <div className="absolute top-0 right-0 p-4 opacity-10">
                         <Clock size={64} className="text-brand-teal" />
                     </div>
                     <h3 className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-2">Studietakt</h3>
-                    <div className="text-2xl font-bold text-slate-900 dark:text-white mb-1">
-                        {profile?.averagePaceMultiplier < 1.0 ? 'Snabb' : profile?.averagePaceMultiplier > 1.0 ? 'Grundlig' : 'Balanserad'}
+                    <div className="text-3xl font-bold text-slate-900 dark:text-white mb-1">
+                        {getPaceLabel(profile?.pacePreference)}
                     </div>
                     <p className="text-xs text-slate-500">
-                        Jämfört med genomsnittet för dina kurser.
+                        Baserat på din aktivitet och framsteg.
                     </p>
                 </div>
 
@@ -143,43 +190,60 @@ const AdaptiveLearningDashboard = () => {
                     <div className="absolute top-0 right-0 p-4 opacity-10">
                         <Target size={64} className="text-brand-orange" />
                     </div>
-                    <h3 className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-2">Fokusområden</h3>
+                    <h3 className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-2">Identifierade Utmaningar</h3>
                     <div className="flex flex-wrap gap-2">
-                        {profile?.struggleAreas?.length > 0 ? (
-                            profile.struggleAreas.map((area, idx) => (
+                        {struggleAreas.length > 0 ? (
+                            struggleAreas.map((area, idx) => (
                                 <span key={idx} className="px-2 py-1 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 text-xs rounded-full border border-red-200 dark:border-red-800">
                                     {area}
                                 </span>
                             ))
                         ) : (
-                            <span className="text-slate-400 text-sm">Inga specifika problemområden identifierade.</span>
+                            <span className="text-emerald-600 dark:text-emerald-400 text-sm flex items-center gap-1">
+                                <CheckCircle size={16} /> Inga hinder identifierade
+                            </span>
+                        )}
+                    </div>
+
+                    <h3 className="text-sm font-medium text-slate-500 dark:text-slate-400 mt-4 mb-2">Styrkor</h3>
+                    <div className="flex flex-wrap gap-2">
+                        {strengthAreas.length > 0 ? (
+                            strengthAreas.map((area, idx) => (
+                                <span key={idx} className="px-2 py-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 text-xs rounded-full border border-emerald-200 dark:border-emerald-800">
+                                    {area}
+                                </span>
+                            ))
+                        ) : (
+                            <span className="text-slate-400 text-sm">Analyseras...</span>
                         )}
                     </div>
                 </div>
             </div>
 
             {/* AI Analysis Section */}
-            <div className="bg-gradient-to-r from-brand-primary/5 to-brand-purple/5 border border-brand-primary/10 rounded-xl p-6">
-                <div className="flex items-start gap-4">
-                    <div className="p-3 bg-white dark:bg-slate-800 rounded-lg shadow-sm">
-                        <TrendingUp className="text-brand-primary" size={24} />
-                    </div>
-                    <div>
-                        <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
-                            AI-Insikt
-                        </h3>
-                        <p className="text-slate-600 dark:text-slate-300 leading-relaxed">
-                            {profile?.aiAnalysisSummary || "Kör din första analys för att få insikter."}
-                        </p>
+            {profile?.aiAnalysisSummary && (
+                <div className="bg-gradient-to-r from-brand-primary/5 to-brand-purple/5 border border-brand-primary/10 rounded-xl p-6">
+                    <div className="flex items-start gap-4">
+                        <div className="p-3 bg-white dark:bg-slate-800 rounded-lg shadow-sm">
+                            <TrendingUp className="text-brand-primary" size={24} />
+                        </div>
+                        <div>
+                            <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
+                                AI-Insikt
+                            </h3>
+                            <p className="text-slate-600 dark:text-slate-300 leading-relaxed">
+                                {profile.aiAnalysisSummary}
+                            </p>
+                        </div>
                     </div>
                 </div>
-            </div>
+            )}
 
             {/* Recommendations List */}
             <div>
                 <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
                     <CheckCircle className="text-emerald-500" size={20} />
-                    Rekommenderade Åtgärder
+                    Rekommenderade Åtgärder ({recommendations?.length || 0})
                 </h2>
 
                 {recommendations?.length > 0 ? (
@@ -215,14 +279,16 @@ const AdaptiveLearningDashboard = () => {
 
                                 <div className="flex gap-2">
                                     <button
-                                        onClick={() => handleStatusUpdate(rec.id, 'ACCEPTED')}
-                                        disabled={rec.status === 'ACCEPTED'}
-                                        className={`flex-1 px-3 py-2 text-sm font-medium rounded-lg transition-colors ${rec.status === 'ACCEPTED'
-                                                ? 'bg-emerald-100 text-emerald-800 border border-emerald-200 cursor-default'
+                                        onClick={() => handleStatusUpdate(rec.id, 'IN_PROGRESS')}
+                                        disabled={rec.status === 'IN_PROGRESS' || rec.status === 'COMPLETED'}
+                                        className={`flex-1 px-3 py-2 text-sm font-medium rounded-lg transition-colors ${rec.status === 'IN_PROGRESS'
+                                            ? 'bg-emerald-100 text-emerald-800 border border-emerald-200 cursor-default'
+                                            : rec.status === 'COMPLETED'
+                                                ? 'bg-blue-100 text-blue-800 cursor-default'
                                                 : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-600'
                                             }`}
                                     >
-                                        {rec.status === 'ACCEPTED' ? 'Pågående' : 'Markera Startad'}
+                                        {rec.status === 'IN_PROGRESS' ? 'Pågående' : rec.status === 'COMPLETED' ? 'Slutförd' : 'Markera Startad'}
                                     </button>
                                     <button className="flex-1 px-3 py-2 bg-brand-primary text-white text-sm font-medium rounded-lg hover:bg-brand-primary/90 transition-colors">
                                         Gå till material
@@ -247,9 +313,10 @@ const AdaptiveLearningDashboard = () => {
 
 const getTypeColor = (type) => {
     switch (type) {
-        case 'REVIEW_TOPIC': return 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300';
+        case 'CONTENT_REVIEW': return 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300';
         case 'CHALLENGE_YOURSELF': return 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300';
-        case 'WELLBEING_CHECK': return 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300';
+        case 'STREAK_REPAIR': return 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300';
+        case 'MENTOR_MEETING': return 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300';
         default: return 'bg-slate-100 text-slate-800 dark:bg-slate-700 dark:text-slate-300';
     }
 };

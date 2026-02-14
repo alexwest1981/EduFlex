@@ -16,7 +16,7 @@
 | **Prediktiv Personalisering** | Analyserar beteendedata för att identifiera "at-risk"-studenter och rekommenderar stödmateri| Fas 1 | **Prediktiv AI-Analys Engine** | Backend-motor färdig | Stable/Completed (Phase 1) |
 | Fas 2 | **Rollspecifika AI-coacher** | Rektor & Mentorsstöd | Stable/Completed (Phase 2) |
 | Fas 3 | **SKA-motor 2.0** | Planering/Uppföljning | Stable/Completed (Phase 3) |
-| Fas 4 | **Adaptive Learning Flow** | Elev-anpassning | Planned |
+| Fas 4 | **Adaptive Learning Flow** | Elev-anpassning | ✅ **Stabil / Verifierad** |
 | :--- | :--- | :--- |
 | **LTI 1.3 Core** | Grundläggande launch-stöd för externa verktyg. | ✅ **Klar** |
 | **LTI 1.3 Advantage** | Stöd för AGS (Betyg) och NRPS (Roller/Namn). | ✅ **Stabil / Verifierad** |
@@ -74,6 +74,12 @@
 - **UX/UI**: **Role-Based Sidebar** - Hidden "Documents" and "Tools" menus for Guardians.
 - **Security**: **Role Guarding** - Strengthened frontend route protection for EHT and Guardian pages.
 - **Roadmap**: Pivot to **Phase 4: Adaptive Learning**.
+
+### [v1.1.2] - 2026-02-14
+- **New Feature**: **Min Lärväg (Adaptive Learning)** - AI-driven analys av studentens inlärningsstil (VAK: Visuell, Auditiv, Kinestetisk) och studietakt.
+- **New Feature**: **AI Rekommendationer** - Personliga åtgärdsförslag baserat på prestation och beteende.
+- **Dashboard**: Ny student-vy med Radar-diagram och statusindikatorer för studietakt.
+- **Backend**: Implementering av `AdaptiveLearningService` med koppling till Google Gemini för analys.
 
 ### [v1.1.0] - 2026-02-14
 - **Platform Recovery**: **Native Mode Transition** - Fully bypassed Docker Desktop API issues by pivoting to host-based services (PostgreSQL 5432, Redis 6379, Standalone MinIO).

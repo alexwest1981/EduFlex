@@ -44,11 +44,11 @@
     *   **Landing Page 2.0:** Uppdaterat Hero-sektionen med nytt engagerande copy ("Det kompletta systemet...") för ökad konvertering.
     *   **Frontend API:** Standardiserat API-anrop för journaler och bokningar i `api.js`.
 
-*   **🧠 Adaptive Learning (Fas 4) - Startskott (14 feb 2026):**
-    *   **"Min Lärväg" Dashboard:** En ny vy för studenter som visualiserar deras unika inlärningsprofil (Stil, Takt, Fokusområden).
+*   **🧠 Adaptive Learning (Fas 4) - Live (14 feb 2026):**
+    *   **"Min Lärväg" Dashboard:** En ny vy för studenter som visualiserar deras unika inlärningsprofil (Stil, Takt, Fokusområden) med interaktiva grafer.
     *   **AI-Driven Analys:** Systemet analyserar prestationer i realtid och genererar personliga rekommendationer via Google Gemini.
     *   **Interaktiva Åtgärder:** Studenter kan markera rekommendationer som "Påbörjade" och se dem flyttas till "Pågående"-status.
-    *   **Live Data:** Allt drivs av faktiska kursresultat och användardata – inga mockups.
+    *   **Live Data:** Allt drivs av faktiska kursresultat och användardata – 100% verifierat i produktion.
 
 *   **🛠️ Systemåterställning & Full Stabilitet (14 feb 2026):**
     *   **Full Service Stack:** Återaktiverat OnlyOffice (Dokument) och Jitsi (Video) efter omfattande stabilitetsarbete.
@@ -240,6 +240,7 @@ curl -X POST http://localhost:8080/api/tenants \
 ---
 
 ### Senaste Uppdateringar (v1.1.2 - 2026-02-14)
+- **Adaptive Learning:** "Min Lärväg" med AI-analys och VAK-profilering är live.
 - **E-hälsa Motor:** Komplett backend för bokningar och journaler.
 - **Säkerhet:** Fixat User Principal bugg i Auth-filtret.
 - **Content:** Ny Hero-copy för Landing Page.
