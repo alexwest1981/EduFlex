@@ -92,7 +92,7 @@ const StandardLayout = ({ children }) => {
             { path: '/communication', icon: <MessageSquare size={20} />, label: t('shortcuts.messages') || 'Meddelanden' },
             { path: '/support', icon: <HelpCircle size={20} />, label: t('sidebar.support') },
             ...(isModuleActive('EDUGAME') ? [{ path: '/shop', icon: <Store size={20} />, label: 'Butik' }] : []),
-            ...(isModuleActive('WELLBEING_CENTER') && !['HALSOTEAM', 'ROLE_HALSOTEAM', 'ADMIN', 'ROLE_ADMIN'].includes(roleName) ? [{ path: '/wellbeing-center', icon: <Heart size={20} />, label: 'Sjukanmälan & E-hälsa' }] : [])
+            ...(isModuleActive('WELLBEING_CENTER') && !['HALSOTEAM', 'ROLE_HALSOTEAM'].includes(roleName) ? [{ path: '/wellbeing-center', icon: <Heart size={20} />, label: 'Sjukanmälan & E-hälsa' }] : [])
         ],
         admin: [
             ...(roleName === 'ADMIN' || roleName === 'ROLE_ADMIN' ? [{ path: '/admin', icon: <Settings size={20} />, label: t('sidebar.admin') }] : []),
