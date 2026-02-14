@@ -70,6 +70,7 @@ import WellbeingInbox from './features/health/WellbeingInbox';
 import AdaptiveLearningDashboard from './features/adaptive/AdaptiveLearningDashboard';
 
 import ManagementReportCenter from './features/principal/ManagementReportCenter';
+import ImpactDashboard from './features/impact/ImpactDashboard';
 
 // --- PROTECTED ROUTE ---
 const ProtectedRoute = ({ children, roles, permission }) => {
@@ -259,6 +260,14 @@ const AppRoutes = () => {
                     <ProtectedRoute roles={['ADMIN', 'ROLE_REKTOR', 'REKTOR', 'PRINCIPAL']}>
                         <Layout currentUser={currentUser} handleLogout={logout}>
                             <PrincipalTools />
+                        </Layout>
+                    </ProtectedRoute>
+                } />
+
+                <Route path="/impact" element={
+                    <ProtectedRoute roles={['ADMIN', 'PRINCIPAL', 'ROLE_REKTOR', 'REKTOR']}>
+                        <Layout currentUser={currentUser} handleLogout={logout}>
+                            <ImpactDashboard />
                         </Layout>
                     </ProtectedRoute>
                 } />

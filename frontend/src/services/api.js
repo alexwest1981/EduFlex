@@ -796,6 +796,10 @@ export const api = {
         getDashboard: (studentId) => api.get(`/guardian/dashboard/${studentId}`),
         getAiSummary: (studentId) => api.get(`/guardian/dashboard/${studentId}/ai-summary`),
     },
+
+    impact: {
+        getOverview: () => api.get('/impact/overview'),
+    },
 };
 
 /**

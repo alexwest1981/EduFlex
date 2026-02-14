@@ -245,6 +245,10 @@ curl -X POST http://localhost:8080/api/tenants \
 - **Stability**: **Transaction Isolation** - Refactored audit logging to use `REQUIRES_NEW`, preventing analysis failures from rolling back audit data.
 - **Database**: **Schema Repair** - Fixed `ai_audit_log` vs `ai_audit_logs` naming conflict and purged legacy constraints on recommendations.
 - **Improvement**: **Robust AI Parsing** - Enhanced `AdaptiveLearningService` to handle variable JSON output formats from Gemini.
+- **New Feature**: **Impact Dashboard** - Implemented "Outcome-Focused" analytics for School Leaders.
+    - **Grade Trends**: Correlates intervention dates with grade improvements.
+    - **Success Metrics**: Visualization of Elevhälsa effectiveness.
+    - **AI ROI**: Tracks academic performance of AI-assisted students vs non-users.
 
 ### [v1.1.2] - 2026-02-14)
 - **Adaptive Learning:** "Min Lärväg" med AI-analys och VAK-profilering är live.

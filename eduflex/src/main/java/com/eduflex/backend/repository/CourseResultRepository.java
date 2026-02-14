@@ -12,5 +12,7 @@ public interface CourseResultRepository extends JpaRepository<CourseResult, Long
 
     List<CourseResult> findByStudentId(Long studentId);
 
+    List<CourseResult> findByStudentIdIn(List<Long> studentIds);
+
     long countByStudentIdAndGrade(Long studentId, String grade);
 }

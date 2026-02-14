@@ -16,8 +16,11 @@ public class AdaptiveLearningProfile {
     private User user;
 
     // VAK Model (0-100 scale)
+    @Transient
     private int visualScore;
+    @Transient
     private int auditoryScore;
+    @Transient
     private int kinestheticScore;
 
     // Learning Pace preference (SLOW, MODERATE, FAST)
