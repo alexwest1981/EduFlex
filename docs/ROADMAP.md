@@ -72,6 +72,8 @@
 ### [v1.1.0] - 2026-02-14
 - **Platform Recovery**: **Native Mode Transition** - Fully bypassed Docker Desktop API issues by pivoting to host-based services (PostgreSQL 5432, Redis 6379, Standalone MinIO).
 - **Connectivity**: **Cloudflare Tunnel Restoration** - Fixed 502 errors and restored public access to `www.eduflexlms.se`.
+- **Backend Fix**: Resolved API mapping conflict in `GuardianController` causing startup failure.
+- **Privacy & Security**: **E-hälsa Visibility Refinement** - Strictly restricted internal health dashboards for specific roles (HALSOTEAM) while maintaining student/admin wellbeing access.
 - **Storage**: **MinIO & Profile Restoration** - Initialized standalone MinIO with correct credentials and synchronized legacy `uploads/` data, fixing profile picture 404s and upload failures.
 
 ### [v1.0.9] - 2026-02-14

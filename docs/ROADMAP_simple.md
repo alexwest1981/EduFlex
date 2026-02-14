@@ -31,7 +31,7 @@ Denna roadmap beskriver den strategiska utvecklingen av EduFlex LMS för att mö
 
 - [ ] **Fullskalig EHT-motor:** Bokningssystem (chatt/video/fysiskt), ärendehantering, journalsystem och statistik över väntetider/risknivåer.
 - [ ] **Elevens Välmående-yta:** Anonyma pulsmätningar, självskattning och "check-ins" som matar data till EHT-dashboards.
-- [ ] **Sekretess & Journalflöden:** Granulär behörighetsstyrning för vad som delas mellan EHT, mentorer och rektorer.
+- [x] **Sekretess & Journalflöden:** Granulär behörighetsstyrning för vad som delas mellan EHT, mentorer och rektorer. <!-- id: 115 -->
 
 ## 5. Engagement Layer & Gamification
 *Öka motivation och engagemang genom hela plattformen.*
