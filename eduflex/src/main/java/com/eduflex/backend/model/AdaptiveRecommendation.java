@@ -30,7 +30,10 @@ public class AdaptiveRecommendation {
 
     // Reasoning from AI
     @Column(columnDefinition = "TEXT")
-    private String aiReasoning;
+    private String aiReasoning; // Short summary (already exists)
+
+    @Column(columnDefinition = "TEXT")
+    private String reasoningTrace; // Detailed XAI explanation ("Why?")
 
     private int priorityScore = 0; // 0-100
 
@@ -111,6 +114,14 @@ public class AdaptiveRecommendation {
 
     public void setAiReasoning(String aiReasoning) {
         this.aiReasoning = aiReasoning;
+    }
+
+    public String getReasoningTrace() {
+        return reasoningTrace;
+    }
+
+    public void setReasoningTrace(String reasoningTrace) {
+        this.reasoningTrace = reasoningTrace;
     }
 
     public int getPriorityScore() {

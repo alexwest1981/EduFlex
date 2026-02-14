@@ -1,0 +1,117 @@
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::                (v3.2.3)
+
+2026-02-14 19:22:10 - Starting EduflexApplication v2.0.1-Beta using Java 25.0.1 with PID 28500 (E:\Projekt\EduFlex\eduflex\target\eduflex-2.0.1-Beta.jar started by alxpa in E:\Projekt\EduFlex\eduflex)
+2026-02-14 19:22:10 - No active profile set, falling back to 1 default profile: "default"
+2026-02-14 19:22:12 - Multiple Spring Data modules found, entering strict repository configuration mode
+2026-02-14 19:22:12 - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-02-14 19:22:12 - Finished Spring Data repository scanning in 378 ms. Found 116 JPA repository interfaces.
+2026-02-14 19:22:13 - Tomcat initialized with port 8080 (http)
+2026-02-14 19:22:13 - Starting service [Tomcat]
+2026-02-14 19:22:13 - Starting Servlet engine: [Apache Tomcat/10.1.19]
+2026-02-14 19:22:14 - Initializing Spring embedded WebApplicationContext
+2026-02-14 19:22:14 - Root WebApplicationContext: initialization completed in 3475 ms
+2026-02-14 19:22:14 - HikariPool-1 - Starting...
+2026-02-14 19:22:14 - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@1978b0d5
+2026-02-14 19:22:14 - HikariPool-1 - Start completed.
+2026-02-14 19:22:14 - HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-02-14 19:22:14 - HHH000412: Hibernate ORM core version 6.4.4.Final
+2026-02-14 19:22:14 - HHH000026: Second-level cache disabled
+2026-02-14 19:22:14 - No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-02-14 19:22:15 - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-02-14 19:22:18 - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-02-14 19:22:18 - Initialized JPA EntityManagerFactory for persistence unit 'default'
+? Public Key Loaded for Verification
+? LICENS GODKÄND (RSA): ENTERPRISE för Alex Weström
+2026-02-14 19:22:19 - Filter registration was not registered (disabled)
+2026-02-14 19:22:19 - Filter tenantFilterRegistration was not registered (disabled)
+2026-02-14 19:22:19 - Filter licenseFilterRegistration was not registered (disabled)
+2026-02-14 19:22:19 - Hibernate is in classpath; If applicable, HQL parser will be used.
+?? FIL-SYNC: Inaktiverad (file.sync.enabled=false). Inga filer synkas.
+2026-02-14 19:22:20 - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'academicGovernanceController' defined in URL [jar:nested:/E:/Projekt/EduFlex/eduflex/target/eduflex-2.0.1-Beta.jar/!BOOT-INF/classes/!/com/eduflex/backend/controller/AcademicGovernanceController.class]: Unsatisfied dependency expressed through constructor parameter 1: Error creating bean with name 'userService' defined in URL [jar:nested:/E:/Projekt/EduFlex/eduflex/target/eduflex-2.0.1-Beta.jar/!BOOT-INF/classes/!/com/eduflex/backend/service/UserService.class]: Unsatisfied dependency expressed through constructor parameter 5: Error creating bean with name 'minioStorageService' defined in URL [jar:nested:/E:/Projekt/EduFlex/eduflex/target/eduflex-2.0.1-Beta.jar/!BOOT-INF/classes/!/com/eduflex/backend/service/MinioStorageService.class]: Unexpected exception during bean creation
+2026-02-14 19:22:20 - Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-02-14 19:22:20 - HikariPool-1 - Shutdown initiated...
+2026-02-14 19:22:20 - HikariPool-1 - Shutdown completed.
+2026-02-14 19:22:20 - Stopping service [Tomcat]
+2026-02-14 19:22:20 - 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2026-02-14 19:22:20 - Application run failed
+org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'academicGovernanceController' defined in URL [jar:nested:/E:/Projekt/EduFlex/eduflex/target/eduflex-2.0.1-Beta.jar/!BOOT-INF/classes/!/com/eduflex/backend/controller/AcademicGovernanceController.class]: Unsatisfied dependency expressed through constructor parameter 1: Error creating bean with name 'userService' defined in URL [jar:nested:/E:/Projekt/EduFlex/eduflex/target/eduflex-2.0.1-Beta.jar/!BOOT-INF/classes/!/com/eduflex/backend/service/UserService.class]: Unsatisfied dependency expressed through constructor parameter 5: Error creating bean with name 'minioStorageService' defined in URL [jar:nested:/E:/Projekt/EduFlex/eduflex/target/eduflex-2.0.1-Beta.jar/!BOOT-INF/classes/!/com/eduflex/backend/service/MinioStorageService.class]: Unexpected exception during bean creation
+	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:798)
+	at org.springframework.beans.factory.support.ConstructorResolver.autowireConstructor(ConstructorResolver.java:237)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.autowireConstructor(AbstractAutowireCapableBeanFactory.java:1355)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1192)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:562)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:522)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:325)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:323)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:199)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.preInstantiateSingletons(DefaultListableBeanFactory.java:975)
+	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:959)
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:624)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:146)
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:754)
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:456)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:334)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1354)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1343)
+	at com.eduflex.EduflexApplication.main(EduflexApplication.java:13)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:565)
+	at org.springframework.boot.loader.launch.Launcher.launch(Launcher.java:91)
+	at org.springframework.boot.loader.launch.Launcher.launch(Launcher.java:53)
+	at org.springframework.boot.loader.launch.JarLauncher.main(JarLauncher.java:58)
+Caused by: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'userService' defined in URL [jar:nested:/E:/Projekt/EduFlex/eduflex/target/eduflex-2.0.1-Beta.jar/!BOOT-INF/classes/!/com/eduflex/backend/service/UserService.class]: Unsatisfied dependency expressed through constructor parameter 5: Error creating bean with name 'minioStorageService' defined in URL [jar:nested:/E:/Projekt/EduFlex/eduflex/target/eduflex-2.0.1-Beta.jar/!BOOT-INF/classes/!/com/eduflex/backend/service/MinioStorageService.class]: Unexpected exception during bean creation
+	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:798)
+	at org.springframework.beans.factory.support.ConstructorResolver.autowireConstructor(ConstructorResolver.java:237)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.autowireConstructor(AbstractAutowireCapableBeanFactory.java:1355)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1192)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:562)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:522)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:325)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:323)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:199)
+	at org.springframework.beans.factory.config.DependencyDescriptor.resolveCandidate(DependencyDescriptor.java:254)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1443)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1353)
+	at org.springframework.beans.factory.support.ConstructorResolver.resolveAutowiredArgument(ConstructorResolver.java:907)
+	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:785)
+	... 24 common frames omitted
+Caused by: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'minioStorageService' defined in URL [jar:nested:/E:/Projekt/EduFlex/eduflex/target/eduflex-2.0.1-Beta.jar/!BOOT-INF/classes/!/com/eduflex/backend/service/MinioStorageService.class]: Unexpected exception during bean creation
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:535)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:325)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:323)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:199)
+	at org.springframework.beans.factory.config.DependencyDescriptor.resolveCandidate(DependencyDescriptor.java:254)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1443)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1353)
+	at org.springframework.beans.factory.support.ConstructorResolver.resolveAutowiredArgument(ConstructorResolver.java:907)
+	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:785)
+	... 38 common frames omitted
+Caused by: java.lang.IllegalArgumentException: Could not resolve placeholder 'minio.bucket' in value "${minio.bucket}"
+	at org.springframework.util.PropertyPlaceholderHelper.parseStringValue(PropertyPlaceholderHelper.java:180)
+	at org.springframework.util.PropertyPlaceholderHelper.replacePlaceholders(PropertyPlaceholderHelper.java:126)
+	at org.springframework.core.env.AbstractPropertyResolver.doResolvePlaceholders(AbstractPropertyResolver.java:239)
+	at org.springframework.core.env.AbstractPropertyResolver.resolveRequiredPlaceholders(AbstractPropertyResolver.java:210)
+	at org.springframework.context.support.PropertySourcesPlaceholderConfigurer.lambda$processProperties$0(PropertySourcesPlaceholderConfigurer.java:200)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.resolveEmbeddedValue(AbstractBeanFactory.java:921)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1374)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1353)
+	at org.springframework.beans.factory.support.ConstructorResolver.resolveAutowiredArgument(ConstructorResolver.java:907)
+	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:785)
+	at org.springframework.beans.factory.support.ConstructorResolver.autowireConstructor(ConstructorResolver.java:237)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.autowireConstructor(AbstractAutowireCapableBeanFactory.java:1355)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1192)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:562)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:522)
+	... 47 common frames omitted

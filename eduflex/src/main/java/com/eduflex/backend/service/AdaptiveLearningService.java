@@ -5,6 +5,7 @@ import com.eduflex.backend.model.*;
 import com.eduflex.backend.repository.AdaptiveLearningProfileRepository;
 import com.eduflex.backend.repository.AdaptiveRecommendationRepository;
 import com.eduflex.backend.repository.CourseResultRepository;
+
 import com.eduflex.backend.repository.UserRepository;
 import com.eduflex.backend.service.ai.GeminiService;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -13,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.eduflex.backend.service.AiAuditService;
 
 import java.time.LocalDateTime;
 
@@ -30,6 +32,7 @@ public class AdaptiveLearningService {
         private final UserRepository userRepository;
         private final GeminiService geminiService;
         private final ObjectMapper objectMapper;
+        private final AiAuditService aiAuditService;
 
         @Transactional
         public AdaptiveDashboardDTO getStudentDashboard(Long userId) {
@@ -64,37 +67,29 @@ public class AdaptiveLearningService {
                 profile.setStrengthAreas("[]");
                 profile.setLastAnalyzed(null);
 
-                return profileRepository.save(profile);
+                try {
+                        return profileRepository.save(profile);
+                } catch (Exception e) {
+                        log.error("Failed to save profile for user {}", student.getId(), e);
+                        throw e;
+                }
         }
 
-        @Transactional
         public void analyzeStudentPerformance(Long userId) {
                 log.info("Starting Adaptive Analysis for user: {}", userId);
+
                 User student = userRepository.findById(userId)
                                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-                // 1. Gather Data
-                List<CourseResult> results = courseResultRepository.findByStudentId(student.getId());
+                // 1. Gather all student data
+                String performanceData = gatherStudentPerformanceContext(student);
 
-                String performanceData;
-                if (results.isEmpty()) {
-                        performanceData = "Studenten har inte slutfört några kurser än. Detta är en ny student som behöver en introduktion.";
-                } else {
-                        StringBuilder sb = new StringBuilder();
-                        for (CourseResult result : results) {
-                                sb.append("- Kurs: ").append(result.getCourse().getName())
-                                                .append(", Betyg: ").append(result.getGrade())
-                                                .append(", Status: ").append(result.getStatus())
-                                                .append("\n");
-                        }
-                        performanceData = sb.toString();
-                }
-
-                // 2. AI Analysis Prompt with VAK & Pace request
+                // 2. Prepare Prompt
                 String prompt = String.format(
                                 """
-                                                Du är en expert på pedagogisk analys och adaptivt lärande. Analysera följande studentdata:
-                                                %s
+                                                Du är en expert-pedagog inom EduFlex LMS.
+                                                Analysera följande data för studenten och skapa en personlig läroprofil.
+                                                Datan innehåller betyg, närvaro, quiz-resultat och varningsflaggor.
 
                                                 Din uppgift är att skapa en detaljerad profil och rekommendationer.
                                                 Svara ENDAST med giltig JSON i följande format:
@@ -110,7 +105,8 @@ public class AdaptiveLearningService {
                                                       "title": "Titel",
                                                       "description": "Beskrivning",
                                                       "type": "CONTENT_REVIEW" | "PRACTICE_QUIZ" | "ADVANCED_TOPIC" | "MENTOR_MEETING" | "STREAK_REPAIR",
-                                                      "reasoning": "Varför denna rekommendation?"
+                                                      "reasoningTrace": "En detaljerad, pedagogisk förklaring till varför just denna rekommendation ges.",
+                                                      "priorityScore": (0-100, hur viktig är denna åtgärd?)
                                                     }
                                                   ]
                                                 }
@@ -120,6 +116,11 @@ public class AdaptiveLearningService {
                 // 3. AI Analysis Execution
                 try {
                         String jsonResponse = geminiService.generateJsonContent(prompt);
+
+                        // --- Audit Logging (Decoupled & Non-blocking) ---
+                        aiAuditService.saveAiAuditLog(userId, prompt, jsonResponse);
+                        // ---------------------
+
                         JsonNode root = objectMapper.readTree(jsonResponse);
 
                         // 4. Update Profile
@@ -158,37 +159,68 @@ public class AdaptiveLearningService {
                                         .findByUserIdAndStatusOrderByPriorityScoreDesc(userId,
                                                         AdaptiveRecommendation.Status.NEW);
                         for (AdaptiveRecommendation old : oldRecs) {
-                                old.setStatus(AdaptiveRecommendation.Status.INVALIDATED); // Or EXPIRED/DISMISSED
-                                recommendationRepository.save(old);
+                                try {
+                                        old.setStatus(AdaptiveRecommendation.Status.INVALIDATED);
+                                        recommendationRepository.save(old);
+                                } catch (Exception e) {
+                                        log.error("Failed to invalidate old recommendation: {}", old.getId(), e);
+                                }
                         }
 
-                        if (root.has("recommendations")) {
-                                JsonNode recsNode = root.get("recommendations");
-                                if (recsNode.isArray()) {
-                                        for (JsonNode recNode : recsNode) {
-                                                createRecommendation(student,
-                                                                recNode.path("title").asText("Rekommendation"),
-                                                                recNode.path("description").asText(""),
-                                                                recNode.path("type").asText("CHALLENGE_YOURSELF"),
-                                                                recNode.path("reasoning").asText("AI-Analys"));
-                                        }
+                        JsonNode recsNode = null;
+                        log.error("DEBUG: Root isArray: {}, hasRecommendations: {}", root.isArray(),
+                                        root.has("recommendations"));
+
+                        if (root.isArray()) {
+                                recsNode = root;
+                        } else if (root.has("recommendations")) {
+                                recsNode = root.get("recommendations");
+                        }
+
+                        if (recsNode != null && recsNode.isArray()) {
+                                for (JsonNode recNode : recsNode) {
+                                        createRecommendation(student,
+                                                        recNode.path("title").asText("Rekommendation"),
+                                                        recNode.path("description").asText(""),
+                                                        recNode.path("type").asText("CONTENT_REVIEW"),
+                                                        recNode.path("reasoningTrace")
+                                                                        .asText("AI-Analys saknas"),
+                                                        recNode.path("priorityScore").asInt(50));
                                 }
+                        } else {
+                                log.warn("No recommendations found in AI response for user {}", userId);
                         }
 
                 } catch (Exception e) {
                         log.error("Failed to analyze student performance", e);
-                        // Fallback handled by keeping old data or throwing
+                }
+        }
+
+        private String gatherStudentPerformanceContext(User student) {
+                List<CourseResult> results = courseResultRepository.findByStudentId(student.getId());
+
+                if (results.isEmpty()) {
+                        return "Studenten har inte slutfört några kurser än. Detta är en ny student som behöver en introduktion.";
+                } else {
+                        StringBuilder sb = new StringBuilder();
+                        for (CourseResult result : results) {
+                                sb.append("- Kurs: ").append(result.getCourse().getName())
+                                                .append(", Betyg: ").append(result.getGrade())
+                                                .append(", Status: ").append(result.getStatus())
+                                                .append("\n");
+                        }
+                        return sb.toString();
                 }
         }
 
         private void createRecommendation(User user, String title, String description,
-                        String typeStr, String reasoning) {
+                        String typeStr, String reasoningTrace, int priorityScore) {
 
                 AdaptiveRecommendation.RecommendationType type;
                 try {
                         type = AdaptiveRecommendation.RecommendationType.valueOf(typeStr);
                 } catch (IllegalArgumentException e) {
-                        type = AdaptiveRecommendation.RecommendationType.CONTENT_REVIEW; // Default fallback
+                        type = AdaptiveRecommendation.RecommendationType.CONTENT_REVIEW;
                 }
 
                 AdaptiveRecommendation rec = new AdaptiveRecommendation();
@@ -196,27 +228,16 @@ public class AdaptiveLearningService {
                 rec.setTitle(title);
                 rec.setDescription(description);
                 rec.setType(type);
-                // rec.setAiReasoning(reasoning); // Make sure entity has this field! I recall
-                // seeing it in AICoachingService usage but did I add it to
-                // AdaptiveRecommendation?
-                // Checking AdaptiveRecommendation.java... I didn't add aiReasoning in the
-                // write_to_file call earlier!
-                // I added: title, description, type, contentUrl, associatedCourseId, status,
-                // createdAt.
-                // I should probably add aiReasoning or just put it in description. Use
-                // description for now.
-
-                // Let's assume description contains reasoning if needed for now, or add the
-                // field.
-                // Given I just wrote the file and didn't include aiReasoning, I should skip it
-                // or use it to augment description.
-                // Or update the entity. Updating entity is better.
-
+                rec.setReasoningTrace(reasoningTrace);
+                rec.setAiReasoning("AI-Generated Recommendation based on performance.");
                 rec.setStatus(AdaptiveRecommendation.Status.NEW);
-                rec.setPriorityScore(80);
-                // I didn't add priorityScore to AdaptiveRecommendation.java either.
+                rec.setPriorityScore(priorityScore);
 
-                recommendationRepository.save(rec);
+                try {
+                        recommendationRepository.save(rec);
+                } catch (Exception e) {
+                        log.error("Failed to save new recommendation: {}", rec.getTitle(), e);
+                }
         }
 
         @Transactional
@@ -230,6 +251,10 @@ public class AdaptiveLearningService {
                 }
 
                 rec.setStatus(status);
-                recommendationRepository.save(rec);
+                try {
+                        recommendationRepository.save(rec);
+                } catch (Exception e) {
+                        log.error("Failed to save new recommendation: {}", rec.getTitle(), e);
+                }
         }
 }

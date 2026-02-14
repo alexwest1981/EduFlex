@@ -1,0 +1,1498 @@
+﻿
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::                (v3.2.3)
+
+2026-02-14 19:20:48 - Starting EduflexApplication v2.0.1-Beta using Java 21.0.10 with PID 28604 (E:\Projekt\EduFlex\eduflex\target\eduflex-2.0.1-Beta.jar started by alxpa in E:\Projekt\EduFlex\eduflex)
+2026-02-14 19:20:48 - No active profile set, falling back to 1 default profile: "default"
+2026-02-14 19:20:51 - Multiple Spring Data modules found, entering strict repository configuration mode
+2026-02-14 19:20:51 - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-02-14 19:20:52 - Finished Spring Data repository scanning in 636 ms. Found 116 JPA repository interfaces.
+2026-02-14 19:20:53 - Tomcat initialized with port 8080 (http)
+2026-02-14 19:20:53 - Starting service [Tomcat]
+2026-02-14 19:20:53 - Starting Servlet engine: [Apache Tomcat/10.1.19]
+2026-02-14 19:20:54 - Initializing Spring embedded WebApplicationContext
+2026-02-14 19:20:54 - Root WebApplicationContext: initialization completed in 4952 ms
+2026-02-14 19:20:54 - HikariPool-1 - Starting...
+2026-02-14 19:20:54 - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@3d12f065
+2026-02-14 19:20:54 - HikariPool-1 - Start completed.
+2026-02-14 19:20:54 - HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-02-14 19:20:55 - HHH000412: Hibernate ORM core version 6.4.4.Final
+2026-02-14 19:20:55 - HHH000026: Second-level cache disabled
+2026-02-14 19:20:55 - No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-02-14 19:20:55 - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-02-14 19:20:59 - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-02-14 19:20:59 - Initialized JPA EntityManagerFactory for persistence unit 'default'
+? Public Key Loaded for Verification
+? LICENS GODK─ND (RSA): ENTERPRISE f÷r Alex Westr÷m
+2026-02-14 19:21:00 - Filter registration was not registered (disabled)
+2026-02-14 19:21:00 - Filter tenantFilterRegistration was not registered (disabled)
+2026-02-14 19:21:00 - Filter licenseFilterRegistration was not registered (disabled)
+2026-02-14 19:21:01 - Hibernate is in classpath; If applicable, HQL parser will be used.
+?? FIL-SYNC: Inaktiverad (file.sync.enabled=false). Inga filer synkas.
+2026-02-14 19:21:02 - MinIO Storage Service initialized: URL=http://127.0.0.1:9000, Bucket=eduflex
+2026-02-14 19:21:04 - AICourseController INITIALIZED
+2026-02-14 19:21:04 - === ModuleService: Initializing system modules ===
+2026-02-14 19:21:04 - === ModuleService: Module initialization complete. Total modules: 15 ===
+2026-02-14 19:21:07 - ­ƒöæ Loading existing LTI RSA Key from database (ID: f02ea0ea-995f-4f8a-a35c-402b9afd0ed1)
+2026-02-14 19:21:09 - Adding welcome page: class path resource [static/index.html]
+2026-02-14 19:21:09 - Exposing 4 endpoint(s) beneath base path '/actuator'
+2026-02-14 19:21:09 - You are asking Spring Security to ignore Mvc [pattern='/uploads/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2026-02-14 19:21:10 - Tomcat started on port 8080 (http) with context path ''
+2026-02-14 19:21:10 - Starting...
+2026-02-14 19:21:10 - BrokerAvailabilityEvent[available=true, SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@5ab5f0d9]]
+2026-02-14 19:21:10 - Started.
+2026-02-14 19:21:10 - Started EduflexApplication in 22.536 seconds (process running for 23.402)
+2026-02-14 19:21:10 - ­ƒÜÇ Starting Global Multi-Tenant Migration process...
+2026-02-14 19:21:10 - ­ƒôª Migrating public schema...
+2026-02-14 19:21:10 - Initializing schema: public for tenant: Default Public Schema
+2026-02-14 19:21:10 - Skipping CREATE SCHEMA for 'public' schema.
+2026-02-14 19:21:10 - Database: jdbc:postgresql://127.0.0.1:5432/eduflex (PostgreSQL 18.1)
+2026-02-14 19:21:11 - Flyway upgrade recommended: PostgreSQL 18.1 is newer than this version of Flyway and support has not been tested. The latest supported version of PostgreSQL is 16.
+2026-02-14 19:21:11 - Repair of failed migration in Schema History table "public"."flyway_schema_history" not necessary. No failed migration detected.
+2026-02-14 19:21:11 - Successfully repaired schema history table "public"."flyway_schema_history" (execution time 00:00.047s).
+2026-02-14 19:21:11 - Flyway upgrade recommended: PostgreSQL 18.1 is newer than this version of Flyway and support has not been tested. The latest supported version of PostgreSQL is 16.
+2026-02-14 19:21:11 - Current version of schema "public": 999
+2026-02-14 19:21:11 - outOfOrder mode is active. Migration of schema "public" may not be reproducible.
+2026-02-14 19:21:11 - Migrating schema "public" to version "37 - Adaptive Learning Metadata" [out of order]
+2026-02-14 19:21:11 - Migration of schema "public" to version "37 - Adaptive Learning Metadata" [out of order] failed! Changes successfully rolled back.
+2026-02-14 19:21:11 - Error creating schema public: Migration V37__Adaptive_Learning_Metadata.sql failed
+----------------------------------------------------
+SQL State  : 42701
+Error Code : 0
+Message    : FEL: kolumn "prerequisite_material_id" i relation "course_materials" finns redan
+Location   : db/migration/V37__Adaptive_Learning_Metadata.sql (E:\Projekt\EduFlex\eduflex\nested:\E:\Projekt\EduFlex\eduflex\target\eduflex-2.0.1-Beta.jar\!BOOT-INF\classes\!\db\migration\V37__Adaptive_Learning_Metadata.sql)
+Line       : 2
+Statement  : -- Migration to add Adaptive Learning Metadata to Course Materials
+ALTER TABLE course_materials 
+ADD COLUMN difficulty_level INTEGER DEFAULT 3,
+ADD COLUMN prerequisite_material_id BIGINT,
+ADD COLUMN estimated_time_minutes INTEGER DEFAULT 15
+
+org.flywaydb.core.internal.command.DbMigrate$FlywayMigrateException: Migration V37__Adaptive_Learning_Metadata.sql failed
+----------------------------------------------------
+SQL State  : 42701
+Error Code : 0
+Message    : FEL: kolumn "prerequisite_material_id" i relation "course_materials" finns redan
+Location   : db/migration/V37__Adaptive_Learning_Metadata.sql (E:\Projekt\EduFlex\eduflex\nested:\E:\Projekt\EduFlex\eduflex\target\eduflex-2.0.1-Beta.jar\!BOOT-INF\classes\!\db\migration\V37__Adaptive_Learning_Metadata.sql)
+Line       : 2
+Statement  : -- Migration to add Adaptive Learning Metadata to Course Materials
+ALTER TABLE course_materials 
+ADD COLUMN difficulty_level INTEGER DEFAULT 3,
+ADD COLUMN prerequisite_material_id BIGINT,
+ADD COLUMN estimated_time_minutes INTEGER DEFAULT 15
+
+	at org.flywaydb.core.internal.command.DbMigrate.doMigrateGroup(DbMigrate.java:382)
+	at org.flywaydb.core.internal.command.DbMigrate.lambda$applyMigrations$1(DbMigrate.java:272)
+	at org.flywaydb.core.internal.jdbc.TransactionalExecutionTemplate.execute(TransactionalExecutionTemplate.java:55)
+	at org.flywaydb.core.internal.command.DbMigrate.applyMigrations(DbMigrate.java:271)
+	at org.flywaydb.core.internal.command.DbMigrate.migrateGroup(DbMigrate.java:244)
+	at org.flywaydb.core.internal.command.DbMigrate.lambda$migrateAll$0(DbMigrate.java:139)
+	at org.flywaydb.database.postgresql.PostgreSQLAdvisoryLockTemplate.execute(PostgreSQLAdvisoryLockTemplate.java:73)
+	at org.flywaydb.database.postgresql.PostgreSQLAdvisoryLockTemplate.lambda$execute$0(PostgreSQLAdvisoryLockTemplate.java:56)
+	at org.flywaydb.core.internal.jdbc.TransactionalExecutionTemplate.execute(TransactionalExecutionTemplate.java:55)
+	at org.flywaydb.database.postgresql.PostgreSQLAdvisoryLockTemplate.execute(PostgreSQLAdvisoryLockTemplate.java:56)
+	at org.flywaydb.database.postgresql.PostgreSQLConnection.lock(PostgreSQLConnection.java:96)
+	at org.flywaydb.core.internal.schemahistory.JdbcTableSchemaHistory.lock(JdbcTableSchemaHistory.java:145)
+	at org.flywaydb.core.internal.command.DbMigrate.migrateAll(DbMigrate.java:139)
+	at org.flywaydb.core.internal.command.DbMigrate.migrate(DbMigrate.java:97)
+	at org.flywaydb.core.Flyway.lambda$migrate$0(Flyway.java:202)
+	at org.flywaydb.core.FlywayExecutor.execute(FlywayExecutor.java:205)
+	at org.flywaydb.core.Flyway.migrate(Flyway.java:147)
+	at com.eduflex.backend.service.TenantService.initTenantSchema(TenantService.java:145)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:351)
+	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:713)
+	at com.eduflex.backend.service.TenantService$$SpringCGLIB$$0.initTenantSchema(<generated>)
+	at com.eduflex.backend.config.GlobalMigrationRunner.run(GlobalMigrationRunner.java:34)
+	at org.springframework.boot.SpringApplication.lambda$callRunner$5(SpringApplication.java:790)
+	at org.springframework.util.function.ThrowingConsumer$1.acceptWithException(ThrowingConsumer.java:83)
+	at org.springframework.util.function.ThrowingConsumer.accept(ThrowingConsumer.java:60)
+	at org.springframework.util.function.ThrowingConsumer$1.accept(ThrowingConsumer.java:88)
+	at org.springframework.boot.SpringApplication.callRunner(SpringApplication.java:798)
+	at org.springframework.boot.SpringApplication.callRunner(SpringApplication.java:789)
+	at org.springframework.boot.SpringApplication.lambda$callRunners$3(SpringApplication.java:774)
+	at java.base/java.util.stream.ForEachOps$ForEachOp$OfRef.accept(ForEachOps.java:184)
+	at java.base/java.util.stream.SortedOps$SizedRefSortingSink.end(SortedOps.java:357)
+	at java.base/java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:510)
+	at java.base/java.util.stream.AbstractPipeline.wrapAndCopyInto(AbstractPipeline.java:499)
+	at java.base/java.util.stream.ForEachOps$ForEachOp.evaluateSequential(ForEachOps.java:151)
+	at java.base/java.util.stream.ForEachOps$ForEachOp$OfRef.evaluateSequential(ForEachOps.java:174)
+	at java.base/java.util.stream.AbstractPipeline.evaluate(AbstractPipeline.java:234)
+	at java.base/java.util.stream.ReferencePipeline.forEach(ReferencePipeline.java:596)
+	at org.springframework.boot.SpringApplication.callRunners(SpringApplication.java:774)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:341)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1354)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1343)
+	at com.eduflex.EduflexApplication.main(EduflexApplication.java:13)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.springframework.boot.loader.launch.Launcher.launch(Launcher.java:91)
+	at org.springframework.boot.loader.launch.Launcher.launch(Launcher.java:53)
+	at org.springframework.boot.loader.launch.JarLauncher.main(JarLauncher.java:58)
+Caused by: org.flywaydb.core.internal.sqlscript.FlywaySqlScriptException: Migration V37__Adaptive_Learning_Metadata.sql failed
+----------------------------------------------------
+SQL State  : 42701
+Error Code : 0
+Message    : FEL: kolumn "prerequisite_material_id" i relation "course_materials" finns redan
+Location   : db/migration/V37__Adaptive_Learning_Metadata.sql (E:\Projekt\EduFlex\eduflex\nested:\E:\Projekt\EduFlex\eduflex\target\eduflex-2.0.1-Beta.jar\!BOOT-INF\classes\!\db\migration\V37__Adaptive_Learning_Metadata.sql)
+Line       : 2
+Statement  : -- Migration to add Adaptive Learning Metadata to Course Materials
+ALTER TABLE course_materials 
+ADD COLUMN difficulty_level INTEGER DEFAULT 3,
+ADD COLUMN prerequisite_material_id BIGINT,
+ADD COLUMN estimated_time_minutes INTEGER DEFAULT 15
+
+	at org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor.handleException(DefaultSqlScriptExecutor.java:252)
+	at org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor.executeStatement(DefaultSqlScriptExecutor.java:214)
+	at org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor.execute(DefaultSqlScriptExecutor.java:133)
+	at org.flywaydb.core.internal.resolver.sql.SqlMigrationExecutor.executeOnce(SqlMigrationExecutor.java:65)
+	at org.flywaydb.core.internal.resolver.sql.SqlMigrationExecutor.lambda$execute$0(SqlMigrationExecutor.java:57)
+	at org.flywaydb.core.internal.database.DefaultExecutionStrategy.execute(DefaultExecutionStrategy.java:27)
+	at org.flywaydb.core.internal.resolver.sql.SqlMigrationExecutor.execute(SqlMigrationExecutor.java:56)
+	at org.flywaydb.core.internal.command.DbMigrate.doMigrateGroup(DbMigrate.java:374)
+	... 48 common frames omitted
+Caused by: org.postgresql.util.PSQLException: FEL: kolumn "prerequisite_material_id" i relation "course_materials" finns redan
+	at org.postgresql.core.v3.QueryExecutorImpl.receiveErrorResponse(QueryExecutorImpl.java:2713)
+	at org.postgresql.core.v3.QueryExecutorImpl.processResults(QueryExecutorImpl.java:2401)
+	at org.postgresql.core.v3.QueryExecutorImpl.execute(QueryExecutorImpl.java:368)
+	at org.postgresql.jdbc.PgStatement.executeInternal(PgStatement.java:498)
+	at org.postgresql.jdbc.PgStatement.execute(PgStatement.java:415)
+	at org.postgresql.jdbc.PgStatement.executeWithFlags(PgStatement.java:335)
+	at org.postgresql.jdbc.PgStatement.executeCachedSql(PgStatement.java:321)
+	at org.postgresql.jdbc.PgStatement.executeWithFlags(PgStatement.java:297)
+	at org.postgresql.jdbc.PgStatement.execute(PgStatement.java:292)
+	at com.zaxxer.hikari.pool.ProxyStatement.execute(ProxyStatement.java:94)
+	at com.zaxxer.hikari.pool.HikariProxyStatement.execute(HikariProxyStatement.java)
+	at org.flywaydb.core.internal.jdbc.JdbcTemplate.executeStatement(JdbcTemplate.java:210)
+	at org.flywaydb.core.internal.sqlscript.ParsedSqlStatement.execute(ParsedSqlStatement.java:89)
+	at org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor.executeStatement(DefaultSqlScriptExecutor.java:206)
+	... 54 common frames omitted
+2026-02-14 19:21:11 - ÔØî Failed to migrate public schema: Failed to create schema: public
+2026-02-14 19:21:11 - ­ƒæÑ Found 2 tenants to migrate.
+2026-02-14 19:21:11 - ­ƒôª Migrating tenant: WestCode (Schema: west_code)
+2026-02-14 19:21:11 - Initializing schema: west_code for tenant: WestCode
+2026-02-14 19:21:11 - Schema west_code created (or already exists).
+2026-02-14 19:21:11 - Database: jdbc:postgresql://127.0.0.1:5432/eduflex (PostgreSQL 18.1)
+2026-02-14 19:21:11 - Flyway upgrade recommended: PostgreSQL 18.1 is newer than this version of Flyway and support has not been tested. The latest supported version of PostgreSQL is 16.
+2026-02-14 19:21:11 - Repair of failed migration in Schema History table "west_code"."flyway_schema_history" not necessary. No failed migration detected.
+2026-02-14 19:21:11 - Successfully repaired schema history table "west_code"."flyway_schema_history" (execution time 00:00.011s).
+2026-02-14 19:21:11 - Flyway upgrade recommended: PostgreSQL 18.1 is newer than this version of Flyway and support has not been tested. The latest supported version of PostgreSQL is 16.
+2026-02-14 19:21:11 - Current version of schema "west_code": 11
+2026-02-14 19:21:11 - outOfOrder mode is active. Migration of schema "west_code" may not be reproducible.
+2026-02-14 19:21:11 - Migrating schema "west_code" to version "12 - Add Package Id Columns"
+2026-02-14 19:21:11 - Migration of schema "west_code" to version "12 - Add Package Id Columns" failed! Changes successfully rolled back.
+2026-02-14 19:21:11 - Error creating schema west_code: Migration V12__Add_Package_Id_Columns.sql failed
+------------------------------------------------
+SQL State  : 42601
+Error Code : 0
+Message    : FEL: syntaxfel vid eller n├ñra "IF"
+  Position: 89
+Location   : db/migration/V12__Add_Package_Id_Columns.sql (E:\Projekt\EduFlex\eduflex\nested:\E:\Projekt\EduFlex\eduflex\target\eduflex-2.0.1-Beta.jar\!BOOT-INF\classes\!\db\migration\V12__Add_Package_Id_Columns.sql)
+Line       : 18
+Statement  : -- Add package_id to cmi5_packages if table existed but column was missing
+DO $$ 
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                   WHERE table_name='cmi5_packages' 
+                     AND column_name='package_id' 
+                     AND table_schema = current_schema()) THEN
+        ALTER TABLE cmi5_packages ADD COLUMN package_id VARCHAR(255);
+    END IF;
+END $$
+
+org.flywaydb.core.internal.command.DbMigrate$FlywayMigrateException: Migration V12__Add_Package_Id_Columns.sql failed
+------------------------------------------------
+SQL State  : 42601
+Error Code : 0
+Message    : FEL: syntaxfel vid eller n├ñra "IF"
+  Position: 89
+Location   : db/migration/V12__Add_Package_Id_Columns.sql (E:\Projekt\EduFlex\eduflex\nested:\E:\Projekt\EduFlex\eduflex\target\eduflex-2.0.1-Beta.jar\!BOOT-INF\classes\!\db\migration\V12__Add_Package_Id_Columns.sql)
+Line       : 18
+Statement  : -- Add package_id to cmi5_packages if table existed but column was missing
+DO $$ 
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                   WHERE table_name='cmi5_packages' 
+                     AND column_name='package_id' 
+                     AND table_schema = current_schema()) THEN
+        ALTER TABLE cmi5_packages ADD COLUMN package_id VARCHAR(255);
+    END IF;
+END $$
+
+	at org.flywaydb.core.internal.command.DbMigrate.doMigrateGroup(DbMigrate.java:382)
+	at org.flywaydb.core.internal.command.DbMigrate.lambda$applyMigrations$1(DbMigrate.java:272)
+	at org.flywaydb.core.internal.jdbc.TransactionalExecutionTemplate.execute(TransactionalExecutionTemplate.java:55)
+	at org.flywaydb.core.internal.command.DbMigrate.applyMigrations(DbMigrate.java:271)
+	at org.flywaydb.core.internal.command.DbMigrate.migrateGroup(DbMigrate.java:244)
+	at org.flywaydb.core.internal.command.DbMigrate.lambda$migrateAll$0(DbMigrate.java:139)
+	at org.flywaydb.database.postgresql.PostgreSQLAdvisoryLockTemplate.execute(PostgreSQLAdvisoryLockTemplate.java:73)
+	at org.flywaydb.database.postgresql.PostgreSQLAdvisoryLockTemplate.lambda$execute$0(PostgreSQLAdvisoryLockTemplate.java:56)
+	at org.flywaydb.core.internal.jdbc.TransactionalExecutionTemplate.execute(TransactionalExecutionTemplate.java:55)
+	at org.flywaydb.database.postgresql.PostgreSQLAdvisoryLockTemplate.execute(PostgreSQLAdvisoryLockTemplate.java:56)
+	at org.flywaydb.database.postgresql.PostgreSQLConnection.lock(PostgreSQLConnection.java:96)
+	at org.flywaydb.core.internal.schemahistory.JdbcTableSchemaHistory.lock(JdbcTableSchemaHistory.java:145)
+	at org.flywaydb.core.internal.command.DbMigrate.migrateAll(DbMigrate.java:139)
+	at org.flywaydb.core.internal.command.DbMigrate.migrate(DbMigrate.java:97)
+	at org.flywaydb.core.Flyway.lambda$migrate$0(Flyway.java:202)
+	at org.flywaydb.core.FlywayExecutor.execute(FlywayExecutor.java:205)
+	at org.flywaydb.core.Flyway.migrate(Flyway.java:147)
+	at com.eduflex.backend.service.TenantService.initTenantSchema(TenantService.java:145)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:351)
+	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:713)
+	at com.eduflex.backend.service.TenantService$$SpringCGLIB$$0.initTenantSchema(<generated>)
+	at com.eduflex.backend.config.GlobalMigrationRunner.run(GlobalMigrationRunner.java:50)
+	at org.springframework.boot.SpringApplication.lambda$callRunner$5(SpringApplication.java:790)
+	at org.springframework.util.function.ThrowingConsumer$1.acceptWithException(ThrowingConsumer.java:83)
+	at org.springframework.util.function.ThrowingConsumer.accept(ThrowingConsumer.java:60)
+	at org.springframework.util.function.ThrowingConsumer$1.accept(ThrowingConsumer.java:88)
+	at org.springframework.boot.SpringApplication.callRunner(SpringApplication.java:798)
+	at org.springframework.boot.SpringApplication.callRunner(SpringApplication.java:789)
+	at org.springframework.boot.SpringApplication.lambda$callRunners$3(SpringApplication.java:774)
+	at java.base/java.util.stream.ForEachOps$ForEachOp$OfRef.accept(ForEachOps.java:184)
+	at java.base/java.util.stream.SortedOps$SizedRefSortingSink.end(SortedOps.java:357)
+	at java.base/java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:510)
+	at java.base/java.util.stream.AbstractPipeline.wrapAndCopyInto(AbstractPipeline.java:499)
+	at java.base/java.util.stream.ForEachOps$ForEachOp.evaluateSequential(ForEachOps.java:151)
+	at java.base/java.util.stream.ForEachOps$ForEachOp$OfRef.evaluateSequential(ForEachOps.java:174)
+	at java.base/java.util.stream.AbstractPipeline.evaluate(AbstractPipeline.java:234)
+	at java.base/java.util.stream.ReferencePipeline.forEach(ReferencePipeline.java:596)
+	at org.springframework.boot.SpringApplication.callRunners(SpringApplication.java:774)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:341)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1354)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1343)
+	at com.eduflex.EduflexApplication.main(EduflexApplication.java:13)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.springframework.boot.loader.launch.Launcher.launch(Launcher.java:91)
+	at org.springframework.boot.loader.launch.Launcher.launch(Launcher.java:53)
+	at org.springframework.boot.loader.launch.JarLauncher.main(JarLauncher.java:58)
+Caused by: org.flywaydb.core.internal.sqlscript.FlywaySqlScriptException: Migration V12__Add_Package_Id_Columns.sql failed
+------------------------------------------------
+SQL State  : 42601
+Error Code : 0
+Message    : FEL: syntaxfel vid eller n├ñra "IF"
+  Position: 89
+Location   : db/migration/V12__Add_Package_Id_Columns.sql (E:\Projekt\EduFlex\eduflex\nested:\E:\Projekt\EduFlex\eduflex\target\eduflex-2.0.1-Beta.jar\!BOOT-INF\classes\!\db\migration\V12__Add_Package_Id_Columns.sql)
+Line       : 18
+Statement  : -- Add package_id to cmi5_packages if table existed but column was missing
+DO $$ 
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                   WHERE table_name='cmi5_packages' 
+                     AND column_name='package_id' 
+                     AND table_schema = current_schema()) THEN
+        ALTER TABLE cmi5_packages ADD COLUMN package_id VARCHAR(255);
+    END IF;
+END $$
+
+	at org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor.handleException(DefaultSqlScriptExecutor.java:252)
+	at org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor.executeStatement(DefaultSqlScriptExecutor.java:214)
+	at org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor.execute(DefaultSqlScriptExecutor.java:133)
+	at org.flywaydb.core.internal.resolver.sql.SqlMigrationExecutor.executeOnce(SqlMigrationExecutor.java:65)
+	at org.flywaydb.core.internal.resolver.sql.SqlMigrationExecutor.lambda$execute$0(SqlMigrationExecutor.java:57)
+	at org.flywaydb.core.internal.database.DefaultExecutionStrategy.execute(DefaultExecutionStrategy.java:27)
+	at org.flywaydb.core.internal.resolver.sql.SqlMigrationExecutor.execute(SqlMigrationExecutor.java:56)
+	at org.flywaydb.core.internal.command.DbMigrate.doMigrateGroup(DbMigrate.java:374)
+	... 48 common frames omitted
+Caused by: org.postgresql.util.PSQLException: FEL: syntaxfel vid eller n├ñra "IF"
+  Position: 89
+	at org.postgresql.core.v3.QueryExecutorImpl.receiveErrorResponse(QueryExecutorImpl.java:2713)
+	at org.postgresql.core.v3.QueryExecutorImpl.processResults(QueryExecutorImpl.java:2401)
+	at org.postgresql.core.v3.QueryExecutorImpl.execute(QueryExecutorImpl.java:368)
+	at org.postgresql.jdbc.PgStatement.executeInternal(PgStatement.java:498)
+	at org.postgresql.jdbc.PgStatement.execute(PgStatement.java:415)
+	at org.postgresql.jdbc.PgStatement.executeWithFlags(PgStatement.java:335)
+	at org.postgresql.jdbc.PgStatement.executeCachedSql(PgStatement.java:321)
+	at org.postgresql.jdbc.PgStatement.executeWithFlags(PgStatement.java:297)
+	at org.postgresql.jdbc.PgStatement.execute(PgStatement.java:292)
+	at com.zaxxer.hikari.pool.ProxyStatement.execute(ProxyStatement.java:94)
+	at com.zaxxer.hikari.pool.HikariProxyStatement.execute(HikariProxyStatement.java)
+	at org.flywaydb.core.internal.jdbc.JdbcTemplate.executeStatement(JdbcTemplate.java:210)
+	at org.flywaydb.core.internal.sqlscript.ParsedSqlStatement.execute(ParsedSqlStatement.java:89)
+	at org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor.executeStatement(DefaultSqlScriptExecutor.java:206)
+	... 54 common frames omitted
+2026-02-14 19:21:11 - ÔØî Failed to migrate tenant WestCode: Failed to create schema: west_code
+2026-02-14 19:21:11 - Ô£à Global Migration process finished.
+2026-02-14 19:21:11 - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-02-14 19:21:11 - Unauthorized error: Full authentication is required to access this resource
+org.springframework.security.authentication.InsufficientAuthenticationException: Full authentication is required to access this resource
+	at org.springframework.security.web.access.ExceptionTranslationFilter.handleAccessDeniedException(ExceptionTranslationFilter.java:199)
+	at org.springframework.security.web.access.ExceptionTranslationFilter.handleSpringSecurityException(ExceptionTranslationFilter.java:178)
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:147)
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:120)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:131)
+	at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:85)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.authentication.AnonymousAuthenticationFilter.doFilter(AnonymousAuthenticationFilter.java:100)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter.doFilter(SecurityContextHolderAwareRequestFilter.java:179)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.savedrequest.RequestCacheAwareFilter.doFilter(RequestCacheAwareFilter.java:63)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter.doFilterInternal(BearerTokenAuthenticationFilter.java:128)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at com.eduflex.backend.security.AuthTokenFilter.doFilterInternal(AuthTokenFilter.java:145)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at com.eduflex.backend.security.RateLimitingFilter.doFilterInternal(RateLimitingFilter.java:60)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at com.eduflex.backend.security.LicenseFilter.doFilterInternal(LicenseFilter.java:38)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at com.eduflex.backend.config.tenant.TenantFilter.doFilterInternal(TenantFilter.java:66)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter.doFilter(AbstractAuthenticationProcessingFilter.java:227)
+	at org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter.doFilter(AbstractAuthenticationProcessingFilter.java:221)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestRedirectFilter.doFilterInternal(OAuth2AuthorizationRequestRedirectFilter.java:181)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:107)
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:93)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.web.filter.CorsFilter.doFilterInternal(CorsFilter.java:91)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.header.HeaderWriterFilter.doHeadersAfter(HeaderWriterFilter.java:90)
+	at org.springframework.security.web.header.HeaderWriterFilter.doFilterInternal(HeaderWriterFilter.java:75)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.context.SecurityContextHolderFilter.doFilter(SecurityContextHolderFilter.java:82)
+	at org.springframework.security.web.context.SecurityContextHolderFilter.doFilter(SecurityContextHolderFilter.java:69)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter.doFilterInternal(WebAsyncManagerIntegrationFilter.java:62)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.session.DisableEncodeUrlFilter.doFilterInternal(DisableEncodeUrlFilter.java:42)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$AroundFilterObservation$SimpleAroundFilterObservation.lambda$wrap$0(ObservationFilterChainDecorator.java:323)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:224)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.FilterChainProxy.doFilterInternal(FilterChainProxy.java:233)
+	at org.springframework.security.web.FilterChainProxy.doFilter(FilterChainProxy.java:191)
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:113)
+	at org.springframework.web.servlet.handler.HandlerMappingIntrospector.lambda$createCacheFilter$3(HandlerMappingIntrospector.java:195)
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:113)
+	at org.springframework.web.filter.CompositeFilter.doFilter(CompositeFilter.java:74)
+	at org.springframework.security.config.annotation.web.configuration.WebMvcSecurityConfiguration$CompositeFilterChainProxy.doFilter(WebMvcSecurityConfiguration.java:230)
+	at org.springframework.web.filter.DelegatingFilterProxy.invokeDelegate(DelegatingFilterProxy.java:352)
+	at org.springframework.web.filter.DelegatingFilterProxy.doFilter(DelegatingFilterProxy.java:268)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+	at org.springframework.web.filter.ServerHttpObservationFilter.doFilterInternal(ServerHttpObservationFilter.java:109)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:167)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:90)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:482)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:115)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:93)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:74)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:344)
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:391)
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63)
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:896)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1744)
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1191)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+2026-02-14 19:21:11 - Unhandled Global Exception
+org.springframework.web.HttpRequestMethodNotSupportedException: Request method 'POST' is not supported
+	at org.springframework.web.servlet.support.WebContentGenerator.checkRequest(WebContentGenerator.java:381)
+	at org.springframework.web.servlet.resource.ResourceHttpRequestHandler.handleRequest(ResourceHttpRequestHandler.java:594)
+	at org.springframework.web.servlet.mvc.HttpRequestHandlerAdapter.handle(HttpRequestHandlerAdapter.java:52)
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1089)
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:979)
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1014)
+	at org.springframework.web.servlet.FrameworkServlet.doPost(FrameworkServlet.java:914)
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:590)
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:885)
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:658)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:205)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:101)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:108)
+	at org.springframework.security.web.FilterChainProxy.lambda$doFilterInternal$3(FilterChainProxy.java:231)
+	at org.springframework.security.web.ObservationFilterChainDecorator$FilterObservation$SimpleFilterObservation.lambda$wrap$1(ObservationFilterChainDecorator.java:479)
+	at org.springframework.security.web.ObservationFilterChainDecorator$AroundFilterObservation$SimpleAroundFilterObservation.lambda$wrap$1(ObservationFilterChainDecorator.java:340)
+	at org.springframework.security.web.ObservationFilterChainDecorator.lambda$wrapSecured$0(ObservationFilterChainDecorator.java:82)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:128)
+	at org.springframework.security.web.access.intercept.AuthorizationFilter.doFilter(AuthorizationFilter.java:100)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:126)
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:120)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:91)
+	at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:85)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.authentication.AnonymousAuthenticationFilter.doFilter(AnonymousAuthenticationFilter.java:100)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter.doFilter(SecurityContextHolderAwareRequestFilter.java:179)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.savedrequest.RequestCacheAwareFilter.doFilter(RequestCacheAwareFilter.java:63)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:101)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:101)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:101)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:101)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:101)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter.doFilter(AbstractAuthenticationProcessingFilter.java:227)
+	at org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter.doFilter(AbstractAuthenticationProcessingFilter.java:221)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:101)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:107)
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:93)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:101)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:101)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.context.SecurityContextHolderFilter.doFilter(SecurityContextHolderFilter.java:75)
+	at org.springframework.security.web.context.SecurityContextHolderFilter.doFilter(SecurityContextHolderFilter.java:69)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:101)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:101)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$AroundFilterObservation$SimpleAroundFilterObservation.lambda$wrap$0(ObservationFilterChainDecorator.java:323)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:224)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.FilterChainProxy.doFilterInternal(FilterChainProxy.java:233)
+	at org.springframework.security.web.FilterChainProxy.doFilter(FilterChainProxy.java:186)
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:113)
+	at org.springframework.web.servlet.handler.HandlerMappingIntrospector.lambda$createCacheFilter$3(HandlerMappingIntrospector.java:195)
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:113)
+	at org.springframework.web.filter.CompositeFilter.doFilter(CompositeFilter.java:74)
+	at org.springframework.security.config.annotation.web.configuration.WebMvcSecurityConfiguration$CompositeFilterChainProxy.doFilter(WebMvcSecurityConfiguration.java:230)
+	at org.springframework.web.filter.DelegatingFilterProxy.invokeDelegate(DelegatingFilterProxy.java:352)
+	at org.springframework.web.filter.DelegatingFilterProxy.doFilter(DelegatingFilterProxy.java:268)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilterNestedErrorDispatch(OncePerRequestFilter.java:248)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:105)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:101)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:101)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+	at org.apache.catalina.core.ApplicationDispatcher.invoke(ApplicationDispatcher.java:642)
+	at org.apache.catalina.core.ApplicationDispatcher.processRequest(ApplicationDispatcher.java:410)
+	at org.apache.catalina.core.ApplicationDispatcher.doForward(ApplicationDispatcher.java:340)
+	at org.apache.catalina.core.ApplicationDispatcher.forward(ApplicationDispatcher.java:277)
+	at org.springframework.web.servlet.view.InternalResourceView.renderMergedOutputModel(InternalResourceView.java:171)
+	at org.springframework.web.servlet.view.AbstractView.render(AbstractView.java:314)
+	at org.springframework.web.servlet.DispatcherServlet.render(DispatcherServlet.java:1431)
+	at org.springframework.web.servlet.DispatcherServlet.processDispatchResult(DispatcherServlet.java:1167)
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1106)
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:979)
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1014)
+	at org.springframework.web.servlet.FrameworkServlet.doPost(FrameworkServlet.java:914)
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:590)
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:885)
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:658)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:205)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:101)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:108)
+	at org.springframework.security.web.FilterChainProxy.lambda$doFilterInternal$3(FilterChainProxy.java:231)
+	at org.springframework.security.web.ObservationFilterChainDecorator$FilterObservation$SimpleFilterObservation.lambda$wrap$1(ObservationFilterChainDecorator.java:479)
+	at org.springframework.security.web.ObservationFilterChainDecorator$AroundFilterObservation$SimpleAroundFilterObservation.lambda$wrap$1(ObservationFilterChainDecorator.java:340)
+	at org.springframework.security.web.ObservationFilterChainDecorator.lambda$wrapSecured$0(ObservationFilterChainDecorator.java:82)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:128)
+	at org.springframework.security.web.access.intercept.AuthorizationFilter.doFilter(AuthorizationFilter.java:100)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:126)
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:120)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:91)
+	at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:85)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.authentication.AnonymousAuthenticationFilter.doFilter(AnonymousAuthenticationFilter.java:100)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter.doFilter(SecurityContextHolderAwareRequestFilter.java:179)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.savedrequest.RequestCacheAwareFilter.doFilter(RequestCacheAwareFilter.java:63)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:101)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:101)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:101)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:101)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:101)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter.doFilter(AbstractAuthenticationProcessingFilter.java:227)
+	at org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter.doFilter(AbstractAuthenticationProcessingFilter.java:221)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:101)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:107)
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:93)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:101)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:101)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.context.SecurityContextHolderFilter.doFilter(SecurityContextHolderFilter.java:82)
+	at org.springframework.security.web.context.SecurityContextHolderFilter.doFilter(SecurityContextHolderFilter.java:69)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:101)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:101)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$AroundFilterObservation$SimpleAroundFilterObservation.lambda$wrap$0(ObservationFilterChainDecorator.java:323)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:224)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.FilterChainProxy.doFilterInternal(FilterChainProxy.java:233)
+	at org.springframework.security.web.FilterChainProxy.doFilter(FilterChainProxy.java:191)
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:113)
+	at org.springframework.web.servlet.handler.HandlerMappingIntrospector.lambda$createCacheFilter$3(HandlerMappingIntrospector.java:195)
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:113)
+	at org.springframework.web.filter.CompositeFilter.doFilter(CompositeFilter.java:74)
+	at org.springframework.security.config.annotation.web.configuration.WebMvcSecurityConfiguration$CompositeFilterChainProxy.doFilter(WebMvcSecurityConfiguration.java:230)
+	at org.springframework.web.filter.DelegatingFilterProxy.invokeDelegate(DelegatingFilterProxy.java:352)
+	at org.springframework.web.filter.DelegatingFilterProxy.doFilter(DelegatingFilterProxy.java:268)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:101)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:101)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+	at org.apache.catalina.core.ApplicationDispatcher.invoke(ApplicationDispatcher.java:642)
+	at org.apache.catalina.core.ApplicationDispatcher.processRequest(ApplicationDispatcher.java:410)
+	at org.apache.catalina.core.ApplicationDispatcher.doForward(ApplicationDispatcher.java:340)
+java : !!!! GLOBAL EXCEPTION CAUGHT !!!!
+At line:1 char:302
++ ... ED="false"; java "-Dfile.encoding=UTF-8" -
+jar target/eduflex-2.0.1-Be ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified    : 
+(!!!! GLOBAL EXCEPTION CAUGHT !!!!:S    tring) [
+], RemoteException
+    + FullyQualifiedErrorId : NativeComman    dE
+rror
+ 
+	at org.apache.catalina.core.ApplicationDispatcher.forward(ApplicationDispatcher.java:277)
+	at org.apache.catalina.core.StandardHostValve.custom(StandardHostValve.java:362)
+	at org.apache.catalina.core.StandardHostValve.status(StandardHostValve.java:222)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:151)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:93)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:74)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:344)
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:391)
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63)
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:896)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1744)
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1191)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+org.springframework.web.HttpRequestMethodNotSupp
+ortedException: Request method 'POST' is not sup
+ported
+	at org.springframework.web.servlet.support.WebC
+ontentGenerator.checkRequest(WebContentGenerator
+.java:381)
+	at org.springframework.web.servlet.resource.Res
+ourceHttpRequestHandler.handleRequest(ResourceHt
+tpRequestHandler.java:594)
+	at org.springframework.web.servlet.mvc.HttpRequ
+estHandlerAdapter.handle(HttpRequestHandlerAdapt
+er.java:52)
+	at org.springframework.web.servlet.DispatcherSe
+rvlet.doDispatch(DispatcherServlet.java:1089)
+	at org.springframework.web.servlet.DispatcherSe
+rvlet.doService(DispatcherServlet.java:979)
+	at org.springframework.web.servlet.FrameworkSer
+vlet.processRequest(FrameworkServlet.java:1014)
+	at org.springframework.web.servlet.FrameworkSer
+vlet.doPost(FrameworkServlet.java:914)
+	at jakarta.servlet.http.HttpServlet.service(Htt
+pServlet.java:590)
+	at org.springframework.web.servlet.FrameworkSer
+vlet.service(FrameworkServlet.java:885)
+	at jakarta.servlet.http.HttpServlet.service(Htt
+pServlet.java:658)
+	at org.apache.catalina.core.ApplicationFilterCh
+ain.internalDoFilter(ApplicationFilterChain.java
+:205)
+	at org.apache.catalina.core.ApplicationFilterCh
+ain.doFilter(ApplicationFilterChain.java:149)
+	at org.springframework.web.filter.OncePerReques
+tFilter.doFilter(OncePerRequestFilter.java:101)
+	at org.apache.catalina.core.ApplicationFilterCh
+ain.internalDoFilter(ApplicationFilterChain.java
+:174)
+	at org.apache.catalina.core.ApplicationFilterCh
+ain.doFilter(ApplicationFilterChain.java:149)
+	at org.springframework.web.filter.CompositeFilt
+er$VirtualFilterChain.doFilter(CompositeFilter.j
+ava:108)
+	at org.springframework.security.web.FilterChain
+Proxy.lambda$doFilterInternal$3(FilterChainProxy
+.java:231)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$FilterObservation$SimpleFil
+terObservation.lambda$wrap$1(ObservationFilterCh
+ainDecorator.java:479)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$AroundFilterObservation$Sim
+pleAroundFilterObservation.lambda$wrap$1(Observa
+tionFilterChainDecorator.java:340)
+	at org.springframework.security.web.Observation
+FilterChainDecorator.lambda$wrapSecured$0(Observ
+ationFilterChainDecorator.java:82)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$VirtualFilterChain.doFilter
+(ObservationFilterChainDecorator.java:128)
+	at org.springframework.security.web.access.inte
+rcept.AuthorizationFilter.doFilter(Authorization
+Filter.java:100)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$ObservationFilter.wrapFilte
+r(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$ObservationFilter.doFilter(
+ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$VirtualFilterChain.doFilter
+(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.access.Exce
+ptionTranslationFilter.doFilter(ExceptionTransla
+tionFilter.java:126)
+	at org.springframework.security.web.access.Exce
+ptionTranslationFilter.doFilter(ExceptionTransla
+tionFilter.java:120)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$ObservationFilter.wrapFilte
+r(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$ObservationFilter.doFilter(
+ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$VirtualFilterChain.doFilter
+(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.session.Ses
+sionManagementFilter.doFilter(SessionManagementF
+ilter.java:91)
+	at org.springframework.security.web.session.Ses
+sionManagementFilter.doFilter(SessionManagementF
+ilter.java:85)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$ObservationFilter.wrapFilte
+r(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$ObservationFilter.doFilter(
+ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$VirtualFilterChain.doFilter
+(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.authenticat
+ion.AnonymousAuthenticationFilter.doFilter(Anony
+mousAuthenticationFilter.java:100)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$ObservationFilter.wrapFilte
+r(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$ObservationFilter.doFilter(
+ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$VirtualFilterChain.doFilter
+(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.servletapi.
+SecurityContextHolderAwareRequestFilter.doFilter
+(SecurityContextHolderAwareRequestFilter.java:17
+9)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$ObservationFilter.wrapFilte
+r(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$ObservationFilter.doFilter(
+ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$VirtualFilterChain.doFilter
+(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.savedreques
+t.RequestCacheAwareFilter.doFilter(RequestCacheA
+wareFilter.java:63)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$ObservationFilter.wrapFilte
+r(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$ObservationFilter.doFilter(
+ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$VirtualFilterChain.doFilter
+(ObservationFilterChainDecorator.java:137)
+	at org.springframework.web.filter.OncePerReques
+tFilter.doFilter(OncePerRequestFilter.java:101)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$ObservationFilter.wrapFilte
+r(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$ObservationFilter.doFilter(
+ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$VirtualFilterChain.doFilter
+(ObservationFilterChainDecorator.java:137)
+	at org.springframework.web.filter.OncePerReques
+tFilter.doFilter(OncePerRequestFilter.java:101)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$ObservationFilter.wrapFilte
+r(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$ObservationFilter.doFilter(
+ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$VirtualFilterChain.doFilter
+(ObservationFilterChainDecorator.java:137)
+	at org.springframework.web.filter.OncePerReques
+tFilter.doFilter(OncePerRequestFilter.java:101)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$ObservationFilter.wrapFilte
+r(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$ObservationFilter.doFilter(
+ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$VirtualFilterChain.doFilter
+(ObservationFilterChainDecorator.java:137)
+	at org.springframework.web.filter.OncePerReques
+tFilter.doFilter(OncePerRequestFilter.java:101)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$ObservationFilter.wrapFilte
+r(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$ObservationFilter.doFilter(
+ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$VirtualFilterChain.doFilter
+(ObservationFilterChainDecorator.java:137)
+	at org.springframework.web.filter.OncePerReques
+tFilter.doFilter(OncePerRequestFilter.java:101)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$ObservationFilter.wrapFilte
+r(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$ObservationFilter.doFilter(
+ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$VirtualFilterChain.doFilter
+(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.authenticat
+ion.AbstractAuthenticationProcessingFilter.doFil
+ter(AbstractAuthenticationProcessingFilter.java:
+227)
+	at org.springframework.security.web.authenticat
+ion.AbstractAuthenticationProcessingFilter.doFil
+ter(AbstractAuthenticationProcessingFilter.java:
+221)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$ObservationFilter.wrapFilte
+r(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$ObservationFilter.doFilter(
+ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$VirtualFilterChain.doFilter
+(ObservationFilterChainDecorator.java:137)
+	at org.springframework.web.filter.OncePerReques
+tFilter.doFilter(OncePerRequestFilter.java:101)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$ObservationFilter.wrapFilte
+r(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$ObservationFilter.doFilter(
+ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$VirtualFilterChain.doFilter
+(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.authenticat
+ion.logout.LogoutFilter.doFilter(LogoutFilter.ja
+va:107)
+	at org.springframework.security.web.authenticat
+ion.logout.LogoutFilter.doFilter(LogoutFilter.ja
+va:93)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$ObservationFilter.wrapFilte
+r(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$ObservationFilter.doFilter(
+ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$VirtualFilterChain.doFilter
+(ObservationFilterChainDecorator.java:137)
+	at org.springframework.web.filter.OncePerReques
+tFilter.doFilter(OncePerRequestFilter.java:101)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$ObservationFilter.wrapFilte
+r(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$ObservationFilter.doFilter(
+ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$VirtualFilterChain.doFilter
+(ObservationFilterChainDecorator.java:137)
+	at org.springframework.web.filter.OncePerReques
+tFilter.doFilter(OncePerRequestFilter.java:101)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$ObservationFilter.wrapFilte
+r(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$ObservationFilter.doFilter(
+ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$VirtualFilterChain.doFilter
+(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.context.Sec
+urityContextHolderFilter.doFilter(SecurityContex
+tHolderFilter.java:75)
+	at org.springframework.security.web.context.Sec
+urityContextHolderFilter.doFilter(SecurityContex
+tHolderFilter.java:69)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$ObservationFilter.wrapFilte
+r(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$ObservationFilter.doFilter(
+ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$VirtualFilterChain.doFilter
+(ObservationFilterChainDecorator.java:137)
+	at org.springframework.web.filter.OncePerReques
+tFilter.doFilter(OncePerRequestFilter.java:101)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$ObservationFilter.wrapFilte
+r(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$ObservationFilter.doFilter(
+ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$VirtualFilterChain.doFilter
+(ObservationFilterChainDecorator.java:137)
+	at org.springframework.web.filter.OncePerReques
+tFilter.doFilter(OncePerRequestFilter.java:101)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$ObservationFilter.wrapFilte
+r(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$AroundFilterObservation$Sim
+pleAroundFilterObservation.lambda$wrap$0(Observa
+tionFilterChainDecorator.java:323)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$ObservationFilter.doFilter(
+ObservationFilterChainDecorator.java:224)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$VirtualFilterChain.doFilter
+(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.FilterChain
+Proxy.doFilterInternal(FilterChainProxy.java:233
+)
+	at org.springframework.security.web.FilterChain
+Proxy.doFilter(FilterChainProxy.java:186)
+	at org.springframework.web.filter.CompositeFilt
+er$VirtualFilterChain.doFilter(CompositeFilter.j
+ava:113)
+	at org.springframework.web.servlet.handler.Hand
+lerMappingIntrospector.lambda$createCacheFilter$
+3(HandlerMappingIntrospector.java:195)
+	at org.springframework.web.filter.CompositeFilt
+er$VirtualFilterChain.doFilter(CompositeFilter.j
+ava:113)
+	at org.springframework.web.filter.CompositeFilt
+er.doFilter(CompositeFilter.java:74)
+	at org.springframework.security.config.annotati
+on.web.configuration.WebMvcSecurityConfiguration
+$CompositeFilterChainProxy.doFilter(WebMvcSecuri
+tyConfiguration.java:230)
+	at org.springframework.web.filter.DelegatingFil
+terProxy.invokeDelegate(DelegatingFilterProxy.ja
+va:352)
+	at org.springframework.web.filter.DelegatingFil
+terProxy.doFilter(DelegatingFilterProxy.java:268
+)
+	at org.apache.catalina.core.ApplicationFilterCh
+ain.internalDoFilter(ApplicationFilterChain.java
+:174)
+	at org.apache.catalina.core.ApplicationFilterCh
+ain.doFilter(ApplicationFilterChain.java:149)
+	at org.springframework.web.filter.OncePerReques
+tFilter.doFilterNestedErrorDispatch(OncePerReque
+stFilter.java:248)
+	at org.springframework.web.filter.OncePerReques
+tFilter.doFilter(OncePerRequestFilter.java:105)
+	at org.apache.catalina.core.ApplicationFilterCh
+ain.internalDoFilter(ApplicationFilterChain.java
+:174)
+	at org.apache.catalina.core.ApplicationFilterCh
+ain.doFilter(ApplicationFilterChain.java:149)
+	at org.springframework.web.filter.OncePerReques
+tFilter.doFilter(OncePerRequestFilter.java:101)
+	at org.apache.catalina.core.ApplicationFilterCh
+ain.internalDoFilter(ApplicationFilterChain.java
+:174)
+	at org.apache.catalina.core.ApplicationFilterCh
+ain.doFilter(ApplicationFilterChain.java:149)
+	at org.springframework.web.filter.OncePerReques
+tFilter.doFilter(OncePerRequestFilter.java:101)
+	at org.apache.catalina.core.ApplicationFilterCh
+ain.internalDoFilter(ApplicationFilterChain.java
+:174)
+	at org.apache.catalina.core.ApplicationFilterCh
+ain.doFilter(ApplicationFilterChain.java:149)
+	at org.apache.catalina.core.ApplicationDispatch
+er.invoke(ApplicationDispatcher.java:642)
+	at org.apache.catalina.core.ApplicationDispatch
+er.processRequest(ApplicationDispatcher.java:410
+)
+	at org.apache.catalina.core.ApplicationDispatch
+er.doForward(ApplicationDispatcher.java:340)
+	at org.apache.catalina.core.ApplicationDispatch
+er.forward(ApplicationDispatcher.java:277)
+	at org.springframework.web.servlet.view.Interna
+lResourceView.renderMergedOutputModel(InternalRe
+sourceView.java:171)
+	at org.springframework.web.servlet.view.Abstrac
+tView.render(AbstractView.java:314)
+	at org.springframework.web.servlet.DispatcherSe
+rvlet.render(DispatcherServlet.java:1431)
+	at org.springframework.web.servlet.DispatcherSe
+rvlet.processDispatchResult(DispatcherServlet.ja
+va:1167)
+	at org.springframework.web.servlet.DispatcherSe
+rvlet.doDispatch(DispatcherServlet.java:1106)
+	at org.springframework.web.servlet.DispatcherSe
+rvlet.doService(DispatcherServlet.java:979)
+	at org.springframework.web.servlet.FrameworkSer
+vlet.processRequest(FrameworkServlet.java:1014)
+	at org.springframework.web.servlet.FrameworkSer
+vlet.doPost(FrameworkServlet.java:914)
+	at jakarta.servlet.http.HttpServlet.service(Htt
+pServlet.java:590)
+	at org.springframework.web.servlet.FrameworkSer
+vlet.service(FrameworkServlet.java:885)
+	at jakarta.servlet.http.HttpServlet.service(Htt
+pServlet.java:658)
+	at org.apache.catalina.core.ApplicationFilterCh
+ain.internalDoFilter(ApplicationFilterChain.java
+:205)
+	at org.apache.catalina.core.ApplicationFilterCh
+ain.doFilter(ApplicationFilterChain.java:149)
+	at org.springframework.web.filter.OncePerReques
+tFilter.doFilter(OncePerRequestFilter.java:101)
+	at org.apache.catalina.core.ApplicationFilterCh
+ain.internalDoFilter(ApplicationFilterChain.java
+:174)
+	at org.apache.catalina.core.ApplicationFilterCh
+ain.doFilter(ApplicationFilterChain.java:149)
+	at org.springframework.web.filter.CompositeFilt
+er$VirtualFilterChain.doFilter(CompositeFilter.j
+ava:108)
+	at org.springframework.security.web.FilterChain
+Proxy.lambda$doFilterInternal$3(FilterChainProxy
+.java:231)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$FilterObservation$SimpleFil
+terObservation.lambda$wrap$1(ObservationFilterCh
+ainDecorator.java:479)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$AroundFilterObservation$Sim
+pleAroundFilterObservation.lambda$wrap$1(Observa
+tionFilterChainDecorator.java:340)
+	at org.springframework.security.web.Observation
+FilterChainDecorator.lambda$wrapSecured$0(Observ
+ationFilterChainDecorator.java:82)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$VirtualFilterChain.doFilter
+(ObservationFilterChainDecorator.java:128)
+	at org.springframework.security.web.access.inte
+rcept.AuthorizationFilter.doFilter(Authorization
+Filter.java:100)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$ObservationFilter.wrapFilte
+r(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$ObservationFilter.doFilter(
+ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$VirtualFilterChain.doFilter
+(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.access.Exce
+ptionTranslationFilter.doFilter(ExceptionTransla
+tionFilter.java:126)
+	at org.springframework.security.web.access.Exce
+ptionTranslationFilter.doFilter(ExceptionTransla
+tionFilter.java:120)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$ObservationFilter.wrapFilte
+r(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$ObservationFilter.doFilter(
+ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$VirtualFilterChain.doFilter
+(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.session.Ses
+sionManagementFilter.doFilter(SessionManagementF
+ilter.java:91)
+	at org.springframework.security.web.session.Ses
+sionManagementFilter.doFilter(SessionManagementF
+ilter.java:85)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$ObservationFilter.wrapFilte
+r(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$ObservationFilter.doFilter(
+ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$VirtualFilterChain.doFilter
+(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.authenticat
+ion.AnonymousAuthenticationFilter.doFilter(Anony
+mousAuthenticationFilter.java:100)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$ObservationFilter.wrapFilte
+r(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$ObservationFilter.doFilter(
+ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$VirtualFilterChain.doFilter
+(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.servletapi.
+SecurityContextHolderAwareRequestFilter.doFilter
+(SecurityContextHolderAwareRequestFilter.java:17
+9)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$ObservationFilter.wrapFilte
+r(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$ObservationFilter.doFilter(
+ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$VirtualFilterChain.doFilter
+(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.savedreques
+t.RequestCacheAwareFilter.doFilter(RequestCacheA
+wareFilter.java:63)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$ObservationFilter.wrapFilte
+r(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$ObservationFilter.doFilter(
+ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$VirtualFilterChain.doFilter
+(ObservationFilterChainDecorator.java:137)
+	at org.springframework.web.filter.OncePerReques
+tFilter.doFilter(OncePerRequestFilter.java:101)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$ObservationFilter.wrapFilte
+r(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$ObservationFilter.doFilter(
+ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$VirtualFilterChain.doFilter
+(ObservationFilterChainDecorator.java:137)
+	at org.springframework.web.filter.OncePerReques
+tFilter.doFilter(OncePerRequestFilter.java:101)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$ObservationFilter.wrapFilte
+r(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$ObservationFilter.doFilter(
+ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$VirtualFilterChain.doFilter
+(ObservationFilterChainDecorator.java:137)
+	at org.springframework.web.filter.OncePerReques
+tFilter.doFilter(OncePerRequestFilter.java:101)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$ObservationFilter.wrapFilte
+r(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$ObservationFilter.doFilter(
+ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$VirtualFilterChain.doFilter
+(ObservationFilterChainDecorator.java:137)
+	at org.springframework.web.filter.OncePerReques
+tFilter.doFilter(OncePerRequestFilter.java:101)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$ObservationFilter.wrapFilte
+r(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$ObservationFilter.doFilter(
+ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$VirtualFilterChain.doFilter
+(ObservationFilterChainDecorator.java:137)
+	at org.springframework.web.filter.OncePerReques
+tFilter.doFilter(OncePerRequestFilter.java:101)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$ObservationFilter.wrapFilte
+r(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$ObservationFilter.doFilter(
+ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$VirtualFilterChain.doFilter
+(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.authenticat
+ion.AbstractAuthenticationProcessingFilter.doFil
+ter(AbstractAuthenticationProcessingFilter.java:
+227)
+	at org.springframework.security.web.authenticat
+ion.AbstractAuthenticationProcessingFilter.doFil
+ter(AbstractAuthenticationProcessingFilter.java:
+221)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$ObservationFilter.wrapFilte
+r(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$ObservationFilter.doFilter(
+ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$VirtualFilterChain.doFilter
+(ObservationFilterChainDecorator.java:137)
+	at org.springframework.web.filter.OncePerReques
+tFilter.doFilter(OncePerRequestFilter.java:101)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$ObservationFilter.wrapFilte
+r(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$ObservationFilter.doFilter(
+ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$VirtualFilterChain.doFilter
+(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.authenticat
+ion.logout.LogoutFilter.doFilter(LogoutFilter.ja
+va:107)
+	at org.springframework.security.web.authenticat
+ion.logout.LogoutFilter.doFilter(LogoutFilter.ja
+va:93)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$ObservationFilter.wrapFilte
+r(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$ObservationFilter.doFilter(
+ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$VirtualFilterChain.doFilter
+(ObservationFilterChainDecorator.java:137)
+	at org.springframework.web.filter.OncePerReques
+tFilter.doFilter(OncePerRequestFilter.java:101)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$ObservationFilter.wrapFilte
+r(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$ObservationFilter.doFilter(
+ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$VirtualFilterChain.doFilter
+(ObservationFilterChainDecorator.java:137)
+	at org.springframework.web.filter.OncePerReques
+tFilter.doFilter(OncePerRequestFilter.java:101)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$ObservationFilter.wrapFilte
+r(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$ObservationFilter.doFilter(
+ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$VirtualFilterChain.doFilter
+(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.context.Sec
+urityContextHolderFilter.doFilter(SecurityContex
+tHolderFilter.java:82)
+	at org.springframework.security.web.context.Sec
+urityContextHolderFilter.doFilter(SecurityContex
+tHolderFilter.java:69)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$ObservationFilter.wrapFilte
+r(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$ObservationFilter.doFilter(
+ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$VirtualFilterChain.doFilter
+(ObservationFilterChainDecorator.java:137)
+	at org.springframework.web.filter.OncePerReques
+tFilter.doFilter(OncePerRequestFilter.java:101)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$ObservationFilter.wrapFilte
+r(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$ObservationFilter.doFilter(
+ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$VirtualFilterChain.doFilter
+(ObservationFilterChainDecorator.java:137)
+	at org.springframework.web.filter.OncePerReques
+tFilter.doFilter(OncePerRequestFilter.java:101)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$ObservationFilter.wrapFilte
+r(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$AroundFilterObservation$Sim
+pleAroundFilterObservation.lambda$wrap$0(Observa
+tionFilterChainDecorator.java:323)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$ObservationFilter.doFilter(
+ObservationFilterChainDecorator.java:224)
+	at org.springframework.security.web.Observation
+FilterChainDecorator$VirtualFilterChain.doFilter
+(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.FilterChain
+Proxy.doFilterInternal(FilterChainProxy.java:233
+)
+	at org.springframework.security.web.FilterChain
+Proxy.doFilter(FilterChainProxy.java:191)
+	at org.springframework.web.filter.CompositeFilt
+er$VirtualFilterChain.doFilter(CompositeFilter.j
+ava:113)
+	at org.springframework.web.servlet.handler.Hand
+lerMappingIntrospector.lambda$createCacheFilter$
+3(HandlerMappingIntrospector.java:195)
+	at org.springframework.web.filter.CompositeFilt
+er$VirtualFilterChain.doFilter(CompositeFilter.j
+ava:113)
+	at org.springframework.web.filter.CompositeFilt
+er.doFilter(CompositeFilter.java:74)
+	at org.springframework.security.config.annotati
+on.web.configuration.WebMvcSecurityConfiguration
+$CompositeFilterChainProxy.doFilter(WebMvcSecuri
+tyConfiguration.java:230)
+	at org.springframework.web.filter.DelegatingFil
+terProxy.invokeDelegate(DelegatingFilterProxy.ja
+va:352)
+	at org.springframework.web.filter.DelegatingFil
+terProxy.doFilter(DelegatingFilterProxy.java:268
+)
+	at org.apache.catalina.core.ApplicationFilterCh
+ain.internalDoFilter(ApplicationFilterChain.java
+:174)
+	at org.apache.catalina.core.ApplicationFilterCh
+ain.doFilter(ApplicationFilterChain.java:149)
+	at org.springframework.web.filter.RequestContex
+tFilter.doFilterInternal(RequestContextFilter.ja
+va:100)
+	at org.springframework.web.filter.OncePerReques
+tFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterCh
+ain.internalDoFilter(ApplicationFilterChain.java
+:174)
+	at org.apache.catalina.core.ApplicationFilterCh
+ain.doFilter(ApplicationFilterChain.java:149)
+	at org.springframework.web.filter.OncePerReques
+tFilter.doFilter(OncePerRequestFilter.java:101)
+	at org.apache.catalina.core.ApplicationFilterCh
+ain.internalDoFilter(ApplicationFilterChain.java
+:174)
+	at org.apache.catalina.core.ApplicationFilterCh
+ain.doFilter(ApplicationFilterChain.java:149)
+	at org.springframework.web.filter.OncePerReques
+tFilter.doFilter(OncePerRequestFilter.java:101)
+	at org.apache.catalina.core.ApplicationFilterCh
+ain.internalDoFilter(ApplicationFilterChain.java
+:174)
+	at org.apache.catalina.core.ApplicationFilterCh
+ain.doFilter(ApplicationFilterChain.java:149)
+	at org.apache.catalina.core.ApplicationDispatch
+er.invoke(ApplicationDispatcher.java:642)
+	at org.apache.catalina.core.ApplicationDispatch
+er.processRequest(ApplicationDispatcher.java:410
+)
+	at org.apache.catalina.core.ApplicationDispatch
+er.doForward(ApplicationDispatcher.java:340)
+	at org.apache.catalina.core.ApplicationDispatch
+er.forward(ApplicationDispatcher.java:277)
+	at org.apache.catalina.core.StandardHostValve.c
+ustom(StandardHostValve.java:362)
+	at org.apache.catalina.core.StandardHostValve.s
+tatus(StandardHostValve.java:222)
+	at org.apache.catalina.core.StandardHostValve.i
+nvoke(StandardHostValve.java:151)
+	at org.apache.catalina.valves.ErrorReportValve.
+invoke(ErrorReportValve.java:93)
+	at org.apache.catalina.core.StandardEngineValve
+.invoke(StandardEngineValve.java:74)
+	at org.apache.catalina.connector.CoyoteAdapter.
+service(CoyoteAdapter.java:344)
+	at org.apache.coyote.http11.Http11Processor.ser
+vice(Http11Processor.java:391)
+	at org.apache.coyote.AbstractProcessorLight.pro
+cess(AbstractProcessorLight.java:63)
+	at org.apache.coyote.AbstractProtocol$Connectio
+nHandler.process(AbstractProtocol.java:896)
+	at org.apache.tomcat.util.net.NioEndpoint$Socke
+tProcessor.doRun(NioEndpoint.java:1744)
+	at org.apache.tomcat.util.net.SocketProcessorBa
+se.run(SocketProcessorBase.java:52)
+	at org.apache.tomcat.util.threads.ThreadPoolExe
+cutor.runWorker(ThreadPoolExecutor.java:1191)
+	at org.apache.tomcat.util.threads.ThreadPoolExe
+cutor$Worker.run(ThreadPoolExecutor.java:659)
+	at org.apache.tomcat.util.threads.TaskThread$Wr
+appingRunnable.run(TaskThread.java:63)
+	at java.base/java.lang.Thread.run(Thread.java:1
+583)
+?? License Heartbeat misslyckades: 500 Internal 
+Server Error: "An internal error occurred: Reque
+st method 'POST' is not supported"

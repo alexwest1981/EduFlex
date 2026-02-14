@@ -239,7 +239,14 @@ curl -X POST http://localhost:8080/api/tenants \
 
 ---
 
-### Senaste Uppdateringar (v1.1.2 - 2026-02-14)
+### Senaste Uppdateringar
+### [v1.1.3] - 2026-02-14
+- **New Feature**: **AI Audit Log** - Full traceability of all AI decisions (Analysis & Recommendations) for compliance and debugging.
+- **Stability**: **Transaction Isolation** - Refactored audit logging to use `REQUIRES_NEW`, preventing analysis failures from rolling back audit data.
+- **Database**: **Schema Repair** - Fixed `ai_audit_log` vs `ai_audit_logs` naming conflict and purged legacy constraints on recommendations.
+- **Improvement**: **Robust AI Parsing** - Enhanced `AdaptiveLearningService` to handle variable JSON output formats from Gemini.
+
+### [v1.1.2] - 2026-02-14)
 - **Adaptive Learning:** "Min Lärväg" med AI-analys och VAK-profilering är live.
 - **E-hälsa Motor:** Komplett backend för bokningar och journaler.
 - **Säkerhet:** Fixat User Principal bugg i Auth-filtret.

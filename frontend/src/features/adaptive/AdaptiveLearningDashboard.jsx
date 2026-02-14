@@ -11,7 +11,10 @@ import {
     BookOpen,
     Clock,
     Layers,
-    Activity
+    Activity,
+    Lightbulb,
+    Sparkles,
+    X
 } from 'lucide-react';
 import {
     Radar,
@@ -31,6 +34,7 @@ const AdaptiveLearningDashboard = () => {
     const [dashboardData, setDashboardData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [analyzing, setAnalyzing] = useState(false);
+    const [selectedReasoning, setSelectedReasoning] = useState(null);
 
     useEffect(() => {
         fetchDashboard();
@@ -265,19 +269,14 @@ const AdaptiveLearningDashboard = () => {
                                     {rec.description}
                                 </p>
 
-                                {rec.aiReasoning && (
-                                    <div className="mb-4 p-3 bg-slate-50 dark:bg-slate-900/50 rounded-lg border border-slate-100 dark:border-slate-800">
-                                        <div className="flex items-center gap-2 text-xs font-medium text-slate-500 mb-1">
-                                            <Brain size={12} />
-                                            Varför detta?
-                                        </div>
-                                        <p className="text-xs text-slate-600 dark:text-slate-400 italic">
-                                            "{rec.aiReasoning}"
-                                        </p>
-                                    </div>
-                                )}
-
-                                <div className="flex gap-2">
+                                <div className="flex gap-2 mt-4">
+                                    <button
+                                        onClick={() => setSelectedReasoning(rec)}
+                                        className="p-2 text-brand-primary bg-brand-primary/10 rounded-lg hover:bg-brand-primary/20 transition-colors"
+                                        title="Varför rekommenderas detta?"
+                                    >
+                                        <Lightbulb size={20} />
+                                    </button>
                                     <button
                                         onClick={() => handleStatusUpdate(rec.id, 'IN_PROGRESS')}
                                         disabled={rec.status === 'IN_PROGRESS' || rec.status === 'COMPLETED'}
@@ -290,9 +289,7 @@ const AdaptiveLearningDashboard = () => {
                                     >
                                         {rec.status === 'IN_PROGRESS' ? 'Pågående' : rec.status === 'COMPLETED' ? 'Slutförd' : 'Markera Startad'}
                                     </button>
-                                    <button className="flex-1 px-3 py-2 bg-brand-primary text-white text-sm font-medium rounded-lg hover:bg-brand-primary/90 transition-colors">
-                                        Gå till material
-                                    </button>
+
                                 </div>
                             </div>
                         ))}
@@ -307,6 +304,46 @@ const AdaptiveLearningDashboard = () => {
                     </div>
                 )}
             </div>
+
+            {/* Reasoning Modal */}
+            {selectedReasoning && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in">
+                    <div className="bg-white dark:bg-slate-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-700 scale-100">
+                        <div className="flex items-start justify-between mb-4">
+                            <div className="flex items-center gap-3">
+                                <div className="p-3 bg-brand-primary/10 rounded-xl">
+                                    <Sparkles className="text-brand-primary" size={24} />
+                                </div>
+                                <div>
+                                    <h3 className="text-lg font-bold text-slate-900 dark:text-white">AI-Insikt</h3>
+                                    <p className="text-sm text-slate-500">Varför rekommenderas detta?</p>
+                                </div>
+                            </div>
+                            <button
+                                onClick={() => setSelectedReasoning(null)}
+                                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
+                            >
+                                <X size={24} />
+                            </button>
+                        </div>
+
+                        <div className="bg-slate-50 dark:bg-slate-900/50 rounded-xl p-4 mb-6">
+                            <p className="text-slate-700 dark:text-slate-300 leading-relaxed italic">
+                                "{selectedReasoning.reasoningTrace || selectedReasoning.aiReasoning || 'Ingen detaljerad analys tillgänglig.'}"
+                            </p>
+                        </div>
+
+                        <div className="flex justify-end">
+                            <button
+                                onClick={() => setSelectedReasoning(null)}
+                                className="px-5 py-2.5 bg-brand-primary text-white font-medium rounded-xl hover:bg-brand-primary/90 transition-colors"
+                            >
+                                Jag förstår
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Brain, ArrowRight, Zap } from 'lucide-react';
+import { Brain, ArrowRight, Zap, Lightbulb, Sparkles, X } from 'lucide-react';
 import { api } from '../../services/api';
 
 const AdaptiveWidget = () => {
@@ -9,6 +9,7 @@ const AdaptiveWidget = () => {
     const navigate = useNavigate();
     const [recommendation, setRecommendation] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [showReasoning, setShowReasoning] = useState(false);
 
     useEffect(() => {
         const fetchRecs = async () => {
@@ -86,13 +87,62 @@ const AdaptiveWidget = () => {
                     {recommendation.description}
                 </p>
 
-                <button
-                    onClick={() => navigate('/adaptive-learning')}
-                    className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm font-medium rounded-lg shadow-sm hover:shadow-md transition-shadow"
-                >
-                    Visa Min Lärväg <ArrowRight size={16} />
-                </button>
+                <div className="flex gap-2">
+                    <button
+                        onClick={() => navigate('/adaptive-learning')}
+                        className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm font-medium rounded-lg shadow-sm hover:shadow-md transition-shadow"
+                    >
+                        Visa Min Lärväg <ArrowRight size={16} />
+                    </button>
+                    <button
+                        onClick={() => setShowReasoning(true)}
+                        className="px-3 py-2 bg-brand-teal/10 text-brand-teal rounded-lg hover:bg-brand-teal/20 transition-colors"
+                        title="Varför rekommenderas detta?"
+                    >
+                        <Lightbulb size={20} />
+                    </button>
+                </div>
             </div>
+
+            {/* Reasoning Modal */}
+            {showReasoning && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in">
+                    <div className="bg-white dark:bg-slate-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-700 scale-100">
+                        <div className="flex items-start justify-between mb-4">
+                            <div className="flex items-center gap-3">
+                                <div className="p-3 bg-brand-teal/10 rounded-xl">
+                                    <Sparkles className="text-brand-teal" size={24} />
+                                </div>
+                                <div>
+                                    <h3 className="text-lg font-bold text-slate-900 dark:text-white">AI-Insikt</h3>
+                                    <p className="text-sm text-slate-500">Varför rekommenderas detta?</p>
+                                </div>
+                            </div>
+                            <button
+                                onClick={() => setShowReasoning(false)}
+                                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
+                            >
+                                <X size={24} />
+                            </button>
+                        </div>
+
+                        <div className="bg-slate-50 dark:bg-slate-900/50 rounded-xl p-4 mb-6">
+                            <p className="text-slate-700 dark:text-slate-300 leading-relaxed italic">
+                                "{recommendation.reasoningTrace || recommendation.aiReasoning || 'Ingen detaljerad analys tillgänglig.'}"
+                            </p>
+                        </div>
+
+                        <div className="flex justify-end">
+                            <button
+                                onClick={() => setShowReasoning(false)}
+                                className="px-5 py-2.5 bg-brand-teal text-white font-medium rounded-xl hover:bg-brand-teal/90 transition-colors"
+                            >
+                                Jag förstår
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

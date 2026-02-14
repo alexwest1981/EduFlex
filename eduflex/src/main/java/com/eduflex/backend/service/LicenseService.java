@@ -221,7 +221,8 @@ public class LicenseService {
                 .orElse(env.getProperty("EDUFLEX_DOMAIN_URL"));
     }
 
-    private void logAudit(String customer, String status, String reason) {
+    @org.springframework.transaction.annotation.Transactional(propagation = org.springframework.transaction.annotation.Propagation.REQUIRES_NEW)
+    public void logAudit(String customer, String status, String reason) {
         try {
             String hostname = java.net.InetAddress.getLocalHost().getHostName();
             com.eduflex.backend.model.LicenseAudit audit = new com.eduflex.backend.model.LicenseAudit(
