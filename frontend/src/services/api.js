@@ -207,7 +207,8 @@ export const api = {
     adaptiveLearning: {
         getMyRecommendations: () => api.get('/adaptive-learning/recommendations'),
         markAsViewed: (id) => api.put(`/adaptive-learning/recommendations/${id}/view`),
-        triggerAnalysis: () => api.post('/adaptive-learning/trigger')
+        triggerAnalysis: () => api.post('/adaptive-learning/trigger'),
+        getRecommendation: (courseId, studentId) => api.get(`/adaptive/recommendation/${courseId}?studentId=${studentId}`),
     },
 
     messages: {
@@ -707,9 +708,18 @@ export const api = {
 
     principal: {
         // --- School Structure ---
+        ska: {
+            getGoals: () => api.get('/ska/goals'),
+            createGoal: (goal) => api.post('/ska/goals', goal),
+            updateGoal: (id, goal) => api.put(`/ska/goals/${id}`, goal),
+            deleteGoal: (id) => api.delete(`/ska/goals/${id}`),
+            addIndicator: (indicator) => api.post('/ska/indicators', indicator),
+            updateIndicatorValue: (id, value) => api.put(`/ska/indicators/${id}/value?value=${value}`),
+            generateYearCycle: () => api.post('/ska/year-cycle/generate')
+        },
         structure: {
-            getDepartments: () => api.get('/admin/structure/departments'),
-            createDepartment: (repo) => api.post('/admin/structure/departments', repo),
+            getDepartments: () => api.get('/principal/structure/departments'),
+            createDepartment: (repo) => api.post('/principal/structure/departments', repo),
             deleteDepartment: (id) => api.delete(`/admin/structure/departments/${id}`),
             getPrograms: (deptId) => api.get(`/admin/structure/programs?departmentId=${deptId}`),
             createProgram: (repo) => api.post('/admin/structure/programs', repo),

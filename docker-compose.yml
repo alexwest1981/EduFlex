@@ -56,6 +56,7 @@ services:
   #       - zookeeper
   #     networks:
   #       - eduflex-net
+  #
 
   # --- OBJECT STORAGE (MinIO) ---
   minio:
@@ -120,6 +121,7 @@ services:
       - MINIO_ACCESS_KEY=minioadmin
       - MINIO_SECRET_KEY=minioadmin
       - MINIO_BUCKET=eduflex-storage
+      - ONLYOFFICE_INTERNAL_URL=http://eduflex-onlyoffice
       # Keycloak OAuth2/OIDC Configuration
       # issuer-uri must match what Keycloak puts in tokens (localhost:8180)
       # jwk-set-uri can use internal Docker hostname for server-to-server communication
@@ -198,7 +200,6 @@ services:
       - eduflex-net
     restart: always
 
-  # --- FRONTEND (React) ---
   frontend:
     build:
       context: ./frontend
@@ -209,7 +210,7 @@ services:
     environment:
       - VITE_API_BASE_URL=/api
       - VITE_BACKEND_URL=http://backend:8080
-      - VITE_JITSI_URL=${JITSI_URL:-https://meet.eduflexlms.se}
+      - VITE_JITSI_URL=${JITSI_URL:-https://localhost:8085}
     command: npm run dev -- --host
     volumes:
       - ./frontend:/app
@@ -287,8 +288,8 @@ services:
       - onlyoffice_logs:/var/log/onlyoffice
       - ./onlyoffice-config:/etc/onlyoffice/documentserver-example
     ports:
-      - "8081:80"
-      - "8443:443"
+      - "8084:80"
+      - "8445:443"
     networks:
       - eduflex-net
     extra_hosts:
@@ -304,9 +305,9 @@ services:
     container_name: eduflex-jitsi
     restart: unless-stopped
     ports:
-      - "8444:80"
+      - "8085:443"
     environment:
-      - PUBLIC_URL=https://meet.eduflexlms.se
+      - PUBLIC_URL=https://localhost:8085
       - TZ=Europe/Stockholm
       # General settings
       - ENABLE_AUTH=0
@@ -316,7 +317,7 @@ services:
       - ENABLE_PREJOIN_PAGE=0
       - ENABLE_LOBBY=0
       - ENABLE_WELCOME_PAGE=0
-      - DISABLE_HTTPS=1
+      # - DISABLE_HTTPS=1
       # XMPP Internal communication
       - XMPP_DOMAIN=meet.jitsi
       - XMPP_SERVER=jitsi-prosody
@@ -339,7 +340,7 @@ services:
       - jitsi-prosody
     networks:
       - eduflex-net
-
+  #
   jitsi-prosody:
     image: jitsi/prosody:stable-9584
     container_name: eduflex-jitsi-prosody
@@ -349,7 +350,7 @@ services:
       - '5347'
       - '5280'
     environment:
-      - PUBLIC_URL=https://meet.eduflexlms.se
+      - PUBLIC_URL=http://localhost:8085
       - TZ=Europe/Stockholm
       - XMPP_DOMAIN=meet.jitsi
       - XMPP_SERVER=jitsi-prosody
@@ -370,7 +371,7 @@ services:
       - jitsi_prosody_plugins:/prosody-plugins-custom
     networks:
       - eduflex-net
-
+  #
   jitsi-jicofo:
     image: jitsi/jicofo:stable-9584
     container_name: eduflex-jitsi-jicofo
@@ -392,13 +393,13 @@ services:
       - jitsi-prosody
     networks:
       - eduflex-net
-
+  #
   jitsi-jvb:
     image: jitsi/jvb:stable-9584
     container_name: eduflex-jitsi-jvb
     restart: unless-stopped
     ports:
-      - "10000:10000/udp"
+      - "30300:10000/udp"
     environment:
       - TZ=Europe/Stockholm
       - XMPP_DOMAIN=meet.jitsi
@@ -407,16 +408,18 @@ services:
       - XMPP_INTERNAL_MUC_DOMAIN=internal-muc.meet.jitsi
       - JVB_AUTH_USER=jvb
       - JVB_AUTH_PASSWORD=eduflex_jvb_secret
-      - JVB_BREWERY_MUC=jvbbrewery@internal-muc.meet.jitsi
-      - JVB_PORT=10000
-      - PUBLIC_URL=https://meet.eduflexlms.se
+      - JICOFO_AUTH_USER=focus
+      - JICOFO_AUTH_PASSWORD=eduflex_jicofo_secret
+      - JVB_TCP_HARVESTER_DISABLED=true
+      - JVB_PORT=30300
+      - PUBLIC_URL=http://localhost:8085
       # NAT/ICE stability fixes
       - DOCKER_HOST_ADDRESS=127.0.0.1
       # Colibri over WebSocket (CRITICAL for Tunnel)
       - ENABLE_COLIBRI_WEBSOCKET=1
       - JVB_WS_SERVER_ID=jvb
-      - JVB_WS_DOMAIN=meet.eduflexlms.se
-      - JVB_WS_PORT=9090
+      - JVB_WS_DOMAIN=localhost
+      - JVB_WS_PORT=8085
     volumes:
       - jitsi_jvb_config:/config
     depends_on:

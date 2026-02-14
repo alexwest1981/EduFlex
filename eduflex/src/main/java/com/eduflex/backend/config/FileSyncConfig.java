@@ -21,6 +21,9 @@ public class FileSyncConfig {
     @Value("${file.upload-dir}")
     private String uploadDir;
 
+    @Value("${file.sync.enabled:false}")
+    private boolean syncEnabled;
+
     private final DocumentRepository documentRepository;
     private final UserRepository userRepository;
 
@@ -29,16 +32,24 @@ public class FileSyncConfig {
         this.userRepository = userRepository;
     }
 
+    /**
+     * Synkar filer från disk till databas. Inaktiverad som standard för att
+     * undvika att raderade filer återregistreras. Aktivera med file.sync.enabled=true
+     * om du behöver importera befintliga filer (t.ex. vid databasåterställning).
+     */
     @PostConstruct
     public void syncFiles() {
+        if (!syncEnabled) {
+            System.out.println("ℹ️ FIL-SYNC: Inaktiverad (file.sync.enabled=false). Inga filer synkas.");
+            return;
+        }
+
         File folder = new File(uploadDir);
         if (!folder.exists() || !folder.isDirectory()) return;
 
         File[] files = folder.listFiles();
         if (files == null) return;
 
-        // Hämta en "default"-ägare (t.ex. första adminen) för föräldralösa filer
-        // Ändra ID:t (1L) om din admin har ett annat ID
         Optional<User> defaultOwner = userRepository.findById(1L);
 
         if (defaultOwner.isEmpty()) {
@@ -51,10 +62,8 @@ public class FileSyncConfig {
             if (file.isFile()) {
                 String rawName = file.getName();
 
-                // FIX: Försök ta bort UUID (allt före första understrecket) för snyggare namn
                 String cleanName = rawName;
                 if (rawName.contains("_") && rawName.length() > 37) {
-                    // Antag att UUID är 36 tecken + 1 understreck
                     cleanName = rawName.substring(rawName.indexOf("_") + 1);
                 }
 
@@ -65,7 +74,7 @@ public class FileSyncConfig {
                 if (!exists) {
                     try {
                         Document doc = new Document();
-                        doc.setFileName(cleanName); // Spara det "rena" namnet
+                        doc.setFileName(cleanName);
                         doc.setFileUrl(fileUrl);
                         doc.setFileType(probeContentType(file));
                         doc.setSize(file.length());

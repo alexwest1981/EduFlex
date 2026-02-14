@@ -22,9 +22,9 @@ Denna roadmap beskriver den strategiska utvecklingen av EduFlex LMS för att mö
 ## 3. Systematiskt Kvalitetsarbete (SKA) "På Riktigt"
 *Integrering av SKA-processen direkt i plattformen för att koppla mål till faktiska data.*
 
-- [ ] **Inbyggd SKA-motor:** Verktyg för att definiera mål, indikatorer och insatser kopplat till realtidsdata (närvaro, resultat, trivsel).
-- [ ] **Årscykel-vy:** Visuell tidslinje för läsåret med checkpoints (enkäter, NP, betyg), synkroniserat mellan ledning och elevhälsa.
-- [ ] **Automatgenererade SKA-rapporter:** PDF/Word-rapporter som sammanfattar trender och åtgärder per skola/klass med ett klick.
+- [x] **Inbyggd SKA-motor:** Verktyg för att definiera mål, indikatorer och insatser kopplat till realtidsdata (närvaro, resultat, trivsel). <!-- id: 110 -->
+- [x] **Årscykel-vy:** Visuell tidslinje för läsåret med checkpoints (enkäter, NP, betyg), synkroniserat mellan ledning och utvärdering. <!-- id: 111 -->
+- [x] **Automatgenererade SKA-rapporter:** PDF-rapporter och analyser som sammanfattar trender och åtgärder per skola/klass med ett klick. <!-- id: 112 -->
 
 ## 4. Integrerad Elevhälsa (EHT)
 *Från fristående modul till djupt integrerad del av skolans ekosystem.*

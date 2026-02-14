@@ -129,11 +129,15 @@ public class CourseController {
             @RequestParam(value = "link", required = false) String link,
             @RequestParam(value = "type", defaultValue = "LESSON") String type, // Default till LESSON
             @RequestParam(value = "availableFrom", required = false) String availableFrom,
-            @RequestParam(value = "file", required = false) MultipartFile file) {
+            @RequestParam(value = "file", required = false) MultipartFile file,
+            @RequestParam(value = "difficulty", required = false) Integer difficulty,
+            @RequestParam(value = "estimatedTime", required = false) Integer estimatedTime,
+            @RequestParam(value = "prerequisiteId", required = false) Long prerequisiteId) {
         try {
             // Logga för debugging
             System.out.println("Adding material: " + title + ", Type: " + type + ", Link: " + link);
-            return ResponseEntity.ok(courseService.addMaterial(id, title, content, link, type, availableFrom, file));
+            return ResponseEntity.ok(courseService.addMaterial(id, title, content, link, type, availableFrom, file,
+                    difficulty, estimatedTime, prerequisiteId));
         } catch (Exception e) {
             e.printStackTrace();
             String rootCause = e.getMessage();
@@ -150,9 +154,13 @@ public class CourseController {
             @RequestParam(value = "content", required = false) String content,
             @RequestParam(value = "link", required = false) String link,
             @RequestParam(value = "availableFrom", required = false) String availableFrom,
-            @RequestParam(value = "file", required = false) MultipartFile file) {
+            @RequestParam(value = "file", required = false) MultipartFile file,
+            @RequestParam(value = "difficulty", required = false) Integer difficulty,
+            @RequestParam(value = "estimatedTime", required = false) Integer estimatedTime,
+            @RequestParam(value = "prerequisiteId", required = false) Long prerequisiteId) {
         try {
-            return ResponseEntity.ok(courseService.updateMaterial(id, title, content, link, availableFrom, file));
+            return ResponseEntity.ok(courseService.updateMaterial(id, title, content, link, availableFrom, file,
+                    difficulty, estimatedTime, prerequisiteId));
         } catch (Exception e) {
             e.printStackTrace();
             String rootCause = e.getMessage();

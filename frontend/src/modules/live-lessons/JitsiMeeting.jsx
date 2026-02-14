@@ -22,7 +22,7 @@ const JitsiMeeting = ({
     onClose,
     onParticipantJoined,
     onParticipantLeft,
-    jitsiDomain = 'meet.eduflexlms.se' // Reverting to private server for unlimited meetings
+    jitsiDomain = (import.meta.env.VITE_JITSI_URL || 'localhost:8085').replace(/^https?:\/\//, '')
 }) => {
     const containerRef = useRef(null);
     const apiRef = useRef(null);
@@ -35,8 +35,8 @@ const JitsiMeeting = ({
     useEffect(() => {
         // Always use HTTPS for meet.jit.si
         const domain = jitsiDomain;
-        const isLocalhost = domain.includes('localhost') || domain.includes('127.0.0.1');
-        const protocol = isLocalhost ? 'http' : 'https';
+        // Always use HTTPS to avoid Mixed Content blocking and protocol mismatches
+        const protocol = 'https';
 
         // Load Jitsi Meet External API
         const script = document.createElement('script');

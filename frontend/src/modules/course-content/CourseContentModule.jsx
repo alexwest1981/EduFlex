@@ -30,7 +30,14 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
     const [publishingLesson, setPublishingLesson] = useState(null);
 
     // Form data
-    const [formData, setFormData] = useState({ title: '', content: '', videoUrl: '' });
+    const [formData, setFormData] = useState({
+        title: '',
+        content: '',
+        videoUrl: '',
+        difficultyLevel: 3,
+        estimatedTimeMinutes: 15,
+        prerequisiteMaterialId: ''
+    });
     const [file, setFile] = useState(null);
 
     useEffect(() => {
@@ -159,6 +166,11 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
         if (formData.availableFrom) fd.append('availableFrom', formData.availableFrom);
         else fd.append('availableFrom', ''); // Skicka tom sträng för att rensa om man tömt fältet
 
+        // Flyttade metadata för adaptivt lärande
+        if (formData.difficultyLevel) fd.append('difficulty', formData.difficultyLevel);
+        if (formData.estimatedTimeMinutes) fd.append('estimatedTime', formData.estimatedTimeMinutes);
+        if (formData.prerequisiteMaterialId) fd.append('prerequisiteId', formData.prerequisiteMaterialId);
+
         // Skicka fil om det finns
         if (file) fd.append('file', file);
 
@@ -249,7 +261,10 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
             content: lesson.content,
             videoUrl: lesson.link, // Mappa tillbaka 'link' till 'videoUrl'
             type: lesson.type || 'LESSON',
-            availableFrom: lesson.availableFrom || ''
+            availableFrom: lesson.availableFrom || '',
+            difficultyLevel: lesson.difficultyLevel || 3,
+            estimatedTimeMinutes: lesson.estimatedTimeMinutes || 15,
+            prerequisiteMaterialId: lesson.prerequisiteMaterial?.id || ''
         });
         setFile(null);
         setSelectedLesson(lesson);
@@ -450,6 +465,42 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
                                 onChange={e => setFormData({ ...formData, availableFrom: e.target.value })}
                             />
                             <p className="text-[10px] text-gray-400 mt-1">Låt stå tomt för att publicera direkt.</p>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label className="block text-xs font-bold text-gray-500 mb-1">Svårighetsgrad (1-5)</label>
+                                <input
+                                    type="number"
+                                    min="1"
+                                    max="5"
+                                    className="w-full p-3 border rounded-xl dark:bg-[#131314] dark:border-[#3c4043] dark:text-white"
+                                    value={formData.difficultyLevel}
+                                    onChange={e => setFormData({ ...formData, difficultyLevel: e.target.value })}
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-xs font-bold text-gray-500 mb-1">Uppskattad tid (min)</label>
+                                <input
+                                    type="number"
+                                    className="w-full p-3 border rounded-xl dark:bg-[#131314] dark:border-[#3c4043] dark:text-white"
+                                    value={formData.estimatedTimeMinutes}
+                                    onChange={e => setFormData({ ...formData, estimatedTimeMinutes: e.target.value })}
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-xs font-bold text-gray-500 mb-1">Förkunskap (Valfritt)</label>
+                                <select
+                                    className="w-full p-3 border rounded-xl dark:bg-[#131314] dark:border-[#3c4043] dark:text-white"
+                                    value={formData.prerequisiteMaterialId}
+                                    onChange={e => setFormData({ ...formData, prerequisiteMaterialId: e.target.value })}
+                                >
+                                    <option value="">Ingen specifik</option>
+                                    {lessons.filter(l => l.id !== selectedLesson?.id).map(l => (
+                                        <option key={l.id} value={l.id}>{l.title}</option>
+                                    ))}
+                                </select>
+                            </div>
                         </div>
 
                         <div>

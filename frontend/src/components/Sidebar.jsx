@@ -74,6 +74,7 @@ const Sidebar = ({ currentUser, logout, siteName, version }) => {
         // --- REKTOR / PRINCIPAL NAVIGATION ---
         if (principalRoles.includes(roleName)) {
             items.push({ path: '/principal/dashboard', label: 'Rektorspaket', icon: <ShieldCheck size={20} /> });
+            items.push({ path: '/principal/quality', label: 'Kvalitetsarbete', icon: <Award size={20} /> });
             items.push({ path: '/principal/management-reports', label: 'Ledningsrapport', icon: <TrendingUp size={20} /> });
             items.push({ path: '/principal/tools', label: 'Verktyg & Admin', icon: <Settings2 size={20} /> });
         }

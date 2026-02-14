@@ -92,18 +92,29 @@ const StandardLayout = ({ children }) => {
             { path: '/communication', icon: <MessageSquare size={20} />, label: t('shortcuts.messages') || 'Meddelanden' },
             { path: '/support', icon: <HelpCircle size={20} />, label: t('sidebar.support') },
             ...(isModuleActive('EDUGAME') ? [{ path: '/shop', icon: <Store size={20} />, label: 'Butik' }] : []),
-            ...(isModuleActive('WELLBEING_CENTER') && ['STUDENT', 'ROLE_STUDENT', 'ADMIN', 'ROLE_ADMIN', 'REKTOR', 'ROLE_REKTOR', 'PRINCIPAL', 'ROLE_PRINCIPAL'].includes(roleName) ? [{ path: '/wellbeing-center', icon: <Heart size={20} />, label: 'Well-being Center' }] : [])
+            ...(isModuleActive('WELLBEING_CENTER') && !['HALSOTEAM', 'ROLE_HALSOTEAM', 'ADMIN', 'ROLE_ADMIN'].includes(roleName) ? [{ path: '/wellbeing-center', icon: <Heart size={20} />, label: 'Sjukanmälan & E-hälsa' }] : [])
         ],
         admin: [
             ...(roleName === 'ADMIN' || roleName === 'ROLE_ADMIN' ? [{ path: '/admin', icon: <Settings size={20} />, label: t('sidebar.admin') }] : []),
-            ...(isModuleActive('WELLBEING_CENTER') && (roleName === 'HALSOTEAM' || roleName === 'ROLE_HALSOTEAM') ? [{ path: '/wellbeing-center/inbox', icon: <Heart size={20} />, label: 'E-hälsa Inbox' }] : []),
+            ...(roleName === 'HALSOTEAM' || roleName === 'ROLE_HALSOTEAM' ? [
+                { path: '/health-dashboard', icon: <Heart size={20} className="text-rose-500" />, label: 'E-hälsa (Hälsoteam)' }
+            ] : []),
             ...(isModuleActive('ANALYTICS') && (roleName === 'ADMIN' || roleName === 'ROLE_ADMIN') ? [{ path: '/analytics', icon: <BarChart2 size={20} />, label: t('sidebar.analytics') }] : []),
         ],
         rektor: [
             ...(['REKTOR', 'ROLE_REKTOR', 'PRINCIPAL', 'ROLE_PRINCIPAL'].includes(roleName) ? [
                 { path: '/principal/dashboard', icon: <ShieldCheck size={20} />, label: 'Rektorspaket' },
+                { path: '/principal/quality', icon: <Award size={20} />, label: 'Kvalitetsarbete' },
                 { path: '/principal/management-reports', icon: <TrendingUp size={20} />, label: 'Ledningsrapport' },
                 { path: '/principal/tools', icon: <Settings size={20} />, label: 'Verktyg & Admin' }
+            ] : [])
+        ],
+        guardian: [
+            ...(roleName === 'GUARDIAN' || roleName === 'ROLE_GUARDIAN' ? [
+                { path: '/', icon: <LayoutDashboard size={20} />, label: 'Vårdnadshavare' },
+                { path: '/communication', icon: <MessageSquare size={20} />, label: 'Meddelanden' },
+                { path: '/calendar', icon: <Calendar size={20} />, label: 'Schema' },
+                { path: '/support', icon: <HelpCircle size={20} />, label: 'Support' }
             ] : [])
         ]
     };
@@ -147,6 +158,13 @@ const StandardLayout = ({ children }) => {
                         items={navItems.main}
                         sidebarOpen={sidebarOpen}
                     />
+                    {navItems.guardian.length > 0 && (
+                        <SidebarSection
+                            title="Vårdnadshavare"
+                            items={navItems.guardian}
+                            sidebarOpen={sidebarOpen}
+                        />
+                    )}
                     {navItems.rektor.length > 0 && (
                         <SidebarSection
                             title="Rektorspaket"

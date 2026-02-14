@@ -13,21 +13,11 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        // exposeDirectory(uploadDir, registry);
+        // /web-apps/** hanteras via OnlyOfficeProxyController
 
-        // Serve OnlyOffice static assets
-        registry.addResourceHandler("/web-apps/**")
-                .addResourceLocations("classpath:/static/web-apps/")
-                .setCachePeriod(0);
+        // Servera uppladdade filer (legacy /uploads/ sökväg)
+        java.nio.file.Path uploadDirPath = java.nio.file.Paths.get(uploadDir).toAbsolutePath().normalize();
+        registry.addResourceHandler("/uploads/**")
+                .addResourceLocations(uploadDirPath.toUri().toString());
     }
-
-    /*
-     * private void exposeDirectory(String dirName, ResourceHandlerRegistry
-     * registry) {
-     * Path uploadDirPath = Paths.get(dirName);
-     * String resourceLocation = uploadDirPath.toUri().toString();
-     * registry.addResourceHandler("/uploads/**")
-     * .addResourceLocations(resourceLocation);
-     * }
-     */
 }

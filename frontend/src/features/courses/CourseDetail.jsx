@@ -10,6 +10,7 @@ import InteractiveModules from './components/InteractiveModules';
 import { useTranslation } from 'react-i18next';
 import { api } from '../../services/api';
 import SkolverketCourseInfo from '../../components/SkolverketCourseInfo';
+import AdaptiveRecommendationWidget from './components/AdaptiveRecommendationWidget';
 
 import TeacherCourseSummary from '../dashboard/components/teacher/TeacherCourseSummary';
 
@@ -67,7 +68,12 @@ const CourseDetail = ({ currentUser }) => {
         },
         {
             key: 'material',
-            comp: CourseContentModule,
+            comp: (props) => (
+                <div className="space-y-6">
+                    {!props.isTeacher && <AdaptiveRecommendationWidget courseId={props.courseId} studentId={props.currentUser.id} />}
+                    <CourseContentModule {...props} />
+                </div>
+            ),
             meta: CourseContentModuleMetadata,
             icon: <BookOpen size={18} />,
             enabled: true,

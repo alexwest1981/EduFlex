@@ -487,7 +487,10 @@ public class CourseService {
 
     public CourseMaterial addMaterial(Long courseId, String title, String content, String link, String type,
             String availableFrom,
-            MultipartFile file) throws IOException {
+            MultipartFile file,
+            Integer difficulty,
+            Integer estimatedTime,
+            Long prerequisiteId) throws IOException {
         Course course = getCourseById(courseId);
         CourseMaterial material = new CourseMaterial();
         material.setTitle(title);
@@ -496,16 +499,11 @@ public class CourseService {
         material.setType(CourseMaterial.MaterialType.valueOf(type));
         if (availableFrom != null && !availableFrom.isEmpty()) {
             try {
-                // If the frontend sends YYYY-MM-DDTHH:mm (without seconds), ISO_LOCAL_DATE_TIME
-                // handles it
-                // but we need to be careful with parse exceptions.
                 material.setAvailableFrom(java.time.LocalDateTime.parse(availableFrom,
                         java.time.format.DateTimeFormatter
                                 .ofPattern("[yyyy-MM-dd'T'HH:mm[:ss]][yyyy-MM-dd HH:mm[:ss]]")));
             } catch (Exception e) {
                 System.err.println("Could not parse date: " + availableFrom + ". Error: " + e.getMessage());
-                // Fallback: set to null or now if it's invalid? Better to keep as null if
-                // invalid.
             }
         }
         material.setCourse(course);
@@ -514,13 +512,21 @@ public class CourseService {
             material.setFileUrl("/api/storage/" + storageId);
             material.setFileName(file.getOriginalFilename());
 
-            // Detect video files and set video-specific metadata
             if (isVideoFile(file.getOriginalFilename())) {
                 material.setType(CourseMaterial.MaterialType.VIDEO);
                 material.setVideoFileSize(file.getSize());
                 material.setVideoStatus(CourseMaterial.VideoStatus.READY);
             }
         }
+
+        if (difficulty != null)
+            material.setDifficultyLevel(difficulty);
+        if (estimatedTime != null)
+            material.setEstimatedTimeMinutes(estimatedTime);
+        if (prerequisiteId != null) {
+            material.setPrerequisiteMaterial(materialRepository.findById(prerequisiteId).orElse(null));
+        }
+
         return materialRepository.save(material);
     }
 
@@ -537,7 +543,10 @@ public class CourseService {
     }
 
     public CourseMaterial updateMaterial(Long id, String title, String content, String link, String availableFrom,
-            MultipartFile file)
+            MultipartFile file,
+            Integer difficulty,
+            Integer estimatedTime,
+            Long prerequisiteId)
             throws IOException {
         CourseMaterial material = materialRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Material hittades inte"));
@@ -565,13 +574,21 @@ public class CourseService {
             material.setFileUrl("/api/storage/" + storageId);
             material.setFileName(file.getOriginalFilename());
 
-            // Detect video files and set video-specific metadata
             if (isVideoFile(file.getOriginalFilename())) {
                 material.setType(CourseMaterial.MaterialType.VIDEO);
                 material.setVideoFileSize(file.getSize());
                 material.setVideoStatus(CourseMaterial.VideoStatus.READY);
             }
         }
+
+        if (difficulty != null)
+            material.setDifficultyLevel(difficulty);
+        if (estimatedTime != null)
+            material.setEstimatedTimeMinutes(estimatedTime);
+        if (prerequisiteId != null) {
+            material.setPrerequisiteMaterial(materialRepository.findById(prerequisiteId).orElse(null));
+        }
+
         return materialRepository.save(material);
     }
 

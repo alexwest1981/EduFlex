@@ -7,6 +7,7 @@ import com.eduflex.backend.repository.CourseMaterialRepository;
 import com.eduflex.backend.repository.DocumentRepository;
 import com.eduflex.backend.repository.LessonRepository;
 import com.eduflex.backend.repository.SystemSettingRepository;
+import com.eduflex.backend.service.StorageService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -53,19 +54,22 @@ public class OnlyOfficeController {
     private final SystemSettingRepository settingRepository;
     private final ObjectMapper objectMapper;
     private final com.eduflex.backend.security.JwtUtils jwtUtils;
+    private final StorageService storageService;
 
     public OnlyOfficeController(DocumentRepository documentRepository,
             CourseMaterialRepository materialRepository,
             LessonRepository lessonRepository,
             SystemSettingRepository settingRepository,
             ObjectMapper objectMapper,
-            com.eduflex.backend.security.JwtUtils jwtUtils) {
+            com.eduflex.backend.security.JwtUtils jwtUtils,
+            StorageService storageService) {
         this.documentRepository = documentRepository;
         this.materialRepository = materialRepository;
         this.lessonRepository = lessonRepository;
         this.settingRepository = settingRepository;
         this.objectMapper = objectMapper;
         this.jwtUtils = jwtUtils;
+        this.storageService = storageService;
     }
 
     @GetMapping("/health")
@@ -229,18 +233,7 @@ public class OnlyOfficeController {
     @GetMapping("/download/{type}/{id}")
     public ResponseEntity<Resource> download(@PathVariable String type, @PathVariable Long id,
             HttpServletRequest request) {
-        // Force log to stdout to ensure visibility in docker logs
-        System.out.println("🧾 ONLYOFFICE DOWNLOAD REQUEST received for " + type + "/" + id);
-        System.out.println("   -> URL: " + request.getRequestURL());
-        System.out.println("   -> Local Addr: " + request.getLocalAddr());
-        System.out.println("   -> Remote Addr: " + request.getRemoteAddr());
-
-        // Log all headers to debug 401 issues
-        java.util.Enumeration<String> headerNames = request.getHeaderNames();
-        while (headerNames.hasMoreElements()) {
-            String name = headerNames.nextElement();
-            System.out.println("   Header " + name + ": " + request.getHeader(name));
-        }
+        logger.info("[ONLYOFFICE] Download request for {}/{}", type, id);
 
         try {
             String fileUrl = "";
@@ -265,26 +258,36 @@ public class OnlyOfficeController {
                 fileName = lesson.getAttachmentName();
             }
 
-            // Construct path (assuming fileUrl starts with /uploads/)
-            String pathInUploads = fileUrl.replace("/uploads/", "");
-            Path filePath = Paths.get(uploadDir).resolve(pathInUploads).normalize();
+            logger.info("[ONLYOFFICE] Download fileUrl={}, fileName={}", fileUrl, fileName);
 
-            System.out.println("   -> File Path: " + filePath.toAbsolutePath());
-
-            Resource resource = new UrlResource(filePath.toUri());
-
-            if (resource.exists() && resource.isReadable()) {
+            // Hantera både /api/storage/ (MinIO) och /uploads/ (legacy lokal)
+            if (fileUrl.startsWith("/api/storage/")) {
+                String storageId = fileUrl.replace("/api/storage/", "");
+                InputStream inputStream = storageService.load(storageId);
+                org.springframework.core.io.InputStreamResource resource =
+                        new org.springframework.core.io.InputStreamResource(inputStream);
                 return ResponseEntity.ok()
-                        .contentType(MediaType.parseMediaType(contentType))
+                        .contentType(MediaType.parseMediaType(contentType != null ? contentType : "application/octet-stream"))
                         .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
                         .body(resource);
             } else {
-                System.err.println("❌ FILE MISSING at " + filePath);
-                return ResponseEntity.notFound().build();
+                // Legacy: /uploads/ sökväg
+                String pathInUploads = fileUrl.replace("/uploads/", "");
+                Path filePath = Paths.get(uploadDir).resolve(pathInUploads).normalize();
+
+                Resource resource = new UrlResource(filePath.toUri());
+                if (resource.exists() && resource.isReadable()) {
+                    return ResponseEntity.ok()
+                            .contentType(MediaType.parseMediaType(contentType))
+                            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
+                            .body(resource);
+                } else {
+                    logger.error("[ONLYOFFICE] FILE MISSING at {}", filePath);
+                    return ResponseEntity.notFound().build();
+                }
             }
         } catch (Exception e) {
-            System.err.println("❌ EXCEPTION in download: " + e.getMessage());
-            e.printStackTrace();
+            logger.error("[ONLYOFFICE] Download exception: {}", e.getMessage(), e);
             return ResponseEntity.internalServerError().build();
         }
     }
@@ -311,18 +314,18 @@ public class OnlyOfficeController {
                 if ("DOCUMENT".equalsIgnoreCase(type)) {
                     Document doc = documentRepository.findById(id).orElseThrow();
                     fileUrl = doc.getFileUrl();
-                    saveFileFromUrl(downloadUrl, fileUrl);
-                    doc.setSize(Files.size(Paths.get(uploadDir).resolve(fileUrl.replace("/uploads/", ""))));
+                    long newSize = saveFileFromUrl(downloadUrl, fileUrl, doc.getFileName());
+                    doc.setSize(newSize);
                     documentRepository.save(doc);
                 } else if ("MATERIAL".equalsIgnoreCase(type)) {
                     CourseMaterial mat = materialRepository.findById(id).orElseThrow();
                     fileUrl = mat.getFileUrl();
-                    saveFileFromUrl(downloadUrl, fileUrl);
+                    saveFileFromUrl(downloadUrl, fileUrl, mat.getFileName());
                     materialRepository.save(mat);
                 } else if ("LESSON".equalsIgnoreCase(type)) {
                     Lesson lesson = lessonRepository.findById(id).orElseThrow();
                     fileUrl = lesson.getAttachmentUrl();
-                    saveFileFromUrl(downloadUrl, fileUrl);
+                    saveFileFromUrl(downloadUrl, fileUrl, lesson.getAttachmentName());
                     lessonRepository.save(lesson);
                 }
                 logger.info("{} {} updated successfully from ONLYOFFICE callback", type, id);
@@ -334,11 +337,33 @@ public class OnlyOfficeController {
         }
     }
 
-    private void saveFileFromUrl(String downloadUrl, String fileUrl) throws Exception {
-        String fileName = fileUrl.replace("/uploads/", "");
-        Path path = Paths.get(uploadDir).resolve(fileName);
+    /**
+     * Sparar den redigerade filen tillbaka till rätt lagring (MinIO eller lokal disk).
+     * Returnerar filstorleken i bytes.
+     */
+    private long saveFileFromUrl(String downloadUrl, String fileUrl, String originalFileName) throws Exception {
         try (InputStream is = new URI(downloadUrl).toURL().openStream()) {
-            Files.copy(is, path, StandardCopyOption.REPLACE_EXISTING);
+            byte[] data = is.readAllBytes();
+
+            if (fileUrl.startsWith("/api/storage/")) {
+                // MinIO: Skriv över befintlig fil med samma storageId
+                String storageId = fileUrl.replace("/api/storage/", "");
+                String contentType = "application/octet-stream";
+                if (originalFileName != null) {
+                    String ext = getExtension(originalFileName).toLowerCase();
+                    if (ext.equals("docx")) contentType = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+                    else if (ext.equals("xlsx")) contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                    else if (ext.equals("pptx")) contentType = "application/vnd.openxmlformats-officedocument.presentationml.presentation";
+                }
+                storageService.save(new java.io.ByteArrayInputStream(data), contentType, originalFileName, storageId);
+            } else {
+                // Legacy: Lokal disk
+                String fileName = fileUrl.replace("/uploads/", "");
+                Path path = Paths.get(uploadDir).resolve(fileName);
+                Files.write(path, data, java.nio.file.StandardOpenOption.CREATE, java.nio.file.StandardOpenOption.TRUNCATE_EXISTING);
+            }
+
+            return data.length;
         }
     }
 

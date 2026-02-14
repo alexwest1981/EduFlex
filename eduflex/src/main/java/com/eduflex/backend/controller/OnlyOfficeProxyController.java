@@ -23,10 +23,11 @@ public class OnlyOfficeProxyController {
 
     private static final Logger logger = LoggerFactory.getLogger(OnlyOfficeProxyController.class);
 
-    @Value("${onlyoffice.internal.url:http://localhost:8081}")
+    @Value("${onlyoffice.internal.url:http://eduflex-onlyoffice}")
     private String onlyOfficeInternalUrl;
 
     @RequestMapping(value = {
+            "/web-apps/**",
             "/cache/**",
             "/coauthoring/**",
             "/spellcheck/**",

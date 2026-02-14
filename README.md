@@ -37,6 +37,19 @@
 
 ## 🇸🇪 Svenska
 
+*   **🛠️ Systemåterställning & Full Stabilitet (14 feb 2026):**
+    *   **Full Service Stack:** Återaktiverat OnlyOffice (Dokument) och Jitsi (Video) efter omfattande stabilitetsarbete.
+    *   **Docker-optimering:** Löste kritiska "Connection refused"-fel genom att separera backend-start från container-orkestrering.
+    *   **502 Error Resolution:** Fixat "Bad Gateway" genom att åtgärda en API-mappningskonflikt i `GuardianController`.
+    *   **E-hälsa Visibility:** Implementerat strikt rollbaserad åtkomst (Hälsoteam ser endast E-hälsa, Admin ser inga hälso-paneler) för ökad integritet.
+    *   **Prestanda:** Systemet kör nu fullt ut med alla mikrotjänster aktiva och integrerade.
+
+*   **📈 Systematiskt Kvalitetsarbete (SKA) Motor (13 feb 2026):**
+    *   **SKA Dashboard:** Ny flik i Rektors-vyn för att definiera, följa upp och analysera kvalitetsmål.
+    *   **Kvalitetsindikatorer:** Stöd för både automatiska (t.ex. närvaro, betyg) och manuella indikatorer med målvärden.
+    *   **Årshjulet:** Visuell tidslinje (`YearCycleVisualization`) för läsårets kvalitetsavstämningar (Nulägesanalys, Målformulering, etc.).
+    *   **Backend-stöd:** Nya `/api/ska` endpoints för fullständig CRUD-hantering av mål och indikatorer.
+
 *   **🛠️ Systemstabilitet & AI-insikter (13 feb 2026 - Kväll):**
     *   **Backend-fix:** Åtgärdat kompileringsfel i `CourseController` genom att korrigera åtkomstnivåer i `CourseService`.
     *   **Vårdnadshavare AI:** Fixat bugg i student-lookup för AI-sammanfattningar och verifierat full funktionalitet.
@@ -183,6 +196,8 @@
 
 #### 🏢 Multi-Tenancy
 - **Schema-isolering:** Varje organisation i eget PostgreSQL-schema
+- **v1.0.9** (2026-02-14): **System Restoration** (Full Service Stack). OnlyOffice & Jitsi re-enabled.
+- **v1.0.8** (2026-02-13): **SKA Motor** (Quality Assurance). Goals, Indicators & AI Reports.
 - **v1.0.7** (2026-02-13): **Role-Specific AI Coachers** (Phase 2 Implementerad). Specialiserat beslutsstöd för Rektorer och Mentorer.
 - **v1.0.6** (2026-02-13): **Predictive AI Engine** (Fas 1 Roadmap 2026+). Deep pattern analysis och riskidentifiering.
 - **Request-routing:** `X-Tenant-ID` header för organisation-val
@@ -271,7 +286,9 @@ curl -X POST http://localhost:8080/api/tenants \
 ## 🇬🇧 English
 
 ### ⚡ Latest Updates (v1.0.5)
-> **2026-02-13: Deployment Optimization & Engagement Boost**
+> **2026-02-14: System Restoration & SKA Integration**
+*   **🛠️ Full Stability:** Resolved Docker connectivity issues and restored Jitsi/OnlyOffice services.
+*   **📈 SKA Motor:** Released Systematic Quality Work engine with Goals, Indicators, and Year Cycle.
 *   **🔄 Skolverket Sync 2.0:** Batch-sync capabilities for the entire catalog. Refactored service for maximum reliability.
 *   **🎮 Gamification Expanded:** XP rewards for AI Tutor chat, lesson views, video playbacks, and downloads.
 *   **🛡️ System Resilience:** Fixed activity logging (DB constraint fix) and AES-256 GCM encryption hardening.

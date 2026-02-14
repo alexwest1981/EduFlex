@@ -103,6 +103,9 @@ public class DocumentService {
                 : documentRepository.findByOwnerIdAndFolderId(userId, folderId);
     }
 
+    @org.springframework.beans.factory.annotation.Value("${file.upload-dir}")
+    private String uploadDir;
+
     @org.springframework.transaction.annotation.Transactional
     public void deleteDocument(Long id) {
         documentRepository.findById(id).ifPresent(doc -> {
@@ -110,11 +113,25 @@ public class DocumentService {
                 throw new RuntimeException("Official records cannot be deleted.");
             }
 
+            String fileUrl = doc.getFileUrl();
+
+            // Ta bort via StorageService (MinIO eller lokal)
             try {
-                String storageId = doc.getFileUrl().replace("/api/storage/", "");
+                String storageId = fileUrl.replace("/api/storage/", "");
                 storageService.delete(storageId);
             } catch (Exception e) {
                 System.err.println("Could not delete file from storage: " + e.getMessage());
+            }
+
+            // Säkerställ att lokal fil också tas bort (legacy /uploads/ sökväg)
+            if (fileUrl.startsWith("/uploads/")) {
+                try {
+                    String fileName = fileUrl.replace("/uploads/", "");
+                    java.nio.file.Path filePath = java.nio.file.Paths.get(uploadDir, fileName);
+                    java.nio.file.Files.deleteIfExists(filePath);
+                } catch (Exception e) {
+                    System.err.println("Could not delete local file: " + e.getMessage());
+                }
             }
 
             documentRepository.delete(doc);

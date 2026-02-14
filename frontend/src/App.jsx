@@ -57,6 +57,7 @@ import AcademicGovernance from './features/principal/AcademicGovernance';
 import PrincipalTools from './features/principal/PrincipalTools';
 import MessageCenter from './features/messages/MessageCenter';
 import IncidentManager from './features/principal/IncidentManager';
+import SKAManager from './features/principal/SKAManager';
 import StaffingControl from './features/principal/StaffingControl';
 import ReportLibrary from './features/principal/ReportLibrary';
 import HealthTeamDashboard from './features/health/HealthTeamDashboard';
@@ -211,7 +212,7 @@ const AppRoutes = () => {
                 <Route path="/principal/quality" element={
                     <ProtectedRoute roles={['ADMIN', 'ROLE_REKTOR', 'REKTOR', 'PRINCIPAL']}>
                         <Layout currentUser={currentUser} handleLogout={logout}>
-                            <IncidentManager />
+                            <SKAManager />
                         </Layout>
                     </ProtectedRoute>
                 } />
@@ -249,7 +250,7 @@ const AppRoutes = () => {
                 } />
 
                 <Route path="/health-dashboard" element={
-                    <ProtectedRoute roles={['ADMIN', 'ROLE_HALSOTEAM', 'HALSOTEAM', 'ROLE_REKTOR', 'REKTOR', 'PRINCIPAL']}>
+                    <ProtectedRoute roles={['HALSOTEAM', 'ROLE_HALSOTEAM']}>
                         <Layout currentUser={currentUser} handleLogout={logout}>
                             <HealthTeamDashboard />
                         </Layout>

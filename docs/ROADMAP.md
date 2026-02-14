@@ -58,7 +58,7 @@
 | Funktion | Beskrivning | Status |
 | :--- | :--- | :--- |
 | **Advanced Security** | Domän-låsning, AES-256 GCM kryptering (PII) och Rate-limiting. | ✅ **Klar** |
-| **Unified Storage** | MinIO-integration för alla tillgångar (Löste split-brain bugg). | ✅ **Klar** |
+| **Unified Storage** | MinIO standalone restoration & auto-bucket sync. | ✅ **Klar** |
 | **CI/CD Pipeline** | Fullt automatiserade tester och deployment. | 📅 **Planerad** |
 | **Kubernetes Migration** | Helm-charts för skalbarhet. | 📅 **Planerad** |
 | **Rektorspaket (Mission Control)** | Komplett skolledningslager: Organisationshierarki, Dashboard för nyckeltal (8 realtids-KPIer), Incidenthantering, Elevhälsa och Masskommunikation. | ✅ **Klar** |
@@ -68,6 +68,24 @@
 ---
 
 ## 📝 Change Log
+
+### [v1.1.0] - 2026-02-14
+- **Platform Recovery**: **Native Mode Transition** - Fully bypassed Docker Desktop API issues by pivoting to host-based services (PostgreSQL 5432, Redis 6379, Standalone MinIO).
+- **Connectivity**: **Cloudflare Tunnel Restoration** - Fixed 502 errors and restored public access to `www.eduflexlms.se`.
+- **Storage**: **MinIO & Profile Restoration** - Initialized standalone MinIO with correct credentials and synchronized legacy `uploads/` data, fixing profile picture 404s and upload failures.
+
+### [v1.0.9] - 2026-02-14
+- **System Restoration**: **Full Service Stack** - Reactivated OnlyOffice and Jitsi after stability fixes.
+- **Docker**: Resolved "Connection refused" errors by decoupling backend startup.
+- **Stability**: Full microservice integration restored.
+
+### [v1.0.8] - 2026-02-13
+- **New Feature**: **SKA Motor** - Systematic Quality Work engine for Principals.
+- **SKA**: Added Goals, Indicators, Year Cycle visualization, and AI-driven reports.
+- **Dashboard**: Integrated SKA tools into the Principal Mission Control.
+
+### [v1.0.6 ~ v1.0.7] - 2026-02-13
+- **AI**: Role-specific AI Coachers and Predictive Risk Model (Phase 1 & 2).
 
 ### [v1.0.5] - 2026-02-13
 - **New Feature**: **AI Management Reports** - Automated deep-dive reports with long-term data snapshots and role-based archival.

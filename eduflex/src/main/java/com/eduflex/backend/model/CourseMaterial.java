@@ -45,6 +45,15 @@ public class CourseMaterial {
 
     private int sortOrder;
 
+    // Adaptive Learning Metadata
+    private int difficultyLevel = 3; // 1-5 scale, default 3
+    private int estimatedTimeMinutes = 15;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "prerequisite_material_id")
+    @JsonIgnore
+    private CourseMaterial prerequisiteMaterial;
+
     @Enumerated(EnumType.STRING)
     private MaterialType type;
 
@@ -185,5 +194,29 @@ public class CourseMaterial {
 
     public void setVideoChapters(String videoChapters) {
         this.videoChapters = videoChapters;
+    }
+
+    public int getDifficultyLevel() {
+        return difficultyLevel;
+    }
+
+    public void setDifficultyLevel(int difficultyLevel) {
+        this.difficultyLevel = difficultyLevel;
+    }
+
+    public int getEstimatedTimeMinutes() {
+        return estimatedTimeMinutes;
+    }
+
+    public void setEstimatedTimeMinutes(int estimatedTimeMinutes) {
+        this.estimatedTimeMinutes = estimatedTimeMinutes;
+    }
+
+    public CourseMaterial getPrerequisiteMaterial() {
+        return prerequisiteMaterial;
+    }
+
+    public void setPrerequisiteMaterial(CourseMaterial prerequisiteMaterial) {
+        this.prerequisiteMaterial = prerequisiteMaterial;
     }
 }
