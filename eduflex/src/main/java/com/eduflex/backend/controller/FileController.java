@@ -5,7 +5,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping({ "/api/files", "/api/storage" })
 @CrossOrigin(origins = "*")
 public class FileController {
 
@@ -20,21 +19,17 @@ public class FileController {
      * Handles /api/files/** and /api/storage/**
      * Supports HTTP Range requests for audio/video streaming.
      */
-    @GetMapping("/**")
-    public ResponseEntity<Object> getFile(jakarta.servlet.http.HttpServletRequest request,
+    @GetMapping({ "/api/files/{*fileName}", "/api/storage/{*fileName}" })
+    public ResponseEntity<Object> getFile(@PathVariable String fileName,
             @RequestHeader(value = org.springframework.http.HttpHeaders.RANGE, required = false) String rangeHeader) {
-        String path = (String) request
-                .getAttribute(org.springframework.web.servlet.HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
 
-        String fileName = "";
-        if (path.startsWith("/api/files/")) {
-            fileName = path.substring("/api/files/".length());
-        } else if (path.startsWith("/api/storage/")) {
-            fileName = path.substring("/api/storage/".length());
+        if (fileName == null || fileName.isEmpty() || fileName.equals("/")) {
+            return ResponseEntity.badRequest().build();
         }
 
-        if (fileName.isEmpty()) {
-            return ResponseEntity.badRequest().build();
+        // Clean up leading slash from captured path variable
+        if (fileName.startsWith("/")) {
+            fileName = fileName.substring(1);
         }
 
         try {
