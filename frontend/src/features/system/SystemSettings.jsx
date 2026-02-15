@@ -277,6 +277,7 @@ const SystemSettings = ({ asTab = false }) => {
             category: 'AI & Automation',
             items: [
                 { id: 'ai', label: 'AI-inställningar', icon: Sparkles },
+                ...(isAdmin ? [{ id: 'ai-audit', label: 'AI Audit Logg', icon: ShieldCheck }] : []),
             ]
         },
         {
@@ -946,6 +947,33 @@ const SystemSettings = ({ asTab = false }) => {
                     </div>
                 );
             }
+
+            case 'ai-audit':
+                return (
+                    <div className="space-y-6">
+                        <div>
+                            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">AI Audit Logg</h2>
+                            <p className="text-gray-500 dark:text-gray-400">Granska och spåra alla AI-beslut i systemet.</p>
+                        </div>
+
+                        <div className="bg-white dark:bg-[#1E1F20] rounded-2xl p-8 border border-gray-200 dark:border-[#3c4043] shadow-sm text-center">
+                            <div className="w-16 h-16 bg-indigo-50 dark:bg-indigo-900/20 rounded-2xl flex items-center justify-center text-indigo-600 mx-auto mb-4">
+                                <Sparkles size={32} />
+                            </div>
+                            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Öppna AI Audit Portal</h3>
+                            <p className="text-gray-500 dark:text-gray-400 max-w-md mx-auto mb-6">
+                                Vi har en dedikerad portal för att söka, filtrera och analysera AI-beslut i detalj.
+                            </p>
+                            <button
+                                onClick={() => navigate('/admin/ai-audit')}
+                                className="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold shadow-lg shadow-indigo-500/20 transition-all flex items-center gap-2 mx-auto"
+                            >
+                                <Sparkles size={20} />
+                                Gå till AI Audit Portal
+                            </button>
+                        </div>
+                    </div>
+                );
 
             case 'modules': {
                 // Group modules by category

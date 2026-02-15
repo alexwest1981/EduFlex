@@ -11,7 +11,7 @@ import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSeriali
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 @Configuration
-// @EnableCaching
+@EnableCaching
 @org.springframework.boot.autoconfigure.condition.ConditionalOnProperty(name = "eduflex.redis.enabled", havingValue = "true")
 public class RedisConfig {
 
@@ -50,8 +50,20 @@ public class RedisConfig {
 
     @Bean
     public org.springframework.cache.CacheManager cacheManager(RedisConnectionFactory connectionFactory) {
+        ObjectMapper mapper = createRedisObjectMapper();
+        GenericJackson2JsonRedisSerializer serializer = new GenericJackson2JsonRedisSerializer(mapper);
+
+        org.springframework.data.redis.cache.RedisCacheConfiguration config = org.springframework.data.redis.cache.RedisCacheConfiguration
+                .defaultCacheConfig()
+                .serializeKeysWith(org.springframework.data.redis.serializer.RedisSerializationContext.SerializationPair
+                        .fromSerializer(new StringRedisSerializer()))
+                .serializeValuesWith(
+                        org.springframework.data.redis.serializer.RedisSerializationContext.SerializationPair
+                                .fromSerializer(serializer))
+                .entryTtl(java.time.Duration.ofMinutes(60)); // Cache for 60 minutes
+
         return org.springframework.data.redis.cache.RedisCacheManager.builder(connectionFactory)
-                .cacheDefaults(org.springframework.data.redis.cache.RedisCacheConfiguration.defaultCacheConfig())
+                .cacheDefaults(config)
                 .build();
     }
 

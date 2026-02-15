@@ -5,7 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/files")
+@RequestMapping({ "/api/files", "/api/storage" })
 @CrossOrigin(origins = "*")
 public class FileController {
 
@@ -17,7 +17,7 @@ public class FileController {
 
     /**
      * Unified fetch endpoint for any file in MinIO/Local storage.
-     * Handles /api/files/**
+     * Handles /api/files/** and /api/storage/**
      * Supports HTTP Range requests for audio/video streaming.
      */
     @GetMapping("/**")
@@ -25,7 +25,13 @@ public class FileController {
             @RequestHeader(value = org.springframework.http.HttpHeaders.RANGE, required = false) String rangeHeader) {
         String path = (String) request
                 .getAttribute(org.springframework.web.servlet.HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
-        String fileName = path.substring("/api/files/".length());
+
+        String fileName = "";
+        if (path.startsWith("/api/files/")) {
+            fileName = path.substring("/api/files/".length());
+        } else if (path.startsWith("/api/storage/")) {
+            fileName = path.substring("/api/storage/".length());
+        }
 
         if (fileName.isEmpty()) {
             return ResponseEntity.badRequest().build();

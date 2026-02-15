@@ -12,6 +12,8 @@ import NotificationBell from '../NotificationBell';
 import OnlineFriendsPanel from '../social/OnlineFriendsPanel';
 import SidebarSection from '../SidebarSection';
 import logoTop from '../../assets/images/Logo_top.png';
+import { Download } from 'lucide-react';
+import { usePwaInstall } from '../../hooks/usePwaInstall';
 
 const StandardLayout = ({ children }) => {
     const { currentUser, logout, systemSettings, theme, toggleTheme, API_BASE } = useAppContext();
@@ -22,6 +24,7 @@ const StandardLayout = ({ children }) => {
     const [sidebarOpen, setSidebarOpen] = useState(true);
     const [friendsPanelOpen, setFriendsPanelOpen] = useState(false);
     const [scrolled, setScrolled] = useState(false);
+    const { canInstall, install } = usePwaInstall();
 
     const handleLogout = () => { logout(); navigate('/login'); };
 
@@ -225,6 +228,13 @@ const StandardLayout = ({ children }) => {
                         <button onClick={toggleTheme} className={`flex items-center w-full px-3 py-2 rounded-xl transition-colors bg-gray-50 dark:bg-[#282a2c] hover:bg-gray-100 dark:hover:bg-[#3c4043] text-gray-600 dark:text-gray-300 ${!sidebarOpen && 'justify-center'}`}>
                             {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
                             {sidebarOpen && <span className="ml-3 font-medium text-sm">{theme === 'dark' ? t('common.light_mode') : t('common.dark_mode')}</span>}
+                        </button>
+                    )}
+
+                    {canInstall && (
+                        <button onClick={install} className={`flex items-center w-full px-3 py-2 rounded-xl transition-colors bg-indigo-50 dark:bg-indigo-900/10 hover:bg-indigo-100 dark:hover:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 ${!sidebarOpen && 'justify-center'}`}>
+                            <Download size={20} />
+                            {sidebarOpen && <span className="ml-3 font-bold text-sm">Installera App</span>}
                         </button>
                     )}
                     <button onClick={handleLogout} className={`flex items-center w-full px-3 py-3 rounded-xl text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/10 transition-colors ${!sidebarOpen && 'justify-center'}`}>

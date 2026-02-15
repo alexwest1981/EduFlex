@@ -156,7 +156,7 @@ const AdaptiveLearningDashboard = () => {
                 {/* VAK Chart Card */}
                 <div className="bg-white dark:bg-slate-800 rounded-xl p-4 border border-slate-200 dark:border-slate-700 shadow-sm relative overflow-hidden flex flex-col">
                     <h3 className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-2">Inlärningsprofil (VAK)</h3>
-                    <div className="flex-1 w-full h-full min-h-[160px]">
+                    <div className="flex-1 w-full h-full min-h-[250px]">
                         <ResponsiveContainer width="100%" height="100%">
                             <RadarChart cx="50%" cy="50%" outerRadius="80%" data={vakData}>
                                 <PolarGrid stroke="#e2e8f0" />

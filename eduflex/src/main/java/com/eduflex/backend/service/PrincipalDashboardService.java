@@ -81,14 +81,12 @@ public class PrincipalDashboardService {
 
                 // 3. Kunskapsstatus (Betygs-progress)
                 long totalResults = courseResultRepository.count();
-                long completedResults = courseResultRepository.findAll().stream()
-                                .filter(r -> r.getStatus() == com.eduflex.backend.model.CourseResult.Status.PASSED)
-                                .count();
+                long completedResults = courseResultRepository
+                                .countByStatus(com.eduflex.backend.model.CourseResult.Status.PASSED);
                 metrics.put("gradingProgressPercentage",
                                 totalResults == 0 ? 0 : (completedResults * 100 / totalResults));
-                metrics.put("npRiskCount", courseResultRepository.findAll().stream()
-                                .filter(r -> r.getStatus() == com.eduflex.backend.model.CourseResult.Status.FAILED)
-                                .count());
+                metrics.put("npRiskCount", courseResultRepository
+                                .countByStatus(com.eduflex.backend.model.CourseResult.Status.FAILED));
 
                 // 4. Personal-status (sjukfrånvaro hanteras via staffStatus)
                 long totalTeachers = userRepository.findByRole_Name("TEACHER").size();
@@ -106,11 +104,7 @@ public class PrincipalDashboardService {
                 metrics.put("sickStaffCount", sickStaff);
 
                 // 5. Betygstrender (Higher grades % A-C)
-                long highGrades = courseResultRepository.findAll().stream()
-                                .filter(r -> r.getGrade() != null
-                                                && (r.getGrade().equals("A") || r.getGrade().equals("B")
-                                                                || r.getGrade().equals("C")))
-                                .count();
+                long highGrades = courseResultRepository.countByGradeIn(List.of("A", "B", "C"));
                 metrics.put("gradesACPercentage", totalResults == 0 ? 0 : (highGrades * 100 / totalResults));
 
                 // 6. Elevhälsa
@@ -134,9 +128,8 @@ public class PrincipalDashboardService {
                 long totalStudents = userRepository.findByRole_Name("STUDENT").size();
                 metrics.put("totalStudents", totalStudents);
 
-                metrics.put("fWarningCount", courseResultRepository.findAll().stream()
-                                .filter(r -> r.getStatus() == com.eduflex.backend.model.CourseResult.Status.FAILED)
-                                .count());
+                metrics.put("fWarningCount", courseResultRepository
+                                .countByStatus(com.eduflex.backend.model.CourseResult.Status.FAILED));
 
                 // 10. Departments Structure
                 List<Department> departments = departmentRepository.findAll();
@@ -151,7 +144,7 @@ public class PrincipalDashboardService {
                         for (Program p : programs) {
                                 List<ClassGroup> classes = classGroupRepository.findByProgram_Id(p.getId());
                                 for (ClassGroup c : classes) {
-                                        studentCount += userRepository.findByClassGroup_Id(c.getId()).size();
+                                        studentCount += userRepository.countByClassGroup_Id(c.getId());
                                 }
                         }
                         d.put("studentCount", studentCount);

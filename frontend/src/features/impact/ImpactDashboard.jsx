@@ -104,7 +104,7 @@ const ImpactDashboard = () => {
                 {/* Charts */}
                 <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
                     <h3 className="text-lg font-semibold text-gray-800 mb-6">Betygsutveckling (Skolnivå)</h3>
-                    <div className="h-80">
+                    <div className="h-80 min-h-[300px]">
                         <ResponsiveContainer width="100%" height="100%">
                             <LineChart data={trendData}>
                                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
@@ -120,7 +120,7 @@ const ImpactDashboard = () => {
 
                 <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
                     <h3 className="text-lg font-semibold text-gray-800 mb-6">Effekt av Åtgärder</h3>
-                    <div className="h-80">
+                    <div className="h-80 min-h-[300px]">
                         <ResponsiveContainer width="100%" height="100%">
                             <BarChart data={interventionData}>
                                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />

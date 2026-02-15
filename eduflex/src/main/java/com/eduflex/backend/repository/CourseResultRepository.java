@@ -15,4 +15,8 @@ public interface CourseResultRepository extends JpaRepository<CourseResult, Long
     List<CourseResult> findByStudentIdIn(List<Long> studentIds);
 
     long countByStudentIdAndGrade(Long studentId, String grade);
+
+    long countByStatus(com.eduflex.backend.model.CourseResult.Status status);
+
+    long countByGradeIn(java.util.List<String> grades);
 }

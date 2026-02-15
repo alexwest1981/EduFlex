@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { useAppContext } from '../context/AppContext';
 import { useBranding } from '../context/BrandingContext';
 import { DESIGN_SYSTEMS } from '../context/DesignSystemContext';
+import PwaInstallPrompt from './common/PwaInstallPrompt';
 
 import StandardLayout from './layouts/StandardLayout';
 import FloatingLayout from './layouts/FloatingLayout';
@@ -56,35 +57,24 @@ const Layout = ({ children }) => {
     const activeDesign = targetSystemId ? DESIGN_SYSTEMS[targetSystemId] : null;
     const layoutStyle = activeDesign?.layout?.style;
 
-    if (layoutStyle === 'floating') {
-        return <FloatingLayout>{children}</FloatingLayout>;
-    }
+    const renderLayout = () => {
+        if (layoutStyle === 'floating') return <FloatingLayout>{children}</FloatingLayout>;
+        if (layoutStyle === 'horizon') return <HorizonLayout>{children}</HorizonLayout>;
+        if (layoutStyle === 'nebula') return <NebulaLayout>{children}</NebulaLayout>;
+        if (layoutStyle === 'ember') return <EmberLayout>{children}</EmberLayout>;
+        if (layoutStyle === 'voltage') return <VoltageLayout>{children}</VoltageLayout>;
+        if (layoutStyle === 'midnight') return <MidnightLayout>{children}</MidnightLayout>;
+        if (layoutStyle === 'pulse') return <PulseLayout>{children}</PulseLayout>;
 
-    if (layoutStyle === 'horizon') {
-        return <HorizonLayout>{children}</HorizonLayout>;
-    }
+        return <StandardLayout>{children}</StandardLayout>;
+    };
 
-    if (layoutStyle === 'nebula') {
-        return <NebulaLayout>{children}</NebulaLayout>;
-    }
-
-    if (layoutStyle === 'ember') {
-        return <EmberLayout>{children}</EmberLayout>;
-    }
-
-    if (layoutStyle === 'voltage') {
-        return <VoltageLayout>{children}</VoltageLayout>;
-    }
-
-    if (layoutStyle === 'midnight') {
-        return <MidnightLayout>{children}</MidnightLayout>;
-    }
-
-    if (layoutStyle === 'pulse') {
-        return <PulseLayout>{children}</PulseLayout>;
-    }
-
-    return <StandardLayout>{children}</StandardLayout>;
+    return (
+        <>
+            <PwaInstallPrompt />
+            {renderLayout()}
+        </>
+    );
 };
 
 export default Layout;

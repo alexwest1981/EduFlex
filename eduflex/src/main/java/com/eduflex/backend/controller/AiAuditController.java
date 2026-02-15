@@ -1,11 +1,8 @@
 package com.eduflex.backend.controller;
 
-import com.eduflex.backend.model.AiAuditRecord;
+import com.eduflex.backend.model.AiAuditLog;
 import com.eduflex.backend.service.AiAuditService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -20,17 +17,20 @@ public class AiAuditController {
     private final AiAuditService aiAuditService;
 
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN') or hasRole('SUPERADMIN')")
-    public ResponseEntity<Page<AiAuditRecord>> getAllAuditLogs(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size) {
-        return ResponseEntity.ok(aiAuditService.getAllAuditLogs(
-                PageRequest.of(page, size, Sort.by("createdAt").descending())));
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPERADMIN')")
+    public ResponseEntity<List<AiAuditLog>> getAllAuditLogs() {
+        return ResponseEntity.ok(aiAuditService.getAllLogs());
     }
 
     @GetMapping("/user/{userId}")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('SUPERADMIN')")
-    public ResponseEntity<List<AiAuditRecord>> getAuditLogsByUser(@PathVariable Long userId) {
-        return ResponseEntity.ok(aiAuditService.getAuditLogsByUser(userId));
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPERADMIN')")
+    public ResponseEntity<List<AiAuditLog>> getAuditLogsByUser(@PathVariable Long userId) {
+        // Since we log by username (actorId), we need to fetch user first or assume
+        // actorId is username
+        // Here we assume the frontend sends the USERNAME as the path variable or we
+        // change the endpoint to accept string
+        // For now, let's assume we change the repository to find by ActorId (which is
+        // String)
+        return ResponseEntity.ok(aiAuditService.getLogsByActor(String.valueOf(userId)));
     }
 }

@@ -31,6 +31,7 @@ import { ThemeProvider } from './context/ThemeContext';
 import { Toaster } from 'react-hot-toast';
 import AchievementToast from './components/gamification/AchievementToast';
 import FloatingAudioPlayer from './components/common/FloatingAudioPlayer';
+import { Helmet, HelmetProvider } from 'react-helmet-async';
 
 // --- DE RIKTIGA SIDORNA ---
 import UserProfile from './features/profile/UserProfile';
@@ -73,6 +74,7 @@ import ManagementReportCenter from './features/principal/ManagementReportCenter'
 import ImpactDashboard from './features/impact/ImpactDashboard';
 import HealthCheckDashboard from './features/admin/HealthCheckDashboard';
 import DeveloperSettings from './features/settings/DeveloperSettings';
+import AiAuditDashboard from './features/admin/AiAuditDashboard';
 
 // --- PROTECTED ROUTE ---
 const ProtectedRoute = ({ children, roles, permission }) => {
@@ -398,6 +400,15 @@ const AppRoutes = () => {
                     </ProtectedRoute>
                 } />
 
+                {/* AI AUDIT PORTAL (ADMIN ONLY) */}
+                <Route path="/admin/ai-audit" element={
+                    <ProtectedRoute roles={['ADMIN']}>
+                        <Layout currentUser={currentUser} handleLogout={logout}>
+                            <AiAuditDashboard />
+                        </Layout>
+                    </ProtectedRoute>
+                } />
+
                 <Route path="/calendar" element={
                     <ProtectedRoute>
                         <Layout currentUser={currentUser} handleLogout={logout}>
@@ -550,12 +561,20 @@ const App = () => {
                     <ModuleProvider>
                         <GamificationProvider>
                             <ErrorBoundary>
-                                <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-                                    <Toaster position="top-right" />
-                                    <AchievementToast />
-                                    <FloatingAudioPlayer />
-                                    <AppRoutes />
-                                </Router>
+                                <HelmetProvider>
+                                    <Helmet>
+                                        <title>EduFlex LMS</title>
+
+                                        <meta http-equiv="X-XSS-Protection" content="1; mode=block" />
+                                        <meta http-equiv="Content-Security-Policy" content="default-src 'self' http://localhost:8080 ws://localhost:8080 https://fonts.googleapis.com https://fonts.gstatic.com; img-src 'self' data: http://localhost:8080 http://localhost:9000 http://localhost:9001 https://storage.eduflexlms.se blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; script-src 'self' 'unsafe-inline' 'unsafe-eval'; frame-src 'self' https://www.youtube.com;" />
+                                    </Helmet>
+                                    <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+                                        <Toaster position="top-right" />
+                                        <AchievementToast />
+                                        <FloatingAudioPlayer />
+                                        <AppRoutes />
+                                    </Router>
+                                </HelmetProvider>
                             </ErrorBoundary>
                         </GamificationProvider>
                     </ModuleProvider>

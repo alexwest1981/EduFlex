@@ -14,6 +14,7 @@ import StudentSidebar from './components/student/StudentSidebar';
 import StudentAttendanceWidget from './widgets/StudentAttendanceWidget';
 import DailyChallengesWidget from '../../components/gamification/DailyChallengesWidget';
 import StudentScheduleAndDeadlinesWidget from './widgets/StudentScheduleAndDeadlinesWidget';
+import OnboardingTour from '../../components/common/OnboardingTour';
 import StudentGamificationWidget from './widgets/StudentGamificationWidget';
 import AchievementsWidget from './widgets/AchievementsWidget';
 import WidgetWrapper from './components/WidgetWrapper';
@@ -139,11 +140,44 @@ const StudentDashboard = ({ currentUser }) => {
         return new Date(dateInput);
     };
 
-    if (isLoading) return <div className="p-10 text-center text-gray-500">{t('messages.loading')}</div>;
+    const tourSteps = [
+        {
+            element: '#dashboard-welcome',
+            popover: {
+                title: 'Välkommen till EduFlex! 👋',
+                description: 'Det här är din personliga startskärm.'
+            }
+        },
+        {
+            element: '#min-larvag-card',
+            popover: {
+                title: 'Min Lärväg 🧠',
+                description: 'Här ser du din AI-analys och din unika inlärningsprofil.'
+            }
+        },
+        {
+            element: '#daily-challenges-card',
+            popover: {
+                title: 'Dina Utmaningar 🏆',
+                description: 'Slutför dagliga uppdrag för att tjäna XP och gå upp i nivå.'
+            }
+        }
+    ];
+
+    if (isLoading) {
+        return (
+            <div className="flex justify-center items-center h-96">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-primary"></div>
+            </div>
+        );
+    }
 
     return (
         <div className="max-w-7xl mx-auto animate-in fade-in pb-20 relative p-4 lg:p-8">
-            <div className="flex justify-between items-center mb-6">
+            <OnboardingTour steps={tourSteps} tourId="student-dashboard-v1" />
+
+            {/* Header Section */}
+            <div id="dashboard-welcome" className="flex justify-between items-center mb-6">
 
                 {/* Tabs */}
                 <div className="flex gap-6 border-b border-gray-200 dark:border-[#3c4043]">
@@ -179,7 +213,7 @@ const StudentDashboard = ({ currentUser }) => {
 
 
                         {widgets.aiInsights && (
-                            <WidgetWrapper className="h-auto">
+                            <WidgetWrapper className="h-auto" id="min-larvag-card">
                                 <AdaptiveWidget />
                             </WidgetWrapper>
                         )}
@@ -231,7 +265,7 @@ const StudentDashboard = ({ currentUser }) => {
 
                         {/* Legacy Daily Challenges - Hide if EduQuest is active? Or keep both? Keeping for now but maybe conditional */}
                         {widgets.dailyChallenges && !isModuleActive('EDUGAME') && (
-                            <WidgetWrapper className="h-auto">
+                            <WidgetWrapper className="h-auto" id="daily-challenges-card">
                                 <DailyChallengesWidget />
                             </WidgetWrapper>
                         )}

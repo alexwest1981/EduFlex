@@ -94,10 +94,14 @@ public class CourseService {
         backfillSlugs();
     }
 
+    // ... imports
+
+    @org.springframework.cache.annotation.Cacheable("courses")
     public List<CourseDTO> getAllCourseDTOs() {
         return courseRepository.findAll().stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 
+    @org.springframework.cache.annotation.Cacheable(value = "course_details", key = "#id")
     public CourseDTO getCourseDTOById(Long id) {
         Course course = courseRepository.findById(id).orElseThrow(() -> new RuntimeException("Kurs ej funnen"));
         return convertToDTO(course);
@@ -107,7 +111,12 @@ public class CourseService {
         return courseRepository.findById(id).orElseThrow(() -> new RuntimeException("Kurs ej funnen"));
     }
 
+    @org.springframework.cache.annotation.CacheEvict(value = "courses", allEntries = true)
     public Course createCourse(CreateCourseDTO dto, Long teacherId) {
+        // ... (existing code implementation)
+        // ...
+        // ...
+
         // --- HIDDEN LICENSE TRAP ---
         if (licenseService != null && !licenseService.isValid()) {
             throw new RuntimeException("Ett internt fel uppstod vid validering av resurser (Error: 0xSEC-C01).");
@@ -355,6 +364,7 @@ public class CourseService {
     }
 
     @Transactional
+    @org.springframework.cache.annotation.CacheEvict(value = { "courses", "course_details" }, allEntries = true)
     public CourseDTO updateCourse(Long id, Map<String, Object> updates) {
         Course course = getCourseById(id);
 
@@ -438,6 +448,7 @@ public class CourseService {
         return convertToDTO(courseRepository.save(course));
     }
 
+    @org.springframework.cache.annotation.CacheEvict(value = { "courses", "course_details" }, allEntries = true)
     public void deleteCourse(Long id) {
         courseRepository.deleteById(id);
     }

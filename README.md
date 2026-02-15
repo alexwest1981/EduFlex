@@ -37,6 +37,12 @@
 
 ## 🇸🇪 Svenska
 
+*   **🛠️ Systemstabilitet & AI-loggning (15 feb 2026):**
+    *   **Storage API Fix:** Åtgärdat 500-fel vid åtkomst till `/api/storage/` genom att implementera en enhetlig mappning i `FileController`. Systemet hanterar nu både `/api/files/` och `/api/storage/` sömlöst.
+    *   **AI Audit Dashboard:** Fixat bugg där AI-loggen visades som tom på grund av fältnamnskonflikter mellan backend och frontend.
+    *   **Databasstabilitet:** Flyttat `ai_audit_log` till `public`-schemat för att säkerställa högsta driftsäkerhet och undvika schemakollisioner.
+    *   **Verifierad Media:** Bekräftat att logotyper, favicons och dokumentleverans fungerar felfritt via MinIO.
+
 *   **🏥 E-hälsa Motor & Bokningssystem (14 feb 2026 - Kväll):**
     *   **Fullständig Bokningsmotor:** Implementerat backend-logik för bokningar mellan elev och hälsoteam med strikt behörighetskontroll.
     *   **Journalsystem:** Refaktorerat journalhantering till dedikerade controllers för ökad säkerhet och prestanda.
@@ -240,7 +246,23 @@ curl -X POST http://localhost:8080/api/tenants \
 ---
 
 ### Senaste Uppdateringar
-### [v1.1.3] - 2026-02-14
+*   **PWA & Mobile (v1.1.5) - 15 feb 2026:**
+    *   **v1.1.5 (PWA-stöd):** EduFlex är nu en installerbar app med offline-stöd och hemskärms-ikoner (iOS/Android/Desktop). 📱
+*   **v1.2.0 (AI Transparency):** Implementerat AI Audit Log och "Varför?"-funktionalitet för full transparens i adaptivt lärande (XAI). 🧠
+    *   **Offline-redo:** Cachar statiska resurser för snabbare laddning och nätverkstålighet.
+    *   **Användarupplevelse:** "Installera"-knapp i sidomenyn och automatisk prompt.
+
+*   **Säkerhet, Onboarding & Prestanda (v1.1.4) - 15 feb 2026:**
+    *   **Säkerhetshärdning:** Implementerat strikta säkerhetsheaders (CSP, X-Frame-Options) och säkrad felhantering i backend för att skydda mot informationsläckage.
+    *   **Användar-Onboarding:** Ny interaktiv rundtur (`driver.js`) som välkomnar nya studenter och guidar dem genom dashboardens nyckelfunktioner (Min Lärväg, Utmaningar).
+    *   **Prestandaoptimering:** Aktiverat Redis-caching för tunga kurshämtningar och optimerat SKA-motorns databasfrågor (bytte in-memory filtering mot `COUNT`-queries), vilket drastiskt minskade laddtiderna för skolledningen.
+
+*   **AI Compliance & Mobile Polish (v1.1.3) - 15 feb 2026:**
+    *   **AI Audit Portal:** Nytt verktyg för administratörer (`/admin/ai-audit`) för att granska AI-genererade beslut, inklusive prompts, JSON-svar och resonemangskedjor ("Reasoning Trace").
+    *   **Mobilanpassning:** Kraftigt förbättrad responsivitet för grafer i "Min Lärväg" och Impact Dashboard, säkerställer att ingen data klipps på små skärmar.
+    *   **Verifierad backend:** Utökade tester (`verify_ai_audit_dashboard.js`) garanterar att loggning sker utan att påverka användarens upplevelse (Async/Isolated Transactions).
+
+### [v1.1.2] - 2026-02-14
 - **New Feature**: **AI Audit Log** - Full traceability of all AI decisions (Analysis & Recommendations) for compliance and debugging.
 - **Stability**: **Transaction Isolation** - Refactored audit logging to use `REQUIRES_NEW`, preventing analysis failures from rolling back audit data.
 - **Database**: **Schema Repair** - Fixed `ai_audit_log` vs `ai_audit_logs` naming conflict and purged legacy constraints on recommendations.
@@ -316,6 +338,11 @@ curl -X POST http://localhost:8080/api/tenants \
 
 ### ⚡ Latest Updates (v1.0.5)
 ### ⚡ Latest Updates (v1.0.6)
+> **2026-02-15: AI Audit Portal & Mobile Polish**
+*   **🤖 AI Audit Dashboard:** New dedicated admin view (`/admin/ai-audit`) to inspect raw AI interactions, including Prompts, Responses, and Reasoning Traces.
+*   **📱 Mobile Optimization:** Enhanced responsiveness for `RadarChart` (Learning Profile) and `ImpactDashboard` charts on mobile devices.
+*   **✅ Verified Reliability:** Backend now uses `REQUIRES_NEW` transactions for audit logs to ensure logging resilience even during analysis failures.
+
 > **2026-02-14: E-Health Motor & Booking System**
 *   **🏥 Booking Engine Implemented:** Full backend logic for student-counselor bookings with strict RBAC.
 *   **Journal System Refactor:** Decoupled journal management into dedicated secure controllers.

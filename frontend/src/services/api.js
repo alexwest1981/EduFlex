@@ -667,6 +667,10 @@ export const api = {
                 if (context) params.append('context', context);
                 return api.post(`/ai/resources/generate?${params}`);
             }
+        },
+        audit: {
+            getAll: (page = 0, size = 20) => api.get(`/admin/ai-audit?page=${page}&size=${size}`),
+            getByUser: (userId) => api.get(`/admin/ai-audit/user/${userId}`)
         }
     },
 

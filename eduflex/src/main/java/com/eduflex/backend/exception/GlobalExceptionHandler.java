@@ -13,19 +13,27 @@ public class GlobalExceptionHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
+    @org.springframework.beans.factory.annotation.Value("${spring.profiles.active:default}")
+    private String activeProfile;
+
     @ExceptionHandler(MaxUploadSizeExceededException.class)
     public ResponseEntity<String> handleMaxSizeException(MaxUploadSizeExceededException exc) {
         logger.error("File upload too large!", exc);
-        System.err.println("GLOBAL ERROR: FILE TOO LARGE");
         return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body("File too large!");
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handleGlobalException(Exception ex) {
         logger.error("Unhandled Global Exception", ex);
-        System.err.println("!!!! GLOBAL EXCEPTION CAUGHT !!!!");
-        ex.printStackTrace(); // Ensure it goes to stderr for capture
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("An internal error occurred: " + ex.getMessage());
+
+        String message = "An internal error occurred.";
+        if (!"prod".equals(activeProfile)) {
+            message += " Details: " + ex.getMessage();
+            ex.printStackTrace();
+        } else {
+            message += " Please contact support.";
+        }
+
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(message);
     }
 }

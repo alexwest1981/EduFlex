@@ -27,6 +27,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     java.util.List<User> findByClassGroup_Id(Long classGroupId);
 
+    long countByClassGroup_Id(Long classGroupId);
+
     long countByRole_NameAndStaffStatus(String roleName, User.StaffStatus status);
 
     long countByLastActiveAfter(java.time.LocalDateTime cutoff);

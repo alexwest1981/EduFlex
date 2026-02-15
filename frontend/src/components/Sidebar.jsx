@@ -43,16 +43,19 @@ const Sidebar = ({ currentUser, logout, siteName, version }) => {
         const role = currentUser?.role?.name || currentUser?.role || '';
         const roleName = role.toUpperCase();
         const principalRoles = ['ADMIN', 'ROLE_ADMIN', 'ROLE_REKTOR', 'REKTOR', 'PRINCIPAL'];
+        const adminRoles = ['ADMIN', 'ROLE_ADMIN'];
+        const teacherRoles = ['TEACHER', 'ROLE_TEACHER'];
+
         const dashboardPath = principalRoles.includes(roleName) ? '/principal/dashboard' : '/';
 
         const items = [
             { path: dashboardPath, label: t('sidebar.dashboard'), icon: <LayoutDashboard size={20} /> }
         ];
 
-        if (role === 'TEACHER' || role === 'ADMIN') {
+        if (teacherRoles.includes(roleName) || adminRoles.includes(roleName)) {
             items.push({ path: '/resources', label: t('sidebar.resource_bank'), icon: <BookOpen size={20} /> });
             // Direct link to My Courses for Teachers
-            if (role === 'TEACHER') {
+            if (teacherRoles.includes(roleName)) {
                 items.push({ path: '/?tab=COURSES', label: t('sidebar.my_courses'), icon: <BookOpen size={20} /> });
             }
             // Only show AI Quiz if module is active
@@ -61,15 +64,20 @@ const Sidebar = ({ currentUser, logout, siteName, version }) => {
             }
         }
 
-        if (role === 'STUDENT') {
+        if (roleName === 'STUDENT' || roleName === 'ROLE_STUDENT') {
             items.push({ path: '/my-courses', label: t('sidebar.my_courses'), icon: <BookOpen size={20} /> });
             items.push({ path: '/adaptive-learning', label: 'Min Lärväg', icon: <TrendingUp size={20} /> });
             items.push({ path: '/catalog', label: t('sidebar.catalog'), icon: <BookOpen size={20} /> });
         }
-        if (role === 'ADMIN' || role === 'TEACHER') {
+
+        if (adminRoles.includes(roleName) || teacherRoles.includes(roleName)) {
             items.push({ path: '/admin', label: t('sidebar.admin'), icon: <Users size={20} /> });
             items.push({ path: '/analytics', label: t('sidebar.analytics'), icon: <TrendingUp size={20} /> });
             items.push({ path: '/system', label: t('sidebar.system') || 'System', icon: <Settings2 size={20} /> });
+        }
+
+        if (adminRoles.includes(roleName)) {
+            items.push({ path: '/admin/ai-audit', label: 'AI Audit', icon: <Sparkles size={20} /> });
         }
 
         // --- REKTOR / PRINCIPAL NAVIGATION ---
@@ -90,7 +98,7 @@ const Sidebar = ({ currentUser, logout, siteName, version }) => {
         };
 
         const isGuardian = roleName === 'GUARDIAN' || roleName === 'ROLE_GUARDIAN';
-        if (roleName !== 'ADMIN' && roleName !== 'ROLE_ADMIN' && !isGuardian) {
+        if (!adminRoles.includes(roleName) && !isGuardian) {
             items.push({ path: '/documents', label: t('sidebar.documents'), icon: <FolderOpen size={20} /> });
         }
 
@@ -118,7 +126,7 @@ const Sidebar = ({ currentUser, logout, siteName, version }) => {
             if (wellbeingRoles.includes(roleName)) {
                 items.push({ path: '/wellbeing-center', label: 'Well-being Center', icon: <Heart size={20} className="text-brand-teal" /> });
             }
-            if (roleName === 'HALSOTEAM' || roleName === 'ROLE_HALSOTEAM' || roleName === 'ADMIN' || roleName === 'ROLE_ADMIN') {
+            if (roleName === 'HALSOTEAM' || roleName === 'ROLE_HALSOTEAM' || adminRoles.includes(roleName)) {
                 items.push({ path: '/wellbeing-center/inbox', label: 'E-hälsa Inbox', icon: <Heart size={20} className="text-brand-teal" /> });
             }
         }
