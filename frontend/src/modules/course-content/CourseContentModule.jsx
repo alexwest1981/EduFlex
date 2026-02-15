@@ -7,6 +7,7 @@ import VideoPlayer from './components/VideoPlayer';
 import EpubViewer from '../../components/common/EpubViewer';
 import PublishModal from '../../features/community/components/PublishModal';
 import CommentSection from '../../features/social/components/CommentSection';
+import RichTextEditor from '../../components/RichTextEditor';
 
 export const CourseContentModuleMetadata = {
     key: 'material',
@@ -557,7 +558,12 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
 
                         <div className="flex-1">
                             <label className="block text-xs font-bold text-gray-500 mb-1">Innehåll / Beskrivning</label>
-                            <textarea className="w-full h-64 p-3 border rounded-xl dark:bg-[#131314] dark:border-[#3c4043] dark:text-white font-mono text-sm" placeholder="Skriv lektionsinnehållet här..." value={formData.content} onChange={e => setFormData({ ...formData, content: e.target.value })} />
+                            <RichTextEditor
+                                value={formData.content}
+                                onChange={val => setFormData({ ...formData, content: val })}
+                                placeholder="Skriv lektionsinnehållet här..."
+                                style={{ height: '350px', marginBottom: '40px' }}
+                            />
                         </div>
 
                         <div className="flex gap-3 pt-4 border-t dark:border-[#3c4043]">
@@ -759,9 +765,10 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
                         )}
 
                         {/* TEXT CONTENT */}
-                        <div className="prose dark:prose-invert max-w-none text-gray-700 dark:text-gray-300 whitespace-pre-wrap leading-relaxed mb-12">
-                            {selectedLesson.content}
-                        </div>
+                        <div
+                            className="prose dark:prose-invert max-w-none text-gray-700 dark:text-gray-300 leading-relaxed mb-12"
+                            dangerouslySetInnerHTML={{ __html: selectedLesson.content }}
+                        />
 
                         {/* --- SOCIAL: COMMENTS --- */}
                         <div className="border-t border-gray-100 dark:border-[#3c4043] pt-8">

@@ -38,8 +38,8 @@
 ## 🇸🇪 Svenska
 
 *   **🛠️ Systemstabilitet & AI-loggning (15 feb 2026):**
-    *   **Storage API Fix:** Åtgärdat 500-fel vid åtkomst till `/api/storage/` genom att implementera en enhetlig mappning i `FileController`. Systemet hanterar nu både `/api/files/` och `/api/storage/` sömlöst.
-    *   **AI Audit Dashboard:** Fixat bugg där AI-loggen visades som tom på grund av fältnamnskonflikter mellan backend och frontend.
+    *   **Rich Text Editor:** Implementerat en avancerad textredigerare (React Quill) för lektionsinnehåll, med stöd för länkar, punktlistor och textformatering.
+    *   **Storage API Fix:** Åtgärdat 500-fel vid åtkomst till `/api/storage/` genom att implementera en enhetlig mappning i `FileController`. Systemet hanperar nu både `/api/files/` och `/api/storage/` sömlöst.
     *   **Databasstabilitet:** Flyttat `ai_audit_log` till `public`-schemat för att säkerställa högsta driftsäkerhet och undvika schemakollisioner.
     *   **Verifierad Media:** Bekräftat att logotyper, favicons och dokumentleverans fungerar felfritt via MinIO.
 
