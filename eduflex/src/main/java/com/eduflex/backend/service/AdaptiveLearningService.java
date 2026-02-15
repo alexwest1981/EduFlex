@@ -14,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.eduflex.backend.service.AiAuditService;
 
 import java.time.LocalDateTime;
 
@@ -121,7 +120,8 @@ public class AdaptiveLearningService {
                         aiAuditService.saveAiAuditLog(userId, prompt, jsonResponse);
                         // ---------------------
 
-                        JsonNode root = objectMapper.readTree(jsonResponse);
+                        String cleanedResponse = cleanJson(jsonResponse);
+                        JsonNode root = objectMapper.readTree(cleanedResponse);
 
                         // 4. Update Profile
                         AdaptiveLearningProfile profile = profileRepository.findByUser(student)
@@ -256,5 +256,16 @@ public class AdaptiveLearningService {
                 } catch (Exception e) {
                         log.error("Failed to save new recommendation: {}", rec.getTitle(), e);
                 }
+        }
+
+        private String cleanJson(String response) {
+                if (response == null)
+                        return "{}";
+                int start = response.indexOf("{");
+                int end = response.lastIndexOf("}");
+                if (start >= 0 && end > start) {
+                        return response.substring(start, end + 1);
+                }
+                return response;
         }
 }

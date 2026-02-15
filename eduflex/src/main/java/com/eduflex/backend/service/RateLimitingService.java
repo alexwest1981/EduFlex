@@ -2,7 +2,7 @@ package com.eduflex.backend.service;
 
 import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Bucket;
-import io.github.bucket4j.Refill;
+
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -20,7 +20,10 @@ public class RateLimitingService {
     }
 
     private Bucket createNewBucket(String key) {
-        Bandwidth limit = Bandwidth.classic(10000, Refill.greedy(10000, Duration.ofMinutes(1)));
+        Bandwidth limit = Bandwidth.builder()
+                .capacity(10000)
+                .refillGreedy(10000, Duration.ofMinutes(1))
+                .build();
         return Bucket.builder()
                 .addLimit(limit)
                 .build();

@@ -47,4 +47,15 @@ public class AiAuditService {
             // relying on REQUIRES_NEW to isolate the rollback if it happened.
         }
     }
+
+    @Transactional(readOnly = true)
+    public org.springframework.data.domain.Page<AiAuditRecord> getAllAuditLogs(
+            org.springframework.data.domain.Pageable pageable) {
+        return auditRecordRepository.findAll(pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public java.util.List<AiAuditRecord> getAuditLogsByUser(Long userId) {
+        return auditRecordRepository.findByUserIdOrderByCreatedAtDesc(userId);
+    }
 }
