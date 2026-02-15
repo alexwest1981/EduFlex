@@ -361,13 +361,7 @@ const AppRoutes = () => {
                     </ProtectedRoute>
                 } />
 
-                {/* ENTERPRISE WHITELABEL (ADMIN ONLY) */}
-                <Route path="/enterprise/whitelabel" element={
-                    <ProtectedRoute roles={['ADMIN']}>
-                        <Layout currentUser={currentUser} handleLogout={logout}>
-                            <EnterpriseWhitelabel />
-                        </Layout>
-                    </ProtectedRoute>
+
                 {/* ENTERPRISE WHITELABEL (ADMIN ONLY) */}
                 <Route path="/enterprise/whitelabel" element={
                     <ProtectedRoute roles={['ADMIN']}>

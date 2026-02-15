@@ -23,7 +23,7 @@ public class ApiKey {
     @Column(nullable = false)
     private String prefix; // Visible part of the key for identification (e.g. "eduflex_abc123...")
 
-    @Column(nullable = false)
+    @Column(name = "hashed_key", nullable = false)
     @JsonIgnore
     private String keyHash; // BCrypt hash of the full key
 
