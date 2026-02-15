@@ -37,6 +37,12 @@
 
 ## 🇸🇪 Svenska
 
+*   **⭐ Guardian Dashboard 2.0 – Live & AI-Powered (16 feb 2026):**
+    *   **Live AI Summaries:** Integrerat Google Gemini för att generera personliga statusrapporter till vårdnadshavare baserat på barnets aktuella närvaro och schema.
+    *   **Sjukanmälan:** Implementerat ett skarpt gränssnitt för att anmäla frånvaro direkt från dashboarden, kopplat till backendens `SickLeaveService`.
+    *   **Dashboard-härdning:** Refaktorerat `GuardianController` och frontend-API för att hantera live-data utan mockups, med strikt behörighetskontroll för barn-kopplingar.
+    *   **UI/UX:** Ny premium-design för vårdnadshavarvyn med interaktiva grafer, schema-widgets och snabbåtgärder.
+
 *   **🛠️ Systemstabilitet & AI-loggning (15 feb 2026):**
     *   **Rich Text Editor:** Implementerat en avancerad textredigerare (React Quill) för lektionsinnehåll, med stöd för länkar, punktlistor och textformatering.
     *   **Storage API Fix:** Åtgärdat persistenta 500-fel vid åtkomst till `/api/storage/` genom en fullständig refaktorering av `FileController` till standardiserad `@PathVariable`-routing. Detta eliminerar routing-ambiguitet och säkerställer korrekt felhantering (404 istället för 500).

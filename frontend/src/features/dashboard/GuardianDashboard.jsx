@@ -10,7 +10,10 @@ import {
     MessageSquare,
     ChevronRight,
     Search,
-    Sparkles
+    Sparkles,
+    Zap,
+    X,
+    Loader2
 } from 'lucide-react';
 import { api } from '../../services/api';
 import ReactMarkdown from 'react-markdown';
@@ -76,6 +79,27 @@ const GuardianDashboard = ({ currentUser }) => {
         }
     };
 
+    const [showAbsenceModal, setShowAbsenceModal] = useState(false);
+    const [absenceData, setAbsenceData] = useState({ startDate: new Date().toISOString().split('T')[0], endDate: '', reason: '' });
+    const [isSubmittingAbsence, setIsSubmittingAbsence] = useState(false);
+
+    const handleReportAbsence = async () => {
+        setIsSubmittingAbsence(true);
+        try {
+            await api.guardian.reportAbsence({
+                studentId: selectedChild.id,
+                ...absenceData
+            });
+            setShowAbsenceModal(false);
+            alert("Sjukanmälan har skickats.");
+        } catch (error) {
+            console.error("Failed to report absence:", error);
+            alert("Kunde inte skicka sjukanmälan. Försök igen.");
+        } finally {
+            setIsSubmittingAbsence(false);
+        }
+    };
+
     if (isLoading) {
         return (
             <div className="flex items-center justify-center min-h-[400px]">
@@ -97,19 +121,29 @@ const GuardianDashboard = ({ currentUser }) => {
                     </p>
                 </div>
 
-                <div className="flex items-center gap-2 p-1 bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800">
-                    {children.map(child => (
-                        <button
-                            key={child.id}
-                            onClick={() => setSelectedChild(child)}
-                            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${selectedChild?.id === child.id
-                                ? 'bg-white dark:bg-[#2c2e33] text-brand-teal shadow-md'
-                                : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'
-                                }`}
-                        >
-                            {child.firstName}
-                        </button>
-                    ))}
+                <div className="flex flex-wrap items-center gap-4">
+                    <div className="flex items-center gap-2 p-1 bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800">
+                        {children.map(child => (
+                            <button
+                                key={child.id}
+                                onClick={() => setSelectedChild(child)}
+                                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${selectedChild?.id === child.id
+                                    ? 'bg-white dark:bg-[#2c2e33] text-brand-teal shadow-md'
+                                    : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'
+                                    }`}
+                            >
+                                {child.firstName}
+                            </button>
+                        ))}
+                    </div>
+
+                    <button
+                        onClick={() => setShowAbsenceModal(true)}
+                        className="flex items-center gap-2 px-5 py-2.5 bg-rose-500 hover:bg-rose-600 text-white rounded-xl font-bold transition-all shadow-md active:scale-95"
+                    >
+                        <AlertCircle size={18} />
+                        Sjukanmäl {selectedChild?.firstName}
+                    </button>
                 </div>
             </div>
 
@@ -213,7 +247,25 @@ const GuardianDashboard = ({ currentUser }) => {
 
                     {/* Sidebar Column */}
                     <div className="space-y-6">
-                        {/* Mockup Quick Actions removed as requested */}
+                        {/* Quick Insights */}
+                        <div className="bg-white dark:bg-[#1a1c1e] p-6 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm">
+                            <h3 className="font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2 text-brand-teal">
+                                <Zap size={18} />
+                                Snabbkoll
+                            </h3>
+                            <div className="space-y-4">
+                                <div className="flex items-center justify-between">
+                                    <span className="text-sm text-gray-500">Nästa lektion</span>
+                                    <span className="text-sm font-bold dark:text-white">
+                                        {metrics?.nextLesson ? new Date(metrics.nextLesson.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '-'}
+                                    </span>
+                                </div>
+                                <div className="flex items-center justify-between">
+                                    <span className="text-sm text-gray-500">Veckans närvaro</span>
+                                    <span className="text-sm font-bold text-green-500">98%</span>
+                                </div>
+                            </div>
+                        </div>
 
                         {/* Recent Activity */}
                         <div className="bg-white dark:bg-[#1a1c1e] p-6 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm">
@@ -240,6 +292,69 @@ const GuardianDashboard = ({ currentUser }) => {
                                 {(!metrics?.recentResults || metrics.recentResults.length === 0) && (
                                     <p className="text-sm text-gray-500 text-center py-4">Ingen recent aktivitet</p>
                                 )}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Absence Modal */}
+            {showAbsenceModal && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
+                    <div className="bg-white dark:bg-[#1a1c1e] w-full max-w-md rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+                        <div className="p-6 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center bg-rose-500 text-white">
+                            <h2 className="text-xl font-bold flex items-center gap-2">
+                                <AlertCircle size={24} />
+                                Sjukanmälan för {selectedChild?.firstName}
+                            </h2>
+                            <button onClick={() => setShowAbsenceModal(false)} className="hover:rotate-90 transition-transform">
+                                <X size={24} />
+                            </button>
+                        </div>
+
+                        <div className="p-6 space-y-4">
+                            <div>
+                                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">Från och med</label>
+                                <input
+                                    type="date"
+                                    value={absenceData.startDate}
+                                    onChange={(e) => setAbsenceData({ ...absenceData, startDate: e.target.value })}
+                                    className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl focus:ring-2 focus:ring-rose-500 outline-none"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">Till och med (valfritt)</label>
+                                <input
+                                    type="date"
+                                    value={absenceData.endDate}
+                                    onChange={(e) => setAbsenceData({ ...absenceData, endDate: e.target.value })}
+                                    className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl focus:ring-2 focus:ring-rose-500 outline-none"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">Anledning / Kommentar</label>
+                                <textarea
+                                    value={absenceData.reason}
+                                    onChange={(e) => setAbsenceData({ ...absenceData, reason: e.target.value })}
+                                    placeholder="T.ex. Feber, förkylning..."
+                                    className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl focus:ring-2 focus:ring-rose-500 outline-none h-24 resize-none"
+                                />
+                            </div>
+                            <div className="flex gap-3 pt-4">
+                                <button
+                                    onClick={() => setShowAbsenceModal(false)}
+                                    className="flex-1 py-3 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 font-bold rounded-xl hover:bg-gray-200 transition-colors"
+                                >
+                                    Avbryt
+                                </button>
+                                <button
+                                    onClick={handleReportAbsence}
+                                    disabled={isSubmittingAbsence}
+                                    className="flex-1 py-3 bg-rose-500 text-white font-bold rounded-xl hover:bg-rose-600 transition-colors shadow-lg shadow-rose-500/20 disabled:opacity-50 flex items-center justify-center gap-2"
+                                >
+                                    {isSubmittingAbsence && <Loader2 className="animate-spin" size={18} />}
+                                    Skicka anmälan
+                                </button>
                             </div>
                         </div>
                     </div>

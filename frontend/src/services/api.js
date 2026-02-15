@@ -798,7 +798,8 @@ export const api = {
     guardian: {
         getChildren: () => api.get('/guardian/children'),
         getDashboard: (studentId) => api.get(`/guardian/dashboard/${studentId}`),
-        getAiSummary: (studentId) => api.get(`/guardian/dashboard/${studentId}/ai-summary`),
+        getAiSummary: (studentId) => api.get(`/guardian/summary/${studentId}`),
+        reportAbsence: (data) => api.post('/guardian/absence', data),
     },
 
     impact: {
