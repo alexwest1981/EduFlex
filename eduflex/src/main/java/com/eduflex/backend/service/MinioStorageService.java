@@ -26,15 +26,18 @@ public class MinioStorageService implements StorageService {
     private final MinioClient minioClient;
     private final String bucketName;
     private final String publicUrl;
+    private final String uploadDir;
 
     public MinioStorageService(
             @Value("${minio.url}") String url,
             @Value("${minio.public-url}") String publicUrl,
             @Value("${minio.access-key}") String accessKey,
             @Value("${minio.secret-key}") String secretKey,
-            @Value("${minio.bucket}") String bucketName) {
+            @Value("${minio.bucket}") String bucketName,
+            @Value("${file.upload-dir:uploads}") String uploadDir) {
         this.publicUrl = publicUrl;
         this.bucketName = bucketName;
+        this.uploadDir = uploadDir;
         this.minioClient = MinioClient.builder()
                 .endpoint(url)
                 .credentials(accessKey, secretKey)
@@ -46,6 +49,15 @@ public class MinioStorageService implements StorageService {
             if (!minioClient.bucketExists(io.minio.BucketExistsArgs.builder().bucket(bucketName).build())) {
                 minioClient.makeBucket(io.minio.MakeBucketArgs.builder().bucket(bucketName).build());
             }
+
+            // DEBUG: List objects in bucket
+            Iterable<io.minio.Result<io.minio.messages.Item>> results = minioClient.listObjects(
+                    io.minio.ListObjectsArgs.builder().bucket(bucketName).build());
+            logger.info("Listing objects in bucket '{}':", bucketName);
+            for (io.minio.Result<io.minio.messages.Item> result : results) {
+                logger.info(" - Found object: {}", result.get().objectName());
+            }
+
         } catch (Exception e) {
             logger.error("MinIO Init Error: {}", e.getMessage());
         }
@@ -90,12 +102,48 @@ public class MinioStorageService implements StorageService {
     @Override
     public InputStream load(String storageId) {
         try {
+            logger.info("Attempting to load object '{}' from bucket '{}'", storageId, bucketName);
             return minioClient.getObject(
                     io.minio.GetObjectArgs.builder()
                             .bucket(bucketName)
                             .object(storageId)
                             .build());
         } catch (Exception e) {
+            // Lazy Sync: Try to recover from local uploads if available
+            try {
+                // Use injected uploadDir
+                java.nio.file.Path localPath = java.nio.file.Paths.get(uploadDir, "profiles", storageId);
+                if (!java.nio.file.Files.exists(localPath)) {
+                    localPath = java.nio.file.Paths.get(uploadDir, "materials", storageId);
+                }
+
+                if (java.nio.file.Files.exists(localPath)) {
+                    logger.info("Lazy Sync: Found missing object '{}' in local uploads ({}). Uploading to MinIO...",
+                            storageId, localPath.toAbsolutePath());
+                    String contentType = java.net.URLConnection.guessContentTypeFromName(storageId);
+                    if (contentType == null)
+                        contentType = "application/octet-stream";
+
+                    try (InputStream is = java.nio.file.Files.newInputStream(localPath)) {
+                        save(is, contentType, storageId, storageId);
+                    }
+
+                    // Try loading again
+                    return minioClient.getObject(
+                            io.minio.GetObjectArgs.builder()
+                                    .bucket(bucketName)
+                                    .object(storageId)
+                                    .build());
+                } else {
+                    logger.warn(
+                            "Lazy Sync: Object '{}' not found in local uploads (searched in profiles and materials)",
+                            storageId);
+                }
+            } catch (Exception inner) {
+                logger.error("Lazy Sync failed for '{}': {}", storageId, inner.getMessage());
+            }
+
+            logger.error("Load failed for '{}': {}", storageId, e.getMessage());
             throw new RuntimeException("Read failed: " + storageId, e);
         }
     }

@@ -89,8 +89,8 @@ public class FileController {
                             "inline; filename=\"" + fileName + "\"")
                     .body(allBytes);
         } catch (Exception e) {
-            org.slf4j.LoggerFactory.getLogger(FileController.class).error("Fetch failed for {}: {}", fileName,
-                    e.getMessage());
+            org.slf4j.LoggerFactory.getLogger(FileController.class)
+                    .error("Fetch failed for {}: {} (Type: {})", fileName, e.getMessage(), e.getClass().getName(), e);
             return ResponseEntity.notFound().build();
         }
     }

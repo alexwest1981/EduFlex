@@ -166,92 +166,34 @@
 - [Felsökning & Infrastruktur](docs/InfrastructureGuide.md)
 
 ---
+### 👤 Vem är du? (Snabbguider)
 
-### 🏫 Om Projektet
+Hitta rätt dokumentation snabbare baserat på din roll i organisationen:
 
-**EduFlex 2.0** är ett komplett, molnbaserat **Learning Management System (LMS)** designat för att skala från små utbildningsföretag till stora kommunala verksamheter. Systemet kombinerar modern pedagogik (Gamification, interaktiva element) med affärskritisk funktionalitet (fakturering, prenumerationer) i en säker, Docker-baserad arkitektur.
+*   **🎓 För Rektorer & Skolledare:**
+    *   [Mission Control Dashboard](docs/reference/PrincipalLanding_Specification.md) – Realtids-KPIer och ledningsstöd.
+    *   [SKA-motorn](docs/ROADMAP.md) – Systematiskt kvalitetsarbete och målrapportering.
+    *   [AI Management Reports](docs/reference/AI_Reports.md) – Automatiserade beslutsunderlag.
 
-**Huvudsakliga fördelar:**
-- 🏢 **Äkta Multi-Tenancy:** Schema-per-organisation för komplett dataisoleringen
-- 🎮 **Inbyggd Gamification:** Poäng, utmärkelser, nivåer och topplistor
-- 🇸🇪 **Skolverket-integration:** Direkt koppling till svenska läroplanen
-- 💼 **SaaS-redo:** Prenumerationsnivåer, fakturering och betalningar
-- 🎨 **White-label:** 8 designsystem med full visuell anpassning
+*   **🍎 För Lärare & Mentorer:**
+    *   [AI-assistenten](docs/reference/AI_Tutor_Guide.md) – Skapa quiz, lektioner och uppgifter på sekunder.
+    *   [Kurshantering](docs/reference/CourseManagement.md) – Betygsmatriser, Skolverket-synk och inlämningar.
+    *   [Vårdnadshavarkontakt](docs/docs/GuardianDashboard_Specification.md) – Sjukanmälan och statusuppdateringar.
 
----
-
-### 🌟 Nyckelfunktioner
-
-#### 🍎 Utbildning (Core)
-- **Kurshantering:** Rika kurser med text, video, bilagor och quiz
-- **AI Quiz & Lektioner:** Generera quiz, uppgifter och lektionsplaner automatiskt med Google Gemini
-- **SCORM / xAPI / LTI 1.3 Advantage:** Fullt stöd för Articulate/Captivate-paket samt LMS-integration (Canvas/Moodle/Blackboard).
-- **Uppgifter:** Filinlämningar med lärarbedömning
-- **Certifikat:** Automatiska, spårbara PDF-diplom
-- **E-boksbibliotek:** Fristående bibliotek för EPUB/PDF med kategorier
-- **Resursbank:** Centraliserad hantering av allt utbildningsmaterial
-
-#### 🎮 Gamification
-- **Poäng & Nivåer:** XP genom aktivitet och framsteg
-- **Utmärkelser:** Visuella badges för prestationer
-- **Dagliga Utmaningar:** Roterande utmaningar med bonus-XP
-- **Streaks:** Spåra konsekutiva inloggningsdagar med bonusar
-- **Topplistor:** Frivilliga rankingar per klass/kurs
-- **Achievement Toast:** Realtids-popup vid upplåsta prestationer
-
-#### 🔔 Notifikationer
-- **WebSocket Push:** Direkta notifikationer via STOMP/SockJS
-- **Notifikationsklocka:** Header-komponent med oläst-räknare
-- **Flera Typer:** Uppgifter, prestationer, system och sociala notiser
-
-#### 👥 Sociala Funktioner
-- **Online-vänner:** Se vilka som är online just nu
-- **Snabbkontakt:** Enkla kontaktalternativ för lärare
-
-#### 🏪 Community Marknadsplats
-- **Innehållsdelning:** Publicera Quiz, Uppgifter och Lektioner till en delad marknadsplats
-- **Moderation:** Admin-godkännande med väntande/publicerad/avvisad status
-- **Frågebank-sync:** Quiz-frågor kopieras automatiskt till din Frågebank vid installation
-- **20+ Ämnen:** Matematik, Svenska, Engelska, Fysik, Kemi och fler med anpassade ikoner
-
-#### 🇸🇪 Skolverket-integration
-- **Kurskoppling:** Direkt Skolverket-databaskoppling
-- **Automatisk Import:** Python-verktyg för kurskoder
-- **Kunskapskrav:** Betygsmatriser (E-A) direkt i kursvyn
-
-#### 🏢 Multi-Tenancy
-- **Schema-isolering:** Varje organisation i eget PostgreSQL-schema
-- **v1.0.9** (2026-02-14): **System Restoration** (Full Service Stack). OnlyOffice & Jitsi re-enabled.
-- **v1.0.8** (2026-02-13): **SKA Motor** (Quality Assurance). Goals, Indicators & AI Reports.
-- **v1.0.7** (2026-02-13): **Role-Specific AI Coachers** (Phase 2 Implementerad). Specialiserat beslutsstöd för Rektorer och Mentorer.
-- **v1.0.6** (2026-02-13): **Predictive AI Engine** (Fas 1 Roadmap 2026+). Deep pattern analysis och riskidentifiering.
-- **Request-routing:** `X-Tenant-ID` header för organisation-val
-
----
-
-### 🏢 Multi-Tenancy (Sv)
-
-EduFlex implementerar **schema-baserad multi-tenancy** för komplett dataisolering.
-
-#### Skapa ny Tenant
-```bash
-curl -X POST http://localhost:8080/api/tenants \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "Stockholms Tekniska Gymnasium",
-    "domain": "stg.local",
-    "dbSchema": "tenant_stg",
-    "organizationKey": "stg",
-    "adminEmail": "admin@stg.local",
-    "adminPassword": "SäkertLösen123",
-    "adminFirstName": "Anna",
-    "adminLastName": "Andersson"
-  }'
-```
+*   **💻 För IT-drift & Tekniker:**
+    *   [Infrastrukturguide](docs/InfrastructureGuide.md) – Docker, MinIO, Redis och PostgreSQL.
+    *   [Multi-Tenancy Setup](docs/TENANT_ADMIN_GUIDE.md) – Schema-baserad isolering och organisationer.
+    *   [API-referens](docs/api/README.md) – Swagger och integrationer (LTI 1.3, xAPI).
+    *   [AI Compliance](docs/compliance/AI_Audit.md) – Loggning och transparens (AI Audit Log).
 
 ---
 
 ### Senaste Uppdateringar
+*   **⭐ Guardian Universe & Storage Resilience (v1.3.0) - 16 feb 2026:**
+    *   **Guardian Dashboard 3.0:** Fullständig lansering av vårdnadshavarens kontrollpanel med AI-drivna statusrapporter och direkt sjukanmälan.
+    *   **Storage "Lazy Sync":** Implementerat en automatisk läkningsmekanism för saknade filer (404-recovery) mellan lokala uploads och MinIO S3-lagring.
+    *   **Favicon & Branding Fix:** Åtgärdat persistenta 404-fel i konsolen genom att rensa trasiga databasreferenser och standardisera fallback-ikoner.
+    *   **Controller Merging:** Optimerat backend-prestanda genom att slå samman redundanta API-endpoints för vårdnadshavare.
 *   **PWA & Mobile (v1.1.5) - 15 feb 2026:**
     *   **v1.1.5 (PWA-stöd):** EduFlex är nu en installerbar app med offline-stöd och hemskärms-ikoner (iOS/Android/Desktop). 📱
 *   **v1.2.0 (AI Transparency):** Implementerat AI Audit Log och "Varför?"-funktionalitet för full transparens i adaptivt lärande (XAI). 🧠

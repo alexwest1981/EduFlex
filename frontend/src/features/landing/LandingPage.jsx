@@ -665,6 +665,131 @@ const LandingPage = () => {
                     </div>
                 </section>
 
+                {/* --- SOLUTIONS BY ROLE SECTION (NEW) --- */}
+                <section className="bg-slate-900/40 py-24 border-y border-white/5 relative overflow-hidden">
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-px bg-gradient-to-r from-transparent via-brand-teal/50 to-transparent"></div>
+
+                    <div className="max-w-7xl mx-auto px-6">
+                        <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
+                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-blue/10 border border-brand-blue/20 text-brand-blue text-xs font-bold uppercase tracking-wider">
+                                <Users className="w-3 h-3" /> Personalisering
+                            </div>
+                            <h2 className="text-3xl lg:text-5xl font-black">Anpassat för din roll</h2>
+                            <p className="text-slate-400 text-lg">EduFlex levererar ett skräddarsytt gränssnitt och specifika verktyg beroende på din profil.</p>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 stagger-animation">
+                            {/* Rektor Card */}
+                            <div className="glass-card p-8 rounded-3xl border-brand-teal/20 hover:border-brand-teal transition-all group relative overflow-hidden flex flex-col h-full">
+                                <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+                                    <Globe className="w-24 h-24" />
+                                </div>
+                                <div className="size-12 bg-brand-teal/10 rounded-xl flex items-center justify-center mb-6 text-brand-teal">
+                                    <Globe className="w-6 h-6" />
+                                </div>
+                                <h3 className="text-xl font-bold mb-2">För Rektor</h3>
+                                <p className="text-slate-400 text-sm mb-6 flex-grow">Få full kontroll över skolan med realtidsdata för SKA, bemanning och hälsa.</p>
+                                <ul className="space-y-3 mb-8">
+                                    <li className="flex items-center gap-2 text-xs font-semibold text-slate-300">
+                                        <Check className="w-4 h-4 text-brand-teal" /> Dashboards för beslutsstöd
+                                    </li>
+                                    <li className="flex items-center gap-2 text-xs font-semibold text-slate-300">
+                                        <Check className="w-4 h-4 text-brand-teal" /> Incident- & hälsohantering
+                                    </li>
+                                    <li className="flex items-center gap-2 text-xs font-semibold text-slate-300">
+                                        <Check className="w-4 h-4 text-brand-teal" /> SKA-årshjul & KPIer
+                                    </li>
+                                </ul>
+                                <div className="pt-4 border-t border-white/5">
+                                    <span className="text-[10px] font-bold uppercase tracking-widest text-brand-teal">Outcome:</span>
+                                    <p className="text-xs font-bold text-white">Full insyn i verksamheten</p>
+                                </div>
+                            </div>
+
+                            {/* Lärare Card */}
+                            <div className="glass-card p-8 rounded-3xl border-brand-blue/20 hover:border-brand-blue transition-all group relative overflow-hidden flex flex-col h-full">
+                                <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+                                    <Zap className="w-24 h-24" />
+                                </div>
+                                <div className="size-12 bg-brand-blue/10 rounded-xl flex items-center justify-center mb-6 text-brand-blue">
+                                    <Zap className="w-6 h-6" />
+                                </div>
+                                <h3 className="text-xl font-bold mb-2">För Lärare</h3>
+                                <p className="text-slate-400 text-sm mb-6 flex-grow">Minska administrationen och fokusera på undervisningen med AI-stöd.</p>
+                                <ul className="space-y-3 mb-8">
+                                    <li className="flex items-center gap-2 text-xs font-semibold text-slate-300">
+                                        <Check className="w-4 h-4 text-brand-blue" /> AI Course & Quiz Creator
+                                    </li>
+                                    <li className="flex items-center gap-2 text-xs font-semibold text-slate-300">
+                                        <Check className="w-4 h-4 text-brand-blue" /> Automatiserad rättning
+                                    </li>
+                                    <li className="flex items-center gap-2 text-xs font-semibold text-slate-300">
+                                        <Check className="w-4 h-4 text-brand-blue" /> LTI 1.3 Advantage-synk
+                                    </li>
+                                </ul>
+                                <div className="pt-4 border-t border-white/5">
+                                    <span className="text-[10px] font-bold uppercase tracking-widest text-brand-blue">Outcome:</span>
+                                    <p className="text-xs font-bold text-white">Spara 10h administration/vecka</p>
+                                </div>
+                            </div>
+
+                            {/* Elev Card */}
+                            <div className="glass-card p-8 rounded-3xl border-brand-gold/20 hover:border-brand-gold transition-all group relative overflow-hidden flex flex-col h-full">
+                                <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+                                    <Gamepad2 className="w-24 h-24" />
+                                </div>
+                                <div className="size-12 bg-brand-gold/10 rounded-xl flex items-center justify-center mb-6 text-brand-gold">
+                                    <Gamepad2 className="w-6 h-6" />
+                                </div>
+                                <h3 className="text-xl font-bold mb-2">För Elev</h3>
+                                <p className="text-slate-400 text-sm mb-6 flex-grow">Ett engagerande sätt att lära med adaptiva stigar och spelifiering.</p>
+                                <ul className="space-y-3 mb-8">
+                                    <li className="flex items-center gap-2 text-xs font-semibold text-slate-300">
+                                        <Check className="w-4 h-4 text-brand-gold" /> Personlig AI-lärväg
+                                    </li>
+                                    <li className="flex items-center gap-2 text-xs font-semibold text-slate-300">
+                                        <Check className="w-4 h-4 text-brand-gold" /> XP, Streaks & Achievements
+                                    </li>
+                                    <li className="flex items-center gap-2 text-xs font-semibold text-slate-300">
+                                        <Check className="w-4 h-4 text-brand-gold" /> Social Learning & Vänner
+                                    </li>
+                                </ul>
+                                <div className="pt-4 border-t border-white/5">
+                                    <span className="text-[10px] font-bold uppercase tracking-widest text-brand-gold">Outcome:</span>
+                                    <p className="text-xs font-bold text-white">Ökad motivation & resultat</p>
+                                </div>
+                            </div>
+
+                            {/* Vårdnadshavare Card */}
+                            <div className="glass-card p-8 rounded-3xl border-purple-500/20 hover:border-purple-500 transition-all group relative overflow-hidden flex flex-col h-full">
+                                <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+                                    <Shield className="w-24 h-24" />
+                                </div>
+                                <div className="size-12 bg-purple-500/10 rounded-xl flex items-center justify-center mb-6 text-purple-400">
+                                    <Shield className="w-6 h-6" />
+                                </div>
+                                <h3 className="text-xl font-bold mb-2">För Förälder</h3>
+                                <p className="text-slate-400 text-sm mb-6 flex-grow">Håll dig uppdaterad om barnets framsteg direkt via mobilen.</p>
+                                <ul className="space-y-3 mb-8">
+                                    <li className="flex items-center gap-2 text-xs font-semibold text-slate-300">
+                                        <Check className="w-4 h-4 text-purple-400" /> AI-genererad barnstatus
+                                    </li>
+                                    <li className="flex items-center gap-2 text-xs font-semibold text-slate-300">
+                                        <Check className="w-4 h-4 text-purple-400" /> Digital sjukanmälan
+                                    </li>
+                                    <li className="flex items-center gap-2 text-xs font-semibold text-slate-300">
+                                        <Check className="w-4 h-4 text-purple-400" /> Insyn i schema & betyg
+                                    </li>
+                                </ul>
+                                <div className="pt-4 border-t border-white/5">
+                                    <span className="text-[10px] font-bold uppercase tracking-widest text-purple-400">Outcome:</span>
+                                    <p className="text-xs font-bold text-white">Full trygghet & insyn</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
 
                 {/* --- CTA SECTION --- */}
                 <section className="py-16 lg:py-24 fade-in-section">

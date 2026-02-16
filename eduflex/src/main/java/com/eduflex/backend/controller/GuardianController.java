@@ -15,7 +15,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/guardian")
-@PreAuthorize("hasRole('GUARDIAN')")
+@PreAuthorize("hasRole('GUARDIAN') or hasRole('ADMIN')")
 public class GuardianController {
 
     private final GuardianDashboardService guardianDashboardService;
@@ -42,8 +42,15 @@ public class GuardianController {
     @GetMapping("/dashboard/{studentId}")
     public ResponseEntity<Map<String, Object>> getChildDashboard(@PathVariable Long studentId,
             Authentication authentication) {
-        User guardian = userService.getUserByUsername(authentication.getName());
-        List<User> children = guardianDashboardService.getChildren(guardian);
+        User currentUser = userService.getUserByUsername(authentication.getName());
+        boolean isAdmin = currentUser.getRole().getName().equalsIgnoreCase("ADMIN");
+
+        if (isAdmin) {
+            User child = userService.getUserById(studentId);
+            return ResponseEntity.ok(guardianDashboardService.getChildDashboardMetrics(child));
+        }
+
+        List<User> children = guardianDashboardService.getChildren(currentUser);
 
         // Security check: Ensure this student is linked to the guardian
         boolean isLinked = children.stream().anyMatch(c -> c.getId().equals(studentId));
@@ -58,13 +65,16 @@ public class GuardianController {
     @GetMapping("/summary/{studentId}")
     public ResponseEntity<Map<String, String>> getAiSummary(@PathVariable Long studentId,
             Authentication authentication) {
-        User guardian = userService.getUserByUsername(authentication.getName());
-        List<User> children = guardianDashboardService.getChildren(guardian);
+        User currentUser = userService.getUserByUsername(authentication.getName());
+        boolean isAdmin = currentUser.getRole().getName().equalsIgnoreCase("ADMIN");
 
-        // Security check
-        boolean isLinked = children.stream().anyMatch(c -> c.getId().equals(studentId));
-        if (!isLinked) {
-            return ResponseEntity.status(403).build();
+        if (!isAdmin) {
+            List<User> children = guardianDashboardService.getChildren(currentUser);
+            // Security check
+            boolean isLinked = children.stream().anyMatch(c -> c.getId().equals(studentId));
+            if (!isLinked) {
+                return ResponseEntity.status(403).build();
+            }
         }
 
         User child = userService.getUserById(studentId);

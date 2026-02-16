@@ -7,21 +7,21 @@
 ## 🧠 Kategori 1: AI & Agentisk Arkitektur
 *Marknaden 2026 kräver att AI inte bara är en "add-on" utan motorn i systemet.*
 
-| Funktion | Beskrivning | Status |
+| Funktion | Beskrivning | Status | Mål / Outcome |
+| :--- | :--- | :--- | :--- |
+| **Generativt Författande (Quiz)** | Skapa quiz från PDF/Text. | ✅ **Klar** | **-70%** tid på provkonstruktion. |
+| **Generativt Författande (Kurser)** | "One-click course creation". Ladda upp PDF/PPT/Video och låt systemet generera kursstruktur, sammanfattningar och quiz automatiskt. | ✅ **Stabil** (V1) | Snabbare onboarding av nytt innehåll. |
+| **AI-Tutor & Copilot** | En inbyggd chattbot som svarar på elevers frågor baserat enbart på kursmaterialet (RAG). Rollspelspartner för träning. | ✅ **Klar** (V1) | **+25%** tillgängligt stöd för elever. |
+| **MCP-Server** | Gör EduFlex tillgängligt för externa AI-agenter (Model Context Protocol). | ✅ **Klar** (V1) | Framtidssäkrad integration. |
+| **Prediktiv Personalisering** | Analyserar beteendedata för att identifiera "at-risk"-studenter och rekommenderar stödmateri| Fas 1 | **Prediktiv AI-Analys Engine** | Backend-motor färdig | Identifiera risker **2 veckor** tidigare.|
+| Fas 2 | **Rollspecifika AI-coacher** | Rektor & Mentorsstöd | Stable/Completed (Phase 2) | Datadrivna beslut på alla nivåer. |
+| Fas 3 | **SKA-motor 2.0** | Planering/Uppföljning | Stable/Completed (Phase 3) | **100%** digitalt SKA-årshjul. |
+| Fas 4 | **Adaptive Learning Flow** | Elev-anpassning | ✅ **Stabil / Verifierad** | **+15%** högre genomströmning. |
 | :--- | :--- | :--- |
-| **Generativt Författande (Quiz)** | Skapa quiz från PDF/Text. | ✅ **Klar** |
-| **Generativt Författande (Kurser)** | "One-click course creation". Ladda upp PDF/PPT/Video och låt systemet generera kursstruktur, sammanfattningar och quiz automatiskt. | ✅ **Stabil** (V1) |
-| **AI-Tutor & Copilot** | En inbyggd chattbot som svarar på elevers frågor baserat enbart på kursmaterialet (RAG). Rollspelspartner för träning. | ✅ **Klar** (V1) |
-| **MCP-Server** | Gör EduFlex tillgängligt för externa AI-agenter (Model Context Protocol). | ✅ **Klar** (V1) |
-| **Prediktiv Personalisering** | Analyserar beteendedata för att identifiera "at-risk"-studenter och rekommenderar stödmateri| Fas 1 | **Prediktiv AI-Analys Engine** | Backend-motor färdig | Stable/Completed (Phase 1) |
-| Fas 2 | **Rollspecifika AI-coacher** | Rektor & Mentorsstöd | Stable/Completed (Phase 2) |
-| Fas 3 | **SKA-motor 2.0** | Planering/Uppföljning | Stable/Completed (Phase 3) |
-| Fas 4 | **Adaptive Learning Flow** | Elev-anpassning | ✅ **Stabil / Verifierad** |
-| :--- | :--- | :--- |
-| **LTI 1.3 Core** | Grundläggande launch-stöd för externa verktyg. | ✅ **Klar** |
-| **LTI 1.3 Advantage** | Stöd för AGS (Betyg) och NRPS (Roller/Namn). | ✅ **Stabil / Verifierad** |
-| **AI Audit Log** | Full spårbarhet av alla AI-beslut och rekommendationer för compliance och debugging. | ✅ **Klar** |
-| **xAPI & cmi5** | Modern spårning (LRS) för mobilt lärande och simuleringar. | ✅ **Verifierad** |
+| **LTI 1.3 Core** | Grundläggande launch-stöd för externa verktyg. | ✅ **Klar** | Sömlös verktygsinterop. |
+| **LTI 1.3 Advantage** | Stöd för AGS (Betyg) och NRPS (Roller/Namn). | ✅ **Stabil / Verifierad** | Automatiserad administration. |
+| **AI Audit Log** | Full spårbarhet av alla AI-beslut och rekommendationer för compliance och debugging. | ✅ **Klar** | **100%** transparens (XAI). |
+| **xAPI & cmi5** | Modern spårning (LRS) för mobilt lärande och simuleringar. | ✅ **Verifierad** | Nästa generations analys. |
 | **Workflow Integration** | Utbildning direkt i Slack/Teams/Salesforce ("Headless LMS"). | 📅 **Planerad** |
 
 ---
@@ -29,15 +29,15 @@
 ## 👥 Kategori 3: Användarupplevelse & Engagemang
 *Fokus på "Learning Experience" (LXP) snarare än administration.*
 
-| Funktion | Beskrivning | Status |
-| :--- | :--- | :--- |
-| **Socialt Lärande (Basic)** | Community Hub / Marketplace. | ✅ **Klar** |
-| **Socialt Lärande (Avancerat)** | P2P-delning, kommentarer i kurser, "YouTube for Learning". | ✅ **Stabil** (V1) |
-| **Gamification (Basic)** | XP, Levlar, Badges, Streaks. | ✅ **Klar** |
-| **EduGame Expansion** | Shop för profil-teman, Sociala Streaks, "Buddy"-system. | ✅ **Stabil** (V1) |
-| **Mobil-först** | Responsiv webbdesign. | ✅ **Klar** |
-| **Media Streaming** | Stabil synkroniserad ljudboksuppspelning med Range-stöd. | ✅ **Klar** |
-| **Offline-läge / PWA** | Installera som app, ladda ner kurser för offline-bruk. | 📅 **Planerad** |
+| Funktion | Beskrivning | Status | Mål / Outcome |
+| :--- | :--- | :--- | :--- |
+| **Socialt Lärande (Basic)** | Community Hub / Marketplace. | ✅ **Klar** | Ökad kunskapsdelning (Peer-to-Peer). |
+| **Socialt Lärande (Avancerat)** | P2P-delning, kommentarer i kurser, "YouTube for Learning". | ✅ **Stabil** (V1) | Högre engagemang i kursmaterialet. |
+| **Gamification (Basic)** | XP, Levlar, Badges, Streaks. | ✅ **Klar** | **+40%** daglig aktivitet. |
+| **EduGame Expansion** | Shop för profil-teman, Sociala Streaks, "Buddy"-system. | ✅ **Stabil** (V1) | Långsiktigt kvarhållande (Retention). |
+| **Mobil-först** | Responsiv webbdesign. | ✅ **Klar** | Tillgängligt lärande var som helst. |
+| **Media Streaming** | Stabil synkroniserad ljudboksuppspelning med Range-stöd. | ✅ **Klar** | Multimodalt lärande på språng. |
+| **Offline-läge / PWA** | Installera som app, ladda ner kurser för offline-bruk. | 📅 **Planerad** | Lärande utan gränser. |
 
 ---
 
@@ -58,23 +58,24 @@
 
 | Funktion | Beskrivning | Status |
 | :--- | :--- | :--- |
-| **Advanced Security** | Domän-låsning, AES-256 GCM kryptering (PII) och Rate-limiting. | ✅ **Klar** |
-| **Unified Storage** | MinIO standalone restoration & auto-bucket sync. | ✅ **Klar** |
-| **CI/CD Pipeline** | Fullt automatiserade tester och deployment. | 📅 **Planerad** |
-| **Kubernetes Migration** | Helm-charts för skalbarhet. | 📅 **Planerad** |
-| **Rektorspaket (Mission Control)** | Komplett skolledningslager: Organisationshierarki, Dashboard för nyckeltal (8 realtids-KPIer), Incidenthantering, Elevhälsa och Masskommunikation. | ✅ **Klar** |
-| **PDF Whitelabeling** | Visuell editor för certifikat- och betygsmallar. Ladda upp logotyp, bakgrundsbild, konfigurera färger, texter, QR-position och layout. Live-förhandsvisning. | ✅ **Klar** |
-| **Sjukanmälan** | Komplett sjukanmälningssystem med statusuppdateringar, mentorsnotifieringar och historikspårning. | ✅ **Klar** |
+| **Advanced Security** | Domän-låsning, AES-256 GCM kryptering (PII) och Rate-limiting. | ✅ **Klar** | Högsta dataskyddsnivå (GDPR). |
+| **Unified Storage** | MinIO standalone restoration & auto-bucket sync. | ✅ **Klar** | Noll dataförlust & hög tillgänglighet. |
+| **CI/CD Pipeline** | Fullt automatiserade tester och deployment. | 📅 **Planerad** | Snabbare time-to-market. |
+| **Kubernetes Migration** | Helm-charts för skalbarhet. | 📅 **Planerad** | Oändlig skalbarhet (Cloud-native). |
+| **Rektorspaket (Mission Control)** | Komplett skolledningslager: Organisationshierarki, Dashboard för nyckeltal (8 realtids-KPIer), Incidenthantering, Elevhälsa och Masskommunikation. | ✅ **Klar** | **Mission Control** för hela verksamheten. |
+| **PDF Whitelabeling** | Visuell editor för certifikat- och betygsmallar. Ladda upp logotyp, bakgrundsbild, konfigurera färger, texter, QR-position och layout. Live-förhandsvisning. | ✅ **Klar** | Professionell visuell identitet. |
+| **Sjukanmälan** | Komplett sjukanmälningssystem med statusuppdateringar, mentorsnotifieringar och historikspårning. | ✅ **Klar** | **-30%** adm-mail från vårdnadshavare. |
 
 ---
 
 ## 📝 Change Log
 
-### [v1.1.1] - 2026-02-14
-- **Wellbeing Center**: Fixed infinite redirection loop for Admins.
-- **UX/UI**: **Role-Based Sidebar** - Hidden "Documents" and "Tools" menus for Guardians.
-- **Security**: **Role Guarding** - Strengthened frontend route protection for EHT and Guardian pages.
-- **Roadmap**: Pivot to **Phase 4: Adaptive Learning**.
+### [v1.3.0] - 2026-02-16
+- **New Feature**: **Guardian Dashboard 3.0** - Full release with AI-driven child status reports and direct sick leave reporting.
+- **Resilience**: **Storage Lazy Sync** - Adaptive 404 recovery mechanism between local storage and MinIO S3.
+- **Fix**: **Branding Lockdown** - Resolved persistent favicon 404s by purging broken DB references and standardizing fallback logic.
+- **Improvement**: **Controller Consolidation** - Merged redundant Guardian controllers for better startup stability and performance.
+- **UX**: **Persona-Based Docs** - Introduced role-specific entry points in documentation for Principals, Teachers, and IT.
 
 ### [v1.1.2] - 2026-02-14
 - **New Feature**: **Min Lärväg (Adaptive Learning)** - AI-driven analys av studentens inlärningsstil (VAK: Visuell, Auditiv, Kinestetisk) och studietakt.

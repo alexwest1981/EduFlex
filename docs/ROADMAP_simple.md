@@ -5,56 +5,85 @@ Denna roadmap beskriver den strategiska utvecklingen av EduFlex LMS för att mö
 ---
 
 ## 1. Äkta Adaptivitet (AI-driven differentiering)
-*Målet är att gå från statiskt innehåll till en dynamisk lärandeupplevelse som anpassar sig i realtid.*
+*Målet är att gå från statiskt innehåll till en dynamisk lärandeupplevelse.*
 
-- [ ] **Personliga lärvägar:** Systemet justerar automatiskt innehåll, svårighetsgrad och tempo baserat på elevens resultat, beteende och preferenser.
-- [x] **Prediktiv riskmodell:** AI-analys av datapunkter (närvaro, betyg, inlämningar, engagemang) för att identifiera elever i riskzonen och proaktivt föreslå åtgärder via AI Statusinsikt. <!-- id: 101 -->
-- [ ] **Adaptiva prov/quiz:** Frågor anpassas i realtid efter elevens prestationsnivå för att skapa mer precisa kunskapsprofiler.
+- [x] **Personliga lärvägar:** Systemet justerar automatiskt innehåll och svårighetsgrad (v1.2.0). <!-- id: 100 -->
+- [x] **Prediktiv riskmodell:** AI-analys av datapunkter för att identifiera elever i riskzonen. <!-- id: 101 -->
+- [ ] **Adaptiva prov/quiz:** Frågor anpassas i realtid efter elevens prestationsnivå.
+
+**Mål (Outcome):** Identifiera risker **2 veckor** tidigare än manuell uppföljning.
+
+---
 
 ## 2. Specialiserade AI-Coacher per Roll
-*Skräddarsytt AI-stöd som agerar proaktiv assistent snarare än passivt verktyg.*
+*Skräddarsytt AI-stöd som agerar proaktiv assistent.*
 
-- [ ] **Rektor-assistent:** Analyserar dashboards och föreslår veckovisa prioriteringar (t.ex. "Fokusera på årskurs 8B pga sjunkande närvaro").
-- [ ] **Mentor-coach:** Föreslår vilka elever som behöver uppmärksamhet, genererar underlag för utvecklingssamtal och rekommenderar kommunikation med vårdnadshavare.
-- [ ] **Elevhälsa-coach:** Grupperar ärenden, identifierar mönster (t.ex. stress, sömnproblem) och föreslår förebyggande insatser på gruppnivå.
-- [ ] **Elev-coach:** Personlig studiecoach som känner till elevens schema, deadlines och svaga områden för att föreslå realistiska studieplaner.
+- [x] **Rektor-assistent:** Analyserar dashboards och föreslår prioriteringar (Phase 2). <!-- id: 105 -->
+- [x] **Mentor-coach:** Föreslår vilka elever som behöver uppmärksamhet (Phase 2). <!-- id: 106 -->
+- [ ] **Elevhälsa-coach:** Grupperar ärenden och identifierar mönster på gruppnivå.
+- [x] **Elev-coach:** Personlig studiecoach (AI-Tutor v1.0). <!-- id: 107 -->
+
+**Mål (Outcome):** Reducera administrativ börda med **25%**.
+
+---
 
 ## 3. Systematiskt Kvalitetsarbete (SKA) "På Riktigt"
-*Integrering av SKA-processen direkt i plattformen för att koppla mål till faktiska data.*
+*Koppla mål direkt till faktiska data.*
 
-- [x] **Inbyggd SKA-motor:** Verktyg för att definiera mål, indikatorer och insatser kopplat till realtidsdata (närvaro, resultat, trivsel). <!-- id: 110 -->
-- [x] **Årscykel-vy:** Visuell tidslinje för läsåret med checkpoints (enkäter, NP, betyg), synkroniserat mellan ledning och utvärdering. <!-- id: 111 -->
-- [x] **Automatgenererade SKA-rapporter:** PDF-rapporter och analyser som sammanfattar trender och åtgärder per skola/klass med ett klick. <!-- id: 112 -->
+- [x] **Inbyggd SKA-motor:** Verktyg för att definiera mål och indikatorer. <!-- id: 110 -->
+- [x] **Årscykel-vy:** Visuell tidslinje för läsårets checkpoints. <!-- id: 111 -->
+- [x] **Automatgenererade SKA-rapporter:** Sammanfattar trender per skola/klass. <!-- id: 112 -->
+
+**Mål (Outcome):** **100%** digitalt årshjul för skolledningen.
+
+---
 
 ## 4. Integrerad Elevhälsa (EHT)
-*Från fristående modul till djupt integrerad del av skolans ekosystem.*
+*Från modul till djupt integrerad del.*
 
-- [ ] **Fullskalig EHT-motor:** Bokningssystem (chatt/video/fysiskt), ärendehantering, journalsystem och statistik över väntetider/risknivåer.
-- [ ] **Elevens Välmående-yta:** Anonyma pulsmätningar, självskattning och "check-ins" som matar data till EHT-dashboards.
-- [x] **Sekretess & Journalflöden:** Granulär behörighetsstyrning för vad som delas mellan EHT, mentorer och rektorer. <!-- id: 115 -->
+- [x] **Enkätsystem:** Dynamiska enkäter för måendeanalys. <!-- id: 116 -->
+- [ ] **Fullskalig EHT-motor:** Bokningssystem och ärendehantering.
+- [x] **Sekretess & Journalflöden:** Granulär behörighetsstyrning. <!-- id: 115 -->
+
+**Mål (Outcome):** Kortare ledtider för stödinsatser.
+
+---
 
 ## 5. Engagement Layer & Gamification
-*Öka motivation och engagemang genom hela plattformen.*
+*Öka motivation genom hela plattformen.*
 
-- [ ] **Systemnivå-Gamification:** "Missions" på skol- och klassnivå (t.ex. "95% närvaro i klassen denna vecka") med visualisering.
-- [ ] **Socialt Lärande:** Säkra forum, kamratbedömning (peer-review) och studiegrupper integrerade i kurser.
-- [ ] **Engagement Insights:** Analys som kopplar engagemangsnivåer till studieresultat för att utvärdera effekten av gamification.
+- [x] **Bas-Gamification:** XP, Levlar, Badges, Streaks. <!-- id: 120 -->
+- [x] **Socialt Lärande:** Marketplace och P2P-delning. <!-- id: 121 -->
+- [x] **PWA / Offline:** Installerbar app för alla plattformar (v1.1.5). <!-- id: 122 -->
+
+**Mål (Outcome):** **+40%** i daglig elevaktivitet.
+
+---
 
 ## 6. Vårdnadshavarupplevelse 2.0
-*Förenkla och förbättra kommunikationen med hemmet.*
+*Förenkla och förbättra kommunikationen.*
 
-- [x] **Guidade Lägesrapporter:** Veckovisa, lättlästa sammanfattningar av elevens status (närvaro, inlämningar, fokusområden) genererade av Gemini AI. <!-- id: 114 -->
-- [ ] **Smart Filter:** "Action Center" som endast visar det som kräver åtgärd (signering, betalning, frånvaroanmälan).
-- [ ] **Interaktiv Onboarding:** Guidad tur vid första inloggning för att säkerställa att vårdnadshavare förstår gränssnittet.
+- [x] **Guardian Dashboard:** Full översikt med AI-status (v1.3.0). <!-- id: 114 -->
+- [x] **Digital Sjukanmälan:** Direkt via dashboard med historik. <!-- id: 118 -->
+- [ ] **Smart Filter:** "Action Center" för signering och betalning.
+
+**Mål (Outcome):** **-30%** administrativ dialog via mail/telefon.
+
+---
 
 ## 7. Integrationer & API-strategi
-*Öppenhet och flexibilitet för att passa in i befintliga IT-landskap.*
+*Plattformen som ett öppet ekosystem.*
 
-- [ ] **Öppna API:er:** Väldokumenterade gränssnitt för integration med externa system (t.ex. Prorenata, Skola24, schemaläggningsverktyg).
-- [ ] **Data Export & BI:** Möjlighet för kommuner/koncerner att exportera standardiserad data till egna BI-verktyg (PowerBI, Tableau).
+- [x] **LTI 1.3 Advantage:** Sömlös verktygsinterop. <!-- id: 130 -->
+- [x] **xAPI & cmi5:** Modern spårning för simuleringar. <!-- id: 131 -->
+- [ ] **Öppna API:er:** Integration med externa system (Prorenata/Skola24).
+
+---
 
 ## 8. AI Transparens & Fairness
 *Etisk AI som bygger förtroende.*
 
-- [ ] **Förklaringslager (XAI):** Varje AI-rekommendation eller riskflagga ska ha en "Varför?"-förklaring tillgänglig för lärare/rektor.
-- [ ] **Bias-kontroll:** Dashboard för ledning att övervaka AI-rekommendationer för att upptäcka och motverka systematisk bias.
+- [x] **Förklaringslager (XAI/Audit):** Full spårbarhet av AI-beslut (v1.2.0). <!-- id: 140 -->
+- [ ] **Bias-kontroll:** Övervakning för att motverka systematisk bias.
+
+**Mål (Outcome):** **100%** spårbarhet för myndighetsbeslut.
