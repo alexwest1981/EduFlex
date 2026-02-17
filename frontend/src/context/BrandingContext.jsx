@@ -19,7 +19,17 @@ const isUserAdmin = () => {
 export const useBranding = () => {
   const context = useContext(BrandingContext);
   if (!context) {
-    throw new Error('useBranding must be used within BrandingProvider');
+    // Return a default branding object instead of throwing to prevent initialization crashes
+    return {
+      branding: {
+        brandName: 'EduFlex',
+        footerText: 'Powered by EduFlex',
+        showPoweredBy: true
+      },
+      loading: false,
+      hasAccess: false,
+      getCustomTheme: () => null
+    };
   }
   return context;
 };

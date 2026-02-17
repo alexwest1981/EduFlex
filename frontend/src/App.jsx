@@ -560,30 +560,28 @@ const AppRoutes = () => {
 const App = () => {
     return (
         <AppProvider>
-            <BrandingProvider>
-                <DesignSystemProvider>
-                    <ModuleProvider>
-                        <GamificationProvider>
-                            <ErrorBoundary>
-                                <HelmetProvider>
-                                    <Helmet>
-                                        <title>EduFlex LMS</title>
+            <DesignSystemProvider>
+                <ModuleProvider>
+                    <GamificationProvider>
+                        <ErrorBoundary>
+                            <HelmetProvider>
+                                <Helmet>
+                                    <title>EduFlex LMS</title>
 
-                                        <meta http-equiv="X-XSS-Protection" content="1; mode=block" />
-                                        <meta http-equiv="Content-Security-Policy" content="default-src 'self' http://localhost:8080 ws://localhost:8080 https://fonts.googleapis.com https://fonts.gstatic.com; img-src 'self' data: http://localhost:8080 http://localhost:9000 http://localhost:9001 https://storage.eduflexlms.se blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; script-src 'self' 'unsafe-inline' 'unsafe-eval'; frame-src 'self' https://www.youtube.com;" />
-                                    </Helmet>
-                                    <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-                                        <Toaster position="top-right" />
-                                        <AchievementToast />
-                                        <FloatingAudioPlayer />
-                                        <AppRoutes />
-                                    </Router>
-                                </HelmetProvider>
-                            </ErrorBoundary>
-                        </GamificationProvider>
-                    </ModuleProvider>
-                </DesignSystemProvider>
-            </BrandingProvider>
+                                    <meta http-equiv="X-XSS-Protection" content="1; mode=block" />
+                                    <meta http-equiv="Content-Security-Policy" content="default-src 'self' http://localhost:8080 ws://localhost:8080 https://fonts.googleapis.com https://fonts.gstatic.com; img-src 'self' data: http://localhost:8080 http://localhost:9000 http://localhost:9001 https://storage.eduflexlms.se blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; script-src 'self' 'unsafe-inline' 'unsafe-eval'; frame-src 'self' https://www.youtube.com;" />
+                                </Helmet>
+                                <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+                                    <Toaster position="top-right" />
+                                    <AchievementToast />
+                                    <FloatingAudioPlayer />
+                                    <AppRoutes />
+                                </Router>
+                            </HelmetProvider>
+                        </ErrorBoundary>
+                    </GamificationProvider>
+                </ModuleProvider>
+            </DesignSystemProvider>
         </AppProvider>
     );
 };

@@ -8,6 +8,8 @@ import App from './App.jsx';
 // Re-enable after OnlyOffice integration is stable, or use production build
 createRoot(document.getElementById('root')).render(
   <I18nextProvider i18n={i18n}>
-    <App />
+    <BrandingProvider>
+      <App />
+    </BrandingProvider>
   </I18nextProvider>,
 )
