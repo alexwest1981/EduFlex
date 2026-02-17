@@ -189,6 +189,13 @@ Hitta rätt dokumentation snabbare baserat på din roll i organisationen:
 ---
 
 ### Senaste Uppdateringar
+*   **🛠️ EduFlex Control Center v4.0 (Mission Control) - 17 feb 2026 (Kväll):**
+    *   **Service Manager (Fas 4):** Fullständig kontrollpanel för samtliga tjänster (Backend, Frontend, Databas, OnlyOffice, Cloudflare). Status-polling var 5:e sekund och mass-åtgärder (Start/Stop All).
+    *   **Log Viewer (Fas 3):** Avancerad realtidsströmning av loggar med sökfunktion, färgkodning (ERROR/WARN) och auto-scroll.
+    *   **Database Manager (Fas 2):** Inbyggd SQL-editor för snabba frågor och förenklad backup/restore-hantering.
+    *   **Modern Dashboard (Fas 1):** Grafisk översikt av systemets hälsa med interaktiva Recharts-grafer och moderna ikoner.
+    *   **Sidomeny-optimering:** Flyttat teknik-kontroller till den nya panelen för en renare och mer fokuserad arbetsyta.
+
 *   **🎨 Whitelabel 2.0 & PWA Synergy (v2.0.18) - 17 feb 2026:**
     *   **Texter & Meddelanden:** Full implementation av en dedikerad flik för central hantering av varumärkesnamn, välkomstmeddelanden och footer-texter.
     *   **Avancerad CSS Editor:** Ny live-editor för custom CSS som tillåter djupgående visuell anpassning direkt i webbläsaren med CSS-variabelstöd.
@@ -915,4 +922,4 @@ For inquiries: 📧 **alexwestrom81@gmail.com**
 
 ---
 
-*Last updated: 2026-02-16 (PWA Stability, Branding & Guardian Dashboard 3.0)*
+*Last updated: 2026-02-17 (EduFlex Control Center v4.0 - Phases 1-4)*

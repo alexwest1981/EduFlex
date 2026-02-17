@@ -104,174 +104,16 @@ const LandingPage = () => {
             bgColor: 'bg-emerald-500/10',
             hoverBorder: 'hover:border-emerald-500/50'
         },
+        {
+            icon: <Smartphone className="w-7 h-7" />,
+            title: "Native PWA Experience",
+            description: "Installera EduFlex direkt på hemskärmen. Fullt stöd för offline-åtkomst och blixtsnabb respons på alla enheter.",
+            color: 'text-sky-400',
+            bgColor: 'bg-sky-500/10',
+            hoverBorder: 'hover:border-sky-500/50'
+        },
     ];
 
-    const highlights = [
-        {
-            icon: <Sparkles className="w-6 h-6" />,
-            title: 'AI Course Creator',
-            description: 'Skapa kompletta kurser från PDF-dokument på under 60 sekunder. Autogenererade lektioner, datum och smarta koder med inbyggd databassynkronisering.',
-            color: 'text-purple-400',
-            bgColor: 'bg-purple-500/10'
-        },
-        {
-            icon: <TrendingUp className="w-6 h-6" />,
-            title: 'Min Lärväg (AI)',
-            description: 'Adaptivt lärande på riktigt. AI analyserar din inlärningsstil (VAK) och takt för att skapa en skräddarsydd studieplan och personliga rekommendationer.',
-            color: 'text-rose-400',
-            bgColor: 'bg-rose-500/10'
-        },
-        {
-            icon: <Globe className="w-6 h-6" />,
-            title: 'LTI 1.3 Advantage',
-            description: 'Fullt verifierat stöd för AGS (Betyg) och NRPS (Roller/Namn). Sömlös integration med Canvas, Moodle och Blackboard för säker autentisering och datautbyte.',
-            color: 'text-brand-blue',
-            bgColor: 'bg-brand-blue/10'
-        },
-        {
-            icon: <Database className="w-6 h-6" />,
-            title: 'xAPI & CMI5 LRS',
-            description: 'Nästa generations spårning. Kör simuleringar och offline-mobilkurser med full detaljrapportering via vårt inbyggda Learning Record Store.',
-            color: 'text-brand-teal',
-            bgColor: 'bg-brand-teal/10'
-        },
-        {
-            icon: <Server className="w-6 h-6" />,
-            title: 'MinIO & S3 Storage',
-            description: 'Skalbar Enterprise-lagring. All media (ljudböcker, video) streamas blixtsnabbt med stöd för uppspelning där du slutade.',
-            color: 'text-pink-400',
-            bgColor: 'bg-pink-500/10'
-        },
-        {
-            icon: <Trophy className="w-6 h-6" />,
-            title: 'EduGame Engine',
-            description: 'XP-system, Shop, Profilteman, dagliga utmaningar och streaks. Gör lärandet till ett äventyr.',
-            color: 'text-brand-gold',
-            bgColor: 'bg-brand-gold/10'
-        },
-        {
-            icon: <Database className="w-6 h-6" />,
-            title: 'Schema-per-Tenant',
-            description: 'Äkta multi-tenancy med komplett dataisolering. Varje organisation får sitt eget PostgreSQL-schema automatiskt.',
-            color: 'text-purple-400',
-            bgColor: 'bg-purple-500/10'
-        },
-        {
-            icon: <Users className="w-6 h-6" />,
-            title: 'Resursbank & Community',
-            description: 'Ett unifierat bibliotek för alla dina quiz, uppgifter och lektioner. Dela och importera material från andra lärare med ett klick.',
-            color: 'text-cyan-400',
-            bgColor: 'bg-cyan-500/10'
-        },
-        {
-            icon: <Zap className="w-6 h-6" />,
-            title: 'Cascading Deletes',
-            description: 'Underhållsfri hantering. När du tar bort en kurs raderas allt tillhörande material och lektioner automatiskt utan databaskonflikter.',
-            color: 'text-emerald-400',
-            bgColor: 'bg-emerald-500/10'
-        },
-        {
-            icon: <Shield className="w-6 h-6" />,
-            title: 'Enterprise SSO',
-            description: 'Keycloak-integration med OAuth2/OIDC. Full kontroll över identiteter och åtkomstnivåer i organisationen.',
-            color: 'text-orange-400',
-            bgColor: 'bg-orange-500/10'
-        },
-        {
-            icon: <Zap className="w-6 h-6" />,
-            title: 'Friendly URLs (Slugs)',
-            description: 'Sökmotorvänliga och läsbara adresser för alla kurser. Navigera via läsbara namn istället för tekniska ID:n.',
-            color: 'text-sky-400',
-            bgColor: 'bg-sky-500/10'
-        },
-        {
-            icon: <Sparkles className="w-6 h-6" />,
-            title: 'Quiz Generator',
-            description: 'Slumpa quiz automatiskt från din frågebank (Math, Java, Svenska etc.) för snabb kunskapskontroll utan manuellt arbete.',
-            color: 'text-fuchsia-400',
-            bgColor: 'bg-fuchsia-500/10'
-        },
-        {
-            icon: <Shield className="w-6 h-6" />,
-            title: 'Enterprise Security',
-            description: 'Fullständig AES-256 GCM kryptering av känslig data, domän-låst licensiering och rate-limiting skyddar din organisation dygnet runt.',
-            color: 'text-indigo-400',
-            bgColor: 'bg-indigo-500/10'
-        },
-        {
-            icon: <BarChart className="w-6 h-6" />,
-            title: 'Kursutvärdering & Insikter',
-            description: 'Komplett system för kurskvalitet, automatiserade studentnotiser och AI-analys av fritextsvar för att mäta ROI.',
-            color: 'text-blue-400',
-            bgColor: 'bg-blue-500/10'
-        },
-        {
-            icon: <MessageSquare className="w-6 h-6" />,
-            title: 'Contextual Social Learning',
-            description: 'Diskutera lektioner och kurser i realtid direkt i spelaren. Lär av dina kurskamrater genom trådade konversationer och realtidsnotiser.',
-            color: 'text-brand-teal',
-            bgColor: 'bg-brand-teal/10'
-        },
-        {
-            icon: <Flame className="w-6 h-6" />,
-            title: 'Milestone Streaks',
-            description: 'Fortsätt din "Learning Streak" och lås upp exklusiva XP-bonusar och märken. Centraliserad spårning som motiverar dig varje dag.',
-            color: 'text-brand-orange',
-            bgColor: 'bg-brand-orange/10'
-        },
-        {
-            icon: <Globe className="w-6 h-6" />,
-            title: 'Rektorspaket (Mission Control)',
-            description: 'Fullständigt skolledningslager med realtids-KPIer. Hantera organisationshierarki (Avdelning, Program, Klass), se aggregerad statistik och hantera incidenter i en unifierad, live-vy.',
-            color: 'text-brand-teal',
-            bgColor: 'bg-brand-teal/10'
-        },
-        {
-            title: "Säker Elevhälsa",
-            description: "Rollbaserad åtkomstkontroll och krypterade journaler för maximal sekretess och trygghet.",
-            icon: <Shield className="text-emerald-500" />,
-            tag: "v2.0.18"
-        },
-        {
-            title: "Prediktiv AI-Analys 2.0",
-            description: "Identifierar elever i riskzonen innan de själva vet det. Deep learning mönsteranalys av närvaro, aktivitet och resultat.",
-            icon: <Brain className="text-pink-500" />,
-            tag: "Live v2.0.18"
-        },
-        {
-            title: "Skolverket Sync 2.0",
-            description: "Sömlös integration med hela Skolverkets kurskatalog. Automatiserad uppdatering av kursmål och betygskriterier.",
-            icon: <Target className="text-indigo-500" />,
-            tag: "v2.0.18"
-        },
-        {
-            title: "Gamification Expansion",
-            description: "Nya Quest-system, Social-hub och utökad Shop. Öka engagemanget genom meningsfullt spelifierat lärande.",
-            icon: <Trophy className="text-orange-500" />,
-            tag: "Stable"
-        },
-        {
-            icon: <Trophy className="w-6 h-6" />,
-            title: 'Expansiv Gamification',
-            description: 'XP för allt! Tjäna poäng genom AI-chatt, lektionsvisningar och utmaningar. Profilteman, shop, streaks och badges gör lärandet beroendeframkallande.',
-            color: 'text-brand-gold',
-            bgColor: 'bg-brand-gold/10'
-        },
-        {
-            icon: <Shield className="w-6 h-6" />,
-            title: 'Guardian & Health Control',
-            description: 'Vårdnadshavarportal, digital sjukanmälan och enkäter för elevhälsa. Allt samlat med AES-256 kryptering och sekretessvakter för säker datahantering.',
-            color: 'text-brand-teal',
-            bgColor: 'bg-brand-teal/10'
-        },
-        {
-            icon: <Smartphone className="w-6 h-6" />,
-            title: 'Installerbar PWA',
-            description: 'Installera EduFlex direkt på din hemskärm — iOS, Android och Desktop. Cachar app-shell för blixtsnabb start med officiell branding och service worker.',
-            color: 'text-sky-400',
-            bgColor: 'bg-sky-500/10'
-        }
-    ];
 
     const screenshotData = [
         { src: adminDashboardImg, title: 'Admin Dashboard 2.0', description: 'Total kontroll över organisationen med live-data och widgets.' },
@@ -647,8 +489,8 @@ const LandingPage = () => {
                         <p className="text-slate-400 text-lg">{t('landing.features.subtitle')}</p>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 stagger-animation fade-in-section">
-                        {features.slice(0, 3).map((feature, idx) => (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 stagger-animation fade-in-section">
+                        {features.slice(0, 4).map((feature, idx) => (
                             <div
                                 key={idx}
                                 className={`glass-card p-8 rounded-3xl group ${feature.hoverBorder} transition-all duration-300 feature-card`}

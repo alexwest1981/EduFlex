@@ -16,7 +16,8 @@
 | **Prediktiv Personalisering** | Analyserar beteendedata för att identifiera "at-risk"-studenter och rekommenderar stödmateri| Fas 1 | **Prediktiv AI-Analys Engine** | Backend-motor färdig | Identifiera risker **2 veckor** tidigare.|
 | Fas 2 | **Rollspecifika AI-coacher** | Rektor & Mentorsstöd | Stable/Completed (Phase 2) | Datadrivna beslut på alla nivåer. |
 | Fas 3 | **SKA-motor 2.0** | Planering/Uppföljning | Stable/Completed (Phase 3) | **100%** digitalt SKA-årshjul. |
-| Fas 4 | **Adaptive Learning Flow** | Elev-anpassning | ✅ **Stabil / Verifierad** | **+15%** högre genomströmning. |
+| **Adaptive Learning Flow** | Elev-anpassning | ✅ **Stabil / Verifierad** | **+15%** högre genomströmning. |
+| **EduFlex Control Center v4.0** | Centraliserad drift & loggning. | ✅ **Stabil / Verifierad** | **-50%** tid på felsökning & drift. |
 | :--- | :--- | :--- |
 | **LTI 1.3 Core** | Grundläggande launch-stöd för externa verktyg. | ✅ **Klar** | Sömlös verktygsinterop. |
 | **LTI 1.3 Advantage** | Stöd för AGS (Betyg) och NRPS (Roller/Namn). | ✅ **Stabil / Verifierad** | Automatiserad administration. |
@@ -69,6 +70,13 @@
 ---
 
 ## 📝 Change Log
+
+### [v2.0.19] - 2026-02-17
+- **New Feature**: **EduFlex Control Center v4.0** – A complete technical management portal.
+- **Service Manager**: Real-time polling and control of all system services.
+- **Log Viewer**: High-performance streaming logs with search and styling.
+- **Database Tools**: Integrated SQL runner and backup management.
+- **Dashboard**: Visual KPI health check for system administrators.
 
 ### [v2.0.18] - 2026-02-17
 - **New Feature**: **Whitelabel Text & Messages** – Centralized management for brand names, welcome messages, and footer text.
