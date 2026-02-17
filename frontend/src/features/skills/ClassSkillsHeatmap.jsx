@@ -4,7 +4,7 @@ import {
     ResponsiveContainer, Cell
 } from 'recharts';
 import { Users, Info, AlertCircle, BarChart3, Loader2 } from 'lucide-react';
-import api from '../../services/api';
+import { api } from '../../services/api';
 
 const ClassSkillsHeatmap = ({ courseId, courseName }) => {
     const [data, setData] = useState([]);

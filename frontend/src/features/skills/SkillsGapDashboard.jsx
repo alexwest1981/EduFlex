@@ -4,7 +4,7 @@ import {
     ResponsiveContainer, Tooltip
 } from 'recharts';
 import { Brain, Target, TrendingUp, AlertTriangle, CheckCircle2, Loader2, Sparkles } from 'lucide-react';
-import api from '../../services/api';
+import { api } from '../../services/api';
 
 const SkillsGapDashboard = () => {
     const [data, setData] = useState(null);

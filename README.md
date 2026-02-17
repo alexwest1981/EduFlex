@@ -37,6 +37,13 @@
 
 ## 🇸🇪 Svenska
 
+*   **📊 Skills Gap Analysis Engine (17 feb 2026):**
+    *   **Nuvarande vs Mål:** Implementerat en motor för att räkna ut glappet mellan studentens faktiska färdigheter och målkraven för deras kurser.
+    *   **Kompetensprofil (Radar):** Ny visualisering för studenter som visar deras styrkor och utvecklingsområden via ett radar-diagram (spindeldiagram).
+    *   **AI-Coach Tips:** Integrerat Google Gemini för att analysera specifika ”gaps” och ge personliga, pedagogiska råd för att nå målen.
+    *   **Lärare – Klassöversikt:** Heatmap-vy för lärare som visar hela klassens genomsnittliga kunskapsnivå per kompetens, för att snabbt identifiera gemensamma svagheter.
+    *   **Skolverket Sync:** Förberett för automatisk mappning av färdigheter mot Skolverkets officiella kursmål.
+
 *   **⭐ Guardian Dashboard 2.0 – Live & AI-Powered (16 feb 2026):**
     *   **Live AI Summaries:** Integrerat Google Gemini för att generera personliga statusrapporter till vårdnadshavare baserat på barnets aktuella närvaro och schema.
     *   **Sjukanmälan:** Implementerat ett skarpt gränssnitt för att anmäla frånvaro direkt från dashboarden, kopplat till backendens `SickLeaveService`.
@@ -922,4 +929,4 @@ For inquiries: 📧 **alexwestrom81@gmail.com**
 
 ---
 
-*Last updated: 2026-02-17 (EduFlex Control Center v4.0 - Phases 1-4)*
+*Last updated: 2026-02-17 (Skills Gap Analysis - v2.0.20)*
