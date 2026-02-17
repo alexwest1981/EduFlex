@@ -37,33 +37,46 @@ const SkillsGapDashboard = () => {
         );
     }
 
-    if (error || !data) {
+    if (error) {
         return (
-            <div className="p-8 text-center bg-red-900/20 border border-red-500/50 rounded-xl">
-                <AlertTriangle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-                <h3 className="text-xl font-bold text-white mb-2">Hoppsan!</h3>
-                <p className="text-gray-300 mb-4">{error || 'Ingen data tillgänglig.'}</p>
+            <div className="p-12 text-center bg-[#0b1b2b] border border-red-500/20 rounded-3xl animate-in fade-in zoom-in duration-300">
+                <div className="w-16 h-16 bg-red-500/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                    <AlertTriangle className="text-red-500" size={32} />
+                </div>
+                <h3 className="text-xl font-bold text-white mb-2">Tjänsten är tillfälligt otillgänglig</h3>
+                <p className="text-gray-400 mb-8 max-w-sm mx-auto">
+                    Vi stötte på ett tekniskt problem vid hämtning av din kompetensprofil.
+                    Vänligen försök igen om en liten stund.
+                </p>
                 <button
                     onClick={fetchData}
-                    className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-500 transition-colors"
+                    className="px-8 py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl transition-all hover:scale-105 active:scale-95 shadow-lg shadow-indigo-600/20"
                 >
-                    Försök igen
+                    Uppdatera vy
                 </button>
             </div>
         );
     }
 
-    const { skills, aiRecommendation } = data;
-
-    if (!skills || skills.length === 0) {
+    if (!data || !data.skills || data.skills.length === 0) {
         return (
-            <div className="p-12 text-center bg-gray-900/50 border border-gray-700/50 rounded-2xl">
-                <Brain className="w-16 h-16 text-gray-500 mx-auto mb-6 opacity-50" />
-                <h3 className="text-2xl font-bold text-white mb-3">Ingen data än 🚀</h3>
-                <p className="text-gray-400 max-w-md mx-auto">
-                    Du har inte slutfört tillräckligt många moduler för att vi ska kunna analysera dina färdigheter.
-                    Fortsätt studera så kommer din profil att växa fram här!
+            <div className="p-16 text-center bg-[#0b1b2b] border border-[#1e3a5f]/30 rounded-3xl animate-in fade-in zoom-in duration-500">
+                <div className="w-20 h-20 bg-indigo-500/10 rounded-3xl flex items-center justify-center mx-auto mb-8">
+                    <Brain className="text-indigo-400" size={40} />
+                </div>
+                <h3 className="text-2xl font-bold text-white mb-4">Ingen analys tillgänglig ännu</h3>
+                <p className="text-gray-400 max-w-lg mx-auto leading-relaxed mb-8">
+                    Din kompetensprofil skapas automatiskt baserat på dina prestationer i kurserna.
+                    När du har genomfört fler moduler och inlämningar kommer vi kunna presentera en detaljerad analys av dina styrkor och utvecklingsområden.
                 </p>
+                <div className="flex justify-center gap-4">
+                    <button
+                        onClick={() => window.location.href = '/courses'}
+                        className="px-8 py-3 bg-white text-indigo-950 font-bold rounded-xl hover:bg-gray-100 transition-all shadow-xl"
+                    >
+                        Utforska kurser
+                    </button>
+                </div>
             </div>
         );
     }
