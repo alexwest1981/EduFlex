@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {
     Users, BookOpen, CheckCircle,
     Calendar as CalendarIcon, Search, MessageSquare,
-    ArrowUpRight, Plus, UserPlus, Edit2
+    ArrowUpRight, Plus, UserPlus, Edit2, Target
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -20,6 +20,7 @@ import { ActiveCoursesCard, MyStudentsCard, GradingCard, ApplicationsCard, RiskC
 import { UngradedTable, ApplicationsTable } from './components/TeacherTables';
 import { CreateCourseModal, EditCourseModal } from './components/TeacherModals';
 import StudentContactModal from './components/StudentContactModal';
+import ClassSkillsHeatmap from '../skills/ClassSkillsHeatmap';
 
 // --- SHARED ---
 import { useDashboardWidgets } from '../../hooks/useDashboardWidgets';
@@ -192,6 +193,7 @@ const TeacherDashboard = ({ currentUser }) => {
                     { id: 'APPLICATIONS', label: `${t('teacher_dashboard.tab_applications')} ${applications.length > 0 ? `(${applications.length})` : ''}`, icon: <UserPlus size={18} /> },
                     { id: 'COURSES', label: t('teacher_dashboard.tab_courses'), icon: <BookOpen size={18} /> },
                     { id: 'STUDENTS', label: t('teacher_dashboard.tab_students'), icon: <Users size={18} /> },
+                    { id: 'SKILLS', label: t('teacher_dashboard.tab_skills', 'Kompetensanalys'), icon: <Target size={18} /> },
                     { id: 'COMMUNICATION', label: t('teacher_dashboard.tab_communication'), icon: <MessageSquare size={18} /> },
                 ].map(tab => (
                     <button key={tab.id} onClick={() => setActiveTab(tab.id)} className={`flex items-center gap-2 px-6 py-3 font-bold text-sm border-b-2 transition-colors whitespace-nowrap ${activeTab === tab.id ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700'}`}>
@@ -338,6 +340,33 @@ const TeacherDashboard = ({ currentUser }) => {
             )}
 
             {activeTab === 'COMMUNICATION' && <MessageCenter preSelectedRecipient={messageRecipient} />}
+
+            {activeTab === 'SKILLS' && (
+                <div className="space-y-8 animate-in slide-in-from-bottom-2 duration-300">
+                    <div className="bg-white dark:bg-[#1E1F20] p-6 rounded-2xl border border-gray-200 dark:border-[#3c4043] shadow-sm">
+                        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">Analysera klasskompetens</h2>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {myCourses.map(course => (
+                                <button
+                                    key={course.id}
+                                    onClick={() => setCourseToEdit(course)} // Use courseToEdit as a temp course holder for heatmap view
+                                    className={`p-6 rounded-2xl border transition-all text-left ${courseToEdit?.id === course.id
+                                            ? 'border-indigo-600 bg-indigo-50 dark:bg-indigo-900/20 shadow-md'
+                                            : 'border-gray-100 dark:border-[#3c4043] hover:border-indigo-300'
+                                        }`}
+                                >
+                                    <h3 className="font-bold text-gray-900 dark:text-white uppercase text-xs tracking-wider mb-1 opacity-60">{course.courseCode}</h3>
+                                    <h4 className="font-bold text-gray-900 dark:text-white text-lg">{course.name}</h4>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    {courseToEdit && (
+                        <ClassSkillsHeatmap courseId={courseToEdit.id} courseName={courseToEdit.name} />
+                    )}
+                </div>
+            )}
 
             <CreateCourseModal isOpen={showCreateModal} onClose={() => setShowCreateModal(false)} onCourseCreated={loadDashboardData} currentUser={currentUser} />
             <EditCourseModal isOpen={showEditModal} onClose={() => setShowEditModal(false)} onCourseUpdated={loadDashboardData} courseToEdit={courseToEdit} />

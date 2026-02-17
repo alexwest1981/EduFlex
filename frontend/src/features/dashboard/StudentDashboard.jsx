@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { LayoutDashboard, MessageSquare, Brain } from 'lucide-react';
+import { LayoutDashboard, MessageSquare, Brain, Target } from 'lucide-react';
 import { api } from '../../services/api';
 import { useAppContext } from '../../context/AppContext';
 import { useModules } from '../../context/ModuleContext';
@@ -28,6 +28,7 @@ import DashboardCustomizer from '../../components/dashboard/DashboardCustomizer'
 import AIPersonalizationWidget from './widgets/AIPersonalizationWidget';
 import AdaptiveWidget from '../adaptive/AdaptiveWidget';
 import EduAIDashboard from '../../components/gamification/EduAIDashboard';
+import SkillsGapDashboard from '../skills/SkillsGapDashboard';
 
 const StudentDashboard = ({ currentUser }) => {
     const { t } = useTranslation();
@@ -190,6 +191,9 @@ const StudentDashboard = ({ currentUser }) => {
                     <button onClick={() => setActiveTab('messages')} className={`pb-3 flex items-center gap-2 font-bold text-sm transition-colors border-b-2 ${activeTab === 'messages' ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200'}`}>
                         <MessageSquare size={18} /> {t('shortcuts.messages')}
                     </button>
+                    <button onClick={() => setActiveTab('skills')} className={`pb-3 flex items-center gap-2 font-bold text-sm transition-colors border-b-2 ${activeTab === 'skills' ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200'}`}>
+                        <Target size={18} /> {t('sidebar.competencies', 'Kompetenser')}
+                    </button>
                 </div>
 
                 {/* Controls */}
@@ -284,6 +288,12 @@ const StudentDashboard = ({ currentUser }) => {
             {activeTab === 'eduai' && (
                 <div className="animate-in slide-in-from-bottom-2 fade-in duration-300">
                     <EduAIDashboard />
+                </div>
+            )}
+
+            {activeTab === 'skills' && (
+                <div className="animate-in slide-in-from-bottom-2 fade-in duration-300">
+                    <SkillsGapDashboard />
                 </div>
             )}
         </div>
