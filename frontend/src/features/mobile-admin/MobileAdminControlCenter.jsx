@@ -99,7 +99,7 @@ const MobileAdminControlCenter = ({ isOpen, onClose }) => {
                     {/* Footer Stats / Info */}
                     <div className="p-4 bg-gray-50/50 dark:bg-black/20 border-t border-gray-100/50 dark:border-white/5">
                         <div className="flex justify-between items-center text-xs text-gray-500 dark:text-gray-400">
-                            <span>EduFlex v2.5.0</span>
+                            <span>EduFlex v2.0.18</span>
                             <div className="flex items-center gap-2">
                                 <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
                                 System OK

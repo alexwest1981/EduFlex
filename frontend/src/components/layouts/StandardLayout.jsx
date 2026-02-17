@@ -14,17 +14,28 @@ import SidebarSection from '../SidebarSection';
 import logoTop from '../../assets/images/Logo_top.png';
 import { Download } from 'lucide-react';
 import { usePwaInstall } from '../../hooks/usePwaInstall';
+import PwaInstallPrompt from '../pwa/PwaInstallPrompt';
 
 const StandardLayout = ({ children }) => {
-    const { currentUser, logout, systemSettings, theme, toggleTheme, API_BASE } = useAppContext();
-    const { isModuleActive } = useModules();
-    const { t } = useTranslation();
+    const context = useAppContext() || {};
+    const { currentUser, logout, systemSettings, theme, toggleTheme, API_BASE } = context;
+    const { isModuleActive } = useModules() || {};
+    const { t } = useTranslation() || { t: k => k };
     const navigate = useNavigate();
     const location = useLocation();
-    const [sidebarOpen, setSidebarOpen] = useState(true);
-    const [friendsPanelOpen, setFriendsPanelOpen] = useState(false);
-    const [scrolled, setScrolled] = useState(false);
-    const { canInstall, install } = usePwaInstall();
+    const [sidebarOpen, setSidebarOpen] = React.useState(true);
+    const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
+    const [friendsPanelOpen, setFriendsPanelOpen] = React.useState(false);
+    const [scrolled, setScrolled] = React.useState(false);
+    const { isInstalled, canInstall, install } = usePwaInstall() || {};
+
+    const handleInstall = () => {
+        if (canInstall) {
+            install();
+        } else {
+            alert("För att installera appen på din enhet:\n\niOS: Klicka på dela-knappen och välj 'Lägg till på hemskärmen'.\n\nAndroid/Chrome: Klicka på de tre punkterna i webbläsaren och välj 'Installera app'.");
+        }
+    };
 
     const handleLogout = () => { logout(); navigate('/login'); };
 
@@ -38,7 +49,9 @@ const StandardLayout = ({ children }) => {
     const darkModeActive = isModuleActive('DARK_MODE');
     const token = localStorage.getItem('token');
 
-    const roleName = currentUser?.role?.name || currentUser?.role;
+    const rawRole = currentUser?.role?.name || currentUser?.role || '';
+    const roleName = typeof rawRole === 'string' ? rawRole.toUpperCase() : '';
+    const isAdmin = roleName.includes('ADMIN') || roleName.includes('SUPERADMIN') || currentUser?.role?.isSuperAdmin || currentUser?.role?.superAdmin;
 
     // --- ACTIVITY TRACKING ---
     useEffect(() => {
@@ -83,12 +96,12 @@ const StandardLayout = ({ children }) => {
             { path: '/catalog', icon: <Layers size={20} />, label: t('sidebar.catalog') },
         ],
         education: [
-            ...(roleName === 'TEACHER' || roleName === 'ADMIN' ? [{ path: '/resources', icon: <BookOpen size={20} />, label: t('sidebar.resource_bank') }] : []),
-            ...(roleName === 'TEACHER' || roleName === 'ADMIN' ? [{ path: '/evaluations/manage', icon: <ClipboardList size={20} />, label: 'Utvärderingar' }] : []),
+            ...(roleName.includes('TEACHER') || isAdmin ? [{ path: '/resources', icon: <BookOpen size={20} />, label: t('sidebar.resource_bank') }] : []),
+            ...(roleName.includes('TEACHER') || isAdmin ? [{ path: '/evaluations/manage', icon: <ClipboardList size={20} />, label: 'Utvärderingar' }] : []),
             ...(roleName === 'TEACHER' ? [{ path: '/?tab=COURSES', icon: <BookOpen size={20} />, label: t('sidebar.my_courses') || 'Mina kurser' }] : []),
             ...(roleName === 'STUDENT' ? [{ path: '/my-courses', icon: <BookOpen size={20} />, label: t('sidebar.my_courses') || 'Mina kurser' }] : []),
             ...(roleName === 'STUDENT' ? [{ path: '/adaptive-learning', icon: <TrendingUp size={20} />, label: 'Min Lärväg' }] : []),
-            ...(['STUDENT', 'TEACHER', 'ADMIN'].includes(roleName) ? [{ path: '/ebooks', icon: <Library size={20} />, label: t('sidebar.ebooks') }] : []),
+            ...(roleName.includes('STUDENT') || roleName.includes('TEACHER') || isAdmin ? [{ path: '/ebooks', icon: <Library size={20} />, label: t('sidebar.ebooks') }] : []),
         ],
         tools: [
             { path: '/calendar', icon: <Calendar size={20} />, label: t('sidebar.calendar') },
@@ -99,11 +112,11 @@ const StandardLayout = ({ children }) => {
             ...(isModuleActive('WELLBEING_CENTER') && !['HALSOTEAM', 'ROLE_HALSOTEAM'].includes(roleName) ? [{ path: '/wellbeing-center', icon: <Heart size={20} />, label: 'Sjukanmälan & E-hälsa' }] : [])
         ],
         admin: [
-            ...(roleName === 'ADMIN' || roleName === 'ROLE_ADMIN' ? [{ path: '/admin', icon: <Settings size={20} />, label: t('sidebar.admin') }] : []),
+            ...(isAdmin ? [{ path: '/admin', icon: <Settings size={20} />, label: t('sidebar.admin') }] : []),
             ...(roleName === 'HALSOTEAM' || roleName === 'ROLE_HALSOTEAM' ? [
                 { path: '/health-dashboard', icon: <Heart size={20} className="text-rose-500" />, label: 'E-hälsa (Hälsoteam)' }
             ] : []),
-            ...(isModuleActive('ANALYTICS') && (roleName === 'ADMIN' || roleName === 'ROLE_ADMIN') ? [{ path: '/analytics', icon: <BarChart2 size={20} />, label: t('sidebar.analytics') }] : []),
+            ...(isModuleActive('ANALYTICS') && isAdmin ? [{ path: '/analytics', icon: <BarChart2 size={20} />, label: t('sidebar.analytics') }] : []),
         ],
         rektor: [
             ...(['REKTOR', 'ROLE_REKTOR', 'PRINCIPAL', 'ROLE_PRINCIPAL'].includes(roleName) ? [
@@ -231,8 +244,8 @@ const StandardLayout = ({ children }) => {
                         </button>
                     )}
 
-                    {canInstall && (
-                        <button onClick={install} className={`flex items-center w-full px-3 py-2 rounded-xl transition-colors bg-indigo-50 dark:bg-indigo-900/10 hover:bg-indigo-100 dark:hover:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 ${!sidebarOpen && 'justify-center'}`}>
+                    {!isInstalled && (
+                        <button onClick={handleInstall} className={`flex items-center w-full px-3 py-2 rounded-xl transition-colors bg-indigo-50 dark:bg-indigo-900/10 hover:bg-indigo-100 dark:hover:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 ${!sidebarOpen && 'justify-center'}`}>
                             <Download size={20} />
                             {sidebarOpen && <span className="ml-3 font-bold text-sm">Installera App</span>}
                         </button>
@@ -241,24 +254,31 @@ const StandardLayout = ({ children }) => {
                         <LogOut size={20} />
                         {sidebarOpen && <span className="ml-3 font-bold text-sm">{t('sidebar.logout')}</span>}
                     </button>
-                    {sidebarOpen && <p className="text-[10px] text-gray-300 dark:text-gray-600 text-center flex justify-center mt-2">EduFlex v1.0.3</p>}
+                    {sidebarOpen && <p className="text-[10px] text-gray-300 dark:text-gray-600 text-center flex justify-center mt-2">EduFlex v2.0.18</p>}
                 </div>
             </aside>
 
             {/* Main content - responsive margins */}
-            <main className={`flex-1 transition-all duration-300 ml-0 p-0 bg-gray-50 dark:bg-[#131314]`}>
+            <main className={`flex-1 min-w-0 transition-all duration-300 ml-0 p-0 bg-gray-50 dark:bg-[#131314]`}>
 
-                <header className={`h-16 flex items-center justify-between px-8 sticky top-0 z-40 transition-all ${scrolled ? 'bg-white/80 dark:bg-[#1E1F20]/80 backdrop-blur-md border-b border-gray-100 dark:border-[#282a2c]' : 'bg-transparent'
+                <header className={`h-16 flex items-center justify-between px-4 sm:px-8 sticky top-0 z-40 transition-all ${scrolled ? 'bg-white/80 dark:bg-[#1E1F20]/80 backdrop-blur-md border-b border-gray-100 dark:border-[#282a2c]' : 'bg-transparent'
                     }`}>
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2 sm:gap-4 flex-1 min-w-0 mr-4">
                         <button
-                            onClick={() => setSidebarOpen(!sidebarOpen)}
-                            className="p-2 hover:bg-gray-100 dark:hover:bg-[#282a2c] rounded-xl text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hidden lg:block"
+                            onClick={() => {
+                                if (window.innerWidth < 1024) {
+                                    setMobileMenuOpen(true);
+                                } else {
+                                    setSidebarOpen(!sidebarOpen);
+                                }
+                            }}
+                            className="p-2 hover:bg-gray-100 dark:hover:bg-[#282a2c] rounded-xl text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 shrink-0"
                             title={sidebarOpen ? t('common.minimize_menu') || "Minimera meny" : t('common.expand_menu') || "Expandera meny"}
                         >
-                            {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
+                            {sidebarOpen ? <X size={20} className="hidden lg:block" /> : <Menu size={20} className="hidden lg:block" />}
+                            <Menu size={20} className="lg:hidden" />
                         </button>
-                        <GlobalSearch />
+                        <GlobalSearch className="w-full max-w-[140px] xs:max-w-[180px] sm:max-w-xs lg:w-96" />
                     </div>
 
                     <div className="flex items-center gap-2 relative">
@@ -283,6 +303,65 @@ const StandardLayout = ({ children }) => {
                 <div className="flex-1 p-4 lg:p-8 relative custom-scrollbar">
                     {children}
                 </div>
+
+                {/* MOBILE BOTTOM NAV */}
+                <div className="lg:hidden fixed bottom-0 left-0 right-0 h-16 bg-white/80 dark:bg-[#1E1F20]/80 backdrop-blur-lg border-t border-gray-100 dark:border-[#282a2c] flex items-center justify-around px-2 z-40">
+                    <MobileNavItem to="/" icon={<LayoutDashboard size={20} />} label="Hem" active={location.pathname === '/'} />
+                    <MobileNavItem to="/resources" icon={<BookOpen size={20} />} label="Resurser" active={location.pathname === '/resources'} />
+                    <button
+                        onClick={() => setMobileMenuOpen(true)}
+                        className="flex flex-col items-center justify-center gap-1 text-gray-400"
+                    >
+                        <div className="p-2 rounded-xl bg-indigo-600 text-white -mt-8 shadow-lg shadow-indigo-500/30">
+                            <Menu size={24} />
+                        </div>
+                        <span className="text-[10px] font-bold">Meny</span>
+                    </button>
+                    <MobileNavItem to="/communication" icon={<MessageSquare size={20} />} label="Chatt" active={location.pathname === '/communication'} />
+                    <MobileNavItem to="/profile" icon={<User size={20} />} label="Profil" active={location.pathname === '/profile'} />
+                </div>
+
+                {/* MOBILE DRAWER OVERLAY */}
+                {mobileMenuOpen && (
+                    <div className="lg:hidden fixed inset-0 z-[100] animate-in fade-in duration-300">
+                        <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setMobileMenuOpen(false)} />
+                        <div className="absolute left-0 top-0 bottom-0 w-[280px] bg-white dark:bg-[#1E1F20] shadow-2xl animate-in slide-in-from-left duration-300 flex flex-col">
+                            <div className="p-6 border-b border-gray-100 dark:border-[#282a2c] flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                    <img src={logoTop} alt="" className="w-8 h-8 object-contain" />
+                                    <span className="font-bold text-lg dark:text-white">EduFlex</span>
+                                </div>
+                                <button onClick={() => setMobileMenuOpen(false)} className="p-2 rounded-lg bg-gray-100 dark:bg-[#282a2c] text-gray-500">
+                                    <X size={20} />
+                                </button>
+                            </div>
+
+                            <div className="flex-1 overflow-y-auto p-4 space-y-6">
+                                <SidebarSection title="Navigering" items={navItems.main} sidebarOpen={true} />
+                                {navItems.admin.length > 0 && <SidebarSection title="Admin" items={navItems.admin} sidebarOpen={true} />}
+                                {navItems.rektor.length > 0 && <SidebarSection title="Rektor" items={navItems.rektor} sidebarOpen={true} />}
+                                <SidebarSection title="Verktyg" items={navItems.tools} sidebarOpen={true} />
+
+                                <div className="pt-4 space-y-2">
+                                    {!isInstalled && (
+                                        <button onClick={() => { handleInstall(); setMobileMenuOpen(false); }} className="w-full flex items-center gap-3 p-3 rounded-xl bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 font-bold">
+                                            <Download size={20} />
+                                            Ladda ner appen
+                                        </button>
+                                    )}
+                                    <button onClick={toggleTheme} className="w-full flex items-center gap-3 p-3 rounded-xl bg-gray-50 dark:bg-[#282a2c] text-gray-600 dark:text-gray-300 font-bold">
+                                        {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+                                        {theme === 'dark' ? 'Ljust läge' : 'Mörkt läge'}
+                                    </button>
+                                    <button onClick={handleLogout} className="w-full flex items-center gap-3 p-3 rounded-xl text-rose-600 font-bold">
+                                        <LogOut size={20} />
+                                        Logga ut
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </main>
 
             {
@@ -296,8 +375,20 @@ const StandardLayout = ({ children }) => {
                     </div>
                 )
             }
+            <PwaInstallPrompt />
         </div >
     );
 };
+
+const MobileNavItem = ({ to, icon, label, active }) => (
+    <NavLink
+        to={to}
+        className={`flex flex-col items-center justify-center gap-1 flex-1 transition-colors ${active ? 'text-indigo-600 dark:text-indigo-400' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'
+            }`}
+    >
+        {icon}
+        <span className="text-[10px] font-bold">{label}</span>
+    </NavLink>
+);
 
 export default StandardLayout;

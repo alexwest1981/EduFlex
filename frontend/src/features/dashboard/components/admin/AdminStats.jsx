@@ -22,72 +22,96 @@ const AdminStats = ({ users = [], courses = [], documents = [], onViewMessages, 
     const closedCourses = courseList.length - openCourses;
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8 animate-in fade-in slide-in-from-bottom-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
 
             {/* ANVÄNDAR-STATISTIK */}
-            <div className="bg-card dark:bg-card-dark p-6 rounded-[var(--radius-xl)] border border-card dark:border-card-dark shadow-sm flex flex-col justify-between min-h-[160px]" style={{ backdropFilter: 'var(--card-backdrop)' }}>
-                <div className="flex justify-between items-start">
-                    <div>
-                        <p className="text-gray-500 dark:text-gray-400 text-[10px] font-bold uppercase tracking-wider">{t('dashboard.total_users')}</p>
-                        <p className="text-4xl font-black text-gray-900 dark:text-white mt-1">{userList.length}</p>
-                    </div>
-                    <div className="bg-blue-100 dark:bg-blue-900/30 p-3 rounded-full text-blue-600 dark:text-blue-400"><Users size={24} /></div>
+            <div className="bg-white dark:bg-[#1c1c1e] p-5 sm:p-6 rounded-[2rem] border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-xl transition-all duration-300 group relative overflow-hidden">
+                <div className="absolute -right-4 -bottom-4 opacity-[0.03] group-hover:scale-125 transition-transform text-blue-500">
+                    <Users size={120} />
                 </div>
-                {/* Detaljerad breakdown */}
-                <div className="flex flex-wrap gap-x-3 gap-y-1 mt-4 pt-4 border-t border-gray-100 dark:border-[#3c4043]">
-                    <div className="flex items-center gap-1 text-[10px] font-bold text-gray-600 dark:text-gray-400" title={t('dashboard.students')}><UserCheck size={11} className="text-green-500" /> {studentCount} S</div>
-                    <div className="flex items-center gap-1 text-[10px] font-bold text-gray-600 dark:text-gray-400" title={t('dashboard.teachers')}><Briefcase size={11} className="text-indigo-500" /> {teacherCount} L</div>
-                    <div className="flex items-center gap-1 text-[10px] font-bold text-gray-600 dark:text-gray-400" title={t('dashboard.admins')}><Shield size={11} className="text-red-500" /> {adminCount} A</div>
-                    <div className="flex items-center gap-1 text-[10px] font-bold text-gray-600 dark:text-gray-400" title={t('dashboard.mentors')}><Users size={11} className="text-orange-500" /> {mentorCount} M</div>
-                    <div className="flex items-center gap-1 text-[10px] font-bold text-gray-600 dark:text-gray-400" title={t('dashboard.principals')}><Shield size={11} className="text-purple-500" /> {principalCount} R</div>
+                <div className="flex justify-between items-start mb-4 relative z-10">
+                    <div className="p-3 rounded-2xl bg-blue-50 dark:bg-blue-900/10 text-blue-600 dark:text-blue-400">
+                        <Users size={22} />
+                    </div>
+                </div>
+                <div className="relative z-10">
+                    <h3 className="text-4xl font-black text-gray-900 dark:text-white tracking-tighter mb-1">{userList.length}</h3>
+                    <p className="text-xs font-black text-gray-400 uppercase tracking-widest">{t('dashboard.total_users')}</p>
+                    <div className="flex flex-wrap gap-x-3 gap-y-1 mt-6 pt-4 border-t border-gray-100 dark:border-gray-800">
+                        <div className="flex items-center gap-1 text-[10px] font-black text-gray-500 uppercase" title={t('dashboard.students')}><span className="w-1.5 h-1.5 bg-green-500 rounded-full"></span> {studentCount} S</div>
+                        <div className="flex items-center gap-1 text-[10px] font-black text-gray-500 uppercase" title={t('dashboard.teachers')}><span className="w-1.5 h-1.5 bg-indigo-500 rounded-full"></span> {teacherCount} L</div>
+                        <div className="flex items-center gap-1 text-[10px] font-black text-gray-500 uppercase" title={t('dashboard.admins')}><span className="w-1.5 h-1.5 bg-red-500 rounded-full"></span> {adminCount} A</div>
+                        <div className="flex items-center gap-1 text-[10px] font-black text-gray-500 uppercase" title={t('dashboard.mentors')}><span className="w-1.5 h-1.5 bg-orange-500 rounded-full"></span> {mentorCount} M</div>
+                    </div>
                 </div>
             </div>
 
             {/* KURS-STATISTIK */}
-            <div className="bg-card dark:bg-card-dark p-6 rounded-[var(--radius-xl)] border border-card dark:border-card-dark shadow-sm flex flex-col justify-between h-40" style={{ backdropFilter: 'var(--card-backdrop)' }}>
-                <div className="flex justify-between items-start">
-                    <div>
-                        <p className="text-gray-500 dark:text-gray-400 text-xs font-bold uppercase">Totalt Kurser</p>
-                        <p className="text-4xl font-black text-gray-900 dark:text-white mt-1">{courseList.length}</p>
-                    </div>
-                    <div className="bg-indigo-100 dark:bg-indigo-900/30 p-3 rounded-full text-indigo-600 dark:text-indigo-400"><Briefcase size={24} /></div>
+            <div className="bg-white dark:bg-[#1c1c1e] p-5 sm:p-6 rounded-[2rem] border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-xl transition-all duration-300 group relative overflow-hidden">
+                <div className="absolute -right-4 -bottom-4 opacity-[0.03] group-hover:scale-125 transition-transform text-indigo-500">
+                    <Briefcase size={120} />
                 </div>
-                <div className="flex gap-4 mt-4 pt-4 border-t border-gray-100 dark:border-[#3c4043]">
-                    <div className="flex items-center gap-1 text-xs font-bold text-green-600"><CheckCircle size={12} /> {openCourses} {t('dashboard.open')}</div>
-                    <div className="flex items-center gap-1 text-xs font-bold text-red-500"><XCircle size={12} /> {closedCourses} {t('dashboard.closed')}</div>
+                <div className="flex justify-between items-start mb-4 relative z-10">
+                    <div className="p-3 rounded-2xl bg-indigo-50 dark:bg-indigo-900/10 text-indigo-600 dark:text-indigo-400">
+                        <Briefcase size={22} />
+                    </div>
+                </div>
+                <div className="relative z-10">
+                    <h3 className="text-4xl font-black text-gray-900 dark:text-white tracking-tighter mb-1">{courseList.length}</h3>
+                    <p className="text-xs font-black text-gray-400 uppercase tracking-widest">Totalt Kurser</p>
+                    <div className="flex gap-4 mt-6 pt-4 border-t border-gray-100 dark:border-gray-800">
+                        <div className="flex items-center gap-1 text-[10px] font-black text-emerald-500 uppercase"><CheckCircle size={12} /> {openCourses} Aktiva</div>
+                        <div className="flex items-center gap-1 text-[10px] font-black text-rose-500 uppercase"><XCircle size={12} /> {closedCourses} Arkiv</div>
+                    </div>
                 </div>
             </div>
 
             {/* FIL-STATISTIK */}
-            <div className="bg-card dark:bg-card-dark p-6 rounded-[var(--radius-xl)] border border-card dark:border-card-dark shadow-sm flex flex-col justify-between h-40" style={{ backdropFilter: 'var(--card-backdrop)' }}>
-                <div className="flex justify-between items-start">
-                    <div>
-                        <p className="text-gray-500 dark:text-gray-400 text-xs font-bold uppercase">{t('dashboard.archived_files')}</p>
-                        <p className="text-4xl font-black text-gray-900 dark:text-white mt-1">{docList.length}</p>
-                    </div>
-                    <div className="bg-orange-100 dark:bg-orange-900/30 p-3 rounded-full text-orange-600 dark:text-orange-400"><FileText size={24} /></div>
+            <div className="bg-white dark:bg-[#1c1c1e] p-5 sm:p-6 rounded-[2rem] border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-xl transition-all duration-300 group relative overflow-hidden">
+                <div className="absolute -right-4 -bottom-4 opacity-[0.03] group-hover:scale-125 transition-transform text-orange-500">
+                    <FileText size={120} />
                 </div>
-                <div className="mt-4 pt-4 border-t border-gray-100 dark:border-[#3c4043]">
-                    <p className="text-xs text-gray-400 italic">{t('dashboard.realtime_update_notice')}</p>
+                <div className="flex justify-between items-start mb-4 relative z-10">
+                    <div className="p-3 rounded-2xl bg-orange-50 dark:bg-orange-900/10 text-orange-600 dark:text-orange-400">
+                        <FileText size={22} />
+                    </div>
+                </div>
+                <div className="relative z-10">
+                    <h3 className="text-4xl font-black text-gray-900 dark:text-white tracking-tighter mb-1">{docList.length}</h3>
+                    <p className="text-xs font-black text-gray-400 uppercase tracking-widest">{t('dashboard.archived_files')}</p>
+                    <div className="mt-6 pt-4 border-t border-gray-100 dark:border-gray-800">
+                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span> Datasync OK
+                        </p>
+                    </div>
                 </div>
             </div>
 
-            {/* SENASTE MEDDELANDEN (STAT CARD STYLE) */}
+            {/* SENASTE MEDDELANDEN */}
             <div
                 onClick={onViewMessages}
-                className="bg-card dark:bg-card-dark p-6 rounded-[var(--radius-xl)] border border-card dark:border-card-dark shadow-sm flex flex-col justify-between h-40 cursor-pointer hover:border-indigo-400 transition-all group"
-                style={{ backdropFilter: 'var(--card-backdrop)' }}
+                className="bg-white dark:bg-[#1c1c1e] p-5 sm:p-6 rounded-[2rem] border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-xl transition-all duration-300 group relative overflow-hidden cursor-pointer active:scale-95"
             >
-                <div className="flex justify-between items-start">
-                    <div>
-                        <p className="text-gray-500 dark:text-gray-400 text-xs font-bold uppercase">{t('dashboard.new_messages')}</p>
-                        <p className="text-4xl font-black text-gray-900 dark:text-white mt-1">{unreadCount}</p>
-                    </div>
-                    <div className="bg-green-100 dark:bg-green-900/30 p-3 rounded-full text-green-600 dark:text-green-400 group-hover:scale-110 transition-transform"><MessageSquare size={24} /></div>
+                <div className="absolute -right-4 -bottom-4 opacity-[0.03] group-hover:scale-125 transition-transform text-emerald-500">
+                    <MessageSquare size={120} />
                 </div>
-                <div className="mt-4 pt-4 border-t border-gray-100 dark:border-[#3c4043] flex justify-between items-center">
-                    <p className="text-xs text-gray-500 font-bold group-hover:text-indigo-600 transition-colors">{t('dashboard.go_to_inbox')}</p>
-                    <ArrowRight size={14} className="text-gray-400 group-hover:text-indigo-600 group-hover:translate-x-1 transition-all" />
+                <div className="flex justify-between items-start mb-4 relative z-10">
+                    <div className="p-3 rounded-2xl bg-emerald-50 dark:bg-emerald-900/10 text-emerald-600 dark:text-emerald-400">
+                        <MessageSquare size={22} />
+                    </div>
+                    {unreadCount > 0 && (
+                        <span className="bg-red-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full animate-pulse">
+                            NYTT
+                        </span>
+                    )}
+                </div>
+                <div className="relative z-10">
+                    <h3 className="text-4xl font-black text-gray-900 dark:text-white tracking-tighter mb-1">{unreadCount}</h3>
+                    <p className="text-xs font-black text-gray-400 uppercase tracking-widest">Nya Meddelanden</p>
+                    <div className="mt-6 pt-4 border-t border-gray-100 dark:border-gray-800 flex justify-between items-center group-hover:text-indigo-600 transition-colors">
+                        <p className="text-[10px] font-black uppercase tracking-widest">{t('dashboard.go_to_inbox')}</p>
+                        <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                    </div>
                 </div>
             </div>
         </div>

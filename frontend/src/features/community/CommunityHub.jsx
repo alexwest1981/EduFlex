@@ -130,11 +130,9 @@ const CommunityHub = ({ minimal = false }) => {
         }
     };
 
-    const isTeacherOrAdmin = currentUser?.role?.name?.includes('TEACHER') ||
-        currentUser?.role?.name?.includes('ADMIN') ||
-        currentUser?.role?.isSuperAdmin;
-
-    const isAdmin = currentUser?.role?.name?.includes('ADMIN') || currentUser?.role?.isSuperAdmin;
+    const rawRole = (currentUser?.role?.name || currentUser?.role || '').toUpperCase();
+    const isAdmin = rawRole.includes('ADMIN') || rawRole.includes('SUPERADMIN') || currentUser?.role?.isSuperAdmin || currentUser?.role?.superAdmin;
+    const isTeacherOrAdmin = isAdmin || rawRole.includes('TEACHER');
 
     return (
         <div className={`max-w-7xl mx-auto animate-in fade-in pb-20 ${minimal ? '' : 'p-4 md:p-8'}`}>

@@ -264,6 +264,16 @@ public class SecurityConfig {
                                                 .requestMatchers("/api/quality/**")
                                                 .hasAnyAuthority("ADMIN", "ROLE_ADMIN", "PRINCIPAL", "ROLE_PRINCIPAL")
 
+                                                // 13. Principal Dashboard endpoints
+                                                .requestMatchers("/api/principal/**")
+                                                .hasAnyAuthority("ADMIN", "ROLE_ADMIN", "PRINCIPAL", "ROLE_PRINCIPAL", "REKTOR", "ROLE_REKTOR")
+
+                                                // 14. Branding endpoints (Admin only for POST/PUT)
+                                                .requestMatchers(HttpMethod.POST, "/api/branding/**")
+                                                .hasAnyAuthority("ADMIN", "ROLE_ADMIN")
+                                                .requestMatchers(HttpMethod.PUT, "/api/branding/**")
+                                                .hasAnyAuthority("ADMIN", "ROLE_ADMIN")
+
                                                 // All other requests require authentication
                                                 .anyRequest().authenticated())
                                 .exceptionHandling(e -> e.authenticationEntryPoint(loggingAuthenticationEntryPoint));
@@ -298,8 +308,21 @@ public class SecurityConfig {
                                 .successHandler(oAuth2LoginSuccessHandler)
                                 .failureHandler(oAuth2LoginFailureHandler));
 
-                // Tillåt iFrames för H2-konsolen
-                http.headers(headers -> headers.frameOptions(frame -> frame.disable()));
+                // Tillåt iFrames för H2-konsolen och OnlyOffice
+                http.headers(headers -> headers
+                                .frameOptions(frame -> frame.disable())
+                                .contentSecurityPolicy(csp -> csp
+                                                .policyDirectives("default-src 'self'; " +
+                                                                "script-src 'self' 'unsafe-inline' 'unsafe-eval' http://localhost:8081 https://www.eduflexlms.se; "
+                                                                +
+                                                                "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
+                                                                +
+                                                                "font-src 'self' https://fonts.gstatic.com data:; " +
+                                                                "frame-src 'self' http://localhost:8081 https://www.eduflexlms.se; "
+                                                                +
+                                                                "connect-src 'self' http://localhost:8081 https://www.eduflexlms.se ws://localhost:8080 wss://www.eduflexlms.se; "
+                                                                +
+                                                                "img-src 'self' data: http://localhost:9000 http://localhost:8081 https://www.eduflexlms.se;")));
 
                 return http.build();
         }

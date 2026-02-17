@@ -212,8 +212,12 @@ public class OnlyOfficeController {
 
         config.put("editorConfig", editorConfig);
 
-        // Usage of main domain for OnlyOffice (routed via Cloudflare Tunnel paths)
-        config.put("documentServerUrl", "https://www.eduflexlms.se");
+        // Hämta OnlyOffice Document Server URL från systemsettings (lokal:
+        // http://localhost:8081, prod: via Cloudflare)
+        String documentServerUrl = settingRepository.findBySettingKey("onlyoffice_url")
+                .map(s -> s.getSettingValue())
+                .orElse("http://localhost:8081");
+        config.put("documentServerUrl", documentServerUrl);
 
         // --- SIGN CONFIG WITH JWT ---
         String token = jwtUtils.generateOnlyOfficeToken(config);
@@ -264,10 +268,11 @@ public class OnlyOfficeController {
             if (fileUrl.startsWith("/api/storage/")) {
                 String storageId = fileUrl.replace("/api/storage/", "");
                 InputStream inputStream = storageService.load(storageId);
-                org.springframework.core.io.InputStreamResource resource =
-                        new org.springframework.core.io.InputStreamResource(inputStream);
+                org.springframework.core.io.InputStreamResource resource = new org.springframework.core.io.InputStreamResource(
+                        inputStream);
                 return ResponseEntity.ok()
-                        .contentType(MediaType.parseMediaType(contentType != null ? contentType : "application/octet-stream"))
+                        .contentType(MediaType
+                                .parseMediaType(contentType != null ? contentType : "application/octet-stream"))
                         .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
                         .body(resource);
             } else {
@@ -338,7 +343,8 @@ public class OnlyOfficeController {
     }
 
     /**
-     * Sparar den redigerade filen tillbaka till rätt lagring (MinIO eller lokal disk).
+     * Sparar den redigerade filen tillbaka till rätt lagring (MinIO eller lokal
+     * disk).
      * Returnerar filstorleken i bytes.
      */
     private long saveFileFromUrl(String downloadUrl, String fileUrl, String originalFileName) throws Exception {
@@ -351,16 +357,20 @@ public class OnlyOfficeController {
                 String contentType = "application/octet-stream";
                 if (originalFileName != null) {
                     String ext = getExtension(originalFileName).toLowerCase();
-                    if (ext.equals("docx")) contentType = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
-                    else if (ext.equals("xlsx")) contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-                    else if (ext.equals("pptx")) contentType = "application/vnd.openxmlformats-officedocument.presentationml.presentation";
+                    if (ext.equals("docx"))
+                        contentType = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+                    else if (ext.equals("xlsx"))
+                        contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                    else if (ext.equals("pptx"))
+                        contentType = "application/vnd.openxmlformats-officedocument.presentationml.presentation";
                 }
                 storageService.save(new java.io.ByteArrayInputStream(data), contentType, originalFileName, storageId);
             } else {
                 // Legacy: Lokal disk
                 String fileName = fileUrl.replace("/uploads/", "");
                 Path path = Paths.get(uploadDir).resolve(fileName);
-                Files.write(path, data, java.nio.file.StandardOpenOption.CREATE, java.nio.file.StandardOpenOption.TRUNCATE_EXISTING);
+                Files.write(path, data, java.nio.file.StandardOpenOption.CREATE,
+                        java.nio.file.StandardOpenOption.TRUNCATE_EXISTING);
             }
 
             return data.length;

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Search, User, BookOpen, FileText, Calendar, X, Loader2 } from 'lucide-react';
 import { api } from '../services/api';
 
-const GlobalSearch = ({ className = "w-96", inputClassName = "bg-gray-100 dark:bg-[#282a2c]" }) => {
+const GlobalSearch = ({ className = "", inputClassName = "bg-gray-100 dark:bg-[#282a2c]" }) => {
     const [query, setQuery] = useState('');
     const [results, setResults] = useState({ users: [], courses: [], documents: [], events: [] });
     const [isOpen, setIsOpen] = useState(false);

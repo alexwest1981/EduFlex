@@ -6,7 +6,7 @@ import {
     Globe, Database, Server, Zap, BarChart,
     Check, ArrowRight, Menu, X, Play, Sparkles,
     Award, TrendingUp, Layers, Gamepad2, Brain, Map, Flame, MessageSquare,
-    FileText, ClipboardList, Thermometer, Target
+    FileText, ClipboardList, Thermometer, Target, Smartphone
 } from 'lucide-react';
 
 // Assets
@@ -230,19 +230,19 @@ const LandingPage = () => {
             title: "Säker Elevhälsa",
             description: "Rollbaserad åtkomstkontroll och krypterade journaler för maximal sekretess och trygghet.",
             icon: <Shield className="text-emerald-500" />,
-            tag: "v1.1.1"
+            tag: "v2.0.18"
         },
         {
             title: "Prediktiv AI-Analys 2.0",
             description: "Identifierar elever i riskzonen innan de själva vet det. Deep learning mönsteranalys av närvaro, aktivitet och resultat.",
             icon: <Brain className="text-pink-500" />,
-            tag: "Live v1.1.2"
+            tag: "Live v2.0.18"
         },
         {
             title: "Skolverket Sync 2.0",
             description: "Sömlös integration med hela Skolverkets kurskatalog. Automatiserad uppdatering av kursmål och betygskriterier.",
             icon: <Target className="text-indigo-500" />,
-            tag: "v1.0.5"
+            tag: "v2.0.18"
         },
         {
             title: "Gamification Expansion",
@@ -263,6 +263,13 @@ const LandingPage = () => {
             description: 'Vårdnadshavarportal, digital sjukanmälan och enkäter för elevhälsa. Allt samlat med AES-256 kryptering och sekretessvakter för säker datahantering.',
             color: 'text-brand-teal',
             bgColor: 'bg-brand-teal/10'
+        },
+        {
+            icon: <Smartphone className="w-6 h-6" />,
+            title: 'Installerbar PWA',
+            description: 'Installera EduFlex direkt på din hemskärm — iOS, Android och Desktop. Cachar app-shell för blixtsnabb start med officiell branding och service worker.',
+            color: 'text-sky-400',
+            bgColor: 'bg-sky-500/10'
         }
     ];
 
@@ -666,7 +673,7 @@ const LandingPage = () => {
                 </section>
 
                 {/* --- SOLUTIONS BY ROLE SECTION (NEW) --- */}
-                <section className="bg-slate-900/40 py-24 border-y border-white/5 relative overflow-hidden">
+                <section className="bg-slate-900/40 py-24 border-y border-white/5 relative overflow-hidden fade-in-section">
                     <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-px bg-gradient-to-r from-transparent via-brand-teal/50 to-transparent"></div>
 
                     <div className="max-w-7xl mx-auto px-6">
@@ -678,7 +685,7 @@ const LandingPage = () => {
                             <p className="text-slate-400 text-lg">EduFlex levererar ett skräddarsytt gränssnitt och specifika verktyg beroende på din profil.</p>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 stagger-animation">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 stagger-animation fade-in-section">
                             {/* Rektor Card */}
                             <div className="glass-card p-8 rounded-3xl border-brand-teal/20 hover:border-brand-teal transition-all group relative overflow-hidden flex flex-col h-full">
                                 <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">

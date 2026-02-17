@@ -2,13 +2,49 @@ import React, { useState, useEffect } from 'react';
 import { useBranding } from '../../context/BrandingContext';
 import { DESIGN_SYSTEMS } from '../../context/DesignSystemContext';
 import { useTheme } from '../../context/ThemeContext';
-import { Upload, Save, RotateCcw, AlertCircle, CheckCircle, Eye, EyeOff, Palette, Image, Globe, Layers, Settings, Layout, Type, Shield, LayoutDashboard, MousePointer2, Monitor, Smartphone, ChevronDown, User } from 'lucide-react';
+import { Upload, Save, RotateCcw, AlertCircle, CheckCircle, Eye, EyeOff, Palette, Image as ImageIcon, Globe, Layers, Settings, Layout, Type, Shield, LayoutDashboard, MousePointer2, Monitor, Smartphone, ChevronDown, User, Download } from 'lucide-react';
 import AdminNavbar from '../../features/dashboard/components/admin/AdminNavbar';
 import AdminHeader from '../../features/dashboard/components/admin/AdminHeader';
 
 const EnterpriseWhitelabel = () => {
-    const { branding, hasAccess, updateBranding, uploadLogo, uploadFavicon, uploadLoginBackground, resetBranding } = useBranding();
+    const { branding, hasAccess, updateBranding, uploadLogo, uploadFavicon, uploadLoginBackground, uploadPwaIcon192, uploadPwaIcon512, resetBranding } = useBranding();
     const { themes } = useTheme();
+
+    /**
+     * Helper to resize image using Canvas before upload
+     */
+    const resizeImage = (file, size) => {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = size;
+                    canvas.height = size;
+                    const ctx = canvas.getContext('2d');
+
+                    // Draw image scaled to fill the square canvas (center crop)
+                    const scale = Math.max(size / img.width, size / img.height);
+                    const x = (size / 2) - (img.width / 2) * scale;
+                    const y = (size / 2) - (img.height / 2) * scale;
+
+                    // Smoothing
+                    ctx.imageSmoothingEnabled = true;
+                    ctx.imageSmoothingQuality = 'high';
+
+                    ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
+
+                    canvas.toBlob((blob) => {
+                        resolve(new File([blob], file.name, { type: 'image/png' }));
+                    }, 'image/png', 0.95);
+                };
+                img.src = e.target.result;
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
+    };
 
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState(null);
@@ -24,6 +60,7 @@ const EnterpriseWhitelabel = () => {
         showPoweredBy: true,
         enforceOrgTheme: false,
         customEmailTemplates: false,
+        customCss: '',
     });
 
     const [customTheme, setCustomTheme] = useState({
@@ -43,6 +80,12 @@ const EnterpriseWhitelabel = () => {
             animationPreset: 'bouncy',  // Playful
             componentDepth: 'floating', // Modern
             enabledThemes: ['finsights-dark', 'cosmic-growth', 'eduflex-fresh'] // Default enabled
+        },
+        pwa: {
+            appName: 'EduFlex LMS',
+            shortName: 'EduFlex',
+            backgroundColor: '#ffffff',
+            themeColor: '#6366f1'
         }
     });
 
@@ -225,6 +268,7 @@ const EnterpriseWhitelabel = () => {
                 showPoweredBy: branding.showPoweredBy ?? true,
                 enforceOrgTheme: branding.enforceOrgTheme ?? false,
                 customEmailTemplates: branding.customEmailTemplates ?? false,
+                customCss: branding.customCss || '',
             });
 
             // Load custom theme if exists
@@ -270,17 +314,23 @@ const EnterpriseWhitelabel = () => {
         }));
     };
 
-    const handleMobileColorChange = (field, value) => {
-        if (field === 'all') {
-            setCustomTheme(prev => ({
+    const handlePwaColorChange = (field, value) => {
+        setCustomTheme(prev => {
+            const newPwa = { ...prev.pwa, [field]: value };
+            // Auto-sync themeColor to mobile.activeColor for consistency
+            const newMobile = field === 'themeColor'
+                ? { ...prev.mobile, activeColor: value }
+                : prev.mobile;
+
+            return {
                 ...prev,
-                mobile: {
-                    ...prev.mobile,
-                    ...value
-                }
-            }));
-            return;
-        }
+                pwa: newPwa,
+                mobile: newMobile
+            };
+        });
+    };
+
+    const handleMobileColorChange = (field, value) => {
         setCustomTheme(prev => ({
             ...prev,
             mobile: {
@@ -356,6 +406,19 @@ const EnterpriseWhitelabel = () => {
             } else if (type === 'background') {
                 await uploadLoginBackground(file);
                 showMessage('Bakgrundsbild uppladdad!', 'success');
+            } else if (type === 'pwa192' || type === 'pwa512') {
+                const targetSize = type === 'pwa192' ? 192 : 512;
+                const resizedFile = await resizeImage(file, targetSize);
+
+                if (type === 'pwa192') {
+                    await uploadPwaIcon192(resizedFile);
+                } else {
+                    await uploadPwaIcon512(resizedFile);
+                }
+
+                showMessage(`PWA-ikon (${targetSize}x${targetSize}) uppladdad och klar!`, 'success');
+                // Force reload branding to get new URLs
+                await updateBranding({});
             }
         } catch (error) {
             showMessage(error.message || 'Ett fel uppstod vid uppladdning', 'error');
@@ -406,7 +469,9 @@ const EnterpriseWhitelabel = () => {
             category: 'Varumärke',
             items: [
                 { id: 'general', label: 'Allmänt', icon: Globe },
-                { id: 'assets', label: 'Grafiska resurser', icon: Image },
+                { id: 'assets', label: 'Grafiska resurser', icon: ImageIcon },
+                { id: 'text', label: 'Texter & Meddelanden', icon: Globe },
+                { id: 'custom-css', label: 'Avancerad CSS', icon: Settings }
             ]
         },
         {
@@ -414,7 +479,7 @@ const EnterpriseWhitelabel = () => {
             items: [
                 { id: 'design', label: 'Design System', icon: Layers },
                 { id: 'theme', label: 'Anpassat tema', icon: Palette },
-                { id: 'mobile', label: 'Mobiltema', icon: Smartphone }
+                { id: 'pwa', label: 'PWA & Mobil-app', icon: Smartphone }
             ]
         }
     ];
@@ -482,10 +547,12 @@ const EnterpriseWhitelabel = () => {
                                     {activeTab === 'assets' && 'Ladda upp logotyper och ikoner.'}
                                     {activeTab === 'design' && 'Välj ett globalt designsystem för hela plattformen.'}
                                     {activeTab === 'theme' && 'Skapa eller välj färgteman.'}
-                                    {activeTab === 'mobile' && 'Anpassa utseendet på mobilappens navigeringsfält.'}
+                                    {activeTab === 'text' && 'Anpassa systemets texter, titlar och meddelanden.'}
+                                    {activeTab === 'custom-css' && 'Skriv egen CSS för att finjustera utseendet på djupet.'}
+                                    {activeTab === 'pwa' && 'Konfigurera appen för mobila enheter, inkl. ikoner, färger och navigering.'}
                                 </p>
                             </div>
-                            {(activeTab === 'general' || activeTab === 'design') && (
+                            {(activeTab === 'general' || activeTab === 'design' || activeTab === 'text' || activeTab === 'custom-css') && (
                                 <button
                                     onClick={handleSaveGeneral}
                                     disabled={loading}
@@ -495,7 +562,7 @@ const EnterpriseWhitelabel = () => {
                                     <Save className="w-5 h-5" />
                                 </button>
                             )}
-                            {(activeTab === 'theme' || activeTab === 'mobile') && (
+                            {(activeTab === 'theme' || activeTab === 'pwa') && (
                                 <button
                                     onClick={handleSaveCustomTheme}
                                     disabled={loading}
@@ -516,51 +583,6 @@ const EnterpriseWhitelabel = () => {
                                     </h2>
 
                                     <div className="space-y-4">
-                                        <div>
-                                            <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                                                Varumärkesnamn
-                                            </label>
-                                            <input
-                                                type="text"
-                                                name="brandName"
-                                                value={formData.brandName}
-                                                onChange={handleInputChange}
-                                                className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600
-                                             bg-white dark:bg-[#282a2c] text-gray-900 dark:text-white"
-                                                placeholder="EduFlex"
-                                            />
-                                        </div>
-
-                                        <div>
-                                            <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                                                Footer-text
-                                            </label>
-                                            <input
-                                                type="text"
-                                                name="footerText"
-                                                value={formData.footerText}
-                                                onChange={handleInputChange}
-                                                className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600
-                                             bg-white dark:bg-[#282a2c] text-gray-900 dark:text-white"
-                                                placeholder="Powered by EduFlex"
-                                            />
-                                        </div>
-
-                                        <div>
-                                            <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                                                Välkomstmeddelande (inloggningssida)
-                                            </label>
-                                            <textarea
-                                                name="welcomeMessage"
-                                                value={formData.welcomeMessage}
-                                                onChange={handleInputChange}
-                                                rows={3}
-                                                className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600
-                                             bg-white dark:bg-[#282a2c] text-gray-900 dark:text-white"
-                                                placeholder="Välkommen till vårt lärandesystem..."
-                                            />
-                                        </div>
-
                                         <div>
                                             <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
                                                 Standard-tema (används om inget anpassat tema är aktivt)
@@ -798,6 +820,110 @@ const EnterpriseWhitelabel = () => {
                             </div >
                         )}
 
+                        {/* Texts Tab */}
+                        {activeTab === 'text' && (
+                            <div className="space-y-6">
+                                <div className="bg-white dark:bg-[#1e1f20] rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+                                    <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white flex items-center gap-2">
+                                        <Type className="w-5 h-5 text-indigo-600" />
+                                        Systemtexter & Meddelanden
+                                    </h2>
+
+                                    <div className="space-y-6">
+                                        <div>
+                                            <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                                                Varumärkesnamn
+                                            </label>
+                                            <input
+                                                type="text"
+                                                name="brandName"
+                                                value={formData.brandName}
+                                                onChange={handleInputChange}
+                                                className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600
+                                             bg-white dark:bg-[#282a2c] text-gray-900 dark:text-white"
+                                                placeholder="EduFlex"
+                                            />
+                                            <p className="text-xs text-gray-500 mt-1">Namnet som visas i webbläsarfliken och i systemet.</p>
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                                                Välkomstmeddelande (Inloggning)
+                                            </label>
+                                            <textarea
+                                                name="welcomeMessage"
+                                                value={formData.welcomeMessage}
+                                                onChange={handleInputChange}
+                                                rows={4}
+                                                className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600
+                                             bg-white dark:bg-[#282a2c] text-gray-900 dark:text-white"
+                                                placeholder="Välkommen till vårt lärandesystem..."
+                                            />
+                                            <p className="text-xs text-gray-500 mt-1">Texten som visas bredvid inloggningsformuläret.</p>
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                                                Footer-text
+                                            </label>
+                                            <input
+                                                type="text"
+                                                name="footerText"
+                                                value={formData.footerText}
+                                                onChange={handleInputChange}
+                                                className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600
+                                             bg-white dark:bg-[#282a2c] text-gray-900 dark:text-white"
+                                                placeholder="Powered by EduFlex"
+                                            />
+                                            <p className="text-xs text-gray-500 mt-1">Texten som visas längst ner i systemet.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Custom CSS Tab */}
+                        {activeTab === 'custom-css' && (
+                            <div className="space-y-6">
+                                <div className="bg-white dark:bg-[#1e1f20] rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+                                    <h2 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white flex items-center gap-2">
+                                        <Settings className="w-5 h-5 text-indigo-600" />
+                                        Avancerad CSS
+                                    </h2>
+                                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
+                                        Här kan du skriva egen CSS för att skriva över systemets standardstilar. Var försiktig då felaktig CSS kan förstöra layouten.
+                                    </p>
+
+                                    <div className="space-y-4">
+                                        <textarea
+                                            value={formData.customCss}
+                                            onChange={(e) => setFormData({ ...formData, customCss: e.target.value })}
+                                            rows={15}
+                                            className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600
+                                         bg-gray-50 dark:bg-[#282a2c] text-gray-900 dark:text-white font-mono text-sm leading-relaxed"
+                                            placeholder="/* Exempel: */
+.logo-container {
+  height: 60px !important;
+}
+
+.bg-indigo-600 {
+  background-color: var(--primary-600) !important;
+}"
+                                        />
+
+                                        <div className="p-4 bg-yellow-50 dark:bg-yellow-900/10 border border-yellow-100 dark:border-yellow-900/20 rounded-xl">
+                                            <div className="flex gap-3">
+                                                <AlertCircle className="w-5 h-5 text-yellow-600 shrink-0" />
+                                                <div className="text-xs text-yellow-700 dark:text-gray-300">
+                                                    <span className="font-bold">Tips:</span> Använd CSS-variabler som <code>--primary-600</code> för att matcha ditt tema, och dölj element med <code>display: none !important;</code>.
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
                         {/* Custom Theme Tab */}
                         {
                             activeTab === 'theme' && (
@@ -963,202 +1089,122 @@ const EnterpriseWhitelabel = () => {
                             )
                         }
 
-                        {/* Mobile Theme Tab */}
-                        {activeTab === 'mobile' && (
+
+                        {/* PWA & Mobil-app Tab */}
+                        {activeTab === 'pwa' && (
                             <div className="space-y-6">
-                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                                    {/* Controls */}
-                                    <div className="space-y-6">
-                                        <div className="bg-white dark:bg-[#1e1f20] rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+                                <div className="bg-white dark:bg-[#1e1f20] rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+                                    <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
+                                        PWA Inställningar (Progressive Web App)
+                                    </h2>
 
-                                            <h2 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">
-                                                Färdiga Mobilteman
-                                            </h2>
-                                            <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
-                                                Välj ett optimerat utseende för den mobila upplevelsen.
-                                            </p>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div>
+                                            <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                                                Appens fullständiga namn
+                                            </label>
+                                            <input
+                                                type="text"
+                                                value={customTheme.pwa?.appName || ''}
+                                                onChange={(e) => setCustomTheme({
+                                                    ...customTheme,
+                                                    pwa: { ...customTheme.pwa, appName: e.target.value }
+                                                })}
+                                                className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-[#282a2c] text-gray-900 dark:text-white"
+                                                placeholder="EduFlex LMS"
+                                            />
+                                        </div>
 
-                                            <div className="grid grid-cols-1 gap-4 mb-8">
-                                                {mobileThemes.map(theme => (
-                                                    <div key={theme.id} className="relative group">
-                                                        <button
-                                                            onClick={() => handleMobileColorChange('all', theme.config)}
-                                                            className={`w-full flex items-center gap-4 p-4 rounded-xl border-2 transition-all text-left bg-gray-50 dark:bg-[#282a2c]
-                                                            ${(customTheme.mobile?.id === theme.id || (!customTheme.mobile?.id && theme.id === 'finsights-dark')) ? 'border-indigo-500 ring-2 ring-indigo-500/20' : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'}`}
-                                                        >
-                                                            {/* Preview Dot */}
-                                                            <div
-                                                                className="w-12 h-12 rounded-full shadow-lg flex items-center justify-center border border-gray-200 dark:border-gray-600"
-                                                                style={{
-                                                                    backgroundColor: theme.config.backgroundColor
-                                                                }}
-                                                            >
-                                                                <Smartphone size={20} style={{ color: theme.config.activeColor }} />
-                                                            </div>
+                                        <div>
+                                            <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                                                Kortnamn (för hemskärmen)
+                                            </label>
+                                            <input
+                                                type="text"
+                                                value={customTheme.pwa?.shortName || ''}
+                                                onChange={(e) => setCustomTheme({
+                                                    ...customTheme,
+                                                    pwa: { ...customTheme.pwa, shortName: e.target.value }
+                                                })}
+                                                className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-[#282a2c] text-gray-900 dark:text-white"
+                                                placeholder="EduFlex"
+                                            />
+                                        </div>
 
-                                                            <div className="flex-1">
-                                                                <h3 className="font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-                                                                    {theme.name}
-                                                                    {(customTheme.mobile?.id === theme.id || (!customTheme.mobile?.id && theme.id === 'finsights-dark')) &&
-                                                                        <span className="px-2 py-0.5 bg-indigo-100 text-indigo-700 text-[10px] rounded-full uppercase tracking-wider">Aktiv</span>
-                                                                    }
-                                                                </h3>
-                                                                <p className="text-xs text-gray-500 dark:text-gray-400">
-                                                                    {theme.description}
-                                                                </p>
-                                                            </div>
-                                                        </button>
-
-                                                        {/* Enable/Disable Toggle - Top Right */}
-                                                        <div className="absolute top-4 right-4 z-10" onClick={(e) => e.stopPropagation()}>
-                                                            <label className="flex items-center gap-2 cursor-pointer bg-white dark:bg-[#1e1f20] px-2 py-1 rounded-lg border border-gray-100 dark:border-gray-600 shadow-sm">
-                                                                <span className="text-[10px] font-bold text-gray-500 uppercase">Valbar</span>
-                                                                <input
-                                                                    type="checkbox"
-                                                                    checked={(customTheme.mobile?.enabledThemes || ['finsights-dark', 'cosmic-growth', 'eduflex-fresh']).includes(theme.id)}
-                                                                    onChange={() => handleToggleTheme(theme.id)}
-                                                                    className="w-4 h-4 text-indigo-600 rounded focus:ring-indigo-500"
-                                                                />
-                                                            </label>
-                                                        </div>
-                                                    </div>
-                                                ))}
+                                        <div>
+                                            <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                                                Bakgrundsfärg (Splash Screen)
+                                            </label>
+                                            <div className="flex gap-2">
+                                                <input
+                                                    type="color"
+                                                    value={customTheme.pwa?.backgroundColor || '#ffffff'}
+                                                    onChange={(e) => setCustomTheme({
+                                                        ...customTheme,
+                                                        pwa: { ...customTheme.pwa, backgroundColor: e.target.value }
+                                                    })}
+                                                    className="w-12 h-10 rounded cursor-pointer"
+                                                />
+                                                <input
+                                                    type="text"
+                                                    value={customTheme.pwa?.backgroundColor || '#ffffff'}
+                                                    onChange={(e) => setCustomTheme({
+                                                        ...customTheme,
+                                                        pwa: { ...customTheme.pwa, backgroundColor: e.target.value }
+                                                    })}
+                                                    className="flex-1 px-3 py-2 border rounded-lg dark:bg-[#282a2c] dark:border-gray-600 dark:text-white"
+                                                />
                                             </div>
+                                        </div>
 
-                                            <h3 className="text-sm font-semibold mb-4 text-gray-900 dark:text-white border-t border-gray-100 dark:border-gray-700 pt-6">
-                                                Design-fysik (Avancerat)
-                                            </h3>
-                                            <div className="space-y-4 mb-8">
-                                                {/* Hörnradie */}
-                                                <div>
-                                                    <div className="flex justify-between mb-2">
-                                                        <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Form (Hörnradie)</label>
-                                                        <span className="text-xs text-gray-500">{customTheme.mobile?.borderRadius || '24px'}</span>
-                                                    </div>
-                                                    <div className="flex gap-2">
-                                                        {['0px', '8px', '16px', '24px', '32px', '9999px'].map(radius => (
-                                                            <button
-                                                                key={radius}
-                                                                onClick={() => handleMobileColorChange('borderRadius', radius)}
-                                                                className={`h-8 flex-1 border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-[#282a2c]
-                                                                hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition-all
-                                                                ${customTheme.mobile?.borderRadius === radius ? 'ring-2 ring-indigo-500 border-transparent' : ''}`}
-                                                                style={{ borderRadius: radius === '9999px' ? '20px' : radius }}
-                                                                title={radius === '9999px' ? 'Pill' : radius}
-                                                            />
-                                                        ))}
-                                                    </div>
-                                                </div>
-
-                                                {/* Animation Preset */}
-                                                <div>
-                                                    <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">Rörelse & Känsla</label>
-                                                    <div className="grid grid-cols-3 gap-2">
-                                                        {[
-                                                            { id: 'minimal', label: 'Minimal', icon: '⚡' },
-                                                            { id: 'smooth', label: 'Mjuk', icon: '🌊' },
-                                                            { id: 'bouncy', label: 'Lekfull', icon: '🏀' }
-                                                        ].map(preset => (
-                                                            <button
-                                                                key={preset.id}
-                                                                onClick={() => handleMobileColorChange('animationPreset', preset.id)}
-                                                                className={`p-2 rounded-lg border text-sm font-medium transition-all
-                                                                ${customTheme.mobile?.animationPreset === preset.id
-                                                                        ? 'bg-indigo-600 text-white border-indigo-600'
-                                                                        : 'bg-white dark:bg-[#282a2c] border-gray-200 dark:border-gray-600 dark:text-white hover:border-gray-300'}`}
-                                                            >
-                                                                <span className="mr-1">{preset.icon}</span> {preset.label}
-                                                            </button>
-                                                        ))}
-                                                    </div>
-                                                </div>
-
-                                                {/* Component Depth */}
-                                                <div>
-                                                    <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">Djup & Skugga</label>
-                                                    <div className="grid grid-cols-3 gap-2">
-                                                        {[
-                                                            { id: 'flat', label: 'Platt' },
-                                                            { id: 'shadow', label: 'Soft' },
-                                                            { id: 'floating', label: 'Flytande' },
-                                                            { id: 'glass', label: 'Glas' }
-                                                        ].map(depth => (
-                                                            <button
-                                                                key={depth.id}
-                                                                onClick={() => handleMobileColorChange('componentDepth', depth.id)}
-                                                                className={`p-2 rounded-lg border text-sm font-medium transition-all
-                                                                ${customTheme.mobile?.componentDepth === depth.id
-                                                                        ? 'bg-indigo-600 text-white border-indigo-600'
-                                                                        : 'bg-white dark:bg-[#282a2c] border-gray-200 dark:border-gray-600 dark:text-white hover:border-gray-300'}`}
-                                                            >
-                                                                {depth.label}
-                                                            </button>
-                                                        ))}
-                                                    </div>
-                                                </div>
+                                        <div>
+                                            <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                                                Temafärg (Statusfält)
+                                            </label>
+                                            <div className="flex gap-2">
+                                                <input
+                                                    type="color"
+                                                    value={customTheme.pwa?.themeColor || '#6366f1'}
+                                                    onChange={(e) => handlePwaColorChange('themeColor', e.target.value)}
+                                                    className="w-12 h-10 rounded cursor-pointer"
+                                                />
+                                                <input
+                                                    type="text"
+                                                    value={customTheme.pwa?.themeColor || '#6366f1'}
+                                                    onChange={(e) => handlePwaColorChange('themeColor', e.target.value)}
+                                                    className="flex-1 px-3 py-2 border rounded-lg dark:bg-[#282a2c] dark:border-gray-600 dark:text-white"
+                                                />
                                             </div>
+                                        </div>
+                                    </div>
 
-                                            <h3 className="text-sm font-semibold mb-4 text-gray-900 dark:text-white border-t border-gray-100 dark:border-gray-700 pt-6">
-                                                Manuell anpassning (Färger)
-                                            </h3>
+                                    {/* Integrated Mobile Nav Settings */}
+                                    <div className="mt-8 pt-8 border-t border-gray-200 dark:border-gray-700">
+                                        <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white flex items-center gap-2">
+                                            <Smartphone size={20} className="text-indigo-600" />
+                                            Mobilnavigering & Gränssnitt
+                                        </h3>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                             <div className="space-y-4">
                                                 <div>
                                                     <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                                                        Bakgrundsfärg för bottenmeny
+                                                        Menystil
                                                     </label>
-                                                    <div className="flex gap-2">
-                                                        <input
-                                                            type="color"
-                                                            value={customTheme.mobile?.backgroundColor || '#ffffff'}
-                                                            onChange={(e) => handleMobileColorChange('backgroundColor', e.target.value)}
-                                                            className="w-12 h-10 rounded cursor-pointer"
-                                                        />
-                                                        <input
-                                                            type="text"
-                                                            value={customTheme.mobile?.backgroundColor || '#ffffff'}
-                                                            onChange={(e) => handleMobileColorChange('backgroundColor', e.target.value)}
-                                                            className="flex-1 px-3 py-2 border rounded-lg dark:bg-[#282a2c] dark:border-gray-600 dark:text-white"
-                                                        />
-                                                    </div>
-                                                </div>
-
-                                                <div>
-                                                    <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                                                        Aktiv Ikonfärg
-                                                    </label>
-                                                    <div className="flex gap-2">
-                                                        <input
-                                                            type="color"
-                                                            value={customTheme.mobile?.activeColor || '#4f46e5'}
-                                                            onChange={(e) => handleMobileColorChange('activeColor', e.target.value)}
-                                                            className="w-12 h-10 rounded cursor-pointer"
-                                                        />
-                                                        <input
-                                                            type="text"
-                                                            value={customTheme.mobile?.activeColor || '#4f46e5'}
-                                                            onChange={(e) => handleMobileColorChange('activeColor', e.target.value)}
-                                                            className="flex-1 px-3 py-2 border rounded-lg dark:bg-[#282a2c] dark:border-gray-600 dark:text-white"
-                                                        />
-                                                    </div>
-                                                </div>
-
-                                                <div>
-                                                    <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                                                        Inaktiv Ikonfärg
-                                                    </label>
-                                                    <div className="flex gap-2">
-                                                        <input
-                                                            type="color"
-                                                            value={customTheme.mobile?.inactiveColor || '#6b7280'}
-                                                            onChange={(e) => handleMobileColorChange('inactiveColor', e.target.value)}
-                                                            className="w-12 h-10 rounded cursor-pointer"
-                                                        />
-                                                        <input
-                                                            type="text"
-                                                            value={customTheme.mobile?.inactiveColor || '#6b7280'}
-                                                            onChange={(e) => handleMobileColorChange('inactiveColor', e.target.value)}
-                                                            className="flex-1 px-3 py-2 border rounded-lg dark:bg-[#282a2c] dark:border-gray-600 dark:text-white"
-                                                        />
+                                                    <div className="grid grid-cols-2 gap-3">
+                                                        <button
+                                                            onClick={() => handleMobileColorChange('componentDepth', 'standard')}
+                                                            className={`p-3 rounded-xl border-2 text-left transition-all ${customTheme.mobile?.componentDepth === 'standard' || !customTheme.mobile?.componentDepth ? 'border-indigo-600 bg-indigo-50/50' : 'border-gray-100 dark:border-gray-700'}`}
+                                                        >
+                                                            <div className="font-bold text-sm">Standard</div>
+                                                            <div className="text-[10px] text-gray-500">Fixerad botten</div>
+                                                        </button>
+                                                        <button
+                                                            onClick={() => handleMobileColorChange('componentDepth', 'floating')}
+                                                            className={`p-3 rounded-xl border-2 text-left transition-all ${customTheme.mobile?.componentDepth === 'floating' ? 'border-indigo-600 bg-indigo-50/50' : 'border-gray-100 dark:border-gray-700'}`}
+                                                        >
+                                                            <div className="font-bold text-sm">Flytande</div>
+                                                            <div className="text-[10px] text-gray-500">Modern svävande</div>
+                                                        </button>
                                                     </div>
                                                 </div>
 
@@ -1170,78 +1216,108 @@ const EnterpriseWhitelabel = () => {
                                                         className="w-5 h-5 text-indigo-600 rounded"
                                                     />
                                                     <div>
-                                                        <div className="font-medium text-gray-900 dark:text-white">
-                                                            Glassmorphism effekt
+                                                        <div className="font-medium text-sm text-gray-900 dark:text-white">
+                                                            Glassmorphism
                                                         </div>
-                                                        <div className="text-sm text-gray-600 dark:text-gray-400">
-                                                            Gör menyn något genomskinlig med suddig bakgrund.
+                                                        <div className="text-[10px] text-gray-500">
+                                                            Blur-effekt på menyn
                                                         </div>
                                                     </div>
                                                 </label>
                                             </div>
+
+                                            <div className="space-y-4">
+                                                <div>
+                                                    <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300 text-sm">Inaktiv Färg (Ikoner)</label>
+                                                    <div className="flex gap-2">
+                                                        <input
+                                                            type="color"
+                                                            value={customTheme.mobile?.inactiveColor || '#6b7280'}
+                                                            onChange={(e) => handleMobileColorChange('inactiveColor', e.target.value)}
+                                                            className="w-10 h-8 rounded cursor-pointer"
+                                                        />
+                                                        <input
+                                                            type="text"
+                                                            value={customTheme.mobile?.inactiveColor || '#6b7280'}
+                                                            onChange={(e) => handleMobileColorChange('inactiveColor', e.target.value)}
+                                                            className="flex-1 px-3 py-1 text-sm border rounded-lg dark:bg-[#282a2c] dark:border-gray-600 dark:text-white"
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <p className="text-[10px] text-gray-500 italic mt-1">
+                                                    * Aktiv färg synkas automatiskt med "Temafärg" ovan.
+                                                </p>
+                                            </div>
                                         </div>
                                     </div>
 
-                                    {/* Live Preview */}
-                                    <div className="flex justify-center">
-                                        <div className="relative border-8 border-gray-900 rounded-[3rem] h-[600px] w-[300px] bg-white dark:bg-black overflow-hidden shadow-2xl">
-                                            {/* Notch */}
-                                            <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-32 h-6 bg-gray-900 rounded-b-xl z-20"></div>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <AssetUploader
+                                            title="App Ikon (192x192)"
+                                            description="Ikon som visas på hemskärmen (Android/Chrome). Rekommenderad storlek: 192x192px (PNG)"
+                                            currentUrl={customTheme.pwa?.icon192}
+                                            onUpload={(file) => handleFileUpload('pwa192', file)}
+                                            accept="image/png"
+                                            loading={loading}
+                                        />
+                                        <AssetUploader
+                                            title="App Ikon (512x512)"
+                                            description="Stor ikon för splash-screens och högupplösta skärmar. Rekommenderad storlek: 512x512px (PNG)"
+                                            currentUrl={customTheme.pwa?.icon512}
+                                            onUpload={(file) => handleFileUpload('pwa512', file)}
+                                            accept="image/png"
+                                            loading={loading}
+                                        />
+                                    </div>
 
-                                            {/* Screen Content */}
-                                            <div className="h-full flex flex-col pt-8 bg-gray-50 dark:bg-[#131314]">
-                                                {/* Header */}
-                                                <div className="px-4 py-2 flex items-center justify-between">
-                                                    <span className="font-bold text-lg dark:text-white">EduFlex</span>
-                                                    <div className="w-8 h-8 bg-gray-200 dark:bg-gray-800 rounded-full"></div>
-                                                </div>
-
-                                                {/* Dummy Content */}
-                                                <div className="p-4 space-y-4 flex-1 overflow-y-hidden opacity-50">
-                                                    <div className="h-32 bg-blue-100 dark:bg-blue-900/20 rounded-2xl w-full"></div>
-                                                    <div className="h-24 bg-gray-100 dark:bg-gray-800 rounded-xl w-full"></div>
-                                                    <div className="h-24 bg-gray-100 dark:bg-gray-800 rounded-xl w-full"></div>
-                                                    <div className="h-24 bg-gray-100 dark:bg-gray-800 rounded-xl w-full"></div>
-                                                </div>
-
-                                                {/* Bottom Nav Preview */}
-                                                <div
-                                                    className={`transition-all duration-300 relative z-10 flex justify-between items-center
-                                                    ${customTheme.mobile?.componentDepth === 'floating'
-                                                            ? 'mx-4 mb-4 px-4 py-3'
-                                                            : 'px-6 py-4 border-t border-gray-200 dark:border-white/10'}`}
-                                                    style={{
-                                                        backgroundColor: customTheme.mobile?.glassmorphism
-                                                            ? (customTheme.mobile?.backgroundColor + 'aa')
-                                                            : customTheme.mobile?.backgroundColor,
-                                                        backdropFilter: customTheme.mobile?.glassmorphism ? 'blur(20px)' : 'none',
-                                                        borderRadius: customTheme.mobile?.componentDepth === 'floating'
-                                                            ? (customTheme.mobile?.borderRadius || '24px')
-                                                            : '0px',
-                                                        boxShadow: customTheme.mobile?.componentDepth === 'floating'
-                                                            ? '0 20px 25px -5px rgba(0, 0, 0, 0.1)'
-                                                            : '0 -4px 20px -5px rgba(0,0,0,0.1)'
-                                                    }}
-                                                >
-                                                    <div className="flex flex-col items-center gap-1">
-                                                        <LayoutDashboard size={24} style={{ color: customTheme.mobile?.activeColor }} />
-                                                    </div>
-                                                    <div className="flex flex-col items-center gap-1 opacity-50">
-                                                        <Layers size={24} style={{ color: customTheme.mobile?.inactiveColor }} />
-                                                    </div>
-                                                    <div className="flex flex-col items-center gap-1 opacity-50">
-                                                        <Monitor size={24} style={{ color: customTheme.mobile?.inactiveColor }} />
-                                                    </div>
-                                                    <div className="flex flex-col items-center gap-1 opacity-50">
-                                                        <User size={24} style={{ color: customTheme.mobile?.inactiveColor }} />
-                                                    </div>
-                                                </div>
+                                    <div className="mt-8 p-4 bg-indigo-50 dark:bg-indigo-900/10 border border-indigo-100 dark:border-indigo-900/20 rounded-2xl">
+                                        <div className="flex gap-3">
+                                            <AlertCircle className="w-5 h-5 text-indigo-600 shrink-0" />
+                                            <div>
+                                                <h4 className="text-sm font-bold text-indigo-900 dark:text-gray-100">Viktig information</h4>
+                                                <p className="text-xs text-indigo-700 dark:text-gray-300 mt-1">
+                                                    Dessa inställningar påverkar hur din app identifierar sig när användare installerar den på sina mobiler eller datorer.
+                                                    Efter att du sparat kan det ta en stund innan webbläsaren uppdaterar installations-manifestet.
+                                                </p>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
 
-                                {/* Save Button for Mobile Tab */}
+                                <div className="bg-white dark:bg-[#1e1f20] rounded-lg border border-gray-200 dark:border-gray-700 p-6 overflow-hidden">
+                                    <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Förhandsvisning (Installation)</h3>
+                                    <div className="flex justify-center py-8">
+                                        <div className="w-64 bg-gray-50 dark:bg-black/40 rounded-3xl p-6 border border-gray-200 dark:border-white/10 shadow-xl">
+                                            <div
+                                                className="w-16 h-16 rounded-2xl mx-auto mb-4 shadow-lg flex items-center justify-center text-white font-bold text-2xl overflow-hidden"
+                                                style={{ backgroundColor: customTheme.pwa?.themeColor || '#6366f1' }}
+                                            >
+                                                {customTheme.pwa?.icon192 || customTheme.pwa?.icon512 ? (
+                                                    <img
+                                                        src={customTheme.pwa?.icon192 || customTheme.pwa?.icon512}
+                                                        alt="App Icon"
+                                                        className="w-full h-full object-cover"
+                                                    />
+                                                ) : (
+                                                    customTheme.pwa?.shortName?.[0] || 'E'
+                                                )}
+                                            </div>
+                                            <h4 className="text-center font-bold dark:text-white">{customTheme.pwa?.appName || 'EduFlex LMS'}</h4>
+                                            <p className="text-center text-xs text-gray-500 mt-1">{window.location.host}</p>
+                                            <div className="mt-6 flex flex-col gap-2">
+                                                <div
+                                                    className="h-10 rounded-xl w-full flex items-center justify-center text-white text-sm font-bold"
+                                                    style={{ backgroundColor: customTheme.pwa?.themeColor || '#6366f1' }}
+                                                >
+                                                    Installera
+                                                </div>
+                                                <div className="h-10 bg-gray-200 dark:bg-gray-800 rounded-xl w-full flex items-center justify-center text-xs dark:text-gray-400">Avbryt</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Save Button for PWA Tab */}
                                 <div className="flex justify-end pt-6 border-t border-gray-200 dark:border-gray-700">
                                     <button
                                         onClick={handleSaveCustomTheme}

@@ -69,6 +69,9 @@ export const BrandingProvider = ({ children }) => {
         if (data.brandName) {
           document.title = data.brandName;
         }
+
+        // Apply PWA Metadata
+        updatePwaMetadata(data);
       }
     } catch (error) {
       console.error('Failed to load branding:', error);
@@ -110,6 +113,9 @@ export const BrandingProvider = ({ children }) => {
       if (data.brandName) {
         document.title = data.brandName;
       }
+
+      // Apply PWA Metadata
+      updatePwaMetadata(data);
 
       return data;
     } catch (error) {
@@ -162,6 +168,32 @@ export const BrandingProvider = ({ children }) => {
       return data;
     } catch (error) {
       console.error('Failed to upload login background:', error);
+      throw error;
+    }
+  };
+
+  const uploadPwaIcon192 = async (file) => {
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      const data = await api.branding.uploadPwaIcon192(formData, branding.organizationKey);
+      setBranding(data);
+      return data;
+    } catch (error) {
+      console.error('Failed to upload PWA 192 icon:', error);
+      throw error;
+    }
+  };
+
+  const uploadPwaIcon512 = async (file) => {
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      const data = await api.branding.uploadPwaIcon512(formData, branding.organizationKey);
+      setBranding(data);
+      return data;
+    } catch (error) {
+      console.error('Failed to upload PWA 512 icon:', error);
       throw error;
     }
   };
@@ -221,6 +253,39 @@ export const BrandingProvider = ({ children }) => {
     }
   };
 
+  // Helper: Update PWA Manifest link and Theme Color
+  const updatePwaMetadata = (data) => {
+    try {
+      let themeColor = '#6366f1'; // Default
+      if (data.customTheme) {
+        const parsed = JSON.parse(data.customTheme);
+        if (parsed.pwa?.themeColor) {
+          themeColor = parsed.pwa.themeColor;
+        }
+      }
+
+      // Update Meta Theme Color
+      let metaTheme = document.querySelector('meta[name="theme-color"]');
+      if (!metaTheme) {
+        metaTheme = document.createElement('meta');
+        metaTheme.name = 'theme-color';
+        document.head.appendChild(metaTheme);
+      }
+      metaTheme.content = themeColor;
+
+      // Update Manifest Link with cache-busting and organization key
+      let manifestLink = document.querySelector('link[rel="manifest"]');
+      if (manifestLink) {
+        const baseUrl = '/api/branding/manifest.json';
+        const orgKey = data.organizationKey || 'default';
+        const timestamp = new Date().getTime();
+        manifestLink.href = `${baseUrl}?organizationKey=${orgKey}&v=${timestamp}`;
+      }
+    } catch (e) {
+      console.error('Failed to update PWA metadata:', e);
+    }
+  };
+
   // Get parsed custom theme object
   const getCustomTheme = () => {
     if (!branding.customTheme) return null;
@@ -242,6 +307,8 @@ export const BrandingProvider = ({ children }) => {
     uploadLogo,
     uploadFavicon,
     uploadLoginBackground,
+    uploadPwaIcon192,
+    uploadPwaIcon512,
     resetBranding,
     getCustomTheme,
   };

@@ -9,7 +9,7 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=gotland81 # Samma lösenord som du är van vid
     ports:
-      - "5433:5432"
+      - "5439:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
@@ -20,7 +20,7 @@ services:
     image: redis:alpine
     container_name: eduflex-redis
     ports:
-      - "6379:6379"
+      - "6389:6379"
     volumes:
       - redis_data:/data
     networks:
@@ -63,8 +63,8 @@ services:
     image: minio/minio
     container_name: eduflex-minio
     ports:
-      - "9000:9000"
-      - "9001:9001"
+      - "9009:9000"
+      - "9099:9001"
     environment:
       MINIO_ROOT_USER: minioadmin
       MINIO_ROOT_PASSWORD: minioadmin
@@ -92,7 +92,7 @@ services:
       - KC_HTTP_ENABLED=true
       - KC_PROXY=edge
     ports:
-      - "8180:8080"
+      - "8189:8080"
     volumes:
       - ./keycloak/realm-export.json:/opt/keycloak/data/import/realm-export.json
     depends_on:
@@ -109,7 +109,7 @@ services:
       - "8080:8080"
     environment:
       # Dessa variabler skriver över din application.properties
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/eduflex
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/eduflex_backend
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=gotland81
       - FILE_UPLOAD_DIR=/app/uploads

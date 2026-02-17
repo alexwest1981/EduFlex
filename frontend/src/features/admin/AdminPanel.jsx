@@ -217,7 +217,7 @@ const AdminPanel = ({ currentUser }) => {
         formData.append('title', title);
         try {
             const token = localStorage.getItem('token');
-            await fetch('${window.location.origin}/api/documents/upload', {
+            await fetch(`${window.location.origin}/api/documents/upload`, {
                 method: 'POST',
                 headers: { 'Authorization': `Bearer ${token}` },
                 body: formData
@@ -412,8 +412,8 @@ const AdminPanel = ({ currentUser }) => {
                                             </td>
                                             <td className="px-4 py-3">
                                                 <span className={`text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wider ${(typeof u.role === 'string' ? u.role : u.role?.name) === 'ADMIN' ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300' :
-                                                        (typeof u.role === 'string' ? u.role : u.role?.name) === 'TEACHER' ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300' :
-                                                            'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300'
+                                                    (typeof u.role === 'string' ? u.role : u.role?.name) === 'TEACHER' ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300' :
+                                                        'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300'
                                                     }`}>
                                                     {typeof u.role === 'string' ? u.role : u.role?.name}
                                                 </span>
@@ -464,7 +464,7 @@ const AdminPanel = ({ currentUser }) => {
                             <h3 className="font-bold text-gray-900 dark:text-white text-lg">Kurshantering</h3>
                             <div className="flex gap-2">
                                 {isCreatingCourse && !editingCourseId && (
-                                    <button 
+                                    <button
                                         onClick={() => setShowSkolverketSelector(true)}
                                         className="bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-900 px-4 py-2 rounded-lg font-bold text-sm flex items-center gap-2"
                                     >
@@ -631,9 +631,9 @@ const AdminPanel = ({ currentUser }) => {
             <UserEditModal />
             <UserCoursesModal />
             {showSkolverketSelector && (
-                <SkolverketCourseSelector 
-                    onSelect={handleSkolverketSelect} 
-                    onClose={() => setShowSkolverketSelector(false)} 
+                <SkolverketCourseSelector
+                    onSelect={handleSkolverketSelect}
+                    onClose={() => setShowSkolverketSelector(false)}
                 />
             )}
         </div>

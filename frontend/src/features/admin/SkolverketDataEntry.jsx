@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Save, X, Plus, Trash2, Book, ChevronDown } from 'lucide-react';
 import { api } from '../../services/api';
+import toast from 'react-hot-toast';
 
 const SkolverketDataEntry = () => {
     const [courses, setCourses] = useState([]);
@@ -112,7 +113,7 @@ const SkolverketDataEntry = () => {
             const freshCourse = updatedCourses.find(c => c.courseCode === selectedCourse.courseCode);
             if (freshCourse) loadCourseData(freshCourse);
 
-            toast?.success ? toast.success('Data synkad med Skolverket!') : alert('Data synkad med Skolverket!');
+            toast.success('Data synkad med Skolverket!');
         } catch (error) {
             alert('Kunde inte synka: ' + error.message);
         } finally {

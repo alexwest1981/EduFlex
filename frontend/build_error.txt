@@ -1,0 +1,367 @@
+﻿
+> frontend@0.1.0 build
+> vite build
+
+[ViteConfig] Mode: production, Backend URL: http://localhost:8080
+[36mvite v5.4.21 [32mbuilding for production...[36m[39m
+transforming...
+node.exe : [1m[33m[plugin:vite:resolve][
+39m[22m [33m[plugin vite:resolve] Module 
+"net" has been externalized for browser com
+patibility, imported by "E:/Projekt/EduFlex
+/frontend/node_modules/stompjs/lib/stomp-no
+de.js". See https://vite.dev/guide/troubles
+hooting.html#module-externalized-for-browse
+r-compatibility for more details.[39m
+At line:1 char:1
++ & "C:\Program Files\nodejs/node.exe" "C:\
+Users\alxpa\AppData\Roaming\ ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified 
+   : ([1m[33m[plugi...e details.[39m:S  
+  tring) [], RemoteException
+    + FullyQualifiedErrorId : NativeComman 
+   dError
+ 
+[32mÔ£ô[39m 5056 modules transformed.
+[1m[33m[plugin:vite:reporter][39m[22m 
+[33m[plugin vite:reporter] 
+(!) E:/Projekt/EduFlex/frontend/src/service
+s/api.js is dynamically imported by E:/Proj
+ekt/EduFlex/frontend/src/components/Layout.
+jsx, E:/Projekt/EduFlex/frontend/src/compon
+ents/layouts/StandardLayout.jsx, E:/Projekt
+/EduFlex/frontend/src/features/auth/OAuth2C
+allback.jsx but also statically imported by
+ E:/Projekt/EduFlex/frontend/src/components
+/GlobalSearch.jsx, E:/Projekt/EduFlex/front
+end/src/components/MobileThemes/EduFlexCosm
+ic.jsx, E:/Projekt/EduFlex/frontend/src/com
+ponents/MobileThemes/EduFlexFinsights.jsx, 
+E:/Projekt/EduFlex/frontend/src/components/
+MobileThemes/EduFlexFresh.jsx, E:/Projekt/E
+duFlex/frontend/src/components/MobileThemes
+/views/MobileAvatar.jsx, E:/Projekt/EduFlex
+/frontend/src/components/MobileThemes/views
+/MobileCalendarView.jsx, E:/Projekt/EduFlex
+/frontend/src/components/MobileThemes/views
+/MobileCommunicationView.jsx, E:/Projekt/Ed
+uFlex/frontend/src/components/MobileThemes/
+views/MobileCourseView.jsx, E:/Projekt/EduF
+lex/frontend/src/components/MobileThemes/vi
+ews/MobileDashboardView.jsx, E:/Projekt/Edu
+Flex/frontend/src/components/MobileThemes/v
+iews/MobileResourcesView.jsx, E:/Projekt/Ed
+uFlex/frontend/src/components/NotificationB
+ell.jsx, E:/Projekt/EduFlex/frontend/src/co
+mponents/SkolverketCourseInfo.jsx, E:/Proje
+kt/EduFlex/frontend/src/components/Skolverk
+etCourseSelector.jsx, E:/Projekt/EduFlex/fr
+ontend/src/components/StudentActivityBoard.
+jsx, E:/Projekt/EduFlex/frontend/src/compon
+ents/common/ErrorBoundary.jsx, E:/Projekt/E
+duFlex/frontend/src/components/common/UserA
+vatar.jsx, E:/Projekt/EduFlex/frontend/src/
+components/dashboard/ActivityHeatmap.jsx, E
+:/Projekt/EduFlex/frontend/src/components/d
+ashboard/CalendarWidget.jsx, E:/Projekt/Edu
+Flex/frontend/src/components/dashboard/Cour
+seDropOffAnalysis.jsx, E:/Projekt/EduFlex/f
+rontend/src/components/gamification/Achieve
+mentsGallery.jsx, E:/Projekt/EduFlex/fronte
+nd/src/components/layouts/StandardLayout.js
+x, E:/Projekt/EduFlex/frontend/src/componen
+ts/social/OnlineFriendsPanel.jsx, E:/Projek
+t/EduFlex/frontend/src/context/AppContext.j
+sx, E:/Projekt/EduFlex/frontend/src/context
+/BrandingContext.jsx, E:/Projekt/EduFlex/fr
+ontend/src/context/GamificationContext.jsx,
+ E:/Projekt/EduFlex/frontend/src/context/Mo
+duleContext.jsx, E:/Projekt/EduFlex/fronten
+d/src/context/ThemeContext.jsx, E:/Projekt/
+EduFlex/frontend/src/features/adaptive/Adap
+tiveLearningDashboard.jsx, E:/Projekt/EduFl
+ex/frontend/src/features/adaptive/AdaptiveW
+idget.jsx, E:/Projekt/EduFlex/frontend/src/
+features/admin/AiAuditDashboard.jsx, E:/Pro
+jekt/EduFlex/frontend/src/features/admin/He
+althCheckDashboard.jsx, E:/Projekt/EduFlex/
+frontend/src/features/admin/InvoiceManageme
+nt.jsx, E:/Projekt/EduFlex/frontend/src/fea
+tures/admin/PaymentGatewaySettings.jsx, E:/
+Projekt/EduFlex/frontend/src/features/admin
+/PdfTemplateEditor.jsx, E:/Projekt/EduFlex/
+frontend/src/features/admin/PromoCodeManage
+ment.jsx, E:/Projekt/EduFlex/frontend/src/f
+eatures/admin/SkolverketDataEntry.jsx, E:/P
+rojekt/EduFlex/frontend/src/features/admin/
+SkolverketManager.jsx, E:/Projekt/EduFlex/f
+rontend/src/features/admin/SubscriptionPlan
+s.jsx, E:/Projekt/EduFlex/frontend/src/feat
+ures/admin/TenantManagement.jsx, E:/Projekt
+/EduFlex/frontend/src/features/admin/shop/A
+dminShopDashboard.jsx, E:/Projekt/EduFlex/f
+rontend/src/features/admin/shop/ShopItemEdi
+tor.jsx, E:/Projekt/EduFlex/frontend/src/fe
+atures/ai/AIQuizGenerator.jsx, E:/Projekt/E
+duFlex/frontend/src/features/ai/PracticeQui
+zSetupModal.jsx, E:/Projekt/EduFlex/fronten
+d/src/features/analytics/AnalyticsDashboard
+.jsx, E:/Projekt/EduFlex/frontend/src/featu
+res/analytics/TeacherAnalytics.jsx, E:/Proj
+ekt/EduFlex/frontend/src/features/billing/U
+serBilling.jsx, E:/Projekt/EduFlex/frontend
+/src/features/calendar/CalendarView.jsx, E:
+/Projekt/EduFlex/frontend/src/features/cale
+ndar/components/CalendarFilter.jsx, E:/Proj
+ekt/EduFlex/frontend/src/features/catalog/C
+ourseCatalog.jsx, E:/Projekt/EduFlex/fronte
+nd/src/features/certificates/CertificateVie
+w.jsx, E:/Projekt/EduFlex/frontend/src/feat
+ures/community/CommunityAdmin.jsx, E:/Proje
+kt/EduFlex/frontend/src/features/community/
+CommunityHub.jsx, E:/Projekt/EduFlex/fronte
+nd/src/features/community/components/Author
+Profile.jsx, E:/Projekt/EduFlex/frontend/sr
+c/features/community/components/CommunityDe
+tailModal.jsx, E:/Projekt/EduFlex/frontend/
+src/features/community/components/Contribut
+orLeaderboard.jsx, E:/Projekt/EduFlex/front
+end/src/features/community/components/Publi
+shModal.jsx, E:/Projekt/EduFlex/frontend/sr
+c/features/courses/CourseDetail.jsx, E:/Pro
+jekt/EduFlex/frontend/src/features/courses/
+StudentCoursesPage.jsx, E:/Projekt/EduFlex/
+frontend/src/features/courses/components/Ad
+aptiveRecommendationWidget.jsx, E:/Projekt/
+EduFlex/frontend/src/features/courses/compo
+nents/InteractiveModules.jsx, E:/Projekt/Ed
+uFlex/frontend/src/features/dashboard/Admin
+AdministrationPage.jsx, E:/Projekt/EduFlex/
+frontend/src/features/dashboard/AdminDashbo
+ard.jsx, E:/Projekt/EduFlex/frontend/src/fe
+atures/dashboard/AdministrationPanel.jsx, E
+:/Projekt/EduFlex/frontend/src/features/das
+hboard/GuardianDashboard.jsx, E:/Projekt/Ed
+uFlex/frontend/src/features/dashboard/Mento
+rDashboard.jsx, E:/Projekt/EduFlex/frontend
+/src/features/dashboard/StudentDashboard.js
+x, E:/Projekt/EduFlex/frontend/src/features
+/dashboard/TeacherDashboard.jsx, E:/Projekt
+/EduFlex/frontend/src/features/dashboard/ad
+min/AdminIntegrations.jsx, E:/Projekt/EduFl
+ex/frontend/src/features/dashboard/componen
+ts/RecentMessagesWidget.jsx, E:/Projekt/Edu
+Flex/frontend/src/features/dashboard/compon
+ents/StudentContactModal.jsx, E:/Projekt/Ed
+uFlex/frontend/src/features/dashboard/compo
+nents/TeacherModals.jsx, E:/Projekt/EduFlex
+/frontend/src/features/dashboard/components
+/admin/AdminMeritManager.jsx, E:/Projekt/Ed
+uFlex/frontend/src/features/dashboard/compo
+nents/admin/AdminModals.jsx, E:/Projekt/Edu
+Flex/frontend/src/features/dashboard/compon
+ents/admin/AdminTables.jsx, E:/Projekt/EduF
+lex/frontend/src/features/dashboard/compone
+nts/admin/GuardianDetailsModal.jsx, E:/Proj
+ekt/EduFlex/frontend/src/features/dashboard
+/components/admin/GuardianManager.jsx, E:/P
+rojekt/EduFlex/frontend/src/features/dashbo
+ard/components/admin/RolesAdmin.jsx, E:/Pro
+jekt/EduFlex/frontend/src/features/dashboar
+d/components/student/StudentProgressWidget.
+jsx, E:/Projekt/EduFlex/frontend/src/featur
+es/dashboard/components/teacher/MentorCoach
+Widget.jsx, E:/Projekt/EduFlex/frontend/src
+/features/dashboard/components/teacher/Pred
+ictiveRiskWidget.jsx, E:/Projekt/EduFlex/fr
+ontend/src/features/dashboard/components/te
+acher/PrincipalCoachWidget.jsx, E:/Projekt/
+EduFlex/frontend/src/features/dashboard/com
+ponents/teacher/TeacherAttendanceView.jsx, 
+E:/Projekt/EduFlex/frontend/src/features/da
+shboard/widgets/AIPersonalizationWidget.jsx
+, E:/Projekt/EduFlex/frontend/src/features/
+dashboard/widgets/AdminTicketsWidget.jsx, E
+:/Projekt/EduFlex/frontend/src/features/das
+hboard/widgets/EvaluationNotificationWidget
+.jsx, E:/Projekt/EduFlex/frontend/src/featu
+res/dashboard/widgets/OnlineFriendsWidget.j
+sx, E:/Projekt/EduFlex/frontend/src/feature
+s/dashboard/widgets/StudentAttendanceWidget
+.jsx, E:/Projekt/EduFlex/frontend/src/featu
+res/dashboard/widgets/StudentGamificationWi
+dget.jsx, E:/Projekt/EduFlex/frontend/src/f
+eatures/dashboard/widgets/StudentScheduleAn
+dDeadlinesWidget.jsx, E:/Projekt/EduFlex/fr
+ontend/src/features/dashboard/widgets/Surve
+yNotificationWidget.jsx, E:/Projekt/EduFlex
+/frontend/src/features/documents/DocumentMa
+nager.jsx, E:/Projekt/EduFlex/frontend/src/
+features/documents/MyDocuments.jsx, E:/Proj
+ekt/EduFlex/frontend/src/features/documents
+/OnlyOfficeEditor.jsx, E:/Projekt/EduFlex/f
+rontend/src/features/documents/components/A
+dvancedShareModal.jsx, E:/Projekt/EduFlex/f
+rontend/src/features/health/HealthTeamDashb
+oard.jsx, E:/Projekt/EduFlex/frontend/src/f
+eatures/health/SurveyBuilder.jsx, E:/Projek
+t/EduFlex/frontend/src/features/health/Surv
+eyDistributionManager.jsx, E:/Projekt/EduFl
+ex/frontend/src/features/health/SurveyRespo
+nseForm.jsx, E:/Projekt/EduFlex/frontend/sr
+c/features/health/SurveyResults.jsx, E:/Pro
+jekt/EduFlex/frontend/src/features/health/W
+ellbeingCenter.jsx, E:/Projekt/EduFlex/fron
+tend/src/features/health/WellbeingInbox.jsx
+, E:/Projekt/EduFlex/frontend/src/features/
+health/components/BookingSystem.jsx, E:/Pro
+jekt/EduFlex/frontend/src/features/health/c
+omponents/JournalSystem.jsx, E:/Projekt/Edu
+Flex/frontend/src/features/impact/ImpactDas
+hboard.jsx, E:/Projekt/EduFlex/frontend/src
+/features/library/EbookLibrary.jsx, E:/Proj
+ekt/EduFlex/frontend/src/features/messages/
+MessageCenter.jsx, E:/Projekt/EduFlex/front
+end/src/features/nav/LtiDeepLinking.jsx, E:
+/Projekt/EduFlex/frontend/src/features/prin
+cipal/AcademicGovernance.jsx, E:/Projekt/Ed
+uFlex/frontend/src/features/principal/Incid
+entManager.jsx, E:/Projekt/EduFlex/frontend
+/src/features/principal/ManagementReportCen
+ter.jsx, E:/Projekt/EduFlex/frontend/src/fe
+atures/principal/PrincipalDashboard.jsx, E:
+/Projekt/EduFlex/frontend/src/features/prin
+cipal/PrincipalTools.jsx, E:/Projekt/EduFle
+x/frontend/src/features/principal/ReportLib
+rary.jsx, E:/Projekt/EduFlex/frontend/src/f
+eatures/principal/SKAManager.jsx, E:/Projek
+t/EduFlex/frontend/src/features/principal/S
+choolStructureManagement.jsx, E:/Projekt/Ed
+uFlex/frontend/src/features/principal/Staff
+ingControl.jsx, E:/Projekt/EduFlex/frontend
+/src/features/principal/YearCycleVisualizat
+ion.jsx, E:/Projekt/EduFlex/frontend/src/fe
+atures/profile/PublicProfile.jsx, E:/Projek
+t/EduFlex/frontend/src/features/profile/Use
+rProfile.jsx, E:/Projekt/EduFlex/frontend/s
+rc/features/resources/ResourceBank.jsx, E:/
+Projekt/EduFlex/frontend/src/features/scorm
+/ScormPlayer.jsx, E:/Projekt/EduFlex/fronte
+nd/src/features/settings/DeveloperSettings.
+jsx, E:/Projekt/EduFlex/frontend/src/featur
+es/social/components/CommentSection.jsx, E:
+/Projekt/EduFlex/frontend/src/features/soci
+al/services/socialService.js, E:/Projekt/Ed
+uFlex/frontend/src/features/support/AdminTi
+cketManager.jsx, E:/Projekt/EduFlex/fronten
+d/src/features/support/SupportPage.jsx, E:/
+Projekt/EduFlex/frontend/src/features/syste
+m/LicenseLock.jsx, E:/Projekt/EduFlex/front
+end/src/features/system/LogDashboard.jsx, E
+:/Projekt/EduFlex/frontend/src/features/sys
+tem/OnlyOfficeSettings.jsx, E:/Projekt/EduF
+lex/frontend/src/features/system/RealTimeLo
+gViewer.jsx, E:/Projekt/EduFlex/frontend/sr
+c/features/system/SystemSettings.jsx, E:/Pr
+ojekt/EduFlex/frontend/src/modules/assignme
+nts/AssignmentsModule.jsx, E:/Projekt/EduFl
+ex/frontend/src/modules/chat/ChatOverlay.js
+x, E:/Projekt/EduFlex/frontend/src/modules/
+course-content/CourseContentModule.jsx, E:/
+Projekt/EduFlex/frontend/src/modules/course
+-content/SummaryModule.jsx, E:/Projekt/EduF
+lex/frontend/src/modules/evaluation/Evaluat
+ionForm.jsx, E:/Projekt/EduFlex/frontend/sr
+c/modules/evaluation/EvaluationManager.jsx,
+ E:/Projekt/EduFlex/frontend/src/modules/fl
+ashcards/FlashcardDashboard.jsx, E:/Projekt
+/EduFlex/frontend/src/modules/flashcards/Fl
+ashcardGenerator.jsx, E:/Projekt/EduFlex/fr
+ontend/src/modules/flashcards/FlashcardPlay
+er.jsx, E:/Projekt/EduFlex/frontend/src/mod
+ules/live-lessons/LiveLessonButton.jsx, E:/
+Projekt/EduFlex/frontend/src/modules/partic
+ipants/ParticipantsModule.jsx, E:/Projekt/E
+duFlex/frontend/src/modules/quiz-runner/Que
+stionBankManager.jsx, E:/Projekt/EduFlex/fr
+ontend/src/modules/quiz-runner/QuizLibrary.
+jsx, E:/Projekt/EduFlex/frontend/src/module
+s/quiz-runner/QuizModals.jsx, E:/Projekt/Ed
+uFlex/frontend/src/modules/quiz-runner/Quiz
+Module.jsx, E:/Projekt/EduFlex/frontend/src
+/modules/skolverket/ImportCourseModal.jsx, 
+E:/Projekt/EduFlex/frontend/src/modules/sko
+lverket/SkolverketModule.jsx, E:/Projekt/Ed
+uFlex/frontend/src/services/eduGameService.
+js, dynamic import will not move module int
+o another chunk.
+[39m
+rendering chunks...
+computing gzip size...
+[2mdist/[22m[32mmanifest.webmanifest                   [39m[1m[2m    0.59 kB[22m[1m[22m
+[2mdist/[22m[32mindex.html                             [39m[1m[2m    1.53 kB[22m[1m[22m[2m Ôöé gzip:   0.75 kB[22m
+[2mdist/[22m[32massets/AIQuizGenerator-Cc2hYDiu.png    [39m[1m[2m  127.49 kB[22m[1m[22m
+[2mdist/[22m[32massets/SystemSettings-ChE-bBpT.png     [39m[1m[2m  154.87 kB[22m[1m[22m
+[2mdist/[22m[32massets/teacher_dashboard-B0CZlGBR.png  [39m[1m[2m  158.62 kB[22m[1m[22m
+[2mdist/[22m[32massets/Kurskatalog-V449B1qW.png        [39m[1m[2m  169.32 kB[22m[1m[22m
+[2mdist/[22m[32massets/Analytics-BroENRp0.png          [39m[1m[2m  172.45 kB[22m[1m[22m
+[2mdist/[22m[32massets/Resursbank-CP9ARMAv.png         [39m[1m[2m  174.50 kB[22m[1m[22m
+[2mdist/[22m[32massets/admin_dashboard-Bw4IthQl.png    [39m[1m[2m  174.55 kB[22m[1m[22m
+[2mdist/[22m[32massets/LiveDebugTerminal-BxA68udU.png  [39m[1m[2m  215.06 kB[22m[1m[22m
+[2mdist/[22m[32massets/Library-n7vwF0Dw.png            [39m[1m[2m  366.17 kB[22m[1m[22m
+[2mdist/[22m[32massets/Hero-ChUe4dWV.jpg               [39m[1m[2m  628.02 kB[22m[1m[22m
+[2mdist/[22m[32massets/Logo_top-msSSKKpP.png           [39m[1m[2m1,149.22 kB[22m[1m[22m
+[2mdist/[22m[32massets/eduflex_connect-mBCrfvCb.png    [39m[1m[2m1,855.22 kB[22m[1m[22m
+[2mdist/[22m[35massets/index-C-gk2elX.css              [39m[1m[2m  244.01 kB[22m[1m[22m[2m Ôöé gzip:  33.64 kB[22m
+[2mdist/[22m[36massets/index-Dh34vdf_.js               [39m[1m[33m3,676.46 kB[39m[22m[2m Ôöé gzip: 975.49 kB[22m
+[33m
+(!) Some chunks are larger than 500 kB afte
+r minification. Consider:
+- Using dynamic import() to code-split the 
+application
+- Use build.rollupOptions.output.manualChun
+ks to improve chunking: https://rollupjs.or
+g/configuration-options/#output-manualchunk
+s
+- Adjust chunk size limit for this warning 
+via build.chunkSizeWarningLimit.[39m
+[32mÔ£ô built in 18.54s[39m
+[31merror during build:
+Error: 
+  Configure "workbox.maximumFileSizeToCache
+InBytes" to change the limit: the default v
+alue is 2 MiB.
+  Check https://vite-pwa-org.netlify.app/gu
+ide/faq.html#missing-assets-from-sw-precach
+e-manifest for more information.
+  Assets exceeding the limit:
+  - assets/index-Dh34vdf_.js is 3.69 MB, an
+d won't be precached.
+
+    at logWorkboxResult (file:///E:/Projekt
+/EduFlex/frontend/node_modules/vite-plugin-
+pwa/dist/chunk-G4TAN34B.js:44:13)
+    at generateServiceWorker (file:///E:/Pr
+ojekt/EduFlex/frontend/node_modules/vite-pl
+ugin-pwa/dist/index.js:209:3)
+    at async _generateSW (file:///E:/Projek
+t/EduFlex/frontend/node_modules/vite-plugin
+-pwa/dist/index.js:234:5)
+    at async Object.handler (file:///E:/Pro
+jekt/EduFlex/frontend/node_modules/vite-plu
+gin-pwa/dist/index.js:427:13)
+    at async PluginDriver.hookParallel (fil
+e:///E:/Projekt/EduFlex/frontend/node_modul
+es/rollup/dist/es/shared/node-entry.js:2243
+1:17)
+    at async Object.close (file:///E:/Proje
+kt/EduFlex/frontend/node_modules/rollup/dis
+t/es/shared/node-entry.js:23450:13)
+    at async build (file:///E:/Projekt/EduF
+lex/frontend/node_modules/vite/dist/node/ch
+unks/dep-BK3b2jBa.js:65732:17)
+    at async CAC.<anonymous> (file:///E:/Pr
+ojekt/EduFlex/frontend/node_modules/vite/di
+st/node/cli.js:829:5)[39m

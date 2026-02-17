@@ -114,3 +114,9 @@ scripts/
 # Tools (Local only)
 tools/
 Tools/
+
+# Custom Exclusions
+backups_list
+copy_blocks
+deploy
+root_compile_errors

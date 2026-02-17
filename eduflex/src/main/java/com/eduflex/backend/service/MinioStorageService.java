@@ -25,17 +25,15 @@ public class MinioStorageService implements StorageService {
     private static final Logger logger = LoggerFactory.getLogger(MinioStorageService.class);
     private final MinioClient minioClient;
     private final String bucketName;
-    private final String publicUrl;
     private final String uploadDir;
 
     public MinioStorageService(
             @Value("${minio.url}") String url,
-            @Value("${minio.public-url}") String publicUrl,
             @Value("${minio.access-key}") String accessKey,
             @Value("${minio.secret-key}") String secretKey,
             @Value("${minio.bucket}") String bucketName,
             @Value("${file.upload-dir:uploads}") String uploadDir) {
-        this.publicUrl = publicUrl;
+
         this.bucketName = bucketName;
         this.uploadDir = uploadDir;
         this.minioClient = MinioClient.builder()

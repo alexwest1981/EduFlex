@@ -7,6 +7,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
@@ -14,7 +16,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/branding")
 public class BrandingController {
-    private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(BrandingController.class);
+    private static final Logger logger = LoggerFactory.getLogger(BrandingController.class);
 
     private final BrandingService brandingService;
 
@@ -34,6 +36,21 @@ public class BrandingController {
             return ResponseEntity.ok(branding);
         } catch (Exception e) {
             logger.error("Error fetching branding for {}: {}", organizationKey, e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * Get dynamic PWA manifest for an organization
+     */
+    @GetMapping("/manifest.json")
+    public ResponseEntity<Map<String, Object>> getManifest(
+            @RequestParam(defaultValue = "default") String organizationKey) {
+        try {
+            Map<String, Object> manifest = brandingService.generateManifest(organizationKey);
+            return ResponseEntity.ok(manifest);
+        } catch (Exception e) {
+            logger.error("Error generating manifest for {}: {}", organizationKey, e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -165,6 +182,50 @@ public class BrandingController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("error", "Ett fel uppstod vid återställning av branding"));
+        }
+    }
+
+    /**
+     * Upload PWA icon 192x192 (admin only)
+     */
+    @PostMapping("/pwa-icon-192")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN')")
+    public ResponseEntity<?> uploadPwaIcon192(
+            @RequestParam(defaultValue = "default") String organizationKey,
+            @RequestParam("file") MultipartFile file) {
+        try {
+            if (file.isEmpty()) {
+                return ResponseEntity.badRequest().body(Map.of("error", "Ingen fil uppladdad"));
+            }
+            OrganizationBranding updated = brandingService.uploadPwaIcon(organizationKey, file, 192);
+            return ResponseEntity.ok(updated);
+        } catch (Exception e) {
+            logger.error("PWA 192 Icon Upload Error: {}", e.getMessage(), e);
+            String errorMsg = e.getMessage() != null ? e.getMessage() : "Okänt serverfel vid uppladdning";
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Kunde inte ladda upp PWA-ikon: " + errorMsg));
+        }
+    }
+
+    /**
+     * Upload PWA icon 512x512 (admin only)
+     */
+    @PostMapping("/pwa-icon-512")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN')")
+    public ResponseEntity<?> uploadPwaIcon512(
+            @RequestParam(defaultValue = "default") String organizationKey,
+            @RequestParam("file") MultipartFile file) {
+        try {
+            if (file.isEmpty()) {
+                return ResponseEntity.badRequest().body(Map.of("error", "Ingen fil uppladdad"));
+            }
+            OrganizationBranding updated = brandingService.uploadPwaIcon(organizationKey, file, 512);
+            return ResponseEntity.ok(updated);
+        } catch (Exception e) {
+            logger.error("PWA 512 Icon Upload Error: {}", e.getMessage(), e);
+            String errorMsg = e.getMessage() != null ? e.getMessage() : "Okänt serverfel vid uppladdning";
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Kunde inte ladda upp PWA-ikon: " + errorMsg));
         }
     }
 

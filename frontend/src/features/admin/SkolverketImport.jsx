@@ -55,7 +55,7 @@ const SkolverketImport = () => {
         if (tenantId) headers['X-Tenant-ID'] = tenantId;
 
         try {
-            const response = await fetch('${window.location.origin}/api/skolverket/import', {
+            const response = await fetch(`${window.location.origin}/api/skolverket/import`, {
                 method: 'POST',
                 headers: headers,
                 body: formData

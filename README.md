@@ -189,6 +189,20 @@ Hitta rätt dokumentation snabbare baserat på din roll i organisationen:
 ---
 
 ### Senaste Uppdateringar
+*   **🎨 Whitelabel 2.0 & PWA Synergy (v2.0.18) - 17 feb 2026:**
+    *   **Texter & Meddelanden:** Full implementation av en dedikerad flik för central hantering av varumärkesnamn, välkomstmeddelanden och footer-texter.
+    *   **Avancerad CSS Editor:** Ny live-editor för custom CSS som tillåter djupgående visuell anpassning direkt i webbläsaren med CSS-variabelstöd.
+    *   **PWA & Mobil-app:** Konsoliderat PWA och mobilinställningar till en unifierad flik för enklare administration.
+    *   **Smart Image Resizing:** Implementerat automatisk klientsidubearbetning av PWA-ikoner (192x192, 512x512) för att garantera perfekt skalning och proportioner.
+    *   **Version Update:** Synkroniserat versionsnummer till **v2.0.18** i samtliga sidomenyer, layouter och administrationsgränssnitt för en enhetlig upplevelse.
+    *   **Resilience:** Datadriven manifest-servering via MinIO med defensiv JSON-hantering och utökad loggning för PWA-integrationen.
+
+*   **📱 PWA Stabilitet & Branding (v1.3.1) - 16 feb 2026:**
+    *   **PWA Build Fix:** Löst kritisk krasch i `vite-plugin-pwa` orsakad av att 210MB+ gamification-mappen scannades av Workbox. Optimerade glob-mönster och exkluderingar för stabil service worker-generering (12 entries, ~3.9KB).
+    *   **Korrekt Branding:** Alla PWA-ikoner (192x192, 512x512, apple-touch-icon) och favicon använder nu den officiella EduFlex-logotypen.
+    *   **Manifest Fix:** Eliminerat "Manifest Syntax Error" genom att ta bort dubblerad `<link rel="manifest">` som kolliderade med vite-plugin-pwa's automatiska injektion.
+    *   **React 19 Hook Fix:** Åtgärdat krasch i `usePwaInstall.js` orsakad av null default export i React 19 — migrerat till namngivna importer.
+    *   **Dev Mode PWA:** Aktiverat `devOptions.enabled: true` för att testa PWA-installation lokalt under utveckling.
 *   **⭐ Guardian Universe & Storage Resilience (v1.3.0) - 16 feb 2026:**
     *   **Guardian Dashboard 3.0:** Fullständig lansering av vårdnadshavarens kontrollpanel med AI-drivna statusrapporter och direkt sjukanmälan.
     *   **Storage "Lazy Sync":** Implementerat en automatisk läkningsmekanism för saknade filer (404-recovery) mellan lokala uploads och MinIO S3-lagring.
@@ -846,6 +860,7 @@ helm install eduflex ./helm/eduflex \
 | Question Bank Integration | ✅ Implemented |
 | AI-powered Quiz Generation (Gemini) | ✅ Implemented |
 | Advanced Analytics Dashboard | ✅ Implemented |
+| PWA (Installable App & Offline Support) | ✅ Implemented |
 | Microservices Split (Video/PDF) | 🔜 Q2 2026 |
 | Event Bus (Kafka/RabbitMQ) | 🔜 Q3 2026 |
 | Mobile App (React Native) | 🔜 Q4 2026 |
@@ -900,4 +915,4 @@ For inquiries: 📧 **alexwestrom81@gmail.com**
 
 ---
 
-*Last updated: 2026-02-01 (Full Language Separation, Course Evaluations & AI Analysis)*
+*Last updated: 2026-02-16 (PWA Stability, Branding & Guardian Dashboard 3.0)*

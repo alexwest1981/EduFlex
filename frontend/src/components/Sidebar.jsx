@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { LayoutDashboard, BookOpen, FolderOpen, Users, UserCircle, LogOut, ShieldCheck, Calendar, MessageSquare, Settings2, FileQuestion, Palette, Store, Sparkles, TrendingUp, Award, GraduationCap, Heart } from 'lucide-react';
+import { LayoutDashboard, BookOpen, FolderOpen, Users, UserCircle, LogOut, ShieldCheck, Calendar, MessageSquare, Settings2, FileQuestion, Palette, Store, Sparkles, TrendingUp, Award, GraduationCap, Heart, Download } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
 import { api } from '../services/api';
 import { useModules } from '../context/ModuleContext';
+import { usePwaInstall } from '../hooks/usePwaInstall';
 
 const Sidebar = ({ currentUser, logout, siteName, version }) => {
     const { t } = useTranslation();
@@ -14,6 +15,7 @@ const Sidebar = ({ currentUser, logout, siteName, version }) => {
     const [requestCount, setRequestCount] = useState(0);
     const [unreadMessages, setUnreadMessages] = useState(0);
     const { isModuleActive } = useModules();
+    const { canInstall, install, isInstalled } = usePwaInstall();
 
     useEffect(() => {
         const fetchRequests = async () => {
@@ -213,6 +215,21 @@ const Sidebar = ({ currentUser, logout, siteName, version }) => {
 
             {/* FOOTER */}
             <div className="p-4 border-t border-gray-100">
+                {canInstall && !isInstalled && (
+                    <button
+                        onClick={install}
+                        className="w-full flex items-center gap-3 px-4 py-3 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 rounded-xl transition-all text-sm font-bold mb-3 border border-indigo-100 group"
+                    >
+                        <div className="bg-white p-1.5 rounded-lg shadow-sm group-hover:scale-110 transition-transform">
+                            <Download size={16} className="text-indigo-600" />
+                        </div>
+                        <div className="text-left">
+                            <p className="text-[10px] uppercase opacity-70 leading-none mb-0.5">Applikation</p>
+                            <p>Ladda ner EduFlex</p>
+                        </div>
+                    </button>
+                )}
+
                 <button
                     onClick={logout}
                     className="w-full flex items-center gap-2 px-4 py-3 text-red-600 hover:bg-red-50 rounded-xl transition-colors text-sm font-medium mb-2"
@@ -220,7 +237,7 @@ const Sidebar = ({ currentUser, logout, siteName, version }) => {
                     <LogOut size={18} /> {t('sidebar.logout')}
                 </button>
                 <div className="text-center text-[10px] text-gray-400 font-mono">
-                    v{version || '1.0.0'}
+                    v{version || '2.0.18'}
                 </div>
             </div>
         </aside>

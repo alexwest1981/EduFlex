@@ -602,6 +602,8 @@ export const api = {
         uploadLogo: (formData, organizationKey = 'default') => api.post(`/branding/logo?organizationKey=${organizationKey}`, formData),
         uploadFavicon: (formData, organizationKey = 'default') => api.post(`/branding/favicon?organizationKey=${organizationKey}`, formData),
         uploadLoginBackground: (formData, organizationKey = 'default') => api.post(`/branding/login-background?organizationKey=${organizationKey}`, formData),
+        uploadPwaIcon192: (formData, organizationKey = 'default') => api.post(`/branding/pwa-icon-192?organizationKey=${organizationKey}`, formData),
+        uploadPwaIcon512: (formData, organizationKey = 'default') => api.post(`/branding/pwa-icon-512?organizationKey=${organizationKey}`, formData),
         reset: (organizationKey = 'default') => api.post(`/branding/reset?organizationKey=${organizationKey}`),
         checkAccess: () => api.get('/branding/access'),
     },

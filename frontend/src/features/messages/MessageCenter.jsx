@@ -439,40 +439,40 @@ const MessageCenter = ({ preSelectedRecipient = null }) => {
                                 </div>
                             )}
                             <div className="flex-1 overflow-y-auto">
-                            {isLoading ? <div className="p-10 text-center text-gray-400">Laddar meddelanden...</div> : (
-                                messages.length === 0 ? <div className="p-10 text-center text-gray-400">Inga meddelanden här.</div> :
-                                    <ul className="divide-y divide-gray-100 dark:divide-[#3c4043]">
-                                        {messages.map(msg => (
-                                            <li
-                                                key={msg.id}
-                                                onClick={() => handleReadMessage(msg)}
-                                                className={`p-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-[#282a2c] transition-colors flex gap-3 ${selectedMessage?.id === msg.id ? 'bg-indigo-50 dark:bg-indigo-900/20' : ''} ${!msg.isRead && activeTab !== 'SENT' ? 'border-l-4 border-indigo-500 bg-gray-50/50' : ''}`}
-                                            >
-                                                {activeTab !== 'SENT' && (
-                                                    <div className="pt-0.5 flex-shrink-0">
-                                                        <input
-                                                            type="checkbox"
-                                                            checked={selectedIds.has(msg.id)}
-                                                            onChange={(e) => toggleSelect(msg.id, e)}
-                                                            onClick={(e) => e.stopPropagation()}
-                                                            className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                                                        />
+                                {isLoading ? <div className="p-10 text-center text-gray-400">Laddar meddelanden...</div> : (
+                                    messages.length === 0 ? <div className="p-10 text-center text-gray-400">Inga meddelanden här.</div> :
+                                        <ul className="divide-y divide-gray-100 dark:divide-[#3c4043]">
+                                            {messages.map(msg => (
+                                                <li
+                                                    key={msg.id}
+                                                    onClick={() => handleReadMessage(msg)}
+                                                    className={`p-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-[#282a2c] transition-colors flex gap-3 ${selectedMessage?.id === msg.id ? 'bg-indigo-50 dark:bg-indigo-900/20' : ''} ${!msg.isRead && activeTab !== 'SENT' ? 'border-l-4 border-indigo-500 bg-gray-50/50' : ''}`}
+                                                >
+                                                    {activeTab !== 'SENT' && (
+                                                        <div className="pt-0.5 flex-shrink-0">
+                                                            <input
+                                                                type="checkbox"
+                                                                checked={selectedIds.has(msg.id)}
+                                                                onChange={(e) => toggleSelect(msg.id, e)}
+                                                                onClick={(e) => e.stopPropagation()}
+                                                                className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                                                            />
+                                                        </div>
+                                                    )}
+                                                    <div className="flex-1 min-w-0">
+                                                        <div className="flex justify-between mb-1">
+                                                            <span className={`text-sm font-bold truncate ${!msg.isRead && activeTab !== 'SENT' ? 'text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-400'}`}>
+                                                                {activeTab === 'SENT' ? `Till: ${msg.recipientName}` : msg.senderName}
+                                                            </span>
+                                                            <span className="text-[10px] text-gray-400 flex-shrink-0 ml-2">{new Date(msg.timestamp).toLocaleDateString()}</span>
+                                                        </div>
+                                                        <p className={`text-sm mb-1 truncate ${!msg.isRead && activeTab !== 'SENT' ? 'font-bold text-gray-800 dark:text-gray-200' : 'text-gray-600 dark:text-gray-400'}`}>{msg.subject}</p>
+                                                        <p className="text-xs text-gray-400 line-clamp-1">{msg.content}</p>
                                                     </div>
-                                                )}
-                                                <div className="flex-1 min-w-0">
-                                                    <div className="flex justify-between mb-1">
-                                                        <span className={`text-sm font-bold truncate ${!msg.isRead && activeTab !== 'SENT' ? 'text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-400'}`}>
-                                                            {activeTab === 'SENT' ? `Till: ${msg.recipientName}` : msg.senderName}
-                                                        </span>
-                                                        <span className="text-[10px] text-gray-400 flex-shrink-0 ml-2">{new Date(msg.timestamp).toLocaleDateString()}</span>
-                                                    </div>
-                                                    <p className={`text-sm mb-1 truncate ${!msg.isRead && activeTab !== 'SENT' ? 'font-bold text-gray-800 dark:text-gray-200' : 'text-gray-600 dark:text-gray-400'}`}>{msg.subject}</p>
-                                                    <p className="text-xs text-gray-400 line-clamp-1">{msg.content}</p>
-                                                </div>
-                                            </li>
-                                        ))}
-                                    </ul>
-                            )}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                )}
                             </div>
                         </div>
 

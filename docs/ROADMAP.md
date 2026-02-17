@@ -37,7 +37,7 @@
 | **EduGame Expansion** | Shop för profil-teman, Sociala Streaks, "Buddy"-system. | ✅ **Stabil** (V1) | Långsiktigt kvarhållande (Retention). |
 | **Mobil-först** | Responsiv webbdesign. | ✅ **Klar** | Tillgängligt lärande var som helst. |
 | **Media Streaming** | Stabil synkroniserad ljudboksuppspelning med Range-stöd. | ✅ **Klar** | Multimodalt lärande på språng. |
-| **Offline-läge / PWA** | Installera som app, ladda ner kurser för offline-bruk. | 📅 **Planerad** | Lärande utan gränser. |
+| **Offline-läge / PWA** | Installera som app, cachar app-shell för snabbare laddning. Officiell EduFlex-branding med korrekt manifest och service worker. | ✅ **Klar** | Lärande utan gränser. |
 
 ---
 
@@ -69,6 +69,21 @@
 ---
 
 ## 📝 Change Log
+
+### [v2.0.18] - 2026-02-17
+- **New Feature**: **Whitelabel Text & Messages** – Centralized management for brand names, welcome messages, and footer text.
+- **New Feature**: **Advanced CSS Editor** – Real-time CSS editor for deep visual customization with CSS variable support.
+- **Improvement**: **PWA & Mobile Consolidation** – Unified branding experience by merging PWA and mobile theme settings.
+- **Performance**: **Client-side Image Resizing** – Automatic icon optimization (192x192, 512x512) using Canvas API for PWA compliance.
+- **Stability**: **Branding Resilience** – Fixed 500 errors in icon storage with defensive JSON handling and enhanced MinIO logging.
+- **Versioning**: **Application-wide Update** – Synchronized version number to **v2.0.18** across all sidebars and UI layouts.
+
+### [v1.3.1] - 2026-02-16
+- **Fix**: **PWA Build Crash** - Resolved critical `vite-plugin-pwa` crash caused by Workbox scanning the 210MB gamification folder. Optimized glob patterns, exclusions, and raised size limit to 5MB.
+- **Fix**: **React 19 Hook Crash** - Migrated `usePwaInstall.js` from `React.useState` to named imports to fix null default export in React 19.
+- **Fix**: **Manifest Syntax Error** - Removed duplicate `<link rel="manifest">` tag from `index.html` that conflicted with vite-plugin-pwa's automatic injection.
+- **Branding**: **Official PWA Icons** - All PWA icons (192x192, 512x512, apple-touch-icon) and favicon now use the official EduFlex logo.
+- **DX**: **Dev Mode PWA** - Enabled `devOptions.enabled: true` for local PWA testing during development.
 
 ### [v1.3.0] - 2026-02-16
 - **New Feature**: **Guardian Dashboard 3.0** - Full release with AI-driven child status reports and direct sick leave reporting.

@@ -26,11 +26,11 @@ const AdminOverview = ({ users, courses, documents, fetchStats, setActiveTab, wi
             "grid-cols-1 lg:grid-cols-2 xl:grid-cols-3";
 
     return (
-        <div className="space-y-8 animate-in fade-in">
+        <div className="space-y-10 animate-in fade-in duration-700">
             {/* 1. Statistik (4 kort inkl. meddelanden) */}
             {widgets.stats && <AdminStats users={users} courses={courses} documents={documents} unreadCount={unreadCount} onViewMessages={() => setActiveTab('communication')} />}
 
-            <div className={`grid ${gridColsClass} gap-8`}>
+            <div className={`grid ${gridColsClass} gap-6 sm:gap-10`}>
                 {/* 2. Aktivitet */}
                 {widgets.calendar && (
                     <CalendarWidget />

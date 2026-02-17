@@ -41,16 +41,6 @@ const Dashboard = ({ currentUser, myCourses }) => {
 
     switch (dashboardType) {
         case 'ADMIN':
-            // If on mobile, serve the specialized mobile experience via the Theme Resolver
-            if (isMobile) {
-                return (
-                    <MobileThemeResolver
-                        currentUser={currentUser}
-                        myCourses={myCourses || []} // Admin doesn't typically have myCourses, but we pass valid empty array
-                    />
-                );
-            }
-
             // VIKTIGT: Vi skickar INTE med props här längre.
             // AdminDashboard hämtar nu sin egen data (Users, Courses) från API:et.
             // Detta förhindrar att App.jsx skriver över datan med tomma arrayer.

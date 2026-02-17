@@ -97,21 +97,25 @@ const ProtectedRoute = ({ children, roles, permission }) => {
 
     // Specifik rättighetskontroll (t.ex. ACCESS_EBOOKS)
     if (permission) {
-        const hasPermission = currentUser.role?.isSuperAdmin ||
-            currentUser.role?.superAdmin ||
-            currentUser.role?.permissions?.includes(permission);
+        const rawRole = (currentUser.role?.name || currentUser.role || '').toUpperCase();
+        const isAdmin = rawRole.includes('ADMIN') || rawRole.includes('SUPERADMIN') || currentUser.role?.isSuperAdmin || currentUser.role?.superAdmin;
+
+        const hasPermission = isAdmin || currentUser.role?.permissions?.includes(permission);
         if (!hasPermission) {
             return <Navigate to="/" replace />;
         }
     }
 
     // Roll-kontroll
-    const userRole = (currentUser.role?.name || currentUser.role || '').toUpperCase();
     if (roles) {
+        const rawRole = (currentUser.role?.name || currentUser.role || '').toUpperCase();
+        const isAdmin = rawRole.includes('ADMIN') || rawRole.includes('SUPERADMIN') || currentUser.role?.isSuperAdmin || currentUser.role?.superAdmin;
+
         const uppercaseRoles = roles.map(r => r.toUpperCase());
-        const hasRole = uppercaseRoles.includes(userRole) ||
-            (userRole === 'ROLE_ADMIN' && uppercaseRoles.includes('ADMIN')) ||
-            (userRole === 'ADMIN' && uppercaseRoles.includes('ROLE_ADMIN'));
+        const hasRole = isAdmin ||
+            uppercaseRoles.includes(rawRole) ||
+            (rawRole === 'ROLE_ADMIN' && uppercaseRoles.includes('ADMIN')) ||
+            (rawRole === 'ADMIN' && uppercaseRoles.includes('ROLE_ADMIN'));
 
         if (!hasRole) {
             return <Navigate to="/" replace />;

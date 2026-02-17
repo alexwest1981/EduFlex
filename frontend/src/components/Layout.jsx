@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import { useAppContext } from '../context/AppContext';
 import { useBranding } from '../context/BrandingContext';
 import { DESIGN_SYSTEMS } from '../context/DesignSystemContext';
-import PwaInstallPrompt from './common/PwaInstallPrompt';
 
 import StandardLayout from './layouts/StandardLayout';
 import FloatingLayout from './layouts/FloatingLayout';
@@ -71,7 +70,6 @@ const Layout = ({ children }) => {
 
     return (
         <>
-            <PwaInstallPrompt />
             {renderLayout()}
         </>
     );

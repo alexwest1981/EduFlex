@@ -1,0 +1,24 @@
+- [x] Configure Native WSL Docker Engine
+- [x] Migrate Docker contexts and credentials
+- [x] Create dedicated base migration for `embeddings` table (`V4_1`)
+- [x] Create dedicated base migration for `elevhalsa_cases` table (`V20_1`)
+- [x] Create dedicated base migration for `guardian_child_links` (`V21_1`)
+- [x] Create dedicated base migration for `message_attachments` (`V22_1`)
+- [x] Implement Premium PWA Installation Prompt
+- [x] Fix `ImageIcon` constructor / naming collision in Admin Dashboard
+- [x] Add 192x192 and 512x512 PWA Icon uploaders to Whitelabel Dashboard
+- [x] Implement Dynamic Manifest backend serving (MinIO integration)
+- [x] Implement client-side image resizing (automatic scale/crop in browser)
+- [x] Fix backend 500 error during PWA icon upload
+    - [x] Add detailed logging to `BrandingController`
+    - [x] Add defensive JSON handling to `BrandingService`
+    - [x] Refactor frontend to use authorized `api` service (Fixed 500 Error)
+- [x] Add missing "Save Changes" button to PWA tab (Fixed missing feedback)
+- [x] Dynamically update PWA Preview and Global Manifest (Fixed "Nothing happens" issue)
+- [x] Final verification of PWA branding flow
+- [x] Aktivera "Texter & Meddelanden" fliken och centralisera texter
+- [x] Aktivera "Avancerad CSS" fliken med fungerande editor
+- [x] Ta bort redundant text-input från "Allmänt"-fliken
+- [x] Uppdatera versionsnummer till v2.0.18 i alla vyer
+- [x] Konsolidera PWA & Mobil-app branding till en flik
+- [x] Slutlig walkthrough och push till GitHub

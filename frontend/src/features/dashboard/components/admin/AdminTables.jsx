@@ -92,32 +92,51 @@ export const AdminCourseRegistry = ({ courses, onEdit, onManage, onNewCourse, on
 export const RecentUsersWidget = ({ latestUsers, onNewUserClick }) => {
     const { t } = useTranslation();
     return (
-
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm p-6 overflow-hidden animate-in slide-in-from-bottom-8 h-full">
-            <div className="flex justify-between items-center mb-4">
-                <h3 className="font-bold text-gray-800 dark:text-white flex items-center gap-2">
-                    <User size={18} className="text-indigo-600" />
+        <div className="bg-white dark:bg-[#1c1c1e] rounded-[2rem] border border-gray-100 dark:border-gray-800 shadow-sm p-6 sm:p-8 group relative overflow-hidden h-full">
+            <div className="flex justify-between items-center mb-6 relative z-10">
+                <h3 className="text-xl font-black text-gray-900 dark:text-white flex items-center gap-3">
+                    <div className="p-2 bg-indigo-50 dark:bg-indigo-900/10 text-indigo-600 rounded-xl">
+                        <User size={20} />
+                    </div>
                     {t('dashboard.recent_users')}
                 </h3>
-                <button onClick={onNewUserClick} className="text-xs bg-indigo-600 text-white px-3 py-1.5 rounded-lg font-bold hover:bg-indigo-700 flex items-center gap-1">
-                    <Plus size={12} /> {t('dashboard.new')}
+                <button
+                    onClick={onNewUserClick}
+                    className="p-2.5 bg-indigo-600 text-white rounded-xl shadow-lg shadow-indigo-100 dark:shadow-none hover:bg-indigo-700 transition-all active:scale-95"
+                >
+                    <Plus size={18} />
                 </button>
             </div>
-            <div className="space-y-3">
+
+            <div className="space-y-4 relative z-10">
                 {latestUsers?.length > 0 ? latestUsers.map((u, index) => (
-                    <div key={u.id ?? `user-${index}`} className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-[#131314] rounded-lg border border-gray-100 dark:border-[#3c4043] hover:border-indigo-200 transition-colors">
-                        <div className="w-8 h-8 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center font-bold text-xs uppercase border border-indigo-200">
+                    <div
+                        key={u.id ?? `user-${index}`}
+                        className="flex items-center gap-4 p-3 sm:p-4 bg-gray-50/50 dark:bg-[#131314]/50 rounded-2xl border border-transparent hover:border-indigo-100 dark:hover:border-indigo-900/30 transition-all group/item"
+                    >
+                        <div className="w-10 sm:w-12 h-10 sm:h-12 bg-white dark:bg-[#1c1c1e] text-indigo-600 rounded-xl flex items-center justify-center font-black text-base sm:text-lg shadow-sm border border-gray-100 dark:border-gray-800 group-hover/item:scale-110 transition-transform">
                             {u.firstName?.[0] || '?'}
                         </div>
-                        <div className="overflow-hidden">
-                            <p className="text-sm font-bold text-gray-900 dark:text-white truncate">{u.firstName} {u.lastName}</p>
-                            <p className="text-xs text-gray-500 dark:text-gray-400 font-mono capitalize">{(u.role?.name || u.role || '').toLowerCase()}</p>
+                        <div className="flex-1 overflow-hidden">
+                            <p className="text-sm font-black text-gray-900 dark:text-white truncate">{u.firstName} {u.lastName}</p>
+                            <div className="flex items-center gap-2 mt-0.5">
+                                <span className={`w-1.5 h-1.5 rounded-full ${(u.role?.name || u.role) === 'ADMIN' ? 'bg-red-500' :
+                                    (u.role?.name || u.role) === 'TEACHER' ? 'bg-indigo-500' : 'bg-emerald-500'
+                                    }`}></span>
+                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{(u.role?.name || u.role || '').toLowerCase()}</p>
+                            </div>
                         </div>
                     </div>
                 )) : (
-                    <p className="text-sm text-gray-400 italic">{t('dashboard.no_new_users')}</p>
+                    <div className="py-10 text-center opacity-50">
+                        <User size={32} className="mx-auto mb-2 text-gray-300" />
+                        <p className="text-xs font-bold uppercase tracking-widest text-gray-400">{t('dashboard.no_new_users')}</p>
+                    </div>
                 )}
             </div>
+
+            {/* Background design element */}
+            <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-600/5 blur-3xl rounded-full -mr-16 -mt-16"></div>
         </div>
     );
 };
@@ -127,45 +146,58 @@ export const RecentUploadsWidget = ({ latestDocs }) => {
     const [selectedDoc, setSelectedDoc] = useState(null);
 
     const getFileIcon = (mimeType) => {
-        if (!mimeType) return <FileIcon size={16} />;
-        if (mimeType.startsWith('image/')) return <Image size={16} />;
-        if (mimeType.includes('pdf')) return <FileText size={16} />;
-        if (mimeType.includes('word') || mimeType.includes('document')) return <FileText size={16} />;
-        if (mimeType.includes('excel') || mimeType.includes('sheet')) return <FileText size={16} />;
-        if (mimeType.includes('code') || mimeType.includes('javascript') || mimeType.includes('html')) return <FileCode size={16} />;
-        return <FileIcon size={16} />;
+        if (!mimeType) return <FileIcon size={20} />;
+        if (mimeType.startsWith('image/')) return <Image size={20} />;
+        if (mimeType.includes('pdf')) return <FileText size={20} />;
+        if (mimeType.includes('word') || mimeType.includes('document')) return <FileText size={20} />;
+        if (mimeType.includes('excel') || mimeType.includes('sheet')) return <FileText size={20} />;
+        if (mimeType.includes('code') || mimeType.includes('javascript') || mimeType.includes('html')) return <FileCode size={20} />;
+        return <FileIcon size={20} />;
     };
 
     return (
         <>
-            <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm p-6 overflow-hidden animate-in slide-in-from-bottom-8 h-full flex flex-col">
-                <div className="flex justify-between items-center mb-4">
-                    <h3 className="font-bold text-gray-800 dark:text-white flex items-center gap-2">
-                        <FileIcon size={18} className="text-blue-600" />
+            <div className="bg-white dark:bg-[#1c1c1e] rounded-[2rem] border border-gray-100 dark:border-gray-800 shadow-sm p-6 sm:p-8 group relative overflow-hidden h-full flex flex-col">
+                <div className="flex justify-between items-center mb-6 relative z-10">
+                    <h3 className="text-xl font-black text-gray-900 dark:text-white flex items-center gap-3">
+                        <div className="p-2 bg-blue-50 dark:bg-blue-900/10 text-blue-600 rounded-xl">
+                            <FileIcon size={20} />
+                        </div>
                         {t('dashboard.recent_uploads')}
                     </h3>
                 </div>
-                <div className="space-y-3 flex-1">
+
+                <div className="space-y-4 relative z-10 flex-1">
                     {latestDocs?.length > 0 ? latestDocs.map((d, index) => (
                         <div
                             key={d.id ?? `doc-${index}`}
                             onClick={() => setSelectedDoc(d)}
-                            className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-[#131314] rounded-lg border border-gray-100 dark:border-[#3c4043] hover:border-blue-400 hover:shadow-sm cursor-pointer transition-all group"
+                            className="flex items-center gap-4 p-3 sm:p-4 bg-gray-50/50 dark:bg-[#131314]/50 rounded-2xl border border-transparent hover:border-blue-100 dark:hover:border-blue-900/30 transition-all group/item cursor-pointer"
                         >
-                            <div className="p-2 bg-blue-50 text-blue-600 rounded-lg border border-blue-100 dark:bg-blue-900/20 dark:border-blue-800 group-hover:bg-blue-100 dark:group-hover:bg-blue-900/40 transition-colors">
+                            <div className="w-10 sm:w-12 h-10 sm:h-12 bg-white dark:bg-[#1c1c1e] text-blue-600 rounded-xl flex items-center justify-center shadow-sm border border-gray-100 dark:border-gray-800 group-hover/item:scale-110 transition-transform">
                                 {getFileIcon(d.fileType)}
                             </div>
-                            <div className="overflow-hidden flex-1">
-                                <p className="text-sm font-bold text-gray-900 dark:text-white truncate" title={d.fileName || d.title || t('dashboard.unknown_file')}>{d.fileName || d.title || t('dashboard.unknown_file')}</p>
-                                <p className="text-xs text-gray-500 dark:text-gray-400">
-                                    {d.size ? `${(d.size / 1024).toFixed(1)} KB` : t('dashboard.unknown_size')} • {d.uploadedAt ? new Date(d.uploadedAt).toLocaleDateString('sv-SE') : t('dashboard.unknown_date')}
+                            <div className="flex-1 overflow-hidden">
+                                <p className="text-sm font-black text-gray-900 dark:text-white truncate" title={d.fileName || d.title || t('dashboard.unknown_file')}>
+                                    {d.fileName || d.title || t('dashboard.unknown_file')}
                                 </p>
+                                <div className="flex items-center gap-2 mt-0.5">
+                                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest truncate max-w-[120px]">
+                                        {d.size ? `${(d.size / 1024).toFixed(1)} KB` : t('dashboard.unknown_size')} • {d.uploadedAt ? new Date(d.uploadedAt).toLocaleDateString('sv-SE') : t('dashboard.unknown_date')}
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     )) : (
-                        <p className="text-sm text-gray-400 italic">{t('dashboard.no_files_uploaded')}</p>
+                        <div className="py-10 text-center opacity-50 flex-1 flex flex-col justify-center">
+                            <FileIcon size={32} className="mx-auto mb-2 text-gray-300" />
+                            <p className="text-xs font-bold uppercase tracking-widest text-gray-400">{t('dashboard.no_files_uploaded')}</p>
+                        </div>
                     )}
                 </div>
+
+                {/* Background design element */}
+                <div className="absolute top-0 right-0 w-32 h-32 bg-blue-600/5 blur-3xl rounded-full -mr-16 -mt-16"></div>
             </div>
 
             {/* PREVIEW MODAL */}
