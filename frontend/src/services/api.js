@@ -835,8 +835,13 @@ export const getSafeUrl = (url) => {
         finalUrl = finalUrl.replace('/uploads/', '/api/files/');
     }
 
-    // 4. Handle root-relative paths by prepending origin (Vite proxy handles the rest)
+    // 4. Handle root-relative paths by prepending origin and using safe fetch
     if (finalUrl.startsWith('/')) {
+        // If it's already an api path, use the safe fetch endpoint to avoid dot/Workbox issues
+        if (finalUrl.includes('/api/files/') || finalUrl.includes('/api/storage/')) {
+            const fileName = finalUrl.split('/').pop();
+            return `${origin}/api/files/fetch?filename=${fileName}`;
+        }
         return `${origin}${finalUrl}`;
     }
 

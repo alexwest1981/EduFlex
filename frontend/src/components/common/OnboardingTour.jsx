@@ -16,16 +16,28 @@ const OnboardingTour = ({ steps, tourId }) => {
     useEffect(() => {
         if (!currentUser || steps.length === 0) return;
 
-        const hasSeenTour = localStorage.getItem(`hasSeenTour_${tourId}`);
+        // Use a user-specific key to avoid persistence issues between different users
+        const storageKey = `hasSeenTour_${tourId}_${currentUser.id}`;
+        const hasSeenTour = localStorage.getItem(storageKey);
+
         if (hasSeenTour) return;
 
         const driverObj = driver({
             showProgress: true,
             animate: true,
             steps: steps,
-            onDestroy: () => {
-                // Mark as seen when tour is closed or finished
-                localStorage.setItem(`hasSeenTour_${tourId}`, 'true');
+            allowClose: true,
+            overlayOpacity: 0.7,
+            onCloseClick: () => {
+                localStorage.setItem(storageKey, 'true');
+                driverObj.destroy();
+            },
+            onDestroyed: () => {
+                localStorage.setItem(storageKey, 'true');
+            },
+            // Fallback name for v1 dismiss event
+            onDismissed: () => {
+                localStorage.setItem(storageKey, 'true');
             },
             nextBtnText: 'Nästa',
             prevBtnText: 'Bakåt',
@@ -34,10 +46,20 @@ const OnboardingTour = ({ steps, tourId }) => {
 
         // Small delay to ensure DOM is ready
         const timer = setTimeout(() => {
+            // Check again inside timeout just in case
+            if (localStorage.getItem(storageKey)) return;
             driverObj.drive();
         }, 1500);
 
-        return () => clearTimeout(timer);
+        return () => {
+            clearTimeout(timer);
+            // If the component unmounts while the tour is active, we should probably mark it as seen
+            // to prevent annoying loops if they navigate away.
+            if (driverObj.isActive()) {
+                localStorage.setItem(storageKey, 'true');
+                driverObj.destroy();
+            }
+        };
     }, [currentUser, steps, tourId]);
 
     return null; // This component handles side effects only

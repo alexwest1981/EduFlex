@@ -22,7 +22,20 @@ public class FileController {
     @GetMapping({ "/api/files/{*fileName}", "/api/storage/{*fileName}" })
     public ResponseEntity<Object> getFile(@PathVariable String fileName,
             @RequestHeader(value = org.springframework.http.HttpHeaders.RANGE, required = false) String rangeHeader) {
+        return processFileRequest(fileName, rangeHeader);
+    }
 
+    /**
+     * Fallback fetch endpoint using query parameter to avoid path variable issues
+     * with dots/Workbox.
+     */
+    @GetMapping("/api/files/fetch")
+    public ResponseEntity<Object> fetchFile(@RequestParam("filename") String fileName,
+            @RequestHeader(value = org.springframework.http.HttpHeaders.RANGE, required = false) String rangeHeader) {
+        return processFileRequest(fileName, rangeHeader);
+    }
+
+    private ResponseEntity<Object> processFileRequest(String fileName, String rangeHeader) {
         if (fileName == null || fileName.isEmpty() || fileName.equals("/")) {
             return ResponseEntity.badRequest().build();
         }

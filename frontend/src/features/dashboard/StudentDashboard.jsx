@@ -175,7 +175,7 @@ const StudentDashboard = ({ currentUser }) => {
 
     return (
         <div className="max-w-7xl mx-auto animate-in fade-in pb-20 relative p-4 lg:p-8">
-            <OnboardingTour steps={tourSteps} tourId="student-dashboard-v1" />
+            <OnboardingTour steps={tourSteps} tourId="student-dashboard-v3" />
 
             {/* Header Section */}
             <div id="dashboard-welcome" className="flex justify-between items-center mb-6">
