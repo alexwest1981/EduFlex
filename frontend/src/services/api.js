@@ -839,7 +839,8 @@ export const getSafeUrl = (url) => {
     if (finalUrl.startsWith('/')) {
         // If it's already an api path, use the safe fetch endpoint to avoid dot/Workbox issues
         if (finalUrl.includes('/api/files/') || finalUrl.includes('/api/storage/')) {
-            const fileName = finalUrl.split('/').pop();
+            const prefix = finalUrl.includes('/api/files/') ? '/api/files/' : '/api/storage/';
+            const fileName = finalUrl.substring(finalUrl.indexOf(prefix) + prefix.length);
             return `${origin}/api/files/fetch?filename=${fileName}`;
         }
         return `${origin}${finalUrl}`;
