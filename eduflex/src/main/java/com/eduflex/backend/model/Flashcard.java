@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @NoArgsConstructor
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 public class Flashcard {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,7 +21,7 @@ public class Flashcard {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "deck_id")
-    @JsonIgnoreProperties("cards")
+    @JsonIgnoreProperties({ "cards", "hibernateLazyInitializer", "handler" })
     private FlashcardDeck deck;
 
     @Column(length = 2000)

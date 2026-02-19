@@ -142,16 +142,8 @@ const Sidebar = ({ currentUser, logout, siteName, version }) => {
         return items;
     };
 
-    // FIX: Hjälpfunktion för att bygga bild-URL
-    const getProfileImage = () => {
-        if (!currentUser?.profilePictureUrl) return null;
-        let url = currentUser.profilePictureUrl;
-        if (url.includes('minio:9000')) url = url.replace('minio:9000', 'localhost:9000');
-
-        return url.startsWith('http')
-            ? url
-            : `${window.location.origin}${url}`;
-    };
+    // FIX: Använd getSafeUrl för att hantera MinIO och https korrekt
+    const profileImg = currentUser?.profilePictureUrl ? getSafeUrl(currentUser.profilePictureUrl) : null;
 
     return (
         <aside className="w-64 bg-white border-r border-gray-200 h-screen flex flex-col fixed left-0 top-0 z-50">
@@ -169,8 +161,8 @@ const Sidebar = ({ currentUser, logout, siteName, version }) => {
             {/* USER PROFILE SNIPPET (Denna saknades kanske innan) */}
             <div className="p-4 mx-4 mt-4 bg-gray-50 rounded-xl border border-gray-100 flex items-center gap-3 cursor-pointer hover:bg-gray-100 transition-colors relative" onClick={() => navigate('/profile')}>
                 <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center overflow-hidden border border-indigo-200">
-                    {getProfileImage() ? (
-                        <img src={getProfileImage()} alt="Profil" className="w-full h-full object-cover" />
+                    {profileImg ? (
+                        <img src={profileImg} alt="Profil" className="w-full h-full object-cover" />
                     ) : (
                         <UserCircle size={24} className="text-indigo-500" />
                     )}

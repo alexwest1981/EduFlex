@@ -6,17 +6,17 @@ import java.time.LocalDateTime;
 
 /**
  * LiveLesson - Represents a live video classroom session.
- * Integrates with Jitsi Meet for real-time video conferencing.
+ * Integrates with LiveKit for real-time video conferencing.
  */
 @Entity
 @Table(name = "live_lessons")
 public class LiveLesson {
 
     public enum Status {
-        SCHEDULED,  // Scheduled for future
-        LIVE,       // Currently active
-        ENDED,      // Session completed
-        CANCELLED   // Cancelled by teacher
+        SCHEDULED, // Scheduled for future
+        LIVE, // Currently active
+        ENDED, // Session completed
+        CANCELLED // Cancelled by teacher
     }
 
     @Id
@@ -28,12 +28,9 @@ public class LiveLesson {
     @Column(length = 1000)
     private String description;
 
-    // Unique room name for Jitsi (generated from course + timestamp)
+    // Unique room name
     @Column(unique = true)
     private String roomName;
-
-    // Direct join URL
-    private String joinUrl;
 
     @Enumerated(EnumType.STRING)
     private Status status = Status.SCHEDULED;
@@ -49,13 +46,13 @@ public class LiveLesson {
     // Related course
     @ManyToOne
     @JoinColumn(name = "course_id")
-    @JsonIgnoreProperties({"students", "materials", "teacher", "evaluation"})
+    @JsonIgnoreProperties({ "students", "materials", "teacher", "evaluation" })
     private Course course;
 
     // Host teacher
     @ManyToOne
     @JoinColumn(name = "host_id")
-    @JsonIgnoreProperties({"password", "courses", "documents"})
+    @JsonIgnoreProperties({ "password", "courses", "documents" })
     private User host;
 
     // Settings
@@ -117,14 +114,6 @@ public class LiveLesson {
 
     public void setRoomName(String roomName) {
         this.roomName = roomName;
-    }
-
-    public String getJoinUrl() {
-        return joinUrl;
-    }
-
-    public void setJoinUrl(String joinUrl) {
-        this.joinUrl = joinUrl;
     }
 
     public Status getStatus() {

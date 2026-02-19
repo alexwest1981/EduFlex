@@ -15,6 +15,7 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 public class FlashcardDeck {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

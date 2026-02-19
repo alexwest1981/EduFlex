@@ -24,19 +24,22 @@ public class StudentActivityService {
     private final CourseMaterialRepository materialRepository;
     private final com.eduflex.backend.repository.StudentQuizLogRepository studentQuizLogRepository;
     private final GamificationService gamificationService;
+    private final com.eduflex.backend.service.ai.EduAIService eduAIService;
 
     public StudentActivityService(StudentActivityLogRepository activityLogRepository,
             UserRepository userRepository,
             CourseRepository courseRepository,
             CourseMaterialRepository materialRepository,
             com.eduflex.backend.repository.StudentQuizLogRepository studentQuizLogRepository,
-            GamificationService gamificationService) {
+            GamificationService gamificationService,
+            com.eduflex.backend.service.ai.EduAIService eduAIService) {
         this.activityLogRepository = activityLogRepository;
         this.userRepository = userRepository;
         this.courseRepository = courseRepository;
         this.materialRepository = materialRepository;
         this.studentQuizLogRepository = studentQuizLogRepository;
         this.gamificationService = gamificationService;
+        this.eduAIService = eduAIService;
     }
 
     @Transactional
@@ -59,6 +62,12 @@ public class StudentActivityService {
 
         // --- GAMIFICATION TRIGGERS ---
         awardPointsForActivity(userId, type);
+
+        // --- EDUAI QUEST TRIGGER ---
+        if (type == StudentActivityLog.ActivityType.VIEW_LESSON && materialId != null) {
+            eduAIService.checkAndCompleteQuest(userId, com.eduflex.backend.model.EduAIQuest.QuestObjectiveType.LESSON,
+                    materialId);
+        }
     }
 
     private void awardPointsForActivity(Long userId, StudentActivityLog.ActivityType type) {

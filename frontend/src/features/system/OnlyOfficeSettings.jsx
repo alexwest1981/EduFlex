@@ -4,9 +4,10 @@ import { api } from '../../services/api';
 
 const OnlyOfficeSettings = () => {
     const [settings, setSettings] = useState({
-        onlyoffice_url: 'http://localhost:8081',
-        onlyoffice_internal_url: 'http://onlyoffice-ds',
-        onlyoffice_enabled: 'true'
+        onlyoffice_url: '',
+        onlyoffice_internal_url: '',
+        onlyoffice_enabled: 'true',
+        onlyoffice_jwt_secret: ''
     });
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
@@ -23,7 +24,7 @@ const OnlyOfficeSettings = () => {
             const data = await api.system.getSettings();
             const ooSettings = {};
             data.forEach(s => {
-                if (s.settingKey === 'onlyoffice_url' || s.settingKey === 'onlyoffice_enabled' || s.settingKey === 'onlyoffice_internal_url') {
+                if (s.settingKey === 'onlyoffice_url' || s.settingKey === 'onlyoffice_enabled' || s.settingKey === 'onlyoffice_internal_url' || s.settingKey === 'onlyoffice_jwt_secret') {
                     ooSettings[s.settingKey] = s.settingValue;
                 }
             });
@@ -41,7 +42,8 @@ const OnlyOfficeSettings = () => {
             await Promise.all([
                 api.system.updateSetting('onlyoffice_url', settings.onlyoffice_url),
                 api.system.updateSetting('onlyoffice_internal_url', settings.onlyoffice_internal_url),
-                api.system.updateSetting('onlyoffice_enabled', settings.onlyoffice_enabled)
+                api.system.updateSetting('onlyoffice_enabled', settings.onlyoffice_enabled),
+                api.system.updateSetting('onlyoffice_jwt_secret', settings.onlyoffice_jwt_secret)
             ]);
             alert('Inställningar sparade!');
         } catch (e) {
@@ -117,6 +119,20 @@ const OnlyOfficeSettings = () => {
                             placeholder="http://onlyoffice-ds"
                         />
                         <p className="text-xs text-gray-500 mt-1">URL som används av backend för anslutningskontroll (Hälsokontroll).</p>
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            JWT Secret
+                        </label>
+                        <input
+                            type="password"
+                            value={settings.onlyoffice_jwt_secret}
+                            onChange={(e) => setSettings({ ...settings, onlyoffice_jwt_secret: e.target.value })}
+                            className="w-full px-4 py-2 bg-gray-50 dark:bg-[#282a2c] border border-gray-200 dark:border-[#3c4043] rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition-all dark:text-white font-mono text-sm"
+                            placeholder="Lämna tomt för systemets JWT-nyckel"
+                        />
+                        <p className="text-xs text-gray-500 mt-1">JWT-hemlighet som matchar Document Serverns JWT_SECRET. Lämna tomt för att använda systemets standardnyckel.</p>
                     </div>
 
                     <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-[#282a2c] rounded-xl">

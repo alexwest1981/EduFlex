@@ -1,13 +1,67 @@
 import React, { useState, useEffect } from 'react';
-import { Target, RefreshCw, Trophy, Star, BookOpen } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Target, RefreshCw, Trophy, Star, BookOpen, Gamepad2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import FlashcardDashboard from '../../modules/flashcards/FlashcardDashboard';
+import SmartReviewDeck from '../../features/eduai/components/SmartReviewDeck';
+import MemoryMatch from '../../features/eduai/components/MemoryMatch';
+import TimeAttack from '../../features/eduai/components/TimeAttack';
+
+const GamesTab = () => {
+    const [activeGame, setActiveGame] = useState(null);
+
+    if (activeGame === 'memory') return (
+        <div className="mt-4">
+            <button onClick={() => setActiveGame(null)} className="text-cyan-400 hover:text-cyan-300 text-sm mb-4 inline-block">&larr; Tillbaka till spel</button>
+            <MemoryMatch />
+        </div>
+    );
+
+    if (activeGame === 'timeattack') return (
+        <div className="mt-4">
+            <button onClick={() => setActiveGame(null)} className="text-cyan-400 hover:text-cyan-300 text-sm mb-4 inline-block">&larr; Tillbaka till spel</button>
+            <TimeAttack />
+        </div>
+    );
+
+    return (
+        <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => setActiveGame('memory')}
+                className="bg-white/5 hover:bg-white/10 border border-white/10 hover:border-purple-400/30 rounded-2xl p-6 text-left transition-all group"
+            >
+                <div className="text-3xl mb-3">🧠</div>
+                <h3 className="text-lg font-bold text-white mb-1 group-hover:text-purple-300 transition-colors">Memory Match</h3>
+                <p className="text-indigo-300 text-sm">Matcha flashcards! Hitta paren mellan framsida och baksida.</p>
+                <div className="mt-3 text-xs text-yellow-400/80 flex items-center gap-1">
+                    <Star className="w-3 h-3" /> Upp till 80 XP per runda
+                </div>
+            </motion.button>
+            <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => setActiveGame('timeattack')}
+                className="bg-white/5 hover:bg-white/10 border border-white/10 hover:border-cyan-400/30 rounded-2xl p-6 text-left transition-all group"
+            >
+                <div className="text-3xl mb-3">⚡</div>
+                <h3 className="text-lg font-bold text-white mb-1 group-hover:text-cyan-300 transition-colors">Time Attack</h3>
+                <p className="text-indigo-300 text-sm">Svara på så många kort som möjligt innan tiden tar slut!</p>
+                <div className="mt-3 text-xs text-yellow-400/80 flex items-center gap-1">
+                    <Star className="w-3 h-3" /> 5 XP per rätt + combo-bonus
+                </div>
+            </motion.button>
+        </div>
+    );
+};
 
 const EduAIDashboard = () => {
+    const navigate = useNavigate();
     const [quests, setQuests] = useState([]);
     const [loading, setLoading] = useState(false);
     const [generating, setGenerating] = useState(false);
-    const [activeTab, setActiveTab] = useState('quests'); // 'quests' or 'flashcards'
+    const [activeTab, setActiveTab] = useState('smart-review'); // Default to smart-review
 
     useEffect(() => {
         if (activeTab === 'quests') {
@@ -88,6 +142,12 @@ const EduAIDashboard = () => {
                     {/* TABS */}
                     <div className="flex bg-black/20 p-1 rounded-xl">
                         <button
+                            onClick={() => setActiveTab('smart-review')}
+                            className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${activeTab === 'smart-review' ? 'bg-white/10 text-white shadow-lg' : 'text-gray-400 hover:text-white'}`}
+                        >
+                            Smart Review
+                        </button>
+                        <button
                             onClick={() => setActiveTab('quests')}
                             className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${activeTab === 'quests' ? 'bg-white/10 text-white shadow-lg' : 'text-gray-400 hover:text-white'}`}
                         >
@@ -97,10 +157,23 @@ const EduAIDashboard = () => {
                             onClick={() => setActiveTab('flashcards')}
                             className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${activeTab === 'flashcards' ? 'bg-white/10 text-white shadow-lg' : 'text-gray-400 hover:text-white'}`}
                         >
-                            Flashcards
+                            Alla Decks
+                        </button>
+                        <button
+                            onClick={() => setActiveTab('games')}
+                            className={`px-4 py-2 rounded-lg text-sm font-bold transition-all flex items-center gap-1 ${activeTab === 'games' ? 'bg-white/10 text-white shadow-lg' : 'text-gray-400 hover:text-white'}`}
+                        >
+                            <Gamepad2 className="w-4 h-4" />
+                            Spel
                         </button>
                     </div>
                 </div>
+
+                {activeTab === 'smart-review' && (
+                    <div className="mt-4">
+                        <SmartReviewDeck />
+                    </div>
+                )}
 
                 {activeTab === 'quests' && (
                     <>
@@ -190,8 +263,13 @@ const EduAIDashboard = () => {
 
                                             <button
                                                 onClick={() => {
-                                                    // TODO: Navigera till rätt ställe baserat på quest.objectiveType och quest.objectiveId
-                                                    alert(`Gå till ${quest.objectiveType} med ID ${quest.objectiveId} för att slutföra uppdraget!`);
+                                                    if (quest.courseId) {
+                                                        const tab = quest.objectiveType === 'QUIZ' ? 'quiz' :
+                                                            quest.objectiveType === 'ASSIGNMENT' ? 'assignments' : 'material';
+                                                        navigate(`/course/${quest.courseId}?tab=${tab}&itemId=${quest.objectiveId}`);
+                                                    } else {
+                                                        navigate('/my-courses');
+                                                    }
                                                 }}
                                                 className="relative z-10 w-full flex items-center justify-center gap-2 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white py-2 rounded-xl font-medium transition-all shadow-lg shadow-cyan-900/50 group-hover:shadow-cyan-500/20"
                                             >
@@ -210,6 +288,10 @@ const EduAIDashboard = () => {
                     <div className="mt-4">
                         <FlashcardDashboard />
                     </div>
+                )}
+
+                {activeTab === 'games' && (
+                    <GamesTab />
                 )}
             </div>
         </div>

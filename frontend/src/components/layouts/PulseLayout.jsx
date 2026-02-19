@@ -10,6 +10,8 @@ import GlobalSearch from '../GlobalSearch';
 import NotificationBell from '../NotificationBell';
 import OnlineFriendsPanel from '../social/OnlineFriendsPanel';
 
+import { getSafeUrl } from '../../services/api';
+
 const PulseLayout = ({ children }) => {
     const { currentUser, logout, systemSettings, theme, toggleTheme, API_BASE } = useAppContext();
     const { isModuleActive } = useModules();
@@ -21,13 +23,7 @@ const PulseLayout = ({ children }) => {
 
     const handleLogout = () => { logout(); navigate('/login'); };
 
-    const getProfileUrl = () => {
-        if (!currentUser?.profilePictureUrl) return null;
-        let url = currentUser.profilePictureUrl;
-        if (url.includes('minio:9000')) url = url.replace('minio:9000', 'localhost:9000');
-        return url.startsWith('http') ? url : `${window.location.origin}${url}`;
-    };
-    const profileImgUrl = getProfileUrl();
+    const profileImgUrl = currentUser?.profilePictureUrl ? getSafeUrl(currentUser.profilePictureUrl) : null;
     const token = localStorage.getItem('token');
     const roleName = currentUser?.role?.name || currentUser?.role;
 

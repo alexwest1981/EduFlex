@@ -24,7 +24,8 @@ public class SystemSettingController {
     }
 
     @PutMapping("/{key}")
-    public ResponseEntity<SystemSetting> updateSetting(@PathVariable String key, @RequestBody Map<String, String> payload) {
+    public ResponseEntity<SystemSetting> updateSetting(@PathVariable String key,
+            @RequestBody Map<String, String> payload) {
         String newValue = payload.get("value");
         return ResponseEntity.ok(service.updateSetting(key, newValue));
     }

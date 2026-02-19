@@ -333,6 +333,12 @@ public class AdaptiveLearningService {
                 }
         }
 
+        public String getRecommendationText(Long id, Long studentId) {
+                return recommendationRepository.findById(id)
+                                .map(AdaptiveRecommendation::getDescription)
+                                .orElse("Ingen rekommendation hittades.");
+        }
+
         private String cleanJson(String response) {
                 if (response == null)
                         return "{}";

@@ -42,7 +42,7 @@ const CheckoutSuccess = () => {
                             Din EduFlex-instans är nu skapad. Vi har skickat inloggningsuppgifter till din e-postadress (admin-kontot).
                         </p>
                         <button
-                            onClick={() => window.location.href = "http://localhost:5173/login"} // TODO: Redirect to specific tenant domain in prod
+                            onClick={() => window.location.href = "/login"}
                             className="w-full py-3 px-6 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-colors flex items-center justify-center"
                         >
                             Gå till Inloggning

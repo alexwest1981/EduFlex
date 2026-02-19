@@ -63,6 +63,23 @@ const AssignmentsModule = ({ courseId, currentUser, isTeacher, mode = 'COURSE' }
                 setSubmissionsMap(subMap);
             }
 
+            // --- AUTO SELECT ITEM FROM URL ---
+            const query = new URLSearchParams(window.location.search);
+            const itemId = query.get('itemId');
+            if (itemId && data) {
+                const foundAssign = data.find(a => String(a.id) === itemId);
+                if (foundAssign) {
+                    setExpandedAssignment(foundAssign.id);
+                    // Add a small delay to allow the list to render before scrolling
+                    setTimeout(() => {
+                        const element = document.getElementById(`assignment-card-${itemId}`);
+                        if (element) {
+                            element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }
+                    }, 500);
+                }
+            }
+
         } catch (e) {
             console.error("Failed to load assignments", e);
         } finally {
@@ -342,6 +359,7 @@ const AssignmentsModule = ({ courseId, currentUser, isTeacher, mode = 'COURSE' }
                 {assignments.map(assign => (
                     <AssignmentCard
                         key={assign.id}
+                        id={`assignment-card-${assign.id}`}
                         assignment={assign}
                         isTeacher={isTeacher}
                         currentUser={currentUser}
@@ -359,7 +377,7 @@ const AssignmentsModule = ({ courseId, currentUser, isTeacher, mode = 'COURSE' }
 };
 
 // --- SUB-COMPONENT: KORT FÖR VARJE UPPGIFT ---
-const AssignmentCard = ({ assignment, isTeacher, currentUser, expanded, toggleExpand, preloadedSubmission, onUploadSuccess, onDelete, onEdit }) => {
+const AssignmentCard = ({ id, assignment, isTeacher, currentUser, expanded, toggleExpand, preloadedSubmission, onUploadSuccess, onDelete, onEdit }) => {
     const [mySubmission, setMySubmission] = useState(preloadedSubmission);
     const [allSubmissions, setAllSubmissions] = useState([]); // Endast för lärare
     const [file, setFile] = useState(null); // För upload
@@ -404,7 +422,7 @@ const AssignmentCard = ({ assignment, isTeacher, currentUser, expanded, toggleEx
     };
 
     return (
-        <div className={`bg-white dark:bg-[#1E1F20] rounded-xl border ${expanded ? 'border-indigo-500 shadow-md ring-1 ring-indigo-500' : 'border-gray-200 dark:border-[#3c4043]'} transition-all overflow-hidden`}>
+        <div id={id} className={`bg-white dark:bg-[#1E1F20] rounded-xl border ${expanded ? 'border-indigo-500 shadow-md ring-1 ring-indigo-500' : 'border-gray-200 dark:border-[#3c4043]'} transition-all overflow-hidden`}>
 
             {/* Header Row */}
             <div onClick={toggleExpand} className="p-5 flex justify-between items-center cursor-pointer hover:bg-gray-50 dark:hover:bg-[#282a2c] transition-colors">

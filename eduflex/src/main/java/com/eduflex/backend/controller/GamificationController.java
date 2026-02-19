@@ -51,11 +51,32 @@ public class GamificationController {
         return gamificationService.getAllBadges();
     }
 
-    // === Achievements Endpoints ===
-
     @GetMapping("/achievements")
     public ResponseEntity<List<Achievement>> getAllAchievements() {
         return ResponseEntity.ok(achievementService.getAllAchievements());
+    }
+
+    @GetMapping("/points/my")
+    public ResponseEntity<Integer> getMyPoints() {
+        try {
+            var auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+            if (auth == null || !auth.isAuthenticated() || "anonymousUser".equals(auth.getPrincipal())) {
+                return ResponseEntity.status(401).build();
+            }
+
+            String username = auth.getName();
+            User user = userRepository.findByUsername(username)
+                    .orElseGet(() -> userRepository.findByEmail(username).orElse(null));
+
+            if (user == null) {
+                return ResponseEntity.status(404).build();
+            }
+
+            return ResponseEntity.ok(user.getPoints());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
     @GetMapping("/achievements/my")
@@ -76,7 +97,7 @@ public class GamificationController {
 
             return ResponseEntity.ok(achievementService.getUserAchievements(user.getId()));
         } catch (Exception e) {
-            e.printStackTrace(); // Keep stdout for docker logs
+            e.printStackTrace();
             return ResponseEntity.internalServerError().build();
         }
     }
@@ -87,19 +108,32 @@ public class GamificationController {
         return ResponseEntity.ok("Badges created");
     }
 
-    // Endpoint för att manuellt ge poäng (används av lärare eller admin)
     @PostMapping("/award/{userId}")
     @org.springframework.security.access.prepost.PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN', 'TEACHER', 'ROLE_TEACHER')")
     public ResponseEntity<User> givePoints(@PathVariable Long userId, @RequestParam int points) {
         return ResponseEntity.ok(gamificationService.addPoints(userId, points));
     }
 
-    // === Daily Challenges Endpoints ===
+    @PostMapping("/xp/award")
+    public ResponseEntity<User> awardXp(@RequestBody Map<String, Object> request) {
+        String username = org.springframework.security.core.context.SecurityContextHolder.getContext()
+                .getAuthentication().getName();
+        User user = userRepository.findByUsername(username)
+                .orElseGet(() -> userRepository.findByEmail(username).orElseThrow());
+
+        int amount = (int) request.getOrDefault("amount", 0);
+        String source = (String) request.getOrDefault("source", "UNKNOWN");
+
+        if (amount > 200)
+            amount = 200;
+
+        logger.info("Awarding {} XP to user {} from source {}", amount, user.getId(), source);
+        return ResponseEntity.ok(gamificationService.addPoints(user.getId(), amount));
+    }
 
     @GetMapping("/challenges/daily/{userId}")
     public ResponseEntity<List<DailyChallenge>> getTodaysChallenges(@PathVariable Long userId) {
-        List<DailyChallenge> challenges = dailyChallengeService.getTodaysChallenges(userId);
-        return ResponseEntity.ok(challenges);
+        return ResponseEntity.ok(dailyChallengeService.getTodaysChallenges(userId));
     }
 
     @GetMapping("/streak")
@@ -111,7 +145,6 @@ public class GamificationController {
                     .orElseGet(() -> userRepository.findByEmail(username).orElse(null));
 
             if (user == null) {
-                logger.error("User not found for username: {}", username);
                 return ResponseEntity.status(404).build();
             }
 
@@ -121,7 +154,6 @@ public class GamificationController {
 
             return ResponseEntity.ok(Map.of("streak", streak, "userId", user.getId()));
         } catch (Exception e) {
-            logger.error("Error fetching streak", e);
             return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
         }
     }
@@ -141,21 +173,12 @@ public class GamificationController {
     }
 
     @PostMapping("/challenges/{userId}/increment")
-    public ResponseEntity<DailyChallenge> incrementChallenge(
-            @PathVariable Long userId,
+    public ResponseEntity<DailyChallenge> incrementChallenge(@PathVariable Long userId,
             @RequestBody Map<String, String> request) {
         String challengeType = request.get("challengeType");
-        DailyChallenge challenge = dailyChallengeService.incrementChallengeProgress(userId, challengeType);
-        return ResponseEntity.ok(challenge);
+        return ResponseEntity.ok(dailyChallengeService.incrementChallengeProgress(userId, challengeType));
     }
 
-    // === XP Recalculation Endpoints ===
-
-    /**
-     * Recalculate XP for current user based on unlocked achievements.
-     * Useful for users who unlocked achievements before XP rewards were
-     * implemented.
-     */
     @PostMapping("/achievements/recalculate-xp")
     public ResponseEntity<Map<String, Object>> recalculateMyXp() {
         String username = org.springframework.security.core.context.SecurityContextHolder.getContext()
@@ -163,34 +186,14 @@ public class GamificationController {
         User user = userRepository.findByUsername(username)
                 .orElseGet(() -> userRepository.findByEmail(username).orElse(null));
 
-        if (user == null) {
+        if (user == null)
             return ResponseEntity.status(404).body(Map.of("error", "User not found"));
-        }
 
         int totalXp = achievementService.recalculateUserXp(user.getId());
         int newLevel = (totalXp / 100) + 1;
 
-        return ResponseEntity.ok(Map.of(
-                "success", true,
-                "totalXp", totalXp,
-                "level", newLevel,
-                "message", "XP recalculated successfully"));
+        return ResponseEntity.ok(Map.of("success", true, "totalXp", totalXp, "level", newLevel));
     }
-
-    /**
-     * Admin endpoint: Recalculate XP for all users in the system.
-     */
-    @PostMapping("/achievements/recalculate-all")
-    @org.springframework.security.access.prepost.PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN')")
-    public ResponseEntity<Map<String, Object>> recalculateAllXp() {
-        int usersUpdated = achievementService.recalculateAllUsersXp();
-        return ResponseEntity.ok(Map.of(
-                "success", true,
-                "usersUpdated", usersUpdated,
-                "message", "XP recalculated for all users"));
-    }
-
-    // === EduAI Quests Endpoints ===
 
     @Autowired
     private com.eduflex.backend.service.ai.EduAIService eduAIService;
@@ -217,8 +220,6 @@ public class GamificationController {
 
     @PostMapping("/eduai/complete/{questId}")
     public ResponseEntity<com.eduflex.backend.model.EduAIQuest> completeQuest(@PathVariable Long questId) {
-        // I en riktig implementation borde vi validera att questet faktiskt är klart
-        // och att det tillhör rätt användare.
         com.eduflex.backend.model.EduAIQuest quest = eduAIService.completeQuest(questId);
         gamificationService.addPoints(quest.getUserId(), quest.getRewardXp());
         return ResponseEntity.ok(quest);

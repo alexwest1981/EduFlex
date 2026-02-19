@@ -45,7 +45,7 @@ public class NotificationService {
      * Get unread notification count for a user
      */
     public long getUnreadCount(Long userId) {
-        return notificationRepository.countByUserIdAndIsReadFalse(userId);
+        return notificationRepository.countByUserIdAndReadFalse(userId);
     }
 
     /**
@@ -53,7 +53,7 @@ public class NotificationService {
      */
     @Transactional
     public void markAllAsRead(Long userId) {
-        List<Notification> unreadNotifications = notificationRepository.findByUserIdAndIsReadFalse(userId);
+        List<Notification> unreadNotifications = notificationRepository.findByUserIdAndReadFalse(userId);
         unreadNotifications.forEach(n -> n.setRead(true));
         notificationRepository.saveAll(unreadNotifications);
     }

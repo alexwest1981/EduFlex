@@ -819,10 +819,10 @@ export const getSafeUrl = (url) => {
     let finalUrl = url;
     const origin = window.location.origin;
 
-    // 1. Handle MinIO internal host reference
-    if (finalUrl.includes('minio:9000')) {
-        // Replace minio:9000 with current origin + /api/files
-        finalUrl = finalUrl.replace(/http:\/\/minio:9000/g, origin + '/api/files');
+    // 1. Handle MinIO internal host reference (9000 or 9009)
+    if (finalUrl.includes('minio:9000') || finalUrl.includes('minio:9009')) {
+        // Replace minio references with current origin + /api/files
+        finalUrl = finalUrl.replace(/http:\/\/minio:(9000|9009)/g, origin + '/api/files');
     }
 
     // 2. Handle legacy /api/storage paths
@@ -846,9 +846,9 @@ export const getSafeUrl = (url) => {
         return `${origin}${finalUrl}`;
     }
 
-    // 4. Handle any MinIO localhost/IP/Internal references (9000 is MinIO port)
-    if (finalUrl.includes(':9000')) {
-        return finalUrl.replace(/^http:\/\/[^/]+:9000/g, origin + '/api/files');
+    // 4. Handle any MinIO localhost/IP/Internal references (9000 or 9009)
+    if (finalUrl.includes(':9000') || finalUrl.includes(':9009')) {
+        return finalUrl.replace(/^http:\/\/[^/]+:(9000|9009)/g, origin + '/api/files');
     }
 
     return finalUrl;

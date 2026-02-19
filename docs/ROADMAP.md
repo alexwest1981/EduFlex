@@ -24,6 +24,7 @@
 | **AI Audit Log** | Full spårbarhet av alla AI-beslut och rekommendationer för compliance och debugging. | ✅ **Klar** | **100%** transparens (XAI). |
 | **xAPI & cmi5** | Modern spårning (LRS) för mobilt lärande och simuleringar. | ✅ **Verifierad** | Nästa generations analys. |
 | **Skills Gap Analysis** | Visualisering av kompetensluckor och progress (Radar charts). | ✅ **Klar** | **v2.0.20** |
+| **EduAI Center v2.0** | AI-driven studiehub (Spaced Repetition, AI Coach, Mini-Games). | 📅 **Planerad** | **v2.1.0** |
 | **Workflow Integration** | Utbildning direkt i Slack/Teams/Salesforce ("Headless LMS"). | 📅 **Planerad** |
 
 ---
@@ -58,12 +59,13 @@
 ## 🛡️ Kategori 5: Infrastruktur & Säkerhet
 *Teknisk ryggrad och skydd av användardata.*
 
-| Funktion | Beskrivning | Status |
-| :--- | :--- | :--- |
+| Funktion | Beskrivning | Status | Mål / Outcome |
+| :--- | :--- | :--- | :--- |
 | **Advanced Security** | Domän-låsning, AES-256 GCM kryptering (PII) och Rate-limiting. | ✅ **Klar** | Högsta dataskyddsnivå (GDPR). |
 | **Unified Storage** | MinIO standalone restoration & auto-bucket sync. | ✅ **Klar** | Noll dataförlust & hög tillgänglighet. |
 | **CI/CD Pipeline** | Fullt automatiserade tester och deployment. | 📅 **Planerad** | Snabbare time-to-market. |
 | **Kubernetes Migration** | Helm-charts för skalbarhet. | 📅 **Planerad** | Oändlig skalbarhet (Cloud-native). |
+| **Live Classrooms** | LiveKit-powered video conferencing with scheduling, background blur, and glassmorphic UI. | ✅ **Klar** | **+20%** engagemang i distansundervisning. |
 | **Rektorspaket (Mission Control)** | Komplett skolledningslager: Organisationshierarki, Dashboard för nyckeltal (8 realtids-KPIer), Incidenthantering, Elevhälsa och Masskommunikation. | ✅ **Klar** | **Mission Control** för hela verksamheten. |
 | **PDF Whitelabeling** | Visuell editor för certifikat- och betygsmallar. Ladda upp logotyp, bakgrundsbild, konfigurera färger, texter, QR-position och layout. Live-förhandsvisning. | ✅ **Klar** | Professionell visuell identitet. |
 | **Sjukanmälan** | Komplett sjukanmälningssystem med statusuppdateringar, mentorsnotifieringar och historikspårning. | ✅ **Klar** | **-30%** adm-mail från vårdnadshavare. |
@@ -71,6 +73,14 @@
 ---
 
 ## 📝 Change Log
+
+### [v2.0.21] - 2026-02-19
+- **New Feature**: **Premium Video Infrastructure (LiveKit integration)**.
+- **Engine**: Replaced legacy Jitsi with high-performance **LiveKit** engine.
+- **Premium Video**: Implemented **Background Blur** (Zoom-style) using `@livekit/track-processors`.
+- **UI/UX**: New glassmorphic meeting interface with functional side panels for Chat, Participants, and Settings.
+- **Layout**: Optimized video grid and control bar accessibility for all screen sizes.
+- **Stability**: Fixed token generation and Flyway migration issues.
 
 ### [v2.0.19] - 2026-02-17
 - **New Feature**: **EduFlex Control Center v4.0** – A complete technical management portal.

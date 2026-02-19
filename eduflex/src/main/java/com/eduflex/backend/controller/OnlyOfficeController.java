@@ -72,15 +72,18 @@ public class OnlyOfficeController {
         this.storageService = storageService;
     }
 
+    @Value("${onlyoffice.internal.url:http://localhost:8081}")
+    private String onlyOfficeInternalUrlProp;
+
     @GetMapping("/health")
     public ResponseEntity<Map<String, Object>> healthCheck() {
         Map<String, Object> status = new HashMap<>();
         try {
+            // Prefer DB setting, fall back to application.properties
             String onlyOfficeUrl = settingRepository.findBySettingKey("onlyoffice_internal_url")
                     .map(s -> s.getSettingValue())
-                    .orElse(settingRepository.findBySettingKey("onlyoffice_url")
-                            .map(s -> s.getSettingValue())
-                            .orElse("http://onlyoffice-ds"));
+                    .filter(v -> v != null && !v.isBlank())
+                    .orElse(onlyOfficeInternalUrlProp);
 
             if (!onlyOfficeUrl.endsWith("/"))
                 onlyOfficeUrl += "/";
@@ -212,15 +215,28 @@ public class OnlyOfficeController {
 
         config.put("editorConfig", editorConfig);
 
-        // Hämta OnlyOffice Document Server URL från systemsettings (lokal:
-        // http://localhost:8081, prod: via Cloudflare)
-        String documentServerUrl = settingRepository.findBySettingKey("onlyoffice_url")
-                .map(s -> s.getSettingValue())
-                .orElse("http://localhost:8081");
-        config.put("documentServerUrl", documentServerUrl);
+        // Use the public app URL as documentServerUrl so the browser loads all
+        // OnlyOffice resources (JS, cache, coauthoring) through our backend proxy.
+        // This avoids HTTPS/HTTP mismatch when accessing OnlyOffice DS directly.
+        String documentServerUrl = clientBaseUrl;
 
         // --- SIGN CONFIG WITH JWT ---
-        String token = jwtUtils.generateOnlyOfficeToken(config);
+        // Only sign the fields OnlyOffice expects: document, editorConfig, documentType
+        // documentServerUrl and token must NOT be in the signed payload
+        Map<String, Object> tokenPayload = new HashMap<>();
+        tokenPayload.put("document", config.get("document"));
+        tokenPayload.put("editorConfig", config.get("editorConfig"));
+        tokenPayload.put("documentType", config.get("documentType"));
+
+        // Use dedicated OnlyOffice JWT secret if configured, otherwise fall back to system JWT
+        String onlyOfficeSecret = settingRepository.findBySettingKey("onlyoffice_jwt_secret")
+                .map(s -> s.getSettingValue())
+                .orElse("");
+        String token = (onlyOfficeSecret != null && !onlyOfficeSecret.isBlank())
+                ? jwtUtils.generateOnlyOfficeToken(tokenPayload, onlyOfficeSecret)
+                : jwtUtils.generateOnlyOfficeToken(tokenPayload);
+
+        config.put("documentServerUrl", documentServerUrl);
         config.put("token", token);
         // -----------------------------
 

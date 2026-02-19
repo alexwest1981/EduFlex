@@ -1,13 +1,6 @@
 package com.eduflex.backend.repository;
-
-import com.eduflex.backend.model.Notification;
-import org.springframework.data.jpa.repository.JpaRepository;
-import java.util.List;
-
-public interface NotificationRepository extends JpaRepository<Notification, Long> {
-    List<Notification> findByUserIdOrderByCreatedAtDesc(Long userId);
-
-    long countByUserIdAndIsReadFalse(Long userId);
-
-    List<Notification> findByUserIdAndIsReadFalse(Long userId);
+public interface NotificationRepository extends org.springframework.data.jpa.repository.JpaRepository<com.eduflex.backend.model.Notification, Long> {
+    java.util.List<com.eduflex.backend.model.Notification> findByUserIdOrderByCreatedAtDesc(Long userId);
+    long countByUserIdAndReadFalse(Long userId);
+    java.util.List<com.eduflex.backend.model.Notification> findByUserIdAndReadFalse(Long userId);
 }

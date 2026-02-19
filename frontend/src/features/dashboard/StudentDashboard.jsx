@@ -29,6 +29,8 @@ import AIPersonalizationWidget from './widgets/AIPersonalizationWidget';
 import AdaptiveWidget from '../adaptive/AdaptiveWidget';
 import EduAIDashboard from '../../components/gamification/EduAIDashboard';
 import SkillsGapDashboard from '../skills/SkillsGapDashboard';
+import CoachRecommendationBanner from '../eduai/components/CoachRecommendationBanner';
+import SmartReviewDeck from '../eduai/components/SmartReviewDeck';
 
 const StudentDashboard = ({ currentUser }) => {
     const { t } = useTranslation();

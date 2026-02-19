@@ -6,11 +6,11 @@ export const getStorageUrl = (url, siteUrl = 'https://www.eduflexlms.se') => {
     if (!url) return '';
 
     // Ersätt MinIO-URLer med publik storage URL för produktion
-    if (url.includes('minio:9000')) {
-        url = url.replace('http://minio:9000', 'https://storage.eduflexlms.se');
+    if (url.includes('minio:9000') || url.includes('minio:9009')) {
+        url = url.replace(/http:\/\/minio:(9000|9009)/, 'https://storage.eduflexlms.se');
     }
-    if (url.includes('localhost:9000')) {
-        url = url.replace('http://localhost:9000', 'https://storage.eduflexlms.se');
+    if (url.includes('localhost:9000') || url.includes('localhost:9009')) {
+        url = url.replace(/http:\/\/localhost:(9000|9009)/, 'https://storage.eduflexlms.se');
     }
 
     // Om det redan är en full URL, returnera den

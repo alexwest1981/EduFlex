@@ -65,7 +65,7 @@ const FileUpload = ({ label, currentUrl, onUpload, uploading }) => {
             <div onDrop={handleDrop} onDragOver={e => e.preventDefault()}
                 className="border-2 border-dashed border-gray-200 dark:border-gray-600 rounded-xl p-4 text-center hover:border-indigo-400 transition-colors cursor-pointer relative">
                 {currentUrl ? (
-                    <img src={currentUrl.includes('minio:9000') ? currentUrl.replace('minio:9000', 'localhost:9000') : currentUrl}
+                    <img src={api.getSafeUrl(currentUrl)}
                         alt={label} className="max-h-20 mx-auto object-contain rounded" />
                 ) : (
                     <div className="text-gray-400 dark:text-gray-500">
@@ -93,8 +93,8 @@ const CertificatePreview = ({ template }) => {
     const previewW = isLandscape ? 420 : 297;
     const previewH = isLandscape ? 297 : 420;
 
-    const logoUrl = t.logoUrl ? (t.logoUrl.includes('minio:9000') ? t.logoUrl.replace('minio:9000', 'localhost:9000') : t.logoUrl) : null;
-    const bgUrl = t.backgroundImageUrl ? (t.backgroundImageUrl.includes('minio:9000') ? t.backgroundImageUrl.replace('minio:9000', 'localhost:9000') : t.backgroundImageUrl) : null;
+    const logoUrl = api.getSafeUrl(t.logoUrl);
+    const bgUrl = api.getSafeUrl(t.backgroundImageUrl);
 
     const titleScale = (t.titleFontSize || 42) / 42;
     const bodyScale = (t.bodyFontSize || 18) / 18;

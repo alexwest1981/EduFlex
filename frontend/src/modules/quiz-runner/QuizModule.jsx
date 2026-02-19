@@ -66,7 +66,7 @@ const QuizModule = ({ courseId, currentUser, isTeacher, mode = 'COURSE' }) => {
 
     useEffect(() => {
         loadQuizzes();
-         
+
     }, [courseId, mode]);
 
     const loadQuizzes = async () => {
@@ -79,6 +79,23 @@ const QuizModule = ({ courseId, currentUser, isTeacher, mode = 'COURSE' }) => {
                 data = await api.quiz.getByCourse(courseId);
             }
             setQuizzes(data || []);
+
+            // --- AUTO SELECT ITEM FROM URL ---
+            const query = new URLSearchParams(window.location.search);
+            const itemId = query.get('itemId');
+            if (itemId && data) {
+                const foundQuiz = data.find(q => String(q.id) === itemId);
+                if (foundQuiz) {
+                    setActiveQuiz(foundQuiz);
+                    // Add a small delay to allow the list to render before scrolling
+                    setTimeout(() => {
+                        const element = document.getElementById(`quiz-card-${itemId}`);
+                        if (element) {
+                            element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }
+                    }, 500);
+                }
+            }
         } catch (e) {
             console.error("Quiz load error", e);
         } finally {
@@ -234,6 +251,7 @@ const QuizModule = ({ courseId, currentUser, isTeacher, mode = 'COURSE' }) => {
                                     return (
                                         <div
                                             key={quiz.id}
+                                            id={`quiz-card-${quiz.id}`}
                                             className={`group relative flex flex-col bg-white dark:bg-[#1E1F20] border border-gray-100 dark:border-[#3c4043] rounded-2xl p-6 shadow-sm hover:shadow-xl hover:border-indigo-200 dark:hover:border-indigo-900/40 transition-all duration-300 ${isLocked ? 'opacity-70' : ''}`}
                                         >
                                             {/* Teacher Controls */}

@@ -6,7 +6,7 @@ import {
     Globe, Database, Server, Zap, BarChart,
     Check, ArrowRight, Menu, X, Play, Sparkles,
     Award, TrendingUp, Layers, Gamepad2, Brain, Map, Flame, MessageSquare,
-    FileText, ClipboardList, Thermometer, Target, Smartphone
+    FileText, ClipboardList, Thermometer, Target, Smartphone, Video as VideoIcon
 } from 'lucide-react';
 
 // Assets
@@ -111,6 +111,14 @@ const LandingPage = () => {
             color: 'text-sky-400',
             bgColor: 'bg-sky-500/10',
             hoverBorder: 'hover:border-sky-500/50'
+        },
+        {
+            icon: <VideoIcon className="w-7 h-7" />,
+            title: "Premium Live Video",
+            description: "Högpresterande videomöten via LiveKit. Inkluderar Zoom-liknande bakgrundsoskärpa och snyggt glassmorphiskt UI.",
+            color: 'text-indigo-400',
+            bgColor: 'bg-indigo-500/10',
+            hoverBorder: 'hover:border-indigo-500/50'
         },
     ];
 

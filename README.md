@@ -37,6 +37,12 @@
 
 ## 🇸🇪 Svenska
 
+*   **🎬 Premium Video & LiveKit Integration (19 feb 2026):**
+    *   **LiveKit Engine:** Migrerat från Jitsi till en högpresterande LiveKit-motor för stabilare och säkrare videomöten.
+    *   **Background Blur:** Implementerat Zoom-liknande bakgrundsoskärpa direkt i webbläsaren via `@livekit/track-processors`.
+    *   **Glassmorphiskt UI:** Helt ny mötesvy med premium-känsla, interaktiva sidopaneler för chatt och deltagare, samt fixerade kontroller.
+    *   **Säkerhet:** Fullständig separation av mötesrum via server-side token-generering.
+
 *   **📊 Skills Gap Analysis Engine (17 feb 2026):**
     *   **Nuvarande vs Mål:** Implementerat en motor för att räkna ut glappet mellan studentens faktiska färdigheter och målkraven för deras kurser.
     *   **Kompetensprofil (Radar):** Ny visualisering för studenter som visar deras styrkor och utvecklingsområden via ett radar-diagram (spindeldiagram).
@@ -196,6 +202,12 @@ Hitta rätt dokumentation snabbare baserat på din roll i organisationen:
 ---
 
 ### Senaste Uppdateringar
+*   **🎬 LiveKit Premium Video - 19 feb 2026:**
+    *   **Premium Infrastructure:** Full integration av LiveKit för live-lektioner med stöd för tusentals samtidiga användare.
+    *   **Suddig bakgrund:** Ny premium-funktion för att dölja distraherande bakgrunder under möten.
+    *   **Realtidsinteraktion:** Optimerad chatt och deltagarlista integrerad direkt i den nya mötesvyn.
+    *   **Fix:** Åtgärdat layout-buggar där kontrollknappar tidigare kunde täckas över.
+
 *   **🛠️ EduFlex Control Center v4.0 (Mission Control) - 17 feb 2026 (Kväll):**
     *   **Service Manager (Fas 4):** Fullständig kontrollpanel för samtliga tjänster (Backend, Frontend, Databas, OnlyOffice, Cloudflare). Status-polling var 5:e sekund och mass-åtgärder (Start/Stop All).
     *   **Log Viewer (Fas 3):** Avancerad realtidsströmning av loggar med sökfunktion, färgkodning (ERROR/WARN) och auto-scroll.
@@ -314,6 +326,12 @@ Hitta rätt dokumentation snabbare baserat på din roll i organisationen:
 
 ### ⚡ Latest Updates (v1.0.5)
 ### ⚡ Latest Updates (v1.0.6)
+> **2026-02-19: LiveKit Premium Video & UI Refactor**
+*   **🎬 LiveKit Migration:** Deprecated Jitsi in favor of LiveKit for superior stability and scalability.
+*   **✨ Background Blur:** Zoom-style background blur feature as a premium addon for live lessons.
+*   **💎 Glassmorphic Meeting UI:** Brand new meeting interface with functional side panels and optimized layout.
+*   **🔒 Secure Tokens:** Backend-driven token generation for enterprise-grade security.
+
 > **2026-02-15: AI Audit Portal & Mobile Polish**
 *   **🤖 AI Audit Dashboard:** New dedicated admin view (`/admin/ai-audit`) to inspect raw AI interactions, including Prompts, Responses, and Reasoning Traces.
 *   **📱 Mobile Optimization:** Enhanced responsiveness for `RadarChart` (Learning Profile) and `ImpactDashboard` charts on mobile devices.
@@ -396,7 +414,7 @@ Hitta rätt dokumentation snabbare baserat på din roll i organisationen:
 |---------|-------------|
 | **Course Management** | Rich courses with text, video, attachments, and quizzes |
 | **Video Lessons** | Self-hosted video uploads with chapters, speed control, and analytics |
-| **Live Classrooms** | Jitsi-powered video conferencing with scheduling and dashboard widget |
+| **Live Classrooms** | LiveKit-powered video conferencing with scheduling, background blur, and premium UI |
 | **SCORM / xAPI / LTI 1.3 Advantage** | Import packages from Articulate/Adobe Captivate & LMS Integration |
 | **Assignment Engine** | File submissions with teacher grading and feedback |
 | **Certification** | Auto-generated verifiable PDF certificates |

@@ -9,21 +9,16 @@ public class Notification {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    private String message; // "Du har fått betyg på..."
-    private String type; // "INFO", "SUCCESS", "WARNING"
-    private boolean isRead = false;
+    private String message;
+    private String type;
+    @Column(name = "is_read")
+    private boolean read = false;
     private LocalDateTime createdAt = LocalDateTime.now();
+    private Long userId;
+    private Long relatedEntityId;
+    private String relatedEntityType;
+    private String actionUrl;
 
-    private Long userId; // Mottagarens ID (Vi kör enkelt ID här för att slippa komplexa relationer just
-                         // nu)
-
-    // New fields for entity linking
-    private Long relatedEntityId; // ID of the related event/assignment/message
-    private String relatedEntityType; // "CALENDAR_EVENT", "CHAT_MESSAGE", "ASSIGNMENT_DEADLINE", "EMAIL"
-    private String actionUrl; // Deep link to the related entity (e.g., "/calendar?event=123")
-
-    // Getters & Setters
     public Long getId() {
         return id;
     }
@@ -49,11 +44,11 @@ public class Notification {
     }
 
     public boolean isRead() {
-        return isRead;
+        return read;
     }
 
     public void setRead(boolean read) {
-        isRead = read;
+        this.read = read;
     }
 
     public LocalDateTime getCreatedAt() {

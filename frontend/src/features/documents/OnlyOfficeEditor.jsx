@@ -36,7 +36,13 @@ const OnlyOfficeEditor = ({ entityType = 'DOCUMENT', entityId, userId, onClose }
 
                 const serverUrl = configData.documentServerUrl || '';
                 // Ensure no trailing slash
-                const baseUrl = serverUrl.endsWith('/') ? serverUrl.slice(0, -1) : serverUrl;
+                let baseUrl = serverUrl.endsWith('/') ? serverUrl.slice(0, -1) : serverUrl;
+
+                // Secure protocol enforcement
+                if (window.location.protocol === 'https:' && baseUrl.startsWith('http:')) {
+                    baseUrl = baseUrl.replace('http:', 'https:');
+                }
+
                 const scriptUrl = `${baseUrl}/web-apps/apps/api/documents/api.js`;
 
                 console.log("📥 Loading OnlyOffice script from:", scriptUrl);

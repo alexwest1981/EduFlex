@@ -210,7 +210,7 @@ services:
     environment:
       - VITE_API_BASE_URL=/api
       - VITE_BACKEND_URL=http://backend:8080
-      - VITE_JITSI_URL=${JITSI_URL:-https://localhost:8085}
+      - VITE_JITSI_URL=${JITSI_URL:-http://localhost:8085}
     command: npm run dev -- --host
     volumes:
       - ./frontend:/app
@@ -263,12 +263,12 @@ services:
 
   # --- DOCUMENT EDITING (ONLYOFFICE) ---
   onlyoffice-ds:
-    image: onlyoffice/documentserver:8.2
+    image: onlyoffice/documentserver:latest
     container_name: eduflex-onlyoffice
     restart: always
     environment:
       - JWT_ENABLED=true
-      - JWT_SECRET=eduflex_secure_secret_key_32_chars_
+      - JWT_SECRET=${ONLYOFFICE_JWT_SECRET:-S0raknJQXb1gcrvpgkNlpRQW3OyfiR9Q}
       - JWT_HEADER=Authorization
       - JWT_IN_BODY=true
       # Use built-in services (no external DB needed)
@@ -288,142 +288,27 @@ services:
       - onlyoffice_logs:/var/log/onlyoffice
       - ./onlyoffice-config:/etc/onlyoffice/documentserver-example
     ports:
-      - "8084:80"
+      - "8081:80"
       - "8445:443"
     networks:
       - eduflex-net
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
-  # --- LIVE VIDEO LESSONS (Jitsi Meet) ---
-  # Self-hosted Jitsi for private video classrooms
-  # For full self-hosted setup, see: https://jitsi.github.io/handbook/docs/devops-guide/devops-guide-docker
-  # --- LIVE VIDEO LESSONS (Jitsi Meet) ---
-  # --- LIVE VIDEO LESSONS (Jitsi Meet) ---
-  jitsi-web:
-    image: jitsi/web:stable-9584
-    container_name: eduflex-jitsi
+  # --- LIVE VIDEO LESSONS (LiveKit) ---
+  livekit:
+    image: livekit/livekit-server:latest
+    container_name: eduflex-livekit
     restart: unless-stopped
+    command: --config /etc/livekit.yaml
     ports:
-      - "8085:443"
+      - "7880:7880"
+      - "7881:7881"
+      - "7882:7882/udp"
     environment:
-      - PUBLIC_URL=https://localhost:8085
-      - TZ=Europe/Stockholm
-      # General settings
-      - ENABLE_AUTH=0
-      - ENABLE_GUESTS=1
-      - ENABLE_TRANSCRIPTIONS=0
-      - ENABLE_BREAKOUT_ROOMS=1
-      - ENABLE_PREJOIN_PAGE=0
-      - ENABLE_LOBBY=0
-      - ENABLE_WELCOME_PAGE=0
-      # - DISABLE_HTTPS=1
-      # XMPP Internal communication
-      - XMPP_DOMAIN=meet.jitsi
-      - XMPP_SERVER=jitsi-prosody
-      - XMPP_BOSH_URL_BASE=http://jitsi-prosody:5280
-      - XMPP_MUC_DOMAIN=muc.meet.jitsi
-      - XMPP_INTERNAL_MUC_DOMAIN=internal-muc.meet.jitsi
-      - JVB_BREWERY_MUC=jvbbrewery@internal-muc.meet.jitsi
-      - JICOFO_AUTH_USER=focus
-      # Colibri over WebSocket (CRITICAL for Tunnel/No-UDP)
-      - ENABLE_COLIBRI_WEBSOCKET=1
-      - COLIBRI_REST_API=true
-      - JVB_TCP_ADDR=eduflex-jitsi-jvb
-      - JVB_TCP_PORT=9090
-      - COLIBRI_WS_TLS=0
+      LIVEKIT_KEYS: "${LIVEKIT_API_KEY}: ${LIVEKIT_API_SECRET}"
     volumes:
-      - jitsi_web_config:/config
-      - jitsi_web_crontabs:/var/spool/cron/crontabs
-      - jitsi_transcripts:/usr/share/jitsi-meet/transcripts
-    depends_on:
-      - jitsi-prosody
-    networks:
-      - eduflex-net
-  #
-  jitsi-prosody:
-    image: jitsi/prosody:stable-9584
-    container_name: eduflex-jitsi-prosody
-    restart: unless-stopped
-    expose:
-      - '5222'
-      - '5347'
-      - '5280'
-    environment:
-      - PUBLIC_URL=http://localhost:8085
-      - TZ=Europe/Stockholm
-      - XMPP_DOMAIN=meet.jitsi
-      - XMPP_SERVER=jitsi-prosody
-      - XMPP_AUTH_DOMAIN=auth.meet.jitsi
-      - XMPP_MUC_DOMAIN=muc.meet.jitsi
-      - XMPP_INTERNAL_MUC_DOMAIN=internal-muc.meet.jitsi
-      - XMPP_GUEST_DOMAIN=guest.meet.jitsi
-      - XMPP_RECORDER_DOMAIN=recorder.meet.jitsi
-      # Security & Internal routing
-      - JICOFO_AUTH_USER=focus
-      - JICOFO_AUTH_PASSWORD=eduflex_jicofo_secret
-      - JVB_AUTH_USER=jvb
-      - JVB_AUTH_PASSWORD=eduflex_jvb_secret
-      - JVB_BREWERY_MUC=jvbbrewery
-      - JICOFO_COMPONENT_SECRET=eduflex_focus_secret
-    volumes:
-      - jitsi_prosody_config:/config
-      - jitsi_prosody_plugins:/prosody-plugins-custom
-    networks:
-      - eduflex-net
-  #
-  jitsi-jicofo:
-    image: jitsi/jicofo:stable-9584
-    container_name: eduflex-jitsi-jicofo
-    restart: unless-stopped
-    environment:
-      - TZ=Europe/Stockholm
-      - XMPP_DOMAIN=meet.jitsi
-      - XMPP_SERVER=jitsi-prosody
-      - XMPP_AUTH_DOMAIN=auth.meet.jitsi
-      - XMPP_MUC_DOMAIN=muc.meet.jitsi
-      - XMPP_INTERNAL_MUC_DOMAIN=internal-muc.meet.jitsi
-      - JICOFO_AUTH_USER=focus
-      - JICOFO_AUTH_PASSWORD=eduflex_jicofo_secret
-      - JICOFO_COMPONENT_SECRET=eduflex_focus_secret
-      - JVB_BREWERY_MUC=jvbbrewery@internal-muc.meet.jitsi
-    volumes:
-      - jitsi_jicofo_config:/config
-    depends_on:
-      - jitsi-prosody
-    networks:
-      - eduflex-net
-  #
-  jitsi-jvb:
-    image: jitsi/jvb:stable-9584
-    container_name: eduflex-jitsi-jvb
-    restart: unless-stopped
-    ports:
-      - "30300:10000/udp"
-    environment:
-      - TZ=Europe/Stockholm
-      - XMPP_DOMAIN=meet.jitsi
-      - XMPP_SERVER=jitsi-prosody
-      - XMPP_AUTH_DOMAIN=auth.meet.jitsi
-      - XMPP_INTERNAL_MUC_DOMAIN=internal-muc.meet.jitsi
-      - JVB_AUTH_USER=jvb
-      - JVB_AUTH_PASSWORD=eduflex_jvb_secret
-      - JICOFO_AUTH_USER=focus
-      - JICOFO_AUTH_PASSWORD=eduflex_jicofo_secret
-      - JVB_TCP_HARVESTER_DISABLED=true
-      - JVB_PORT=30300
-      - PUBLIC_URL=http://localhost:8085
-      # NAT/ICE stability fixes
-      - DOCKER_HOST_ADDRESS=127.0.0.1
-      # Colibri over WebSocket (CRITICAL for Tunnel)
-      - ENABLE_COLIBRI_WEBSOCKET=1
-      - JVB_WS_SERVER_ID=jvb
-      - JVB_WS_DOMAIN=localhost
-      - JVB_WS_PORT=8085
-    volumes:
-      - jitsi_jvb_config:/config
-    depends_on:
-      - jitsi-prosody
+      - ./livekit.yaml:/etc/livekit.yaml
     networks:
       - eduflex-net
 
@@ -451,18 +336,12 @@ services:
       - eduflex-net
 
 volumes:
-  postgres_data: # Här sparas databasen så den inte försvinner vid omstart
+  postgres_data:
   redis_data:
   minio_data:
   onlyoffice_data:
   onlyoffice_logs:
-  jitsi_web_config:
-  jitsi_web_crontabs:
-  jitsi_transcripts:
-  jitsi_prosody_config:
-  jitsi_prosody_plugins:
-  jitsi_jicofo_config:
-  jitsi_jvb_config:
+  livekit_data:
 
 
 networks:

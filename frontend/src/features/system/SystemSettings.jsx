@@ -16,7 +16,6 @@ import { useModules } from '../../context/ModuleContext';
 import { api } from '../../services/api';
 import TenantManagement from '../admin/TenantManagement';
 import SkolverketManager from '../admin/SkolverketManager';
-import AdminIntegrations from '../dashboard/admin/AdminIntegrations';
 import PdfTemplateEditor from '../admin/PdfTemplateEditor';
 
 // Mappa modulnycklar till ikoner
@@ -251,8 +250,7 @@ const SystemSettings = ({ asTab = false }) => {
             items: [
                 ...(isAdmin ? [
                     { id: 'tenants', label: 'Tenants', icon: Server },
-                    { id: 'skolverket', label: 'Skolverket', icon: Database },
-                    { id: 'integrations', label: 'Integrationer', icon: Globe }
+                    { id: 'skolverket', label: 'Skolverket', icon: Database }
                 ] : [])
             ]
         },
@@ -294,8 +292,6 @@ const SystemSettings = ({ asTab = false }) => {
                 return <TenantManagement />;
             case 'skolverket':
                 return <SkolverketManager />;
-            case 'integrations':
-                return <AdminIntegrations />;
             case 'theme':
                 return (
                     <div className="space-y-6">

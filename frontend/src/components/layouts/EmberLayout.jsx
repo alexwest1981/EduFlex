@@ -11,6 +11,8 @@ import SidebarSection from '../SidebarSection';
 import logoTop from '../../assets/images/Logo_top.png';
 import { ShieldCheck } from 'lucide-react';
 
+import { getSafeUrl } from '../../services/api';
+
 const EmberLayout = ({ children }) => {
     const { currentUser, logout, systemSettings, theme, toggleTheme, API_BASE } = useAppContext();
     const { isModuleActive } = useModules();
@@ -20,13 +22,7 @@ const EmberLayout = ({ children }) => {
 
     const handleLogout = () => { logout(); navigate('/login'); };
 
-    const getProfileUrl = () => {
-        if (!currentUser?.profilePictureUrl) return null;
-        let url = currentUser.profilePictureUrl;
-        if (url.includes('minio:9000')) url = url.replace('minio:9000', 'localhost:9000');
-        return url.startsWith('http') ? url : `${window.location.origin}${url}`;
-    };
-    const profileImgUrl = getProfileUrl();
+    const profileImgUrl = currentUser?.profilePictureUrl ? getSafeUrl(currentUser.profilePictureUrl) : null;
     const token = localStorage.getItem('token');
     const roleName = currentUser?.role?.name || currentUser?.role;
 

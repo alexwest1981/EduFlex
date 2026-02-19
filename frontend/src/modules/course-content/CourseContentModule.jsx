@@ -135,6 +135,40 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
                 setQuizzes(qData);
             }
 
+            // --- AUTO SELECT ITEM FROM URL ---
+            const query = new URLSearchParams(window.location.search);
+            const itemId = query.get('itemId');
+            if (itemId) {
+                // Check lessons
+                const foundLesson = mappedLessons.find(l => String(l.id) === itemId);
+                if (foundLesson) {
+                    setSelectedLesson(foundLesson);
+                    setSelectedQuiz(null);
+                    // Add a small delay to allow the list to render before scrolling
+                    setTimeout(() => {
+                        const element = document.getElementById(`lesson-item-${itemId}`);
+                        if (element) {
+                            element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }
+                    }, 500);
+                    return;
+                }
+                // Check quizzes
+                if (resQuizzes.ok) {
+                    const foundQuiz = qData.find(q => String(q.id) === itemId);
+                    if (foundQuiz) {
+                        setSelectedQuiz(foundQuiz);
+                        setSelectedLesson(null);
+                        // Add a small delay to allow the list to render before scrolling
+                        setTimeout(() => {
+                            const element = document.getElementById(`quiz-item-${itemId}`);
+                            if (element) {
+                                element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            }
+                        }, 500);
+                    }
+                }
+            }
         } catch (e) {
             console.error("Failed to load content", e);
         }
@@ -305,6 +339,7 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
                         return (
                             <div
                                 key={`lesson-${lesson.id}`}
+                                id={`lesson-item-${lesson.id}`}
                                 onClick={() => {
                                     if (!isLocked) {
                                         setSelectedLesson(lesson);
@@ -391,6 +426,7 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
                         return (
                             <div
                                 key={`quiz-${quiz.id}`}
+                                id={`quiz-item-${quiz.id}`}
                                 onClick={() => {
                                     if (!isLocked) {
                                         setSelectedQuiz(quiz);

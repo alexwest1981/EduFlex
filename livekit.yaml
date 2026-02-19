@@ -1,0 +1,6 @@
+port: 7880
+logging:
+  json: false
+  level: info
+
+# devkey: secret is set via environment variable

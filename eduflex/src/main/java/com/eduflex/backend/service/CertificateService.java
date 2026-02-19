@@ -11,6 +11,7 @@ import com.lowagie.text.*;
 import com.lowagie.text.pdf.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +26,9 @@ import java.time.format.DateTimeFormatter;
 public class CertificateService {
 
     private static final Logger logger = LoggerFactory.getLogger(CertificateService.class);
+
+    @Value("${app.url:https://www.eduflexlms.se}")
+    private String appUrl;
 
     private final CourseRepository courseRepository;
     private final UserRepository userRepository;
@@ -109,7 +113,7 @@ public class CertificateService {
             try {
                 String bgUrl = tmpl.getBackgroundImageUrl();
                 if (!bgUrl.startsWith("http")) {
-                    bgUrl = "http://localhost:8080" + bgUrl;
+                    bgUrl = appUrl + bgUrl;
                 }
                 Image bg = Image.getInstance(new URL(bgUrl));
                 bg.scaleAbsolute(width, height);
@@ -147,7 +151,7 @@ public class CertificateService {
             if (tmpl != null && tmpl.getLogoUrl() != null && !tmpl.getLogoUrl().isBlank()) {
                 String logoUrl = tmpl.getLogoUrl();
                 if (!logoUrl.startsWith("http")) {
-                    logoUrl = "http://localhost:8080" + logoUrl;
+                    logoUrl = appUrl + logoUrl;
                 }
                 logo = Image.getInstance(new URL(logoUrl));
             } else {

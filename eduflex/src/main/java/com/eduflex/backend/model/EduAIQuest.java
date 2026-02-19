@@ -30,6 +30,8 @@ public class EduAIQuest {
 
     private Long objectiveId; // ID of the lesson, quiz, or assignment
 
+    private Long courseId; // ID of the course (for navigation)
+
     private int rewardXp;
 
     private boolean isCompleted;
@@ -42,7 +44,7 @@ public class EduAIQuest {
     }
 
     public EduAIQuest(Long id, Long userId, String title, String description, String narrative,
-            QuestObjectiveType objectiveType, Long objectiveId, int rewardXp, boolean isCompleted,
+            QuestObjectiveType objectiveType, Long objectiveId, Long courseId, int rewardXp, boolean isCompleted,
             LocalDateTime createdAt, LocalDateTime completedAt) {
         this.id = id;
         this.userId = userId;
@@ -51,6 +53,7 @@ public class EduAIQuest {
         this.narrative = narrative;
         this.objectiveType = objectiveType;
         this.objectiveId = objectiveId;
+        this.courseId = courseId;
         this.rewardXp = rewardXp;
         this.isCompleted = isCompleted;
         this.createdAt = createdAt;
@@ -122,6 +125,14 @@ public class EduAIQuest {
 
     public void setObjectiveId(Long objectiveId) {
         this.objectiveId = objectiveId;
+    }
+
+    public Long getCourseId() {
+        return courseId;
+    }
+
+    public void setCourseId(Long courseId) {
+        this.courseId = courseId;
     }
 
     public int getRewardXp() {

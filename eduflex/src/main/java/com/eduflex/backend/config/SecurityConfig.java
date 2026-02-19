@@ -46,6 +46,8 @@ public class SecurityConfig {
         @Value("${eduflex.auth.mode:hybrid}")
         private String authMode;
 
+
+
         private final com.eduflex.backend.security.OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
         private final com.eduflex.backend.security.OAuth2LoginFailureHandler oAuth2LoginFailureHandler;
         private final com.eduflex.backend.security.CustomOidcUserService customOidcUserService;
@@ -107,10 +109,10 @@ public class SecurityConfig {
                                 .sessionManagement(session -> session.sessionCreationPolicy(
                                                 SessionCreationPolicy.STATELESS))
                                 .authorizeHttpRequests(auth -> auth
-                                                // 1. VIKTIGT: Tillåt alltid OPTIONS (CORS pre-flight)
+                                                // 1. VIKTIGT: TillÃ¥t alltid OPTIONS (CORS pre-flight)
                                                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
-                                                // 2. Publika endpoints (inklusive LRS för CMI5)
+                                                // 2. Publika endpoints (inklusive LRS fÃ¶r CMI5)
                                                 .requestMatchers("/", "/index.html", "/favicon.ico", "/api/auth/**",
                                                                 "/api/users/register",
                                                                 "/api/users/generate-usernames",
@@ -134,7 +136,7 @@ public class SecurityConfig {
                                                                 "/ws-log/**",
                                                                 "/ws-forum/**",
                                                                 "/ws-social/**",
-                                                                "/actuator/**", "/lti/**", "/api/lti/**", "/error",
+                                                                "/api/adaptive/**", "/actuator/**", "/lti/**", "/api/lti/**", "/error",
                                                                 "/web-apps/**", "/sdkjs/**", "/sdkjs-plugins/**",
                                                                 "/fonts/**", "/cache/**", "/coauthoring/**",
                                                                 "/spellcheck/**",
@@ -162,8 +164,8 @@ public class SecurityConfig {
 
                                                 // 3. KURS-REGLER
 
-                                                // --- FIX: TILLÅT ANSÖKAN FÖR ALLA INLOGGADE ---
-                                                // Detta måste ligga INNAN regeln som blockerar POST för studenter
+                                                // --- FIX: TILLÃ…T ANSÃ–KAN FÃ–R ALLA INLOGGADE ---
+                                                // Detta mÃ¥ste ligga INNAN regeln som blockerar POST fÃ¶r studenter
                                                 .requestMatchers(HttpMethod.POST, "/api/courses/*/apply/*")
                                                 .authenticated()
                                                 // ----------------------------------------------
@@ -172,10 +174,10 @@ public class SecurityConfig {
                                                                 "/api/courses/*/enroll")
                                                 .authenticated()
 
-                                                // Tillåt studenter att se sina egna kurser
+                                                // TillÃ¥t studenter att se sina egna kurser
                                                 .requestMatchers("/api/courses/student/**").authenticated()
 
-                                                // ENDAST Lärare och Admins får ändra/skapa kurser generellt
+                                                // ENDAST LÃ¤rare och Admins fÃ¥r Ã¤ndra/skapa kurser generellt
                                                 .requestMatchers(HttpMethod.POST, "/api/courses/**")
                                                 .hasAnyAuthority("ADMIN", "ROLE_ADMIN", "TEACHER", "ROLE_TEACHER")
 
@@ -185,10 +187,10 @@ public class SecurityConfig {
                                                 .requestMatchers(HttpMethod.DELETE, "/api/courses/**")
                                                 .hasAnyAuthority("ADMIN", "ROLE_ADMIN", "TEACHER", "ROLE_TEACHER")
 
-                                                // Alla inloggade får läsa kurser (GET)
+                                                // Alla inloggade fÃ¥r lÃ¤sa kurser (GET)
                                                 .requestMatchers(HttpMethod.GET, "/api/courses/**").authenticated()
 
-                                                // 4. Övrigt
+                                                // 4. Ã–vrigt
                                                 .requestMatchers("/api/live-lessons/**").authenticated()
                                                 .requestMatchers("/api/notifications/**").authenticated()
                                                 .requestMatchers("/api/quizzes/**").authenticated()
@@ -266,7 +268,8 @@ public class SecurityConfig {
 
                                                 // 13. Principal Dashboard endpoints
                                                 .requestMatchers("/api/principal/**")
-                                                .hasAnyAuthority("ADMIN", "ROLE_ADMIN", "PRINCIPAL", "ROLE_PRINCIPAL", "REKTOR", "ROLE_REKTOR")
+                                                .hasAnyAuthority("ADMIN", "ROLE_ADMIN", "PRINCIPAL", "ROLE_PRINCIPAL",
+                                                                "REKTOR", "ROLE_REKTOR")
 
                                                 // 14. Branding endpoints (Admin only for POST/PUT)
                                                 .requestMatchers(HttpMethod.POST, "/api/branding/**")
@@ -308,21 +311,23 @@ public class SecurityConfig {
                                 .successHandler(oAuth2LoginSuccessHandler)
                                 .failureHandler(oAuth2LoginFailureHandler));
 
-                // Tillåt iFrames för H2-konsolen och OnlyOffice
                 http.headers(headers -> headers
                                 .frameOptions(frame -> frame.disable())
                                 .contentSecurityPolicy(csp -> csp
-                                                .policyDirectives("default-src 'self'; " +
-                                                                "script-src 'self' 'unsafe-inline' 'unsafe-eval' http://localhost:8081 https://www.eduflexlms.se; "
-                                                                +
-                                                                "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
-                                                                +
-                                                                "font-src 'self' https://fonts.gstatic.com data:; " +
-                                                                "frame-src 'self' http://localhost:8081 https://www.eduflexlms.se; "
-                                                                +
-                                                                "connect-src 'self' http://localhost:8081 https://www.eduflexlms.se ws://localhost:8080 wss://www.eduflexlms.se; "
-                                                                +
-                                                                "img-src 'self' data: http://localhost:9000 http://localhost:8081 https://www.eduflexlms.se;")));
+                                                .policyDirectives(
+                                                                "default-src 'self' https://www.eduflexlms.se https://fonts.googleapis.com https://fonts.gstatic.com; "
+                                                                                +
+                                                                                "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.eduflexlms.se; "
+                                                                                +
+                                                                                "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
+                                                                                +
+                                                                                "font-src 'self' https://fonts.gstatic.com data:; "
+                                                                                +
+                                                                                "frame-src 'self' https://www.youtube.com https://www.eduflexlms.se; "
+                                                                                +
+                                                                                "connect-src 'self' https://www.eduflexlms.se wss://www.eduflexlms.se; "
+                                                                                +
+                                                                                "img-src 'self' data: blob: https://www.eduflexlms.se https://storage.eduflexlms.se;")));
 
                 return http.build();
         }
@@ -358,3 +363,4 @@ public class SecurityConfig {
                 return source;
         }
 }
+

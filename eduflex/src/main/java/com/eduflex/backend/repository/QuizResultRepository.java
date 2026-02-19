@@ -12,4 +12,6 @@ public interface QuizResultRepository extends JpaRepository<QuizResult, Long> {
     List<QuizResult> findByStudentIdAndQuizCourseId(Long studentId, Long courseId);
 
     List<QuizResult> findByQuizIdAndStudentId(Long quizId, Long studentId);
+
+    List<QuizResult> findTop5ByStudentIdOrderByDateDesc(Long studentId);
 }

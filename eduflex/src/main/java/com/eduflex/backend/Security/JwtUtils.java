@@ -74,6 +74,20 @@ public class JwtUtils {
                 .compact();
     }
 
+    /**
+     * Generates an OnlyOffice token with a custom secret (for matching the DS secret).
+     */
+    public String generateOnlyOfficeToken(java.util.Map<String, Object> payload, String customSecret) {
+        Key customKey = io.jsonwebtoken.security.Keys.hmacShaKeyFor(
+                customSecret.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+        return Jwts.builder()
+                .setClaims(payload)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date((new Date()).getTime() + 1000 * 60 * 60)) // 1 hour
+                .signWith(customKey, SignatureAlgorithm.HS256)
+                .compact();
+    }
+
     private Key key() {
         return io.jsonwebtoken.security.Keys.hmacShaKeyFor(jwtSecret.getBytes(java.nio.charset.StandardCharsets.UTF_8));
     }

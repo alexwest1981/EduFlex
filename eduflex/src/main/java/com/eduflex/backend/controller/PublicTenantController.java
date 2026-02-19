@@ -62,7 +62,7 @@ public class PublicTenantController {
             return ResponseEntity.ok(Map.of(
                     "message", "Organization registered successfully",
                     "tenantId", tenant.getId(),
-                    "loginUrl", "http://" + tenant.getDomain() + ".eduflex.local/login" // Adjust dependent on domain
+                    "loginUrl", "https://" + tenant.getDomain() + ".eduflexlms.se/login" // Adjust dependent on domain
                                                                                         // logic
             ));
 
