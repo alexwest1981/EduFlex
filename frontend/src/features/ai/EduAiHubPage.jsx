@@ -9,8 +9,8 @@ import { motion } from 'framer-motion';
 import { api } from '../../services/api';
 import HubReviewDeck from './components/HubReviewDeck';
 import HubQuests from './components/HubQuests';
-import HubMemoryMatch from './components/HubMemoryMatch';
-import HubTimeAttack from './components/HubTimeAttack';
+import MemoryMatch from '../eduai/components/MemoryMatch';
+import TimeAttack from '../eduai/components/TimeAttack';
 
 const HubGameTile = ({ title, icon: Icon, color, xp, description, onClick }) => (
     <motion.div
@@ -79,6 +79,12 @@ const EduAiHubPage = () => {
 
     useEffect(() => {
         fetchStats();
+
+        const handleXpUpdate = () => {
+            fetchStats();
+        };
+        window.addEventListener('xpUpdated', handleXpUpdate);
+        return () => window.removeEventListener('xpUpdated', handleXpUpdate);
     }, []);
 
     const fetchStats = async () => {
@@ -183,8 +189,19 @@ const EduAiHubPage = () => {
                                             Starta Session
                                         </button>
                                     </div>
-                                    <div className="w-56 h-56 relative flex items-center justify-center animate-spin-slow">
+                                    <div className="w-64 h-64 relative flex items-center justify-center animate-spin-slow">
+                                        <div className="absolute inset-0 border-4 border-dashed border-white/20 rounded-full"></div>
+                                        <div className="absolute inset-4 border-2 border-indigo-400/30 rounded-full"></div>
                                         <Brain size={80} className="text-white drop-shadow-[0_0_30px_rgba(255,255,255,0.4)]" />
+
+                                        {/* Orbiting Dots */}
+                                        {[0, 120, 240].map((deg) => (
+                                            <div
+                                                key={deg}
+                                                className="absolute w-4 h-4 bg-brand-orange rounded-full shadow-[0_0_15px_rgba(255,102,0,1)]"
+                                                style={{ transform: `rotate(${deg}deg) translateX(128px)` }}
+                                            ></div>
+                                        ))}
                                     </div>
                                 </div>
                             </motion.div>
@@ -217,6 +234,16 @@ const EduAiHubPage = () => {
                                     <span className="absolute bottom-[20%] right-0 text-[10px] font-black text-gray-400 uppercase">Praktik ({stats.radarStats.Praktik}%)</span>
                                     <span className="absolute bottom-0 text-[10px] font-black text-gray-400 uppercase">Focus ({stats.radarStats.Focus}%)</span>
                                     <span className="absolute bottom-[20%] left-0 text-[10px] font-black text-gray-400 uppercase">Analys ({stats.radarStats.Analys}%)</span>
+                                </div>
+
+                                <div className="mt-8 space-y-3">
+                                    <div className="flex justify-between items-center text-xs font-bold text-gray-500 uppercase tracking-widest">
+                                        <span>Total Mastery</span>
+                                        <span className="text-brand-orange">{stats.masteryScore}%</span>
+                                    </div>
+                                    <div className="h-2 w-full bg-gray-100 dark:bg-white/5 rounded-full overflow-hidden">
+                                        <div className="h-full bg-brand-orange" style={{ width: `${stats.masteryScore}%` }} />
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -254,22 +281,42 @@ const EduAiHubPage = () => {
                             description="Repetera så många kort som möjligt under intensiv tidspress."
                             onClick={() => setActiveTab('time-attack')}
                         />
+                        <HubGameTile
+                            title="Boss Battle"
+                            icon={Shield}
+                            color="bg-red-500"
+                            xp="500"
+                            description="Utmanande test som täcker hela din kurs."
+                            onClick={() => alert("Kommer snart!")}
+                        />
+                        <HubGameTile
+                            title="Flash Quiz"
+                            icon={Star}
+                            color="bg-amber-500"
+                            xp="50"
+                            description="Snabba slumpmässiga frågor för att hålla minnet fräscht."
+                            onClick={() => alert("Kommer snart!")}
+                        />
                     </div>
                 </div>
             )}
 
             {activeTab === 'memory' && (
-                <HubMemoryMatch
-                    onBack={() => setActiveTab('games')}
-                    onComplete={() => fetchStats()}
-                />
+                <div className="mt-8">
+                    <button onClick={() => setActiveTab('games')} className="mb-4 text-indigo-600 font-bold text-sm hover:underline">
+                        &larr; Tillbaka till Spel
+                    </button>
+                    <MemoryMatch />
+                </div>
             )}
 
             {activeTab === 'time-attack' && (
-                <HubTimeAttack
-                    onBack={() => setActiveTab('games')}
-                    onComplete={() => fetchStats()}
-                />
+                <div className="mt-8">
+                    <button onClick={() => setActiveTab('games')} className="mb-4 text-indigo-600 font-bold text-sm hover:underline">
+                        &larr; Tillbaka till Spel
+                    </button>
+                    <TimeAttack />
+                </div>
             )}
 
             <style dangerouslySetInnerHTML={{

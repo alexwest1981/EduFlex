@@ -94,16 +94,14 @@ const TimeAttack = () => {
 
         if (correct > highScore) {
             setHighScore(correct);
-            try { localStorage.setItem('eduai_timeattack_highscore', String(correct)); } catch {}
+            try { localStorage.setItem('eduai_timeattack_highscore', String(correct)); } catch { }
         }
 
-        const token = localStorage.getItem('token');
-        fetch('/api/gamification/xp/award', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-            body: JSON.stringify({ amount: total, source: 'TIME_ATTACK' }),
-        }).catch(() => {});
-        window.dispatchEvent(new Event('xpUpdated'));
+        api.post('/gamification/xp/award', { amount: total, source: 'TIME_ATTACK' })
+            .then(() => {
+                window.dispatchEvent(new Event('xpUpdated'));
+            })
+            .catch(err => console.error("Kunde inte registrera XP", err));
     }, [finished, correct, maxCombo, highScore]);
 
     const startGame = () => {

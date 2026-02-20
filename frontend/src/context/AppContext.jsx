@@ -60,19 +60,36 @@ export const AppProvider = ({ children }) => {
         loadSettings();
         checkLicense();
 
-        // Global Event Listener for Lock
         const handleLock = () => setLicenseLocked(true);
         const handleSessionExpired = () => {
             console.warn('[AppContext] Detected expired session event. Performing global logout.');
             logout();
         };
 
+        const handleXpUpdated = () => {
+            const storedUser = localStorage.getItem('user');
+            if (storedUser) {
+                try {
+                    const parsed = JSON.parse(storedUser);
+                    if (parsed?.id) {
+                        api.users.getById(parsed.id).then(updated => {
+                            const merged = { ...parsed, ...updated };
+                            localStorage.setItem('user', JSON.stringify(merged));
+                            setCurrentUser(merged);
+                        }).catch(e => console.error("Failed xp refresh", e));
+                    }
+                } catch (e) { }
+            }
+        };
+
         window.addEventListener('license-lock', handleLock);
         window.addEventListener('session-expired', handleSessionExpired);
+        window.addEventListener('xpUpdated', handleXpUpdated);
 
         return () => {
             window.removeEventListener('license-lock', handleLock);
             window.removeEventListener('session-expired', handleSessionExpired);
+            window.removeEventListener('xpUpdated', handleXpUpdated);
         };
 
     }, []);

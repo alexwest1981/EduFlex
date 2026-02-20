@@ -72,13 +72,11 @@ const MemoryMatch = () => {
             const total = baseXp + timeBonus;
             setXpAwarded(total);
             // Award XP via backend
-            const token = localStorage.getItem('token');
-            fetch('/api/gamification/xp/award', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                body: JSON.stringify({ amount: total, source: 'MEMORY_MATCH' }),
-            }).catch(() => {});
-            window.dispatchEvent(new Event('xpUpdated'));
+            api.post('/gamification/xp/award', { amount: total, source: 'MEMORY_MATCH' })
+                .then(() => {
+                    window.dispatchEvent(new Event('xpUpdated'));
+                })
+                .catch(err => console.error("Kunde inte registrera XP", err));
         }
     }, [matched, cards, timer]);
 
