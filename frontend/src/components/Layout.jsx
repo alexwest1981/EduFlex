@@ -11,6 +11,7 @@ import EmberLayout from './layouts/EmberLayout';
 import VoltageLayout from './layouts/VoltageLayout';
 import MidnightLayout from './layouts/MidnightLayout';
 import PulseLayout from './layouts/PulseLayout';
+import AiCoachSidebar from './ai/AiCoachSidebar';
 
 const Layout = ({ children }) => {
     const { systemSettings, currentUser } = useAppContext();
@@ -71,6 +72,7 @@ const Layout = ({ children }) => {
     return (
         <>
             {renderLayout()}
+            <AiCoachSidebar />
         </>
     );
 };

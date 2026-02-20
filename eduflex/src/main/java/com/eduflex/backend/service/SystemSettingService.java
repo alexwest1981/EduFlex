@@ -33,6 +33,11 @@ public class SystemSettingService {
         createIfMissing("onlyoffice_jwt_secret", "",
                 "JWT-hemlighet för ONLYOFFICE Document Server (lämna tomt för att använda systemets JWT-nyckel).");
 
+        // --- EduAI Center v2.0 INSTÄLLNINGAR ---
+        createIfMissing("eduai_xp_ratio", "1.0", "XP-multiplikator för AI-baserade aktiviteter (0.1 - 5.0).");
+        createIfMissing("eduai_credit_earn_rate", "5", "Antal AI-Credits per slutförd lektion.");
+        createIfMissing("eduai_proactivity", "MEDIUM", "Hur ofta AI-Coachen tar kontakt (LOW, MEDIUM, HIGH).");
+
         // --- TA BORT MODULERNA HÄRIFRÅN ---
         // Vi tar bort chat_enabled, gamification_enabled etc. härifrån
         // eftersom de nu ligger i ModuleService istället.

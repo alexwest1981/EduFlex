@@ -25,6 +25,7 @@ public class StudentActivityService {
     private final com.eduflex.backend.repository.StudentQuizLogRepository studentQuizLogRepository;
     private final GamificationService gamificationService;
     private final com.eduflex.backend.service.ai.EduAIService eduAIService;
+    private final EduAiHubService eduAiHubService;
 
     public StudentActivityService(StudentActivityLogRepository activityLogRepository,
             UserRepository userRepository,
@@ -32,7 +33,8 @@ public class StudentActivityService {
             CourseMaterialRepository materialRepository,
             com.eduflex.backend.repository.StudentQuizLogRepository studentQuizLogRepository,
             GamificationService gamificationService,
-            com.eduflex.backend.service.ai.EduAIService eduAIService) {
+            com.eduflex.backend.service.ai.EduAIService eduAIService,
+            EduAiHubService eduAiHubService) {
         this.activityLogRepository = activityLogRepository;
         this.userRepository = userRepository;
         this.courseRepository = courseRepository;
@@ -40,6 +42,7 @@ public class StudentActivityService {
         this.studentQuizLogRepository = studentQuizLogRepository;
         this.gamificationService = gamificationService;
         this.eduAIService = eduAIService;
+        this.eduAiHubService = eduAiHubService;
     }
 
     @Transactional
@@ -67,6 +70,12 @@ public class StudentActivityService {
         if (type == StudentActivityLog.ActivityType.VIEW_LESSON && materialId != null) {
             eduAIService.checkAndCompleteQuest(userId, com.eduflex.backend.model.EduAIQuest.QuestObjectiveType.LESSON,
                     materialId);
+
+            // Add to Spaced Repetition Hub
+            if (material != null) {
+                eduAiHubService.addKnowledgeFragment(user, material.getTitle(), material.getContent(), "LESSON",
+                        materialId);
+            }
         }
     }
 

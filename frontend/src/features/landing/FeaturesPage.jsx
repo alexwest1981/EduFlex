@@ -235,6 +235,13 @@ const FeaturesPage = () => {
             description: 'Vårdnadshavarportal, digital sjukanmälan och enkäter för elevhälsa. Allt samlat med AES-256 kryptering och sekretessvakter för säker datahantering.',
             color: 'text-brand-teal',
             bgColor: 'bg-brand-teal/10'
+        },
+        {
+            icon: <Brain className="w-6 h-6" />,
+            title: 'EduAI Center 2.1',
+            description: 'Avancerad Spaced Repetition med SM-2 algoritm. Tjäna AI-credits genom intelligenta repetitioner och visualisera din kunskapsresa i realtid.',
+            color: 'text-brand-orange',
+            bgColor: 'bg-brand-orange/10'
         }
     ];
 

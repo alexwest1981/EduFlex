@@ -101,6 +101,10 @@ public class LiveLessonController {
                     .orElseThrow(() -> new RuntimeException("Lesson not found"));
 
             User user = getCurrentUser();
+            if (user == null) {
+                return ResponseEntity.status(401).body(Map.of("error", "User not found"));
+            }
+
             boolean isHost = lesson.getHost().getId().equals(user.getId());
 
             String token = liveKitService.createJoinToken(
@@ -115,8 +119,6 @@ public class LiveLessonController {
                     : System.getenv("LIVEKIT_URL");
 
             if (serverUrl == null || serverUrl.isEmpty()) {
-                // If we are on a public domain, localhost:7880 won't work for clients.
-                // We'll try to use the requesting host as a fallback if it's not localhost.
                 String requestHost = request.getServerName();
                 if (!requestHost.equals("localhost") && !requestHost.equals("127.0.0.1")) {
                     String protocol = request.isSecure() ? "wss" : "ws";
@@ -161,7 +163,7 @@ public class LiveLessonController {
                 .orElseGet(() -> userRepository.findByEmail(username).orElse(null));
     }
 
-    static class CreateLiveLessonRequest {
+    public static class CreateLiveLessonRequest {
         public Long courseId;
         public String title;
         public String description;

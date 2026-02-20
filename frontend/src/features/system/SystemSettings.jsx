@@ -75,6 +75,17 @@ const SystemSettings = ({ asTab = false }) => {
     const [apiKeyInput, setApiKeyInput] = useState('');
     const [savingApiKey, setSavingApiKey] = useState(false);
     const [showApiKey, setShowApiKey] = useState(false);
+    const { updateSystemSetting } = useAppContext();
+
+    const [eduAiForm, setEduAiForm] = useState({
+        eduai_xp_ratio: localStorage.getItem('eduai_xp_ratio') || '1.0',
+        eduai_credit_earn_rate: localStorage.getItem('eduai_credit_earn_rate') || '5',
+        eduai_proactivity: localStorage.getItem('eduai_proactivity') || 'medium'
+    });
+
+    const updateEduAiForm = (key, value) => {
+        setEduAiForm(prev => ({ ...prev, [key]: value }));
+    };
 
     const currentTheme = themes.find(t => t.id === themeId) || themes[0];
     const isAdmin = currentUser?.role?.name === 'ADMIN' || currentUser?.role === 'ADMIN';
@@ -136,6 +147,29 @@ const SystemSettings = ({ asTab = false }) => {
         } catch (e) {
             console.error('Failed to save API key:', e);
             alert('Kunde inte spara API-nyckel: ' + (e.message || 'Okänt fel'));
+        } finally {
+            setSavingApiKey(false);
+        }
+    };
+
+    const handleSaveEduAi = async () => {
+        setSavingApiKey(true);
+        try {
+            await api.system.updateSetting('eduai_xp_ratio', eduAiForm.eduai_xp_ratio);
+            await api.system.updateSetting('eduai_credit_earn_rate', eduAiForm.eduai_credit_earn_rate);
+            await api.system.updateSetting('eduai_proactivity', eduAiForm.eduai_proactivity);
+
+            // Uppdatera context för omedelbar effekt
+            if (updateSystemSetting) {
+                updateSystemSetting('eduai_xp_ratio', eduAiForm.eduai_xp_ratio);
+                updateSystemSetting('eduai_credit_earn_rate', eduAiForm.eduai_credit_earn_rate);
+                updateSystemSetting('eduai_proactivity', eduAiForm.eduai_proactivity);
+            }
+
+            alert('EduAI-inställningar sparade!');
+        } catch (err) {
+            console.error('Failed to save EduAI settings:', err);
+            alert('Kunde inte spara EduAI-inställningar');
         } finally {
             setSavingApiKey(false);
         }
@@ -869,6 +903,97 @@ const SystemSettings = ({ asTab = false }) => {
                                 <p className="text-xs text-gray-500 dark:text-gray-400">
                                     Skapa en API-nyckel på <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Google AI Studio</a>
                                 </p>
+                            </div>
+                        </div>
+
+                        {/* EduAI Hub Configuration Card */}
+                        <div className="bg-white dark:bg-[#1E1F20] rounded-2xl p-6 border border-gray-200 dark:border-[#3c4043] shadow-sm">
+                            <div className="flex items-center gap-4 mb-6">
+                                <div className="w-12 h-12 bg-indigo-50 dark:bg-indigo-900/20 rounded-xl flex items-center justify-center text-indigo-600">
+                                    <Trophy size={24} />
+                                </div>
+                                <div className="flex-1">
+                                    <h3 className="font-bold text-gray-900 dark:text-white">EduAI Center (Hub)</h3>
+                                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                                        Konfigurera belöningar och beteende för AI-hubben
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div className="space-y-6">
+                                {/* XP Ratio */}
+                                <div>
+                                    <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
+                                        XP Multiplikator (AI-aktiviteter)
+                                    </label>
+                                    <div className="flex items-center gap-4">
+                                        <input
+                                            type="range"
+                                            min="0.1"
+                                            max="5.0"
+                                            step="0.1"
+                                            value={eduAiForm.eduai_xp_ratio}
+                                            onChange={(e) => updateEduAiForm('eduai_xp_ratio', e.target.value)}
+                                            className="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-indigo-600"
+                                        />
+                                        <span className="w-12 text-center font-bold text-indigo-600 bg-indigo-50 dark:bg-indigo-900/20 px-2 py-1 rounded">
+                                            {eduAiForm.eduai_xp_ratio}x
+                                        </span>
+                                    </div>
+                                    <p className="text-xs text-gray-500 mt-1">Bestämmer hur mycket extra XP som delas ut vid slutförd repetition.</p>
+                                </div>
+
+                                {/* Credit Earn Rate */}
+                                <div>
+                                    <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
+                                        AI-Credits vid Review
+                                    </label>
+                                    <div className="flex items-center gap-4">
+                                        <input
+                                            type="number"
+                                            min="0"
+                                            max="100"
+                                            value={eduAiForm.eduai_credit_earn_rate}
+                                            onChange={(e) => updateEduAiForm('eduai_credit_earn_rate', e.target.value)}
+                                            className="w-24 px-3 py-2 border border-gray-200 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-[#282a2c] text-gray-900 dark:text-white"
+                                        />
+                                        <span className="text-sm text-gray-500">Antal credits per slutförd perfekt review.</span>
+                                    </div>
+                                </div>
+
+                                {/* AI Proactivity */}
+                                <div>
+                                    <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
+                                        AI-Coach Proaktivitet
+                                    </label>
+                                    <div className="grid grid-cols-3 gap-3">
+                                        {['low', 'medium', 'high'].map((level) => (
+                                            <button
+                                                key={level}
+                                                onClick={() => updateEduAiForm('eduai_proactivity', level)}
+                                                className={`py-2 px-3 rounded-xl border-2 text-sm font-bold transition-all ${eduAiForm.eduai_proactivity === level
+                                                    ? 'border-indigo-600 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-400'
+                                                    : 'border-transparent bg-gray-50 dark:bg-[#282a2c] text-gray-500 hover:bg-gray-100'
+                                                    }`}
+                                            >
+                                                {level === 'low' ? 'Passiv' : level === 'medium' ? 'Balanserad' : 'Proaktiv'}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <button
+                                    onClick={handleSaveEduAi}
+                                    disabled={savingApiKey}
+                                    className="w-full flex items-center justify-center gap-2 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold shadow-lg shadow-indigo-500/20 transition-all hover:scale-[1.02]"
+                                >
+                                    {savingApiKey ? (
+                                        <RefreshCw size={18} className="animate-spin" />
+                                    ) : (
+                                        <Save size={18} />
+                                    )}
+                                    Spara EduAI Hub-inställningar
+                                </button>
                             </div>
                         </div>
 

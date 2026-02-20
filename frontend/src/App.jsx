@@ -69,6 +69,7 @@ import SurveyResults from './features/health/SurveyResults';
 import WellbeingCenter from './features/health/WellbeingCenter';
 import WellbeingInbox from './features/health/WellbeingInbox';
 import AdaptiveLearningDashboard from './features/adaptive/AdaptiveLearningDashboard';
+import EduAiHubPage from './features/ai/EduAiHubPage';
 
 import ManagementReportCenter from './features/principal/ManagementReportCenter';
 import ImpactDashboard from './features/impact/ImpactDashboard';
@@ -547,6 +548,14 @@ const AppRoutes = () => {
                     <ProtectedRoute roles={['STUDENT', 'ROLE_STUDENT', 'ADMIN']}>
                         <Layout currentUser={currentUser} handleLogout={logout}>
                             <AdaptiveLearningDashboard />
+                        </Layout>
+                    </ProtectedRoute>
+                } />
+
+                <Route path="/ai-hub" element={
+                    <ProtectedRoute roles={['STUDENT', 'ROLE_STUDENT', 'ADMIN']}>
+                        <Layout currentUser={currentUser} handleLogout={logout}>
+                            <EduAiHubPage />
                         </Layout>
                     </ProtectedRoute>
                 } />

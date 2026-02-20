@@ -24,7 +24,7 @@
 | **AI Audit Log** | Full spårbarhet av alla AI-beslut och rekommendationer för compliance och debugging. | ✅ **Klar** | **100%** transparens (XAI). |
 | **xAPI & cmi5** | Modern spårning (LRS) för mobilt lärande och simuleringar. | ✅ **Verifierad** | Nästa generations analys. |
 | **Skills Gap Analysis** | Visualisering av kompetensluckor och progress (Radar charts). | ✅ **Klar** | **v2.0.20** |
-| **EduAI Center v2.0** | AI-driven studiehub (Spaced Repetition, AI Coach, Mini-Games). | 📅 **Planerad** | **v2.1.0** |
+| **EduAI Center v2.0** | AI-driven studiehub (Spaced Repetition, AI Coach, Mini-Games). | ✅ **Klar** | **v2.1.0** |
 | **Workflow Integration** | Utbildning direkt i Slack/Teams/Salesforce ("Headless LMS"). | 📅 **Planerad** |
 
 ---
@@ -73,6 +73,15 @@
 ---
 
 ## 📝 Change Log
+
+### [v2.1.0] - 2026-02-20
+- **New Feature**: **EduAI Hub v2.1 & Intelligence Center**.
+- **Spaced Repetition**: Implemented SM-2 algorithm for Knowledge Fragments.
+- **AI Credit System**: New economy system with Balance tracking and Transaction logs.
+- **Admin Controls**: Centralized AI settings for XP ratios, credit earn rates, and coach proactivity.
+- **UI/UX**: Created glassmorphic `HubReviewDeck` and interactive `IntelligenceBar`.
+- **Gamification**: Integrated AI Credits with Daily Review quality scores.
+- **Stability**: Fixed critical backend lint errors in `LiveLessonController`, `SystemSettingController`, and `EduAiHubController`.
 
 ### [v2.0.22] - 2026-02-20
 - **New Feature**: **Collaborative Document Editing (OnlyOffice Fix)**.

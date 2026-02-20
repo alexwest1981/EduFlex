@@ -673,7 +673,10 @@ export const api = {
         audit: {
             getAll: (page = 0, size = 20) => api.get(`/admin/ai-audit?page=${page}&size=${size}`),
             getByUser: (userId) => api.get(`/admin/ai-audit/user/${userId}`)
-        }
+        },
+        getHubStats: () => api.get('/ai/hub/stats'),
+        getReviewQueue: () => api.get('/ai/hub/queue'),
+        processReviewResult: (itemId, quality) => api.post(`/ai/hub/review/${itemId}?quality=${quality}`)
     },
 
     resources: {

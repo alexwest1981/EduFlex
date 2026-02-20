@@ -22,6 +22,7 @@ public class QuizService {
     private final com.eduflex.backend.service.ai.EduAIService eduAIService;
     private final LtiAgsService ltiAgsService;
     private final LtiLaunchRepository ltiLaunchRepository;
+    private final EduAiHubService eduAiHubService;
 
     public QuizService(QuizRepository quizRepository,
             QuizResultRepository resultRepository,
@@ -31,7 +32,8 @@ public class QuizService {
             StudentActivityService studentActivityService,
             com.eduflex.backend.service.ai.EduAIService eduAIService,
             LtiAgsService ltiAgsService,
-            LtiLaunchRepository ltiLaunchRepository) {
+            LtiLaunchRepository ltiLaunchRepository,
+            EduAiHubService eduAiHubService) {
         this.quizRepository = quizRepository;
         this.resultRepository = resultRepository;
         this.courseRepository = courseRepository;
@@ -41,6 +43,7 @@ public class QuizService {
         this.eduAIService = eduAIService;
         this.ltiAgsService = ltiAgsService;
         this.ltiLaunchRepository = ltiLaunchRepository;
+        this.eduAiHubService = eduAiHubService;
     }
 
     public List<Quiz> getQuizzesByCourse(Long courseId) {
@@ -140,6 +143,9 @@ public class QuizService {
         // --- EDUAI TRIGGER ---
         eduAIService.checkAndCompleteQuest(studentId, com.eduflex.backend.model.EduAIQuest.QuestObjectiveType.QUIZ,
                 quizId);
+
+        // Add to Spaced Repetition Hub
+        eduAiHubService.addKnowledgeFragment(student, quiz.getTitle(), quiz.getDescription(), "QUIZ", quizId);
         // ---------------------
 
         // --- LTI ADVANTAGE AGS: Post Grade ---

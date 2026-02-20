@@ -37,6 +37,14 @@
 
 ## 🇸🇪 Svenska
 
+*   **🧠 EduAI Hub v2.1 (Modular Center) (20 feb 2026):**
+    *   **Intelligence Bar:** Nytt gränssnitt som visualiserar studentens "Kunskaps-kö", XP-multiplikator och Mastery Score i realtid.
+    *   **AI Credit System:** Implementerat ett helt nytt valutasystem för AI-tjänster. Studenter tjänar credits genom högpresterande repetitioner.
+    *   **Daily Review Deck:** Glassmorphisk kortvy för Spaced Repetition (SM-2) som gör daglig repetition engagerande och visuell.
+    *   **Kunskaps-radar:** Dynamisk visualisering av studentens kompetensspridning (Teori, Praktik, Focus, Analys).
+    *   **Admin Sync:** Slutförd integration av centrala AI-inställningar (XP-ratio, earn-rates, proaktivitet) i systemets administrationsvy.
+    *   **Backend Stabilitet:** Åtgärdat kritiska kompilerings- och lint-fel i `LiveLessonController`, `SystemSettingController` och `EduAiHubController`.
+
 *   **📄 OnlyOffice & Collaborative Editing (20 feb 2026):**
     *   **Fullständig Integration:** Åtgärdat kritiska SSL- och JWT-fel som tidigare hindrade dokumentredigering.
     *   **Storage Resilience:** Implementerat "Path-Stripping" i `MinioStorageService` för att sömlöst hantera dokument från både MinIO och lokala sökningar.

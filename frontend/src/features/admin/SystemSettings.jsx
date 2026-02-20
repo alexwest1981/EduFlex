@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import {
     Save, Database, Server, HardDrive, RefreshCw,
     Shield, Activity, Clock, Download, Upload,
-    Trash2, AlertTriangle, CheckCircle, XCircle
+    Trash2, AlertTriangle, CheckCircle, XCircle, Settings,
+    Sparkles, Percent, Zap, MessageSquare
 } from 'lucide-react';
 import { api } from '../../services/api';
 import { useAppContext } from '../../context/AppContext';
@@ -17,10 +18,13 @@ const SystemSettings = () => {
 
     // General Settings State
     const [generalForm, setGeneralForm] = useState({
-        site_name: '',
-        support_email: '',
-        maintenance_mode: false,
         log_retention_days: 30
+    });
+
+    const [eduAiForm, setEduAiForm] = useState({
+        eduai_xp_ratio: '1.0',
+        eduai_credit_earn_rate: '5',
+        eduai_proactivity: 'MEDIUM'
     });
 
     useEffect(() => {
@@ -30,6 +34,11 @@ const SystemSettings = () => {
                 support_email: systemSettings.support_email || '',
                 maintenance_mode: systemSettings.maintenance_mode === 'true',
                 log_retention_days: parseInt(systemSettings.log_retention_days || '30')
+            });
+            setEduAiForm({
+                eduai_xp_ratio: systemSettings.eduai_xp_ratio || '1.0',
+                eduai_credit_earn_rate: systemSettings.eduai_credit_earn_rate || '5',
+                eduai_proactivity: systemSettings.eduai_proactivity || 'MEDIUM'
             });
         }
     }, [systemSettings]);
@@ -66,7 +75,7 @@ const SystemSettings = () => {
             await api.system.updateSetting('support_email', generalForm.support_email);
             await api.system.updateSetting('maintenance_mode', generalForm.maintenance_mode.toString());
             await api.system.updateSetting('log_retention_days', generalForm.log_retention_days.toString());
-            
+
             // Update context
             updateSystemSetting('site_name', generalForm.site_name);
             updateSystemSetting('support_email', generalForm.support_email);
@@ -129,7 +138,7 @@ const SystemSettings = () => {
 
             {/* Content */}
             <div className="bg-white dark:bg-[#1E1F20] rounded-xl border border-gray-200 dark:border-[#3c4043] shadow-sm p-6">
-                
+
                 {/* GENERAL TAB */}
                 {activeTab === 'general' && (
                     <div className="space-y-6 max-w-2xl">
@@ -179,6 +188,95 @@ const SystemSettings = () => {
                             >
                                 {loading ? <RefreshCw className="animate-spin" size={18} /> : <Save size={18} />}
                                 Spara ändringar
+                            </button>
+                        </div>
+                    </div>
+                )}
+
+                {/* EduAI TAB */}
+                {activeTab === 'eduai' && (
+                    <div className="space-y-6 max-w-2xl">
+                        <div>
+                            <div className="flex items-center gap-2 mb-4">
+                                <h3 className="text-lg font-bold text-gray-900 dark:text-white">EduAI Center Inställningar</h3>
+                                <span className="px-2 py-0.5 bg-brand-orange/10 text-brand-orange text-[10px] font-bold rounded-full uppercase">Premium</span>
+                            </div>
+
+                            <div className="space-y-5">
+                                <div className="p-4 bg-brand-orange/5 border border-brand-orange/10 rounded-xl">
+                                    <div className="flex items-center gap-3 mb-3">
+                                        <div className="p-2 bg-brand-orange/10 rounded-lg text-brand-orange">
+                                            <Percent size={20} />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-bold text-gray-900 dark:text-white">XP Multiplikator</label>
+                                            <p className="text-xs text-gray-500">Hur mycket extra XP ger AI-aktiviteter jämfört med vanliga kurser.</p>
+                                        </div>
+                                    </div>
+                                    <input
+                                        type="range"
+                                        min="0.1"
+                                        max="5.0"
+                                        step="0.1"
+                                        value={eduAiForm.eduai_xp_ratio}
+                                        onChange={(e) => setEduAiForm({ ...eduAiForm, eduai_xp_ratio: e.target.value })}
+                                        className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer accent-brand-orange"
+                                    />
+                                    <div className="flex justify-between mt-2 text-xs font-bold text-brand-orange">
+                                        <span>0.1x</span>
+                                        <span className="bg-brand-orange text-white px-2 py-0.5 rounded-full">{eduAiForm.eduai_xp_ratio}x</span>
+                                        <span>5.0x</span>
+                                    </div>
+                                </div>
+
+                                <div className="p-4 bg-indigo-500/5 border border-indigo-500/10 rounded-xl">
+                                    <div className="flex items-center gap-3 mb-3">
+                                        <div className="p-2 bg-indigo-500/10 rounded-lg text-indigo-500">
+                                            <Zap size={20} />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-bold text-gray-900 dark:text-white">AI-Credit Earn Rate</label>
+                                            <p className="text-xs text-gray-500">Antal AI-Credits studenten får per slutförd lektion.</p>
+                                        </div>
+                                    </div>
+                                    <input
+                                        type="number"
+                                        value={eduAiForm.eduai_credit_earn_rate}
+                                        onChange={(e) => setEduAiForm({ ...eduAiForm, eduai_credit_earn_rate: e.target.value })}
+                                        className="w-24 px-3 py-2 border border-gray-300 dark:border-[#3c4043] rounded-lg bg-white dark:bg-[#282a2c] text-gray-900 dark:text-white focus:ring-2 focus:ring-brand-orange outline-none"
+                                    />
+                                </div>
+
+                                <div className="p-4 bg-purple-500/5 border border-purple-500/10 rounded-xl">
+                                    <div className="flex items-center gap-3 mb-3">
+                                        <div className="p-2 bg-purple-500/10 rounded-lg text-purple-500">
+                                            <MessageSquare size={20} />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-bold text-gray-900 dark:text-white">AI-Coach Proaktivitet</label>
+                                            <p className="text-xs text-gray-500">Bestämmer hur ofta coachen tar kontakt med studenten.</p>
+                                        </div>
+                                    </div>
+                                    <select
+                                        value={eduAiForm.eduai_proactivity}
+                                        onChange={(e) => setEduAiForm({ ...eduAiForm, eduai_proactivity: e.target.value })}
+                                        className="w-full px-3 py-2 border border-gray-300 dark:border-[#3c4043] rounded-lg bg-white dark:bg-[#282a2c] text-gray-900 dark:text-white focus:ring-2 focus:ring-brand-orange outline-none"
+                                    >
+                                        <option value="LOW">Låg (Endast vid behov)</option>
+                                        <option value="MEDIUM">Medel (Balanserad)</option>
+                                        <option value="HIGH">Hög (Aktiv coachning)</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="pt-4 border-t border-gray-200 dark:border-[#3c4043]">
+                            <button
+                                onClick={handleSaveEduAi}
+                                disabled={loading}
+                                className="flex items-center gap-2 px-6 py-2.5 bg-brand-orange text-white rounded-lg font-bold hover:bg-brand-orange/90 disabled:opacity-50 transition-colors shadow-lg shadow-brand-orange/20"
+                            >
+                                {loading ? <RefreshCw className="animate-spin" size={18} /> : <Save size={18} />}
+                                Spara EduAI-inställningar
                             </button>
                         </div>
                     </div>
@@ -281,7 +379,7 @@ const SystemSettings = () => {
                                                         <Download size={16} />
                                                     </a>
                                                     <button
-                                                        onClick={() => {/* Delete logic */}}
+                                                        onClick={() => {/* Delete logic */ }}
                                                         title="Radera"
                                                         className="p-1.5 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
                                                     >
