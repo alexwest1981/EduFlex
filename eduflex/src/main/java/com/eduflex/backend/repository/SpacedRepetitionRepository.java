@@ -20,5 +20,7 @@ public interface SpacedRepetitionRepository extends JpaRepository<SpacedRepetiti
     @Query("SELECT s FROM SpacedRepetitionItem s WHERE s.user = :user AND s.nextReviewDate <= :now ORDER BY s.nextReviewDate ASC")
     List<SpacedRepetitionItem> findDueItems(User user, LocalDateTime now);
 
+    List<SpacedRepetitionItem> findByUserId(Long userId);
+
     List<SpacedRepetitionItem> findByUserIdAndCategoryAndSourceId(Long userId, String category, Long sourceId);
 }

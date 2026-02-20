@@ -10,7 +10,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Service for managing the EduAI Hub, including Spaced Repetition logic.
@@ -33,6 +36,48 @@ public class EduAiHubService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         return spacedRepetitionRepository.findDueItems(user, LocalDateTime.now());
+    }
+
+    /**
+     * Calculates the overall mastery score for a user.
+     * Based on normalized Easiness Factor (1.3 - 2.5+).
+     */
+    public int getMasteryScore(Long userId) {
+        List<SpacedRepetitionItem> all = spacedRepetitionRepository.findByUserId(userId);
+        if (all.isEmpty())
+            return 0;
+
+        double sum = all.stream()
+                .mapToDouble(item -> Math.min(1.0, (item.getEasinessFactor() - 1.3) / 1.2))
+                .sum();
+
+        return (int) Math.round((sum / all.size()) * 100);
+    }
+
+    /**
+     * Calculates mastery per category for the Radar Chart.
+     */
+    public Map<String, Integer> getRadarStats(Long userId) {
+        List<SpacedRepetitionItem> all = spacedRepetitionRepository.findByUserId(userId);
+        Map<String, List<SpacedRepetitionItem>> grouped = all.stream()
+                .collect(Collectors.groupingBy(item -> item.getCategory() != null ? item.getCategory() : "Allmänt"));
+
+        Map<String, Integer> stats = new HashMap<>();
+        String[] categories = { "Teori", "Praktik", "Focus", "Analys" };
+
+        for (String cat : categories) {
+            List<SpacedRepetitionItem> items = grouped.get(cat);
+            if (items == null || items.isEmpty()) {
+                stats.put(cat, 0);
+            } else {
+                double avg = items.stream()
+                        .mapToDouble(item -> Math.min(1.0, (item.getEasinessFactor() - 1.3) / 1.2))
+                        .average()
+                        .orElse(0.0);
+                stats.put(cat, (int) Math.round(avg * 100));
+            }
+        }
+        return stats;
     }
 
     /**

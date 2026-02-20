@@ -74,6 +74,14 @@
 
 ## 📝 Change Log
 
+### [v2.2.0] - 2026-02-20
+- **New Feature**: **Intelligence Center Merger**.
+- **Consolidation**: Merged legacy EduAI into the unified EduAI Hub.
+- **Mini-Games**: Fully functional **Memory Match** and **Time Attack** using live student data.
+- **Live Analytics**: Dynamic SVG Radar Chart and SM-2 based Mastery Score calculation.
+- **UI/UX**: Tabbed Hub interface for Review, Games, and Quests.
+- **Clean Up**: Removed legacy EduAI dashboard tab to avoid redundancy.
+
 ### [v2.1.0] - 2026-02-20
 - **New Feature**: **EduAI Hub v2.1 & Intelligence Center**.
 - **Spaced Repetition**: Implemented SM-2 algorithm for Knowledge Fragments.

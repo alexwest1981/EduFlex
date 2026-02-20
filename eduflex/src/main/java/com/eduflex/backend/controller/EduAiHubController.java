@@ -50,6 +50,10 @@ public class EduAiHubController {
                 : "1.0");
         stats.put("aiCredits", aiCreditService.getBalance(user));
 
+        // NEW: Live Data from DB
+        stats.put("masteryScore", eduAiHubService.getMasteryScore(user.getId()));
+        stats.put("radarStats", eduAiHubService.getRadarStats(user.getId()));
+
         return ResponseEntity.ok(stats);
     }
 
