@@ -37,6 +37,11 @@
 
 ## 🇸🇪 Svenska
 
+*   **🎮 EduAI Hub Spel & XP Ekonomi (20 feb 2026):**
+    *   **Restaurerade Mini-spel:** Återställt de konfigurerade och fungerande spelen (Memory Match & Time Attack) till EduAI Hub och tagit bort icke-funktionella mockups.
+    *   **XP Integration:** Kopplat spelmotorn till det globala XP/poäng-systemet så att studenter omedelbart belönas efter spelade omgångar.
+    *   **Live Sync i Butiken:** Löst en bugg där XP-saldo i ShopView inte uppdaterades. Implementerat en global event-lyssnare i `AppContext` och säkrat API-anropen med JWT och Tenant-ID.
+
 *   **🧠 EduAI Hub v2.1 (Modular Center) (20 feb 2026):**
     *   **Intelligence Bar:** Nytt gränssnitt som visualiserar studentens "Kunskaps-kö", XP-multiplikator och Mastery Score i realtid.
     *   **AI Credit System:** Implementerat ett helt nytt valutasystem för AI-tjänster. Studenter tjänar credits genom högpresterande repetitioner.
@@ -216,6 +221,10 @@ Hitta rätt dokumentation snabbare baserat på din roll i organisationen:
 ---
 
 ### Senaste Uppdateringar
+*   **🎮 EduAI Hub Spel & XP Ekonomi - 20 feb 2026:**
+    *   **Restaurerade Mini-spel:** Återställt funktionella spel (Memory Match & Time Attack) samt relaterade 3D-UI-komponenter till EduAI Hub.
+    *   **Real-time Economy Sync:** Kopplat spelets XP till den globala butiken via `AppContext` listeners och robusta API-middlewares.
+
 *   **📄 OnlyOffice & Collaborative Editing - 20 feb 2026:**
     *   **Production Ready:** Fixed critical SSL/JWT errors and Forced HTTPS via proxy headers to enable seamless document editing in production.
     *   **Deep Storage Sync:** Enhanced `MinioStorageService` to recover missing documents via aggressive path-stripping and recursive folder search.
