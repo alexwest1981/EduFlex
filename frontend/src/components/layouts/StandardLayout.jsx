@@ -300,7 +300,7 @@ const StandardLayout = ({ children }) => {
                     </div>
                 </header>
 
-                <div className="flex-1 p-4 lg:p-8 relative custom-scrollbar">
+                <div className="flex-1 p-4 lg:p-8 relative custom-scrollbar overflow-x-hidden">
                     {children}
                 </div>
 

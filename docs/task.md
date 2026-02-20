@@ -1,6 +1,21 @@
 - [x] Configure Native WSL Docker Engine
 - [x] Migrate Docker contexts and credentials
 - [x] Create dedicated base migration for `embeddings` table (`V4_1`)
+- [x] **Documentation & Finalization**:
+  - [x] Updated `README.md` with latest updates.
+  - [x] Updated `ROADMAP.md` (v2.0.21).
+  - [x] Updated `LandingPage.jsx` with Premium Video feature.
+  - [x] Cleaned up documentation (moved legacy MDs to `docs/`).
+  - [x] Performed final Git Push.
+- [ ] **Debugging & Stability**:
+  - [x] Fix `ReferenceError: Smartphone is not defined` in `FeaturesPage.jsx`.
+  - [x] Fix `HS256` JWT secret length error.
+  - [x] Fix `Flyway` checksum repair issues.
+  - [x] Fix Signal "Failed to fetch" (host/protocol detection).
+  - [/] Fix Media/ICE "Departure Timeout" (TURN server config).
+    - [x] Enable internal TURN in `livekit.yaml`.
+    - [x] Expose TURN ports in `docker-compose.yml`.
+    - [ ] Add `turn.eduflexlms.se` to Cloudflare Tunnel.
 - [x] Create dedicated base migration for `elevhalsa_cases` table (`V20_1`)
 - [x] Create dedicated base migration for `guardian_child_links` (`V21_1`)
 - [x] Create dedicated base migration for `message_attachments` (`V22_1`)

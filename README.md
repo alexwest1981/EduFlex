@@ -37,6 +37,12 @@
 
 ## 🇸🇪 Svenska
 
+*   **📄 OnlyOffice & Collaborative Editing (20 feb 2026):**
+    *   **Fullständig Integration:** Åtgärdat kritiska SSL- och JWT-fel som tidigare hindrade dokumentredigering.
+    *   **Storage Resilience:** Implementerat "Path-Stripping" i `MinioStorageService` för att sömlöst hantera dokument från både MinIO och lokala sökningar.
+    *   **HTTPS Protocol Fix:** Tvingat HTTPS-protokoll via proxy-headers (X-Forwarded-Proto) för att eliminera "Mixed Content"-varningar i OnlyOffice.
+    *   **Prestanda:** Ökat minnesgränsen för OnlyOffice-containern till 4GB för att hantera stora dokument och flera samtidiga redigerare.
+
 *   **🎬 Premium Video & LiveKit Integration (19 feb 2026):**
     *   **LiveKit Engine:** Migrerat från Jitsi till en högpresterande LiveKit-motor för stabilare och säkrare videomöten.
     *   **Background Blur:** Implementerat Zoom-liknande bakgrundsoskärpa direkt i webbläsaren via `@livekit/track-processors`.
@@ -202,6 +208,11 @@ Hitta rätt dokumentation snabbare baserat på din roll i organisationen:
 ---
 
 ### Senaste Uppdateringar
+*   **📄 OnlyOffice & Collaborative Editing - 20 feb 2026:**
+    *   **Production Ready:** Fixed critical SSL/JWT errors and Forced HTTPS via proxy headers to enable seamless document editing in production.
+    *   **Deep Storage Sync:** Enhanced `MinioStorageService` to recover missing documents via aggressive path-stripping and recursive folder search.
+    *   **Performance:** Boosted OnlyOffice resources and resolved "Download Failed" (Code -4) errors.
+
 *   **🎬 LiveKit Premium Video - 19 feb 2026:**
     *   **Premium Infrastructure:** Full integration av LiveKit för live-lektioner med stöd för tusentals samtidiga användare.
     *   **Suddig bakgrund:** Ny premium-funktion för att dölja distraherande bakgrunder under möten.
@@ -326,6 +337,11 @@ Hitta rätt dokumentation snabbare baserat på din roll i organisationen:
 
 ### ⚡ Latest Updates (v1.0.5)
 ### ⚡ Latest Updates (v1.0.6)
+> **2026-02-20: OnlyOffice Fix & Collaborative Editing**
+*   **📄 OnlyOffice integration:** Resolved complex SSL/Mixed Content issues and JWT signature errors.
+*   **📂 Storage Path Fix:** Implemented smart path-stripping for MinIO retrieval.
+*   **🚀 Version Update:** Synchronized version to **v2.0.22**.
+
 > **2026-02-19: LiveKit Premium Video & UI Refactor**
 *   **🎬 LiveKit Migration:** Deprecated Jitsi in favor of LiveKit for superior stability and scalability.
 *   **✨ Background Blur:** Zoom-style background blur feature as a premium addon for live lessons.

@@ -46,8 +46,6 @@ public class SecurityConfig {
         @Value("${eduflex.auth.mode:hybrid}")
         private String authMode;
 
-
-
         private final com.eduflex.backend.security.OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
         private final com.eduflex.backend.security.OAuth2LoginFailureHandler oAuth2LoginFailureHandler;
         private final com.eduflex.backend.security.CustomOidcUserService customOidcUserService;
@@ -122,8 +120,11 @@ public class SecurityConfig {
                                                                 "/api/onlyoffice/**",
                                                                 "/api/gamification/config/system", "/api/payment/**",
                                                                 "/api/community/subjects",
-                                                                "/api/lrs/**") // LRS endpoints must be accessible
+                                                                "/api/lrs/**", // LRS endpoints must be accessible
                                                                                // without auth for Content/AUs
+                                                                "/api/calendar/ical/feed/**") // iCal feed - public so
+                                                                                              // Google Calendar, Apple
+                                                                                              // Calendar etc. can poll
                                                 .permitAll()
                                                 .requestMatchers(HttpMethod.POST, "/api/tenants").permitAll() // Explicitly
                                                                                                               // allow
@@ -136,9 +137,12 @@ public class SecurityConfig {
                                                                 "/ws-log/**",
                                                                 "/ws-forum/**",
                                                                 "/ws-social/**",
-                                                                "/api/adaptive/**", "/actuator/**", "/lti/**", "/api/lti/**", "/error",
+                                                                "/api/adaptive/**", "/actuator/**", "/lti/**",
+                                                                "/api/lti/**", "/error",
                                                                 "/web-apps/**", "/sdkjs/**", "/sdkjs-plugins/**",
                                                                 "/fonts/**", "/cache/**", "/coauthoring/**",
+                                                                "/spellcheck/**", "/proxy-ping", "/api/proxy-ping",
+                                                                "/api/onlyoffice-proxy/**",
                                                                 "/spellcheck/**",
                                                                 "/ConvertService.ashx", "/CommandService.ashx", // Static
                                                                                                                 // and
@@ -363,4 +367,3 @@ public class SecurityConfig {
                 return source;
         }
 }
-

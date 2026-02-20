@@ -147,6 +147,7 @@ services:
       - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY:-}
       - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET:-}
       - EDUFLEX_DOMAIN_URL=${EDUFLEX_DOMAIN_URL:-}
+      - ONLYOFFICE_JWT_SECRET=${ONLYOFFICE_JWT_SECRET:-S0raknJQXb1gcrvpgkNlpRQW3OyfiR9Q}
       # - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9094
       # Disable Kafka Auto-Configuration to prevent startup failure
       - SPRING_AUTOCONFIGURE_EXCLUDE=org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration
@@ -271,25 +272,28 @@ services:
       - JWT_SECRET=${ONLYOFFICE_JWT_SECRET:-S0raknJQXb1gcrvpgkNlpRQW3OyfiR9Q}
       - JWT_HEADER=Authorization
       - JWT_IN_BODY=true
-      # Use built-in services (no external DB needed)
-      - DB_TYPE=postgres
-      - DB_HOST=localhost
-      - DB_PORT=5432
-      - DB_NAME=onlyoffice
-      - DB_USER=onlyoffice
-      - AMQP_TYPE=rabbitmq
-      - AMQP_URI=amqp://guest:guest@localhost
-      - REDIS_SERVER_HOST=localhost
-      - REDIS_SERVER_PORT=6379
       # Enable debug logging
       - DS_LOG_LEVEL=DEBUG
+      # Proxy and base URL configuration to fix localhost:8081 redirection and SSL issues
+      - DS_ADDRESS=https://www.eduflexlms.se
+      - DS_QUERY_ADDRESS=https://www.eduflexlms.se
+      - DS_HEADER_X_FORWARDED_PROTO=X-Forwarded-Proto
+      - DS_HEADER_X_FORWARDED_HOST=X-Forwarded-Host
+      - DS_HEADER_X_FORWARDED_PORT=X-Forwarded-Port
+      - DS_USE_HTTP_FOR_INTERNAL_CALLS=true
+      - ALLOW_PRIVATE_IP_ADDRESS=true
     volumes:
       - onlyoffice_data:/var/www/onlyoffice/Data
       - onlyoffice_logs:/var/log/onlyoffice
-      - ./onlyoffice-config:/etc/onlyoffice/documentserver-example
     ports:
       - "8081:80"
       - "8445:443"
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+        reservations:
+          memory: 1G
     networks:
       - eduflex-net
     extra_hosts:
@@ -304,6 +308,10 @@ services:
     ports:
       - "7880:7880"
       - "7881:7881"
+      - "3478:3478"
+      - "3478:3478/udp"
+      - "5349:5349"
+      - "5349:5349/udp"
       - "7882:7882/udp"
     environment:
       LIVEKIT_KEYS: "${LIVEKIT_API_KEY}: ${LIVEKIT_API_SECRET}"

@@ -12,6 +12,7 @@ import com.eduflex.backend.service.SystemSettingService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import jakarta.servlet.http.HttpServletRequest;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -94,7 +95,7 @@ public class LiveLessonController {
     }
 
     @GetMapping("/{id}/join")
-    public ResponseEntity<?> getJoinInfo(@PathVariable Long id) {
+    public ResponseEntity<?> getJoinInfo(@PathVariable Long id, HttpServletRequest request) {
         try {
             LiveLesson lesson = liveLessonRepository.findById(id)
                     .orElseThrow(() -> new RuntimeException("Lesson not found"));
@@ -111,7 +112,19 @@ public class LiveLessonController {
             SystemSetting urlSetting = systemSettingService.getSetting("livekit_url");
             String serverUrl = (urlSetting != null && urlSetting.getSettingValue() != null)
                     ? urlSetting.getSettingValue()
-                    : "ws://localhost:7880";
+                    : System.getenv("LIVEKIT_URL");
+
+            if (serverUrl == null || serverUrl.isEmpty()) {
+                // If we are on a public domain, localhost:7880 won't work for clients.
+                // We'll try to use the requesting host as a fallback if it's not localhost.
+                String requestHost = request.getServerName();
+                if (!requestHost.equals("localhost") && !requestHost.equals("127.0.0.1")) {
+                    String protocol = request.isSecure() ? "wss" : "ws";
+                    serverUrl = protocol + "://" + requestHost + ":7880";
+                } else {
+                    serverUrl = "ws://localhost:7880";
+                }
+            }
 
             return ResponseEntity.ok(Map.of(
                     "id", lesson.getId(),

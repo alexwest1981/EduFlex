@@ -9,9 +9,10 @@ import {
     useTracks,
     Chat,
     useParticipants,
-    useLocalParticipant
+    useLocalParticipant,
+    useConnectionState
 } from '@livekit/components-react';
-import { Track } from 'livekit-client';
+import { Track, ConnectionState } from 'livekit-client';
 import '@livekit/components-styles';
 import { X, Users, MessageSquare, Settings, Share2, Mic, MicOff, Video as VideoIcon, VideoOff, PhoneOff, User, Sparkles } from 'lucide-react';
 
@@ -42,6 +43,17 @@ const MyParticipantList = () => {
 
 const MeetingUI = ({ activePanel, setActivePanel, onLeave, isBlurActive, setIsBlurActive, isProcessing, setIsProcessing }) => {
     const { localParticipant } = useLocalParticipant();
+    const connectionState = useConnectionState();
+
+    const getStatusColor = () => {
+        switch (connectionState) {
+            case ConnectionState.Connected: return 'bg-emerald-500';
+            case ConnectionState.Connecting: return 'bg-amber-500 animate-pulse';
+            case ConnectionState.Reconnecting: return 'bg-orange-500 animate-pulse';
+            case ConnectionState.Disconnected: return 'bg-red-500';
+            default: return 'bg-slate-500';
+        }
+    };
 
     const toggleBlur = async () => {
         if (isProcessing) return;
@@ -84,8 +96,10 @@ const MeetingUI = ({ activePanel, setActivePanel, onLeave, isBlurActive, setIsBl
                     <div>
                         <h1 className="text-white font-semibold text-lg leading-tight">Live Lesson</h1>
                         <p className="text-white/40 text-xs flex items-center gap-1">
-                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                            LiveKit Secure Session
+                            <span className={`w-1.5 h-1.5 rounded-full ${getStatusColor()}`}></span>
+                            {connectionState === ConnectionState.Connected ? 'Ansluten' :
+                                connectionState === ConnectionState.Connecting ? 'Ansluter media...' :
+                                    connectionState === ConnectionState.Reconnecting ? 'Återansluter...' : 'Frånkopplad'}
                         </p>
                     </div>
                 </div>
@@ -194,16 +208,74 @@ const PremiumLiveMeeting = ({ lessonId, token, serverUrl, onLeave }) => {
     const [activePanel, setActivePanel] = useState(null); // 'chat', 'participants', 'settings'
     const [isBlurActive, setIsBlurActive] = useState(false);
     const [isProcessing, setIsProcessing] = useState(false);
+    const [error, setError] = useState(null);
+
+    // Sanitize serverUrl: Handle protocol mismatch (ws vs wss) and localhost in non-local environments
+    const sanitizedServerUrl = React.useMemo(() => {
+        if (!serverUrl) return serverUrl;
+        let url = serverUrl;
+
+        // Auto-upgrade to wss if page is secure
+        if (window.location.protocol === 'https:' && url.startsWith('ws://')) {
+            url = url.replace('ws://', 'wss://');
+            console.log('Upgraded LiveKit protocol to wss:// for secure page');
+        }
+
+        // Detect if we are in production but the server sent localhost
+        const isProdDomain = window.location.hostname !== 'localhost' && !window.location.hostname.includes('127.0.0.1');
+        if (isProdDomain && url.includes('localhost')) {
+            // Fallback: Try to use the current domain instead of localhost
+            // Keep the port if it was specified (e.g. 7880), but ideally the user should set a proper LIVEKIT_URL
+            url = url.replace('localhost', window.location.hostname);
+            console.warn('Detected localhost in production environment, falling back to current domain:', url);
+        }
+
+        return url;
+    }, [serverUrl]);
 
     if (!token) return <div className="flex items-center justify-center h-screen bg-slate-900 text-white">Laddar möte...</div>;
+
+    const handleError = (error) => {
+        console.error('LiveKit Room Error:', error);
+        setError(`Anslutningsfel: ${error.message || 'Okänt fel'}`);
+    };
+
+    const handleDisconnected = (reason) => {
+        console.warn('LiveKit Room Disconnected:', reason);
+        // If it was a natural exit, just leave
+        if (!reason) {
+            onLeave();
+            return;
+        }
+        setError(`Frånkopplad: ${reason}`);
+    };
+
+    if (error) {
+        return (
+            <div className="flex flex-col items-center justify-center h-screen bg-slate-950 text-white p-6 text-center">
+                <div className="w-16 h-16 rounded-full bg-red-500/10 flex items-center justify-center text-red-500 mb-6">
+                    <X size={32} />
+                </div>
+                <h2 className="text-2xl font-bold mb-2">Ett fel uppstod</h2>
+                <p className="text-white/60 mb-8 max-w-md">{error}</p>
+                <button
+                    onClick={onLeave}
+                    className="px-6 py-2 rounded-xl bg-white/5 hover:bg-white/10 transition-colors border border-white/10"
+                >
+                    Gå tillbaka
+                </button>
+            </div>
+        );
+    }
 
     return (
         <LiveKitRoom
             video={true}
             audio={true}
             token={token}
-            serverUrl={serverUrl}
-            onDisconnected={onLeave}
+            serverUrl={sanitizedServerUrl}
+            onDisconnected={handleDisconnected}
+            onError={handleError}
             className="fixed inset-0"
         >
             <MeetingUI

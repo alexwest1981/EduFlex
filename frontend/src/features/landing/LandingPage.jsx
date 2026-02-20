@@ -120,6 +120,14 @@ const LandingPage = () => {
             bgColor: 'bg-indigo-500/10',
             hoverBorder: 'hover:border-indigo-500/50'
         },
+        {
+            icon: <FileText className="w-7 h-7" />,
+            title: "Collaborative Editing",
+            description: "Redigera dokument tillsammans i realtid med OnlyOffice. Sömlös integration för Word, Excel och PowerPoint direkt i webbläsaren.",
+            color: 'text-brand-orange',
+            bgColor: 'bg-brand-orange/10',
+            hoverBorder: 'hover:border-brand-orange/50'
+        },
     ];
 
 

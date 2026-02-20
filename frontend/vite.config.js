@@ -65,8 +65,11 @@ export default defineConfig(({ mode }) => {
                     // The main JS bundle is ~1.85MB; give a comfortable margin
                     maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
                     // Let the app shell handle routing for SPA — match everything except /api/
+                    // Let the app shell handle routing for SPA — match everything except /api/ and OnlyOffice assets
                     navigateFallback: 'index.html',
-                    navigateFallbackAllowlist: [/^\/(?!api\/)/]
+                    navigateFallbackAllowlist: [
+                        /^\/(?!(api|web-apps|sdkjs|fonts|cache|coauthoring|spellcheck|doc\/|shards|.*\/web-apps|.*\/sdkjs|.*\/fonts|.*\/cache|.*\/coauthoring|.*\/spellcheck|.*\/doc\/|.*\/shards|.*service_worker\.js|\d+\.\d+\.\d+))/
+                    ]
                 },
                 // Aktivera PWA-funktioner även i dev mode (manifest + service worker)
                 devOptions: {
@@ -122,47 +125,25 @@ export default defineConfig(({ mode }) => {
                     ws: true,
                     changeOrigin: true
                 },
-                '/web-apps': {
-                    target: 'http://localhost:8081',
-                    changeOrigin: true,
-                    ws: true,
-                    secure: false
-                },
                 // Proxy uploads to backend (Profile pictures, etc.)
                 '/uploads': {
                     target: backendUrl,
                     changeOrigin: true,
                     secure: false
                 },
-                // OnlyOffice 8.x uses versioned paths like /8.2.0/ for some resources
-                // Proxy all numeric version paths to OnlyOffice (localhost:8081 or Docker onlyoffice-ds)
-                '^/[0-9]+\\.[0-9]+\\.[0-9]+': {
+                // OnlyOffice Direct Proxy - Route ASSETS and SOCKETS directly to ONLYOFFICE server (8081)
+                // This bypasses the backend proxy for better performance and WebSocket support
+                // Refined: Use doc/ (slash inclusive) to avoid matching /documents SPA route
+                '^(?:/.*)?/(web-apps|sdkjs|fonts|cache|sdkjs-plugins|coauthoring|spellcheck|doc/|shards|ConvertService\\.ashx|CommandService\\.ashx|.*service_worker\\.js|\\d+\\.\\d+\\.\\d+)': {
                     target: 'http://localhost:8081',
-                    changeOrigin: true,
+                    changeOrigin: false,
                     ws: true,
-                    secure: false
-                },
-                // OnlyOffice also uses /cache/files/ for document operations
-                '/cache': {
-                    target: 'http://localhost:8081',
-                    changeOrigin: true,
-                    secure: false
-                },
-                // Fonts and other resources
-                '/fonts': {
-                    target: 'http://localhost:8081',
-                    changeOrigin: true,
-                    secure: false
-                },
-                '/sdkjs': {
-                    target: 'http://localhost:8081',
-                    changeOrigin: true,
-                    secure: false
-                },
-                '/sdkjs-plugins': {
-                    target: 'http://localhost:8081',
-                    changeOrigin: true,
-                    secure: false
+                    secure: false,
+                    xfwd: true,
+                    headers: {
+                        'X-Forwarded-Proto': 'https',
+                        'X-Forwarded-Port': '443'
+                    }
                 }
             }
         }

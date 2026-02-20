@@ -11,26 +11,26 @@ import com.eduflex.backend.service.StorageService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/onlyoffice")
@@ -42,11 +42,17 @@ public class OnlyOfficeController {
     @Value("${file.upload-dir}")
     private String uploadDir;
 
-    @Value("${app.backend.internal-url:http://eduflex-backend:8080}")
+    @Value("${app.backend.internal-url:http://host.docker.internal:8080}")
     private String internalBackendUrl;
 
     @Value("${app.url:https://www.eduflexlms.se}")
     private String publicAppUrl;
+
+    @Value("${onlyoffice.internal.url:${ONLYOFFICE_URL:http://eduflex-onlyoffice}}")
+    private String onlyOfficeInternalUrlProp;
+
+    @Value("${onlyoffice.jwt.secret:S0raknJQXb1gcrvpgkNlpRQW3OyfiR9Q}")
+    private String onlyOfficeJwtSecret;
 
     private final DocumentRepository documentRepository;
     private final CourseMaterialRepository materialRepository;
@@ -72,33 +78,115 @@ public class OnlyOfficeController {
         this.storageService = storageService;
     }
 
-    @Value("${onlyoffice.internal.url:http://localhost:8081}")
-    private String onlyOfficeInternalUrlProp;
-
     @GetMapping("/health")
     public ResponseEntity<Map<String, Object>> healthCheck() {
         Map<String, Object> status = new HashMap<>();
+        String onlyOfficeUrl = "";
         try {
-            // Prefer DB setting, fall back to application.properties
-            String onlyOfficeUrl = settingRepository.findBySettingKey("onlyoffice_internal_url")
+            onlyOfficeUrl = settingRepository.findBySettingKey("onlyoffice_internal_url")
                     .map(s -> s.getSettingValue())
                     .filter(v -> v != null && !v.isBlank())
                     .orElse(onlyOfficeInternalUrlProp);
+
+            logger.info("[ONLYOFFICE] Checking health at: {}", onlyOfficeUrl);
 
             if (!onlyOfficeUrl.endsWith("/"))
                 onlyOfficeUrl += "/";
             onlyOfficeUrl += "healthcheck";
 
             URL url = new URI(onlyOfficeUrl).toURL();
-            InputStream is = url.openStream();
-            is.close();
-            status.put("status", "UP");
-            status.put("message", "ONLYOFFICE server is reachable at " + onlyOfficeUrl);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setConnectTimeout(2000);
+            int code = conn.getResponseCode();
+
+            status.put("status", code == 200 ? "UP" : "DOWN");
+            status.put("message", "ONLYOFFICE server returned " + code + " at " + onlyOfficeUrl);
         } catch (Exception e) {
             status.put("status", "DOWN");
-            status.put("message", "Cannot reach ONLYOFFICE server: " + e.getMessage());
+            status.put("message", "Cannot reach ONLYOFFICE server at " + onlyOfficeUrl + ": " + e.getMessage());
+            logger.error("[ONLYOFFICE] Health check failed for {}", onlyOfficeUrl, e);
         }
         return ResponseEntity.ok(status);
+    }
+
+    @GetMapping("/test-ping")
+    public String proxyPing() {
+        return "OnlyOffice Proxy is active in OnlyOfficeController";
+    }
+
+    @RequestMapping(value = "/proxy/**")
+    public void proxyRequest(HttpServletRequest request, HttpServletResponse response) {
+        String path = request.getRequestURI();
+        String query = request.getQueryString();
+
+        String onlyOfficeUrl = settingRepository.findBySettingKey("onlyoffice_internal_url")
+                .map(s -> s.getSettingValue())
+                .filter(v -> v != null && !v.isBlank())
+                .orElse(onlyOfficeInternalUrlProp);
+
+        if (onlyOfficeUrl.endsWith("/")) {
+            onlyOfficeUrl = onlyOfficeUrl.substring(0, onlyOfficeUrl.length() - 1);
+        }
+
+        // Standard path is /api/onlyoffice/proxy/...
+        String internalPath = path;
+        int proxyIndex = internalPath.indexOf("/proxy/");
+        if (proxyIndex != -1) {
+            internalPath = internalPath.substring(proxyIndex + 6); // skip "/proxy"
+        }
+
+        String fullTarget = onlyOfficeUrl + internalPath + (query != null ? "?" + query : "");
+        logger.info("[OnlyOfficeProxy] {} {} -> {}", request.getMethod(), path, fullTarget);
+
+        try {
+            URL url = new URI(fullTarget).toURL();
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod(request.getMethod());
+            connection.setConnectTimeout(5000);
+            connection.setReadTimeout(15000);
+            connection.setDoInput(true);
+            connection.setDoOutput(
+                    "POST".equalsIgnoreCase(request.getMethod()) || "PUT".equalsIgnoreCase(request.getMethod()));
+
+            Enumeration<String> headerNames = request.getHeaderNames();
+            while (headerNames.hasMoreElements()) {
+                String headerName = headerNames.nextElement();
+                if (headerName.equalsIgnoreCase("Host") || headerName.equalsIgnoreCase("Content-Length")
+                        || headerName.equalsIgnoreCase("Transfer-Encoding"))
+                    continue;
+                connection.setRequestProperty(headerName, request.getHeader(headerName));
+            }
+
+            if (connection.getDoOutput()) {
+                try (InputStream is = request.getInputStream(); OutputStream os = connection.getOutputStream()) {
+                    IOUtils.copy(is, os);
+                }
+            }
+
+            connection.setRequestProperty("X-Forwarded-Host", request.getServerName());
+            connection.setRequestProperty("X-Forwarded-Proto", request.getScheme());
+
+            int responseCode = connection.getResponseCode();
+            response.setStatus(responseCode);
+
+            Map<String, List<String>> responseHeaders = connection.getHeaderFields();
+            for (Map.Entry<String, List<String>> entry : responseHeaders.entrySet()) {
+                if (entry.getKey() != null && !entry.getKey().equalsIgnoreCase("Transfer-Encoding")) {
+                    for (String value : entry.getValue()) {
+                        response.addHeader(entry.getKey(), value);
+                    }
+                }
+            }
+
+            try (InputStream is = (responseCode >= 400) ? connection.getErrorStream() : connection.getInputStream();
+                    OutputStream os = response.getOutputStream()) {
+                if (is != null)
+                    IOUtils.copy(is, os);
+            }
+        } catch (Exception e) {
+            logger.error("Error proxying to OnlyOffice: {}", fullTarget, e);
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        }
     }
 
     @GetMapping("/config/{type}/{id}")
@@ -113,283 +201,149 @@ public class OnlyOfficeController {
         String tenantId = request.getHeader("X-Tenant-ID");
         if (tenantId == null)
             tenantId = request.getParameter("tenantId");
-        String tenantQuery = (tenantId != null) ? "?tenantId=" + tenantId : "";
-
-        logger.info("[ONLYOFFICE DEBUG] getConfig called for {} {} (Tenant Header: {}, Tenant QueryParam: {})",
-                type, id, request.getHeader("X-Tenant-ID"), request.getParameter("tenantId"));
-        logger.info("[ONLYOFFICE DEBUG] Tenant Resolved: {}, Final tenantQuery: {}", tenantId, tenantQuery);
 
         String fileName = "";
-        String fileUrl = "";
         String key = "";
 
         if ("DOCUMENT".equalsIgnoreCase(type)) {
             Document doc = documentRepository.findById(id).orElse(null);
-            if (doc == null) {
-                logger.error("[ONLYOFFICE] Document not found: {}", id);
+            if (doc == null)
                 return ResponseEntity.notFound().build();
-            }
             fileName = doc.getFileName();
-            fileUrl = doc.getFileUrl();
             key = "doc_" + id + "_"
                     + (doc.getUploadedAt() != null ? doc.getUploadedAt().hashCode() : System.currentTimeMillis());
         } else if ("MATERIAL".equalsIgnoreCase(type)) {
             CourseMaterial mat = materialRepository.findById(id).orElse(null);
-            if (mat == null) {
-                logger.error("[ONLYOFFICE] Material not found: {}", id);
+            if (mat == null)
                 return ResponseEntity.notFound().build();
-            }
             fileName = mat.getFileName() != null ? mat.getFileName() : mat.getTitle();
-            fileUrl = mat.getFileUrl();
             key = "mat_" + id + "_"
                     + (mat.getAvailableFrom() != null ? mat.getAvailableFrom().hashCode() : System.currentTimeMillis());
         } else if ("LESSON".equalsIgnoreCase(type)) {
             Lesson lesson = lessonRepository.findById(id).orElse(null);
-            if (lesson == null) {
-                logger.error("[ONLYOFFICE] Lesson not found: {}", id);
+            if (lesson == null)
                 return ResponseEntity.notFound().build();
-            }
-            fileName = lesson.getAttachmentName() != null ? lesson.getAttachmentName() : lesson.getTitle();
-            fileUrl = lesson.getAttachmentUrl();
-            key = "lesson_" + id + "_" + (fileName != null ? fileName.hashCode() : id);
+            fileName = lesson.getTitle();
+            key = "lesson_" + id + "_"
+                    + (lesson.getId() != null ? lesson.getId().hashCode() : System.currentTimeMillis());
         }
 
-        // Determine Base URL for Client
-        String clientBaseUrl = publicAppUrl;
-        if (clientBaseUrl == null || clientBaseUrl.isEmpty()) {
-            // Fallback: Construct from request (Use X-Forwarded-Proto if present)
-            String scheme = request.getHeader("X-Forwarded-Proto");
-            if (scheme == null)
-                scheme = request.getScheme();
+        // Use Public URL for download/callback to ensure reachability from Docker container
+        // This avoids host.docker.internal issues if DNS is not set up correctly in the container
+        String baseUrl = publicAppUrl;
 
-            String host = request.getHeader("X-Forwarded-Host");
-            if (host == null)
-                host = request.getServerName();
-
-            // Port handling could be complex behind proxies, simplified here:
-            // If explicit host header, assume port is implied or standard.
-            // If using local dev, might need port.
-            // Better to rely on app.url for production!
-            clientBaseUrl = scheme + "://" + host;
-
-            // If running strictly local dev without proxy, append port if not 80/443
-            if ("localhost".equals(host) || "127.0.0.1".equals(host)) {
-                int port = request.getServerPort();
-                if (port != 80 && port != 443) {
-                    clientBaseUrl += ":" + port;
-                }
-            }
+        // Fallback to internal if public is not set (though it should be)
+        if (baseUrl == null || baseUrl.isEmpty() || baseUrl.contains("localhost")) {
+             baseUrl = internalBackendUrl;
         }
 
-        // Remove trailing slash if present
-        if (clientBaseUrl.endsWith("/")) {
-            clientBaseUrl = clientBaseUrl.substring(0, clientBaseUrl.length() - 1);
-        }
+        String downloadUrl = baseUrl + "/api/onlyoffice/download/" + type + "/" + id
+                        + (tenantId != null ? "?tenantId=" + tenantId : "");
+        String callbackUrl = baseUrl + "/api/onlyoffice/callback/" + type + "/" + id
+                        + (tenantId != null ? "?tenantId=" + tenantId : "");
+
+        logger.info("[ONLYOFFICE] Generated URLs - Download: {}, Callback: {}", downloadUrl, callbackUrl);
 
         Map<String, Object> config = new HashMap<>();
+        config.put("document", Map.of(
+                "fileType", getExtension(fileName),
+                "key", key,
+                "title", fileName,
+                "url", downloadUrl));
+
         config.put("documentType", getDocumentType(fileName));
+        config.put("editorConfig", Map.of(
+                "callbackUrl", callbackUrl,
+                "lang", "sv",
+                "mode", "edit",
+                "user", Map.of("id", userId != null ? userId.toString() : "admin", "name", "User")));
 
-        Map<String, Object> document = new HashMap<>();
-        document.put("fileType", getExtension(fileName));
-        document.put("key", key);
-        document.put("title", fileName);
-
-        // VIKTIGT: Använd den INTERNA backend-URL:en för dokument och callback
-        // så att OnlyOffice-containern (i Docker-nätverket) kan nå dem direkt.
-        // Detta fixar även "token mismatch" eftersom token nyss signerats med dessa
-        // URLer.
-        document.put("url", internalBackendUrl + "/api/onlyoffice/download/" + type + "/" + id + tenantQuery);
-
-        config.put("document", document);
-
-        Map<String, Object> editorConfig = new HashMap<>();
-
-        // Samma för Callback - använd intern URL
-        editorConfig.put("callbackUrl",
-                internalBackendUrl + "/api/onlyoffice/callback/" + type + "/" + id + tenantQuery);
-
-        Map<String, Object> user = new HashMap<>();
-        user.put("id", userId.toString());
-        user.put("name", "User " + userId);
-        editorConfig.put("user", user);
-
-        config.put("editorConfig", editorConfig);
-
-        // Use the public app URL as documentServerUrl so the browser loads all
-        // OnlyOffice resources (JS, cache, coauthoring) through our backend proxy.
-        // This avoids HTTPS/HTTP mismatch when accessing OnlyOffice DS directly.
-        String documentServerUrl = clientBaseUrl;
-
-        // --- SIGN CONFIG WITH JWT ---
-        // Only sign the fields OnlyOffice expects: document, editorConfig, documentType
-        // documentServerUrl and token must NOT be in the signed payload
-        Map<String, Object> tokenPayload = new HashMap<>();
-        tokenPayload.put("document", config.get("document"));
-        tokenPayload.put("editorConfig", config.get("editorConfig"));
-        tokenPayload.put("documentType", config.get("documentType"));
-
-        // Use dedicated OnlyOffice JWT secret if configured, otherwise fall back to system JWT
-        String onlyOfficeSecret = settingRepository.findBySettingKey("onlyoffice_jwt_secret")
-                .map(s -> s.getSettingValue())
-                .orElse("");
-        String token = (onlyOfficeSecret != null && !onlyOfficeSecret.isBlank())
-                ? jwtUtils.generateOnlyOfficeToken(tokenPayload, onlyOfficeSecret)
-                : jwtUtils.generateOnlyOfficeToken(tokenPayload);
-
-        config.put("documentServerUrl", documentServerUrl);
+        // Sign the configuration with JWT token for OnlyOffice Security
+        String token = jwtUtils.generateOnlyOfficeToken(config, onlyOfficeJwtSecret);
         config.put("token", token);
-        // -----------------------------
 
-        try {
-            logger.info("[ONLYOFFICE DEBUG] Final Config (signed): {}", objectMapper.writeValueAsString(config));
-        } catch (Exception e) {
-            logger.error("Error logging onlyoffice config", e);
-        }
-
-        logger.info("ONLYOFFICE Config generated for {} {} with token", type, id);
         return ResponseEntity.ok(config);
     }
 
     @GetMapping("/download/{type}/{id}")
-    public ResponseEntity<Resource> download(@PathVariable String type, @PathVariable Long id,
+    public ResponseEntity<Resource> downloadFile(@PathVariable String type, @PathVariable Long id,
             HttpServletRequest request) {
-        logger.info("[ONLYOFFICE] Download request for {}/{}", type, id);
-
         try {
+            logger.info("[ONLYOFFICE] Download request for {} {}", type, id);
             String fileUrl = "";
             String fileName = "";
-            String contentType = "application/octet-stream";
 
             if ("DOCUMENT".equalsIgnoreCase(type)) {
-                Document doc = documentRepository.findById(id)
-                        .orElseThrow(() -> new RuntimeException("Document not found in DB"));
-                fileUrl = doc.getFileUrl();
-                fileName = doc.getFileName();
-                contentType = doc.getFileType();
-            } else if ("MATERIAL".equalsIgnoreCase(type)) {
-                CourseMaterial mat = materialRepository.findById(id)
-                        .orElseThrow(() -> new RuntimeException("Material not found in DB"));
-                fileUrl = mat.getFileUrl();
-                fileName = mat.getFileName();
-            } else if ("LESSON".equalsIgnoreCase(type)) {
-                Lesson lesson = lessonRepository.findById(id)
-                        .orElseThrow(() -> new RuntimeException("Lesson not found in DB"));
-                fileUrl = lesson.getAttachmentUrl();
-                fileName = lesson.getAttachmentName();
-            }
-
-            logger.info("[ONLYOFFICE] Download fileUrl={}, fileName={}", fileUrl, fileName);
-
-            // Hantera både /api/storage/ (MinIO) och /uploads/ (legacy lokal)
-            if (fileUrl.startsWith("/api/storage/")) {
-                String storageId = fileUrl.replace("/api/storage/", "");
-                InputStream inputStream = storageService.load(storageId);
-                org.springframework.core.io.InputStreamResource resource = new org.springframework.core.io.InputStreamResource(
-                        inputStream);
-                return ResponseEntity.ok()
-                        .contentType(MediaType
-                                .parseMediaType(contentType != null ? contentType : "application/octet-stream"))
-                        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
-                        .body(resource);
-            } else {
-                // Legacy: /uploads/ sökväg
-                String pathInUploads = fileUrl.replace("/uploads/", "");
-                Path filePath = Paths.get(uploadDir).resolve(pathInUploads).normalize();
-
-                Resource resource = new UrlResource(filePath.toUri());
-                if (resource.exists() && resource.isReadable()) {
-                    return ResponseEntity.ok()
-                            .contentType(MediaType.parseMediaType(contentType))
-                            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
-                            .body(resource);
+                Document doc = documentRepository.findById(id).orElse(null);
+                if (doc != null) {
+                    fileUrl = doc.getFileUrl();
+                    fileName = doc.getFileName();
                 } else {
-                    logger.error("[ONLYOFFICE] FILE MISSING at {}", filePath);
-                    return ResponseEntity.notFound().build();
+                    logger.warn("[ONLYOFFICE] Document {} not found in database", id);
+                }
+            } else if ("MATERIAL".equalsIgnoreCase(type)) {
+                CourseMaterial mat = materialRepository.findById(id).orElse(null);
+                if (mat != null) {
+                    fileUrl = mat.getFileUrl();
+                    fileName = mat.getFileName();
+                } else {
+                    logger.warn("[ONLYOFFICE] Material {} not found in database", id);
                 }
             }
+
+            if (fileUrl == null || fileUrl.isEmpty()) {
+                logger.warn("[ONLYOFFICE] File URL is empty for {} {}", type, id);
+                return ResponseEntity.notFound().build();
+            }
+
+            logger.info("[ONLYOFFICE] Loading file from storage: storageId={}, fileName={}", fileUrl, fileName);
+            InputStream is = storageService.load(fileUrl);
+            Resource resource = new InputStreamResource(is);
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
+                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                    .body(resource);
         } catch (Exception e) {
-            logger.error("[ONLYOFFICE] Download exception: {}", e.getMessage(), e);
+            logger.error("[ONLYOFFICE] Download error for {} {}: {}", type, id, e.getMessage(), e);
             return ResponseEntity.internalServerError().build();
         }
     }
 
     @PostMapping("/callback/{type}/{id}")
-    public void callback(
-            @PathVariable String type,
-            @PathVariable Long id,
-            HttpServletRequest request,
+    public void callback(@PathVariable String type, @PathVariable Long id, @RequestBody Map<String, Object> body,
             HttpServletResponse response) {
         try {
-            Scanner scanner = new Scanner(request.getInputStream()).useDelimiter("\\A");
-            String body = scanner.hasNext() ? scanner.next() : "";
-            Map<String, Object> callBackData = objectMapper.readValue(body, Map.class);
+            logger.info("[ONLYOFFICE] Callback for {} {}: status={}", type, id, body.get("status"));
+            Integer status = (Integer) body.get("status");
 
-            String tenant = com.eduflex.backend.config.tenant.TenantContext.getCurrentTenant();
-            logger.info("[ONLYOFFICE DEBUG] Callback for {} {}: status {} (Tenant: {})", type, id,
-                    callBackData.get("status"), tenant);
+            if (status == 2 || status == 6) { // 2 = Ready for saving, 6 = Client closed (forced save)
+                String downloadUrl = (String) body.get("url");
+                if (downloadUrl != null) {
+                    URL url = new URL(downloadUrl);
+                    Path tempFile = Files.createTempFile("onlyoffice_", getExtension("file"));
+                    try (InputStream is = url.openStream()) {
+                        Files.copy(is, tempFile, StandardCopyOption.REPLACE_EXISTING);
+                    }
 
-            if (callBackData.get("status") instanceof Integer && (Integer) callBackData.get("status") == 2) {
-                String downloadUrl = (String) callBackData.get("url");
-                String fileUrl = "";
+                    String fileName = "";
+                    if ("DOCUMENT".equalsIgnoreCase(type)) {
+                        Document doc = documentRepository.findById(id).orElse(null);
+                        if (doc != null)
+                            fileName = doc.getFileName();
+                    } else if ("MATERIAL".equalsIgnoreCase(type)) {
+                        CourseMaterial mat = materialRepository.findById(id).orElse(null);
+                        if (mat != null)
+                            fileName = mat.getFileName();
+                    }
 
-                if ("DOCUMENT".equalsIgnoreCase(type)) {
-                    Document doc = documentRepository.findById(id).orElseThrow();
-                    fileUrl = doc.getFileUrl();
-                    long newSize = saveFileFromUrl(downloadUrl, fileUrl, doc.getFileName());
-                    doc.setSize(newSize);
-                    documentRepository.save(doc);
-                } else if ("MATERIAL".equalsIgnoreCase(type)) {
-                    CourseMaterial mat = materialRepository.findById(id).orElseThrow();
-                    fileUrl = mat.getFileUrl();
-                    saveFileFromUrl(downloadUrl, fileUrl, mat.getFileName());
-                    materialRepository.save(mat);
-                } else if ("LESSON".equalsIgnoreCase(type)) {
-                    Lesson lesson = lessonRepository.findById(id).orElseThrow();
-                    fileUrl = lesson.getAttachmentUrl();
-                    saveFileFromUrl(downloadUrl, fileUrl, lesson.getAttachmentName());
-                    lessonRepository.save(lesson);
+                    storageService.save(tempFile.toUri().toURL().openStream(), "application/octet-stream", fileName);
+                    Files.deleteIfExists(tempFile);
                 }
-                logger.info("{} {} updated successfully from ONLYOFFICE callback", type, id);
             }
-
             response.getWriter().write("{\"error\":0}");
         } catch (Exception e) {
-            logger.error("Error processing ONLYOFFICE callback for " + type + " " + id, e);
-        }
-    }
-
-    /**
-     * Sparar den redigerade filen tillbaka till rätt lagring (MinIO eller lokal
-     * disk).
-     * Returnerar filstorleken i bytes.
-     */
-    private long saveFileFromUrl(String downloadUrl, String fileUrl, String originalFileName) throws Exception {
-        try (InputStream is = new URI(downloadUrl).toURL().openStream()) {
-            byte[] data = is.readAllBytes();
-
-            if (fileUrl.startsWith("/api/storage/")) {
-                // MinIO: Skriv över befintlig fil med samma storageId
-                String storageId = fileUrl.replace("/api/storage/", "");
-                String contentType = "application/octet-stream";
-                if (originalFileName != null) {
-                    String ext = getExtension(originalFileName).toLowerCase();
-                    if (ext.equals("docx"))
-                        contentType = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
-                    else if (ext.equals("xlsx"))
-                        contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-                    else if (ext.equals("pptx"))
-                        contentType = "application/vnd.openxmlformats-officedocument.presentationml.presentation";
-                }
-                storageService.save(new java.io.ByteArrayInputStream(data), contentType, originalFileName, storageId);
-            } else {
-                // Legacy: Lokal disk
-                String fileName = fileUrl.replace("/uploads/", "");
-                Path path = Paths.get(uploadDir).resolve(fileName);
-                Files.write(path, data, java.nio.file.StandardOpenOption.CREATE,
-                        java.nio.file.StandardOpenOption.TRUNCATE_EXISTING);
-            }
-
-            return data.length;
+            logger.error("[ONLYOFFICE] Callback error", e);
+            response.setStatus(500);
         }
     }
 

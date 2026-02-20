@@ -161,11 +161,11 @@ CREATE TABLE IF NOT EXISTS forum_reactions (
     CONSTRAINT fk_forum_reactions_user FOREIGN KEY (user_id) REFERENCES app_users(id)
 );
 
--- Add FK for forum_reactions.post_id only if forum_posts table exists
+-- Add FK for forum_reactions.post_id only if forum_post table exists
 DO $$ BEGIN
-    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'forum_posts') THEN
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'forum_post') THEN
         IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_forum_reactions_post') THEN
-            ALTER TABLE forum_reactions ADD CONSTRAINT fk_forum_reactions_post FOREIGN KEY (post_id) REFERENCES forum_posts(id);
+            ALTER TABLE forum_reactions ADD CONSTRAINT fk_forum_reactions_post FOREIGN KEY (post_id) REFERENCES forum_post(id);
         END IF;
     END IF;
 END $$;

@@ -4,7 +4,7 @@ import {
     Image as ImageIcon, Eye, ToggleLeft, ToggleRight,
     ChevronDown, QrCode, Loader2, Check, RotateCcw
 } from 'lucide-react';
-import { api } from '../../services/api';
+import { api, getSafeUrl } from '../../services/api';
 import toast from 'react-hot-toast';
 
 const TEMPLATE_TYPES = [
@@ -93,8 +93,8 @@ const CertificatePreview = ({ template }) => {
     const previewW = isLandscape ? 420 : 297;
     const previewH = isLandscape ? 297 : 420;
 
-    const logoUrl = api.getSafeUrl(t.logoUrl);
-    const bgUrl = api.getSafeUrl(t.backgroundImageUrl);
+    const logoUrl = getSafeUrl(t.logoUrl);
+    const bgUrl = getSafeUrl(t.backgroundImageUrl);
 
     const titleScale = (t.titleFontSize || 42) / 42;
     const bodyScale = (t.bodyFontSize || 18) / 18;

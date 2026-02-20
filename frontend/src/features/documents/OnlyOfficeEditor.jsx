@@ -35,12 +35,17 @@ const OnlyOfficeEditor = ({ entityType = 'DOCUMENT', entityId, userId, onClose }
                 }
 
                 const serverUrl = configData.documentServerUrl || '';
-                // Ensure no trailing slash
-                let baseUrl = serverUrl.endsWith('/') ? serverUrl.slice(0, -1) : serverUrl;
+                // Use relative path if the server URL matches current origin or if we want to force proxy usage
+                let baseUrl = '';
 
-                // Secure protocol enforcement
-                if (window.location.protocol === 'https:' && baseUrl.startsWith('http:')) {
-                    baseUrl = baseUrl.replace('http:', 'https:');
+                // If developers explicitly set a different external URL, use it, otherwise stay relative
+                if (serverUrl && !serverUrl.includes(window.location.hostname)) {
+                    baseUrl = serverUrl.endsWith('/') ? serverUrl.slice(0, -1) : serverUrl;
+
+                    // Secure protocol enforcement for external URLs
+                    if (window.location.protocol === 'https:' && baseUrl.startsWith('http:')) {
+                        baseUrl = baseUrl.replace('http:', 'https:');
+                    }
                 }
 
                 const scriptUrl = `${baseUrl}/web-apps/apps/api/documents/api.js`;
@@ -109,9 +114,12 @@ const OnlyOfficeEditor = ({ entityType = 'DOCUMENT', entityId, userId, onClose }
                 editorConfig: {
                     ...config.editorConfig,
                     lang: "sv",
+                    permissions: {
+                        ...config.editorConfig?.permissions,
+                        chat: false,
+                    },
                     customization: {
                         autosave: true,
-                        chat: false,
                         help: false,
                         compactHeader: true,
                         toolbar: true,

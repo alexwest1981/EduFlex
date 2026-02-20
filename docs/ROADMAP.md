@@ -74,6 +74,13 @@
 
 ## 📝 Change Log
 
+### [v2.0.22] - 2026-02-20
+- **New Feature**: **Collaborative Document Editing (OnlyOffice Fix)**.
+- **Support**: Resolved persistent SSL protocol errors and Mixed Content warnings by forcing HTTPS proxy headers.
+- **Security**: Fixed JWT signature validation mismatches.
+- **Storage**: Implemented smart path-stripping and recursive folder fallback in `MinioStorageService` for document recovery.
+- **Infra**: Upgraded OnlyOffice memory limits to 4GB and fixed Flyway pluralization bugs.
+
 ### [v2.0.21] - 2026-02-19
 - **New Feature**: **Premium Video Infrastructure (LiveKit integration)**.
 - **Engine**: Replaced legacy Jitsi with high-performance **LiveKit** engine.

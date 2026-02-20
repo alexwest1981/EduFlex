@@ -1,46 +1,85 @@
-import React, { useState, useEffect } from 'react';
-import { Book, Upload, Search, Trash2, X, Maximize2, Library, Filter, Settings, Sparkles as SparklesIcon, Volume2, Music, RefreshCw } from 'lucide-react';
-import { api } from '../../services/api';
+import React, { useState, useEffect, useMemo } from 'react';
+import {
+    Book, Upload, Search, Trash2, X, Filter,
+    Settings, Sparkles as SparklesIcon, Volume2, Music, RefreshCw,
+    LayoutGrid, List, BookOpen, Headphones, Tag, SortAsc
+} from 'lucide-react';
 import EpubViewer from '../../components/common/EpubViewer';
 import PdfViewer from '../../components/common/PdfViewer';
-import EpubThumbnail from '../../components/common/EpubThumbnail';
 import { useAppContext } from '../../context/AppContext';
 import { useTranslation } from 'react-i18next';
 import toast from 'react-hot-toast';
-import AudiobookPlayer from '../../components/common/AudiobookPlayer';
 
+// Defined OUTSIDE the component so it never gets recreated on re-render
+const ModalShell = ({ title, icon: Icon, onClose, children }) => (
+    <div className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div className="bg-white dark:bg-[#1a1b1d] rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden border border-gray-100 dark:border-[#2a2b2d] max-h-[92vh] overflow-y-auto custom-scrollbar">
+            <div className="h-1 bg-gradient-to-r from-indigo-500 to-violet-500" />
+            <div className="px-6 py-5 border-b border-gray-100 dark:border-[#2a2b2d] flex items-center justify-between">
+                <h2 className="text-base font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                    <Icon size={18} className="text-indigo-500" />
+                    {title}
+                </h2>
+                <button
+                    onClick={onClose}
+                    className="p-1.5 text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-[#252628] rounded-lg transition-colors"
+                >
+                    <X size={16} />
+                </button>
+            </div>
+            {children}
+        </div>
+    </div>
+);
+
+const isAdmin = (user) =>
+    user?.role?.name === 'ROLE_TEACHER' ||
+    user?.role?.name === 'ROLE_ADMIN' ||
+    user?.role === 'TEACHER' ||
+    user?.role === 'ADMIN' ||
+    user?.username === 'admin';
 
 const EbookLibrary = () => {
     const [courses, setCourses] = useState([]);
     const [selectedCourses, setSelectedCourses] = useState([]);
-    const { currentUser } = useAppContext();
+    const { currentUser, setActiveAudiobook } = useAppContext();
     const { t } = useTranslation();
     const [ebooks, setEbooks] = useState([]);
     const [loading, setLoading] = useState(true);
     const [viewMode, setViewMode] = useState('grid');
     const [searchTerm, setSearchTerm] = useState('');
     const [categoryFilter, setCategoryFilter] = useState('Alla');
+    const [sortBy, setSortBy] = useState('title');
     const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [selectedBook, setSelectedBook] = useState(null);
-    const { setActiveAudiobook } = useAppContext();
     const [files, setFiles] = useState({ epub: null, cover: null });
     const [uploadProgress, setUploadProgress] = useState(0);
     const [uploadData, setUploadData] = useState({
-        title: '',
-        author: '',
-        category: '',
-        language: 'Svenska',
-        description: '',
-        isbn: ''
+        title: '', author: '', category: '', language: 'Svenska', description: '', isbn: ''
     });
-    const [isIndexing, setIsIndexing] = useState(false);
-    const [isAudioPlayerOpen, setIsAudioPlayerOpen] = useState(false);
     const [ttsLoading, setTtsLoading] = useState(false);
 
+    const availableCategories = useMemo(() =>
+        ['Alla', ...new Set(ebooks.map(b => b.category).filter(Boolean))].sort(),
+        [ebooks]
+    );
 
-    // Derive available categories dynamically from the loaded ebooks
-    const availableCategories = ['Alla', ...new Set(ebooks.map(book => book.category).filter(Boolean))].sort();
+    const audiobookCount = useMemo(() => ebooks.filter(b => b.type === 'AUDIO').length, [ebooks]);
+    const categoryCount = useMemo(() => availableCategories.length - 1, [availableCategories]);
+
+    const filteredBooks = useMemo(() => {
+        let result = ebooks.filter(book => {
+            const matchesCat = categoryFilter === 'Alla' || book.category === categoryFilter;
+            const q = searchTerm.toLowerCase();
+            const matchesSearch = book.title?.toLowerCase().includes(q) || book.author?.toLowerCase().includes(q);
+            return matchesCat && matchesSearch;
+        });
+        if (sortBy === 'title') result.sort((a, b) => (a.title || '').localeCompare(b.title || '', 'sv'));
+        else if (sortBy === 'author') result.sort((a, b) => (a.author || '').localeCompare(b.author || '', 'sv'));
+        else if (sortBy === 'type') result.sort((a, b) => (a.type || '').localeCompare(b.type || ''));
+        return result;
+    }, [ebooks, categoryFilter, searchTerm, sortBy]);
 
     const fetchEbooks = async () => {
         try {
@@ -48,621 +87,642 @@ const EbookLibrary = () => {
             const response = await fetch('/api/ebooks', {
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
             });
-            if (response.ok) {
-                const data = await response.json();
-                setEbooks(data);
-            }
-        } catch (error) {
-            console.error('Failed to fetch ebooks:', error);
+            if (response.ok) setEbooks(await response.json());
+        } catch {
             toast.error(t('messages.fetch_error'));
         } finally {
             setLoading(false);
         }
     };
 
-    useEffect(() => {
-        fetchEbooks();
-        fetchCourses();
-    }, []);
-
     const fetchCourses = async () => {
         try {
-            // Assuming /api/courses/list exists or similar. Checking api.js usually reveals it. 
-            // If not, /api/courses usually returns list for teacher/admin.
             const response = await fetch('/api/courses', {
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
             });
-            if (response.ok) {
-                const data = await response.json();
-                setCourses(data);
-            }
-        } catch (error) {
-            console.error('Failed to fetch courses:', error);
-        }
+            if (response.ok) setCourses(await response.json());
+        } catch { /* silent */ }
     };
 
-    // ... (keep fetchEbooks)
+    useEffect(() => { fetchEbooks(); fetchCourses(); }, []);
 
     const handleFetchIsbn = async () => {
         if (!uploadData.isbn) return toast.error('Ange ett ISBN-nummer');
-        const loadingToast = toast.loading('Hämtar bokinformation...');
+        const id = toast.loading('Hämtar bokinformation...');
         try {
-            const response = await fetch(`/api/ebooks/metadata/fetch?isbn=${uploadData.isbn}`, {
+            const res = await fetch(`/api/ebooks/metadata/fetch?isbn=${uploadData.isbn}`, {
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
             });
-            if (response.ok) {
-                const data = await response.json();
-                setUploadData(prev => ({
-                    ...prev,
-                    title: data.title || prev.title,
-                    author: data.author || prev.author,
-                    description: data.description || prev.description,
-                    category: data.category || prev.category,
-                    language: data.language || prev.language
-                }));
-                // Try to set cover if URL provided? We'd need to fetch blob.
-                // For now just fill text fields.
-                toast.success('Information hämtad!', { id: loadingToast });
+            if (res.ok) {
+                const data = await res.json();
+                setUploadData(prev => ({ ...prev, ...Object.fromEntries(Object.entries(data).filter(([, v]) => v)) }));
+                toast.success('Information hämtad!', { id });
             } else {
-                toast.error('Kunde inte hitta boken via ISBN', { id: loadingToast });
+                toast.error('Kunde inte hitta boken via ISBN', { id });
             }
-        } catch (error) {
-            toast.error('Fel vid hämtning av metadata', { id: loadingToast });
+        } catch {
+            toast.error('Fel vid hämtning av metadata', { id });
         }
     };
 
     const handleUpload = async (e) => {
         e.preventDefault();
-        if (!files.epub) return toast.error(t('library.select_file_alert') || 'Vänligen välj en fil');
-
+        if (!files.epub) return toast.error(t('library.select_file_alert') || 'Välj en fil');
         const formData = new FormData();
+        // Always send required fields even if empty string — backend has no required=false on them
         formData.append('title', uploadData.title);
-        formData.append('author', uploadData.author);
-        formData.append('category', uploadData.category);
-        formData.append('language', uploadData.language);
-        formData.append('description', uploadData.description);
+        formData.append('author', uploadData.author || '');
+        formData.append('description', uploadData.description || '');
+        formData.append('category', uploadData.category || '');
+        formData.append('language', uploadData.language || 'Svenska');
         if (uploadData.isbn) formData.append('isbn', uploadData.isbn);
         formData.append('file', files.epub);
         if (files.cover) formData.append('cover', files.cover);
-
-        // Append course IDs
-        if (selectedCourses.length > 0) {
-            // Spring expects duplicate keys for list: courseIds=1&courseIds=2
-            // Or comma separated? RequestParam List<Long> usually handles both but duplicate keys is safer for FormData
-            // If we used @RequestParam List<Long> courseIds in controller, comma separated string often works too.
-            // Let's try appending multiple times.
-            const courseIdsStr = selectedCourses.join(',');
-            // Actually, for @RequestParam List<Long>, sending comma separated value is often easiest with FormData in JS
-            formData.append('courseIds', courseIdsStr);
-        }
+        if (selectedCourses.length > 0) formData.append('courseIds', selectedCourses.join(','));
 
         try {
             await new Promise((resolve, reject) => {
                 const xhr = new XMLHttpRequest();
                 xhr.open('POST', '/api/ebooks/upload');
                 xhr.setRequestHeader('Authorization', `Bearer ${localStorage.getItem('token')}`);
-                xhr.upload.onprogress = (event) => {
-                    if (event.lengthComputable) {
-                        setUploadProgress(Math.round((event.loaded / event.total) * 100));
-                    }
+                xhr.upload.onprogress = (ev) => {
+                    if (ev.lengthComputable) setUploadProgress(Math.round((ev.loaded / ev.total) * 100));
                 };
-                xhr.onload = () => xhr.status >= 200 && xhr.status < 300 ? resolve(xhr.response) : reject(new Error(xhr.statusText));
-                xhr.onerror = () => reject(new Error('Network error'));
+                xhr.onload = () => xhr.status >= 200 && xhr.status < 300 ? resolve() : reject();
+                xhr.onerror = reject;
                 xhr.send(formData);
             });
-
             toast.success(t('messages.upload_success'));
             setIsUploadModalOpen(false);
             setUploadProgress(0);
-            fetchEbooks();
             setUploadData({ title: '', author: '', category: '', language: 'Svenska', description: '', isbn: '' });
             setFiles({ epub: null, cover: null });
             setSelectedCourses([]);
-        } catch (error) {
+            fetchEbooks();
+        } catch {
             toast.error(t('messages.upload_error'));
         }
     };
 
     const handleUpdate = async (e) => {
         e.preventDefault();
-        const payload = {
-            ...uploadData,
-            courseIds: selectedCourses // JSON array works for @RequestBody map parsing we did
-        };
-
         try {
-            const response = await fetch(`/api/ebooks/${selectedBook.id}`, {
+            const res = await fetch(`/api/ebooks/${selectedBook.id}`, {
                 method: 'PUT',
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`,
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(payload)
+                body: JSON.stringify({ ...uploadData, courseIds: selectedCourses })
             });
-
-            if (response.ok) {
+            if (res.ok) {
                 toast.success(t('messages.setting_saved'));
                 setIsEditModalOpen(false);
                 setSelectedBook(null);
-                fetchEbooks();
                 setSelectedCourses([]);
-            } else {
-                throw new Error('Update failed');
-            }
-        } catch (error) {
-            console.error('Update error:', error);
+                fetchEbooks();
+            } else throw new Error();
+        } catch {
             toast.error('Kunde inte spara ändringar');
         }
     };
 
     const handleDelete = async (id) => {
-        if (!confirm(t('common.confirm_delete') || 'Are you sure?')) return;
+        if (!confirm(t('common.confirm_delete') || 'Är du säker?')) return;
         try {
-            const response = await fetch(`/api/ebooks/${id}`, {
+            const res = await fetch(`/api/ebooks/${id}`, {
                 method: 'DELETE',
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
             });
-            if (response.ok) {
-                toast.success(t('messages.delete_success') || 'Boken har tagits bort');
-                fetchEbooks();
-            } else {
-                throw new Error('Delete failed');
-            }
-        } catch (error) {
+            if (res.ok) { toast.success(t('messages.delete_success') || 'Boken har tagits bort'); fetchEbooks(); }
+            else throw new Error();
+        } catch {
             toast.error(t('messages.delete_error') || 'Kunde inte ta bort boken');
         }
     };
 
     const handleIndexForAI = async (id) => {
-        if (!confirm('Vill du indexera den här boken för din AI Study Pal? Detta gör att AI:n kan svara på frågor baserat på bokens innehåll för ALLA länkade kurser.')) return;
-        setIsIndexing(true);
-        const loadingToast = toast.loading('Indexerar boken för AI Study Pal...');
+        if (!confirm('Vill du indexera den här boken för din AI Study Pal?')) return;
+        const loadId = toast.loading('Indexerar boken för AI Study Pal...');
         try {
-            // Updated endpoint
-            const response = await fetch(`/api/ai-tutor/ingest-ebook/${id}`, {
+            const res = await fetch(`/api/ai-tutor/ingest-ebook/${id}`, {
                 method: 'POST',
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
             });
-            if (response.ok) {
-                toast.success('Boken har indexerats! Din AI Study Pal är nu smartare. 🧠✨', { id: loadingToast });
-            } else {
-                const err = await response.text();
-                toast.error('Kunde inte indexera: ' + err, { id: loadingToast });
-            }
-        } catch (error) {
-            console.error('Failed to index ebook:', error);
-            toast.error('Ett fel inträffade vid indexering.', { id: loadingToast });
-        } finally {
-            setIsIndexing(false);
+            if (res.ok) toast.success('Boken har indexerats! Din AI Study Pal är nu smartare.', { id: loadId });
+            else toast.error('Kunde inte indexera: ' + await res.text(), { id: loadId });
+        } catch {
+            toast.error('Ett fel inträffade vid indexering.', { id: loadId });
         }
     };
 
     const handleListenWithAI = async (book) => {
         setTtsLoading(true);
-        const loadingToast = toast.loading('Förbereder AI-uppläsning...');
+        const loadId = toast.loading('Förbereder AI-uppläsning...');
         try {
-            // 1. Fetch metadata/chapters to get text (simple version: get first 5000 chars of chapter 1)
-            // Implementation detail: for now we just send a request to our new TTS endpoint
-            // with a sample text extracted from the book service.
-
-            // In a better version, we'd open the reader, then click "Read this page"
-            // For now, let's just show it's working by reading the book's description or a placeholder.
-            const textToRead = book.description || `Detta är en uppläsning av boken ${book.title}. Tyvärr saknas beskrivning.`;
-
-            const response = await fetch(`/api/ebooks/${book.id}/tts`, {
+            const text = book.description || `Uppläsning av boken ${book.title}.`;
+            const res = await fetch(`/api/ebooks/${book.id}/tts`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`,
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ text: textToRead })
+                body: JSON.stringify({ text })
             });
-
-            if (response.ok) {
-                const blob = await response.blob();
-                const audioUrl = URL.createObjectURL(blob);
+            if (res.ok) {
+                const audioUrl = URL.createObjectURL(await res.blob());
                 setActiveAudiobook({ ...book, fileUrl: audioUrl, type: 'AUDIO' });
-                toast.success('AI-rösten är redo! 🎧', { id: loadingToast });
+                toast.success('AI-rösten är redo!', { id: loadId });
             } else {
-                toast.error('Kunde inte generera AI-röst.', { id: loadingToast });
+                toast.error('Kunde inte generera AI-röst.', { id: loadId });
             }
-        } catch (error) {
-            console.error('TTS error:', error);
-            toast.error('Ett fel inträffade vid AI-uppläsning.', { id: loadingToast });
+        } catch {
+            toast.error('Ett fel inträffade vid AI-uppläsning.', { id: loadId });
         } finally {
             setTtsLoading(false);
         }
     };
 
     const handleRegenerateAudio = async (book) => {
-        const loadingToast = toast.loading('Genererar ljudbok till servern...');
+        const loadId = toast.loading('Genererar ljudbok till servern...');
         try {
-            const response = await fetch(`/api/ebooks/${book.id}/regenerate-audio`, {
+            const res = await fetch(`/api/ebooks/${book.id}/regenerate-audio`, {
                 method: 'POST',
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
             });
-
-            if (response.ok) {
-                const updatedBook = await response.json();
-                toast.success('Ljudboken har återskapats och sparats! 🎧✅', { id: loadingToast });
-                fetchEbooks(); // Refresh list to get new URL
-                if (selectedBook?.id === book.id) setSelectedBook(updatedBook);
+            if (res.ok) {
+                const updated = await res.json();
+                toast.success('Ljudboken har återskapats och sparats!', { id: loadId });
+                fetchEbooks();
+                if (selectedBook?.id === book.id) setSelectedBook(updated);
             } else {
-                const err = await response.json();
-                toast.error('Misslyckades: ' + (err.message || 'Okänt fel'), { id: loadingToast });
+                const err = await res.json();
+                toast.error('Misslyckades: ' + (err.message || 'Okänt fel'), { id: loadId });
             }
-        } catch (error) {
-            console.error('Regeneration error:', error);
-            toast.error('Tekniskt fel vid återskapande.', { id: loadingToast });
+        } catch {
+            toast.error('Tekniskt fel vid återskapande.', { id: loadId });
         }
     };
 
-    // ... (keeping render logic)
+    const toggleCourse = (id) =>
+        setSelectedCourses(prev => prev.includes(id) ? prev.filter(c => c !== id) : [...prev, id]);
 
-    // Helper to toggle course selection
-    const toggleCourse = (id) => {
-        if (selectedCourses.includes(id)) {
-            setSelectedCourses(selectedCourses.filter(c => c !== id));
-        } else {
-            setSelectedCourses([...selectedCourses, id]);
-        }
+    const openBook = (book) => {
+        if (book.type === 'AUDIO') setActiveAudiobook(book);
+        else setSelectedBook(book);
     };
 
-    // Role logging removed for production clarity
+    // Shared input style
+    const inputCls = "w-full bg-gray-50 dark:bg-[#0f1012] border border-gray-200 dark:border-[#2a2b2d] rounded-xl px-4 py-2.5 text-sm text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-indigo-500/50 transition-shadow";
+    const labelCls = "block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1.5";
+
+    // Shared course selector JSX (rendered inline, not as a sub-component)
+    const renderCourseSelector = () => (
+        <div>
+            <label className={labelCls}>Koppla till kurser (för AI)</label>
+            <div className="bg-gray-50 dark:bg-[#0f1012] border border-gray-200 dark:border-[#2a2b2d] rounded-xl p-3 max-h-28 overflow-y-auto custom-scrollbar">
+                {courses.length === 0
+                    ? <p className="text-xs text-gray-400">Inga kurser hittades.</p>
+                    : courses.map(course => (
+                        <label key={course.id} className="flex items-center gap-2 py-1 cursor-pointer">
+                            <input
+                                type="checkbox"
+                                checked={selectedCourses.includes(course.id)}
+                                onChange={() => toggleCourse(course.id)}
+                                className="rounded text-indigo-600 focus:ring-indigo-500"
+                            />
+                            <span className="text-xs text-gray-700 dark:text-gray-300 truncate">
+                                {course.name} <span className="text-gray-400">({course.courseCode})</span>
+                            </span>
+                        </label>
+                    ))
+                }
+            </div>
+            <p className="text-[10px] text-gray-400 mt-1">AI:n kan svara på frågor om boken i valda kurser.</p>
+        </div>
+    );
 
     return (
-        <div className="p-6 max-w-7xl mx-auto min-h-screen bg-gray-50 dark:bg-[#131314]">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-                <div>
-                    <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-3">
-                        <Book className="w-8 h-8 text-indigo-600" />
-                        {t('library.title')}
-                    </h1>
-                    <p className="text-gray-500 dark:text-gray-400">{t('library.subtitle')}</p>
+        <div className="min-h-screen bg-gray-50 dark:bg-[#0f1012] pb-24 -mx-4 lg:-mx-8 -mt-4 lg:-mt-8">
+
+            {/* ─── HERO ─── */}
+            <div className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900">
+                <div className="absolute inset-0 pointer-events-none">
+                    <div className="absolute top-0 left-1/3 w-80 h-80 bg-violet-600/20 rounded-full blur-3xl -translate-y-1/2" />
+                    <div className="absolute top-0 right-1/4 w-64 h-64 bg-indigo-600/15 rounded-full blur-3xl -translate-y-1/3" />
                 </div>
-                <div className="flex flex-wrap gap-3 w-full md:w-auto">
-                    <button onClick={() => setIsUploadModalOpen(true)} className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 transition-colors shadow-lg shadow-indigo-200 dark:shadow-none">
-                        <Upload size={20} />
-                        {t('library.upload_btn')}
-                    </button>
-                    <div className="flex bg-white dark:bg-gray-800 rounded-xl p-1 shadow-sm border border-gray-200 dark:border-gray-700">
-                        <button onClick={() => setViewMode('grid')} className={`p-2 rounded-lg transition-colors ${viewMode === 'grid' ? 'bg-indigo-100 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400' : 'text-gray-400 hover:text-gray-600'}`}><Library size={20} /></button>
-                        <button onClick={() => setViewMode('list')} className={`p-2 rounded-lg transition-colors ${viewMode === 'list' ? 'bg-indigo-100 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400' : 'text-gray-400 hover:text-gray-600'}`}><Filter size={20} /></button>
+                <div className="absolute inset-0 opacity-[0.04]"
+                    style={{ backgroundImage: `radial-gradient(circle, white 1px, transparent 1px)`, backgroundSize: '28px 28px' }}
+                />
+                <div className="relative max-w-7xl mx-auto px-8 pt-10 pb-12">
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-violet-500/15 border border-violet-500/25 rounded-full text-violet-300 text-xs font-semibold tracking-wider uppercase mb-5">
+                        Digitalt Bibliotek
+                    </span>
+                    <h1 className="text-4xl md:text-5xl font-black text-white mb-3 tracking-tight leading-tight">
+                        Ditt{' '}
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-indigo-400">
+                            bibliotek
+                        </span>
+                    </h1>
+                    <p className="text-slate-400 text-base max-w-lg mb-8">
+                        E-böcker, PDF:er och ljudböcker — allt på ett ställe, redo att läsa eller lyssna på.
+                    </p>
+
+                    <div className="flex flex-wrap gap-8 mb-8">
+                        {[
+                            { label: 'Böcker totalt', value: ebooks.length },
+                            { label: 'Kategorier', value: categoryCount },
+                            { label: 'Ljudböcker', value: audiobookCount },
+                        ].map(stat => (
+                            <div key={stat.label} className="flex items-baseline gap-2">
+                                <span className="text-3xl font-black text-white tabular-nums">
+                                    {loading ? '–' : stat.value}
+                                </span>
+                                <span className="text-slate-400 text-sm">{stat.label}</span>
+                            </div>
+                        ))}
+                    </div>
+
+                    <div className="flex gap-3 items-center max-w-xl">
+                        <div className="relative flex-1">
+                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={17} />
+                            <input
+                                className="w-full pl-11 pr-4 py-3.5 rounded-2xl bg-white/10 backdrop-blur-md border border-white/15 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-400/60 focus:bg-white/15 transition-all text-sm font-medium"
+                                placeholder={t('library.search_placeholder')}
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                            />
+                        </div>
+                        {isAdmin(currentUser) && (
+                            <button
+                                onClick={() => setIsUploadModalOpen(true)}
+                                className="flex items-center gap-2 px-5 py-3.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-2xl text-sm font-bold transition-colors shadow-lg shadow-indigo-900/40 shrink-0"
+                            >
+                                <Upload size={16} />
+                                {t('library.upload_btn')}
+                            </button>
+                        )}
                     </div>
                 </div>
             </div>
 
-            {/* Main Content Layout */}
-            <div className="grid md:grid-cols-[240px_1fr] gap-8">
-                {/* SIDEBAR (Desktop) */}
-                <div className="hidden md:block space-y-2 sticky top-4 self-start">
-                    <h2 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-4 px-3">Kategorier</h2>
-                    {availableCategories.map(cat => (
-                        <button
-                            key={cat}
-                            onClick={() => setCategoryFilter(cat)}
-                            className={`w-full text-left px-4 py-2 rounded-xl text-sm font-medium transition-colors ${categoryFilter === cat
-                                ? 'bg-indigo-600 text-white shadow-md shadow-indigo-200 dark:shadow-none'
-                                : 'text-gray-600 dark:text-gray-400 hover:bg-white dark:hover:bg-gray-800'
-                                }`}
-                        >
-                            {cat}
-                        </button>
-                    ))}
-                </div>
-
-                {/* MOBILE CATEGORY DROPDOWN (Visible only on small screens) */}
-                <div className="md:hidden">
-                    <select
-                        className="w-full px-4 py-3 bg-white dark:bg-gray-800 border-none rounded-xl text-gray-900 dark:text-white shadow-sm focus:ring-2 focus:ring-indigo-500"
-                        value={categoryFilter}
-                        onChange={(e) => setCategoryFilter(e.target.value)}
-                    >
-                        {availableCategories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
-                    </select>
-                </div>
-
-                {/* RIGHT COLUMN */}
-                <div className="flex flex-col gap-6">
-                    {/* Search Bar - Now Full Width in its column */}
-                    <div className="relative">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
-                        <input
-                            type="text"
-                            placeholder={t('library.search_placeholder')}
-                            className="w-full pl-12 pr-4 py-3 bg-white dark:bg-gray-800 border-none rounded-xl text-gray-900 dark:text-white shadow-sm focus:ring-2 focus:ring-indigo-500"
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                        />
-                    </div>
-
-                    {loading ? (
-                        <div className="flex justify-center items-center py-20"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div></div>
-                    ) : ebooks.length === 0 ? (
-                        <div className="text-center py-20">
-                            <Book className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">{t('library.no_books')}</h3>
-                            <p className="text-gray-500">{t('library.no_books_desc')}</p>
+            {/* ─── MAIN ─── */}
+            <div className="max-w-7xl mx-auto px-8 py-7">
+                <div className="flex items-center justify-between mb-6">
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                        <span className="font-semibold text-gray-900 dark:text-white">{filteredBooks.length}</span>
+                        {' '}böcker
+                        {categoryFilter !== 'Alla' && (
+                            <span className="ml-1 text-indigo-600 dark:text-indigo-400">· {categoryFilter}</span>
+                        )}
+                    </p>
+                    <div className="flex items-center gap-2">
+                        <label className="flex items-center gap-2 bg-white dark:bg-[#1a1b1d] border border-gray-200 dark:border-[#2a2b2d] rounded-xl px-3 py-2 cursor-pointer">
+                            <SortAsc size={13} className="text-gray-400 shrink-0" />
+                            <select
+                                value={sortBy}
+                                onChange={e => setSortBy(e.target.value)}
+                                className="text-xs text-gray-600 dark:text-gray-300 bg-transparent outline-none cursor-pointer"
+                            >
+                                <option value="title">Titel A–Ö</option>
+                                <option value="author">Författare</option>
+                                <option value="type">Typ</option>
+                            </select>
+                        </label>
+                        <div className="flex bg-white dark:bg-[#1a1b1d] border border-gray-200 dark:border-[#2a2b2d] rounded-xl overflow-hidden">
+                            <button
+                                onClick={() => setViewMode('grid')}
+                                className={`p-2.5 transition-colors ${viewMode === 'grid' ? 'bg-indigo-600 text-white' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'}`}
+                            >
+                                <LayoutGrid size={15} />
+                            </button>
+                            <button
+                                onClick={() => setViewMode('list')}
+                                className={`p-2.5 transition-colors ${viewMode === 'list' ? 'bg-indigo-600 text-white' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'}`}
+                            >
+                                <List size={15} />
+                            </button>
                         </div>
-                    ) : (
-                        <div className={viewMode === 'grid' ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6" : "space-y-4"}>
-                            {ebooks.filter(book => (categoryFilter === 'Alla' || book.category === categoryFilter) && (book.title.toLowerCase().includes(searchTerm.toLowerCase()) || book.author.toLowerCase().includes(searchTerm.toLowerCase()))).map(book => (
-                                <div key={book.id} className={`group bg-white dark:bg-gray-800 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-gray-700 overflow-hidden ${viewMode === 'list' ? 'flex items-center gap-4 p-4' : 'flex flex-col'}`}>
-                                    <div className={`relative overflow-hidden cursor-pointer ${viewMode === 'list' ? 'w-24 h-32 rounded-lg flex-grow-0' : 'aspect-[3/4] w-full'}`} onClick={() => {
-                                        if (book.type === 'AUDIO') {
-                                            setActiveAudiobook(book);
-                                        } else {
-                                            setSelectedBook(book);
-                                        }
-                                    }}>
-                                        {/* Server-side Cached Cover */}
-                                        <img
-                                            src={`/api/ebooks/${book.id}/cover`}
-                                            alt={book.title}
-                                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                                            onError={(e) => {
-                                                e.target.onerror = null;
-                                                e.target.src = 'https://placehold.co/400x600?text=' + encodeURIComponent(book.title); // Fallback
-                                            }}
-                                        />
-                                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
-                                            <div className="bg-white/90 dark:bg-gray-900/90 p-3 rounded-full shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-all duration-300">
-                                                <Maximize2 size={24} className="text-indigo-600" />
-                                            </div>
-                                        </div>
-                                        <span className="absolute top-2 right-2 bg-black/60 backdrop-blur-md text-white text-xs font-bold px-2 py-1 rounded-lg">{book.category}</span>
-                                        {book.type === 'AUDIO' && (
-                                            <div className="absolute top-2 left-2 bg-indigo-600 backdrop-blur-md text-white text-[10px] font-bold px-2 py-1 rounded-lg flex items-center gap-1">
-                                                <Music size={10} /> AUDIO
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-4 gap-7">
+                    {/* ─── SIDEBAR ─── */}
+                    <aside className="lg:col-span-1">
+                        <div className="bg-white dark:bg-[#1a1b1d] rounded-2xl border border-gray-100 dark:border-[#2a2b2d] overflow-hidden sticky top-6 shadow-sm">
+                            <div className="px-5 py-4 border-b border-gray-100 dark:border-[#2a2b2d] flex items-center gap-2">
+                                <Filter size={14} className="text-violet-500" />
+                                <h3 className="text-xs font-bold text-gray-500 dark:text-gray-400 tracking-widest uppercase">Kategorier</h3>
+                            </div>
+                            <div className="p-3 max-h-[72vh] overflow-y-auto custom-scrollbar">
+                                {availableCategories.map(cat => (
+                                    <button
+                                        key={cat}
+                                        onClick={() => setCategoryFilter(cat)}
+                                        className={`w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all flex items-center gap-2.5 mb-0.5 ${
+                                            categoryFilter === cat
+                                                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200 dark:shadow-indigo-900/30'
+                                                : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-[#232426]'
+                                        }`}
+                                    >
+                                        {cat === 'Alla' ? <BookOpen size={14} className="shrink-0" /> : <Tag size={14} className="shrink-0" />}
+                                        <span className="truncate">{cat}</span>
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    </aside>
+
+                    {/* ─── BOOKS ─── */}
+                    <div className="lg:col-span-3">
+                        {loading ? (
+                            <div className={viewMode === 'grid' ? 'grid grid-cols-2 sm:grid-cols-3 gap-5' : 'flex flex-col gap-3'}>
+                                {[...Array(6)].map((_, i) => (
+                                    <div key={i} className="bg-white dark:bg-[#1a1b1d] rounded-2xl overflow-hidden border border-gray-100 dark:border-[#2a2b2d] animate-pulse">
+                                        <div className={`bg-gradient-to-b from-gray-200 to-gray-100 dark:from-[#252628] dark:to-[#222] ${viewMode === 'grid' ? 'aspect-[2/3]' : 'h-20'}`} />
+                                        {viewMode === 'grid' && (
+                                            <div className="p-4 space-y-2">
+                                                <div className="h-3.5 bg-gray-200 dark:bg-[#252628] rounded w-3/4" />
+                                                <div className="h-3 bg-gray-100 dark:bg-[#222] rounded w-1/2" />
                                             </div>
                                         )}
                                     </div>
-
-                                    <div className={`flex flex-col ${viewMode === 'list' ? 'flex-1 py-0' : 'p-5 flex-1'}`}>
-                                        <h3 className="font-bold text-gray-900 dark:text-white text-lg mb-1 line-clamp-1">{book.title}</h3>
-                                        <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">{book.author}</p>
-                                        <div className="mt-auto flex items-center gap-2 justify-end">
-                                            {(currentUser?.role?.name === 'ROLE_TEACHER' || currentUser?.role?.name === 'ROLE_ADMIN' || currentUser?.role === 'TEACHER' || currentUser?.role === 'ADMIN' || currentUser?.username === 'admin') && (
-                                                <>
+                                ))}
+                            </div>
+                        ) : ebooks.length === 0 ? (
+                            <div className="flex flex-col items-center justify-center py-24 text-center">
+                                <div className="w-20 h-20 bg-gray-100 dark:bg-[#1a1b1d] border border-gray-200 dark:border-[#2a2b2d] rounded-3xl flex items-center justify-center mb-5">
+                                    <BookOpen size={28} className="text-gray-300 dark:text-gray-600" />
+                                </div>
+                                <p className="text-gray-700 dark:text-gray-300 font-bold text-lg mb-1">{t('library.no_books')}</p>
+                                <p className="text-gray-400 text-sm mb-5">{t('library.no_books_desc')}</p>
+                                {isAdmin(currentUser) && (
+                                    <button
+                                        onClick={() => setIsUploadModalOpen(true)}
+                                        className="flex items-center gap-2 px-5 py-2.5 bg-indigo-600 text-white rounded-xl text-sm font-bold hover:bg-indigo-700 transition-colors"
+                                    >
+                                        <Upload size={15} /> Ladda upp din första bok
+                                    </button>
+                                )}
+                            </div>
+                        ) : filteredBooks.length === 0 ? (
+                            <div className="flex flex-col items-center justify-center py-24 text-center">
+                                <div className="w-16 h-16 bg-gray-100 dark:bg-[#1a1b1d] border border-gray-200 dark:border-[#2a2b2d] rounded-2xl flex items-center justify-center mb-4">
+                                    <Search size={22} className="text-gray-300 dark:text-gray-600" />
+                                </div>
+                                <p className="text-gray-700 dark:text-gray-300 font-semibold mb-1">Inga böcker hittades</p>
+                                <p className="text-gray-400 text-sm mb-4">Prova en annan sökterm eller kategori</p>
+                                {categoryFilter !== 'Alla' && (
+                                    <button onClick={() => setCategoryFilter('Alla')} className="text-indigo-600 dark:text-indigo-400 text-sm font-semibold hover:underline">
+                                        Visa alla böcker
+                                    </button>
+                                )}
+                            </div>
+                        ) : viewMode === 'grid' ? (
+                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-5">
+                                {filteredBooks.map(book => (
+                                    <div key={book.id} className="group bg-white dark:bg-[#1a1b1d] rounded-2xl border border-gray-100 dark:border-[#2a2b2d] overflow-hidden hover:shadow-xl hover:shadow-gray-200/60 dark:hover:shadow-black/40 hover:-translate-y-0.5 transition-all duration-300 flex flex-col">
+                                        <div className="relative overflow-hidden cursor-pointer aspect-[2/3]" onClick={() => openBook(book)}>
+                                            <img
+                                                src={`/api/ebooks/${book.id}/cover`}
+                                                alt={book.title}
+                                                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                                                onError={(e) => { e.target.onerror = null; e.target.src = `https://placehold.co/300x450/1e1b4b/818cf8?text=${encodeURIComponent(book.title?.slice(0, 20) || 'Bok')}`; }}
+                                            />
+                                            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-300 flex items-center justify-center">
+                                                <div className="opacity-0 group-hover:opacity-100 transform translate-y-3 group-hover:translate-y-0 transition-all duration-300 bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm p-3 rounded-2xl shadow-xl">
+                                                    {book.type === 'AUDIO' ? <Headphones size={22} className="text-indigo-600" /> : <BookOpen size={22} className="text-indigo-600" />}
+                                                </div>
+                                            </div>
+                                            {book.category && (
+                                                <span className="absolute bottom-2 left-2 bg-black/60 backdrop-blur-md text-white text-[10px] font-bold px-2 py-0.5 rounded-lg max-w-[70%] truncate">{book.category}</span>
+                                            )}
+                                            {book.type === 'AUDIO' && (
+                                                <div className="absolute top-2 left-2 bg-violet-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-lg flex items-center gap-1">
+                                                    <Music size={9} /> AUDIO
+                                                </div>
+                                            )}
+                                        </div>
+                                        <div className="p-4 flex-1 flex flex-col">
+                                            <h3 className="font-bold text-gray-900 dark:text-white text-sm leading-snug line-clamp-2 mb-0.5 cursor-pointer hover:text-indigo-600 transition-colors" onClick={() => openBook(book)}>
+                                                {book.title}
+                                            </h3>
+                                            <p className="text-xs text-gray-400 dark:text-gray-500 mb-3 truncate">{book.author}</p>
+                                            {isAdmin(currentUser) && (
+                                                <div className="mt-auto flex items-center justify-end gap-0.5 pt-2 border-t border-gray-100 dark:border-[#2a2b2d]">
                                                     {book.type === 'AUDIO' && (
-                                                        <button onClick={(e) => { e.stopPropagation(); handleRegenerateAudio(book); }} className="p-2 text-indigo-500 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg transition-colors" title="Återskapa Ljudfil (Fixa 404)">
-                                                            <RefreshCw size={18} />
-                                                        </button>
+                                                        <button onClick={() => handleRegenerateAudio(book)} className="p-2 text-gray-400 hover:text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg transition-colors" title="Återskapa ljudfil"><RefreshCw size={14} /></button>
                                                     )}
-                                                    <button onClick={(e) => { e.stopPropagation(); handleListenWithAI(book); }} className="p-2 text-pink-500 hover:text-pink-600 hover:bg-pink-50 dark:hover:bg-pink-900/30 rounded-lg transition-colors" title="Lyssna med AI (TTS)">
-                                                        <Volume2 size={18} />
-                                                    </button>
-                                                    <button onClick={(e) => { e.stopPropagation(); handleIndexForAI(book.id); }} className="p-2 text-indigo-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg transition-colors" title="Indexera för AI Study Pal">
-                                                        <SparklesIcon size={18} />
-                                                    </button>
-                                                    <button onClick={(e) => { e.stopPropagation(); setUploadData({ ...book, description: book.description || '' }); setSelectedCourses(book.courses?.map(c => c.id) || []); setSelectedBook(book); setIsEditModalOpen(true); }} className="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg transition-colors">
-                                                        <Settings size={18} />
-                                                    </button>
-                                                    <button onClick={(e) => { e.stopPropagation(); handleDelete(book.id); }} className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors">
-                                                        <Trash2 size={18} />
-                                                    </button>
-                                                </>
+                                                    <button onClick={() => handleListenWithAI(book)} className="p-2 text-gray-400 hover:text-pink-500 hover:bg-pink-50 dark:hover:bg-pink-900/20 rounded-lg transition-colors" title="Lyssna med AI"><Volume2 size={14} /></button>
+                                                    <button onClick={() => handleIndexForAI(book.id)} className="p-2 text-gray-400 hover:text-violet-500 hover:bg-violet-50 dark:hover:bg-violet-900/20 rounded-lg transition-colors" title="Indexera för AI"><SparklesIcon size={14} /></button>
+                                                    <button onClick={() => { setUploadData({ ...book, description: book.description || '' }); setSelectedCourses(book.courses?.map(c => c.id) || []); setSelectedBook(book); setIsEditModalOpen(true); }} className="p-2 text-gray-400 hover:text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg transition-colors" title="Redigera"><Settings size={14} /></button>
+                                                    <button onClick={() => handleDelete(book.id)} className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors" title="Ta bort"><Trash2 size={14} /></button>
+                                                </div>
                                             )}
                                         </div>
                                     </div>
-                                </div>
-                            ))}
-                        </div>
-                    )}
-
-                    {/* UPLOAD MODAL - Update to include Course Selector */}
-                    {isUploadModalOpen && (
-                        <div className="fixed inset-0 z-[100] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-                            <div className="bg-white dark:bg-gray-800 rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200 max-h-[90vh] overflow-y-auto">
-                                {/* ... Header ... */}
-                                <div className="p-6 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
-                                    <h2 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                                        <Upload className="text-indigo-600" />
-                                        {t('library.upload_modal_title')}
-                                    </h2>
-                                    <button onClick={() => setIsUploadModalOpen(false)} className="text-gray-400 hover:text-gray-600"><X /></button>
-                                </div>
-
-                                <form onSubmit={handleUpload} className="p-6 space-y-4">
-                                    {/* ISBN Lookup */}
-                                    <div className="flex gap-2 items-end">
-                                        <div className="flex-1">
-                                            <label className="block text-xs font-bold text-gray-500 uppercase mb-1">ISBN (Valfritt)</label>
-                                            <input type="text" placeholder="978..." className="w-full bg-gray-50 dark:bg-gray-900 border-none rounded-xl p-3 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-indigo-500" value={uploadData.isbn || ''} onChange={(e) => setUploadData({ ...uploadData, isbn: e.target.value })} />
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="flex flex-col gap-2.5">
+                                {filteredBooks.map(book => (
+                                    <div key={book.id} className="group bg-white dark:bg-[#1a1b1d] rounded-2xl border border-gray-100 dark:border-[#2a2b2d] overflow-hidden hover:shadow-md hover:border-indigo-200 dark:hover:border-indigo-900/50 transition-all duration-200 flex items-center">
+                                        <div className="w-14 h-20 shrink-0 overflow-hidden cursor-pointer" onClick={() => openBook(book)}>
+                                            <img
+                                                src={`/api/ebooks/${book.id}/cover`}
+                                                alt={book.title}
+                                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                                onError={(e) => { e.target.onerror = null; e.target.src = `https://placehold.co/120x180/1e1b4b/818cf8?text=📚`; }}
+                                            />
                                         </div>
-                                        <button type="button" onClick={handleFetchIsbn} className="px-4 py-3 bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300 rounded-xl font-bold hover:bg-indigo-200 dark:hover:bg-indigo-900/50 transition-colors">Hämta info</button>
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-xs font-bold text-gray-500 uppercase mb-1">{t('library.title_label')} *</label>
-                                        <input type="text" required className="w-full bg-gray-50 dark:bg-gray-900 border-none rounded-xl p-3 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-indigo-500" value={uploadData.title} onChange={(e) => setUploadData({ ...uploadData, title: e.target.value })} />
-                                    </div>
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div>
-                                            <label className="block text-xs font-bold text-gray-500 uppercase mb-1">{t('library.author_label')}</label>
-                                            <input type="text" className="w-full bg-gray-50 dark:bg-gray-900 border-none rounded-xl p-3 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-indigo-500" value={uploadData.author} onChange={(e) => setUploadData({ ...uploadData, author: e.target.value })} />
-                                        </div>
-                                        <div>
-                                            <label className="block text-xs font-bold text-gray-500 uppercase mb-1">{t('library.category_label')}</label>
-                                            <input type="text" list="category-suggestions" className="w-full bg-gray-50 dark:bg-gray-900 border-none rounded-xl p-3 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-indigo-500" value={uploadData.category} onChange={(e) => setUploadData({ ...uploadData, category: e.target.value })} />
-                                            <datalist id="category-suggestions">
-                                                {availableCategories.filter(c => c !== 'Alla').map(cat => <option key={cat} value={cat} />)}
-                                            </datalist>
-                                        </div>
-                                    </div>
-
-                                    {/* COURSE SELECTOR */}
-                                    <div>
-                                        <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Koppla till kurser (för AI)</label>
-                                        <div className="bg-gray-50 dark:bg-gray-900 rounded-xl p-3 max-h-32 overflow-y-auto border border-gray-100 dark:border-gray-700">
-                                            {courses.length === 0 && <p className="text-xs text-gray-400">Inga kurser hittades.</p>}
-                                            {courses.map(course => (
-                                                <div key={course.id} className="flex items-center gap-2 mb-1 last:mb-0">
-                                                    <input
-                                                        type="checkbox"
-                                                        id={`course-${course.id}`}
-                                                        checked={selectedCourses.includes(course.id)}
-                                                        onChange={() => toggleCourse(course.id)}
-                                                        className="rounded text-indigo-600 focus:ring-indigo-500"
-                                                    />
-                                                    <label htmlFor={`course-${course.id}`} className="text-sm text-gray-700 dark:text-gray-300 cursor-pointer select-none truncate">
-                                                        {course.name} <span className="text-xs text-gray-400">({course.courseCode})</span>
-                                                    </label>
+                                        <div className="flex items-center gap-4 px-4 py-3 flex-1 min-w-0 flex-wrap md:flex-nowrap">
+                                            <div className="flex-1 min-w-0">
+                                                <div className="flex items-center gap-2 mb-0.5 flex-wrap">
+                                                    {book.type === 'AUDIO' && (
+                                                        <span className="inline-flex items-center gap-1 text-[10px] font-bold text-violet-600 dark:text-violet-400 bg-violet-50 dark:bg-violet-900/20 px-1.5 py-0.5 rounded-md"><Music size={9} /> AUDIO</span>
+                                                    )}
+                                                    {book.category && (
+                                                        <span className="text-[10px] text-gray-400 bg-gray-100 dark:bg-[#252628] px-1.5 py-0.5 rounded-md">{book.category}</span>
+                                                    )}
                                                 </div>
-                                            ))}
-                                        </div>
-                                        <p className="text-[10px] text-gray-400 mt-1">AI:n kommer kunna svara på frågor om boken i de valda kurserna.</p>
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-xs font-bold text-gray-500 uppercase mb-1">{t('library.description_label')}</label>
-                                        <textarea className="w-full bg-gray-50 dark:bg-gray-900 border-none rounded-xl p-3 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-indigo-500 h-24 resize-none" value={uploadData.description} onChange={(e) => setUploadData({ ...uploadData, description: e.target.value })} />
-                                    </div>
-
-                                    {/* ... File Inputs ... */}
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div>
-                                            <label className="block text-xs font-bold text-gray-500 uppercase mb-1">{t('library.epub_file_label')} *</label>
-                                            <input type="file" accept=".epub,.pdf,.mp3,.m4b" required onChange={(e) => setFiles({ ...files, epub: e.target.files[0] })} className="text-xs text-gray-500 file:mr-2 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" />
-                                        </div>
-                                        <div>
-                                            <label className="block text-xs font-bold text-gray-500 uppercase mb-1">{t('library.cover_image_label')} ({t('common.optional')})</label>
-                                            <input type="file" accept="image/*" onChange={(e) => setFiles({ ...files, cover: e.target.files[0] })} className="text-xs text-gray-500 file:mr-2 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" />
-                                        </div>
-                                    </div>
-
-                                    {/* ... Footer Buttons ... */}
-                                    <div className="pt-4 flex flex-col gap-3">
-                                        {uploadProgress > 0 && (<div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700"> <div className="bg-indigo-600 h-2.5 rounded-full transition-all duration-300" style={{ width: `${uploadProgress}%` }}></div> <p className="text-xs text-center mt-1 text-gray-500">{uploadProgress}%</p> </div>)}
-                                        <div className="flex gap-3">
-                                            <button type="button" onClick={() => setIsUploadModalOpen(false)} className="flex-1 py-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-xl font-bold hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">{t('common.cancel')}</button>
-                                            <button type="submit" disabled={uploadProgress > 0 && uploadProgress < 100} className="flex-1 py-3 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 transition-colors shadow-lg shadow-indigo-200 dark:shadow-none disabled:opacity-50 disabled:cursor-not-allowed">{uploadProgress > 0 && uploadProgress < 100 ? t('common.uploading') + '...' : t('library.upload_btn')}</button>
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    )}
-
-                    {/* EDIT MODAL - Update to include Course Selector */}
-                    {isEditModalOpen && (
-                        <div className="fixed inset-0 z-[100] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-                            <div className="bg-white dark:bg-gray-800 rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200 max-h-[90vh] overflow-y-auto">
-                                <div className="p-6 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
-                                    <h2 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                                        <Settings size={24} className="text-indigo-600" />
-                                        {t('library.edit_modal_title')}
-                                    </h2>
-                                    <button onClick={() => { setIsEditModalOpen(false); setSelectedBook(null); }} className="text-gray-400 hover:text-gray-600"><X /></button>
-                                </div>
-                                <form onSubmit={handleUpdate} className="p-6 space-y-4">
-                                    {/* ISBN Lookup */}
-                                    <div className="flex gap-2 items-end">
-                                        <div className="flex-1">
-                                            <label className="block text-xs font-bold text-gray-500 uppercase mb-1">ISBN</label>
-                                            <input type="text" placeholder="978..." className="w-full bg-gray-50 dark:bg-gray-900 border-none rounded-xl p-3 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-indigo-500" value={uploadData.isbn || ''} onChange={(e) => setUploadData({ ...uploadData, isbn: e.target.value })} />
-                                        </div>
-                                        <button type="button" onClick={handleFetchIsbn} className="px-4 py-3 bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300 rounded-xl font-bold hover:bg-indigo-200 dark:hover:bg-indigo-900/50 transition-colors">Hämta info</button>
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-xs font-bold text-gray-500 uppercase mb-1">{t('library.title_label')} *</label>
-                                        <input type="text" required className="w-full bg-gray-50 dark:bg-gray-900 border-none rounded-xl p-3 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-indigo-500" value={uploadData.title} onChange={(e) => setUploadData({ ...uploadData, title: e.target.value })} />
-                                    </div>
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div>
-                                            <label className="block text-xs font-bold text-gray-500 uppercase mb-1">{t('library.author_label')}</label>
-                                            <input type="text" className="w-full bg-gray-50 dark:bg-gray-900 border-none rounded-xl p-3 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-indigo-500" value={uploadData.author} onChange={(e) => setUploadData({ ...uploadData, author: e.target.value })} />
-                                        </div>
-                                        <div>
-                                            <label className="block text-xs font-bold text-gray-500 uppercase mb-1">{t('library.category_label')}</label>
-                                            <input type="text" list="edit-category-suggestions" className="w-full bg-gray-50 dark:bg-gray-900 border-none rounded-xl p-3 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-indigo-500" value={uploadData.category} onChange={(e) => setUploadData({ ...uploadData, category: e.target.value })} />
-                                            <datalist id="edit-category-suggestions">
-                                                {availableCategories.filter(c => c !== 'Alla').map(cat => <option key={cat} value={cat} />)}
-                                            </datalist>
-                                        </div>
-                                    </div>
-
-                                    {/* COURSE SELECTOR */}
-                                    <div>
-                                        <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Koppla till kurser (för AI)</label>
-                                        <div className="bg-gray-50 dark:bg-gray-900 rounded-xl p-3 max-h-32 overflow-y-auto border border-gray-100 dark:border-gray-700">
-                                            {courses.length === 0 && <p className="text-xs text-gray-400">Inga kurser hittades.</p>}
-                                            {courses.map(course => (
-                                                <div key={course.id} className="flex items-center gap-2 mb-1 last:mb-0">
-                                                    <input
-                                                        type="checkbox"
-                                                        id={`edit-course-${course.id}`}
-                                                        checked={selectedCourses.includes(course.id)}
-                                                        onChange={() => toggleCourse(course.id)}
-                                                        className="rounded text-indigo-600 focus:ring-indigo-500"
-                                                    />
-                                                    <label htmlFor={`edit-course-${course.id}`} className="text-sm text-gray-700 dark:text-gray-300 cursor-pointer select-none truncate">
-                                                        {course.name} <span className="text-xs text-gray-400">({course.courseCode})</span>
-                                                    </label>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-xs font-bold text-gray-500 uppercase mb-1">{t('library.description_label')}</label>
-                                        <textarea className="w-full bg-gray-50 dark:bg-gray-900 border-none rounded-xl p-3 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-indigo-500 h-24 resize-none" value={uploadData.description} onChange={(e) => setUploadData({ ...uploadData, description: e.target.value })} />
-                                    </div>
-                                    <div className="pt-4 flex gap-3">
-                                        <button type="button" onClick={() => { setIsEditModalOpen(false); setSelectedBook(null); }} className="flex-1 py-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-xl font-bold hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">{t('common.cancel')}</button>
-                                        <button type="submit" className="flex-1 py-3 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 transition-colors shadow-lg shadow-indigo-200 dark:shadow-none">{t('library.save_changes')}</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    )}
-
-                    {selectedBook && !isEditModalOpen && (
-                        <div className="fixed inset-0 z-50 bg-white dark:bg-gray-900 flex flex-col animate-in fade-in duration-200">
-                            <div className="p-4 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-white dark:bg-gray-800 shadow-sm z-10">
-                                <h2 className="text-lg font-bold text-gray-800 dark:text-white truncate max-w-2xl flex items-center gap-2">
-                                    <Book className="text-indigo-600" size={20} />
-                                    {selectedBook.title}
-                                </h2>
-                                <div className="flex items-center gap-2">
-                                    <span className="text-sm text-gray-500 hidden sm:inline-block">{selectedBook.author}</span>
-                                    <button onClick={() => setSelectedBook(null)} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"><X /></button>
-                                </div>
-                            </div>
-                            <div className="flex-1 bg-gray-100 dark:bg-gray-900 overflow-hidden relative">
-                                {selectedBook.type === 'AUDIO' ? (
-                                    <div className="flex items-center justify-center h-full">
-                                        <div className="text-center">
-                                            <div className="w-20 h-20 bg-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse">
-                                                <Music className="text-white" size={40} />
+                                                <h3 className="font-bold text-sm text-gray-900 dark:text-white truncate cursor-pointer hover:text-indigo-600 transition-colors" onClick={() => openBook(book)}>{book.title}</h3>
+                                                <p className="text-xs text-gray-400 truncate">{book.author}</p>
                                             </div>
-                                            <h3 className="text-xl font-bold dark:text-white mb-2">Ljudbok startad</h3>
-                                            <p className="text-gray-500">Spelaren syns i ett flytande fönster längst ner.</p>
-                                            <button
-                                                onClick={() => {
-                                                    setActiveAudiobook(selectedBook);
-                                                    setSelectedBook(null);
-                                                }}
-                                                className="mt-6 px-6 py-2 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 transition-colors"
-                                            >
-                                                Öppna biblioteket
-                                            </button>
+                                            <div className="flex items-center gap-1 shrink-0">
+                                                <button onClick={() => openBook(book)} className="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-600 text-white rounded-xl text-xs font-bold hover:bg-indigo-700 transition-colors shadow-md shadow-indigo-200 dark:shadow-indigo-900/30 mr-1">
+                                                    {book.type === 'AUDIO' ? <Headphones size={12} /> : <BookOpen size={12} />}
+                                                    {book.type === 'AUDIO' ? 'Lyssna' : 'Läs'}
+                                                </button>
+                                                {isAdmin(currentUser) && (
+                                                    <>
+                                                        {book.type === 'AUDIO' && <button onClick={() => handleRegenerateAudio(book)} className="p-2 text-gray-400 hover:text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg transition-colors" title="Återskapa"><RefreshCw size={14} /></button>}
+                                                        <button onClick={() => handleListenWithAI(book)} className="p-2 text-gray-400 hover:text-pink-500 hover:bg-pink-50 dark:hover:bg-pink-900/20 rounded-lg transition-colors" title="AI-röst"><Volume2 size={14} /></button>
+                                                        <button onClick={() => handleIndexForAI(book.id)} className="p-2 text-gray-400 hover:text-violet-500 hover:bg-violet-50 dark:hover:bg-violet-900/20 rounded-lg transition-colors" title="Indexera AI"><SparklesIcon size={14} /></button>
+                                                        <button onClick={() => { setUploadData({ ...book, description: book.description || '' }); setSelectedCourses(book.courses?.map(c => c.id) || []); setSelectedBook(book); setIsEditModalOpen(true); }} className="p-2 text-gray-400 hover:text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg transition-colors" title="Redigera"><Settings size={14} /></button>
+                                                        <button onClick={() => handleDelete(book.id)} className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors" title="Ta bort"><Trash2 size={14} /></button>
+                                                    </>
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
-                                ) : (selectedBook.fileUrl && selectedBook.fileUrl.toLowerCase().endsWith('.epub')) || selectedBook.type === 'EPUB' ? (
-                                    <EpubViewer url={selectedBook.fileUrl} title={selectedBook.title} />
-                                ) : (
-                                    <PdfViewer ebookId={selectedBook.id} title={selectedBook.title} />
-                                )}
+                                ))}
                             </div>
-                        </div>
-                    )}
+                        )}
+                    </div>
                 </div>
             </div>
+
+            {/* ─── UPLOAD MODAL ─── */}
+            {isUploadModalOpen && (
+                <ModalShell
+                    title={t('library.upload_modal_title')}
+                    icon={Upload}
+                    onClose={() => { setIsUploadModalOpen(false); setUploadProgress(0); }}
+                >
+                    <form onSubmit={handleUpload} className="p-6 space-y-4">
+                        <div className="flex gap-2 items-end">
+                            <div className="flex-1">
+                                <label className={labelCls}>ISBN (valfritt)</label>
+                                <input type="text" placeholder="978-..." className={inputCls} value={uploadData.isbn || ''} onChange={(e) => setUploadData(prev => ({ ...prev, isbn: e.target.value }))} />
+                            </div>
+                            <button type="button" onClick={handleFetchIsbn} className="px-4 py-2.5 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300 rounded-xl text-sm font-bold hover:bg-indigo-100 dark:hover:bg-indigo-900/40 transition-colors border border-indigo-100 dark:border-indigo-800/30">Hämta</button>
+                        </div>
+                        <div>
+                            <label className={labelCls}>{t('library.title_label')} *</label>
+                            <input type="text" required className={inputCls} value={uploadData.title} onChange={(e) => setUploadData(prev => ({ ...prev, title: e.target.value }))} />
+                        </div>
+                        <div className="grid grid-cols-2 gap-3">
+                            <div>
+                                <label className={labelCls}>{t('library.author_label')}</label>
+                                <input type="text" className={inputCls} value={uploadData.author} onChange={(e) => setUploadData(prev => ({ ...prev, author: e.target.value }))} />
+                            </div>
+                            <div>
+                                <label className={labelCls}>{t('library.category_label')}</label>
+                                <input type="text" list="upload-cat-suggestions" className={inputCls} value={uploadData.category} onChange={(e) => setUploadData(prev => ({ ...prev, category: e.target.value }))} />
+                                <datalist id="upload-cat-suggestions">
+                                    {availableCategories.filter(c => c !== 'Alla').map(c => <option key={c} value={c} />)}
+                                </datalist>
+                            </div>
+                        </div>
+                        {renderCourseSelector()}
+                        <div>
+                            <label className={labelCls}>{t('library.description_label')}</label>
+                            <textarea className={`${inputCls} h-20 resize-none`} value={uploadData.description} onChange={(e) => setUploadData(prev => ({ ...prev, description: e.target.value }))} />
+                        </div>
+                        <div className="grid grid-cols-2 gap-3">
+                            <div>
+                                <label className={labelCls}>{t('library.epub_file_label')} *</label>
+                                <input type="file" accept=".epub,.pdf,.mp3,.m4b" required onChange={(e) => setFiles(prev => ({ ...prev, epub: e.target.files[0] }))} className="text-xs text-gray-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 dark:file:bg-indigo-900/30 file:text-indigo-700 dark:file:text-indigo-300 hover:file:bg-indigo-100" />
+                            </div>
+                            <div>
+                                <label className={labelCls}>{t('library.cover_image_label')} ({t('common.optional')})</label>
+                                <input type="file" accept="image/*" onChange={(e) => setFiles(prev => ({ ...prev, cover: e.target.files[0] }))} className="text-xs text-gray-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 dark:file:bg-indigo-900/30 file:text-indigo-700 dark:file:text-indigo-300 hover:file:bg-indigo-100" />
+                            </div>
+                        </div>
+                        {uploadProgress > 0 && (
+                            <div>
+                                <div className="w-full bg-gray-200 dark:bg-[#252628] rounded-full h-1.5 overflow-hidden">
+                                    <div className="bg-indigo-600 h-full rounded-full transition-all duration-300" style={{ width: `${uploadProgress}%` }} />
+                                </div>
+                                <p className="text-xs text-gray-400 text-center mt-1">{uploadProgress}%</p>
+                            </div>
+                        )}
+                        <div className="flex gap-3 pt-2">
+                            <button type="button" onClick={() => { setIsUploadModalOpen(false); setUploadProgress(0); }} className="flex-1 py-2.5 bg-gray-100 dark:bg-[#252628] text-gray-700 dark:text-gray-200 rounded-xl text-sm font-bold hover:bg-gray-200 dark:hover:bg-[#333] transition-colors">{t('common.cancel')}</button>
+                            <button type="submit" disabled={uploadProgress > 0 && uploadProgress < 100} className="flex-1 py-2.5 bg-indigo-600 text-white rounded-xl text-sm font-bold hover:bg-indigo-700 transition-colors shadow-md shadow-indigo-200 dark:shadow-indigo-900/30 disabled:opacity-50 disabled:cursor-not-allowed">
+                                {uploadProgress > 0 && uploadProgress < 100 ? `${t('common.uploading')}...` : t('library.upload_btn')}
+                            </button>
+                        </div>
+                    </form>
+                </ModalShell>
+            )}
+
+            {/* ─── EDIT MODAL ─── */}
+            {isEditModalOpen && (
+                <ModalShell
+                    title={t('library.edit_modal_title')}
+                    icon={Settings}
+                    onClose={() => { setIsEditModalOpen(false); setSelectedBook(null); }}
+                >
+                    <form onSubmit={handleUpdate} className="p-6 space-y-4">
+                        <div className="flex gap-2 items-end">
+                            <div className="flex-1">
+                                <label className={labelCls}>ISBN</label>
+                                <input type="text" placeholder="978-..." className={inputCls} value={uploadData.isbn || ''} onChange={(e) => setUploadData(prev => ({ ...prev, isbn: e.target.value }))} />
+                            </div>
+                            <button type="button" onClick={handleFetchIsbn} className="px-4 py-2.5 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300 rounded-xl text-sm font-bold hover:bg-indigo-100 dark:hover:bg-indigo-900/40 transition-colors border border-indigo-100 dark:border-indigo-800/30">Hämta</button>
+                        </div>
+                        <div>
+                            <label className={labelCls}>{t('library.title_label')} *</label>
+                            <input type="text" required className={inputCls} value={uploadData.title} onChange={(e) => setUploadData(prev => ({ ...prev, title: e.target.value }))} />
+                        </div>
+                        <div className="grid grid-cols-2 gap-3">
+                            <div>
+                                <label className={labelCls}>{t('library.author_label')}</label>
+                                <input type="text" className={inputCls} value={uploadData.author} onChange={(e) => setUploadData(prev => ({ ...prev, author: e.target.value }))} />
+                            </div>
+                            <div>
+                                <label className={labelCls}>{t('library.category_label')}</label>
+                                <input type="text" list="edit-cat-suggestions" className={inputCls} value={uploadData.category} onChange={(e) => setUploadData(prev => ({ ...prev, category: e.target.value }))} />
+                                <datalist id="edit-cat-suggestions">
+                                    {availableCategories.filter(c => c !== 'Alla').map(c => <option key={c} value={c} />)}
+                                </datalist>
+                            </div>
+                        </div>
+                        {renderCourseSelector()}
+                        <div>
+                            <label className={labelCls}>{t('library.description_label')}</label>
+                            <textarea className={`${inputCls} h-20 resize-none`} value={uploadData.description} onChange={(e) => setUploadData(prev => ({ ...prev, description: e.target.value }))} />
+                        </div>
+                        <div className="flex gap-3 pt-2">
+                            <button type="button" onClick={() => { setIsEditModalOpen(false); setSelectedBook(null); }} className="flex-1 py-2.5 bg-gray-100 dark:bg-[#252628] text-gray-700 dark:text-gray-200 rounded-xl text-sm font-bold hover:bg-gray-200 dark:hover:bg-[#333] transition-colors">{t('common.cancel')}</button>
+                            <button type="submit" className="flex-1 py-2.5 bg-indigo-600 text-white rounded-xl text-sm font-bold hover:bg-indigo-700 transition-colors shadow-md shadow-indigo-200 dark:shadow-indigo-900/30">{t('library.save_changes')}</button>
+                        </div>
+                    </form>
+                </ModalShell>
+            )}
+
+            {/* ─── READER MODAL ─── */}
+            {selectedBook && !isEditModalOpen && (
+                <div className="fixed inset-0 z-50 bg-white dark:bg-slate-900 flex flex-col">
+                    <div className="px-5 py-3 border-b border-gray-100 dark:border-[#2a2b2d] flex justify-between items-center bg-white dark:bg-[#1a1b1d] shadow-sm z-10">
+                        <div className="flex items-center gap-3 min-w-0">
+                            <div className="w-8 h-8 rounded-lg bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center shrink-0">
+                                <Book size={15} className="text-indigo-600 dark:text-indigo-400" />
+                            </div>
+                            <div className="min-w-0">
+                                <h2 className="text-sm font-bold text-gray-900 dark:text-white truncate">{selectedBook.title}</h2>
+                                <p className="text-xs text-gray-400 truncate">{selectedBook.author}</p>
+                            </div>
+                        </div>
+                        <button onClick={() => setSelectedBook(null)} className="p-2 hover:bg-gray-100 dark:hover:bg-[#252628] rounded-xl transition-colors ml-4 shrink-0">
+                            <X size={18} className="text-gray-500" />
+                        </button>
+                    </div>
+                    <div className="flex-1 bg-gray-100 dark:bg-slate-900 overflow-hidden relative">
+                        {selectedBook.type === 'AUDIO' ? (
+                            <div className="flex items-center justify-center h-full">
+                                <div className="text-center">
+                                    <div className="w-24 h-24 bg-gradient-to-br from-indigo-500 to-violet-600 rounded-3xl flex items-center justify-center mx-auto mb-5 shadow-2xl shadow-indigo-300/40 dark:shadow-indigo-900/60">
+                                        <Music className="text-white" size={42} />
+                                    </div>
+                                    <h3 className="text-xl font-bold dark:text-white mb-1">Ljudbok</h3>
+                                    <p className="text-gray-400 text-sm mb-6">Spelaren visas i ett flytande fönster.</p>
+                                    <button onClick={() => { setActiveAudiobook(selectedBook); setSelectedBook(null); }} className="inline-flex items-center gap-2 px-6 py-2.5 bg-indigo-600 text-white rounded-xl text-sm font-bold hover:bg-indigo-700 transition-colors">
+                                        <Headphones size={15} /> Öppna spelare
+                                    </button>
+                                </div>
+                            </div>
+                        ) : (selectedBook.fileUrl?.toLowerCase().endsWith('.epub') || selectedBook.type === 'EPUB') ? (
+                            <EpubViewer url={selectedBook.fileUrl} title={selectedBook.title} />
+                        ) : (
+                            <PdfViewer ebookId={selectedBook.id} title={selectedBook.title} />
+                        )}
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
-
 
 export default EbookLibrary;

@@ -6,7 +6,7 @@ import {
     Globe, Database, Server, Zap, BarChart,
     Check, ArrowRight, Menu, X, Play, Sparkles,
     Award, TrendingUp, Layers, Gamepad2, Brain, Map, Flame, MessageSquare,
-    FileText, ClipboardList, Thermometer, Target, ArrowLeft
+    FileText, ClipboardList, Thermometer, Target, ArrowLeft, Smartphone
 } from 'lucide-react';
 
 import adminDashboardImg from '../../assets/screenshots/admin_dashboard.png';

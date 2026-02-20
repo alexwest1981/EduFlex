@@ -27,8 +27,8 @@ ALTER TABLE notifications ADD COLUMN IF NOT EXISTS action_url VARCHAR(255);
 -- 4. courses: missing tags
 ALTER TABLE courses ADD COLUMN IF NOT EXISTS tags TEXT;
 
--- 5. lessons: missing source_community_item_id
-ALTER TABLE lessons ADD COLUMN IF NOT EXISTS source_community_item_id VARCHAR(255);
+-- 5. lesson: missing source_community_item_id
+ALTER TABLE lesson ADD COLUMN IF NOT EXISTS source_community_item_id VARCHAR(255);
 
 -- 6. assignment: missing gamification columns
 DO $$ BEGIN

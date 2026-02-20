@@ -100,19 +100,47 @@ public class MinioStorageService implements StorageService {
     @Override
     public InputStream load(String storageId) {
         try {
-            logger.info("Attempting to load object '{}' from bucket '{}'", storageId, bucketName);
+            // FIX: Strip common path prefixes to find the actual key/filename
+            String key = storageId;
+            String[] prefixes = { "/uploads/", "uploads/", "/api/storage/", "api/storage/", "/api/files/", "api/files/",
+                    "/api/onlyoffice/download/" };
+            for (String prefix : prefixes) {
+                if (key.startsWith(prefix)) {
+                    key = key.substring(prefix.length());
+                    break;
+                }
+            }
+
+            logger.info("Attempting to load object '{}' (original: '{}') from bucket '{}'", key, storageId, bucketName);
             return minioClient.getObject(
                     io.minio.GetObjectArgs.builder()
                             .bucket(bucketName)
-                            .object(storageId)
+                            .object(key)
                             .build());
         } catch (Exception e) {
             // Lazy Sync: Try to recover from local uploads if available
             try {
                 // Use injected uploadDir
-                java.nio.file.Path localPath = java.nio.file.Paths.get(uploadDir, "profiles", storageId);
+                // Try to find the file locally using the original storageId (which might be a
+                // path) or just the filename
+                String filename = storageId;
+                if (filename.contains("/")) {
+                    filename = filename.substring(filename.lastIndexOf("/") + 1);
+                }
+
+                java.nio.file.Path localPath = java.nio.file.Paths.get(uploadDir, "profiles", filename);
                 if (!java.nio.file.Files.exists(localPath)) {
-                    localPath = java.nio.file.Paths.get(uploadDir, "materials", storageId);
+                    localPath = java.nio.file.Paths.get(uploadDir, "materials", filename);
+                }
+                if (!java.nio.file.Files.exists(localPath)) {
+                    localPath = java.nio.file.Paths.get(uploadDir, "documents", filename);
+                }
+                if (!java.nio.file.Files.exists(localPath)) {
+                    localPath = java.nio.file.Paths.get(uploadDir, "attachments", filename);
+                }
+                // Also check root of uploadDir
+                if (!java.nio.file.Files.exists(localPath)) {
+                    localPath = java.nio.file.Paths.get(uploadDir, filename);
                 }
 
                 if (java.nio.file.Files.exists(localPath)) {
@@ -122,15 +150,23 @@ public class MinioStorageService implements StorageService {
                     if (contentType == null)
                         contentType = "application/octet-stream";
 
+                    // Use the cleaned key for MinIO
+                    String key = storageId;
+                    if (key.startsWith("/uploads/")) {
+                        key = key.substring("/uploads/".length());
+                    } else if (key.startsWith("uploads/")) {
+                        key = key.substring("uploads/".length());
+                    }
+
                     try (InputStream is = java.nio.file.Files.newInputStream(localPath)) {
-                        save(is, contentType, storageId, storageId);
+                        save(is, contentType, storageId, key);
                     }
 
                     // Try loading again
                     return minioClient.getObject(
                             io.minio.GetObjectArgs.builder()
                                     .bucket(bucketName)
-                                    .object(storageId)
+                                    .object(key)
                                     .build());
                 } else {
                     logger.warn(
@@ -149,10 +185,17 @@ public class MinioStorageService implements StorageService {
     @Override
     public void delete(String storageId) {
         try {
+            String key = storageId;
+            if (key.startsWith("/uploads/")) {
+                key = key.substring("/uploads/".length());
+            } else if (key.startsWith("uploads/")) {
+                key = key.substring("uploads/".length());
+            }
+
             minioClient.removeObject(
                     io.minio.RemoveObjectArgs.builder()
                             .bucket(bucketName)
-                            .object(storageId)
+                            .object(key)
                             .build());
         } catch (Exception e) {
             throw new RuntimeException("Delete failed: " + storageId, e);
