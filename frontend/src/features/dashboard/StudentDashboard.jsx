@@ -21,6 +21,7 @@ import WidgetWrapper from './components/WidgetWrapper';
 import EvaluationNotificationWidget from './widgets/EvaluationNotificationWidget';
 import SurveyNotificationWidget from './widgets/SurveyNotificationWidget';
 import EduQuestWidget from '../edugame/EduQuestWidget';
+import EduAiHubWidget from './widgets/EduAiHubWidget';
 
 // --- SHARED ---
 import { useDashboardWidgets } from '../../hooks/useDashboardWidgets';
@@ -54,7 +55,8 @@ const StudentDashboard = ({ currentUser }) => {
         calendar: true,
         achievements: true,
         aiInsights: true,
-        eduQuest: true // Default enabled
+        eduQuest: true,
+        eduAiHub: true // Default enabled
     });
 
     const widgetLabels = {
@@ -66,7 +68,8 @@ const StudentDashboard = ({ currentUser }) => {
         calendar: t('dashboard.widgets.calendar'),
         achievements: t('dashboard.widgets.achievements'),
         aiInsights: t('dashboard.widgets.ai_personalization'),
-        eduQuest: "EduQuest Uppdrag"
+        eduQuest: "EduQuest Uppdrag",
+        eduAiHub: "EduAI Intelligence Center"
     };
 
     useEffect(() => {
@@ -250,6 +253,10 @@ const StudentDashboard = ({ currentUser }) => {
                             <WidgetWrapper className="h-auto">
                                 <StudentGamificationWidget currentUser={currentUser} isModuleActive={isModuleActive} />
                             </WidgetWrapper>
+                        )}
+
+                        {widgets.eduAiHub && (
+                            <EduAiHubWidget />
                         )}
 
                         {widgets.sidebar && (
