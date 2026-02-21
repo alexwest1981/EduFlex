@@ -379,13 +379,7 @@ const AppRoutes = () => {
                     </ProtectedRoute>
                 } />
 
-                <Route path="/analytics/roi" element={
-                    <ProtectedRoute roles={['ADMIN', 'TEACHER', 'REKTOR', 'PRINCIPAL']}>
-                        <Layout currentUser={currentUser} handleLogout={logout}>
-                            <RoiCenter />
-                        </Layout>
-                    </ProtectedRoute>
-                } />
+
 
                 {/* HEALTH CHECK (ADMIN ONLY) */}
                 <Route path="/admin/health" element={
@@ -465,7 +459,7 @@ const AppRoutes = () => {
                 } />
 
                 <Route path="/analytics" element={
-                    <ProtectedRoute roles={['ADMIN', 'TEACHER']}>
+                    <ProtectedRoute roles={['ADMIN', 'TEACHER', 'REKTOR', 'PRINCIPAL']}>
                         <Layout currentUser={currentUser} handleLogout={logout}>
                             <AnalyticsDashboard />
                         </Layout>
