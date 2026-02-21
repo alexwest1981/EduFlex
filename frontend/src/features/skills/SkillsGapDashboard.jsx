@@ -82,7 +82,7 @@ const SkillsGapDashboard = () => {
     }
 
     // Formatting data for Recharts
-    const chartData = skills.map(s => ({
+    const chartData = data.skills.map(s => ({
         subject: s.skillName,
         current: s.currentLevel,
         target: s.targetLevel,
@@ -153,7 +153,7 @@ const SkillsGapDashboard = () => {
                         </h3>
                         <div className="prose prose-invert prose-blue max-w-none">
                             <p className="text-blue-100 leading-relaxed italic line-clamp-[10]">
-                                "{aiRecommendation}"
+                                "{data.aiRecommendation}"
                             </p>
                         </div>
                     </div>
@@ -176,7 +176,7 @@ const SkillsGapDashboard = () => {
             <div className="bg-[#0b1b2b]/50 border border-[#1e3a5f]/20 rounded-3xl p-8">
                 <h3 className="text-xl font-bold text-white mb-8">Detaljerad Analys</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {skills.map((skill, idx) => (
+                    {data.skills.map((skill, idx) => (
                         <div
                             key={idx}
                             className="bg-[#0f172a] border border-[#1e3a5f]/30 rounded-2xl p-6 hover:border-blue-500/50 transition-all group"

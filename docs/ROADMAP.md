@@ -51,8 +51,8 @@
 | :--- | :--- | :--- |
 | **Kursutvärdering & Insikter** | Komplett system för kurskvalitet, automatiserade studentnotiser och AI-analys av fritextsvar. | ✅ **Klar** |
 | **Enkätsystem (Elevhälsa)** | Dynamiska enkäter med 4 frågetyper, massdistribution per roll, intern notifiering och statistikaggregering. | ✅ **Klar** |
-| **Skills Gap Analysis** | Visualisera kompetensluckor baserat på quiz/profiler. | 📅 **Planerad** |
-| **ROI-rapportering** | Koppla utbildning till affärsdata (t.ex. säljsiffror). | 📅 **Planerad** |
+| **Skills Gap Analysis** | Visualisera kompetensluckor baserat på quiz/profiler (Radar charts). | ✅ **Klar** |
+| **ROI-rapportering** | Koppla utbildning till affärsdata och Mastery Scores. | ✅ **Klar** |
 
 ---
 
@@ -73,6 +73,13 @@
 ---
 
 ## 📝 Change Log
+
+### [v2.5.0] - 2026-02-21
+- **New Feature**: **Skills Gap Analysis - Live Integration**.
+- **Radar Charts**: Dynamic visualization of Student vs. Target skill levels per category.
+- **AI Insights**: Google Gemini analyzes skill gaps and generates actionable learning recommendations.
+- **Teacher Dashboard**: Heatmaps representing the average skill gaps across an entire class/course.
+- **Data Persistence**: Student skill levels dynamically update based on their performance in AI Sessions and Quizzes.
 
 ### [v2.4.0] - 2026-02-21
 - **New Feature**: **ROI Reporting Engine**.

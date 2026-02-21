@@ -101,12 +101,12 @@ Här är en sammanfattning av det stora arbetet med att ena plattformens intelli
     *   **Glassmorphiskt UI:** Helt ny mötesvy med premium-känsla, interaktiva sidopaneler för chatt och deltagare, samt fixerade kontroller.
     *   **Säkerhet:** Fullständig separation av mötesrum via server-side token-generering.
 
-*   **📊 Skills Gap Analysis Engine (17 feb 2026):**
-    *   **Nuvarande vs Mål:** Implementerat en motor för att räkna ut glappet mellan studentens faktiska färdigheter och målkraven för deras kurser.
-    *   **Kompetensprofil (Radar):** Ny visualisering för studenter som visar deras styrkor och utvecklingsområden via ett radar-diagram (spindeldiagram).
-    *   **AI-Coach Tips:** Integrerat Google Gemini för att analysera specifika ”gaps” och ge personliga, pedagogiska råd för att nå målen.
-    *   **Lärare – Klassöversikt:** Heatmap-vy för lärare som visar hela klassens genomsnittliga kunskapsnivå per kompetens, för att snabbt identifiera gemensamma svagheter.
-    *   **Skolverket Sync:** Förberett för automatisk mappning av färdigheter mot Skolverkets officiella kursmål.
+*   **📊 Skills Gap Analysis Engine - Live (21 feb 2026):**
+    *   **Nuvarande vs Mål:** Motorn beräknar nu glappet live genom att jämföra studentens faktiska färdigheter (`student_skill_levels`) med kursens målkrav (`course_skill_mapping`).
+    *   **Kompetensprofil (Radar):** Ny dynamisk visualisering för studenter som visar deras live-styrkor och utvecklingsområden via ett radar-diagram.
+    *   **AI-Coach Tips:** Integrerat Google Gemini för att analysera specifika ”gaps” och ge personliga, pedagogiska råd för att nå målen, baserat på realtidsdata.
+    *   **Lärare – Klassöversikt:** Heatmap-vy för lärare som visar hela klassens genomsnittliga kunskapsnivå per kompetens.
+    *   **Event-drivet Lärande:** Kompetensförbättringar registreras nu automatiskt när studenter genomför AI-sessioner eller klarar Quizzes.
 
 *   **⭐ Guardian Dashboard 2.0 – Live & AI-Powered (16 feb 2026):**
     *   **Live AI Summaries:** Integrerat Google Gemini för att generera personliga statusrapporter till vårdnadshavare baserat på barnets aktuella närvaro och schema.

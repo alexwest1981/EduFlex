@@ -14,6 +14,7 @@ import com.eduflex.backend.repository.QuizRepository;
 import com.eduflex.backend.repository.UserRepository;
 import com.eduflex.backend.repository.SubmissionRepository;
 import com.eduflex.backend.model.Submission;
+import com.eduflex.backend.service.SkillsGapService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
@@ -44,6 +45,7 @@ public class EduAIService {
     private final ObjectMapper objectMapper;
     private final SubmissionRepository submissionRepository;
     private final AiSessionResultRepository aiSessionResultRepository;
+    private final SkillsGapService skillsGapService;
 
     public EduAIService(GeminiService geminiService, EduAIQuestRepository questRepository,
             UserRepository userRepository, CourseRepository courseRepository,
@@ -52,7 +54,8 @@ public class EduAIService {
             com.eduflex.backend.service.GamificationService gamificationService,
             ObjectMapper objectMapper,
             SubmissionRepository submissionRepository,
-            AiSessionResultRepository aiSessionResultRepository) {
+            AiSessionResultRepository aiSessionResultRepository,
+            SkillsGapService skillsGapService) {
         this.geminiService = geminiService;
         this.questRepository = questRepository;
         this.userRepository = userRepository;
@@ -64,6 +67,7 @@ public class EduAIService {
         this.objectMapper = objectMapper;
         this.submissionRepository = submissionRepository;
         this.aiSessionResultRepository = aiSessionResultRepository;
+        this.skillsGapService = skillsGapService;
     }
 
     private static final String QUEST_SYSTEM_PROMPT = """
@@ -391,6 +395,12 @@ public class EduAIService {
                 .createdAt(LocalDateTime.now())
                 .build();
         aiSessionResultRepository.save(newResult);
+
+        // Update Skills Gap Analysis
+        if (courseId != null) {
+            double masteryPercentage = (double) score / maxScore * 100.0;
+            skillsGapService.processPerformanceResult(user.getId(), courseId, masteryPercentage);
+        }
 
         Map<String, Object> response = new HashMap<>();
         response.put("score", score);
