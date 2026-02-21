@@ -116,6 +116,7 @@ const StandardLayout = ({ children }) => {
             ...(roleName === 'HALSOTEAM' || roleName === 'ROLE_HALSOTEAM' ? [
                 { path: '/health-dashboard', icon: <Heart size={20} className="text-rose-500" />, label: 'E-hälsa (Hälsoteam)' }
             ] : []),
+            ...(isAdmin || roleName.includes('TEACHER') || ['REKTOR', 'PRINCIPAL'].includes(roleName) ? [{ path: '/analytics/roi', icon: <TrendingUp size={20} />, label: 'ROI & Prestation' }] : []),
             ...(isModuleActive('ANALYTICS') && isAdmin ? [{ path: '/analytics', icon: <BarChart2 size={20} />, label: t('sidebar.analytics') }] : []),
         ],
         rektor: [

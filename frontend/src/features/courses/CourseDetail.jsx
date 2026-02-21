@@ -13,6 +13,7 @@ import SkolverketCourseInfo from '../../components/SkolverketCourseInfo';
 import AdaptiveRecommendationWidget from './components/AdaptiveRecommendationWidget';
 
 import TeacherCourseSummary from '../dashboard/components/teacher/TeacherCourseSummary';
+import TeacherAnalyticsDashboard from './components/TeacherAnalyticsDashboard';
 
 // --- CONTEXT ---
 import { useAppContext } from '../../context/AppContext';
@@ -174,6 +175,14 @@ const CourseDetail = ({ currentUser }) => {
             icon: <Users size={18} />,
             enabled: true, // Always enabled, handles empty inside
             visibleFor: 'ALL'
+        },
+        {
+            key: 'mission-control',
+            comp: ({ courseId }) => <TeacherAnalyticsDashboard courseId={courseId} />,
+            meta: { name: 'Mission Control' },
+            icon: <Sparkles size={18} />,
+            enabled: true,
+            visibleFor: 'TEACHER'
         }
     ];
 
@@ -456,32 +465,10 @@ const CourseDetail = ({ currentUser }) => {
 
                 {/* --- RIGHT CONTENT AREA --- */}
                 <main className="flex-1 min-w-0">
-                    {/* Top Actions Bar (Certificate, Eval, etc) - ONLY VISIBLE IF CONTENT EXISTS */}
-                    {!isTeacher && ((myResult?.status === 'PASSED' || canClaim) || (course.evaluation && course.evaluation.active)) && (
+                    {/* Top Actions Bar (Eval) - ONLY VISIBLE IF CONTENT EXISTS */}
+                    {!isTeacher && course.evaluation?.active && (
                         <div className="flex flex-wrap gap-3 mb-6 justify-end">
-                            {/* CERTIFICATE BUTTON (STUDENT ONLY) */}
-                            {(myResult?.status === 'PASSED' || canClaim) && (
-                                <button
-                                    onClick={async () => {
-                                        if (myResult?.status !== 'PASSED') {
-                                            try {
-                                                await api.courses.claimCertificate(course.id, currentUser.id);
-                                                setMyResult({ ...myResult, status: 'PASSED' });
-                                            } catch (e) {
-                                                alert("Kunde inte utfärda certifikat.");
-                                                return;
-                                            }
-                                        }
-                                        navigate(`/certificate/${course.id}`);
-                                    }}
-                                    className="bg-gradient-to-r from-amber-200 to-yellow-400 text-amber-900 border border-amber-300 px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 hover:from-amber-300 hover:to-yellow-500 transition-all shadow-sm"
-                                >
-                                    <Users size={16} /> {myResult?.status === 'PASSED' ? t('course.view_certificate') : t('course.claim_certificate')}
-                                </button>
-                            )}
-
-
-
+                            {/* STUDIO/CERTIFICATES MOVED TO CENTRAL "FILER & DOKUMENT" */}
                             {/* STUDENT: EVALUATE COURSE BUTTON */}
                             {course.evaluation && course.evaluation.active && (
                                 <button

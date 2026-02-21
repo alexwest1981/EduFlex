@@ -26,6 +26,11 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
     const [isSaving, setIsSaving] = useState(false);
     const [onlyOfficeDoc, setOnlyOfficeDoc] = useState(null);
 
+    // Calendar Integration
+    const [addToCalendar, setAddToCalendar] = useState(false);
+    const [calendarStart, setCalendarStart] = useState('');
+    const [calendarEnd, setCalendarEnd] = useState('');
+
     // Community Publishing
     const [showPublishModal, setShowPublishModal] = useState(false);
     const [publishingLesson, setPublishingLesson] = useState(null);
@@ -179,6 +184,9 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
         setFile(null);
         setSelectedLesson(null);
         setSelectedQuiz(null);
+        setAddToCalendar(false);
+        setCalendarStart('');
+        setCalendarEnd('');
         setIsEditing(true);
     };
 
@@ -239,6 +247,39 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
                     setLessons(lessons.map(l => l.id === savedItem.id ? savedItem : l));
                     setSelectedLesson(savedItem);
                 }
+
+                // --- CALENDAR INTEGRATION ---
+                if (addToCalendar && calendarStart && calendarEnd) {
+                    try {
+                        const eventReq = {
+                            title: formData.title,
+                            description: `Ny lektion: ${formData.title}.\nLäs mer under Material-fliken.`,
+                            startTime: new Date(calendarStart).toISOString(),
+                            endTime: new Date(calendarEnd).toISOString(),
+                            type: 'LESSON',
+                            status: 'CONFIRMED',
+                            courseId: courseId
+                        };
+                        console.log("Saving to calendar with payload:", eventReq);
+                        const calRes = await fetch(`${window.location.origin}/api/events`, {
+                            method: 'POST',
+                            headers: {
+                                'Authorization': `Bearer ${token}`,
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(eventReq)
+                        });
+
+                        if (!calRes.ok) {
+                            console.error("Failed to save to calendar", await calRes.text());
+                            alert("Lektionen sparades, men det gick inte att lägga till den i kalendern.");
+                        }
+                    } catch (calErr) {
+                        console.error("Error saving to calendar", calErr);
+                        alert("Ett nätverksfel uppstod när lektionen skulle läggas till i kalendern.");
+                    }
+                }
+                // --- END CALENDAR INTEGRATION ---
 
                 setIsEditing(false);
                 setFile(null);
@@ -457,7 +498,7 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
             </div>
 
             {/* HÖGER: INNEHÅLL */}
-            <div className="lg:col-span-3 bg-white dark:bg-[#1E1F20] rounded-xl border border-gray-200 dark:border-[#3c4043] p-8 flex flex-col">
+            <div className="lg:col-span-3 min-w-0 bg-white dark:bg-[#1E1F20] rounded-xl border border-gray-200 dark:border-[#3c4043] p-8 flex flex-col">
                 {isEditing ? (
                     /* EDITOR MODE */
                     <div className="space-y-4 flex-1 animate-in fade-in relative">
@@ -600,6 +641,49 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
                                 placeholder="Skriv lektionsinnehållet här..."
                                 style={{ height: '350px', marginBottom: '40px' }}
                             />
+                        </div>
+
+                        {/* CALENDAR INTEGRATION SECTION */}
+                        <div className="bg-gray-50 dark:bg-[#2A2B2C] p-4 rounded-xl border border-gray-200 dark:border-[#3c4043] my-4">
+                            <label className="flex items-center gap-3 cursor-pointer">
+                                <div className="relative">
+                                    <input
+                                        type="checkbox"
+                                        className="sr-only"
+                                        checked={addToCalendar}
+                                        onChange={(e) => setAddToCalendar(e.target.checked)}
+                                    />
+                                    <div className={`block w-10 h-6 rounded-full transition-colors ${addToCalendar ? 'bg-indigo-600' : 'bg-gray-300 dark:bg-gray-600'}`}></div>
+                                    <div className={`dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform ${addToCalendar ? 'transform translate-x-4' : ''}`}></div>
+                                </div>
+                                <div className="flex flex-col">
+                                    <span className="text-sm font-bold text-gray-800 dark:text-gray-200">Schemalägg lektion i Kalendern</span>
+                                    <span className="text-xs text-gray-500">Lägg automatiskt till en kalenderhändelse för denna lektion som eleverna kan se.</span>
+                                </div>
+                            </label>
+
+                            {addToCalendar && (
+                                <div className="grid grid-cols-2 gap-4 mt-4 pt-4 border-t border-gray-200 dark:border-[#3c4043] animate-in fade-in slide-in-from-top-2">
+                                    <div>
+                                        <label className="block text-xs font-bold text-gray-500 mb-1">Starttid</label>
+                                        <input
+                                            type="datetime-local"
+                                            value={calendarStart}
+                                            onChange={(e) => setCalendarStart(e.target.value)}
+                                            className="w-full bg-white dark:bg-[#1E1F20] text-gray-900 dark:text-white border border-gray-300 dark:border-[#3c4043] rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-bold text-gray-500 mb-1">Sluttid</label>
+                                        <input
+                                            type="datetime-local"
+                                            value={calendarEnd}
+                                            onChange={(e) => setCalendarEnd(e.target.value)}
+                                            className="w-full bg-white dark:bg-[#1E1F20] text-gray-900 dark:text-white border border-gray-300 dark:border-[#3c4043] rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                        />
+                                    </div>
+                                </div>
+                            )}
                         </div>
 
                         <div className="flex gap-3 pt-4 border-t dark:border-[#3c4043]">
@@ -802,7 +886,7 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
 
                         {/* TEXT CONTENT */}
                         <div
-                            className="prose dark:prose-invert max-w-none text-gray-700 dark:text-gray-300 leading-relaxed mb-12"
+                            className="prose dark:prose-invert max-w-full overflow-hidden text-gray-700 dark:text-gray-300 leading-relaxed mb-12 prose-pre:overflow-x-auto prose-pre:max-w-full break-words"
                             dangerouslySetInnerHTML={{ __html: selectedLesson.content }}
                         />
 

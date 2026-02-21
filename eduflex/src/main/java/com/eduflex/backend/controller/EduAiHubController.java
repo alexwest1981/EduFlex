@@ -7,6 +7,7 @@ import com.eduflex.backend.service.EduAiHubService;
 import com.eduflex.backend.service.GamificationService;
 import com.eduflex.backend.service.SystemSettingService;
 import com.eduflex.backend.service.ai.EduAIService;
+import com.eduflex.backend.service.ai.EduAiRecommendationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -26,6 +27,7 @@ public class EduAiHubController {
     private final SystemSettingService systemSettingService;
     private final EduAIService eduAIService;
     private final GamificationService gamificationService;
+    private final EduAiRecommendationService eduAiRecommendationService;
 
     @GetMapping("/queue")
     public ResponseEntity<List<SpacedRepetitionItem>> getReviewQueue() {
@@ -57,6 +59,12 @@ public class EduAiHubController {
         stats.put("radarStats", eduAiHubService.getRadarStats(user.getId()));
 
         return ResponseEntity.ok(stats);
+    }
+
+    @GetMapping("/recommendations")
+    public ResponseEntity<List<EduAiRecommendationService.Recommendation>> getRecommendations() {
+        User user = getCurrentUser();
+        return ResponseEntity.ok(eduAiRecommendationService.getRecommendations(user.getId()));
     }
 
     @PostMapping("/session/generate")

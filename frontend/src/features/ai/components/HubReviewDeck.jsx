@@ -9,7 +9,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import toast from 'react-hot-toast';
 
-const HubReviewDeck = ({ onComplete }) => {
+const HubReviewDeck = ({ onComplete, initialSessionType }) => {
     const [step, setStep] = useState('SETUP'); // SETUP, LOADING, LEARNING, QUIZ, RESULTS
     const [courses, setCourses] = useState([]);
     const [config, setConfig] = useState({ courseId: '', sessionType: 'SUMMARY' });
@@ -37,6 +37,12 @@ const HubReviewDeck = ({ onComplete }) => {
         };
         fetchCourses();
     }, []);
+
+    useEffect(() => {
+        if (initialSessionType) {
+            setConfig(prev => ({ ...prev, sessionType: initialSessionType }));
+        }
+    }, [initialSessionType]);
 
     const handleGenerate = async () => {
         setStep('LOADING');

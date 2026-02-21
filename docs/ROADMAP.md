@@ -74,12 +74,20 @@
 
 ## 📝 Change Log
 
+### [v2.4.0] - 2026-02-21
+- **New Feature**: **ROI Reporting Engine**.
+- **Correlation**: Link AI Session Mastery scores with Business Outcomes (KPIs).
+- **Visualization**: New `RoiDashboard` with interactive Scatter Charts.
+- **Insights**: AI-powered ROI analysis via Google Gemini.
+- **Export**: Full support for Excel, CSV, XML, and JSON data exports.
+
 ### [v2.3.0] - 2026-02-21
-- **New Feature**: **Interactive AI Study Sessions**.
+- **New Feature**: **Interactive AI Study Sessions & Recommendations**.
 - **Wizard**: 5-step wizard in `HubReviewDeck` for generating study material and quizzes.
 - **Persistence**: Permanent storage of session results in `ai_session_results`.
 - **Analytics**: Integrated AI sessions into Live Radar and Mastery Score calculations.
-- **UI/UX**: Premium Landing Page Hero featuring the EduAI Hub.
+- **AI Engine**: New **Recommendation Engine** for proactive gap analysis.
+- **UI/UX**: Premium Landing Page Hero and Dagens Rekommendation component.
 - **Bug Fixes**: Fixed several JavaScript and backend errors related to session completion and XP syncing.
 
 ### [v2.2.0] - 2026-02-20

@@ -447,6 +447,22 @@ public class GeminiService {
     }
 
     /**
+     * Generates a concise pedagogical insight for the teacher based on course
+     * analytics.
+     */
+    public String generateControlCenterInsight(String prompt) {
+        // Use general chat mode to get a natural language pedagogical conseil
+        return generateResponse(prompt);
+    }
+
+    /**
+     * Generates a detailed lesson plan based on course analytics insights.
+     */
+    public String generateLessonPlan(String prompt) {
+        return generateResponse(prompt);
+    }
+
+    /**
      * Checks if the Gemini service is available and configured.
      */
     public boolean isAvailable() {

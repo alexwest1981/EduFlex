@@ -9,11 +9,13 @@ import java.util.List;
 @Repository
 public interface AiSessionResultRepository extends JpaRepository<AiSessionResult, Long> {
 
-    List<AiSessionResult> findByUserId(Long userId);
+        List<AiSessionResult> findByUserId(Long userId);
 
-    List<AiSessionResult> findByUserIdAndCourseIdAndSessionTypeOrderByCreatedAtDesc(Long userId, Long courseId,
-            String sessionType);
+        List<AiSessionResult> findByCourseId(Long courseId);
 
-    AiSessionResult findFirstByUserIdAndCourseIdAndSessionTypeOrderByCreatedAtDesc(Long userId, Long courseId,
-            String sessionType);
+        List<AiSessionResult> findByUserIdAndCourseIdAndSessionTypeOrderByCreatedAtDesc(Long userId, Long courseId,
+                        String sessionType);
+
+        AiSessionResult findFirstByUserIdAndCourseIdAndSessionTypeOrderByCreatedAtDesc(Long userId, Long courseId,
+                        String sessionType);
 }

@@ -76,6 +76,7 @@ import ImpactDashboard from './features/impact/ImpactDashboard';
 import HealthCheckDashboard from './features/admin/HealthCheckDashboard';
 import DeveloperSettings from './features/settings/DeveloperSettings';
 import AiAuditDashboard from './features/admin/AiAuditDashboard';
+import RoiCenter from './features/analytics/RoiCenter';
 
 // --- PROTECTED ROUTE ---
 const ProtectedRoute = ({ children, roles, permission }) => {
@@ -374,6 +375,14 @@ const AppRoutes = () => {
                     <ProtectedRoute roles={['ADMIN']}>
                         <Layout currentUser={currentUser} handleLogout={logout}>
                             <EnterpriseWhitelabel />
+                        </Layout>
+                    </ProtectedRoute>
+                } />
+
+                <Route path="/analytics/roi" element={
+                    <ProtectedRoute roles={['ADMIN', 'TEACHER', 'REKTOR', 'PRINCIPAL']}>
+                        <Layout currentUser={currentUser} handleLogout={logout}>
+                            <RoiCenter />
                         </Layout>
                     </ProtectedRoute>
                 } />

@@ -7,7 +7,7 @@ const RichTextEditor = ({ value, onChange, placeholder, style }) => {
     const modules = useMemo(() => ({
         toolbar: [
             [{ 'header': [1, 2, false] }],
-            ['bold', 'italic', 'underline', 'strike', 'blockquote'],
+            ['bold', 'italic', 'underline', 'strike', 'blockquote', 'code-block'],
             [{ 'list': 'ordered' }, { 'list': 'bullet' }],
             ['link', 'clean']
         ],
@@ -15,7 +15,7 @@ const RichTextEditor = ({ value, onChange, placeholder, style }) => {
 
     const formats = [
         'header',
-        'bold', 'italic', 'underline', 'strike', 'blockquote',
+        'bold', 'italic', 'underline', 'strike', 'blockquote', 'code-block',
         'list',
         'link'
     ];
@@ -43,6 +43,17 @@ const RichTextEditor = ({ value, onChange, placeholder, style }) => {
                     border-top: none !important;
                     border-left: none !important;
                     border-right: none !important;
+                }
+                .ql-editor {
+                    word-wrap: break-word;
+                    overflow-wrap: break-word;
+                }
+                .ql-editor pre.ql-syntax {
+                    background-color: #1e1e1e;
+                    color: #d4d4d4;
+                    padding: 1rem;
+                    border-radius: 0.5rem;
+                    overflow-x: auto;
                 }
                 .ql-container.ql-snow {
                     border: none !important;

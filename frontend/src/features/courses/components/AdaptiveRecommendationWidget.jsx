@@ -10,7 +10,7 @@ const AdaptiveRecommendationWidget = ({ courseId, studentId }) => {
         setIsLoading(true);
         try {
             const data = await api.adaptiveLearning.getRecommendation(courseId, studentId);
-            setRecommendation(data);
+            setRecommendation(data.recommendation || data);
         } catch (e) {
             console.error('Failed to load recommendation', e);
         } finally {

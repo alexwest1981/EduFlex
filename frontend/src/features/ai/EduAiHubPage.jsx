@@ -80,6 +80,46 @@ const IntelligenceBar = ({ stats }) => (
     </div>
 );
 
+const HubRecommendations = ({ recommendations, onAction }) => {
+    if (!recommendations || recommendations.length === 0) return null;
+
+    const primary = recommendations[0];
+
+    return (
+        <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-12 bg-white dark:bg-[#1E1F20] rounded-[32px] p-6 border-2 border-brand-orange/20 shadow-xl relative overflow-hidden group"
+        >
+            <div className="absolute top-0 right-0 w-64 h-64 bg-brand-orange/5 blur-3xl rounded-full translate-x-1/2 -translate-y-1/2 group-hover:bg-brand-orange/10 transition-all duration-700"></div>
+
+            <div className="flex flex-col md:flex-row items-center gap-6 relative z-10">
+                <div className="w-16 h-16 bg-brand-orange/10 rounded-2xl flex items-center justify-center text-brand-orange shrink-0">
+                    {primary.type === 'SESSION' ? <Play size={32} /> : <Zap size={32} />}
+                </div>
+
+                <div className="flex-1 text-center md:text-left">
+                    <div className="flex items-center justify-center md:justify-start gap-2 mb-1">
+                        <Sparkles size={14} className="text-brand-orange" />
+                        <span className="text-[10px] font-black uppercase tracking-widest text-brand-orange">Dagens Rekommendation</span>
+                    </div>
+                    <h3 className="text-xl font-black text-gray-900 dark:text-white mb-1 uppercase tracking-tight">{primary.title}</h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">{primary.description}</p>
+                </div>
+
+                <div className="shrink-0">
+                    <button
+                        onClick={() => onAction(primary)}
+                        className="brand-gradient text-white font-black px-8 py-4 rounded-2xl hover:scale-105 transition-all shadow-lg flex items-center gap-2 uppercase text-xs tracking-widest"
+                    >
+                        {primary.actionLabel} <ArrowRight size={16} />
+                    </button>
+                </div>
+            </div>
+        </motion.div>
+    );
+};
+
 const EduAiHubPage = () => {
     const [stats, setStats] = useState({
         queueSize: 0,
@@ -87,7 +127,9 @@ const EduAiHubPage = () => {
         masteryScore: 0,
         radarStats: { Teori: 0, Praktik: 0, Focus: 0, Analys: 0 }
     });
+    const [recommendations, setRecommendations] = useState([]);
     const [isReviewing, setIsReviewing] = useState(false);
+    const [recommendedPass, setRecommendedPass] = useState(null);
     const [loading, setLoading] = useState(true);
     const location = useLocation();
 
@@ -115,18 +157,33 @@ const EduAiHubPage = () => {
 
     const fetchStats = async () => {
         try {
-            const data = await api.ai.getHubStats();
+            const [statsData, recsData] = await Promise.all([
+                api.ai.getHubStats(),
+                api.ai.getRecommendations()
+            ]);
+
             setStats({
-                ...data,
-                queueSize: data.queueSize || 0,
-                xpMultiplier: data.xpMultiplier || '1.0',
-                masteryScore: data.masteryScore || 0,
-                radarStats: data.radarStats || { Teori: 0, Praktik: 0, Focus: 0, Analys: 0 }
+                ...statsData,
+                queueSize: statsData.queueSize || 0,
+                xpMultiplier: statsData.xpMultiplier || '1.0',
+                masteryScore: statsData.masteryScore || 0,
+                radarStats: statsData.radarStats || { Teori: 0, Praktik: 0, Focus: 0, Analys: 0 }
             });
+
+            setRecommendations(recsData || []);
         } catch (err) {
-            console.error("Failed to fetch hub stats", err);
+            console.error("Failed to fetch hub data", err);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleRecommendationAction = (rec) => {
+        if (rec.type === 'SESSION') {
+            setRecommendedPass({ sessionType: rec.sessionType });
+            setIsReviewing(true);
+        } else if (rec.type === 'REVIEW') {
+            setIsReviewing(true);
         }
     };
 
@@ -144,12 +201,19 @@ const EduAiHubPage = () => {
     if (isReviewing) {
         return (
             <div className="min-h-[80vh] flex flex-col items-center justify-center p-6">
-                <HubReviewDeck onComplete={() => {
-                    setIsReviewing(false);
-                    fetchStats();
-                }} />
+                <HubReviewDeck
+                    initialSessionType={recommendedPass?.sessionType}
+                    onComplete={() => {
+                        setIsReviewing(false);
+                        setRecommendedPass(null);
+                        fetchStats();
+                    }}
+                />
                 <button
-                    onClick={() => setIsReviewing(false)}
+                    onClick={() => {
+                        setIsReviewing(false);
+                        setRecommendedPass(null);
+                    }}
                     className="mt-8 text-gray-500 hover:text-brand-orange font-bold text-xs uppercase tracking-widest transition-colors"
                 >
                     Avbryt Session
@@ -189,6 +253,10 @@ const EduAiHubPage = () => {
 
             {activeTab === 'overview' && (
                 <>
+                    <HubRecommendations
+                        recommendations={recommendations}
+                        onAction={handleRecommendationAction}
+                    />
                     <IntelligenceBar stats={stats} />
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                         <div className="lg:col-span-2">

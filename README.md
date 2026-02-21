@@ -38,6 +38,11 @@
 ## 🚀 Senaste uppdateringarna (21 feb 2026)
 Här är en sammanfattning av det stora arbetet med att ena plattformens intelligens-funktioner under **EduAI Hub**:
 
+*   **📈 ROI Reporting Engine (Business Correlation):**
+    *   Implementerade en motor för att korrelera studenternas Kunskapsnivå (Mastery) med faktiska affärsresultat (KPI:er).
+    *   Nytt **ROI Center** med scatter-plot visualisering och AI-genererade ROI-insikter via Gemini.
+    *   Stöd för **Multi-format export** (JSON, CSV, XML, Excel) av ROI-data för ledningsrapportering.
+
 *   **🧠 EduAI Hub Integration (Intelligence Center):**
     *   Slog ihop gamla "EduAI" och nya "Hub" till ett enhetligt center. 
     *   Flyttade **Min Lärväg (Adaptivt lärande)** till en egen flik i Huben för bättre tillgänglighet.
@@ -54,6 +59,9 @@ Här är en sammanfattning av det stora arbetet med att ena plattformens intelli
 *   **🎮 Spel & Ekonomi:**
     *   Återställde funktionella spel (Memory Match & Time Attack) kopplade till live-blixtkort.
     *   Enade ekonomin genom att fasa ut "AI Credits" – allt drivs nu av **XP** som studenten tjänar genom att vara aktiv.
+
+*   **🤖 AI Recommendations:**
+    *   Implementerat en intelligent motor som analyserar studentens Live Radar och proaktivt föreslår nästa studiepass för att maximera lärandet.
 
 *   **✨ Premium Landing Page:**
     *   Designat om startsidans **Hero-sektion** för att framhäva EduAI Hub med modern glassmorphism och flådiga animationer.

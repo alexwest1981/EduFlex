@@ -190,6 +190,13 @@ export const api = {
             analyzeAll: () => api.post('/analytics/predictive/analyze-all'),
             getPrincipalCoach: () => api.get('/analytics/predictive/coach/principal'),
             getMentorCoach: (mentorId) => api.get(`/analytics/predictive/coach/mentor/${mentorId}`),
+        },
+        roi: {
+            getStats: (courseId) => api.get(`/roi/stats/${courseId}`),
+            getData: (courseId) => api.get(`/roi/data/${courseId}`),
+            getInsight: (courseId) => api.get(`/roi/insight/${courseId}`),
+            saveOutcome: (data) => api.post('/roi/outcomes', data),
+            getExportUrl: (courseId, format) => `${API_BASE}/roi/export/${courseId}?format=${format}`,
         }
     },
 
@@ -571,7 +578,9 @@ export const api = {
     },
 
     teacher: {
-        getCourseAnalytics: (courseId) => api.get(`/teacher/analytics/course/${courseId}`),
+        getCourseAnalytics: (courseId) => api.get(`/teacher/mission-control/course/${courseId}`),
+        generateLessonPlan: (courseId) => api.post(`/teacher/mission-control/course/${courseId}/lesson-plan`),
+        saveLessonPlanToCalendar: (courseId, data) => api.post(`/teacher/mission-control/course/${courseId}/lesson-plan/save-calendar`, data),
     },
 
     mentors: {
@@ -678,7 +687,8 @@ export const api = {
         getReviewQueue: () => api.get('/ai/hub/queue'),
         processReviewResult: (itemId, quality) => api.post(`/ai/hub/review/${itemId}?quality=${quality}`),
         generateSession: (data) => api.post('/ai/hub/session/generate', data),
-        completeSession: (data, xp) => api.post(`/ai/hub/session/complete?xp=${xp}`, data)
+        completeSession: (data, xp) => api.post(`/ai/hub/session/complete?xp=${xp}`, data),
+        getRecommendations: () => api.get('/ai/hub/recommendations')
     },
 
     resources: {

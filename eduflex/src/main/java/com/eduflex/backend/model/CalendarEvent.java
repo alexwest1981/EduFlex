@@ -27,6 +27,8 @@ public class CalendarEvent {
     private Long id;
 
     private String title;
+
+    @Column(length = 10000)
     private String description;
     private LocalDateTime startTime;
     private LocalDateTime endTime;

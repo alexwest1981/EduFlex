@@ -128,6 +128,14 @@ const LandingPage = () => {
             bgColor: 'bg-brand-orange/10',
             hoverBorder: 'hover:border-brand-orange/50'
         },
+        {
+            icon: <TrendingUp className="w-7 h-7" />,
+            title: "ROI Reporting Engine",
+            description: "Koppla utbildningsresultat till faktiska affärsmål. Maximera avkastningen på er kompetensutveckling med datadrivna insikter.",
+            color: 'text-brand-gold',
+            bgColor: 'bg-brand-gold/10',
+            hoverBorder: 'hover:border-brand-gold/50'
+        },
     ];
 
 
@@ -139,6 +147,7 @@ const LandingPage = () => {
         { src: catalogNewImg, title: 'Kurskatalog', description: 'Visuell och filtrerbar katalog för elever att hitta nya kurser.' },
         { src: resourceImg, title: 'Resursbank & Community', description: 'Dela och hämta material från ett gemensamt Community-bibliotek.' },
         { src: analyticsNewImg, title: 'Djupgående Statistik', description: 'Analysera intäkter, användarengagemang och kursresultat.' },
+        { src: analyticsNewImg, title: 'ROI Reporting Engine', description: 'Visualisera korrelationen mellan Mastery Score och KPI:er.' },
         { src: settingsNewImg, title: 'Systeminställningar', description: 'Hantera LTI, moduler, tema och lagringsbackends.' },
         { src: debugImg, title: 'Live Debug Terminal', description: 'Matrix-inspirerad loggvisning för teknisk felsökning i realtid.' }
     ];
