@@ -229,23 +229,7 @@ const SystemSettings = () => {
                                     </div>
                                 </div>
 
-                                <div className="p-4 bg-indigo-500/5 border border-indigo-500/10 rounded-xl">
-                                    <div className="flex items-center gap-3 mb-3">
-                                        <div className="p-2 bg-indigo-500/10 rounded-lg text-indigo-500">
-                                            <Zap size={20} />
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-bold text-gray-900 dark:text-white">AI-Credit Earn Rate</label>
-                                            <p className="text-xs text-gray-500">Antal AI-Credits studenten får per slutförd lektion.</p>
-                                        </div>
-                                    </div>
-                                    <input
-                                        type="number"
-                                        value={eduAiForm.eduai_credit_earn_rate}
-                                        onChange={(e) => setEduAiForm({ ...eduAiForm, eduai_credit_earn_rate: e.target.value })}
-                                        className="w-24 px-3 py-2 border border-gray-300 dark:border-[#3c4043] rounded-lg bg-white dark:bg-[#282a2c] text-gray-900 dark:text-white focus:ring-2 focus:ring-brand-orange outline-none"
-                                    />
-                                </div>
+
 
                                 <div className="p-4 bg-purple-500/5 border border-purple-500/10 rounded-xl">
                                     <div className="flex items-center gap-3 mb-3">

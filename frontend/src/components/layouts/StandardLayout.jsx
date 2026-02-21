@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
-import { LayoutDashboard, FileText, User, Settings, LogOut, Layers, Menu, X, Award, Zap, Moon, Sun, Calendar, BookOpen, TrendingUp, Users, HelpCircle, Store, Library, ClipboardList, ShieldCheck, MessageSquare, Heart, Thermometer, BarChart2 } from 'lucide-react';
+import { LayoutDashboard, FileText, User, Settings, LogOut, Layers, Menu, X, Award, Zap, Moon, Sun, Calendar, BookOpen, TrendingUp, Users, HelpCircle, Store, Library, ClipboardList, ShieldCheck, MessageSquare, Heart, Thermometer, BarChart2, Brain } from 'lucide-react';
 import { useAppContext } from '../../context/AppContext';
 import { useModules } from '../../context/ModuleContext';
 import { useTranslation } from 'react-i18next';
@@ -100,7 +100,7 @@ const StandardLayout = ({ children }) => {
             ...(roleName.includes('TEACHER') || isAdmin ? [{ path: '/evaluations/manage', icon: <ClipboardList size={20} />, label: 'Utvärderingar' }] : []),
             ...(roleName === 'TEACHER' ? [{ path: '/?tab=COURSES', icon: <BookOpen size={20} />, label: t('sidebar.my_courses') || 'Mina kurser' }] : []),
             ...(roleName === 'STUDENT' ? [{ path: '/my-courses', icon: <BookOpen size={20} />, label: t('sidebar.my_courses') || 'Mina kurser' }] : []),
-            ...(roleName === 'STUDENT' ? [{ path: '/adaptive-learning', icon: <TrendingUp size={20} />, label: 'Min Lärväg' }] : []),
+            ...(roleName === 'STUDENT' || roleName === 'ROLE_STUDENT' ? [{ path: '/ai-hub', icon: <Brain size={20} />, label: 'EduAI Hub' }] : []),
             ...(roleName.includes('STUDENT') || roleName.includes('TEACHER') || isAdmin ? [{ path: '/ebooks', icon: <Library size={20} />, label: t('sidebar.ebooks') }] : []),
         ],
         tools: [

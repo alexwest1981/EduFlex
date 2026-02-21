@@ -74,6 +74,14 @@
 
 ## 📝 Change Log
 
+### [v2.3.0] - 2026-02-21
+- **New Feature**: **Interactive AI Study Sessions**.
+- **Wizard**: 5-step wizard in `HubReviewDeck` for generating study material and quizzes.
+- **Persistence**: Permanent storage of session results in `ai_session_results`.
+- **Analytics**: Integrated AI sessions into Live Radar and Mastery Score calculations.
+- **UI/UX**: Premium Landing Page Hero featuring the EduAI Hub.
+- **Bug Fixes**: Fixed several JavaScript and backend errors related to session completion and XP syncing.
+
 ### [v2.2.0] - 2026-02-20
 - **New Feature**: **Intelligence Center Merger**.
 - **Consolidation**: Merged legacy EduAI into the unified EduAI Hub.

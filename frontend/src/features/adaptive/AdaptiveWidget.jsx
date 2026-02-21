@@ -56,7 +56,7 @@ const AdaptiveWidget = () => {
                     </p>
 
                     <button
-                        onClick={() => navigate('/adaptive-learning')}
+                        onClick={() => navigate('/ai-hub?tab=adaptive')}
                         className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-brand-teal text-white text-sm font-medium rounded-lg shadow-sm hover:bg-brand-teal/90 transition-colors"
                     >
                         Aktivera Nu <ArrowRight size={16} />
@@ -96,7 +96,7 @@ const AdaptiveWidget = () => {
                 </p>
 
                 <button
-                    onClick={() => navigate('/adaptive-learning')}
+                    onClick={() => navigate('/ai-hub?tab=adaptive')}
                     className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm font-medium rounded-lg shadow-sm hover:shadow-md transition-shadow"
                 >
                     Visa Min Lärväg <ArrowRight size={16} />

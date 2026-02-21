@@ -15,6 +15,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.eduflex.backend.repository.AiSessionResultRepository;
+import com.eduflex.backend.model.AiSessionResult;
+
 /**
  * Service for managing the EduAI Hub, including Spaced Repetition logic.
  */
@@ -28,6 +31,7 @@ public class EduAiHubService {
     private final SystemSettingService systemSettingService;
     private final GamificationService gamificationService;
     private final AiCreditService aiCreditService;
+    private final AiSessionResultRepository aiSessionResultRepository;
 
     /**
      * Finds items due for review for a student.
@@ -40,41 +44,85 @@ public class EduAiHubService {
 
     /**
      * Calculates the overall mastery score for a user.
-     * Based on normalized Easiness Factor (1.3 - 2.5+).
+     * Based on the average of all Radar categories.
      */
     public int getMasteryScore(Long userId) {
-        List<SpacedRepetitionItem> all = spacedRepetitionRepository.findByUserId(userId);
-        if (all.isEmpty())
+        Map<String, Integer> radarStats = getRadarStats(userId);
+        if (radarStats.isEmpty())
             return 0;
 
-        double sum = all.stream()
-                .mapToDouble(item -> Math.min(1.0, (item.getEasinessFactor() - 1.3) / 1.2))
-                .sum();
+        double sum = 0.0;
+        int count = 0;
+        for (Integer score : radarStats.values()) {
+            if (score != null) {
+                sum += score;
+                count++;
+            }
+        }
 
-        return (int) Math.round((sum / all.size()) * 100);
+        return count == 0 ? 0 : (int) Math.round(sum / count);
     }
 
     /**
      * Calculates mastery per category for the Radar Chart.
+     * Combines data from SpacedRepetitionItem (Queue) and AiSessionResult (Study
+     * Sessions).
      */
     public Map<String, Integer> getRadarStats(Long userId) {
-        List<SpacedRepetitionItem> all = spacedRepetitionRepository.findByUserId(userId);
-        Map<String, List<SpacedRepetitionItem>> grouped = all.stream()
+        // --- 1. Fetch data from SpacedRepetition (Flashcards/Queue) ---
+        List<SpacedRepetitionItem> allSpacedItems = spacedRepetitionRepository.findByUserId(userId);
+        Map<String, List<SpacedRepetitionItem>> groupedSpacedItems = allSpacedItems.stream()
                 .collect(Collectors.groupingBy(item -> item.getCategory() != null ? item.getCategory() : "Allmänt"));
+
+        // --- 2. Fetch data from AiSessionResult (Smart Sessions) ---
+        List<AiSessionResult> allSessionItems = aiSessionResultRepository.findByUserId(userId);
 
         Map<String, Integer> stats = new HashMap<>();
         String[] categories = { "Teori", "Praktik", "Focus", "Analys" };
 
         for (String cat : categories) {
-            List<SpacedRepetitionItem> items = grouped.get(cat);
-            if (items == null || items.isEmpty()) {
-                stats.put(cat, 0);
-            } else {
-                double avg = items.stream()
+            double totalScore = 0.0;
+            int count = 0;
+
+            // 1. Calculate average from Spaced Repetition (if any exists for this category)
+            List<SpacedRepetitionItem> sItems = groupedSpacedItems.get(cat);
+            if (sItems != null && !sItems.isEmpty()) {
+                double avg = sItems.stream()
                         .mapToDouble(item -> Math.min(1.0, (item.getEasinessFactor() - 1.3) / 1.2))
                         .average()
                         .orElse(0.0);
-                stats.put(cat, (int) Math.round(avg * 100));
+                totalScore += avg;
+                count++;
+            }
+
+            // 2. Calculate average from AiSessionResults mapped to this category
+            double sessionTotal = 0.0;
+            int sessionCount = 0;
+            for (AiSessionResult session : allSessionItems) {
+                boolean matchesCategory = false;
+                if ("Teori".equals(cat) && "SUMMARY".equals(session.getSessionType()))
+                    matchesCategory = true;
+                if ("Praktik".equals(cat) && "PRACTICE".equals(session.getSessionType()))
+                    matchesCategory = true;
+                if ("Analys".equals(cat) && "EXAM_PREP".equals(session.getSessionType()))
+                    matchesCategory = true;
+
+                if (matchesCategory && session.getMaxScore() > 0) {
+                    sessionTotal += (double) session.getScore() / session.getMaxScore();
+                    sessionCount++;
+                }
+            }
+
+            if (sessionCount > 0) {
+                totalScore += (sessionTotal / sessionCount);
+                count++;
+            }
+
+            // Final Average
+            if (count == 0) {
+                stats.put(cat, 0);
+            } else {
+                stats.put(cat, (int) Math.round((totalScore / count) * 100));
             }
         }
         return stats;

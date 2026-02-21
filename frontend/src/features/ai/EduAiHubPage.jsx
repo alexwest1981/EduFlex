@@ -3,7 +3,7 @@ import {
     Brain, Sparkles, Zap, Target,
     TrendingUp, Calendar, Trophy,
     Star, ArrowRight, Play, Gamepad2,
-    Shield, Activity, Info
+    Shield, Activity, Info, HelpCircle
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { api } from '../../services/api';
@@ -11,6 +11,9 @@ import HubReviewDeck from './components/HubReviewDeck';
 import HubQuests from './components/HubQuests';
 import MemoryMatch from '../eduai/components/MemoryMatch';
 import TimeAttack from '../eduai/components/TimeAttack';
+import AdaptiveLearningDashboard from '../adaptive/AdaptiveLearningDashboard';
+import FlashcardDashboard from '../../modules/flashcards/FlashcardDashboard';
+import { useLocation } from 'react-router-dom';
 
 const HubGameTile = ({ title, icon: Icon, color, xp, description, onClick }) => (
     <motion.div
@@ -39,25 +42,36 @@ const HubGameTile = ({ title, icon: Icon, color, xp, description, onClick }) => 
 const IntelligenceBar = ({ stats }) => (
     <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
         {[
-            { label: 'Kunskaps-kö', val: stats.queueSize || 0, icon: Brain, color: 'text-brand-orange', bg: 'bg-brand-orange/10' },
-            { label: 'AI Credits', val: stats.aiCredits || 0, icon: Sparkles, color: 'text-amber-400', bg: 'bg-amber-400/10' },
-            { label: 'XP Multiplier', val: `${stats.xpMultiplier || '1.0'}x`, icon: TrendingUp, color: 'text-indigo-500', bg: 'bg-indigo-500/10' },
-            { label: 'Mastery Score', val: `${stats.masteryScore || 0}%`, icon: Target, color: 'text-green-500', bg: 'bg-green-500/10' }
+            { label: 'Kunskaps-kö', val: stats.queueSize || 0, icon: Brain, color: 'text-brand-orange', bg: 'bg-brand-orange/10', tooltip: 'Antalet koncept från tidigare kurser som behöver repeteras idag för att stanna i långtidsminnet enligt SM-2 algoritmen.' },
+            { label: 'Intjänad XP', val: stats.totalXp || 0, icon: Sparkles, color: 'text-amber-400', bg: 'bg-amber-400/10', tooltip: 'Din totala erfarenhetspoäng insamlad från repetitioner och avklarade uppdrag.' },
+            { label: 'XP Multiplier', val: `${stats.xpMultiplier || '1.0'}x`, icon: TrendingUp, color: 'text-indigo-500', bg: 'bg-indigo-500/10', tooltip: 'Din nuvarande poäng-multiplikator. Bibehåll en \'streak\' genom att fullfölja dagliga sessioner för att låsa upp högre multiplier!' },
+            { label: 'Mastery Score', val: `${stats.masteryScore || 0}%`, icon: Target, color: 'text-green-500', bg: 'bg-green-500/10', tooltip: 'Ett övergripande mått på din inlärningsstabilitet. Ju högre poäng du har, desto lägre chans är det att du glömmer bort kursmaterialet.' }
         ].map((item, i) => (
             <motion.div
                 key={i}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.1 }}
-                className={`${item.bg} p-6 rounded-3xl border border-white/10 shadow-xl relative overflow-hidden group`}
+                className={`${item.bg} p-6 rounded-3xl border border-white/10 shadow-xl relative group hover:z-50`}
             >
-                <div className="absolute top-0 right-0 w-24 h-24 bg-white/5 blur-2xl rounded-full -mr-12 -mt-12 group-hover:scale-150 transition-transform duration-700"></div>
+                <div className="absolute inset-0 overflow-hidden rounded-3xl pointer-events-none">
+                    <div className="absolute top-0 right-0 w-24 h-24 bg-white/5 blur-2xl rounded-full -mr-12 -mt-12 group-hover:scale-150 transition-transform duration-700"></div>
+                </div>
                 <div className="flex items-center gap-4 relative z-10">
                     <div className={`p-3 rounded-2xl bg-white dark:bg-black/20 ${item.color} shadow-sm`}>
                         <item.icon size={24} />
                     </div>
                     <div>
-                        <p className="text-[10px] font-black uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-1">{item.label}</p>
+                        <div className="flex items-center gap-1.5 mb-1 relative group/tooltip">
+                            <p className="text-[10px] font-black uppercase tracking-widest text-gray-500 dark:text-gray-400">{item.label}</p>
+                            <HelpCircle size={12} className="text-gray-400 cursor-help" />
+
+                            {/* Tooltip Hover */}
+                            <div className="absolute left-0 bottom-full mb-2 w-64 bg-gray-900 text-white text-[11px] leading-relaxed p-3 rounded-xl opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all z-[100] shadow-2xl pointer-events-none">
+                                {item.tooltip}
+                                <div className="absolute top-full left-4 border-4 border-transparent border-t-gray-900"></div>
+                            </div>
+                        </div>
                         <p className={`text-2xl font-black ${item.color} leading-none`}>{item.val}</p>
                     </div>
                 </div>
@@ -75,7 +89,19 @@ const EduAiHubPage = () => {
     });
     const [isReviewing, setIsReviewing] = useState(false);
     const [loading, setLoading] = useState(true);
-    const [activeTab, setActiveTab] = useState('overview'); // 'overview', 'games', 'quests'
+    const location = useLocation();
+
+    // Parse tab from URL or state if available, otherwise default to 'overview'
+    const getInitialTab = () => {
+        const params = new URLSearchParams(location.search);
+        const tabParam = params.get('tab');
+        if (['overview', 'adaptive', 'games', 'quests', 'memory', 'time-attack'].includes(tabParam)) {
+            return tabParam;
+        }
+        return location.state?.activeTab || 'overview';
+    };
+
+    const [activeTab, setActiveTab] = useState(getInitialTab());
 
     useEffect(() => {
         fetchStats();
@@ -148,14 +174,14 @@ const EduAiHubPage = () => {
                 </div>
 
                 {/* Tabs */}
-                <div className="flex bg-gray-100 dark:bg-white/5 p-1.5 rounded-2xl border border-gray-200 dark:border-white/10">
-                    {['overview', 'games', 'quests'].map((tab) => (
+                <div className="flex bg-gray-100 dark:bg-white/5 p-1.5 rounded-2xl border border-gray-200 dark:border-white/10 overflow-x-auto">
+                    {['overview', 'adaptive', 'games', 'flashcards', 'quests'].map((tab) => (
                         <button
                             key={tab}
                             onClick={() => setActiveTab(tab)}
-                            className={`px-6 py-2.5 rounded-xl font-black uppercase text-[10px] tracking-widest transition-all ${activeTab === tab ? 'bg-white dark:bg-indigo-600 text-indigo-600 dark:text-white shadow-lg' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-200'}`}
+                            className={`px-6 py-2.5 rounded-xl font-black uppercase text-[10px] tracking-widest transition-all whitespace-nowrap ${activeTab === tab ? 'bg-white dark:bg-indigo-600 text-indigo-600 dark:text-white shadow-lg' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-200'}`}
                         >
-                            {tab === 'overview' ? 'Översikt' : tab === 'games' ? 'Spel' : 'Uppdrag'}
+                            {tab === 'overview' ? 'Översikt' : tab === 'adaptive' ? 'Min Lärväg' : tab === 'games' ? 'Spel' : tab === 'flashcards' ? 'Flashcards' : 'Uppdrag'}
                         </button>
                     ))}
                 </div>
@@ -174,16 +200,13 @@ const EduAiHubPage = () => {
                                 <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 blur-[100px] rounded-full translate-x-1/3 -translate-y-1/3"></div>
                                 <div className="relative z-10 flex flex-col md:flex-row items-center gap-10">
                                     <div className="flex-1">
-                                        <h2 className="text-4xl font-black mb-4 leading-tight">Dags för din <br /> Daily Review?</h2>
+                                        <h2 className="text-4xl font-black mb-4 leading-tight">Dags för din <br /> Session?</h2>
                                         <p className="text-indigo-100 text-lg mb-8 font-medium leading-relaxed opacity-80">
-                                            {stats.queueSize > 0
-                                                ? `Du har ${stats.queueSize} koncept som väntar på din uppmärksamhet. Optimera ditt minne med SM-2.`
-                                                : 'Snyggt jobbat! Du har inga objekt som behöver repeteras just nu.'}
+                                            Starta en interaktiv studiesession med din AI-tutorn. Välj ett ämne och låt AI:n skapa skräddarsytt material och övningsfrågor för dig.
                                         </p>
                                         <button
                                             onClick={() => setIsReviewing(true)}
-                                            disabled={stats.queueSize === 0}
-                                            className={`flex items-center gap-3 px-10 py-5 rounded-[24px] font-black uppercase tracking-widest text-sm transition-all shadow-2xl relative overflow-hidden ${stats.queueSize > 0 ? 'bg-brand-orange text-white hover:brightness-110' : 'bg-white/10 text-white/50 cursor-not-allowed'}`}
+                                            className="flex items-center gap-3 px-10 py-5 rounded-[24px] font-black uppercase tracking-widest text-sm transition-all shadow-2xl relative overflow-hidden bg-brand-orange text-white hover:brightness-110"
                                         >
                                             <Play size={20} fill="currentColor" />
                                             Starta Session
@@ -207,12 +230,29 @@ const EduAiHubPage = () => {
                             </motion.div>
                         </div>
 
-                        <div className="lg:col-span-1">
-                            <div className="bg-white dark:bg-[#1E1F20] rounded-[48px] p-8 border border-gray-100 dark:border-white/10 h-full shadow-xl flex flex-col">
-                                <h3 className="text-xl font-black mb-8 flex items-center gap-3 text-gray-900 dark:text-white uppercase tracking-tight">
-                                    <Activity size={20} className="text-brand-orange" />
-                                    Live Radar
-                                </h3>
+                        <div className="lg:col-span-1 border-t-0 hover:z-50 relative">
+                            <div className="bg-white dark:bg-[#1E1F20] rounded-[48px] p-8 border border-gray-100 dark:border-white/10 h-full shadow-xl flex flex-col relative z-20">
+                                <div className="flex items-center gap-3 mb-8">
+                                    <h3 className="text-xl font-black flex items-center gap-3 text-gray-900 dark:text-white uppercase tracking-tight">
+                                        <Activity size={20} className="text-brand-orange" />
+                                        Live Radar
+                                    </h3>
+
+                                    <div className="relative group/radar-tooltip ml-auto">
+                                        <HelpCircle size={16} className="text-gray-400 cursor-help" />
+                                        <div className="absolute right-0 bottom-full mb-2 w-72 bg-gray-900 text-white text-xs leading-relaxed p-4 rounded-xl opacity-0 invisible group-hover/radar-tooltip:opacity-100 group-hover/radar-tooltip:visible transition-all z-[100] shadow-2xl pointer-events-none text-left font-normal normal-case">
+                                            <p className="font-bold mb-1 text-brand-orange">Hur fungerar Live Radar?</p>
+                                            <p className="mb-2 text-gray-300">Radarn är en visuell representation av din kognitiva profil baserat på ditt lärande.</p>
+                                            <ul className="space-y-1 text-gray-400 list-disc pl-4">
+                                                <li><strong className="text-gray-200">Teori:</strong> Bedöms från quiz med begrepp/läsförståelse.</li>
+                                                <li><strong className="text-gray-200">Praktik:</strong> Ökar när du slutför uppgifter och labbar.</li>
+                                                <li><strong className="text-gray-200">Focus:</strong> Bygger på hur snabbt och ihärdigt du slutför repetitioner (Time Attack, Streak).</li>
+                                                <li><strong className="text-gray-200">Analys:</strong> Ökar av djupdykande diskussioner med AI-tutorn och utvärderingar.</li>
+                                            </ul>
+                                            <div className="absolute top-full right-4 border-4 border-transparent border-t-gray-900"></div>
+                                        </div>
+                                    </div>
+                                </div>
                                 <div className="flex-1 flex items-center justify-center relative min-h-[220px]">
                                     <svg viewBox="0 0 100 100" className="w-full h-full max-w-[200px]">
                                         {[0.2, 0.4, 0.6, 0.8, 1.0].map(r => (
@@ -251,6 +291,12 @@ const EduAiHubPage = () => {
                 </>
             )}
 
+            {activeTab === 'adaptive' && (
+                <div className="mt-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                    <AdaptiveLearningDashboard />
+                </div>
+            )}
+
             {activeTab === 'quests' && (
                 <div className="mt-8">
                     <HubQuests />
@@ -264,7 +310,7 @@ const EduAiHubPage = () => {
                         <h2 className="text-2xl font-black text-gray-900 dark:text-white uppercase tracking-tight">Mini-Games (GamiLearn)</h2>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 max-w-4xl">
                         <HubGameTile
                             title="Memory Match"
                             icon={Brain}
@@ -281,22 +327,6 @@ const EduAiHubPage = () => {
                             description="Repetera så många kort som möjligt under intensiv tidspress."
                             onClick={() => setActiveTab('time-attack')}
                         />
-                        <HubGameTile
-                            title="Boss Battle"
-                            icon={Shield}
-                            color="bg-red-500"
-                            xp="500"
-                            description="Utmanande test som täcker hela din kurs."
-                            onClick={() => alert("Kommer snart!")}
-                        />
-                        <HubGameTile
-                            title="Flash Quiz"
-                            icon={Star}
-                            color="bg-amber-500"
-                            xp="50"
-                            description="Snabba slumpmässiga frågor för att hålla minnet fräscht."
-                            onClick={() => alert("Kommer snart!")}
-                        />
                     </div>
                 </div>
             )}
@@ -306,7 +336,9 @@ const EduAiHubPage = () => {
                     <button onClick={() => setActiveTab('games')} className="mb-4 text-indigo-600 font-bold text-sm hover:underline">
                         &larr; Tillbaka till Spel
                     </button>
-                    <MemoryMatch />
+                    <div className="bg-[#1E1F20] p-4 md:p-8 rounded-[32px] shadow-2xl overflow-hidden min-h-[500px]">
+                        <MemoryMatch />
+                    </div>
                 </div>
             )}
 
@@ -315,7 +347,15 @@ const EduAiHubPage = () => {
                     <button onClick={() => setActiveTab('games')} className="mb-4 text-indigo-600 font-bold text-sm hover:underline">
                         &larr; Tillbaka till Spel
                     </button>
-                    <TimeAttack />
+                    <div className="bg-[#1E1F20] p-4 md:p-8 rounded-[32px] shadow-2xl overflow-hidden min-h-[500px]">
+                        <TimeAttack />
+                    </div>
+                </div>
+            )}
+
+            {activeTab === 'flashcards' && (
+                <div className="mt-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                    <FlashcardDashboard />
                 </div>
             )}
 

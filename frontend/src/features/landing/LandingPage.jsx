@@ -401,37 +401,34 @@ const LandingPage = () => {
                 <section className="max-w-7xl mx-auto px-6 py-16 lg:py-28 grid lg:grid-cols-2 gap-12 items-center">
                     <div className="space-y-8">
                         {/* Badge */}
-                        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-teal/10 border border-brand-teal/20 text-brand-teal text-xs font-bold uppercase tracking-widest">
-                            <span className="relative flex h-2 w-2">
-                                <span className="animate-ping-slow absolute inline-flex h-full w-full rounded-full bg-brand-teal opacity-75"></span>
-                                <span className="relative inline-flex rounded-full h-2 w-2 bg-brand-teal"></span>
-                            </span>
-                            {t('landing.hero.badge')}
+                        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-gold/10 border border-brand-gold/20 text-brand-gold text-xs font-bold uppercase tracking-widest shadow-[0_0_15px_rgba(255,183,3,0.2)]">
+                            <Sparkles className="w-3.5 h-3.5" />
+                            Nyhet: EduAI Hub 2.0
                         </div>
 
                         {/* Heading */}
                         <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-black leading-[1.1] tracking-tight">
-                            {t('landing.hero.title_start')} <span className="text-gradient">{t('landing.hero.title_highlight')}</span>
+                            Framtidens Lärande med <br /><span className="text-gradient drop-shadow-lg">EduAI Hub</span>
                         </h1>
 
                         {/* Subtitle */}
-                        <p className="text-lg text-slate-400 max-w-xl leading-relaxed">
-                            {t('landing.hero.subtitle')}
+                        <p className="text-lg text-slate-300 max-w-xl leading-relaxed font-light">
+                            Upptäck vårt nya intelligenta kunskapscenter. Generera skräddarsydda studiepass med AI, spela engagerande minispel och följ din exakta kunskapsutveckling via vår dynamiska Live Radar. Allt drivet av Google Gemini.
                         </p>
 
                         {/* CTA Buttons */}
-                        <div className="flex flex-wrap gap-4">
+                        <div className="flex flex-wrap gap-4 pt-2">
                             <button
-                                onClick={() => navigate('/register-org')}
+                                onClick={() => navigate('/login')}
                                 className="brand-gradient text-white font-bold px-8 py-4 rounded-xl hover:scale-105 transition-transform text-lg shadow-xl shadow-brand-teal/30 flex items-center gap-2"
                             >
-                                Kom igång gratis <ArrowRight className="w-5 h-5" />
+                                <Brain className="w-5 h-5" /> Starta din första AI Session
                             </button>
                             <button
                                 onClick={() => navigate('/features')}
                                 className="glass-card font-bold px-8 py-4 rounded-xl hover:bg-white/10 transition-all text-lg flex items-center gap-2 text-slate-200"
                             >
-                                <Sparkles className="w-5 h-5 text-brand-teal" /> Utforska Funktioner
+                                Läs mer om plattformen <ArrowRight className="w-5 h-5 text-brand-teal" />
                             </button>
                         </div>
 

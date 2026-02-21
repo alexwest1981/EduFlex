@@ -3,7 +3,7 @@ import {
     Sparkles, Brain, Zap, Target,
     ChevronRight, ChevronLeft,
     TrendingUp, MessageSquare,
-    Play
+    Play, HelpCircle
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { api } from '../../services/api';
@@ -78,19 +78,29 @@ const AiCoachSidebar = () => {
 
                 {/* Stats Grid */}
                 <div className="grid grid-cols-2 gap-3 mb-8">
-                    <div className="bg-gray-50 dark:bg-white/5 p-3 rounded-2xl border border-gray-100 dark:border-white/10">
-                        <div className="flex items-center gap-2 text-brand-orange mb-1">
+                    <div className="bg-gray-50 dark:bg-white/5 p-3 rounded-2xl border border-gray-100 dark:border-white/10 group/tooltip relative">
+                        <div className="flex items-center gap-1.5 text-brand-orange mb-1">
                             <Target size={14} />
                             <span className="text-[10px] font-bold uppercase">I kön</span>
+                            <HelpCircle size={10} className="text-gray-400 cursor-help" />
                         </div>
                         <p className="text-xl font-black text-gray-900 dark:text-white">{stats.queueSize}</p>
+                        <div className="absolute left-0 bottom-full mb-2 w-48 bg-gray-900 text-white text-[10px] p-2 rounded-lg opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all z-20 pointer-events-none shadow-xl">
+                            Begrepp som måste repeteras idag.
+                            <div className="absolute top-full left-4 border-4 border-transparent border-t-gray-900"></div>
+                        </div>
                     </div>
-                    <div className="bg-gray-50 dark:bg-white/5 p-3 rounded-2xl border border-gray-100 dark:border-white/10">
-                        <div className="flex items-center gap-2 text-indigo-500 mb-1">
+                    <div className="bg-gray-50 dark:bg-white/5 p-3 rounded-2xl border border-gray-100 dark:border-white/10 group/tooltip relative">
+                        <div className="flex items-center gap-1.5 text-indigo-500 mb-1">
                             <TrendingUp size={14} />
                             <span className="text-[10px] font-bold uppercase">XP Bonus</span>
+                            <HelpCircle size={10} className="text-gray-400 cursor-help" />
                         </div>
                         <p className="text-xl font-black text-gray-900 dark:text-white">{stats.xpMultiplier}x</p>
+                        <div className="absolute right-0 bottom-full mb-2 w-48 bg-gray-900 text-white text-[10px] p-2 rounded-lg opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all z-20 pointer-events-none shadow-xl">
+                            Bygg en daglig 'streak' för mer XP.
+                            <div className="absolute top-full right-4 border-4 border-transparent border-t-gray-900"></div>
+                        </div>
                     </div>
                 </div>
 
@@ -102,7 +112,7 @@ const AiCoachSidebar = () => {
                 >
                     <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
                     <Play size={20} fill="white" className="relative z-10" />
-                    <span className="relative z-10">Starta Daily Review</span>
+                    <span className="relative z-10">Starta Session</span>
                 </Link>
 
                 {/* AI Tip / Message */}

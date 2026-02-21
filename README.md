@@ -35,7 +35,38 @@
 
 <div id="-svenska"></div>
 
+## 🚀 Senaste uppdateringarna (21 feb 2026)
+Här är en sammanfattning av det stora arbetet med att ena plattformens intelligens-funktioner under **EduAI Hub**:
+
+*   **🧠 EduAI Hub Integration (Intelligence Center):**
+    *   Slog ihop gamla "EduAI" och nya "Hub" till ett enhetligt center. 
+    *   Flyttade **Min Lärväg (Adaptivt lärande)** till en egen flik i Huben för bättre tillgänglighet.
+    *   Ersatte statiska widgets på dashboarden med dynamiska **Dagens Uppdrag (Quests)** som länkar direkt till uppgifter och spel.
+
+*   **⚡ Interaktiva AI-sessioner:**
+    *   Byggde en ny interaktiv **5-stegs wizard** där studenter kan generera skräddarsydda studiepass (Sammanfattning, Övningar, Tentaplugg) via Gemini.
+    *   Implementerade **Permanent databaslagring** av sessionsresultat för att möjliggöra historisk uppföljning.
+
+*   **📊 Live Radar & Mastery Progress:**
+    *   Automatisk synkronisering av quiz-resultat till studentens **Live Kunskapsradar**.
+    *   Fixade beräkningen av **Total Mastery** så att den väger in alla axlar (Teori, Praktik, Focus, Analys).
+
+*   **🎮 Spel & Ekonomi:**
+    *   Återställde funktionella spel (Memory Match & Time Attack) kopplade till live-blixtkort.
+    *   Enade ekonomin genom att fasa ut "AI Credits" – allt drivs nu av **XP** som studenten tjänar genom att vara aktiv.
+
+*   **✨ Premium Landing Page:**
+    *   Designat om startsidans **Hero-sektion** för att framhäva EduAI Hub med modern glassmorphism och flådiga animationer.
+
+---
+
 ## 🇸🇪 Svenska
+
+*   **🧠 AI Session & Live Radar (21 feb 2026):**
+    *   **Generativa Studiepass:** Infört en AI-driven 5-stegs wizard för att generera skräddarsydda teoripass och övningsprov (Sammanfattning, Övningar, Tentaplugg) via Google Gemini.
+    *   **Interaktiva Markdown Quizzes:** Inbyggt stöd för syntax-highlighting i AI-genererade frågor och omedelbar färgkodad feedback vid svarsval.
+    *   **Live Radar Integration:** Resultaten från AI-sessionerna matas nu automatiskt in i studentens Live Radar, vilket ger en 100% dynamisk överblick över Teori, Praktik, Focus och Analys.
+    *   **Historik & Mastery Score:** Alla resultat lagras permanent i en ny databastabell. "Total Mastery" beräknas nu direkt baserat på alla 4 inlärningsparametrar.
 
 *   **🎮 EduAI Hub Spel & XP Ekonomi (20 feb 2026):**
     *   **Restaurerade Mini-spel:** Återställt de konfigurerade och fungerande spelen (Memory Match & Time Attack) till EduAI Hub och tagit bort icke-funktionella mockups.

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Timer, Zap, CheckCircle, XCircle, RotateCcw, Trophy, Flame } from 'lucide-react';
 import eduAiService from '../services/eduAiService';
+import { api } from '../../../services/api';
 
 const ROUND_SECONDS = 60;
 

@@ -12,16 +12,21 @@ import com.eduflex.backend.repository.EduAIQuestRepository;
 import com.eduflex.backend.repository.LessonRepository;
 import com.eduflex.backend.repository.QuizRepository;
 import com.eduflex.backend.repository.UserRepository;
+import com.eduflex.backend.repository.SubmissionRepository;
+import com.eduflex.backend.model.Submission;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.eduflex.backend.repository.AiSessionResultRepository;
+import com.eduflex.backend.model.AiSessionResult;
 
 @Service
 public class EduAIService {
@@ -37,13 +42,17 @@ public class EduAIService {
     private final AssignmentRepository assignmentRepository;
     private final com.eduflex.backend.service.GamificationService gamificationService;
     private final ObjectMapper objectMapper;
+    private final SubmissionRepository submissionRepository;
+    private final AiSessionResultRepository aiSessionResultRepository;
 
     public EduAIService(GeminiService geminiService, EduAIQuestRepository questRepository,
             UserRepository userRepository, CourseRepository courseRepository,
             LessonRepository lessonRepository, QuizRepository quizRepository,
             AssignmentRepository assignmentRepository,
             com.eduflex.backend.service.GamificationService gamificationService,
-            ObjectMapper objectMapper) {
+            ObjectMapper objectMapper,
+            SubmissionRepository submissionRepository,
+            AiSessionResultRepository aiSessionResultRepository) {
         this.geminiService = geminiService;
         this.questRepository = questRepository;
         this.userRepository = userRepository;
@@ -53,6 +62,8 @@ public class EduAIService {
         this.assignmentRepository = assignmentRepository;
         this.gamificationService = gamificationService;
         this.objectMapper = objectMapper;
+        this.submissionRepository = submissionRepository;
+        this.aiSessionResultRepository = aiSessionResultRepository;
     }
 
     private static final String QUEST_SYSTEM_PROMPT = """
@@ -111,12 +122,26 @@ public class EduAIService {
                 }
 
                 List<Assignment> assignments = assignmentRepository.findByCourseId(course.getId());
+                List<Submission> userSubmissions = submissionRepository.findByStudentId(userId);
                 for (Assignment assignment : assignments) {
-                    catalog.append("  - ASSIGNMENT id=").append(assignment.getId()).append(": \"")
-                            .append(assignment.getTitle()).append("\"\n");
+                    boolean hasSubmitted = userSubmissions.stream()
+                            .anyMatch(s -> s.getAssignment().getId().equals(assignment.getId()));
+                    if (!hasSubmitted) {
+                        catalog.append("  - ASSIGNMENT id=").append(assignment.getId()).append(": \"")
+                                .append(assignment.getTitle()).append("\"\n");
+                    }
                 }
             }
         }
+
+        // Lägg till evighetsuppdrag så AI:n alltid har något att generera!
+        catalog.append("\nALLTID TILLGÄNGLIGA REPETITIONS-UPPDRAG (Välj dessa om studenten gjort allt annat):\n");
+        catalog.append(
+                "  - REVISION: \"Spela en runda Time Attack\" (Bygg en story, sätt objectiveType=CUSTOM, objectiveId=1, courseId=0)\n");
+        catalog.append(
+                "  - REVISION: \"Spela en runda Memory Match\" (Bygg en story, sätt objectiveType=CUSTOM, objectiveId=2, courseId=0)\n");
+        catalog.append(
+                "  - REVISION: \"Generera och öva på Flashcards\" (Bygg en story, sätt objectiveType=CUSTOM, objectiveId=3, courseId=0)\n");
 
         String prompt = QUEST_SYSTEM_PROMPT + "\n\nKONTEXT:\n" + catalog;
 
@@ -202,7 +227,34 @@ public class EduAIService {
     }
 
     public List<EduAIQuest> getActiveQuests(Long userId) {
-        return questRepository.findByUserIdAndIsCompletedFalse(userId);
+        // Hämta både aktiva OCH slutförda uppdrag från senaste 24 timmarna så eleven
+        // kan se sina framsteg
+        LocalDateTime yesterday = LocalDateTime.now().minusHours(24);
+        List<EduAIQuest> allRecent = questRepository.findByUserId(userId);
+        List<Submission> userSubmissions = submissionRepository.findByStudentId(userId);
+
+        // Retroactively complete assignment quests that got graded
+        boolean updatedAny = false;
+        for (EduAIQuest q : allRecent) {
+            if (!q.isCompleted() && q.getObjectiveType() == EduAIQuest.QuestObjectiveType.ASSIGNMENT) {
+                boolean isGraded = userSubmissions.stream()
+                        .anyMatch(s -> s.getAssignment().getId().equals(q.getObjectiveId())
+                                && s.getGrade() != null && !s.getGrade().trim().isEmpty());
+                if (isGraded) {
+                    completeQuest(q.getId());
+                    updatedAny = true;
+                }
+            }
+        }
+
+        // Fetch fresh if anything was updated
+        if (updatedAny) {
+            allRecent = questRepository.findByUserId(userId);
+        }
+
+        return allRecent.stream()
+                .filter(q -> !q.isCompleted() || (q.getCompletedAt() != null && q.getCompletedAt().isAfter(yesterday)))
+                .toList();
     }
 
     public EduAIQuest completeQuest(Long questId) {
@@ -241,5 +293,113 @@ public class EduAIService {
 
     public String generateResponse(String prompt) {
         return geminiService.generateResponse(prompt);
+    }
+
+    private static final String SESSION_SYSTEM_PROMPT = """
+            Du är en expert-tutor (lärare) för EduFlex. Din uppgift är att hålla en anpassad studiesession för en student baserat på valt ämne och typ av session (%s).
+
+            Skapa ett djuplodande och engagerande studiematerial (Markdown-formaterat) samt 3-5 flervalsfrågor för att testa studentens kunskap efteråt.
+
+            FORMAT:
+            Du MÅSTE svara med GILTIG JSON (och ingen runtomkringliggande markdown som ```json):
+            {
+              "title": "Passande rubrik för sessionen",
+              "material": "Här skriver du omfattande text i Markdown-format med rubriker (##), punktlistor och pedagogiska förklaringar. Ge dig hän! Bygg en riktig superlesson.",
+              "questions": [
+                {
+                  "question": "Fråga 1?",
+                  "options": ["Svar A", "Svar B", "Svar C", "Svar D"],
+                  "correctAnswerIndex": 1
+                }
+              ]
+            }
+            """;
+
+    public Map<String, Object> generateStudySession(Long userId, Long courseId, String sessionType) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+
+        List<Course> courses = new ArrayList<>();
+        if (courseId != null) {
+            courseRepository.findById(courseId).ifPresent(courses::add);
+        } else {
+            courses = courseRepository.findByStudentsId(userId);
+        }
+
+        StringBuilder catalog = new StringBuilder();
+        catalog.append("Student: ").append(user.getFullName()).append("\n");
+        catalog.append("Typ av session: ").append(sessionType).append("\n\n");
+
+        if (!courses.isEmpty()) {
+            catalog.append("KURSINNEHÅLL (Använd detta som grund för ditt material):\n");
+            for (Course course : courses) {
+                catalog.append("Kurs: ").append(course.getName()).append("\n");
+                List<Lesson> lessons = lessonRepository.findByCourseIdOrderBySortOrderAsc(course.getId());
+                for (Lesson lesson : lessons) {
+                    String excerpt = lesson.getContent() != null
+                            ? (lesson.getContent().length() > 300 ? lesson.getContent().substring(0, 300) + "..."
+                                    : lesson.getContent())
+                            : "";
+                    catalog.append(" - Lektion: ").append(lesson.getTitle()).append("\n   Utdrag: ").append(excerpt)
+                            .append("\n");
+                }
+            }
+        } else {
+            catalog.append(
+                    "Studenten har inga specifika kurser valda. Ge en allmän studieteknik- eller inspirationssession för en student.\n");
+        }
+
+        String prompt = String.format(SESSION_SYSTEM_PROMPT, sessionType) + "\n\nKONTEXT:\n" + catalog;
+
+        try {
+            String jsonResponse = geminiService.generateResponse(prompt);
+            jsonResponse = cleanJson(jsonResponse);
+            logger.info("Generated Study Session for user {}, sessionType {}", userId, sessionType);
+            return objectMapper.readValue(jsonResponse, new TypeReference<>() {
+            });
+        } catch (Exception e) {
+            logger.error("Failed to generate study session", e);
+            throw new RuntimeException("Could not generate study session");
+        }
+    }
+
+    public Map<String, Object> saveSessionResultAndGetImprovement(User user, Long courseId, String sessionType,
+            Integer score, Integer maxScore) {
+        // Hitta förra resultatet för denna specifika kombo
+        AiSessionResult previousResult = aiSessionResultRepository
+                .findFirstByUserIdAndCourseIdAndSessionTypeOrderByCreatedAtDesc(user.getId(), courseId, sessionType);
+
+        Integer previousScore = null;
+        Integer previousMaxScore = null;
+        Integer improvement = null;
+
+        if (previousResult != null) {
+            previousScore = previousResult.getScore();
+            previousMaxScore = previousResult.getMaxScore();
+            // Jämför procentuellt
+            double currentPercentage = maxScore > 0 ? (double) score / maxScore : 0;
+            double prevPercentage = previousMaxScore > 0 ? (double) previousScore / previousMaxScore : 0;
+            improvement = (int) Math.round((currentPercentage - prevPercentage) * 100);
+        }
+
+        // Spara nya resultatet
+        AiSessionResult newResult = AiSessionResult.builder()
+                .user(user)
+                .courseId(courseId)
+                .sessionType(sessionType)
+                .score(score)
+                .maxScore(maxScore)
+                .createdAt(LocalDateTime.now())
+                .build();
+        aiSessionResultRepository.save(newResult);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("score", score);
+        response.put("maxScore", maxScore);
+        if (improvement != null) {
+            response.put("improvementPercentage", improvement);
+            response.put("previousScore", previousScore);
+            response.put("previousMaxScore", previousMaxScore);
+        }
+        return response;
     }
 }

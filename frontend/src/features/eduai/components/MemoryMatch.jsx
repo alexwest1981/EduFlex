@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { RotateCcw, Trophy, Clock, Zap } from 'lucide-react';
 import eduAiService from '../services/eduAiService';
+import { api } from '../../../services/api';
 
 const MemoryMatch = () => {
     const [cards, setCards] = useState([]);

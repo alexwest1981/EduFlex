@@ -4,8 +4,9 @@ import com.eduflex.backend.model.SpacedRepetitionItem;
 import com.eduflex.backend.model.User;
 import com.eduflex.backend.repository.UserRepository;
 import com.eduflex.backend.service.EduAiHubService;
+import com.eduflex.backend.service.GamificationService;
 import com.eduflex.backend.service.SystemSettingService;
-import com.eduflex.backend.service.AiCreditService;
+import com.eduflex.backend.service.ai.EduAIService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -23,7 +24,8 @@ public class EduAiHubController {
     private final EduAiHubService eduAiHubService;
     private final UserRepository userRepository;
     private final SystemSettingService systemSettingService;
-    private final AiCreditService aiCreditService;
+    private final EduAIService eduAIService;
+    private final GamificationService gamificationService;
 
     @GetMapping("/queue")
     public ResponseEntity<List<SpacedRepetitionItem>> getReviewQueue() {
@@ -48,13 +50,51 @@ public class EduAiHubController {
         stats.put("xpMultiplier", systemSettingService.getSetting("eduai_xp_ratio") != null
                 ? systemSettingService.getSetting("eduai_xp_ratio").getSettingValue()
                 : "1.0");
-        stats.put("aiCredits", aiCreditService.getBalance(user));
+        stats.put("totalXp", user.getPoints());
 
         // NEW: Live Data from DB
         stats.put("masteryScore", eduAiHubService.getMasteryScore(user.getId()));
         stats.put("radarStats", eduAiHubService.getRadarStats(user.getId()));
 
         return ResponseEntity.ok(stats);
+    }
+
+    @PostMapping("/session/generate")
+    public ResponseEntity<Map<String, Object>> generateSession(@RequestBody Map<String, Object> request) {
+        User user = getCurrentUser();
+        Long courseId = null;
+        if (request.get("courseId") != null) {
+            courseId = Long.parseLong(request.get("courseId").toString());
+        }
+        String sessionType = (String) request.get("sessionType");
+        if (sessionType == null)
+            sessionType = "SUMMARY";
+
+        return ResponseEntity.ok(eduAIService.generateStudySession(user.getId(), courseId, sessionType));
+    }
+
+    @PostMapping("/session/complete")
+    public ResponseEntity<Map<String, Object>> completeSession(@RequestBody Map<String, Object> request,
+            @RequestParam int xp) {
+        User user = getCurrentUser();
+
+        Long courseId = null;
+        if (request.get("courseId") != null) {
+            courseId = Long.parseLong(request.get("courseId").toString());
+        }
+        String sessionType = (String) request.get("sessionType");
+        if (sessionType == null)
+            sessionType = "SUMMARY";
+
+        Integer score = request.get("score") != null ? Integer.parseInt(request.get("score").toString()) : 0;
+        Integer maxScore = request.get("maxScore") != null ? Integer.parseInt(request.get("maxScore").toString()) : 0;
+
+        Map<String, Object> improvementData = eduAIService.saveSessionResultAndGetImprovement(user, courseId,
+                sessionType, score, maxScore);
+
+        gamificationService.addPoints(user.getId(), xp);
+
+        return ResponseEntity.ok(improvementData);
     }
 
     private User getCurrentUser() {

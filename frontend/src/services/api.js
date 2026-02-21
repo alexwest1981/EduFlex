@@ -676,7 +676,9 @@ export const api = {
         },
         getHubStats: () => api.get('/ai/hub/stats'),
         getReviewQueue: () => api.get('/ai/hub/queue'),
-        processReviewResult: (itemId, quality) => api.post(`/ai/hub/review/${itemId}?quality=${quality}`)
+        processReviewResult: (itemId, quality) => api.post(`/ai/hub/review/${itemId}?quality=${quality}`),
+        generateSession: (data) => api.post('/ai/hub/session/generate', data),
+        completeSession: (data, xp) => api.post(`/ai/hub/session/complete?xp=${xp}`, data)
     },
 
     resources: {

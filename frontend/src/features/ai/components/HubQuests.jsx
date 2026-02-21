@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { RefreshCw, Target, BookOpen, Star, Trophy } from 'lucide-react';
+import { RefreshCw, Target, BookOpen, Star, Trophy, CheckCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 
@@ -18,7 +18,7 @@ const HubQuests = () => {
         try {
             const token = localStorage.getItem('token');
             const response = await fetch('/api/gamification/eduai/active', {
-                headers: { 'Authorization': `Bearer ${token}` }
+                headers: { 'Authorization': `Bearer ${token} ` }
             });
             if (response.ok) {
                 const data = await response.json();
@@ -37,7 +37,7 @@ const HubQuests = () => {
             const token = localStorage.getItem('token');
             const response = await fetch('/api/gamification/eduai/generate', {
                 method: 'POST',
-                headers: { 'Authorization': `Bearer ${token}` }
+                headers: { 'Authorization': `Bearer ${token} ` }
             });
             if (response.ok) {
                 await fetchActiveQuests();
@@ -54,7 +54,7 @@ const HubQuests = () => {
             <div className="flex justify-between items-center bg-white dark:bg-white/5 p-6 rounded-[32px] border border-gray-100 dark:border-white/10 shadow-xl">
                 <div>
                     <h2 className="text-2xl font-black text-gray-900 dark:text-white uppercase tracking-tight">Aktiva Uppdrag</h2>
-                    <p className="text-gray-500 dark:text-gray-400 text-sm font-medium">Utmana dig själv för extra XP och credits.</p>
+                    <p className="text-gray-500 dark:text-gray-400 text-sm font-medium">Utmana dig själv för extra XP.</p>
                 </div>
                 <button
                     onClick={generateQuests}
@@ -63,7 +63,8 @@ const HubQuests = () => {
                         flex items-center gap-2 px-6 py-3 rounded-2xl text-xs font-black uppercase tracking-widest transition-all
                         ${quests.length >= 3
                             ? 'bg-gray-100 text-gray-400 cursor-not-allowed dark:bg-white/5'
-                            : 'bg-brand-orange text-white hover:brightness-110 shadow-lg shadow-brand-orange/20 active:scale-95'}
+                            : 'bg-brand-orange text-white hover:brightness-110 shadow-lg shadow-brand-orange/20 active:scale-95'
+                        }
                     `}
                 >
                     <RefreshCw size={16} className={generating ? 'animate-spin' : ''} />
@@ -91,8 +92,11 @@ const HubQuests = () => {
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, scale: 0.95 }}
                                 transition={{ delay: index * 0.1 }}
-                                className="bg-white dark:bg-[#1C1D1E] border border-gray-100 dark:border-white/10 rounded-[32px] p-8 shadow-xl hover:translate-y-[-4px] transition-all group relative overflow-hidden"
+                                className={`bg-white dark:bg-[#1C1D1E] border border-gray-100 dark:border-white/10 rounded-[32px] p-8 shadow-xl hover:translate-y-[-4px] transition-all group relative overflow-hidden ${quest.completed ? 'opacity-70 grayscale-[30%]' : ''}`}
                             >
+                                {quest.completed && (
+                                    <div className="absolute top-0 right-0 w-32 h-32 bg-green-500/10 blur-[40px] rounded-full -translate-y-1/2 translate-x-1/2"></div>
+                                )}
                                 <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/5 blur-3xl rounded-full"></div>
 
                                 <div className="flex justify-between items-start mb-6">
@@ -113,21 +117,33 @@ const HubQuests = () => {
                                     {quest.description}
                                 </p>
 
-                                <button
-                                    onClick={() => {
-                                        if (quest.courseId) {
-                                            const tab = quest.objectiveType === 'QUIZ' ? 'quiz' :
-                                                quest.objectiveType === 'ASSIGNMENT' ? 'assignments' : 'material';
-                                            navigate(`/course/${quest.courseId}?tab=${tab}&itemId=${quest.objectiveId}`);
-                                        } else {
-                                            navigate('/my-courses');
-                                        }
-                                    }}
-                                    className="w-full flex items-center justify-center gap-2 bg-gray-900 dark:bg-white text-white dark:text-black py-4 rounded-2xl font-black uppercase text-xs tracking-widest hover:brightness-110 transition-all active:scale-95"
-                                >
-                                    <BookOpen size={16} />
-                                    Börja Uppdrag
-                                </button>
+                                {quest.completed ? (
+                                    <div className="mt-auto w-full flex items-center justify-center gap-2 bg-green-500/10 text-green-500 py-4 rounded-2xl font-black uppercase text-xs tracking-widest border border-green-500/20">
+                                        <CheckCircle size={18} />
+                                        <span>KLAR!</span>
+                                    </div>
+                                ) : (
+                                    <button
+                                        onClick={() => {
+                                            if (quest.objectiveType === 'CUSTOM') {
+                                                if (quest.objectiveId === 1) navigate('/ai-hub?tab=time-attack');
+                                                else if (quest.objectiveId === 2) navigate('/ai-hub?tab=memory');
+                                                else if (quest.objectiveId === 3) navigate('/ai-hub?tab=flashcards');
+                                                else navigate('/ai-hub?tab=games');
+                                            } else if (quest.courseId && quest.courseId !== 0) {
+                                                const tab = quest.objectiveType === 'QUIZ' ? 'quiz' :
+                                                    quest.objectiveType === 'ASSIGNMENT' ? 'assignments' : 'material';
+                                                navigate(`/course/${quest.courseId}?tab=${tab}&itemId=${quest.objectiveId}`);
+                                            } else {
+                                                navigate('/my-courses');
+                                            }
+                                        }}
+                                        className="mt-auto w-full flex items-center justify-center gap-2 bg-gray-900 dark:bg-white text-white dark:text-black py-4 rounded-2xl font-black uppercase text-xs tracking-widest hover:brightness-110 transition-all active:scale-95 shadow-xl"
+                                    >
+                                        <BookOpen size={16} />
+                                        Börja Uppdrag
+                                    </button>
+                                )}
                             </motion.div>
                         ))}
                     </AnimatePresence>

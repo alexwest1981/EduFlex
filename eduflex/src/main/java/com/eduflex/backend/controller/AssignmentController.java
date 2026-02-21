@@ -19,14 +19,17 @@ public class AssignmentController {
     private final CourseRepository courseRepo;
     private final UserRepository userRepo;
     private final StorageService storageService;
+    private final com.eduflex.backend.service.ai.EduAIService eduAIService;
 
     public AssignmentController(AssignmentRepository assignmentRepo, SubmissionRepository submissionRepo,
-            CourseRepository courseRepo, UserRepository userRepo, StorageService storageService) {
+            CourseRepository courseRepo, UserRepository userRepo, StorageService storageService,
+            com.eduflex.backend.service.ai.EduAIService eduAIService) {
         this.assignmentRepo = assignmentRepo;
         this.submissionRepo = submissionRepo;
         this.courseRepo = courseRepo;
         this.userRepo = userRepo;
         this.storageService = storageService;
+        this.eduAIService = eduAIService;
     }
 
     // --- ASSIGNMENTS ---
@@ -166,6 +169,20 @@ public class AssignmentController {
         Submission sub = submissionRepo.findById(id).orElseThrow();
         sub.setGrade(grade);
         sub.setFeedback(feedback);
+
+        // Om en inlämning blir rättad, slutför eventuella EduAI-uppdrag
+        if (grade != null && !grade.trim().isEmpty()) {
+            try {
+                eduAIService.checkAndCompleteQuest(
+                        sub.getStudent().getId(),
+                        com.eduflex.backend.model.EduAIQuest.QuestObjectiveType.ASSIGNMENT,
+                        sub.getAssignment().getId());
+            } catch (Exception e) {
+                // Logga men fallera inte hela rättningen
+                System.err.println("Failed to complete EduAI quest for assignment: " + e.getMessage());
+            }
+        }
+
         return submissionRepo.save(sub);
     }
 

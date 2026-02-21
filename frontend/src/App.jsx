@@ -545,15 +545,11 @@ const AppRoutes = () => {
                 } />
 
                 <Route path="/adaptive-learning" element={
-                    <ProtectedRoute roles={['STUDENT', 'ROLE_STUDENT', 'ADMIN']}>
-                        <Layout currentUser={currentUser} handleLogout={logout}>
-                            <AdaptiveLearningDashboard />
-                        </Layout>
-                    </ProtectedRoute>
+                    <Navigate to="/ai-hub" replace />
                 } />
 
                 <Route path="/ai-hub" element={
-                    <ProtectedRoute roles={['STUDENT', 'ROLE_STUDENT', 'ADMIN']}>
+                    <ProtectedRoute roles={['STUDENT', 'ROLE_STUDENT']}>
                         <Layout currentUser={currentUser} handleLogout={logout}>
                             <EduAiHubPage />
                         </Layout>

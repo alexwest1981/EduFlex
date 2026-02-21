@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { LayoutDashboard, BookOpen, FolderOpen, Users, UserCircle, LogOut, ShieldCheck, Calendar, MessageSquare, Settings2, FileQuestion, Palette, Store, Sparkles, TrendingUp, Award, GraduationCap, Heart, Download } from 'lucide-react';
+import { LayoutDashboard, BookOpen, FolderOpen, Users, UserCircle, LogOut, ShieldCheck, Calendar, MessageSquare, Settings2, FileQuestion, Palette, Store, Sparkles, TrendingUp, Award, GraduationCap, Heart, Download, Brain } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
@@ -68,7 +68,7 @@ const Sidebar = ({ currentUser, logout, siteName, version }) => {
 
         if (roleName === 'STUDENT' || roleName === 'ROLE_STUDENT') {
             items.push({ path: '/my-courses', label: t('sidebar.my_courses'), icon: <BookOpen size={20} /> });
-            items.push({ path: '/adaptive-learning', label: 'Min Lärväg', icon: <TrendingUp size={20} /> });
+            items.push({ path: '/ai-hub', label: 'EduAI Hub', icon: <Brain size={20} /> });
             items.push({ path: '/catalog', label: t('sidebar.catalog'), icon: <BookOpen size={20} /> });
         }
 

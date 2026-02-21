@@ -27,7 +27,6 @@ import EduAiHubWidget from './widgets/EduAiHubWidget';
 import { useDashboardWidgets } from '../../hooks/useDashboardWidgets';
 import DashboardCustomizer from '../../components/dashboard/DashboardCustomizer';
 import AIPersonalizationWidget from './widgets/AIPersonalizationWidget';
-import AdaptiveWidget from '../adaptive/AdaptiveWidget';
 import EduAIDashboard from '../../components/gamification/EduAIDashboard';
 import SkillsGapDashboard from '../skills/SkillsGapDashboard';
 import CoachRecommendationBanner from '../eduai/components/CoachRecommendationBanner';
@@ -54,7 +53,6 @@ const StudentDashboard = ({ currentUser }) => {
         dailyChallenges: true,
         calendar: true,
         achievements: true,
-        aiInsights: true,
         eduQuest: true,
         eduAiHub: true // Default enabled
     });
@@ -67,8 +65,7 @@ const StudentDashboard = ({ currentUser }) => {
         dailyChallenges: t('dashboard.widgets.daily_challenges'),
         calendar: t('dashboard.widgets.calendar'),
         achievements: t('dashboard.widgets.achievements'),
-        aiInsights: t('dashboard.widgets.ai_personalization'),
-        eduQuest: "EduQuest Uppdrag",
+        eduQuest: "Dagens Uppdrag",
         eduAiHub: "EduAI Intelligence Center"
     };
 
@@ -218,9 +215,10 @@ const StudentDashboard = ({ currentUser }) => {
 
 
 
-                        {widgets.aiInsights && (
-                            <WidgetWrapper className="h-auto" id="min-larvag-card">
-                                <AdaptiveWidget />
+                        {/* EduQuest Widget - Only if EDUGAME is active */}
+                        {widgets.eduQuest && isModuleActive('EDUGAME') && (
+                            <WidgetWrapper className="h-auto">
+                                <EduQuestWidget />
                             </WidgetWrapper>
                         )}
 
@@ -264,13 +262,6 @@ const StudentDashboard = ({ currentUser }) => {
                                 navigate={navigate}
                                 currentUser={currentUser}
                             />
-                        )}
-
-                        {/* EduQuest Widget - Only if EDUGAME is active */}
-                        {widgets.eduQuest && isModuleActive('EDUGAME') && (
-                            <WidgetWrapper className="h-auto">
-                                <EduQuestWidget />
-                            </WidgetWrapper>
                         )}
 
                         {/* Legacy Daily Challenges - Hide if EduQuest is active? Or keep both? Keeping for now but maybe conditional */}
