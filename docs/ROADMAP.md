@@ -26,6 +26,7 @@
 | **Skills Gap Analysis** | Visualisering av kompetensluckor och progress (Radar charts). | ✅ **Klar** | **v2.5.0** |
 | **EduAI Center v2.0** | AI-driven studiehub (Spaced Repetition, AI Coach, Mini-Games). | ✅ **Klar** | **v2.1.0** |
 | **Workflow Integration** | Utbildning direkt i Slack/Teams/Salesforce ("Headless LMS"). | ✅ **Stabil / Verifierad** |
+| **Social Gamification** | Ligor & Kollektiva klassmål utan individuella rankningar. | ✅ **Klar** | **v2.8.0** |
 
 ---
 
@@ -71,6 +72,13 @@
 | **Sjukanmälan** | Komplett sjukanmälningssystem med statusuppdateringar, mentorsnotifieringar och historikspårning. | ✅ **Klar** | **-30%** adm-mail från vårdnadshavare. |
 
 ---
+
+### [v2.8.0] - 2026-02-22
+- **New Feature**: **Social Gamification (Leagues & Class Goals)**.
+- **Leagues**: 5 levels (Bronze, Silver, Gold, Platinum, Ruby) based on XP.
+- **Class Goals**: Collective progress tracking for shared rewards ("Class Pride").
+- **Safety**: Designed to hide individual ranks to prevent bullying.
+- **UI**: Added animated Glassmorphic widgets to the Student Dashboard.
 
 ### [v2.7.0] - 2026-02-22
 - **New Feature**: **Predictive AI Analysis (At-Risk Early Warning)**.

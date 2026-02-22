@@ -2,7 +2,7 @@
   <img src="docs/Logo_top.png" width="600" alt="EduFlex Logo" />
 </p>
 
-<h1 align="center">🎓 EduFlex LMS v2.2.0</h1>
+<h1 align="center">🎓 EduFlex LMS v2.3.0</h1>
 
 <p align="center">
   <em>The Complete Enterprise Learning Platform for Modern Education</em><br/>
@@ -36,7 +36,13 @@
 <div id="-svenska"></div>
 
 ## 🚀 Senaste uppdateringarna (22 feb 2026)
-Här är en sammanfattning av dagens stora uppdateringar för att proaktivt stödja studenter:
+Här är en sammanfattning av dagens stora uppdateringar för att öka engagemanget och stödja studenter:
+
+*   **🏆 Social Gamification (Ligor & Klassmål):**
+    *   **Ligasystem:** Introducerat ett icke-kompetitivt progressionssystem med 5 ligor (Brons till Rubin) baserat på elevens totala XP.
+    *   **Klass-Stolthet:** Implementerat ett kollektivt mål-system där klassen arbetar tillsammans mot gemensamma belöningar (t.ex. klassfika), vilket stärker gemenskapen.
+    *   **Anonymitet by Design:** Systemet är byggt för att aldrig visa individuella rankningar eller jämförelser mellan elever, vilket motverkar mobbning och fokus på prestation över lärande.
+    *   **Premium UI:** Två nya glassmorphiska widgets (`LeagueStatusWidget` & `ClassPrideWidget`) med mjuka animationer för student-dashboarden.
 
 *   **🔮 Prediktiv AI-analys (At-Risk Early Warning):**
     *   **AI-driven riskbedömning:** Implementerat en motor i `TeacherAnalyticsService` som kombinerar akademisk data (Mastery Score) med beteende (senaste aktivitet, quiz-trender).

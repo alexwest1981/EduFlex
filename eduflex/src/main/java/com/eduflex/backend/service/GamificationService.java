@@ -5,7 +5,6 @@ import com.eduflex.backend.repository.*;
 import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Service;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class GamificationService {
@@ -14,7 +13,8 @@ public class GamificationService {
     private final BadgeRepository badgeRepository;
     private final UserBadgeRepository userBadgeRepository;
 
-    public GamificationService(UserRepository userRepository, BadgeRepository badgeRepository, UserBadgeRepository userBadgeRepository) {
+    public GamificationService(UserRepository userRepository, BadgeRepository badgeRepository,
+            UserBadgeRepository userBadgeRepository) {
         this.userRepository = userRepository;
         this.badgeRepository = badgeRepository;
         this.userBadgeRepository = userBadgeRepository;
@@ -24,14 +24,36 @@ public class GamificationService {
         User user = userRepository.findById(userId).orElseThrow();
         user.setPoints(user.getPoints() + points);
 
+        // Uppdatera Liga
+        League nextLeague = League.determineLeague(user.getPoints());
+        if (nextLeague != user.getCurrentLeague()) {
+            user.setCurrentLeague(nextLeague);
+            // Här kan man trigga en notis: "Välkommen till Rubinligan!"
+        }
+
         // Enkel Level-logik: Varje 100 poäng är en ny level
         int newLevel = (user.getPoints() / 100) + 1;
         if (newLevel > user.getLevel()) {
             user.setLevel(newLevel);
-            // Här kan man lägga till logik för "Level Up Notification"
         }
 
         return userRepository.save(user);
+    }
+
+    public java.util.Map<String, Object> getClassProgress(Long classGroupId) {
+        List<User> students = userRepository.findByClassGroup_Id(classGroupId);
+        int totalXp = students.stream().mapToInt(User::getPoints).sum();
+
+        // Dynamiskt mål baserat på antal studenter (t.ex. 500 XP per student)
+        int targetXp = students.size() * 500;
+        if (targetXp == 0)
+            targetXp = 1000; // Fallback
+
+        return java.util.Map.of(
+                "totalXp", totalXp,
+                "targetXp", targetXp,
+                "studentCount", students.size(),
+                "percentage", Math.min(100, (totalXp * 100) / targetXp));
     }
 
     public void awardBadge(Long userId, Long badgeId) {

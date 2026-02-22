@@ -119,6 +119,9 @@ public class User implements Serializable {
     private ClassGroup classGroup;
 
     @Enumerated(EnumType.STRING)
+    private League currentLeague = League.BRONZE;
+
+    @Enumerated(EnumType.STRING)
     private StaffStatus staffStatus = StaffStatus.ACTIVE;
 
     public enum StaffStatus {
@@ -408,5 +411,13 @@ public class User implements Serializable {
 
     public void setStaffStatus(StaffStatus staffStatus) {
         this.staffStatus = staffStatus;
+    }
+
+    public League getCurrentLeague() {
+        return currentLeague;
+    }
+
+    public void setCurrentLeague(League currentLeague) {
+        this.currentLeague = currentLeague;
     }
 }

@@ -22,6 +22,8 @@ import EvaluationNotificationWidget from './widgets/EvaluationNotificationWidget
 import SurveyNotificationWidget from './widgets/SurveyNotificationWidget';
 import EduQuestWidget from '../edugame/EduQuestWidget';
 import EduAiHubWidget from './widgets/EduAiHubWidget';
+import LeagueStatusWidget from './widgets/LeagueStatusWidget';
+import ClassPrideWidget from './widgets/ClassPrideWidget';
 
 // --- SHARED ---
 import { useDashboardWidgets } from '../../hooks/useDashboardWidgets';
@@ -54,7 +56,9 @@ const StudentDashboard = ({ currentUser }) => {
         calendar: true,
         achievements: true,
         eduQuest: true,
-        eduAiHub: true // Default enabled
+        eduAiHub: true,
+        league: true,
+        classPride: true
     });
 
     const widgetLabels = {
@@ -66,7 +70,9 @@ const StudentDashboard = ({ currentUser }) => {
         calendar: t('dashboard.widgets.calendar'),
         achievements: t('dashboard.widgets.achievements'),
         eduQuest: "Dagens Uppdrag",
-        eduAiHub: "EduAI Intelligence Center"
+        eduAiHub: "EduAI Intelligence Center",
+        league: "Min Liga",
+        classPride: "Klass-Stolthet"
     };
 
     useEffect(() => {
@@ -244,6 +250,14 @@ const StudentDashboard = ({ currentUser }) => {
 
                     {/* RIGHT COLUMN (Sidebar) */}
                     <div className="lg:col-span-1 space-y-6">
+                        {widgets.league && (
+                            <LeagueStatusWidget />
+                        )}
+
+                        {widgets.classPride && (
+                            <ClassPrideWidget />
+                        )}
+
                         {widgets.stats && (
                             <WidgetWrapper className="h-auto">
                                 <StudentGamificationWidget currentUser={currentUser} isModuleActive={isModuleActive} />

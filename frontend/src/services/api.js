@@ -631,6 +631,8 @@ export const api = {
         getStreak: (userId) => api.get(`/gamification/streak/login/${userId}`),
         getMyStreak: () => api.get('/gamification/streak'),
         getMyAchievements: () => api.get('/gamification/achievements/my'),
+        getMyLeague: () => api.get('/gamification/league/my'),
+        getClassProgress: () => api.get('/gamification/class/progress'),
         getQuests: (type = 'daily') => api.get(`/edugame/quests/${type}`),
         social: {
             getFriends: () => api.get('/edugame/social/friends'),

@@ -2,6 +2,7 @@ package com.eduflex.backend.controller;
 
 import com.eduflex.backend.model.Badge;
 import com.eduflex.backend.model.DailyChallenge;
+import com.eduflex.backend.model.League;
 import com.eduflex.backend.model.User;
 import com.eduflex.backend.service.GamificationService;
 import com.eduflex.backend.service.DailyChallengeService;
@@ -223,5 +224,49 @@ public class GamificationController {
         com.eduflex.backend.model.EduAIQuest quest = eduAIService.completeQuest(questId);
         gamificationService.addPoints(quest.getUserId(), quest.getRewardXp());
         return ResponseEntity.ok(quest);
+    }
+
+    @GetMapping("/league/my")
+    public ResponseEntity<Map<String, Object>> getMyLeague() {
+        String username = org.springframework.security.core.context.SecurityContextHolder.getContext()
+                .getAuthentication().getName();
+        User user = userRepository.findByUsername(username)
+                .orElseGet(() -> userRepository.findByEmail(username).orElseThrow());
+
+        League current = user.getCurrentLeague();
+        League next = null;
+        League[] values = League.values();
+        for (int i = 0; i < values.length - 1; i++) {
+            if (values[i] == current) {
+                next = values[i + 1];
+                break;
+            }
+        }
+
+        return ResponseEntity.ok(Map.of(
+                "current", current,
+                "displayName", current.getDisplayName(),
+                "icon", current.getIcon(),
+                "nextThreshold", next != null ? next.getMinPoints() : -1,
+                "nextLeague", next != null ? next.getDisplayName() : "MAX",
+                "xp", user.getPoints()));
+    }
+
+    @GetMapping("/class/progress")
+    public ResponseEntity<Map<String, Object>> getClassProgress() {
+        String username = org.springframework.security.core.context.SecurityContextHolder.getContext()
+                .getAuthentication().getName();
+        User user = userRepository.findByUsername(username)
+                .orElseGet(() -> userRepository.findByEmail(username).orElseThrow());
+
+        if (user.getClassGroup() == null) {
+            return ResponseEntity.ok(Map.of("hasGroup", false));
+        }
+
+        Map<String, Object> progress = gamificationService.getClassProgress(user.getClassGroup().getId());
+        return ResponseEntity.ok(Map.of(
+                "hasGroup", true,
+                "groupName", user.getClassGroup().getName(),
+                "progress", progress));
     }
 }
