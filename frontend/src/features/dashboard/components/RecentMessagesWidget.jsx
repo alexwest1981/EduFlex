@@ -26,7 +26,7 @@ const RecentMessagesWidget = ({ onViewAll }) => {
     };
 
     return (
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm flex flex-col h-full">
+        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm flex flex-col">
             <div className="p-6 border-b border-card dark:border-card-dark flex justify-between items-center">
                 <h3 className="font-bold text-lg text-gray-900 dark:text-white flex items-center gap-2">
                     <Mail className="text-indigo-600" size={20} /> {t('widgets.recent_messages.title')}
@@ -39,11 +39,11 @@ const RecentMessagesWidget = ({ onViewAll }) => {
                 </button>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-2">
+            <div className="flex-1 overflow-y-auto p-2 max-h-[400px]">
                 {isLoading ? (
                     <div className="p-8 text-center text-gray-400 text-sm">{t('messages.loading')}</div>
                 ) : messages.length === 0 ? (
-                    <div className="p-8 text-center text-gray-400 text-sm italic">{t('widgets.recent_messages.empty')}</div>
+                    <div className="p-8 text-center text-gray-400 text-sm italic">Inga nya meddelanden för stunden.</div>
                 ) : (
                     <div className="flex flex-col gap-2">
                         {messages.map(msg => (
