@@ -247,4 +247,26 @@ public class TenantService {
             throw new RuntimeException("Failed to create admin user", e);
         }
     }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void ensureDemoTenantExists() {
+        String demoKey = "demo";
+        String demoDomain = "demo.eduflexlms.se";
+        String demoSchema = "tenant_demo";
+
+        if (!tenantRepository.existsById(demoKey)) {
+            logger.info("🚀 Provisioning demo tenant: {}", demoKey);
+            createTenant(
+                    "EduFlex Demo-Skola",
+                    demoDomain,
+                    demoSchema,
+                    demoKey,
+                    "admin@demo.eduflexlms.se",
+                    "admin",
+                    "Demo",
+                    "Admin",
+                    null,
+                    null);
+        }
+    }
 }

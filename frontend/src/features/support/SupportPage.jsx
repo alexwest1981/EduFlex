@@ -7,7 +7,7 @@ const SupportPage = ({ currentUser }) => {
     const [submitting, setSubmitting] = useState(false);
     const [tickets, setTickets] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [view, setView] = useState('new'); // 'new' or 'history'
+    const [view, setView] = useState('faq'); // 'faq', 'new' or 'history'
 
     const [formData, setFormData] = useState({
         category: '',
@@ -31,6 +31,25 @@ const SupportPage = ({ currentUser }) => {
         "Fel i gamification",
         "Saknad behörighet",
         "Övrigt"
+    ];
+
+    const faqs = [
+        {
+            q: "Hur hanterar EduFlex GDPR och datalagring?",
+            a: "EduFlex är byggt för svenska myndighetskrav. All data lagras lokalt eller via MinIO i er egen infrastruktur. Vi använder kryptering (AES-256) för känsliga personuppgifter som personnummer och adresser."
+        },
+        {
+            q: "Vilka lärplattformar kan EduFlex integreras med?",
+            a: "Vi har fullt stöd för LTI 1.3 (Advantage), vilket möjliggör sömlös integration med Canvas, itslearning och Moodle. Vi stödjer även Google Classroom och Microsoft Teams."
+        },
+        {
+            q: "Hur fungerar spelifiering (Gamification) för eleverna?",
+            a: "Elever tjänar XP och märken genom att vara aktiva. Som admin kan du styra exakt vilka funktioner som ska vara aktiva (t.ex. Ligor, Streaks eller Achievements) via Gamification-panelen."
+        },
+        {
+            q: "Vad ingår i vår support-SLA?",
+            a: "För Pilot-kunder erbjuder vi prioriterad support via chat och e-post med en svarsgaranti inom 4 arbetstimmar för kritiska fel."
+        }
     ];
 
     useEffect(() => {
@@ -91,6 +110,12 @@ const SupportPage = ({ currentUser }) => {
             {/* TAB NAVIGATION */}
             <div className="flex gap-4 mb-8 border-b border-gray-100 pb-1">
                 <button
+                    onClick={() => setView('faq')}
+                    className={`pb-3 px-2 text-sm font-bold transition-all ${view === 'faq' ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-400 hover:text-gray-600'}`}
+                >
+                    Vanliga frågor (FAQ)
+                </button>
+                <button
                     onClick={() => setView('new')}
                     className={`pb-3 px-2 text-sm font-bold transition-all ${view === 'new' ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-400 hover:text-gray-600'}`}
                 >
@@ -109,7 +134,33 @@ const SupportPage = ({ currentUser }) => {
                 </button>
             </div>
 
-            {view === 'new' ? (
+            {view === 'faq' ? (
+                <div className="space-y-4">
+                    {faqs.map((faq, idx) => (
+                        <div key={idx} className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
+                            <h3 className="font-extrabold text-gray-900 mb-2 flex items-center gap-2">
+                                <span className="w-6 h-6 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center text-xs font-black">?</span>
+                                {faq.q}
+                            </h3>
+                            <p className="text-sm text-gray-600 leading-relaxed pl-8 font-medium">
+                                {faq.a}
+                            </p>
+                        </div>
+                    ))}
+                    <div className="bg-indigo-600 rounded-3xl p-8 text-white mt-8 flex justify-between items-center">
+                        <div>
+                            <h3 className="text-xl font-black mb-1">Hittar du inte det du söker?</h3>
+                            <p className="text-indigo-100 text-sm font-bold">Vår supportpersonal sitter redo att hjälpa dig.</p>
+                        </div>
+                        <button
+                            onClick={() => setView('new')}
+                            className="bg-white text-indigo-600 px-6 py-3 rounded-xl font-black text-sm hover:scale-105 transition-transform"
+                        >
+                            Kontakta oss
+                        </button>
+                    </div>
+                </div>
+            ) : view === 'new' ? (
                 <div className="bg-white rounded-3xl shadow-xl shadow-indigo-100/20 border border-gray-100 overflow-hidden">
                     <form onSubmit={handleSubmit} className="p-8 space-y-6">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

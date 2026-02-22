@@ -10,7 +10,8 @@ import {
     Check,
     Copy,
     Clock,
-    ShieldAlert
+    ShieldAlert,
+    Plus
 } from 'lucide-react';
 import { api } from '../../../services/api';
 

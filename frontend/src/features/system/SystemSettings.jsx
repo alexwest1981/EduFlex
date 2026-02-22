@@ -287,12 +287,17 @@ const SystemSettings = ({ asTab = false }) => {
         }
     };
 
+    const isMaster = window.location.hostname === 'localhost' ||
+        window.location.hostname === '127.0.0.1' ||
+        window.location.hostname === 'www.eduflexlms.se' ||
+        window.location.hostname === 'eduflexlms.se';
+
     const menuItems = [
         {
             category: 'Konfiguration',
             items: [
                 ...(isAdmin ? [
-                    { id: 'tenants', label: 'Tenants', icon: Server },
+                    ...(isMaster ? [{ id: 'tenants', label: 'Tenants', icon: Server }] : []),
                     { id: 'skolverket', label: 'Skolverket', icon: Database }
                 ] : [])
             ]

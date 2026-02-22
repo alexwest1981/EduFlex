@@ -1,6 +1,44 @@
 # 🚀 EduFlex Roadmap: Vision 2026
 
-**Mål:** Transformera EduFlex från ett administrativt LMS till ett "Intelligent Learning Ecosystem" som är agent-redo, adaptivt och integrerat i arbetsflödet.
+**Mål:** Pilot-klar för 3–5 svenska kommuner/universitet till juni 2026, med fokus på integrationer, support och referenser för att adressera dealbreakers.
+
+---
+
+## 🚀 Roadmap: v2.4–3.0 (Mars–Juni 2026)
+
+### Mars 2026: Dealbreakers – Pilot-Ready (Fokus: Sälja nu!)
+| Prioritet | Funktion | Beskrivning | Ansträngning | Varför |
+| :--- | :--- | :--- | :--- | :--- |
+| **Hög** | **Integrations Guide + 5 core** | LTI 1.3 (AGS/NRPS), Zoom/Teams, Skolverket batch, SIS, bibliotek. | 10 dagar | Kritiskt: "Plug-and-play". |
+| **Hög** | **Svensk Support Portal** | SLA, FAQ, video-guides, chat-widget, forum. | 7 dagar | Kritiskt: Skalbar support. |
+| **Hög** | **Pilot Kit** | Demo-data, onboarding-wizard, "EduFlex vs Canvas"-whitepaper. | 5 dagar | Kritiskt: Referenser. |
+| **Medel** | **Subscriptions Polish** | Auto-invoicing, tier-lås (nästan klart). | 3 dagar | Revenue-ready. |
+
+**Milstolpe:** Första pilot-pitch (t.ex. Falu/Botkyrka) – slutet av mars.
+
+---
+
+### April 2026: Revenue & AI-Differentiator
+| Prioritet | Funktion | Beskrivning | Ansträngning | Varför |
+| :--- | :--- | :--- | :--- | :--- |
+| **Hög** | **Role-Specific AI Coaches** | Principal (KPI), Teacher (risk-warning), Student (study-plan). | 12 dagar | Killer-feature: Unik selling point. |
+| **Hög** | **CSN/Upphandlings-rapporter** | Närvaro-export, GDPR-logs. | 6 dagar | Svenskt krav. |
+| **Medel** | **Partner Program** | Resellers (Edtech Studios), affiliate. | 5 dagar | Scale via partners. |
+| **Låg** | **Microservices Scale** | Load-test PDF/video (verifiera befintlig implementation). | 2 dagar | Verify. |
+
+**Milstolpe:** Första betalande kund + Kubernetes-deploy (Helm).
+
+---
+
+### Maj–Juni 2026: Enterprise & Mobile (v3.0)
+| Prioritet | Funktion | Beskrivning | Ansträngning | Varför |
+| :--- | :--- | :--- | :--- | :--- |
+| **Hög** | **Mobile App (React Native)** | iOS/Android, push, offline-quiz. | 20 dagar | Mobil är 80% av användning. |
+| **Hög** | **Enterprise Compliance** | ISO 27001 prep, full AI-audit. | 8 dagar | Universitet/kommuner. |
+| **Medel** | **Event Bus** | Kafka/RabbitMQ för realtid. | 7 dagar | Scale 100+ skolor. |
+| **Låg** | **xAPI/SCORM 2.0** | Full import (Articulate/Captivate). | 5 dagar | Legacy-innehåll. |
+
+**Milstolpe:** 5 aktiva piloter, >50k SEK/mån, pitch Borås Ink.
 
 ---
 

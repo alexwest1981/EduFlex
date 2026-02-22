@@ -33,6 +33,30 @@ public class TenantFilter extends OncePerRequestFilter {
             tenantId = request.getParameter("tenantId");
         }
 
+        // Fallback to Domain-based resolution (t.ex. demo.eduflexlms.se)
+        if (tenantId == null || tenantId.isBlank()) {
+            String serverName = request.getServerName();
+
+            // Check ServerName (Host header)
+            if (serverName != null && serverName.endsWith(".eduflexlms.se")) {
+                tenantId = extractSubdomain(serverName);
+            }
+
+            // Fallback to Referer or Origin if api.eduflexlms.se is used
+            if (tenantId == null || tenantId.isBlank() || "api".equalsIgnoreCase(tenantId)) {
+                String referer = request.getHeader("Referer");
+                String origin = request.getHeader("Origin");
+
+                if (referer != null && referer.contains(".eduflexlms.se")) {
+                    tenantId = extractSubdomainFromUrl(referer);
+                    logger.debug("🌐 Resolved from Referer: {} -> {}", referer, tenantId);
+                } else if (origin != null && origin.contains(".eduflexlms.se")) {
+                    tenantId = extractSubdomainFromUrl(origin);
+                    logger.debug("🌐 Resolved from Origin: {} -> {}", origin, tenantId);
+                }
+            }
+        }
+
         // Log query string for debug if needed, but remove force-set logic
         if (tenantId != null) {
             logger.debug("👉 TenantFilter: Resolved tenantId: {}", tenantId);
@@ -65,10 +89,27 @@ public class TenantFilter extends OncePerRequestFilter {
 
             filterChain.doFilter(request, response);
 
-        } finally
-
-        {
+        } finally {
             TenantContext.clear();
+        }
+    }
+
+    private String extractSubdomain(String host) {
+        if (host != null && host.endsWith(".eduflexlms.se")) {
+            String sub = host.substring(0, host.indexOf(".eduflexlms.se"));
+            if (!sub.isEmpty() && !"www".equalsIgnoreCase(sub) && !"api".equalsIgnoreCase(sub)) {
+                return sub;
+            }
+        }
+        return null;
+    }
+
+    private String extractSubdomainFromUrl(String url) {
+        try {
+            java.net.URL u = new java.net.URL(url);
+            return extractSubdomain(u.getHost());
+        } catch (Exception e) {
+            return null;
         }
     }
 }

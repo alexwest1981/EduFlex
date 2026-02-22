@@ -35,6 +35,21 @@
 
 <div id="-svenska"></div>
 
+## 🚀 Senaste uppdateringarna (23 feb 2026)
+Här är en sammanfattning av fixarna för Tenant-resolution och Master-isolering:
+
+*   **🌐 Förbättrad Tenant-resolution (Multi-Tenancy):**
+    *   **Referer Fallback:** Åtgärdat problem där proxade anrop (via Cloudflare/Nginx) till `api.eduflexlms.se` inte kände igen subdomänen. Systemet extraherar nu Tenant-ID även från `Referer` och `Origin` headers för att garantera rätt schema-mappning.
+    *   **Demo-vyn:** Verifierat att `demo.eduflexlms.se` nu landar 100% korrekt i `tenant_demo`-schemat med dess specifika demodata.
+
+*   **🔒 Master/Sub-Account Isolering:**
+    *   **Backend-restriktioner:** Implementerat strikt kontroll i `TenantController` så att enbart Master-kontot (`public` schema) kan lista, skapa eller ta bort andra tenants. Anrop från sub-tenants blockeras nu med `403 Forbidden`.
+    *   **Frontend-skydd:** Döljt "Tenants"-menyn i systeminställningarna för alla domäner utom master-domänen (`eduflexlms.se` / `localhost`).
+
+*   **🛠️ Systemhärdning:**
+    *   **Deprecated API Fix:** Uppdaterat `TenantFilter` till moderna Java 21-metoder för URL-hantering.
+    *   **CORS & CSP:** Utökat Content Security Policy för att inkludera subdomäner (`*.eduflexlms.se`) för sömlös interaktion mellan portal och API.
+
 ## 🚀 Senaste uppdateringarna (22 feb 2026)
 Här är en sammanfattning av dagens stora uppdateringar för att öka engagemanget och stödja studenter:
 
@@ -60,6 +75,12 @@ Här är en sammanfattning av dagens stora uppdateringar för att öka engageman
     *   **Flytt av Inställningar:** Relokerat detaljerad konfiguration för XP-multiplikatorer, AI Credits och funktions-toggles från allmänna systeminställningar till Gamification-panelen.
     *   **Backend-förstärkning:** Implementerat nya säkra endpoints i `GamificationAdminController` för hantering av globala konfigurationsvärden via `SystemSettingRepository`.
     *   **UX-fokus:** Rensat `SystemSettings.jsx` för att undvika dubbel lagring och säkerställa att administratören hittar rätt inställningar på rätt plats.
+
+## 🧭 Roadmap mot v3.0 (Mars–Juni 2026)
+Vi rör oss nu in i en fas av kommersialisering och skalning. Vårt fokus ligger på att eliminera "dealbreakers" för svenska kommuner och universitet:
+*   **Mars:** Pilot-Ready (Integrationer, Supportportal, Pilot-kit).
+*   **April:** Revenue & AI Coaches (Rollspecifika AI-assistenter, CSN-rapportering).
+*   **Maj–Juni:** Enterprise & Mobile (React Native app, ISO 27001 prep, Skalbarhet).
 
 ## 🚀 Senaste uppdateringarna (21 feb 2026)
 Här är en sammanfattning av det stora arbetet med att ena plattformens intelligens-funktioner under **EduAI Hub**:

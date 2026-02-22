@@ -156,6 +156,20 @@ const AdminShopDashboard = () => {
         }
     };
 
+    const handleGenerateDemoData = async () => {
+        if (!window.confirm("Detta kommer att generera realistisk svensk demo-data (användare, kurser, resultat). Vill du fortsätta?")) return;
+        setLoading(true);
+        try {
+            await api.post('/admin/demo/generate');
+            toast.success("🚀 Demo-data har genererats framgångsrikt!");
+        } catch (err) {
+            console.error("Demo generation failed", err);
+            toast.error("Kunde inte generera demo-data.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const filteredItems = filter === 'ALL' ? items : items.filter(i => i.type === filter);
 
     return (
@@ -464,6 +478,28 @@ const AdminShopDashboard = () => {
                                         </select>
                                     </div>
                                 </div>
+                            </div>
+                        </div>
+
+                        {/* PILOT KIT: DEMO ENGINE */}
+                        <div className="bg-indigo-50 dark:bg-indigo-900/10 rounded-2xl border-2 border-dashed border-indigo-200 dark:border-indigo-800/50 p-6">
+                            <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+                                <div className="flex items-center gap-4">
+                                    <div className="p-3 bg-indigo-600 text-white rounded-2xl shadow-lg shadow-indigo-500/20">
+                                        <Zap size={24} />
+                                    </div>
+                                    <div>
+                                        <h2 className="text-xl font-black text-gray-900 dark:text-white tracking-tight uppercase">Pilot-läge: Demo Data Engine</h2>
+                                        <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Blixtsnabb setup för möten. Generera realistiska svenska användare, kurser och resultat direkt.</p>
+                                    </div>
+                                </div>
+                                <button
+                                    onClick={handleGenerateDemoData}
+                                    disabled={loading}
+                                    className="w-full md:w-auto px-8 py-4 bg-indigo-600 text-white rounded-2xl font-black text-sm hover:bg-indigo-700 hover:scale-105 active:scale-95 transition-all shadow-xl shadow-indigo-500/20 flex items-center justify-center gap-2 whitespace-nowrap disabled:opacity-50"
+                                >
+                                    {loading ? 'Genererar...' : '🚀 Fyll med Demo-data'}
+                                </button>
                             </div>
                         </div>
                     </div>

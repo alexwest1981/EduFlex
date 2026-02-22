@@ -28,7 +28,11 @@ public class TenantController {
 
     @GetMapping
     @Operation(summary = "Get all tenants")
-    public ResponseEntity<java.util.List<Tenant>> getAllTenants() {
+    public ResponseEntity<?> getAllTenants() {
+        String currentTenant = com.eduflex.backend.config.tenant.TenantContext.getCurrentTenant();
+        if (currentTenant != null && !currentTenant.equalsIgnoreCase("public")) {
+            return ResponseEntity.status(403).body(java.util.Map.of("error", "Access denied."));
+        }
         return ResponseEntity.ok(tenantService.getAllTenants());
     }
 
@@ -40,12 +44,13 @@ public class TenantController {
     public ResponseEntity<?> createTenant(@Valid @RequestBody TenantCreationRequest request) {
         logger.info("Received tenant creation request for: {}", request.getName());
 
-        // 1. Security Check
+        // 1. Security Check: Only allow from 'public' (Master) schema
         String currentTenant = com.eduflex.backend.config.tenant.TenantContext.getCurrentTenant();
-        if (currentTenant != null) {
-            logger.warn("Attempt to create tenant from sub-tenant context: {}", currentTenant);
+        if (currentTenant != null && !currentTenant.equalsIgnoreCase("public")) {
+            logger.warn("🛑 Master-only violation: Attempt to create tenant from schema: {}", currentTenant);
             return ResponseEntity.status(403)
-                    .body(java.util.Map.of("error", "Tenant creation is only allowed from the main installation."));
+                    .body(java.util.Map.of("error",
+                            "Tenant management is only allowed from the Master (public) installation."));
         }
 
         // 2. Registration Key Check
@@ -95,14 +100,22 @@ public class TenantController {
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete a tenant")
-    public ResponseEntity<Void> deleteTenant(@PathVariable String id) {
+    public ResponseEntity<?> deleteTenant(@PathVariable String id) {
+        String currentTenant = com.eduflex.backend.config.tenant.TenantContext.getCurrentTenant();
+        if (currentTenant != null && !currentTenant.equalsIgnoreCase("public")) {
+            return ResponseEntity.status(403).build();
+        }
         tenantService.deleteTenant(id);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/{id}/init-schema")
     @Operation(summary = "Initialize tenant schema")
-    public ResponseEntity<Void> initSchema(@PathVariable String id) {
+    public ResponseEntity<?> initSchema(@PathVariable String id) {
+        String currentTenant = com.eduflex.backend.config.tenant.TenantContext.getCurrentTenant();
+        if (currentTenant != null && !currentTenant.equalsIgnoreCase("public")) {
+            return ResponseEntity.status(403).build();
+        }
         tenantService.initSchema(id);
         return ResponseEntity.ok().build();
     }

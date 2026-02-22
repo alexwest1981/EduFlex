@@ -320,19 +320,19 @@ public class SecurityConfig {
                                 .frameOptions(frame -> frame.disable())
                                 .contentSecurityPolicy(csp -> csp
                                                 .policyDirectives(
-                                                                "default-src 'self' https://www.eduflexlms.se https://fonts.googleapis.com https://fonts.gstatic.com; "
+                                                                "default-src 'self' https://www.eduflexlms.se https://*.eduflexlms.se https://fonts.googleapis.com https://fonts.gstatic.com; "
                                                                                 +
-                                                                                "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.eduflexlms.se; "
+                                                                                "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.eduflexlms.se https://*.eduflexlms.se; "
                                                                                 +
                                                                                 "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
                                                                                 +
                                                                                 "font-src 'self' https://fonts.gstatic.com data:; "
                                                                                 +
-                                                                                "frame-src 'self' https://www.youtube.com https://www.eduflexlms.se; "
+                                                                                "frame-src 'self' https://www.youtube.com https://*.eduflexlms.se; "
                                                                                 +
-                                                                                "connect-src 'self' https://www.eduflexlms.se wss://www.eduflexlms.se; "
+                                                                                "connect-src 'self' https://www.eduflexlms.se https://*.eduflexlms.se wss://www.eduflexlms.se wss://*.eduflexlms.se; "
                                                                                 +
-                                                                                "img-src 'self' data: blob: https://www.eduflexlms.se https://storage.eduflexlms.se;")));
+                                                                                "img-src 'self' data: blob: https://www.eduflexlms.se https://*.eduflexlms.se https://storage.eduflexlms.se;")));
 
                 return http.build();
         }
@@ -354,6 +354,7 @@ public class SecurityConfig {
                                 "https://*.loca.lt",
                                 "https://*.trycloudflare.com",
                                 "https://eduflexlms.se",
+                                "https://*.eduflexlms.se",
                                 "https://www.eduflexlms.se"));
                 configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
                 configuration.setAllowedHeaders(

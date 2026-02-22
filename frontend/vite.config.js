@@ -85,7 +85,7 @@ export default defineConfig(({ mode }) => {
         server: {
             host: true,
             port: 5173,
-            allowedHosts: ['www.eduflexlms.se', 'eduflexlms.se', 'localhost', '127.0.0.1'],
+            allowedHosts: ['demo.eduflexlms.se', 'www.eduflexlms.se', 'eduflexlms.se', 'localhost', '127.0.0.1'],
             // HMR configuration for Cloudflare Tunnel / Reverse Proxy
             hmr: {
                 host: 'www.eduflexlms.se',
