@@ -426,6 +426,12 @@ export const api = {
             link: (id, studentId) => api.post(`/admin/guardians/${id}/link/${studentId}`),
             unlink: (linkId) => api.delete(`/admin/guardians/links/${linkId}`),
             searchStudents: (query) => api.get(`/users/search?role=STUDENT&query=${query}`),
+        },
+
+        // Integrations
+        integrations: {
+            get: (platform) => api.get(`/admin/integrations/${platform}`),
+            save: (platform, data) => api.post(`/admin/integrations/${platform}`, data),
         }
     },
 

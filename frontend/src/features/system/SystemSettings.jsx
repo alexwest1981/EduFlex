@@ -5,7 +5,7 @@ import {
     MessageSquare, Calendar, CreditCard, BarChart3, Briefcase,
     GraduationCap, BookOpen, Globe, Shield, Cpu, HardDrive,
     Download, RefreshCw, Trash2, Plus, AlertTriangle, Clock, CheckCircle2,
-    Link2, Cloud, Eye, EyeOff, Key, Save, Gamepad2, Trophy
+    Link2, Cloud, Eye, EyeOff, Key, Save, Gamepad2, Trophy, Hash
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../../context/ThemeContext';
@@ -77,6 +77,13 @@ const SystemSettings = ({ asTab = false }) => {
     const [showApiKey, setShowApiKey] = useState(false);
     const { updateSystemSetting } = useAppContext();
 
+    // Integrations State
+    const [slackForm, setSlackForm] = useState({
+        webhookUrl: '',
+        isActive: false
+    });
+    const [integrationsLoading, setIntegrationsLoading] = useState(false);
+
     const [eduAiForm, setEduAiForm] = useState({
         eduai_xp_ratio: localStorage.getItem('eduai_xp_ratio') || '1.0',
         eduai_credit_earn_rate: localStorage.getItem('eduai_credit_earn_rate') || '5',
@@ -113,7 +120,24 @@ const SystemSettings = ({ asTab = false }) => {
         if (activeTab === 'ai') {
             fetchAiStatus();
         }
-    }, [activeTab]);
+        if (activeTab === 'integrations' && isAdmin) {
+            fetchIntegrationData();
+        }
+    }, [activeTab, isAdmin]);
+
+    const fetchIntegrationData = async () => {
+        try {
+            const data = await api.admin.integrations.get('SLACK');
+            if (data) {
+                setSlackForm({
+                    webhookUrl: data.webhookUrl || '',
+                    isActive: data.active || false
+                });
+            }
+        } catch (err) {
+            console.error('Failed to fetch Slack settings:', err);
+        }
+    };
 
     const fetchAiStatus = async () => {
         setAiLoading(true);
@@ -278,6 +302,21 @@ const SystemSettings = ({ asTab = false }) => {
         }
     };
 
+    const handleSaveSlack = async () => {
+        setIntegrationsLoading(true);
+        try {
+            await api.admin.integrations.save('SLACK', {
+                webhookUrl: slackForm.webhookUrl,
+                isActive: slackForm.isActive
+            });
+            alert('Slack-integration sparad');
+        } catch (err) {
+            alert('Kunde inte spara Slack-integration');
+        } finally {
+            setIntegrationsLoading(false);
+        }
+    };
+
     const menuItems = [
         {
             category: 'Konfiguration',
@@ -316,6 +355,12 @@ const SystemSettings = ({ asTab = false }) => {
             category: 'Moduler',
             items: [
                 { id: 'modules', label: 'Systemmoduler', icon: Database },
+            ]
+        },
+        {
+            category: 'Integrationer',
+            items: [
+                ...(isAdmin ? [{ id: 'integrations', label: 'Webhooks & Appar', icon: Globe }] : []),
             ]
         }
     ];
@@ -1263,6 +1308,71 @@ const SystemSettings = ({ asTab = false }) => {
                     </div>
                 );
             }
+
+            case 'integrations':
+                return (
+                    <div className="space-y-6 max-w-3xl">
+                        <div>
+                            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">API-Integrationer & Webhooks</h2>
+                            <p className="text-gray-500 dark:text-gray-400">Hantera uppkopplingar mot externa tjänster.</p>
+                        </div>
+
+                        <div className="bg-white dark:bg-[#1E1F20] rounded-2xl p-6 border border-gray-200 dark:border-[#3c4043] shadow-sm">
+                            <div className="flex items-center gap-4 mb-6">
+                                <div className="w-12 h-12 bg-indigo-50 dark:bg-indigo-900/20 rounded-xl flex items-center justify-center text-indigo-600">
+                                    <Hash size={24} />
+                                </div>
+                                <div>
+                                    <h3 className="font-bold text-gray-900 dark:text-white">Slack App & Incoming Webhook</h3>
+                                    <p className="text-sm text-gray-500 dark:text-gray-400">Koppla EduFlex till Slack</p>
+                                </div>
+                                <div className="ml-auto">
+                                    <label className="relative inline-flex items-center cursor-pointer">
+                                        <input
+                                            type="checkbox"
+                                            className="sr-only peer"
+                                            checked={slackForm.isActive}
+                                            onChange={(e) => setSlackForm({ ...slackForm, isActive: e.target.checked })}
+                                        />
+                                        <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-indigo-600"></div>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div className={`space-y-4 transition-all duration-300 ${slackForm.isActive ? 'opacity-100' : 'opacity-50 pointer-events-none'}`}>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Webhook URL</label>
+                                    <input
+                                        type="text"
+                                        placeholder="https://hooks.slack.com/services/..."
+                                        value={slackForm.webhookUrl}
+                                        onChange={(e) => setSlackForm({ ...slackForm, webhookUrl: e.target.value })}
+                                        className="w-full px-4 py-3 border border-gray-200 dark:border-[#3c4043] rounded-xl bg-gray-50 dark:bg-[#282a2c] text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none font-mono text-sm"
+                                    />
+                                </div>
+                                <div className="bg-blue-50 dark:bg-blue-900/20 text-blue-800 dark:text-blue-300 p-4 rounded-xl text-sm flex items-start gap-3">
+                                    <AlertTriangle size={18} className="mt-0.5 shrink-0" />
+                                    <div>
+                                        <p className="font-semibold mb-1">Inkommande Slash Commands (t.ex. '/eduflex')</p>
+                                        <p>Peka din Slack App Request URL till:</p>
+                                        <code className="bg-white/50 dark:bg-black/20 px-2 py-1 rounded block mt-2 font-mono text-xs">{(window.location.origin).replace('localhost', 'eduflexlms.se')}/api/webhooks/slack/command</code>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="pt-6 mt-6 border-t border-gray-200 dark:border-[#3c4043] flex justify-end">
+                                <button
+                                    onClick={handleSaveSlack}
+                                    disabled={integrationsLoading}
+                                    className="flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 disabled:opacity-50 transition-colors"
+                                >
+                                    {integrationsLoading ? <RefreshCw className="animate-spin" size={18} /> : <Save size={18} />}
+                                    Spara Integrationer
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                );
 
             default:
                 return <div className="p-8 text-center text-gray-500">Välj en kategori i menyn</div>;

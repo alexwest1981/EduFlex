@@ -25,7 +25,7 @@
 | **xAPI & cmi5** | Modern spårning (LRS) för mobilt lärande och simuleringar. | ✅ **Verifierad** | Nästa generations analys. |
 | **Skills Gap Analysis** | Visualisering av kompetensluckor och progress (Radar charts). | ✅ **Klar** | **v2.5.0** |
 | **EduAI Center v2.0** | AI-driven studiehub (Spaced Repetition, AI Coach, Mini-Games). | ✅ **Klar** | **v2.1.0** |
-| **Workflow Integration** | Utbildning direkt i Slack/Teams/Salesforce ("Headless LMS"). | 📅 **Planerad** |
+| **Workflow Integration** | Utbildning direkt i Slack/Teams/Salesforce ("Headless LMS"). | ✅ **Stabil / Verifierad** |
 
 ---
 
@@ -72,7 +72,11 @@
 
 ---
 
-## 📝 Change Log
+### [v2.6.0] - 2026-02-22
+- **New Feature**: **Slack Dynamic Integration**.
+- **Slash Commands**: Rebuilt `/eduflex kurser` to fetch real-time active course data from the database.
+- **Security**: Whitelisted Slack webhooks in `SecurityConfig` for seamless external communication.
+- **Stability**: Refactored `CourseRepository` and `SlackIntegrationService` for robust data fetching.
 
 ### [v2.5.0] - 2026-02-21
 - **New Feature**: **Skills Gap Analysis - Live Integration**.

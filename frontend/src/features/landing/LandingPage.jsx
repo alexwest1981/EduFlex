@@ -136,6 +136,14 @@ const LandingPage = () => {
             bgColor: 'bg-brand-gold/10',
             hoverBorder: 'hover:border-brand-gold/50'
         },
+        {
+            icon: <MessageSquare className="w-7 h-7" />,
+            title: "Slack & Workflow Sync",
+            description: "Hämta kursdata och få notiser direkt i Slack. Integrera ditt lärande sömlöst i de verktyg du redan använder dagligen.",
+            color: 'text-purple-400',
+            bgColor: 'bg-purple-500/10',
+            hoverBorder: 'hover:border-purple-500/50'
+        },
     ];
 
 

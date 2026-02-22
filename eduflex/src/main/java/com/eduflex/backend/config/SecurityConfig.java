@@ -120,6 +120,7 @@ public class SecurityConfig {
                                                                 "/api/onlyoffice/**",
                                                                 "/api/gamification/config/system", "/api/payment/**",
                                                                 "/api/community/subjects",
+                                                                "/api/webhooks/**",
                                                                 "/api/lrs/**", // LRS endpoints must be accessible
                                                                                // without auth for Content/AUs
                                                                 "/api/calendar/ical/feed/**") // iCal feed - public so

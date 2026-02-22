@@ -23,15 +23,18 @@ public class CourseController {
 
     private final CourseService courseService;
     private final CourseRepository courseRepository;
+    private final com.eduflex.backend.integration.service.SlackIntegrationService slackIntegrationService;
 
     @Autowired
     private com.eduflex.backend.repository.UserRepository userRepository;
 
     @Autowired
     public CourseController(CourseService courseService,
-            CourseRepository courseRepository) {
+            CourseRepository courseRepository,
+            com.eduflex.backend.integration.service.SlackIntegrationService slackIntegrationService) {
         this.courseService = courseService;
         this.courseRepository = courseRepository;
+        this.slackIntegrationService = slackIntegrationService;
     }
 
     /**
@@ -229,8 +232,21 @@ public class CourseController {
     @PutMapping("/{id}/toggle-status")
     public ResponseEntity<Course> toggleCourseStatus(@PathVariable Long id) {
         Course course = courseService.getCourseById(id);
-        course.setOpen(!course.isOpen());
-        return ResponseEntity.ok(courseService.saveCourse(course));
+        boolean wasOpen = course.isOpen();
+        course.setOpen(!wasOpen);
+
+        Course savedCourse = courseService.saveCourse(course);
+
+        // If course was just opened (published), send Slack notification
+        if (!wasOpen) {
+            String teacherName = "Okänd lärare";
+            if (savedCourse.getTeacher() != null) {
+                teacherName = savedCourse.getTeacher().getFirstName() + " " + savedCourse.getTeacher().getLastName();
+            }
+            slackIntegrationService.sendCoursePublishedNotification(savedCourse.getName(), teacherName);
+        }
+
+        return ResponseEntity.ok(savedCourse);
     }
 
     // --- ANSÖKNINGAR ---

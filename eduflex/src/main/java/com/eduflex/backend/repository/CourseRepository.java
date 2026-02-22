@@ -25,6 +25,8 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
 
     Optional<Course> findBySlug(String slug);
 
+    List<Course> findByIsOpenTrue();
+
     // Health Check Queries
     // Note: finding courses with NO students might require a custom query or stream
     // filtering in service if JPQL is tricky with collections.

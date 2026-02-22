@@ -35,6 +35,15 @@
 
 <div id="-svenska"></div>
 
+## 🚀 Senaste uppdateringarna (22 feb 2026)
+Här är en sammanfattning av de senaste fixarna för Slack-integrationen:
+
+*   **🔌 Slack Integration Fix (Slash Commands):**
+    *   **Dynamisk Kurslista:** Åtgärdat `/eduflex kurser` så att den nu hämtar faktiska öppna kurser från databasen istället för mockup-data.
+    *   **Security Whitelist:** Lagt till `/api/webhooks/**` i säkerhetskonfigurationen så att Slack kan kommunicera med systemet utan autentiseringskrav.
+    *   **Repository Fix:** Implementerat `findByIsOpenTrue()` i `CourseRepository` för att korrekt filtrera aktiva kurser.
+    *   **Stabilitet:** Verifierat endpoint-stabilitet efter backend-omstart via den lokala kör-scriptet.
+
 ## 🚀 Senaste uppdateringarna (21 feb 2026)
 Här är en sammanfattning av det stora arbetet med att ena plattformens intelligens-funktioner under **EduAI Hub**:
 
