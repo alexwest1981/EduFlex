@@ -19,7 +19,7 @@ const SkillsGapDashboard = () => {
         try {
             setLoading(true);
             const response = await api.get('/skills/gap');
-            setData(response.data);
+            setData(response);
         } catch (err) {
             console.error('Failed to fetch skills gap data', err);
             setError('Kunde inte hämta kompetensdata.');

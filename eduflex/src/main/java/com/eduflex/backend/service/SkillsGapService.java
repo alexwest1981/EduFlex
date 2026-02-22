@@ -153,7 +153,7 @@ public class SkillsGapService {
             return "Börja läsa kurser för att se din kompetensutveckling!";
 
         StringBuilder context = new StringBuilder();
-        context.append("Student: ").append(student.getUsername()).append("\n");
+        context.append("Student: ").append(student.getFirstName()).append("\n");
         context.append("Status för kompetenser:\n");
         for (SkillsGapDTO.SkillProgressDTO gap : gaps) {
             context.append("- ").append(gap.getSkillName())
