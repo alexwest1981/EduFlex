@@ -13,7 +13,7 @@
 | **Generativt Författande (Kurser)** | "One-click course creation". Ladda upp PDF/PPT/Video och låt systemet generera kursstruktur, sammanfattningar och quiz automatiskt. | ✅ **Stabil** (V1) | Snabbare onboarding av nytt innehåll. |
 | **AI-Tutor & Copilot** | En inbyggd chattbot som svarar på elevers frågor baserat enbart på kursmaterialet (RAG). Rollspelspartner för träning. | ✅ **Klar** (V1) | **+25%** tillgängligt stöd för elever. |
 | **MCP-Server** | Gör EduFlex tillgängligt för externa AI-agenter (Model Context Protocol). | ✅ **Klar** (V1) | Framtidssäkrad integration. |
-| **Prediktiv Personalisering** | Analyserar beteendedata för att identifiera "at-risk"-studenter och rekommenderar stödmateri| Fas 1 | **Prediktiv AI-Analys Engine** | Backend-motor färdig | Identifiera risker **2 veckor** tidigare.|
+| **Prediktiv Personalisering** | Analyserar beteendedata för att identifiera "at-risk"-studenter och rekommenderar stödmateri | ✅ **Klar** | **v2.7.0** | Identifiera risker **2 veckor** tidigare.|
 | Fas 2 | **Rollspecifika AI-coacher** | Rektor & Mentorsstöd | Stable/Completed (Phase 2) | Datadrivna beslut på alla nivåer. |
 | Fas 3 | **SKA-motor 2.0** | Planering/Uppföljning | Stable/Completed (Phase 3) | **100%** digitalt SKA-årshjul. |
 | **Adaptive Learning Flow** | Elev-anpassning | ✅ **Stabil / Verifierad** | **+15%** högre genomströmning. |
@@ -71,6 +71,13 @@
 | **Sjukanmälan** | Komplett sjukanmälningssystem med statusuppdateringar, mentorsnotifieringar och historikspårning. | ✅ **Klar** | **-30%** adm-mail från vårdnadshavare. |
 
 ---
+
+### [v2.7.0] - 2026-02-22
+- **New Feature**: **Predictive AI Analysis (At-Risk Early Warning)**.
+- **AI Engine**: Integrated Google Gemini for proactive risk scoring based on Mastery, Activity, and Quiz Trends.
+- **Dashboard**: Advanced color-coded "Early Warning" panel on the Teacher Mission Control.
+- **Actionable Insights**: AI-generated "Risk Reasons" providing pedagogical context for teachers.
+- **Resilience**: Implemented manual threshold fallback for offline/failover support.
 
 ### [v2.6.0] - 2026-02-22
 - **New Feature**: **Slack Dynamic Integration**.

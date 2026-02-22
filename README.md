@@ -36,7 +36,13 @@
 <div id="-svenska"></div>
 
 ## 🚀 Senaste uppdateringarna (22 feb 2026)
-Här är en sammanfattning av de senaste fixarna för Slack-integrationen:
+Här är en sammanfattning av dagens stora uppdateringar för att proaktivt stödja studenter:
+
+*   **🔮 Prediktiv AI-analys (At-Risk Early Warning):**
+    *   **AI-driven riskbedömning:** Implementerat en motor i `TeacherAnalyticsService` som kombinerar akademisk data (Mastery Score) med beteende (senaste aktivitet, quiz-trender).
+    *   **Gemini Engine:** Integrerat Google Gemini för att analysera komplexa mönster och ge lärare en konkret förklaring till varför en student flaggas som "Hög" eller "Medel" risk.
+    *   **Real-time Dashboard:** Uppdaterat lärarens Mission Control med en ny "Tidig Varning"-sektion som visualiserar risker grafiskt med färgkodning och AI-kommentarer.
+    *   **Automatiskt Failover:** Inbyggt stöd för manuell tröskelbedömning om AI-tjänsten tillfälligt är otillgänglig, vilket garanterar att inga studenter "faller mellan stolarna".
 
 *   **🔌 Slack Integration Fix (Slash Commands):**
     *   **Dynamisk Kurslista:** Åtgärdat `/eduflex kurser` så att den nu hämtar faktiska öppna kurser från databasen istället för mockup-data.

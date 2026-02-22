@@ -159,10 +159,10 @@ const TeacherAnalyticsDashboard = ({ courseId }) => {
                         <div className="p-2 bg-rose-500/10 rounded-lg text-rose-600">
                             <TrendingDown size={20} />
                         </div>
-                        <span className="text-sm font-medium text-slate-500">Risk-flaggade</span>
+                        <span className="text-sm font-medium text-slate-500">Prediktiv Risk (Hög)</span>
                     </div>
                     <div className="text-2xl font-bold text-slate-800">
-                        {data.lowPerformingStudents.length}
+                        {data.allStudentsRisk?.filter(s => s.riskLevel === 'HIGH').length || 0}
                     </div>
                 </motion.div>
             </div>
@@ -243,7 +243,7 @@ const TeacherAnalyticsDashboard = ({ courseId }) => {
                         <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-3xl"></div>
                     </motion.div>
 
-                    {/* Low mastery list */}
+                    {/* Predictive Risk List */}
                     <motion.div
                         initial={{ opacity: 0, x: 20 }}
                         animate={{ opacity: 1, x: 0 }}
@@ -251,29 +251,57 @@ const TeacherAnalyticsDashboard = ({ courseId }) => {
                         className="p-6 bg-white/50 backdrop-blur-md border border-white/20 rounded-2xl"
                     >
                         <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
-                            <Users size={20} className="text-rose-500" />
-                            Behöver Extra Stöd (&lt; 40%)
+                            <AlertCircle size={20} className="text-rose-500" />
+                            Prediktiv Riskanalys (Tidig Varning)
                         </h3>
-                        {data.lowPerformingStudents.length > 0 ? (
-                            <div className="space-y-3">
-                                {data.lowPerformingStudents.map(student => (
-                                    <div key={student.userId} className="flex items-center justify-between p-3 bg-white/80 rounded-xl border border-rose-100">
-                                        <div className="flex items-center gap-3">
-                                            <div className="w-8 h-8 rounded-full bg-rose-100 flex items-center justify-center text-rose-600 font-bold text-xs uppercase">
-                                                {student.name.charAt(0)}
+                        {data.allStudentsRisk && data.allStudentsRisk.filter(s => s.riskLevel !== 'LOW').length > 0 ? (
+                            <div className="space-y-4">
+                                {data.allStudentsRisk
+                                    .filter(s => s.riskLevel !== 'LOW')
+                                    .sort((a, b) => (a.riskLevel === 'HIGH' ? -1 : 1))
+                                    .map(student => (
+                                        <div key={student.userId} className={`p-4 rounded-xl border ${student.riskLevel === 'HIGH' ? 'bg-rose-50 border-rose-200' : 'bg-amber-50 border-amber-200'
+                                            }`}>
+                                            <div className="flex items-center justify-between mb-2">
+                                                <div className="flex items-center gap-3">
+                                                    <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs uppercase ${student.riskLevel === 'HIGH' ? 'bg-rose-200 text-rose-700' : 'bg-amber-200 text-amber-700'
+                                                        }`}>
+                                                        {student.name.charAt(0)}
+                                                    </div>
+                                                    <div>
+                                                        <span className="text-sm font-bold text-slate-800 block">{student.name}</span>
+                                                        <span className="text-[10px] uppercase font-bold text-slate-500">Risk: {student.riskLevel}</span>
+                                                    </div>
+                                                </div>
+                                                <div className="text-right">
+                                                    <div className="text-sm font-bold text-slate-700">{student.masteryScore}% Mastery</div>
+                                                    {student.quizTrend !== null && (
+                                                        <div className={`text-[10px] font-bold flex items-center justify-end gap-1 ${student.quizTrend < 0 ? 'text-rose-500' : 'text-emerald-500'}`}>
+                                                            {student.quizTrend < 0 ? <TrendingDown size={10} /> : <TrendingUp size={10} />}
+                                                            {student.quizTrend}% trend
+                                                        </div>
+                                                    )}
+                                                </div>
                                             </div>
-                                            <span className="text-sm font-medium text-slate-700">{student.name}</span>
+                                            <div className="mt-2 text-xs text-slate-600 bg-white/50 p-2 rounded-lg border border-white/50 flex items-center gap-2">
+                                                <MessageSquare size={12} className="text-indigo-400 shrink-0" />
+                                                <span className="italic">AI: {student.riskReason || 'Analyserar beteende...'}</span>
+                                            </div>
+                                            {student.lastActivityDays !== null && (
+                                                <div className="mt-1 text-[10px] text-slate-400 text-right">
+                                                    Senast aktiv: {student.lastActivityDays === 0 ? 'Idag' : `${student.lastActivityDays} dagar sedan`}
+                                                </div>
+                                            )}
                                         </div>
-                                        <div className="flex items-center gap-2">
-                                            <span className="text-xs font-bold text-rose-500">{student.masteryScore}% Mastery</span>
-                                            <TrendingDown size={14} className="text-rose-400" />
-                                        </div>
-                                    </div>
-                                ))}
+                                    ))}
                             </div>
                         ) : (
-                            <div className="text-center py-6 text-slate-500 italic text-sm">
-                                Inga elever under tröskelvärdet just nu. Gott jobb!
+                            <div className="text-center py-10 text-slate-500 italic text-sm">
+                                <div className="size-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <Activity size={32} />
+                                </div>
+                                <p>Inga kritiska avvikelser identifierade.</p>
+                                <p className="text-xs mt-1">AI-motorn analyserar kontinuerligt studenternas beteende.</p>
                             </div>
                         )}
                     </motion.div>

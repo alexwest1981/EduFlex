@@ -24,12 +24,15 @@ public class TeacherAnalyticsService {
         private final com.eduflex.backend.repository.UserRepository userRepository;
         private final com.eduflex.backend.repository.CalendarEventRepository calendarEventRepository;
         private final com.eduflex.backend.repository.CourseMaterialRepository courseMaterialRepository;
+        private final com.eduflex.backend.repository.StudentActivityLogRepository activityLogRepository;
+        private final com.eduflex.backend.repository.StudentQuizLogRepository quizLogRepository;
 
         @Data
         @Builder
         public static class CourseAnalytics {
                 private Map<String, Integer> aggregateRadar;
                 private List<StudentPerformance> lowPerformingStudents;
+                private List<StudentPerformance> allStudentsRisk; // New predictive list
                 private List<String> learningGaps;
                 private String aiInsight;
         }
@@ -40,6 +43,10 @@ public class TeacherAnalyticsService {
                 private Long userId;
                 private String name;
                 private int masteryScore;
+                private Integer lastActivityDays; // Days since last activity
+                private Integer quizTrend; // Trend in quiz scores (%)
+                private String riskLevel; // LOW, MEDIUM, HIGH
+                private String riskReason; // AI generated reason
         }
 
         public CourseAnalytics getCourseAnalytics(Long courseId) {
@@ -72,10 +79,25 @@ public class TeacherAnalyticsService {
                                 sumStats.put(k, current + val);
                         });
 
+                        // Fetch engagement metrics
+                        var activityLogs = activityLogRepository.findByUserIdOrderByTimestampDesc(student.getId());
+                        Integer lastActivityDays = null;
+                        if (!activityLogs.isEmpty()) {
+                                java.time.LocalDateTime lastActive = activityLogs.get(0).getTimestamp();
+                                lastActivityDays = (int) java.time.Duration
+                                                .between(lastActive, java.time.LocalDateTime.now()).toDays();
+                        }
+
+                        // Fetch quiz trend (comparing last 3 vs prior)
+                        var quizLogs = quizLogRepository.findByStudentId(student.getId());
+                        Integer quizTrend = calculateQuizTrend(quizLogs);
+
                         performers.add(StudentPerformance.builder()
                                         .userId(student.getId())
                                         .name(student.getFirstName() + " " + student.getLastName())
                                         .masteryScore(eduAiHubService.getMasteryScore(student.getId()))
+                                        .lastActivityDays(lastActivityDays)
+                                        .quizTrend(quizTrend)
                                         .build());
                 }
 
@@ -92,17 +114,96 @@ public class TeacherAnalyticsService {
                         }
                 });
 
+                // Generate predictive risk levels using AI (Batch processing logic)
+                enrichWithPredictiveRisk(performers);
+
                 List<StudentPerformance> atRisk = performers.stream()
-                                .filter(p -> p.getMasteryScore() < 40)
+                                .filter(p -> "HIGH".equals(p.getRiskLevel()) || "MEDIUM".equals(p.getRiskLevel()))
                                 .sorted(Comparator.comparingInt(StudentPerformance::getMasteryScore))
-                                .limit(5)
+                                .limit(10)
                                 .collect(Collectors.toList());
 
                 return CourseAnalytics.builder()
                                 .aggregateRadar(avgStats)
                                 .lowPerformingStudents(atRisk)
+                                .allStudentsRisk(performers)
                                 .learningGaps(gaps)
                                 .build();
+        }
+
+        private Integer calculateQuizTrend(List<com.eduflex.backend.model.StudentQuizLog> logs) {
+                if (logs.size() < 4)
+                        return null;
+
+                // Sort by timestamp
+                logs.sort(Comparator.comparing(com.eduflex.backend.model.StudentQuizLog::getTimestamp).reversed());
+
+                double recentAvg = logs.stream().limit(3)
+                                .mapToDouble(l -> (double) l.getScore() / l.getMaxScore())
+                                .average().orElse(0);
+
+                double priorAvg = logs.stream().skip(3).limit(5)
+                                .mapToDouble(l -> (double) l.getScore() / l.getMaxScore())
+                                .average().orElse(0);
+
+                if (priorAvg == 0)
+                        return 0;
+                return (int) Math.round((recentAvg - priorAvg) * 100);
+        }
+
+        private void enrichWithPredictiveRisk(List<StudentPerformance> performers) {
+                if (performers.isEmpty())
+                        return;
+
+                StringBuilder prompt = new StringBuilder();
+                prompt.append("Du är en AI-analytiker på EduFlex LMS. Analysera följande studentdata och bedöm risk för avhopp eller misslyckande.\n");
+                prompt.append("Risk bedöms utifrån Mastery Score (kunskap), Last Activity Days (engagemang) och Quiz Trend (riktning).\n\n");
+                prompt.append("DATA I JSON-FORMAT:\n");
+
+                try {
+                        com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+                        prompt.append(mapper.writeValueAsString(performers));
+                } catch (Exception e) {
+                        log.error("Failed to serialize student data for risk analysis", e);
+                        return;
+                }
+
+                prompt.append("\n\nSvara EXAKT med en JSON-lista med objekt som innehåller {userId, riskLevel, riskReason}.\n");
+                prompt.append("riskLevel ska vara 'HIGH', 'MEDIUM' eller 'LOW'.\n");
+                prompt.append("riskReason ska vara en kort förklaring på svenska (max 10 ord).\n");
+                prompt.append("Hög risk ges vid inaktivitet > 7 dagar ELLER kraftigt sjunkande trend.\n");
+
+                try {
+                        String aiResponse = geminiService.generateJsonContent(prompt.toString());
+                        com.fasterxml.jackson.databind.JsonNode root = new com.fasterxml.jackson.databind.ObjectMapper()
+                                        .readTree(aiResponse);
+
+                        Map<Long, StudentPerformance> performerMap = performers.stream()
+                                        .collect(Collectors.toMap(StudentPerformance::getUserId, p -> p));
+
+                        if (root.isArray()) {
+                                for (com.fasterxml.jackson.databind.JsonNode node : root) {
+                                        Long userId = node.get("userId").asLong();
+                                        if (performerMap.containsKey(userId)) {
+                                                StudentPerformance p = performerMap.get(userId);
+                                                p.setRiskLevel(node.get("riskLevel").asText());
+                                                p.setRiskReason(node.get("riskReason").asText());
+                                        }
+                                }
+                        }
+                } catch (Exception e) {
+                        log.error("Failed to parse AI risk analysis", e);
+                        // Fallback to manual threshold if AI fails
+                        performers.forEach(p -> {
+                                if (p.getMasteryScore() < 40
+                                                || (p.getLastActivityDays() != null && p.getLastActivityDays() > 10)) {
+                                        p.setRiskLevel("HIGH");
+                                        p.setRiskReason("Låg poäng/Hög inaktivitet (AI-fel)");
+                                } else {
+                                        p.setRiskLevel("LOW");
+                                }
+                        });
+                }
         }
 
         public String generateAiInsight(Long courseId, CourseAnalytics analytics) {
