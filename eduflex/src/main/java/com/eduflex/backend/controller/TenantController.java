@@ -8,7 +8,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -77,7 +76,9 @@ public class TenantController {
                     request.getAdminFirstName(),
                     request.getAdminLastName(),
                     null,
-                    null);
+                    null,
+                    request.getTier() != null ? com.eduflex.backend.model.LicenseType.valueOf(request.getTier())
+                            : com.eduflex.backend.model.LicenseType.BASIC);
             return ResponseEntity.ok(tenant);
 
         } catch (org.springframework.web.server.ResponseStatusException e) {

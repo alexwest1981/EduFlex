@@ -125,7 +125,8 @@ public class PaymentController {
                                     adminFirstName,
                                     adminLastName,
                                     stripeCustomerId,
-                                    stripeSubscriptionId);
+                                    stripeSubscriptionId,
+                                    com.eduflex.backend.model.LicenseType.BASIC);
                             logger.info("Successfully provisioned tenant: {} with Stripe IDs", orgKey);
                         } catch (Exception e) {
                             logger.error("Failed to provision tenant automatically: {}", e.getMessage());

@@ -81,9 +81,11 @@ public class BrandingService {
     @Transactional
     public OrganizationBranding updateBranding(String organizationKey, OrganizationBranding updates) {
         // Check if ENTERPRISE_WHITELABEL module is allowed
-        if (!licenseService.getTier().isModuleAllowed("ENTERPRISE_WHITELABEL")) {
+        com.eduflex.backend.model.LicenseType tier = licenseService.getTier();
+
+        if (!tier.isModuleAllowed("ENTERPRISE_WHITELABEL")) {
             throw new RuntimeException("Enterprise Whitelabel-modulen kräver ENTERPRISE-licens. Nuvarande licens: "
-                    + licenseService.getTier());
+                    + tier);
         }
 
         OrganizationBranding branding = getBranding(organizationKey);

@@ -24,6 +24,8 @@ public class TenantCreationRequest {
     // Security
     private String registrationKey;
 
+    private String tier; // BASIC, PRO, ENTERPRISE
+
     public String getTenantId() {
         return tenantId != null ? tenantId : organizationKey;
     }
@@ -117,5 +119,13 @@ public class TenantCreationRequest {
 
     public void setRegistrationKey(String registrationKey) {
         this.registrationKey = registrationKey;
+    }
+
+    public String getTier() {
+        return tier;
+    }
+
+    public void setTier(String tier) {
+        this.tier = tier;
     }
 }

@@ -28,9 +28,13 @@ public class ModuleService {
 
         public SystemModule toggleModule(String key, boolean isActive) {
                 // --- LICENSE CHECK ---
-                if (isActive && !licenseService.getTier().isModuleAllowed(key)) {
-                        throw new RuntimeException("Modulen '" + key + "' ingår inte i din nuvarande licens ("
-                                        + licenseService.getTier() + "). Uppgradera till PRO eller ENTERPRISE.");
+                if (isActive) {
+                        com.eduflex.backend.model.LicenseType tier = licenseService.getTier();
+
+                        if (!tier.isModuleAllowed(key)) {
+                                throw new RuntimeException("Modulen '" + key + "' ingår inte i din nuvarande licens ("
+                                                + tier + "). Uppgradera till PRO eller ENTERPRISE.");
+                        }
                 }
                 // ---------------------
 

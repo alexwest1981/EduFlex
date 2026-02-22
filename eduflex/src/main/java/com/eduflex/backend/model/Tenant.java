@@ -30,6 +30,10 @@ public class Tenant implements Serializable {
     @Column(nullable = false)
     private boolean isActive = true;
 
+    @Enumerated(EnumType.STRING)
+    @Column(length = 50, nullable = false)
+    private LicenseType tier = LicenseType.BASIC;
+
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
@@ -105,6 +109,14 @@ public class Tenant implements Serializable {
 
     public void setActive(boolean active) {
         isActive = active;
+    }
+
+    public LicenseType getTier() {
+        return tier;
+    }
+
+    public void setTier(LicenseType tier) {
+        this.tier = tier;
     }
 
     public LocalDateTime getCreatedAt() {

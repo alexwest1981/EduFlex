@@ -46,6 +46,12 @@ Här är en sammanfattning av fixarna för Tenant-resolution och Master-isolerin
     *   **Backend-restriktioner:** Implementerat strikt kontroll i `TenantController` så att enbart Master-kontot (`public` schema) kan lista, skapa eller ta bort andra tenants. Anrop från sub-tenants blockeras nu med `403 Forbidden`.
     *   **Frontend-skydd:** Döljt "Tenants"-menyn i systeminställningarna för alla domäner utom master-domänen (`eduflexlms.se` / `localhost`).
 
+*   **💳 Kommersiell Tiering & Feature Locking (v2.9.0):**
+    *   **Prenumerationsnivåer:** Introducerat stöd för per-tenant licensnivåer (BASIC, PRO, ENTERPRISE). Systemet kan nu styra funktionalitet och användargränser styrt av kundens plan.
+    *   **App Store-spärrar:** Moduler i systeminställningarna låses nu automatiskt baserat på licensnivå. BASIC-kunder kan t.ex. inte aktivera AI-Tutor eller SCORM-stöd utan att uppgradera.
+    *   **Centraliserad Licenskontroll:** Refaktorerat `LicenseService` till en tenant-smart motor som fungerar som "Source of Truth" för hela backend-stacken.
+    *   **UI-feedback:** Lagt till hänglås-ikoner och dynamiska förklaringar i administrationen för att uppmuntra till uppgraderingar (Upsell).
+
 *   **🛠️ Systemhärdning:**
     *   **Deprecated API Fix:** Uppdaterat `TenantFilter` till moderna Java 21-metoder för URL-hantering.
     *   **CORS & CSP:** Utökat Content Security Policy för att inkludera subdomäner (`*.eduflexlms.se`) för sömlös interaktion mellan portal och API.

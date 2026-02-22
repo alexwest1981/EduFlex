@@ -106,7 +106,7 @@ public class TenantFilter extends OncePerRequestFilter {
 
     private String extractSubdomainFromUrl(String url) {
         try {
-            java.net.URL u = new java.net.URL(url);
+            java.net.URL u = java.net.URI.create(url).toURL();
             return extractSubdomain(u.getHost());
         } catch (Exception e) {
             return null;

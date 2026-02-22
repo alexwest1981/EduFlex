@@ -260,7 +260,28 @@ const SystemSettings = ({ asTab = false }) => {
         localStorage.setItem('system_settings_tab', tab);
     };
 
+    const isModuleAllowedByPlan = (moduleKey) => {
+        if (!licenseInfo || !licenseInfo.tier) return true;
+        const tier = licenseInfo.tier;
+        if (tier === 'ENTERPRISE') return true;
+
+        const proRequired = ['QUIZ_PRO', 'CHAT', 'FORUM', 'SCORM', 'AI_QUIZ', 'AI_TUTOR'];
+        const enterpriseRequired = ['GAMIFICATION', 'EDUGAME', 'ANALYTICS', 'ENTERPRISE_WHITELABEL', 'REVENUE'];
+
+        if (tier === 'BASIC') {
+            return !proRequired.includes(moduleKey) && !enterpriseRequired.includes(moduleKey);
+        }
+        if (tier === 'PRO') {
+            return !enterpriseRequired.includes(moduleKey);
+        }
+        return true;
+    };
+
     const handleToggleModule = async (key, currentStatus) => {
+        if (!isModuleAllowedByPlan(key)) {
+            alert(`Denna modul kräver en högre licensnivå (PRO eller ENTERPRISE).`);
+            return;
+        }
         setToggling(key);
         try {
             await api.modules.toggle(key, !currentStatus);
@@ -1113,6 +1134,9 @@ const SystemSettings = ({ asTab = false }) => {
                                             }
                                         }
 
+                                        const allowedByPlan = isModuleAllowedByPlan(mod.moduleKey);
+                                        const isDisabled = !dependencyMet || !allowedByPlan;
+
                                         return (
                                             <div
                                                 key={mod.moduleKey}
@@ -1158,16 +1182,19 @@ const SystemSettings = ({ asTab = false }) => {
                                                 <div className="flex-shrink-0">
                                                     <button
                                                         onClick={() => handleToggleModule(mod.moduleKey, mod.active)}
-                                                        disabled={toggling === mod.moduleKey || !dependencyMet}
+                                                        disabled={toggling === mod.moduleKey || isDisabled}
                                                         className={`relative w-11 h-6 rounded-full transition-colors duration-200 ${mod.active
                                                             ? 'bg-indigo-500'
                                                             : 'bg-gray-300 dark:bg-gray-600'
-                                                            } ${(toggling === mod.moduleKey || !dependencyMet) ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                                            } ${(toggling === mod.moduleKey || isDisabled) ? 'opacity-50 cursor-not-allowed' : ''}`}
                                                     >
                                                         <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform duration-200 ${mod.active ? 'translate-x-5' : 'translate-x-0'
                                                             }`}>
                                                             {toggling === mod.moduleKey && (
                                                                 <RefreshCw size={12} className="absolute inset-0 m-auto animate-spin text-gray-400" />
+                                                            )}
+                                                            {!allowedByPlan && (
+                                                                <Lock size={10} className="absolute inset-0 m-auto text-gray-400" />
                                                             )}
                                                         </span>
                                                     </button>

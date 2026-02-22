@@ -22,6 +22,7 @@ public class LicenseService {
 
     private final com.eduflex.backend.repository.PaymentSettingsRepository paymentSettingsRepository;
     private final com.eduflex.backend.repository.LicenseAuditRepository licenseAuditRepository;
+    private final com.eduflex.backend.repository.TenantRepository tenantRepository;
     private final org.springframework.core.env.Environment env;
 
     private com.eduflex.backend.model.LicenseType currentTier = com.eduflex.backend.model.LicenseType.ENTERPRISE;
@@ -34,9 +35,11 @@ public class LicenseService {
 
     public LicenseService(com.eduflex.backend.repository.PaymentSettingsRepository paymentSettingsRepository,
             com.eduflex.backend.repository.LicenseAuditRepository licenseAuditRepository,
+            com.eduflex.backend.repository.TenantRepository tenantRepository,
             org.springframework.core.env.Environment env) {
         this.paymentSettingsRepository = paymentSettingsRepository;
         this.licenseAuditRepository = licenseAuditRepository;
+        this.tenantRepository = tenantRepository;
         this.env = env;
         this.isOfflineMode = "true".equalsIgnoreCase(env.getProperty("EDUFLEX_OFFLINE_MODE"));
     }
@@ -192,6 +195,12 @@ public class LicenseService {
     }
 
     public LicenseType getTier() {
+        String tenantId = com.eduflex.backend.config.tenant.TenantContext.getCurrentTenant();
+        if (tenantId != null && !tenantId.equalsIgnoreCase("public")) {
+            return tenantRepository.findById(tenantId)
+                    .map(com.eduflex.backend.model.Tenant::getTier)
+                    .orElse(com.eduflex.backend.model.LicenseType.BASIC);
+        }
         return currentTier;
     }
 

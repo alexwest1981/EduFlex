@@ -28,10 +28,9 @@ public class TenantService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    @Transactional(rollbackFor = Exception.class)
     public Tenant createTenant(String name, String domain, String dbSchema, String organizationKey, String adminEmail,
             String adminPassword, String adminFirstName, String adminLastName, String stripeCustomerId,
-            String stripeSubscriptionId) {
+            String stripeSubscriptionId, com.eduflex.backend.model.LicenseType tier) {
         if (tenantRepository.existsById(organizationKey)) {
             throw new org.springframework.web.server.ResponseStatusException(
                     org.springframework.http.HttpStatus.CONFLICT,
@@ -68,6 +67,9 @@ public class TenantService {
         tenant.setDbSchema(dbSchema);
         tenant.setStripeCustomerId(stripeCustomerId);
         tenant.setStripeSubscriptionId(stripeSubscriptionId);
+        if (tier != null) {
+            tenant.setTier(tier);
+        }
         tenant.setActive(true);
 
         tenant = tenantRepository.save(tenant);
@@ -110,11 +112,11 @@ public class TenantService {
         initTenantSchema(tenant.getDbSchema(), tenant.getName());
     }
 
-    // "Raw" create matching the simple UI
     public Tenant createTenantRaw(String name, String tenantId, String schema) {
         // Default admin credentials for quick create
         String defaultAdmin = "admin@" + tenantId + ".local";
-        return createTenant(name, tenantId, schema, tenantId, defaultAdmin, "admin", "Admin", "User", null, null);
+        return createTenant(name, tenantId, schema, tenantId, defaultAdmin, "admin", "Admin", "User", null, null,
+                com.eduflex.backend.model.LicenseType.BASIC);
     }
 
     // Make this public so we can call it from initSchema
@@ -266,7 +268,8 @@ public class TenantService {
                     "Demo",
                     "Admin",
                     null,
-                    null);
+                    null,
+                    com.eduflex.backend.model.LicenseType.PRO);
         }
     }
 }

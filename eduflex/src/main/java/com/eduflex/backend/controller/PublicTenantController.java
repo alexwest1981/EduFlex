@@ -57,13 +57,14 @@ public class PublicTenantController {
                     request.getAdminFirstName(),
                     request.getAdminLastName(),
                     null,
-                    null);
+                    null,
+                    com.eduflex.backend.model.LicenseType.BASIC);
 
             return ResponseEntity.ok(Map.of(
                     "message", "Organization registered successfully",
                     "tenantId", tenant.getId(),
                     "loginUrl", "https://" + tenant.getDomain() + ".eduflexlms.se/login" // Adjust dependent on domain
-                                                                                        // logic
+                                                                                         // logic
             ));
 
         } catch (org.springframework.web.server.ResponseStatusException e) {
