@@ -256,6 +256,10 @@ const TeacherDashboard = ({ currentUser }) => {
                                 </div>
                             )}
 
+                            {widgets.showMessages && (
+                                <RecentMessagesWidget onViewAll={() => setActiveTab('COMMUNICATION')} />
+                            )}
+
                             {widgets.showShortcuts && (
                                 <div className="bg-white dark:bg-[#1E1F20] rounded-2xl border border-gray-200 dark:border-[#3c4043] shadow-sm p-6">
                                     <h3 className="font-bold text-lg mb-4">{t('teacher_dashboard.section_shortcuts')}</h3>
@@ -282,7 +286,7 @@ const TeacherDashboard = ({ currentUser }) => {
                                     <OnlineFriendsWidget />
                                 </div>
                             )}
-                            {widgets.showMessages && <RecentMessagesWidget onViewAll={() => setActiveTab('COMMUNICATION')} />}
+                            {widgets.showMessages && null}
                         </div>
                     </div>
                 </div>
