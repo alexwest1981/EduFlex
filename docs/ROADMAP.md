@@ -73,6 +73,12 @@
 
 ---
 
+### [v2.8.5] - 2026-02-22
+- **Refactoring**: **Gamification Admin Relocation**.
+- **Consolidation**: Moved detailed settings (XP, AI Credits, Toggles) from System Settings to the Gamification Admin dashboard.
+- **Backend**: New endpoints for global gamification config and EduAI Hub settings.
+- **UX**: Unified administrative workspace for all gamification features.
+
 ### [v2.8.0] - 2026-02-22
 - **New Feature**: **Social Gamification (Leagues & Class Goals)**.
 - **Leagues**: 5 levels (Bronze, Silver, Gold, Platinum, Ruby) based on XP.

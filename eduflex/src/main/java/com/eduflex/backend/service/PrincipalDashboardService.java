@@ -1,7 +1,6 @@
 package com.eduflex.backend.service;
 
 import com.eduflex.backend.model.Attendance;
-import com.eduflex.backend.model.CourseResult;
 import com.eduflex.backend.model.Department;
 import com.eduflex.backend.model.Program;
 import com.eduflex.backend.model.ClassGroup;
@@ -21,7 +20,6 @@ import java.time.temporal.ChronoUnit;
 public class PrincipalDashboardService {
 
         private final UserRepository userRepository;
-        private final CourseRepository courseRepository;
         private final CourseResultRepository courseResultRepository;
         private final AttendanceRepository attendanceRepository;
         private final IncidentReportRepository incidentReportRepository;
@@ -33,7 +31,6 @@ public class PrincipalDashboardService {
         private final ClassGroupRepository classGroupRepository;
 
         public PrincipalDashboardService(UserRepository userRepository,
-                        CourseRepository courseRepository,
                         CourseResultRepository courseResultRepository,
                         AttendanceRepository attendanceRepository,
                         IncidentReportRepository incidentReportRepository,
@@ -44,7 +41,6 @@ public class PrincipalDashboardService {
                         ProgramRepository programRepository,
                         ClassGroupRepository classGroupRepository) {
                 this.userRepository = userRepository;
-                this.courseRepository = courseRepository;
                 this.courseResultRepository = courseResultRepository;
                 this.attendanceRepository = attendanceRepository;
                 this.incidentReportRepository = incidentReportRepository;

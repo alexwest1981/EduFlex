@@ -12,23 +12,25 @@ public class GamificationService {
     private final UserRepository userRepository;
     private final BadgeRepository badgeRepository;
     private final UserBadgeRepository userBadgeRepository;
+    private final GamificationLeagueSettingRepository leagueSettingRepository;
 
     public GamificationService(UserRepository userRepository, BadgeRepository badgeRepository,
-            UserBadgeRepository userBadgeRepository) {
+            UserBadgeRepository userBadgeRepository,
+            GamificationLeagueSettingRepository leagueSettingRepository) {
         this.userRepository = userRepository;
         this.badgeRepository = badgeRepository;
         this.userBadgeRepository = userBadgeRepository;
+        this.leagueSettingRepository = leagueSettingRepository;
     }
 
     public User addPoints(Long userId, int points) {
         User user = userRepository.findById(userId).orElseThrow();
         user.setPoints(user.getPoints() + points);
 
-        // Uppdatera Liga
-        League nextLeague = League.determineLeague(user.getPoints());
+        // Uppdatera Liga (Dynamiskt från DB)
+        League nextLeague = determineLeagueDynamic(user.getPoints());
         if (nextLeague != user.getCurrentLeague()) {
             user.setCurrentLeague(nextLeague);
-            // Här kan man trigga en notis: "Välkommen till Rubinligan!"
         }
 
         // Enkel Level-logik: Varje 100 poäng är en ny level
@@ -38,6 +40,21 @@ public class GamificationService {
         }
 
         return userRepository.save(user);
+    }
+
+    public League determineLeagueDynamic(int points) {
+        List<GamificationLeagueSetting> settings = leagueSettingRepository.findAll();
+        if (settings.isEmpty()) {
+            return League.determineLeague(points); // Fallback to enum defaults
+        }
+
+        // Search for the highest league the user qualifies for
+        return settings.stream()
+                .filter(s -> points >= s.getMinPoints())
+                .sorted((a, b) -> b.getMinPoints() - a.getMinPoints()) // Descending
+                .map(GamificationLeagueSetting::getLeagueKey)
+                .findFirst()
+                .orElse(League.BRONZE);
     }
 
     public java.util.Map<String, Object> getClassProgress(Long classGroupId) {

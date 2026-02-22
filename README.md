@@ -56,6 +56,11 @@ Här är en sammanfattning av dagens stora uppdateringar för att öka engageman
     *   **Repository Fix:** Implementerat `findByIsOpenTrue()` i `CourseRepository` för att korrekt filtrera aktiva kurser.
     *   **Stabilitet:** Verifierat endpoint-stabilitet efter backend-omstart via den lokala kör-scriptet.
 
+*   **⚙️ Arkitektur-refaktorering (Gamification Administration):**
+    *   **Flytt av Inställningar:** Relokerat detaljerad konfiguration för XP-multiplikatorer, AI Credits och funktions-toggles från allmänna systeminställningar till Gamification-panelen.
+    *   **Backend-förstärkning:** Implementerat nya säkra endpoints i `GamificationAdminController` för hantering av globala konfigurationsvärden via `SystemSettingRepository`.
+    *   **UX-fokus:** Rensat `SystemSettings.jsx` för att undvika dubbel lagring och säkerställa att administratören hittar rätt inställningar på rätt plats.
+
 ## 🚀 Senaste uppdateringarna (21 feb 2026)
 Här är en sammanfattning av det stora arbetet med att ena plattformens intelligens-funktioner under **EduAI Hub**:
 
@@ -526,8 +531,9 @@ Hitta rätt dokumentation snabbare baserat på din roll i organisationen:
 | **Leaderboards** | Optional class/course rankings |
 | **Activity Tracking** | Detailed student activity logs |
 | **Per-Tenant Config** | Admins can enable/disable gamification features per organization |
-| **Achievement Toast** | Real-time popups when achievements are unlocked |
-| **XP Boost Indicator** | Visual indicator for active XP multipliers |
+| **EduAI Center v2.0** | AI-driven studiehub (Spaced Repetition, AI Coach, Mini-Games). | ✅ **Klar** | **v2.1.0** |
+| **Gamification Admin Relocation** | Flytt av detaljerade inställningar till admin-panelen. | ✅ **Klar** | **v2.8.5** |
+| **Workflow Integration** | Utbildning direkt i Slack/Teams/Salesforce ("Headless LMS"). | ✅ **Stabil / Verifierad** |
 
 #### 🇸🇪 Skolverket Integration
 | Feature | Description |

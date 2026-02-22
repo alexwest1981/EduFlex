@@ -19,6 +19,8 @@ import com.eduflex.backend.model.Achievement;
 import com.eduflex.backend.model.UserAchievement;
 import com.eduflex.backend.service.AchievementService;
 import com.eduflex.backend.repository.UserRepository;
+import com.eduflex.backend.repository.GamificationLeagueSettingRepository;
+import com.eduflex.backend.model.GamificationLeagueSetting;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,16 +37,19 @@ public class GamificationController {
     private final AchievementService achievementService;
     private final UserRepository userRepository;
     private final UserStreakService userStreakService;
+    private final GamificationLeagueSettingRepository leagueSettingRepository;
 
     @Autowired
     private DailyChallengeService dailyChallengeService;
 
     public GamificationController(GamificationService gamificationService, AchievementService achievementService,
-            UserRepository userRepository, UserStreakService userStreakService) {
+            UserRepository userRepository, UserStreakService userStreakService,
+            GamificationLeagueSettingRepository leagueSettingRepository) {
         this.gamificationService = gamificationService;
         this.achievementService = achievementService;
         this.userRepository = userRepository;
         this.userStreakService = userStreakService;
+        this.leagueSettingRepository = leagueSettingRepository;
     }
 
     @GetMapping("/badges")
@@ -234,21 +239,22 @@ public class GamificationController {
                 .orElseGet(() -> userRepository.findByEmail(username).orElseThrow());
 
         League current = user.getCurrentLeague();
-        League next = null;
-        League[] values = League.values();
-        for (int i = 0; i < values.length - 1; i++) {
-            if (values[i] == current) {
-                next = values[i + 1];
-                break;
-            }
-        }
+        GamificationLeagueSetting currentSetting = leagueSettingRepository.findByLeagueKey(current).orElse(null);
+
+        // Finn nästa liga (den med lägst poäng som är högre än nuvarande tröskel)
+        int currentThreshold = currentSetting != null ? currentSetting.getMinPoints() : 0;
+        GamificationLeagueSetting nextSetting = leagueSettingRepository.findAll().stream()
+                .filter(s -> s.getMinPoints() > currentThreshold)
+                .sorted((a, b) -> a.getMinPoints() - b.getMinPoints()) // Ascending
+                .findFirst()
+                .orElse(null);
 
         return ResponseEntity.ok(Map.of(
                 "current", current,
-                "displayName", current.getDisplayName(),
-                "icon", current.getIcon(),
-                "nextThreshold", next != null ? next.getMinPoints() : -1,
-                "nextLeague", next != null ? next.getDisplayName() : "MAX",
+                "displayName", currentSetting != null ? currentSetting.getDisplayName() : current.getDisplayName(),
+                "icon", currentSetting != null ? currentSetting.getIcon() : current.getIcon(),
+                "nextThreshold", nextSetting != null ? nextSetting.getMinPoints() : -1,
+                "nextLeague", nextSetting != null ? nextSetting.getDisplayName() : "MAX",
                 "xp", user.getPoints()));
     }
 
