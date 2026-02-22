@@ -191,7 +191,6 @@ const TeacherDashboard = ({ currentUser }) => {
                     { id: 'OVERVIEW', label: t('teacher_dashboard.tab_overview'), icon: <ArrowUpRight size={18} /> },
                     { id: 'GRADING', label: `${t('teacher_dashboard.tab_grading')} ${ungradedSubmissions.length > 0 ? `(${ungradedSubmissions.length})` : ''}`, icon: <CheckCircle size={18} /> },
                     { id: 'APPLICATIONS', label: `${t('teacher_dashboard.tab_applications')} ${applications.length > 0 ? `(${applications.length})` : ''}`, icon: <UserPlus size={18} /> },
-                    { id: 'COURSES', label: t('teacher_dashboard.tab_courses'), icon: <BookOpen size={18} /> },
                     { id: 'STUDENTS', label: t('teacher_dashboard.tab_students'), icon: <Users size={18} /> },
                     { id: 'SKILLS', label: t('teacher_dashboard.tab_skills', 'Kompetensanalys'), icon: <Target size={18} /> },
                     { id: 'COMMUNICATION', label: t('teacher_dashboard.tab_communication'), icon: <MessageSquare size={18} /> },
@@ -351,8 +350,8 @@ const TeacherDashboard = ({ currentUser }) => {
                                     key={course.id}
                                     onClick={() => setCourseToEdit(course)} // Use courseToEdit as a temp course holder for heatmap view
                                     className={`p-6 rounded-2xl border transition-all text-left ${courseToEdit?.id === course.id
-                                            ? 'border-indigo-600 bg-indigo-50 dark:bg-indigo-900/20 shadow-md'
-                                            : 'border-gray-100 dark:border-[#3c4043] hover:border-indigo-300'
+                                        ? 'border-indigo-600 bg-indigo-50 dark:bg-indigo-900/20 shadow-md'
+                                        : 'border-gray-100 dark:border-[#3c4043] hover:border-indigo-300'
                                         }`}
                                 >
                                     <h3 className="font-bold text-gray-900 dark:text-white uppercase text-xs tracking-wider mb-1 opacity-60">{course.courseCode}</h3>
