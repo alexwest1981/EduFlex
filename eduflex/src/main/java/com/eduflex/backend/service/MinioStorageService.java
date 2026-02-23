@@ -48,13 +48,15 @@ public class MinioStorageService implements StorageService {
                 minioClient.makeBucket(io.minio.MakeBucketArgs.builder().bucket(bucketName).build());
             }
 
-            // DEBUG: List objects in bucket
+            // Räkna antalet objekt vid uppstart – vi listar inte individuellt för att
+            // undvika lång output
             Iterable<io.minio.Result<io.minio.messages.Item>> results = minioClient.listObjects(
                     io.minio.ListObjectsArgs.builder().bucket(bucketName).build());
-            logger.info("Listing objects in bucket '{}':", bucketName);
-            for (io.minio.Result<io.minio.messages.Item> result : results) {
-                logger.info(" - Found object: {}", result.get().objectName());
+            long objectCount = 0;
+            for (io.minio.Result<io.minio.messages.Item> ignored : results) {
+                objectCount++;
             }
+            logger.info("MinIO bucket '{}' klar – {} objekt hittade.", bucketName, objectCount);
 
         } catch (Exception e) {
             logger.error("MinIO Init Error: {}", e.getMessage());
@@ -180,7 +182,8 @@ public class MinioStorageService implements StorageService {
                     for (String staticPath : staticPaths) {
                         try (InputStream is = getClass().getResourceAsStream(staticPath + filename)) {
                             if (is != null) {
-                                logger.info("Lazy Sync: Found missing object '{}' in classpath ({}). Uploading to MinIO...",
+                                logger.info(
+                                        "Lazy Sync: Found missing object '{}' in classpath ({}). Uploading to MinIO...",
                                         storageId, staticPath + filename);
                                 String contentType = java.net.URLConnection.guessContentTypeFromName(filename);
                                 if (contentType == null)

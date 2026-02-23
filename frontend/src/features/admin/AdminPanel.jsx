@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import {
     Users, BookOpen, FileText, Settings, Plus, Trash2, Search,
     Save, X, Upload, Edit2, Mail, UserCheck, UserX,
-    Moon, Cpu, Activity, Phone, MapPin, Badge, Rocket, ArrowRight
+    Moon, Cpu, Activity, Phone, MapPin, Badge, Rocket, ArrowRight,
+    Bell, Smartphone, Globe, Server
 } from 'lucide-react';
 import { api } from '../../services/api';
 import { useTranslation } from 'react-i18next';

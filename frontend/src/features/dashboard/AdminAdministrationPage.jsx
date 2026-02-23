@@ -7,6 +7,8 @@ import SystemSettings from '../system/SystemSettings';
 import AdminNavbar from './components/admin/AdminNavbar';
 import AdminHeader from './components/admin/AdminHeader';
 import AdminTicketManager from '../support/AdminTicketManager';
+import SupportArticleManager from '../admin/SupportArticleManager';
+import PilotKitWizard from '../admin/PilotKitWizard';
 import { useSearchParams } from 'react-router-dom';
 
 const AdminAdministrationPage = () => {
@@ -63,6 +65,16 @@ const AdminAdministrationPage = () => {
                 )}
                 {activeTab === 'system' && <SystemSettings asTab={true} />}
                 {activeTab === 'tickets' && <AdminTicketManager />}
+                {activeTab === 'support-content' && (
+                    <div className="bg-white dark:bg-[#1E1F20] rounded-xl border border-gray-200 dark:border-[#282a2c] shadow-sm p-6 min-h-[500px]">
+                        <SupportArticleManager />
+                    </div>
+                )}
+                {activeTab === 'pilot' && (
+                    <div className="bg-white dark:bg-[#1E1F20] rounded-xl border border-gray-200 dark:border-[#282a2c] shadow-sm p-6">
+                        <PilotKitWizard />
+                    </div>
+                )}
             </div>
         </div>
     );

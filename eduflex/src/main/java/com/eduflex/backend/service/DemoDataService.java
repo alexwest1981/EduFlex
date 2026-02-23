@@ -21,25 +21,19 @@ public class DemoDataService {
     private final RoleRepository roleRepository;
     private final CourseRepository courseRepository;
     private final PasswordEncoder passwordEncoder;
-    private final AttendanceRepository attendanceRepository;
     private final CourseResultRepository courseResultRepository;
-    private final CalendarEventRepository calendarEventRepository;
 
     @Autowired
     public DemoDataService(UserRepository userRepository,
             RoleRepository roleRepository,
             CourseRepository courseRepository,
             PasswordEncoder passwordEncoder,
-            AttendanceRepository attendanceRepository,
-            CourseResultRepository courseResultRepository,
-            CalendarEventRepository calendarEventRepository) {
+            CourseResultRepository courseResultRepository) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.courseRepository = courseRepository;
         this.passwordEncoder = passwordEncoder;
-        this.attendanceRepository = attendanceRepository;
         this.courseResultRepository = courseResultRepository;
-        this.calendarEventRepository = calendarEventRepository;
     }
 
     @Transactional
@@ -116,30 +110,15 @@ public class DemoDataService {
         Random rand = new Random();
         LocalDateTime now = LocalDateTime.now();
 
+        // Generera kurs-resultat veckovis (de senaste 30 dagarna) – inga
+        // kalenderhändelser
+        // eller närvaro-poster skapas här eftersom cross-schema FK-constraints annars
+        // brister
         for (int i = 29; i >= 0; i--) {
             LocalDateTime date = now.minusDays(i);
 
-            // Create a CalendarEvent (Lesson) for each day
-            CalendarEvent event = new CalendarEvent();
-            event.setTitle("Lektion: " + course.getName());
-            event.setCourse(course);
-            event.setOwner(course.getTeacher());
-            event.setStartTime(date.withHour(8).withMinute(30));
-            event.setEndTime(date.withHour(10).withMinute(0));
-            event.setType(CalendarEvent.EventType.LESSON);
-            event.setStatus(CalendarEvent.EventStatus.CONFIRMED);
-            event = calendarEventRepository.save(event);
-
-            for (User student : students) {
-                // Attendance
-                Attendance att = new Attendance();
-                att.setEvent(event);
-                att.setStudent(student);
-                att.setPresent(rand.nextDouble() > 0.15); // ~85% attendance
-                attendanceRepository.save(att);
-
-                // Sample Grading/Results (weekly)
-                if (i % 7 == 0) {
+            if (i % 7 == 0) {
+                for (User student : students) {
                     CourseResult res = courseResultRepository
                             .findByCourseIdAndStudentId(course.getId(), student.getId())
                             .orElse(new CourseResult());

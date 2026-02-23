@@ -70,6 +70,7 @@ import WellbeingCenter from './features/health/WellbeingCenter';
 import WellbeingInbox from './features/health/WellbeingInbox';
 import AdaptiveLearningDashboard from './features/adaptive/AdaptiveLearningDashboard';
 import EduAiHubPage from './features/ai/EduAiHubPage';
+import AdminPanel from './features/admin/AdminPanel';
 
 import ManagementReportCenter from './features/principal/ManagementReportCenter';
 import ImpactDashboard from './features/impact/ImpactDashboard';
@@ -146,6 +147,14 @@ const DashboardWrapper = ({ currentUser }) => {
 const AppRoutes = () => {
     const { currentUser, logout, licenseLocked, licenseStatus, refreshUser, licenseTier } = useAppContext();
     const { isModuleActive, loading: modulesLoading } = useModules();
+
+    React.useEffect(() => {
+        if (currentUser && currentUser.id) {
+            import('./utils/pushNotifications').then(({ registerPush }) => {
+                registerPush(currentUser.id);
+            });
+        }
+    }, [currentUser]);
 
     // 1. GLOBAL LICENSE LOCK (Triggered by 402 or explicit lock)
     if (licenseLocked || licenseStatus === 'locked') {

@@ -10,8 +10,10 @@
 | Prioritet | Funktion | Beskrivning | Ansträngning | Varför |
 | :--- | :--- | :--- | :--- | :--- |
 | **Hög** | **Integrations Guide + 5 core** | LTI 1.3 (AGS/NRPS), Zoom/Teams, Skolverket batch, SIS, bibliotek. | 10 dagar | Kritiskt: "Plug-and-play". |
-| **Hög** | **Svensk Support Portal** | SLA, FAQ, video-guides, chat-widget, forum. | 7 dagar | Kritiskt: Skalbar support. |
-| **Hög** | **Pilot Kit** | Demo-data, onboarding-wizard, "EduFlex vs Canvas"-whitepaper. | 5 dagar | Kritiskt: Referenser. |
+| **Hög** | **Svensk Support Portal** | SLA, FAQ, video-guides, chat-widget, forum. | ✅ **Klar** | Kritiskt: Skalbar support. |
+| **Hög** | **Pilot Kit** | Demo-data, onboarding-wizard, "EduFlex vs Canvas"-whitepaper. | ✅ **Klar** | Kritiskt: Referenser. |
+...
+| **Fas 2** | **Multi-Channel Notiser** | E-post, SMS, Push (PWA) | ✅ **Klar** (v3.0.0) | Sömlös kommunikation. |
 | **Medel** | **Subscriptions Polish** | Auto-invoicing, tier-lås. | ✅ **Klar** | Revenue-ready. |
 
 **Milstolpe:** Första pilot-pitch (t.ex. Falu/Botkyrka) – slutet av mars.

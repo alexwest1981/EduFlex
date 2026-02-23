@@ -2,6 +2,7 @@ package com.eduflex.backend.service;
 
 import com.eduflex.backend.model.Notification;
 import com.eduflex.backend.repository.NotificationRepository;
+import com.eduflex.backend.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,13 +13,26 @@ import java.util.List;
 public class NotificationService {
 
     private final NotificationRepository notificationRepository;
+    private final UserRepository userRepository;
+    private final EmailService emailService;
+    private final SmsService smsService;
+    private final WebPushService webPushService;
 
-    public NotificationService(NotificationRepository notificationRepository) {
+    public NotificationService(
+            NotificationRepository notificationRepository,
+            UserRepository userRepository,
+            EmailService emailService,
+            SmsService smsService,
+            WebPushService webPushService) {
         this.notificationRepository = notificationRepository;
+        this.userRepository = userRepository;
+        this.emailService = emailService;
+        this.smsService = smsService;
+        this.webPushService = webPushService;
     }
 
     /**
-     * Create a new notification for a user
+     * Create a new notification for a user with optional external channels
      */
     @Transactional
     public Notification createNotification(
@@ -27,7 +41,12 @@ public class NotificationService {
             String type,
             Long relatedEntityId,
             String relatedEntityType,
-            String actionUrl) {
+            String actionUrl,
+            boolean sendEmail,
+            boolean sendSms,
+            boolean sendPush) {
+
+        // 1. Create Internal Notification
         Notification notification = new Notification();
         notification.setUserId(userId);
         notification.setMessage(message);
@@ -38,7 +57,41 @@ public class NotificationService {
         notification.setCreatedAt(LocalDateTime.now());
         notification.setRead(false);
 
-        return notificationRepository.save(notification);
+        Notification saved = notificationRepository.save(notification);
+
+        // 2. Handle External Channels
+        if (sendEmail || sendSms || sendPush) {
+            userRepository.findById(userId).ifPresent(user -> {
+                if (sendEmail && user.getEmail() != null) {
+                    emailService.sendSimpleEmail(user.getEmail(), "EduFlex Notis: " + type, message);
+                }
+
+                if (sendSms && user.getPhone() != null) {
+                    smsService.sendSms(user.getPhone(), "[EduFlex] " + message);
+                }
+
+                if (sendPush) {
+                    webPushService.sendPushNotification(userId, "EduFlex Notis", message, actionUrl);
+                }
+            });
+        }
+
+        return saved;
+    }
+
+    /**
+     * Legacy method for backward compatibility
+     */
+    @Transactional
+    public Notification createNotification(
+            Long userId,
+            String message,
+            String type,
+            Long relatedEntityId,
+            String relatedEntityType,
+            String actionUrl) {
+        return createNotification(userId, message, type, relatedEntityId, relatedEntityType, actionUrl, false, false,
+                false);
     }
 
     /**

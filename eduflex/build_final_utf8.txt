@@ -1,0 +1,19 @@
+﻿[INFO] Scanning for projects...
+[INFO] 
+[INFO] ------------------------< com.eduflex:eduflex >-------------------------
+[INFO] Building eduflex 2.0.1-Beta
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ eduflex ---
+[INFO] Copying 1 resource from src\main\resources to target\classes
+[INFO] Copying 123 resources from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.13.0:compile (default-compile) @ eduflex ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  2.930 s
+[INFO] Finished at: 2026-02-23T15:45:45+01:00
+[INFO] ------------------------------------------------------------------------

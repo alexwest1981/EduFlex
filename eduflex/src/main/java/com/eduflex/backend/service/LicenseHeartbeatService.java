@@ -1,5 +1,7 @@
 package com.eduflex.backend.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -10,6 +12,8 @@ import java.util.HashMap;
 
 @Service
 public class LicenseHeartbeatService {
+
+    private static final Logger logger = LoggerFactory.getLogger(LicenseHeartbeatService.class);
 
     private final LicenseService licenseService;
     private final RestTemplate restTemplate;
@@ -25,7 +29,7 @@ public class LicenseHeartbeatService {
     @Scheduled(fixedRate = 12 * 60 * 60 * 1000)
     public void checkLicenseStatus() {
         if (licenseService.isOfflineMode()) {
-            System.out.println("📴 License Heartbeat: Omhoppad (Offline Mode aktiv)");
+            logger.debug("📴 License Heartbeat: Omhoppad (Offline Mode aktiv)");
             return;
         }
 
@@ -46,13 +50,13 @@ public class LicenseHeartbeatService {
                     reportInvalidUsage("Status: " + status);
                 } else if ("VALID".equalsIgnoreCase(status) || "UP".equalsIgnoreCase(status)) {
                     licenseService.setSystemLocked(false);
-                    System.out.println("💓 License Heartbeat: Status OK för " + licenseService.getCustomerName());
+                    logger.info("💓 License Heartbeat: Status OK för {}", licenseService.getCustomerName());
                 }
             }
 
         } catch (Exception e) {
-            System.err.println("⚠️ License Heartbeat misslyckades: " + e.getMessage());
-            // I offline-mode låter vi det passera, men här loggar vi det.
+            // Heartbeat misslyckades – externt API kan vara nere, låter det passera tyst
+            logger.debug("⚠️ License Heartbeat misslyckades: {}", e.getMessage());
         }
     }
 
@@ -63,7 +67,7 @@ public class LicenseHeartbeatService {
             report.put("ip", getPublicIp());
             report.put("reason", reason);
             restTemplate.postForEntity(REPORT_URL, report, Map.class);
-            System.err.println("📢 Rapporterat ogiltig licensanvändning till EduFlex Central.");
+            logger.warn("📢 Rapporterat ogiltig licensanvändning till EduFlex Central.");
         } catch (Exception e) {
             // Ignorera fel vid rapportering för att inte krascha tjänsten
         }

@@ -4,7 +4,7 @@ import {
     Camera, Mail, Phone, MapPin, Save, Lock, User, AlertTriangle, Globe,
     Layout, Download, Shield, CreditCard, Check, X,
     Linkedin, Instagram, Facebook, Twitter, Search, UserPlus, UserMinus, Ban, Award,
-    Briefcase, LogOut, Zap
+    Briefcase, LogOut, Zap, Bell, Smartphone, MessageSquare, Calendar
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { api, getSafeUrl } from '../../services/api.js';
@@ -255,6 +255,47 @@ const UserProfile = ({ currentUser, showMessage, refreshUser, logout }) => {
     const [isLoadingInventory, setIsLoadingInventory] = useState(false);
     const [streakCount, setStreakCount] = useState(0);
 
+    // --- NOTIFICATION PREFERENCES ---
+    const [preferences, setPreferences] = useState([]);
+    const [isPrefLoading, setIsPrefLoading] = useState(false);
+
+    useEffect(() => {
+        if (activeTab === 'notifications') {
+            fetchPreferences();
+        }
+    }, [activeTab]);
+
+    const fetchPreferences = async () => {
+        setIsPrefLoading(true);
+        try {
+            const data = await api.notifications.getPreferences(currentUser.id);
+            setPreferences(data);
+        } catch (e) {
+            console.error("Failed to fetch notification preferences", e);
+        } finally {
+            setIsPrefLoading(false);
+        }
+    };
+
+    const handlePrefToggle = async (category, channel, enabled) => {
+        try {
+            await api.notifications.updatePreference(currentUser.id, category, channel, enabled);
+            // Optimistic update
+            setPreferences(prev => {
+                const index = prev.findIndex(p => p.category === category && p.channel === channel);
+                if (index > -1) {
+                    const updated = [...prev];
+                    updated[index] = { ...updated[index], enabled };
+                    return updated;
+                } else {
+                    return [...prev, { category, channel, enabled }];
+                }
+            });
+        } catch (e) {
+            showMessage("Kunde inte uppdatera inställningen", "error");
+        }
+    };
+
     // Sync activeTab with URL
     useEffect(() => {
         const tab = searchParams.get('tab');
@@ -450,6 +491,7 @@ const UserProfile = ({ currentUser, showMessage, refreshUser, logout }) => {
         { id: 'security_privacy', icon: Shield, label: 'Säkerhet & Integritet' },
         { id: 'themes', icon: Layout, label: 'Tema & Utseende', visible: isModuleActive('GAMIFICATION') },
         { id: 'achievements', icon: Award, label: 'Prestationer', visible: isModuleActive('GAMIFICATION') },
+        { id: 'notifications', icon: Bell, label: 'Notiser & Kanaler' },
         { id: 'connections', icon: UserPlus, label: 'Vänner & Relationer' },
         ...(isModuleActive('REVENUE') ? [{ id: 'billing', icon: CreditCard, label: 'Fakturering' }] : []),
     ].filter(item => item.visible !== false);
@@ -849,7 +891,90 @@ const UserProfile = ({ currentUser, showMessage, refreshUser, logout }) => {
                             </div>
                         )}
 
-                        {/* 4. CONNECTIONS TAB */}
+                        {/* 4. NOTIFICATIONS TAB */}
+                        {activeTab === 'notifications' && (
+                            <div className="space-y-8 max-w-4xl">
+                                <div>
+                                    <h3 className="text-2xl font-bold mb-6 dark:text-white flex items-center gap-2"><Bell size={24} className="text-indigo-500" /> Mina Notiser</h3>
+                                    <p className="text-sm text-gray-500 mb-8 -mt-4">Välj exakt vilka kanaler du vill använda för olika typer av händelser.</p>
+
+                                    {/* Preference Matrix */}
+                                    <div className="overflow-hidden bg-white dark:bg-[#1E1F20] rounded-2xl border border-gray-200 dark:border-[#3c4043] shadow-sm">
+                                        <table className="w-full text-left border-collapse">
+                                            <thead className="bg-gray-50 dark:bg-[#131314]">
+                                                <tr>
+                                                    <th className="p-4 font-bold text-gray-900 dark:text-white border-b border-gray-200 dark:border-[#3c4043]">Kategori</th>
+                                                    <th className="p-4 text-center font-bold text-gray-900 dark:text-white border-b border-gray-200 dark:border-[#3c4043]"><Mail size={18} className="mx-auto mb-1 text-blue-500" /> E-post</th>
+                                                    <th className="p-4 text-center font-bold text-gray-900 dark:text-white border-b border-gray-200 dark:border-[#3c4043]"><Smartphone size={18} className="mx-auto mb-1 text-green-500" /> SMS</th>
+                                                    <th className="p-4 text-center font-bold text-gray-900 dark:text-white border-b border-gray-200 dark:border-[#3c4043]"><Globe size={18} className="mx-auto mb-1 text-indigo-500" /> Push</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+                                                {[
+                                                    { id: 'CHAT', label: 'Chatt-meddelanden', icon: MessageSquare },
+                                                    { id: 'MESSAGE', label: 'Interna meddelanden', icon: Mail },
+                                                    { id: 'CALENDAR', label: 'Kalenderpåminnelser', icon: Calendar },
+                                                    { id: 'FEEDBACK', label: 'Lärarfeedback', icon: Award }
+                                                ].map(cat => (
+                                                    <tr key={cat.id} className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
+                                                        <td className="p-4">
+                                                            <div className="flex items-center gap-3">
+                                                                <cat.icon size={18} className="text-gray-400" />
+                                                                <span className="font-medium text-gray-700 dark:text-gray-300">{cat.label}</span>
+                                                            </div>
+                                                        </td>
+                                                        {['MAIL', 'SMS', 'PUSH'].map(channel => {
+                                                            const pref = preferences.find(p => p.category === cat.id && p.channel === channel);
+                                                            const isEnabled = pref ? pref.enabled : true;
+                                                            return (
+                                                                <td key={channel} className="p-4 text-center">
+                                                                    <label className="relative inline-flex items-center cursor-pointer">
+                                                                        <input
+                                                                            type="checkbox"
+                                                                            className="sr-only peer"
+                                                                            checked={isEnabled}
+                                                                            onChange={(e) => handlePrefToggle(cat.id, channel, e.target.checked)}
+                                                                        />
+                                                                        <div className="w-10 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-indigo-600"></div>
+                                                                    </label>
+                                                                </td>
+                                                            );
+                                                        })}
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                    <div className="mt-8 p-4 bg-indigo-50 dark:bg-indigo-900/10 rounded-xl border border-indigo-100 dark:border-indigo-900/30">
+                                        <div className="flex gap-3">
+                                            <Globe className="text-indigo-600 shrink-0" size={20} />
+                                            <div>
+                                                <h4 className="text-sm font-bold text-indigo-900 dark:text-indigo-200">Push-notiser (PWA)</h4>
+                                                <p className="text-xs text-indigo-700/70 dark:text-indigo-300/60 mt-1">För att ta emot push-notiser måste du först prenumerera på den här enheten.</p>
+                                                <button
+                                                    onClick={async () => {
+                                                        try {
+                                                            const permission = await Notification.requestPermission();
+                                                            if (permission === 'granted') {
+                                                                showMessage("Push-notiser aktiverade på denna enhet!");
+                                                            } else {
+                                                                alert("Du nekade behörighet för notiser.");
+                                                            }
+                                                        } catch (e) { console.error(e); }
+                                                    }}
+                                                    className="mt-3 px-4 py-1.5 bg-indigo-600 text-white text-xs font-bold rounded-lg hover:bg-indigo-700 transition-colors shadow-sm"
+                                                >
+                                                    Aktivera på denna enhet
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* 5. CONNECTIONS TAB */}
                         {activeTab === 'connections' && (
                             <div className="space-y-8">
                                 <section>

@@ -4,6 +4,7 @@ import {
     BookOpen, Video, ChevronUp, ChevronDown, Info
 } from 'lucide-react';
 import { api } from '../../services/api';
+import RichTextEditor from '../../components/RichTextEditor';
 import toast from 'react-hot-toast';
 
 // Kategorier för support-artiklar – speglar flikar i SupportPage
@@ -83,7 +84,9 @@ export default function SupportArticleManager() {
     const handleSave = async (e) => {
         e.preventDefault();
         if (!form.title.trim()) { toast.error('Titel är obligatorisk'); return; }
-        if (form.type === 'FAQ' && !form.content.trim()) { toast.error('Svarets text är obligatorisk för FAQ'); return; }
+        // Quill returnerar '<p><br></p>' när fältet är tomt
+        const contentIsEmpty = !form.content || form.content === '<p><br></p>' || form.content.trim() === '';
+        if (form.type === 'FAQ' && contentIsEmpty) { toast.error('Svarets text är obligatorisk för FAQ'); return; }
 
         setSaving(true);
         try {
@@ -229,16 +232,15 @@ export default function SupportArticleManager() {
                             </div>
                         </div>
 
-                        {/* FAQ: Svarstext */}
+                        {/* FAQ: Svarstext med rich text editor */}
                         {form.type === 'FAQ' && (
                             <div>
                                 <label className={labelClass}>Svarets text *</label>
-                                <textarea
-                                    className={inputClass + ' h-28 resize-none'}
+                                <RichTextEditor
                                     value={form.content}
-                                    onChange={e => setForm(f => ({ ...f, content: e.target.value }))}
-                                    placeholder="Skriv svaret på frågan här..."
-                                    required
+                                    onChange={(val) => setForm(f => ({ ...f, content: val }))}
+                                    placeholder="Skriv svaret på frågan här... (stöder fetstil, listor, länkar m.m.)"
+                                    style={{ minHeight: '160px' }}
                                 />
                             </div>
                         )}
@@ -266,11 +268,11 @@ export default function SupportArticleManager() {
                                 </div>
                                 <div className="md:col-span-2">
                                     <label className={labelClass}>Beskrivning</label>
-                                    <textarea
-                                        className={inputClass + ' h-20 resize-none'}
+                                    <RichTextEditor
                                         value={form.content}
-                                        onChange={e => setForm(f => ({ ...f, content: e.target.value }))}
+                                        onChange={(val) => setForm(f => ({ ...f, content: val }))}
                                         placeholder="Kort beskrivning av vad videon handlar om..."
+                                        style={{ minHeight: '120px' }}
                                     />
                                 </div>
                             </div>
@@ -327,8 +329,8 @@ export default function SupportArticleManager() {
                         <div
                             key={article.id}
                             className={`flex items-center gap-4 p-4 rounded-xl border transition-all group ${article.isPublished
-                                    ? 'bg-white dark:bg-[#1E1F20] border-gray-200 dark:border-[#3c4043]'
-                                    : 'bg-gray-50 dark:bg-[#131314] border-gray-200 dark:border-[#3c4043] opacity-60'
+                                ? 'bg-white dark:bg-[#1E1F20] border-gray-200 dark:border-[#3c4043]'
+                                : 'bg-gray-50 dark:bg-[#131314] border-gray-200 dark:border-[#3c4043] opacity-60'
                                 }`}
                         >
                             {/* Ikon */}
@@ -346,8 +348,8 @@ export default function SupportArticleManager() {
                                         {article.title}
                                     </span>
                                     <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase ${article.type === 'VIDEO'
-                                            ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300'
-                                            : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300'
+                                        ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300'
+                                        : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300'
                                         }`}>{article.type}</span>
                                     {article.category && (
                                         <span className="text-[10px] text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-[#282a2c] px-2 py-0.5 rounded-full">
@@ -366,8 +368,8 @@ export default function SupportArticleManager() {
                                     onClick={() => handleTogglePublish(article)}
                                     title={article.isPublished ? 'Avpublicera' : 'Publicera'}
                                     className={`p-2 rounded-lg transition-colors ${article.isPublished
-                                            ? 'text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20'
-                                            : 'text-gray-400 hover:bg-gray-100 dark:hover:bg-[#3c4043]'
+                                        ? 'text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20'
+                                        : 'text-gray-400 hover:bg-gray-100 dark:hover:bg-[#3c4043]'
                                         }`}
                                 >
                                     {article.isPublished ? <Eye size={16} /> : <EyeOff size={16} />}

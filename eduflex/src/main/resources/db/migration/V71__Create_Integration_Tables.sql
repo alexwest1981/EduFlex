@@ -1,4 +1,4 @@
-CREATE TABLE integration_config (
+CREATE TABLE IF NOT EXISTS integration_config (
     id UUID PRIMARY KEY,
     platform VARCHAR(50) NOT NULL UNIQUE,
     webhook_url VARCHAR(1024),
@@ -8,7 +8,7 @@ CREATE TABLE integration_config (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE integration_log (
+CREATE TABLE IF NOT EXISTS integration_log (
     id UUID PRIMARY KEY,
     platform VARCHAR(50) NOT NULL,
     direction VARCHAR(20) NOT NULL,
@@ -19,5 +19,5 @@ CREATE TABLE integration_log (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX idx_integration_log_platform ON integration_log(platform);
-CREATE INDEX idx_integration_log_created_at ON integration_log(created_at);
+CREATE INDEX IF NOT EXISTS idx_integration_log_platform ON integration_log(platform);
+CREATE INDEX IF NOT EXISTS idx_integration_log_created_at ON integration_log(created_at);

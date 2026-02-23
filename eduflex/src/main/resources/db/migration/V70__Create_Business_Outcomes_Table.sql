@@ -1,4 +1,4 @@
-CREATE TABLE business_outcomes (
+CREATE TABLE IF NOT EXISTS business_outcomes (
     id BIGSERIAL PRIMARY KEY,
     user_id BIGINT NOT NULL,
     course_id BIGINT,
@@ -9,5 +9,5 @@ CREATE TABLE business_outcomes (
     CONSTRAINT fk_bo_course FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE SET NULL
 );
 
-CREATE INDEX idx_bo_user ON business_outcomes(user_id);
-CREATE INDEX idx_bo_course ON business_outcomes(course_id);
+CREATE INDEX IF NOT EXISTS idx_bo_user ON business_outcomes(user_id);
+CREATE INDEX IF NOT EXISTS idx_bo_course ON business_outcomes(course_id);

@@ -9,6 +9,7 @@ import { api } from '../../services/api';
 import { useAppContext } from '../../context/AppContext';
 import toast from 'react-hot-toast';
 
+
 const SupportPage = () => {
     const { currentUser, licenseTier } = useAppContext();
     const [submitting, setSubmitting] = useState(false);
@@ -30,60 +31,72 @@ const SupportPage = () => {
         { id: 'security', name: 'Säkerhet & GDPR', icon: <Shield className="w-4 h-4" /> }
     ];
 
-    const faqs = [
-        {
-            category: 'security',
-            q: "Hur hanterar EduFlex GDPR och datalagring?",
-            a: "EduFlex är byggt för svenska myndighetskrav. All data lagras lokalt eller via MinIO i er egen infrastruktur. Vi använder kryptering (AES-256) för känsliga personuppgifter som personnummer och adresser."
-        },
-        {
-            category: 'system',
-            q: "Vilka lärplattformar kan EduFlex integreras med?",
-            a: "Vi har fullt stöd för LTI 1.3 (Advantage), vilket möjliggör sömlös integration med Canvas, itslearning och Moodle. Vi stödjer även Google Classroom och Microsoft Teams."
-        },
-        {
-            category: 'pedagogy',
-            q: "Hur fungerar spelifiering (Gamification) för eleverna?",
-            a: "Elever tjänar XP och märken genom att vara aktiva. Som admin kan du styra exakt vilka funktioner som ska vara aktiva (t.ex. Ligor, Streaks eller Achievements) via Gamification-panelen."
-        },
-        {
-            category: 'system',
-            q: "Vad ingår i vår support-SLA?",
-            a: "För Pilot-kunder erbjuder vi prioriterad support via chat och e-post med en svarsgaranti inom 4 arbetstimmar för kritiska fel."
-        },
-        {
-            category: 'ai',
-            q: "Hur krediteras AI-credits för PRO-användare?",
-            a: "PRO-konton får automatiskt 1000 credits vid första användning. Dessa förnyas enligt ert avtal. Enterprise-konton har obegränsad tillgång."
-        }
-    ];
-
-    const videoGuides = [
-        {
-            title: "Kom igång med EduFlex",
-            duration: "3:45",
-            thumbnail: "bg-brand-teal/20",
-            desc: "En snabb genomgång av dashboarden och de viktigaste funktionerna."
-        },
-        {
-            title: "Skapa din första AI-kurs",
-            duration: "5:20",
-            thumbnail: "bg-brand-blue/20",
-            desc: "Lär dig hur du använder AI Quiz Generator och Indexering."
-        },
-        {
-            title: "Integration med LTI 1.3",
-            duration: "8:10",
-            thumbnail: "bg-purple-500/20",
-            desc: "Teknisk guide för att koppla ihop EduFlex med Canvas/Moodle."
-        }
-    ];
+    // FAQ-artiklar och videoguider - hämtas från databasen via API
+    const [faqArticles, setFaqArticles] = useState([]);
+    const [videoArticles, setVideoArticles] = useState([]);
+    const [articlesLoading, setArticlesLoading] = useState(true);
 
     useEffect(() => {
         if (currentUser) {
             fetchMyTickets();
         }
     }, [currentUser]);
+
+    useEffect(() => {
+        fetchPublishedArticles();
+    }, []);
+
+    const [expandedArticles, setExpandedArticles] = useState({});
+    const [activeCategory, setActiveCategory] = useState('all');
+
+    const toggleArticle = (id) => {
+        setExpandedArticles(prev => ({
+            ...prev,
+            [id]: !prev[id]
+        }));
+    };
+
+    const fetchPublishedArticles = async () => {
+        try {
+            const data = await api.support.articles.getPublished();
+            // Sortera efter displayOrder
+            const sorted = data.sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
+            setFaqArticles(sorted.filter(a => a.type === 'FAQ'));
+            setVideoArticles(sorted.filter(a => a.type === 'VIDEO'));
+        } catch (e) {
+            console.warn('Kunde inte hämta support-artiklar', e);
+        } finally {
+            setArticlesLoading(false);
+        }
+    };
+
+    // Gruppera FAQ efter kategori
+    const faqsByCategory = useMemo(() => {
+        const filtered = searchQuery
+            ? faqArticles.filter(f =>
+                (f.title || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+                (f.content || '').toLowerCase().includes(searchQuery.toLowerCase())
+            )
+            : faqArticles;
+
+        if (activeCategory !== 'all') {
+            return {
+                [activeCategory]: filtered.filter(f => f.category === activeCategory)
+            };
+        }
+
+        const groups = {};
+        faqCategories.forEach(cat => {
+            const items = filtered.filter(f => f.category === cat.id);
+            if (items.length > 0) groups[cat.id] = items;
+        });
+
+        // Hantera övriga/okategoriserade
+        const otherItems = filtered.filter(f => !faqCategories.find(c => c.id === f.category));
+        if (otherItems.length > 0) groups['other'] = otherItems;
+
+        return groups;
+    }, [faqArticles, searchQuery, activeCategory, faqCategories]);
 
     const fetchMyTickets = async () => {
         try {
@@ -95,15 +108,6 @@ const SupportPage = () => {
             setLoading(false);
         }
     };
-
-    const filteredFaqs = useMemo(() => {
-        if (!searchQuery) return faqs;
-        const lowQuery = searchQuery.toLowerCase();
-        return faqs.filter(f =>
-            f.q.toLowerCase().includes(lowQuery) ||
-            f.a.toLowerCase().includes(lowQuery)
-        );
-    }, [searchQuery]);
 
     const slaInfo = useMemo(() => {
         const tier = licenseTier || 'BASIC';
@@ -225,30 +229,86 @@ const SupportPage = () => {
                     {/* MAIN CONTENT AREA */}
                     <div className="min-h-[500px]">
                         {view === 'knowledge' && (
-                            <div className="grid grid-cols-1 gap-5 animate-in slide-in-from-bottom-4 duration-500">
-                                {filteredFaqs.length > 0 ? (
-                                    filteredFaqs.map((faq, idx) => (
-                                        <div key={idx} className="bg-white border border-slate-200 dark:bg-white/5 dark:border-white/10 rounded-3xl p-8 hover:bg-slate-50 dark:hover:bg-white/[0.08] hover:border-brand-teal/40 hover:-translate-y-1 transition-all duration-300 group cursor-default shadow-md hover:shadow-xl">
-                                            <div className="flex items-start gap-6">
-                                                <div className="p-4 bg-slate-100 dark:bg-slate-800/80 rounded-2xl text-brand-teal group-hover:bg-brand-teal group-hover:text-slate-900 transition-all duration-500 shadow-inner">
-                                                    {faqCategories.find(c => c.id === faq.category)?.icon || <Info className="w-5 h-5" />}
+                            <div className="space-y-12 animate-in slide-in-from-bottom-4 duration-500">
+                                {/* Category Filter Chips */}
+                                <div className="flex flex-wrap gap-2 pb-4">
+                                    <button
+                                        onClick={() => setActiveCategory('all')}
+                                        className={`px-4 py-2 rounded-full text-xs font-black uppercase tracking-wider transition-all border ${activeCategory === 'all'
+                                            ? 'bg-brand-teal text-slate-900 border-brand-teal'
+                                            : 'bg-white/5 text-slate-400 border-white/10 hover:border-white/20'}`}
+                                    >
+                                        Visa alla
+                                    </button>
+                                    {faqCategories.map(cat => (
+                                        <button
+                                            key={cat.id}
+                                            onClick={() => setActiveCategory(cat.id)}
+                                            className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs font-black uppercase tracking-wider transition-all border ${activeCategory === cat.id
+                                                ? 'bg-brand-teal text-slate-900 border-brand-teal'
+                                                : 'bg-white/5 text-slate-400 border-white/10 hover:border-white/20'}`}
+                                        >
+                                            {cat.icon} {cat.name}
+                                        </button>
+                                    ))}
+                                </div>
+
+                                {/* FAQ Sections */}
+                                {Object.keys(faqsByCategory).length > 0 ? (
+                                    Object.entries(faqsByCategory).map(([catId, items]) => (
+                                        <section key={catId} className="space-y-6">
+                                            <div className="flex items-center gap-4 px-2">
+                                                <div className="w-10 h-10 rounded-2xl bg-brand-teal/10 flex items-center justify-center text-brand-teal border border-brand-teal/20">
+                                                    {faqCategories.find(c => c.id === catId)?.icon || <Info className="w-5 h-5" />}
                                                 </div>
-                                                <div className="space-y-3">
-                                                    <h3 className="text-xl font-black text-slate-900 dark:text-white leading-tight group-hover:text-brand-teal transition-colors">
-                                                        {faq.q}
-                                                    </h3>
-                                                    <p className="text-slate-600 dark:text-slate-300 text-base leading-relaxed font-bold">
-                                                        {faq.a}
-                                                    </p>
-                                                </div>
+                                                <h2 className="text-2xl font-black text-slate-900 dark:text-white uppercase tracking-tight">
+                                                    {faqCategories.find(c => c.id === catId)?.name || 'Övrigt'}
+                                                </h2>
+                                                <div className="flex-grow h-[1px] bg-slate-200 dark:bg-white/10"></div>
+                                                <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">{items.length} artiklar</span>
                                             </div>
-                                        </div>
+
+                                            <div className="grid grid-cols-1 gap-4">
+                                                {items.map((faq, idx) => {
+                                                    const isExpanded = expandedArticles[faq.id];
+                                                    return (
+                                                        <div
+                                                            key={faq.id || idx}
+                                                            className={`bg-white border border-slate-200 dark:bg-white/5 dark:border-white/10 rounded-3xl transition-all duration-300 group shadow-md hover:shadow-xl overflow-hidden ${isExpanded ? 'border-brand-teal/40' : 'hover:bg-slate-50 dark:hover:bg-white/[0.08]'}`}
+                                                        >
+                                                            <button
+                                                                onClick={() => toggleArticle(faq.id)}
+                                                                className="w-full text-left p-6 lg:p-8 flex items-center justify-between gap-6 outline-none"
+                                                            >
+                                                                <div className="flex items-center gap-6">
+                                                                    <div className={`transition-all duration-500 font-black text-xl leading-tight ${isExpanded ? 'text-brand-teal' : 'text-slate-900 dark:text-white group-hover:text-brand-teal'}`}>
+                                                                        {faq.title}
+                                                                    </div>
+                                                                </div>
+                                                                <div className={`w-10 h-10 rounded-xl bg-slate-100 dark:bg-white/10 flex items-center justify-center transition-all duration-300 ${isExpanded ? 'rotate-180 bg-brand-teal text-slate-900' : 'text-slate-400 dark:text-slate-500 group-hover:text-brand-teal'}`}>
+                                                                    <ChevronRight className={`w-5 h-5 transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
+                                                                </div>
+                                                            </button>
+
+                                                            <div className={`transition-all duration-500 ease-in-out ${isExpanded ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'} overflow-hidden`}>
+                                                                <div className="px-8 pb-8 lg:px-10 lg:pb-10 pt-2 border-t border-slate-100 dark:border-white/5">
+                                                                    <div
+                                                                        className="text-slate-700 dark:text-slate-300 text-lg leading-relaxed ql-rendered prose prose-slate dark:prose-invert max-w-none prose-p:font-medium"
+                                                                        dangerouslySetInnerHTML={{ __html: faq.content || '' }}
+                                                                    />
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    );
+                                                })}
+                                            </div>
+                                        </section>
                                     ))
                                 ) : (
                                     <div className="text-center py-32 bg-slate-100 dark:bg-slate-900/40 rounded-[3rem] border-2 border-dashed border-slate-200 dark:border-white/5">
                                         <Search className="w-16 h-16 text-slate-400 dark:text-slate-700 mx-auto mb-6 opacity-40" />
                                         <h3 className="text-slate-900 dark:text-white font-black text-2xl">Inga träffar</h3>
-                                        <p className="text-slate-500 font-bold max-w-sm mx-auto">Vi hittade inget för "{searchQuery}". Pröva att söka på t.ex. "Säkerhet" eller "LTI".</p>
+                                        <p className="text-slate-500 font-bold max-w-sm mx-auto">Vi hittade inget för "{searchQuery}". Pröva att söka på något annat eller rensa filtret.</p>
                                     </div>
                                 )}
                             </div>
@@ -256,29 +316,44 @@ const SupportPage = () => {
 
                         {view === 'videos' && (
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 animate-in slide-in-from-bottom-4 duration-500">
-                                {videoGuides.map((guide, idx) => (
-                                    <div key={idx} className="bg-white border border-slate-200 dark:bg-white/5 dark:border-white/10 rounded-[2.5rem] overflow-hidden group hover:border-brand-blue/50 hover:-translate-y-2 transition-all duration-500 shadow-lg hover:shadow-2xl">
-                                        <div className={`aspect-video ${guide.thumbnail} relative flex items-center justify-center overflow-hidden`}>
-                                            <div className="absolute inset-0 bg-slate-900/40 opacity-20 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-[2px]">
-                                                <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-2xl scale-75 group-hover:scale-100 transition-all duration-500">
-                                                    <Play className="w-10 h-10 text-slate-900 fill-slate-900 ml-1.5" />
+                                {articlesLoading ? (
+                                    [1, 2, 3].map(i => <div key={i} className="h-64 bg-slate-100 dark:bg-slate-900/40 rounded-[2.5rem] animate-pulse" />)
+                                ) : videoArticles.length === 0 ? (
+                                    <div className="col-span-2 text-center py-20 bg-slate-100 dark:bg-slate-900/40 rounded-[3rem] border-2 border-dashed border-slate-200 dark:border-white/5">
+                                        <Video className="w-14 h-14 text-slate-400 dark:text-slate-700 mx-auto mb-4 opacity-40" />
+                                        <h3 className="text-slate-900 dark:text-white font-black text-xl">Inga videoguider ännu</h3>
+                                        <p className="text-slate-500 font-bold text-sm mt-1">Admins kan lägga till videoguider från administrationspanelen.</p>
+                                    </div>
+                                ) : videoArticles.map((guide, idx) => (
+                                    <div key={guide.id || idx} className="bg-white border border-slate-200 dark:bg-white/5 dark:border-white/10 rounded-[2.5rem] overflow-hidden group hover:border-brand-blue/50 hover:-translate-y-2 transition-all duration-500 shadow-lg hover:shadow-2xl">
+                                        <a href={guide.videoUrl || '#'} target="_blank" rel="noopener noreferrer">
+                                            <div className={`aspect-video ${guide.thumbnail || 'bg-brand-teal/20'} relative flex items-center justify-center overflow-hidden`}>
+                                                <div className="absolute inset-0 bg-slate-900/40 opacity-20 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-[2px]">
+                                                    <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-2xl scale-75 group-hover:scale-100 transition-all duration-500">
+                                                        <Play className="w-10 h-10 text-slate-900 fill-slate-900 ml-1.5" />
+                                                    </div>
                                                 </div>
+                                                {guide.duration && (
+                                                    <div className="absolute top-4 right-4 px-3 py-1.5 bg-black/70 backdrop-blur-xl rounded-xl text-xs font-black text-white border border-white/10">
+                                                        {guide.duration}
+                                                    </div>
+                                                )}
+                                                <Video className="w-16 h-16 text-slate-400 dark:text-white/10 group-hover:scale-110 transition-transform duration-700" />
                                             </div>
-                                            <div className="absolute top-4 right-4 px-3 py-1.5 bg-black/70 backdrop-blur-xl rounded-xl text-xs font-black text-white border border-white/10">
-                                                {guide.duration}
-                                            </div>
-                                            <Video className="w-16 h-16 text-slate-400 dark:text-white/10 group-hover:scale-110 transition-transform duration-700" />
-                                        </div>
+                                        </a>
                                         <div className="p-8 space-y-3">
                                             <h3 className="text-2xl font-black text-slate-900 dark:text-white group-hover:text-brand-blue transition-colors">
                                                 {guide.title}
                                             </h3>
-                                            <p className="text-slate-600 dark:text-slate-400 font-bold text-sm leading-relaxed">
-                                                {guide.desc}
-                                            </p>
-                                            <div className="pt-4 flex items-center gap-2 text-brand-blue text-xs font-black uppercase tracking-widest">
-                                                Visa guide <ChevronRight className="w-4 h-4" />
-                                            </div>
+                                            <div
+                                                className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed ql-rendered"
+                                                dangerouslySetInnerHTML={{ __html: guide.content || '' }}
+                                            />
+                                            {guide.videoUrl && (
+                                                <div className="pt-4 flex items-center gap-2 text-brand-blue text-xs font-black uppercase tracking-widest">
+                                                    Visa guide <ChevronRight className="w-4 h-4" />
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                 ))}

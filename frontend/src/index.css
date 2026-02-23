@@ -4,35 +4,36 @@
 
 /* Fix for OnlyOffice Modal Overlap */
 .onlyoffice-editor {
-  position: fixed !important;
-  z-index: 999999 !important;
-  isolation: isolate; /* Create new stacking context */
+    position: fixed !important;
+    z-index: 999999 !important;
+    isolation: isolate;
+    /* Create new stacking context */
 }
 
 /* Force OnlyOffice iframe to be visible */
 .onlyoffice-editor iframe,
 .onlyoffice-editor [id^="onlyoffice-editor-"],
 .onlyoffice-editor div[id^="onlyoffice-editor-"] iframe {
-  position: relative !important;
-  z-index: 1 !important;
-  width: 100% !important;
-  height: 100% !important;
-  border: none !important;
-  display: block !important;
-  visibility: visible !important;
-  opacity: 1 !important;
+    position: relative !important;
+    z-index: 1 !important;
+    width: 100% !important;
+    height: 100% !important;
+    border: none !important;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
 }
 
 /* Ensure the placeholder takes full space */
-.onlyoffice-editor > div > div:last-child {
-  position: absolute !important;
-  inset: 0 !important;
-  z-index: 1 !important;
+.onlyoffice-editor>div>div:last-child {
+    position: absolute !important;
+    inset: 0 !important;
+    z-index: 1 !important;
 }
 
 /* Hide loader when iframe is present */
-.onlyoffice-editor iframe ~ div[class*="absolute"] {
-  display: none !important;
+.onlyoffice-editor iframe~div[class*="absolute"] {
+    display: none !important;
 }
 
 /* --- GLOBALA REGLER --- */
@@ -108,22 +109,204 @@ html[data-use-blur="false"][data-use-glow="false"] {
     transform: translateY(0);
 }
 
-.stagger-animation > * {
+.stagger-animation>* {
     opacity: 0;
     transform: translateY(20px);
     transition: opacity 0.5s ease-out, transform 0.5s ease-out;
 }
 
-.animate-in .stagger-animation > *,
-.fade-in-section.animate-in > .stagger-animation > *,
-.stagger-animation.animate-in > * {
+.animate-in .stagger-animation>*,
+.fade-in-section.animate-in>.stagger-animation>*,
+.stagger-animation.animate-in>* {
     opacity: 1;
     transform: translateY(0);
 }
 
 /* Stagger delays */
-.stagger-animation > *:nth-child(1) { transition-delay: 0.1s; }
-.stagger-animation > *:nth-child(2) { transition-delay: 0.2s; }
-.stagger-animation > *:nth-child(3) { transition-delay: 0.3s; }
-.stagger-animation > *:nth-child(4) { transition-delay: 0.4s; }
-.stagger-animation > *:nth-child(5) { transition-delay: 0.5s; }
+.stagger-animation>*:nth-child(1) {
+    transition-delay: 0.1s;
+}
+
+.stagger-animation>*:nth-child(2) {
+    transition-delay: 0.2s;
+}
+
+.stagger-animation>*:nth-child(3) {
+    transition-delay: 0.3s;
+}
+
+.stagger-animation>*:nth-child(4) {
+    transition-delay: 0.4s;
+}
+
+.stagger-animation>*:nth-child(5) {
+    transition-delay: 0.5s;
+}
+
+/* ─────────────────────────────────────────────────────────
+   QUILL RICH TEXT – RENDERED LÄGE (support-sidan m.m.)
+   Stilar för HTML som genererats av Quill-editorn och
+   renderas via dangerouslySetInnerHTML.
+   ───────────────────────────────────────────────────────── */
+
+/* Wrapper för rendered Quill-innehåll */
+.ql-rendered {
+    line-height: 1.6;
+    font-size: 0.875rem;
+    word-wrap: break-word;
+}
+
+/* Rubriknivåer */
+.ql-rendered h1 {
+    font-size: 1.5rem;
+    font-weight: 800;
+    margin: 0.75rem 0 0.5rem;
+}
+
+.ql-rendered h2 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin: 0.75rem 0 0.5rem;
+}
+
+.ql-rendered h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0.5rem 0 0.25rem;
+}
+
+/* Stycken */
+.ql-rendered p {
+    margin: 0.25rem 0;
+}
+
+/* Listor */
+.ql-rendered ol,
+.ql-rendered ul {
+    margin: 0.4rem 0 0.4rem 1.5rem;
+}
+
+.ql-rendered li {
+    margin: 0.15rem 0;
+}
+
+/* Blockquote */
+.ql-rendered blockquote {
+    border-left: 4px solid #818cf8;
+    margin: 0.5rem 0;
+    padding: 0.25rem 0.75rem;
+    background: #eef2ff;
+    border-radius: 0 0.375rem 0.375rem 0;
+}
+
+.dark .ql-rendered blockquote {
+    background: #1e1b4b20;
+    border-left-color: #818cf8;
+}
+
+/* Kod-block */
+.ql-rendered pre {
+    background: #1e1e1e;
+    color: #d4d4d4;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    overflow-x: auto;
+    font-size: 0.8rem;
+    margin: 0.5rem 0;
+}
+
+/* Inline-kod */
+.ql-rendered code {
+    background: #f1f5f9;
+    padding: 0.1rem 0.3rem;
+    border-radius: 0.25rem;
+    font-size: 0.8rem;
+}
+
+.dark .ql-rendered code {
+    background: #282a2c;
+    color: #e2e8f0;
+}
+
+/* Länk */
+.ql-rendered a {
+    color: #6366f1;
+    text-decoration: underline;
+}
+
+.ql-rendered a:hover {
+    color: #4f46e5;
+}
+
+/* Indragsnivåer (ql-indent-N) */
+.ql-rendered .ql-indent-1 {
+    margin-left: 1.5rem;
+}
+
+.ql-rendered .ql-indent-2 {
+    margin-left: 3rem;
+}
+
+.ql-rendered .ql-indent-3 {
+    margin-left: 4.5rem;
+}
+
+.ql-rendered .ql-indent-4 {
+    margin-left: 6rem;
+}
+
+/* Textjustering */
+.ql-rendered .ql-align-center {
+    text-align: center;
+}
+
+.ql-rendered .ql-align-right {
+    text-align: right;
+}
+
+.ql-rendered .ql-align-justify {
+    text-align: justify;
+}
+
+/* ─── TABELLER ─────────────────────────────────────────── */
+.ql-rendered table,
+.ql-rendered .tiptap-table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 0.75rem 0;
+    font-size: 0.85rem;
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
+
+.ql-rendered table th,
+.ql-rendered table td {
+    border: 1px solid #d1d5db;
+    padding: 0.5rem 0.75rem;
+    text-align: left;
+    vertical-align: top;
+}
+
+.ql-rendered table th {
+    background: #f3f4f6;
+    font-weight: 700;
+    color: #374151;
+}
+
+.ql-rendered table tr:nth-child(even) td {
+    background: #f9fafb;
+}
+
+/* Mörkt läge – tabeller */
+.dark .ql-rendered table th {
+    background: #282a2c;
+    color: #e2e8f0;
+}
+
+.dark .ql-rendered table td {
+    border-color: #3c4043;
+}
+
+.dark .ql-rendered table tr:nth-child(even) td {
+    background: #1e1f20;
+}

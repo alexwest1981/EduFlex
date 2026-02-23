@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Users, Settings, Database, Edit3, Server, Globe, MessageSquare, Store, Trophy } from 'lucide-react';
+import { Users, Settings, Database, Edit3, Server, Globe, MessageSquare, Store, Trophy, BookOpen, Rocket } from 'lucide-react';
 import { useModules } from '../../../../context/ModuleContext';
 
 const AdminNavbar = () => {
@@ -19,8 +19,10 @@ const AdminNavbar = () => {
 
     const tabs = [
         { id: 'administration', label: t('admin_tabs.administration') || 'Administration', icon: Users, path: '/admin?tab=administration' },
+        { id: 'pilot', label: 'Pilot Kit', icon: Rocket, path: '/admin?tab=pilot', color: 'text-orange-500' },
         { id: 'system', label: t('admin_tabs.system_settings') || 'Systeminställningar', icon: Settings, path: '/admin?tab=system' },
         { id: 'tickets', label: t('admin_tabs.tickets') || 'Ärenden', icon: MessageSquare, path: '/admin?tab=tickets' },
+        { id: 'support-content', label: 'Support Innehåll', icon: BookOpen, path: '/admin?tab=support-content' },
         { id: 'gamification', label: 'Gamification', icon: Trophy, path: '/admin/gamification-management', visible: isModuleActive('GAMIFICATION') },
         { id: 'community', label: 'Community', icon: Store, path: '/admin/community' }
     ].filter(tab => tab.visible !== false);
@@ -61,7 +63,7 @@ const AdminNavbar = () => {
                             : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
                             }`}
                     >
-                        <Icon size={20} />
+                        <Icon size={20} className={isActive && tab.color ? tab.color : ''} />
                         {tab.label}
                     </button>
                 );

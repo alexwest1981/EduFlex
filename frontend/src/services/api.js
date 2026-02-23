@@ -458,6 +458,10 @@ export const api = {
         markRead: (id) => api.put(`/notifications/${id}/read`),
         getUnreadCount: (userId) => api.get(`/notifications/user/${userId}/unread-count`),
         markAllAsRead: (userId) => api.put(`/notifications/user/${userId}/mark-all-read`),
+        // Preferences
+        getPreferences: (userId) => api.get(`/notifications/preferences/${userId}`),
+        updatePreference: (userId, category, channel, enabled) =>
+            api.put(`/notifications/preferences/${userId}?category=${category}&channel=${channel}&enabled=${enabled}`),
     },
 
     assignments: {

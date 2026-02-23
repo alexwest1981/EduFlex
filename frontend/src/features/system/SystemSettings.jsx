@@ -5,7 +5,7 @@ import {
     MessageSquare, Calendar, CreditCard, BarChart3, Briefcase,
     GraduationCap, BookOpen, Globe, Shield, Cpu, HardDrive,
     Download, RefreshCw, Trash2, Plus, AlertTriangle, Clock, CheckCircle2,
-    Link2, Cloud, Eye, EyeOff, Key, Save, Gamepad2, Trophy, Hash
+    Link2, Cloud, Eye, EyeOff, Key, Save, Gamepad2, Trophy, Hash, Smartphone, Rocket
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../../context/ThemeContext';
@@ -357,6 +357,12 @@ const SystemSettings = ({ asTab = false }) => {
             category: 'Integrationer',
             items: [
                 ...(isAdmin ? [{ id: 'integrations', label: 'Webhooks & Appar', icon: Globe }] : []),
+            ]
+        },
+        {
+            category: 'Kommunikation',
+            items: [
+                ...(isAdmin ? [{ id: 'notifs', label: 'Notissystem', icon: Bell }] : []),
             ]
         }
     ];
@@ -1220,6 +1226,112 @@ const SystemSettings = ({ asTab = false }) => {
                     </div>
                 );
             }
+
+            case 'notifs':
+                return (
+                    <div className="space-y-6 max-w-4xl">
+                        <div>
+                            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Globala Notisinställningar</h2>
+                            <p className="text-gray-500 dark:text-gray-400">Styr vilka kanaler som är aktiva för hela systemet och konfigurera Web Push.</p>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            {/* Email Channel */}
+                            <div className="bg-white dark:bg-[#1E1F20] border border-gray-200 dark:border-[#3c4043] rounded-2xl p-5 shadow-sm">
+                                <div className="flex justify-between items-start mb-4">
+                                    <div className="p-2.5 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 rounded-xl">
+                                        <MessageSquare size={20} />
+                                    </div>
+                                    <label className="relative inline-flex items-center cursor-pointer">
+                                        <input
+                                            type="checkbox"
+                                            className="sr-only peer"
+                                            checked={systemSettings['notify_mail_active'] === 'true'}
+                                            onChange={(e) => updateSystemSetting('notify_mail_active', e.target.checked ? 'true' : 'false')}
+                                        />
+                                        <div className="w-10 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-indigo-600"></div>
+                                    </label>
+                                </div>
+                                <h3 className="font-bold text-gray-900 dark:text-white">E-post</h3>
+                                <p className="text-xs text-gray-500 mt-1">Skicka notiser via systemets SMTP-tjänst.</p>
+                            </div>
+
+                            {/* SMS Channel */}
+                            <div className="bg-white dark:bg-[#1E1F20] border border-gray-200 dark:border-[#3c4043] rounded-2xl p-5 shadow-sm">
+                                <div className="flex justify-between items-start mb-4">
+                                    <div className="p-2.5 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 rounded-xl">
+                                        <Smartphone size={20} />
+                                    </div>
+                                    <label className="relative inline-flex items-center cursor-pointer">
+                                        <input
+                                            type="checkbox"
+                                            className="sr-only peer"
+                                            checked={systemSettings['notify_sms_active'] === 'true'}
+                                            onChange={(e) => updateSystemSetting('notify_sms_active', e.target.checked ? 'true' : 'false')}
+                                        />
+                                        <div className="w-10 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-emerald-600"></div>
+                                    </label>
+                                </div>
+                                <h3 className="font-bold text-gray-900 dark:text-white">SMS</h3>
+                                <p className="text-xs text-gray-500 mt-1">Kräver konfigurerad SMS-provider API.</p>
+                            </div>
+
+                            {/* Push Channel */}
+                            <div className="bg-white dark:bg-[#1E1F20] border border-gray-200 dark:border-[#3c4043] rounded-2xl p-5 shadow-sm">
+                                <div className="flex justify-between items-start mb-4">
+                                    <div className="p-2.5 bg-purple-50 dark:bg-purple-900/20 text-purple-600 rounded-xl">
+                                        <Globe size={20} />
+                                    </div>
+                                    <label className="relative inline-flex items-center cursor-pointer">
+                                        <input
+                                            type="checkbox"
+                                            className="sr-only peer"
+                                            checked={systemSettings['notify_push_active'] === 'true'}
+                                            onChange={(e) => updateSystemSetting('notify_push_active', e.target.checked ? 'true' : 'false')}
+                                        />
+                                        <div className="w-10 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-purple-600"></div>
+                                    </label>
+                                </div>
+                                <h3 className="font-bold text-gray-900 dark:text-white">Push (PWA)</h3>
+                                <p className="text-xs text-gray-500 mt-1">Realtidsnotiser direkt i webbläsaren.</p>
+                            </div>
+                        </div>
+
+                        {/* PWA / VAPID CONFIG */}
+                        <div className="bg-white dark:bg-[#1E1F20] border border-gray-200 dark:border-[#3c4043] rounded-2xl p-6 shadow-sm">
+                            <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                                <Key size={20} className="text-gray-400" /> Web Push Konfiguration
+                            </h3>
+                            <div className="space-y-4">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">VAPID Public Key</label>
+                                        <input
+                                            type="text"
+                                            className="w-full px-4 py-2 bg-gray-50 dark:bg-[#282a2c] border border-gray-200 dark:border-[#3c4043] rounded-xl text-sm font-mono focus:ring-2 focus:ring-indigo-500 outline-none transition-all dark:text-white"
+                                            placeholder="Nyckel för klienten..."
+                                            defaultValue={systemSettings['vapid_public_key'] || ''}
+                                            onBlur={(e) => updateSystemSetting('vapid_public_key', e.target.value)}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">VAPID Private Key</label>
+                                        <input
+                                            type="password"
+                                            className="w-full px-4 py-2 bg-gray-50 dark:bg-[#282a2c] border border-gray-200 dark:border-[#3c4043] rounded-xl text-sm font-mono focus:ring-2 focus:ring-indigo-500 outline-none transition-all dark:text-white"
+                                            placeholder="Nyckel för backend..."
+                                            defaultValue={systemSettings['vapid_private_key'] || ''}
+                                            onBlur={(e) => updateSystemSetting('vapid_private_key', e.target.value)}
+                                        />
+                                    </div>
+                                </div>
+                                <p className="text-xs text-gray-500 italic bg-gray-50 dark:bg-[#282a2c] p-3 rounded-lg border-l-4 border-indigo-500">
+                                    * VAPID-nycklar används för att signera notiser så att webbläsaren kan verifiera att de kommer från din server.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                );
 
             case 'integrations':
                 return (

@@ -36,20 +36,32 @@
 <div id="-svenska"></div>
 
 ## 🚀 Senaste uppdateringarna (23 feb 2026 – v3.0.0-dev)
-Här är en sammanfattning av de stora onboarding- och UI-förbättringarna:
+
+*   **📝 Support Content CMS (v3.0.0):**
+    *   **Ny backend-entitet:** `SupportArticle` – admin-hanterade FAQ-artiklar och videoguider i en separat, isolerad tabell (`V76` Flyway-migration).
+    *   **CRUD-API:** REST-endpoints på `/api/support/articles` – publicerade visas publikt, CRUD kräver ADMIN-roll.
+    *   **Admin-CMS-panel:** Ny flik **"Support Innehåll"** i admin-navigeringen (`AdminNavbar`) med `SupportArticleManager.jsx` för att skapa, redigera, publicera/avpublicera och ta bort artiklar.
+    *   **Rich Text Editor:** Svarstext och beskrivningar stödjer nu full rich text (fetstil, listor, länkar m.m.) via `react-quill-new`.
+    *   **Live data i Help Center:** `SupportPage.jsx` hämtar nu artiklar live från API istället för hårdkodad data. HTML renderas säkert via `dangerouslySetInnerHTML`.
 
 *   **🚀 Pilot Kit Onboarding Wizard (v3.0.0):**
-    *   **Ny Wizard-komponent:** Skapade `PilotKitWizard.jsx` – en multi-stegs onboarding-guide för nya tenants (Identitet → Estetik → AI-konfiguration → Klart).
-    *   **Välkomstbanner:** En dynamisk, gradient-banner visas i admingränssnittet för nya tenants och manar dem att starta Pilot Kit.
-    *   **Integrerad i Admin-panelen:** Ny dedikerad flik "Pilot Kit" i `AdminPanel.jsx` med smooth fade-animation.
-    *   **Tema-val:** Tenants kan välja designtema direkt i wizarden med live-förhandsvisning.
-    *   **AI-konfiguration:** Steget "AI-kraft" låter administratören aktivera/deaktivera AI-funktioner och sätta kredit-budget.
+    *   **Ny Wizard-komponent:** `PilotKitWizard.jsx` – multi-stegs onboarding för nya tenants.
+    *   **Välkomstbanner:** Dynamisk banner i admingränssnittet för nya tenants.
+    *   **AI-konfiguration & Tema-val:** Administratören kan aktivera AI-funktioner och välja designtema direkt i wizarden.
+
+*   **🔔 Utökat Notis-system (v3.0.0):**
+    *   **Multi-Channel stöd:** Backend-integration för E-post (SMTP), SMS-provider API och Web Push (PWA).
+    *   **Globala Inställningar:** Ny flik **"Notissystem"** under Systeminställningar för att aktivera/inaktivera kanaler globalt och hantera VAPID-nycklar.
+    *   **Användarpreferenser:** Ny flik **"Notiser & Kanaler"** i användarprofilen där varje användare individuellt kan ställa in sina kanaler.
+    *   **PWA Push:** Stöd för webbläsarnotiser via Service Worker och VAPID-signering.
+    *   **Granulära Inställningar:** Användare kan nu styra kanaler individuellt för kategorierna **Chatt, Interna meddelanden, Kalenderpåminnelser och Feedback**.
+
+*   **🛠 Admin UI & Pilot Kit (v3.0.0):**
+    *   **UI Återställning:** Återställt admingränssnittet till `AdminAdministrationPage.jsx` för att säkerställa full tillgång till alla administrativa verktyg.
+    *   **Pilot Kit Synlighet:** Integrerat "Pilot Kit" direkt i `AdminNavbar` med en framträdande raket-ikon och stöd för temafärger för att öka tillgängligheten för nya administratörer.
 
 *   **🎨 Help Center 2.0 – Premium UI (v2.9.9):**
-    *   **Glassmorphic Hero:** Dynamisk djup-indigo gradient som hero-sektion.
-    *   **Kontrastfix:** Förbättrad textläsbarhet på FAQ-kort och sidopanel för ljust och mörkt läge.
-    *   **Glassmorfisk flikrad:** Smooth tab-transition med aktiv-indikator.
-    *   **SLA-dashboard:** Mjukare gradienter och förbättrad typografi.
+    *   Glassmorphic hero-sektion, kontrastfix, SLA-dashboard med mjukare gradienter.
 
 Här är en sammanfattning av fixarna för Tenant-resolution, Master-isolering och Modul-kontroll:
 
