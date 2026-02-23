@@ -107,6 +107,15 @@ ebook11.json
 ebooks_list.json
 license_history.json
 table_list.txt
+backups_list.csv
+copy_blocks.csv
+deploy.ps1
+Start-ControlCenter.bat
+jar_contents.txt
+git_status.txt
+test_api.js
+test_skills.js
+root_compile_errors
 
 # Scripts (Local only)
 scripts/
@@ -116,7 +125,7 @@ tools/
 Tools/
 
 # Custom Exclusions
-backups_list
-copy_blocks
-deploy
-root_compile_errors
+backups_list*
+copy_blocks*
+deploy*
+root_compile_errors*
