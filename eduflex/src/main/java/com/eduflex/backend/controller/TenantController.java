@@ -111,6 +111,32 @@ public class TenantController {
         return ResponseEntity.ok().build();
     }
 
+    @PutMapping("/{id}")
+    @Operation(summary = "Update an existing tenant")
+    public ResponseEntity<?> updateTenant(@PathVariable String id, @RequestBody TenantCreationRequest request) {
+        // Security Check: Only allow from 'public' (Master) schema
+        String currentTenant = com.eduflex.backend.config.tenant.TenantContext.getCurrentTenant();
+        if (currentTenant != null && !currentTenant.equalsIgnoreCase("public")) {
+            return ResponseEntity.status(403)
+                    .body(java.util.Map.of("error",
+                            "Tenant management is only allowed from the Master (public) installation."));
+        }
+
+        try {
+            Tenant tenant = tenantService.updateTenant(
+                    id,
+                    request.getName(),
+                    request.getTier() != null ? com.eduflex.backend.model.LicenseType.valueOf(request.getTier()) : null,
+                    request.getAllowedModules());
+            return ResponseEntity.ok(tenant);
+        } catch (org.springframework.web.server.ResponseStatusException e) {
+            return ResponseEntity.status(e.getStatusCode()).body(java.util.Map.of("error", e.getReason()));
+        } catch (Exception e) {
+            logger.error("Failed to update tenant", e);
+            return ResponseEntity.status(500).body(java.util.Map.of("error", e.getMessage()));
+        }
+    }
+
     @PostMapping("/{id}/init-schema")
     @Operation(summary = "Initialize tenant schema")
     public ResponseEntity<?> initSchema(@PathVariable String id) {

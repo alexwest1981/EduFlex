@@ -38,8 +38,7 @@
 ## 🚀 Senaste uppdateringarna (23 feb 2026)
 Här är en sammanfattning av fixarna för Tenant-resolution, Master-isolering och Modul-kontroll:
 
-*   **🛠️ Master Module Control (v2.9.5):**
-    *   **Modul-Whitelisting:** Master-kontot kan nu explicit välja vilka moduler som ska vara tillgängliga för varje enskild tenant, oavsett licensnivå.
+*   **🛠️- **Master Module Control**: Master admin can now whitelist specific modules for each tenant and edit their license tier (BASIC, PRO, ENTERPRISE) directly from the Tenant Management UI. This ensures sub-accounts only see features they are licensed for.
     *   **Licensstyrd Menyvisning:** "Tenants"-menyn är nu strikt begränsad till Master-konton med PRO eller ENTERPRISE-licens.
     *   **Granulär Provisionering:** Nya tenants kan nu konfigureras med ett urval av tillåtna moduler direkt vid skapandet.
 

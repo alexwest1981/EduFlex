@@ -10,6 +10,7 @@ export default function TenantManagement() {
     const [isLoading, setIsLoading] = useState(true);
     const [isCreating, setIsCreating] = useState(false);
     const [showModal, setShowModal] = useState(false);
+    const [editingId, setEditingId] = useState(null);
 
     // Form state
     const [formData, setFormData] = useState({
@@ -51,16 +52,25 @@ export default function TenantManagement() {
         }
     };
 
-    const handleCreate = async (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setIsCreating(true);
         try {
-            await api.tenants.create({
-                ...formData,
-                allowedModules: formData.allowedModules.join(',')
-            });
-            toast.success("Tenant skapad!");
+            if (editingId) {
+                await api.tenants.update(editingId, {
+                    ...formData,
+                    allowedModules: formData.allowedModules.join(',')
+                });
+                toast.success("Tenant uppdaterad!");
+            } else {
+                await api.tenants.create({
+                    ...formData,
+                    allowedModules: formData.allowedModules.join(',')
+                });
+                toast.success("Tenant skapad!");
+            }
             setShowModal(false);
+            setEditingId(null);
             setFormData({
                 name: '',
                 tenantId: '',
@@ -71,12 +81,28 @@ export default function TenantManagement() {
                 tier: 'BASIC',
                 allowedModules: []
             });
+            fetchTenants();
         } catch (error) {
-            console.error("Failed to create tenant", error);
-            toast.error("Kunde inte skapa tenant. ID kanske redan finns?");
+            console.error("Failed to save tenant", error);
+            toast.error(editingId ? "Kunde inte uppdatera tenant" : "Kunde inte skapa tenant. ID kanske redan finns?");
         } finally {
             setIsCreating(false);
         }
+    };
+
+    const handleEdit = (tenant) => {
+        setEditingId(tenant.id);
+        setFormData({
+            name: tenant.name || '',
+            tenantId: tenant.tenantId || tenant.id || '',
+            schema: tenant.schema || tenant.dbSchema || '',
+            dbUrl: tenant.dbUrl || '',
+            dbUsername: '', // Keep passwords/usernames empty for security unless we add specific fields
+            dbPassword: '',
+            tier: tenant.tier || 'BASIC',
+            allowedModules: tenant.allowedModules ? tenant.allowedModules.split(',') : []
+        });
+        setShowModal(true);
     };
 
     const handleInitSchema = async (id, name) => {
@@ -115,7 +141,20 @@ export default function TenantManagement() {
                     <p className="text-gray-500 text-sm mt-1">Hantera organisationer och databaskopplingar</p>
                 </div>
                 <button
-                    onClick={() => setShowModal(true)}
+                    onClick={() => {
+                        setEditingId(null);
+                        setFormData({
+                            name: '',
+                            tenantId: '',
+                            schema: '',
+                            dbUrl: '',
+                            dbUsername: '',
+                            dbPassword: '',
+                            tier: 'BASIC',
+                            allowedModules: []
+                        });
+                        setShowModal(true);
+                    }}
                     className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition-colors font-medium"
                 >
                     <Plus size={18} />
@@ -168,6 +207,13 @@ export default function TenantManagement() {
 
                             <div className="flex items-center gap-2">
                                 <button
+                                    onClick={() => handleEdit(tenant)}
+                                    title="Redigera"
+                                    className="p-2 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg transition-colors"
+                                >
+                                    <Edit2 size={18} />
+                                </button>
+                                <button
                                     onClick={() => handleInitSchema(tenant.id, tenant.name)}
                                     title="Initiera/Uppdatera Schema"
                                     className="p-2 text-gray-500 hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-lg transition-colors"
@@ -200,10 +246,12 @@ export default function TenantManagement() {
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-in fade-in">
                     <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-200">
                         <div className="p-6 border-b border-gray-100 dark:border-gray-700">
-                            <h3 className="text-xl font-bold text-gray-900 dark:text-white">Ny Tenant</h3>
+                            <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+                                {editingId ? "Redigera Tenant" : "Ny Tenant"}
+                            </h3>
                         </div>
 
-                        <form onSubmit={handleCreate} className="p-6 space-y-4">
+                        <form onSubmit={handleSubmit} className="p-6 space-y-4">
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Namn (Display Name)</label>
                                 <input
@@ -222,7 +270,8 @@ export default function TenantManagement() {
                                     <input
                                         type="text"
                                         required
-                                        className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white font-mono text-sm"
+                                        disabled={!!editingId}
+                                        className={`w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white font-mono text-sm ${editingId ? 'opacity-50 cursor-not-allowed' : ''}`}
                                         placeholder="acme"
                                         value={formData.tenantId}
                                         onChange={e => setFormData({ ...formData, tenantId: e.target.value })}
@@ -337,7 +386,7 @@ export default function TenantManagement() {
                                     className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50 flex items-center gap-2"
                                 >
                                     {isCreating && <RefreshCw className="animate-spin w-4 h-4" />}
-                                    Skapa Tenant
+                                    {editingId ? "Spara ändringar" : "Skapa Tenant"}
                                 </button>
                             </div>
                         </form>

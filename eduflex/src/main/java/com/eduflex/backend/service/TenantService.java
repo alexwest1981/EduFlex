@@ -108,6 +108,22 @@ public class TenantService {
     }
 
     @Transactional
+    public Tenant updateTenant(String id, String name, com.eduflex.backend.model.LicenseType tier,
+            String allowedModules) {
+        Tenant tenant = tenantRepository.findById(id)
+                .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(
+                        org.springframework.http.HttpStatus.NOT_FOUND, "Tenant not found: " + id));
+
+        if (name != null)
+            tenant.setName(name.trim());
+        if (tier != null)
+            tenant.setTier(tier);
+        tenant.setAllowedModules(allowedModules); // Can be null/empty
+
+        return tenantRepository.save(tenant);
+    }
+
+    @Transactional
     public void initSchema(String id) {
         Tenant tenant = tenantRepository.findById(id).orElseThrow();
         initTenantSchema(tenant.getDbSchema(), tenant.getName());
