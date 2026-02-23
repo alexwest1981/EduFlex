@@ -31,11 +31,51 @@ const AiCoachWidget = ({ role, courseId }) => {
         fetchInsight();
     }, [role, courseId]);
 
-    const colors = {
-        STUDENT: 'from-blue-500/20 to-indigo-500/20 text-blue-400 border-blue-500/30',
-        TEACHER: 'from-purple-500/20 to-pink-500/20 text-purple-400 border-purple-500/30',
-        PRINCIPAL: 'from-emerald-500/20 to-teal-500/20 text-emerald-400 border-emerald-500/30',
-        RECTOR: 'from-emerald-500/20 to-teal-500/20 text-emerald-400 border-emerald-500/30',
+    const theme = {
+        STUDENT: {
+            bg: 'from-blue-50/90 to-indigo-50/90',
+            border: 'border-blue-200',
+            text: 'text-blue-900',
+            subtext: 'text-blue-700/80',
+            heading: 'text-indigo-950',
+            accent: 'text-blue-600',
+            card: 'bg-white/50 border-blue-100',
+            iconBg: 'bg-blue-100 text-blue-600',
+            button: 'bg-blue-600 text-white hover:bg-blue-700 shadow-blue-500/20'
+        },
+        TEACHER: {
+            bg: 'from-purple-50/90 to-pink-50/90',
+            border: 'border-purple-200',
+            text: 'text-purple-900',
+            subtext: 'text-purple-700/80',
+            heading: 'text-purple-950',
+            accent: 'text-purple-600',
+            card: 'bg-white/50 border-purple-100',
+            iconBg: 'bg-purple-100 text-purple-600',
+            button: 'bg-purple-600 text-white hover:bg-purple-700 shadow-purple-500/20'
+        },
+        PRINCIPAL: {
+            bg: 'from-emerald-50/90 to-teal-50/90',
+            border: 'border-emerald-200',
+            text: 'text-emerald-900',
+            subtext: 'text-emerald-700/80',
+            heading: 'text-emerald-950',
+            accent: 'text-emerald-600',
+            card: 'bg-white/50 border-emerald-100',
+            iconBg: 'bg-emerald-100 text-emerald-600',
+            button: 'bg-emerald-600 text-white hover:bg-emerald-700 shadow-emerald-500/20'
+        },
+        RECTOR: {
+            bg: 'from-emerald-50/90 to-teal-50/90',
+            border: 'border-emerald-200',
+            text: 'text-emerald-900',
+            subtext: 'text-emerald-700/80',
+            heading: 'text-emerald-950',
+            accent: 'text-emerald-600',
+            card: 'bg-white/40 border-emerald-100',
+            iconBg: 'bg-emerald-100 text-emerald-600',
+            button: 'bg-emerald-600 text-white hover:bg-emerald-700 shadow-emerald-500/20'
+        },
     };
 
     const icons = {
@@ -45,15 +85,15 @@ const AiCoachWidget = ({ role, courseId }) => {
         RECTOR: <TrendingUp className="size-6" />,
     };
 
-    const gradient = colors[role] || colors.STUDENT;
+    const activeTheme = theme[role] || theme.STUDENT;
 
     if (loading) {
         return (
-            <div className="glass-card p-6 rounded-3xl animate-pulse flex items-center gap-4">
-                <div className="size-12 rounded-2xl bg-slate-700/50" />
+            <div className="glass-card p-6 rounded-3xl animate-pulse flex items-center gap-4 border border-slate-200">
+                <div className="size-12 rounded-2xl bg-slate-200" />
                 <div className="space-y-2 flex-1">
-                    <div className="h-4 w-1/3 bg-slate-700/50 rounded" />
-                    <div className="h-4 w-2/3 bg-slate-700/50 rounded" />
+                    <div className="h-4 w-1/3 bg-slate-200 rounded" />
+                    <div className="h-4 w-2/3 bg-slate-200 rounded" />
                 </div>
             </div>
         );
@@ -65,53 +105,53 @@ const AiCoachWidget = ({ role, courseId }) => {
         <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className={`glass-card p-1 rounded-3xl border ${gradient.split(' ').pop()} overflow-hidden`}
+            className={`glass-card p-1 rounded-3xl border ${activeTheme.border} overflow-hidden shadow-xl shadow-slate-200/50`}
         >
-            <div className={`p-5 rounded-[22px] bg-gradient-to-br ${gradient} flex flex-col gap-4`}>
+            <div className={`p-5 rounded-[22px] bg-gradient-to-br ${activeTheme.bg} flex flex-col gap-4`}>
                 <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                        <div className="p-2.5 bg-white/10 rounded-xl backdrop-blur-md">
+                    <div className="flex items-center gap-4">
+                        <div className={`p-2.5 ${activeTheme.iconBg} rounded-xl shadow-inner`}>
                             {icons[role]}
                         </div>
                         <div>
-                            <h4 className="font-bold text-white leading-tight">
+                            <h4 className={`font-bold ${activeTheme.heading} text-lg leading-tight`}>
                                 {role === 'STUDENT' ? insight.welcomeMessage : role === 'TEACHER' ? 'Teacher Coach' : 'Principal Coach'}
                             </h4>
-                            <span className="text-xs opacity-70 flex items-center gap-1">
+                            <span className={`text-xs ${activeTheme.subtext} font-medium flex items-center gap-1`}>
                                 <Sparkles className="size-3" /> EduAI Insight
                             </span>
                         </div>
                     </div>
                     <button
                         onClick={() => setExpanded(!expanded)}
-                        className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+                        className={`p-2 hover:bg-black/5 rounded-lg transition-colors ${activeTheme.accent}`}
                     >
-                        <Info className="size-5 text-white/70" />
+                        <Info className="size-5" />
                     </button>
                 </div>
 
-                <div className="space-y-3">
+                <div className="space-y-4">
                     {role === 'STUDENT' ? (
                         <>
-                            <p className="text-sm text-white/90 leading-relaxed font-medium">
+                            <p className={`text-sm ${activeTheme.text} leading-relaxed font-medium`}>
                                 {insight.studyRecommendation}
                             </p>
-                            <div className="bg-white/5 p-3 rounded-2xl border border-white/10">
-                                <p className="text-xs text-white/70 uppercase tracking-wider mb-1">Motivation</p>
-                                <p className="text-sm text-white">{insight.motivationTip}</p>
+                            <div className={`${activeTheme.card} p-3.5 rounded-2xl border`}>
+                                <p className={`text-[10px] ${activeTheme.subtext} uppercase font-black tracking-widest mb-1`}>Motivation</p>
+                                <p className={`text-sm ${activeTheme.text} font-semibold`}>{insight.motivationTip}</p>
                             </div>
                         </>
                     ) : role === 'TEACHER' ? (
                         <>
-                            <p className="text-sm text-white/90 leading-relaxed font-medium">
+                            <p className={`text-sm ${activeTheme.text} leading-relaxed font-semibold`}>
                                 {insight.classSummary}
                             </p>
-                            <div className="bg-white/5 p-3 rounded-2xl border border-white/10">
-                                <p className="text-xs text-white/70 uppercase tracking-wider mb-2">Interventioner</p>
-                                <ul className="space-y-1">
+                            <div className={`${activeTheme.card} p-3.5 rounded-2xl border`}>
+                                <p className={`text-[10px] ${activeTheme.subtext} uppercase font-black tracking-widest mb-2`}>Föreslagna Interventioner</p>
+                                <ul className="space-y-1.5">
                                     {insight.interventions?.slice(0, 2).map((it, i) => (
-                                        <li key={i} className="text-xs text-white flex gap-2">
-                                            <span className="text-purple-400">•</span> {it}
+                                        <li key={i} className={`text-xs ${activeTheme.text} font-medium flex gap-2 items-start`}>
+                                            <span className={`${activeTheme.accent} mt-1`}>•</span> {it}
                                         </li>
                                     ))}
                                 </ul>
@@ -119,20 +159,21 @@ const AiCoachWidget = ({ role, courseId }) => {
                         </>
                     ) : (
                         <>
-                            <p className="text-sm text-white/90 leading-relaxed font-medium">
+                            <p className={`text-sm ${activeTheme.text} leading-relaxed font-medium`}>
                                 {insight.executiveSummary}
                             </p>
-                            <div className="bg-white/5 p-3 rounded-2xl border border-white/10">
-                                <p className="text-xs text-white/70 uppercase tracking-wider mb-1">Avvikelse-analys</p>
-                                <p className="text-sm text-white">{insight.anomalyAlert}</p>
+                            <div className={`${activeTheme.card} p-3.5 rounded-2xl border`}>
+                                <p className={`text-[10px] ${activeTheme.subtext} uppercase font-black tracking-widest mb-1`}>Avvikelse-analys</p>
+                                <p className={`text-sm ${activeTheme.text} font-bold`}>{insight.anomalyAlert}</p>
                             </div>
                         </>
                     )}
                 </div>
 
                 <motion.button
-                    whileHover={{ x: 5 }}
-                    className="flex items-center justify-center gap-2 w-full py-3 bg-white text-slate-900 rounded-2xl font-bold text-sm shadow-xl shadow-white/10"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className={`flex items-center justify-center gap-2 w-full py-3.5 ${activeTheme.button} rounded-2xl font-black text-sm shadow-lg transition-all`}
                 >
                     {role === 'STUDENT' ? insight.quickAction : 'Se full analys'}
                     <ArrowRight className="size-4" />
@@ -145,27 +186,35 @@ const AiCoachWidget = ({ role, courseId }) => {
                         initial={{ height: 0, opacity: 0 }}
                         animate={{ height: 'auto', opacity: 1 }}
                         exit={{ height: 0, opacity: 0 }}
-                        className="px-5 pb-5 pt-2"
+                        className={`${activeTheme.bg} px-5 pb-5 pt-2`}
                     >
-                        <hr className="border-white/10 mb-4" />
+                        <hr className="border-black/5 mb-4" />
                         <div className="space-y-4">
                             {role === 'STUDENT' ? (
-                                <p className="text-xs text-white/60">
+                                <p className={`text-xs ${activeTheme.subtext} leading-relaxed font-medium italic`}>
                                     Denna insikt baseras på dina senaste quiz-resultat, din XP-ligastatus och din föredragna lärstil.
                                 </p>
                             ) : role === 'TEACHER' ? (
-                                <div>
-                                    <p className="text-xs text-white/70 font-semibold mb-2">Lektionstips:</p>
-                                    <p className="text-xs text-white/60">{insight.pedagogicalTip}</p>
-                                    <p className="text-xs text-white/70 font-semibold mt-3 mb-2">Fokus-analys:</p>
-                                    <p className="text-xs text-white/60">{insight.focusAnalysis}</p>
+                                <div className="space-y-3">
+                                    <div>
+                                        <p className={`text-[10px] ${activeTheme.subtext} font-black uppercase mb-1`}>Lektionstips:</p>
+                                        <p className={`text-xs ${activeTheme.text} font-medium`}>{insight.pedagogicalTip}</p>
+                                    </div>
+                                    <div>
+                                        <p className={`text-[10px] ${activeTheme.subtext} font-black uppercase mb-1`}>Fokus-analys:</p>
+                                        <p className={`text-xs ${activeTheme.text} font-medium`}>{insight.focusAnalysis}</p>
+                                    </div>
                                 </div>
                             ) : (
-                                <div>
-                                    <p className="text-xs text-white/70 font-semibold mb-2">Strategiskt Råd:</p>
-                                    <p className="text-xs text-white/60">{insight.strategicAdvice}</p>
-                                    <p className="text-xs text-white/70 font-semibold mt-3 mb-2">Trendanalys:</p>
-                                    <p className="text-xs text-white/60">{insight.trendAnalysis}</p>
+                                <div className="space-y-3">
+                                    <div>
+                                        <p className={`text-[10px] ${activeTheme.subtext} font-black uppercase mb-1`}>Strategiskt Råd:</p>
+                                        <p className={`text-xs ${activeTheme.text} font-medium`}>{insight.strategicAdvice}</p>
+                                    </div>
+                                    <div>
+                                        <p className={`text-[10px] ${activeTheme.subtext} font-black uppercase mb-1`}>Trendanalys:</p>
+                                        <p className={`text-xs ${activeTheme.text} font-medium`}>{insight.trendAnalysis}</p>
+                                    </div>
                                 </div>
                             )}
                         </div>
