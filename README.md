@@ -57,6 +57,12 @@ Här är en sammanfattning av fixarna för Tenant-resolution, Master-isolering o
     *   **Centraliserad Licenskontroll:** Refaktorerat `LicenseService` till en tenant-smart motor som fungerar som "Source of Truth" för hela backend-stacken.
     *   **UI-feedback:** Lagt till hänglås-ikoner och dynamiska förklaringar i administrationen för att uppmuntra till uppgraderingar (Upsell).
 
+*   **🧠 Help Center & Support Portal (v2.9.8):**
+    *   **Premium Knowledge Base:** Sökbar FAQ med realtidsfiltrering för snabb självhjälp.
+    *   **Videoguider:** Bibliotek med instruktionsfilmer för onboarding och AI-funktioner.
+    *   **SLA Dashboard:** Dynamisk visning av supportnivå och svarstider baserat på `licenseTier` (Standard/Priority/Enterprise).
+    *   **Midnight Design:** Fullständig UI-omvandling med glassmorphism och snygga animationer.
+
 *   **🧠 AI Credit Enforcement & Tier Control (v2.9.7):**
     *   **Tier-Aware Access:** Implementerat strikt blockering av AI-funktioner för BASIC-konton (403 Forbidden). 
     *   **Pro-Provisioning:** PRO-licenser krediteras automatiskt med 1000 AI-credits vid första användning.
