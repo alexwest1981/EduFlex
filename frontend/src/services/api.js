@@ -654,6 +654,15 @@ export const api = {
         updateStatus: (id, status) => api.patch(`/support/tickets/${id}/status?status=${status}`),
         respond: (id, response, severity) => api.post(`/support/tickets/${id}/respond?response=${encodeURIComponent(response)}&severity=${severity}`),
 
+        // Admin-hanterade artiklar för Help Center (FAQ och videoguider)
+        articles: {
+            getPublished: () => api.get('/support/articles/published'),
+            getAll: () => api.get('/support/articles'),
+            create: (data) => api.post('/support/articles', data),
+            update: (id, data) => api.put(`/support/articles/${id}`, data),
+            delete: (id) => api.delete(`/support/articles/${id}`),
+        },
+
         // Wellbeing (Encrypted)
         getWellbeingRequests: () => api.get('/wellbeing/requests/my'),
         getWellbeingInbox: () => api.get('/wellbeing/requests/inbox'),

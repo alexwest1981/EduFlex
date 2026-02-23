@@ -19,6 +19,7 @@ import UserImport from './UserImport';
 import AuditLogDashboard from './AuditLogDashboard';
 import DeployPanel from './DeployPanel';
 import PilotKitWizard from './PilotKitWizard';
+import SupportArticleManager from './SupportArticleManager';
 import SkolverketCourseSelector from '../../components/SkolverketCourseSelector';
 
 const AdminPanel = ({ currentUser }) => {
@@ -339,9 +340,9 @@ const AdminPanel = ({ currentUser }) => {
             )}
 
             <div className="flex flex-wrap gap-2 mb-8 border-b border-gray-200 dark:border-[#282a2c] pb-1">
-                {['users', 'courses', 'content', 'audit', 'pilot', 'settings', 'deploy'].map(tab => (
+                {['users', 'courses', 'content', 'audit', 'pilot', 'support-content', 'settings', 'deploy'].map(tab => (
                     <button key={tab} onClick={() => setAdminTab(tab)} className={`px-4 py-2 rounded-t-lg font-medium text-sm transition-colors flex items-center gap-2 capitalize ${adminTab === tab ? 'bg-gray-100 dark:bg-[#282a2c] text-indigo-600 dark:text-white border-b-2 border-indigo-500' : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200'}`}>
-                        {tab === 'users' ? 'Användare' : tab === 'courses' ? 'Kurser' : tab === 'content' ? 'Innehåll' : tab === 'audit' ? 'Audit Log' : tab === 'pilot' ? 'Pilot Kit' : tab === 'settings' ? 'Inställningar' : 'Deploy'}
+                        {tab === 'users' ? 'Användare' : tab === 'courses' ? 'Kurser' : tab === 'content' ? 'Innehåll' : tab === 'audit' ? 'Audit Log' : tab === 'pilot' ? 'Pilot Kit' : tab === 'support-content' ? 'Support Innehåll' : tab === 'settings' ? 'Inställningar' : 'Deploy'}
                     </button>
                 ))}
             </div>
@@ -641,6 +642,13 @@ const AdminPanel = ({ currentUser }) => {
                                 ))}
                             </div>
                         </div>
+                    </div>
+                )}
+
+                {/* SUPPORT INNEHÅLL FLIK */}
+                {adminTab === 'support-content' && (
+                    <div className="animate-in fade-in">
+                        <SupportArticleManager />
                     </div>
                 )}
 
