@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import { api } from '../services/api';
 import { useModules } from '../context/ModuleContext';
+import { useAppContext } from '../context/AppContext';
 import { usePwaInstall } from '../hooks/usePwaInstall';
 
 const Sidebar = ({ currentUser, logout, siteName, version }) => {
@@ -15,6 +16,7 @@ const Sidebar = ({ currentUser, logout, siteName, version }) => {
     const [requestCount, setRequestCount] = useState(0);
     const [unreadMessages, setUnreadMessages] = useState(0);
     const { isModuleActive } = useModules();
+    const { licenseTier } = useAppContext();
     const { canInstall, install, isInstalled } = usePwaInstall();
 
     useEffect(() => {
@@ -60,15 +62,17 @@ const Sidebar = ({ currentUser, logout, siteName, version }) => {
             if (teacherRoles.includes(roleName)) {
                 items.push({ path: '/?tab=COURSES', label: t('sidebar.my_courses'), icon: <BookOpen size={20} /> });
             }
-            // Only show AI Quiz if module is active
-            if (isModuleActive('AI_QUIZ')) {
+            // Only show AI Quiz if module is active AND tier is not BASIC
+            if (isModuleActive('AI_QUIZ') && licenseTier !== 'BASIC') {
                 items.push({ path: '/ai-quiz', label: t('sidebar.ai_quiz') || 'AI Quiz', icon: <Sparkles size={20} /> });
             }
         }
 
         if (roleName === 'STUDENT' || roleName === 'ROLE_STUDENT') {
             items.push({ path: '/my-courses', label: t('sidebar.my_courses'), icon: <BookOpen size={20} /> });
-            items.push({ path: '/ai-hub', label: 'EduAI Hub', icon: <Brain size={20} /> });
+            if (licenseTier !== 'BASIC') {
+                items.push({ path: '/ai-hub', label: 'EduAI Hub', icon: <Brain size={20} /> });
+            }
             items.push({ path: '/catalog', label: t('sidebar.catalog'), icon: <BookOpen size={20} /> });
         }
 
@@ -79,7 +83,9 @@ const Sidebar = ({ currentUser, logout, siteName, version }) => {
         }
 
         if (adminRoles.includes(roleName)) {
-            items.push({ path: '/admin/ai-audit', label: 'AI Audit', icon: <Sparkles size={20} /> });
+            if (licenseTier !== 'BASIC') {
+                items.push({ path: '/admin/ai-audit', label: 'AI Audit', icon: <Sparkles size={20} /> });
+            }
         }
 
         // --- REKTOR / PRINCIPAL NAVIGATION ---

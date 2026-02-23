@@ -14,6 +14,10 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 import java.util.Map;
+import com.eduflex.backend.model.User;
+import com.eduflex.backend.repository.UserRepository;
+import com.eduflex.backend.service.AiCreditService;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
  * Service for interacting with Google Gemini API.
@@ -35,6 +39,12 @@ public class GeminiService {
 
     @Autowired
     private com.eduflex.backend.service.SystemConfigService systemConfigService;
+
+    @Autowired
+    private AiCreditService aiCreditService;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Value("${gemini.model:gemini-2.0-flash}")
     private String model;
@@ -126,6 +136,7 @@ public class GeminiService {
      * Generates a full course structure from document text using Gemini.
      */
     public String generateCourseStructure(String documentText) {
+        validateAndSpendCredits(5, "AI Course Generation");
         logger.info("Generating course structure from document text length: {}", documentText.length());
 
         // Truncate if too long (approx 30k chars to stay within token limits for Flash
@@ -158,6 +169,7 @@ public class GeminiService {
         String fullPrompt = QUIZ_SYSTEM_PROMPT + "\n\n"
                 + buildTopicUserPrompt(topic, questionCount, difficultyDesc, language);
 
+        validateAndSpendCredits(questionCount, "AI Quiz Generation (" + topic + ")");
         return callGemini(fullPrompt, true);
     }
 
@@ -246,6 +258,7 @@ public class GeminiService {
      */
     public String generateQuizQuestions(String documentText, int questionCount,
             String difficulty, String language) {
+        validateAndSpendCredits(questionCount, "AI Quiz Generation");
         logger.info("Generating {} quiz questions at {} difficulty using Gemini", questionCount, difficulty);
         questionCount = Math.max(1, Math.min(15, questionCount));
         String fullPrompt = QUIZ_SYSTEM_PROMPT + "\n\n"
@@ -257,6 +270,7 @@ public class GeminiService {
      * Generates a generic text response from Gemini (Chat mode).
      */
     public String generateResponse(String prompt) {
+        validateAndSpendCredits(1, "AI Chat/Generic Response");
         // Simple chat generation without JSON constraints
         Map<String, Object> requestBody = Map.of(
                 "contents", List.of(
@@ -366,6 +380,11 @@ public class GeminiService {
      * Generates a vector embedding for the given text using Gemini.
      */
     public List<Double> generateEmbedding(String text) {
+        // Embeddings are cheaper, maybe 0 credits or very low. Let's charge 0 for now
+        // as they are infrastructure.
+        // But we still validate access!
+        validateAndSpendCredits(0, "AI Embedding Generation");
+
         if (!isAvailable()) {
             throw new IllegalStateException("Gemini API is not configured");
         }
@@ -442,6 +461,7 @@ public class GeminiService {
      * Analyzes student performance using Gemini.
      */
     public String analyzeStudentPerformance(String performanceData) {
+        validateAndSpendCredits(2, "AI Performance Analysis");
         String prompt = ANALYSIS_SYSTEM_PROMPT + "\n\nSTUDENTDATA:\n---\n" + performanceData + "\n---\n";
         return callGemini(prompt, false); // Validate JSON manually in calling service if needed, or add validation here
     }
@@ -468,5 +488,32 @@ public class GeminiService {
     public boolean isAvailable() {
         String key = getApiKey();
         return key != null && !key.isBlank() && restTemplate != null;
+    }
+
+    private void validateAndSpendCredits(int amount, String description) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        if (username == null || username.equals("anonymousUser")) {
+            // If system-level call without user context, we might want to bypass or check
+            // tenant-wide.
+            // For now, let's assume all AI features require a user context.
+            logger.warn("AI generation attempted without user context for: {}", description);
+            return;
+        }
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found for AI credit enforcement"));
+
+        // 1. Check if tier allows AI
+        aiCreditService.validateAiAccess(user);
+
+        // 2. Spend credits
+        if (amount > 0) {
+            boolean success = aiCreditService.spendCredits(user, amount, description);
+            if (!success) {
+                throw new org.springframework.web.server.ResponseStatusException(
+                        org.springframework.http.HttpStatus.PAYMENT_REQUIRED,
+                        "Du har inte tillräckligt med AI-poäng kvar. Uppgradera ditt konto!");
+            }
+        }
     }
 }

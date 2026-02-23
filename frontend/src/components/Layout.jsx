@@ -14,7 +14,7 @@ import PulseLayout from './layouts/PulseLayout';
 import AiCoachSidebar from './ai/AiCoachSidebar';
 
 const Layout = ({ children }) => {
-    const { systemSettings, currentUser } = useAppContext();
+    const { systemSettings, currentUser, licenseTier } = useAppContext();
     const { branding } = useBranding();
 
     // Set Document Title
@@ -72,7 +72,7 @@ const Layout = ({ children }) => {
     return (
         <>
             {renderLayout()}
-            <AiCoachSidebar />
+            {licenseTier !== 'BASIC' && <AiCoachSidebar />}
         </>
     );
 };

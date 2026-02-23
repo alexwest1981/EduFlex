@@ -57,7 +57,15 @@ Här är en sammanfattning av fixarna för Tenant-resolution, Master-isolering o
     *   **Centraliserad Licenskontroll:** Refaktorerat `LicenseService` till en tenant-smart motor som fungerar som "Source of Truth" för hela backend-stacken.
     *   **UI-feedback:** Lagt till hänglås-ikoner och dynamiska förklaringar i administrationen för att uppmuntra till uppgraderingar (Upsell).
 
-*   **🛠️ Systemhärdning:**
+*   **🧠 AI Credit Enforcement & Tier Control (v2.9.7):**
+    *   **Tier-Aware Access:** Implementerat strikt blockering av AI-funktioner för BASIC-konton (403 Forbidden). 
+    *   **Pro-Provisioning:** PRO-licenser krediteras automatiskt med 1000 AI-credits vid första användning.
+    *   **Enterprise Unlimited:** Obegränsad AI-användning för Enterprise-organisationer utan credit-avdrag.
+    *   **Frontend-skydd:** Dolt AI-widgets, sidomenyer och knappar ("Indexera för AI") för BASIC-kunder.
+    *   **Route Guards:** Säkerställt att direktnavigering till AI-hubben blockeras för olicensierade användare.
+
+*   **🛠️ Systemhärdning & Fixar:**
+    *   **App.jsx Patch:** Åtgärdat ReferenceError vid destrukturering av `licenseTier`.
     *   **Deprecated API Fix:** Uppdaterat `TenantFilter` till moderna Java 21-metoder för URL-hantering.
     *   **CORS & CSP:** Utökat Content Security Policy för att inkludera subdomäner (`*.eduflexlms.se`) för sömlös interaktion mellan portal och API.
 

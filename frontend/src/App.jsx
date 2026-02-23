@@ -144,7 +144,7 @@ const DashboardWrapper = ({ currentUser }) => {
 };
 
 const AppRoutes = () => {
-    const { currentUser, logout, licenseLocked, licenseStatus, refreshUser } = useAppContext();
+    const { currentUser, logout, licenseLocked, licenseStatus, refreshUser, licenseTier } = useAppContext();
     const { isModuleActive, loading: modulesLoading } = useModules();
 
     // 1. GLOBAL LICENSE LOCK (Triggered by 402 or explicit lock)
@@ -411,9 +411,13 @@ const AppRoutes = () => {
                 {/* AI AUDIT PORTAL (ADMIN ONLY) */}
                 <Route path="/admin/ai-audit" element={
                     <ProtectedRoute roles={['ADMIN']}>
-                        <Layout currentUser={currentUser} handleLogout={logout}>
-                            <AiAuditDashboard />
-                        </Layout>
+                        {licenseTier !== 'BASIC' ? (
+                            <Layout currentUser={currentUser} handleLogout={logout}>
+                                <AiAuditDashboard />
+                            </Layout>
+                        ) : (
+                            <Navigate to="/" replace />
+                        )}
                     </ProtectedRoute>
                 } />
 
@@ -477,9 +481,13 @@ const AppRoutes = () => {
                 {/* AI Quiz Generator (TEACHER/ADMIN ONLY) */}
                 <Route path="/ai-quiz" element={
                     <ProtectedRoute roles={['TEACHER', 'ADMIN']}>
-                        <Layout currentUser={currentUser} handleLogout={logout}>
-                            <AIQuizGenerator />
-                        </Layout>
+                        {licenseTier !== 'BASIC' ? (
+                            <Layout currentUser={currentUser} handleLogout={logout}>
+                                <AIQuizGenerator />
+                            </Layout>
+                        ) : (
+                            <Navigate to="/" replace />
+                        )}
                     </ProtectedRoute>
                 } />
 
@@ -553,9 +561,13 @@ const AppRoutes = () => {
 
                 <Route path="/ai-hub" element={
                     <ProtectedRoute roles={['STUDENT', 'ROLE_STUDENT']}>
-                        <Layout currentUser={currentUser} handleLogout={logout}>
-                            <EduAiHubPage />
-                        </Layout>
+                        {licenseTier !== 'BASIC' ? (
+                            <Layout currentUser={currentUser} handleLogout={logout}>
+                                <EduAiHubPage />
+                            </Layout>
+                        ) : (
+                            <Navigate to="/" replace />
+                        )}
                     </ProtectedRoute>
                 } />
 

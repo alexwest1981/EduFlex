@@ -7,6 +7,7 @@ const AppContext = createContext({
     systemSettings: {},
     theme: 'light',
     licenseStatus: 'checking',
+    licenseTier: null,
     licenseLocked: false,
     login: () => { },
     logout: () => { },
@@ -32,6 +33,7 @@ export const AppProvider = ({ children }) => {
     const [systemSettings, setSystemSettings] = useState({});
     const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
     const [licenseStatus, setLicenseStatus] = useState('checking');
+    const [licenseTier, setLicenseTier] = useState(null); // Added licenseTier state
     const [licenseLocked, setLicenseLocked] = useState(false);
     const [token, setToken] = useState(localStorage.getItem('token'));
     const [activeAudiobook, setActiveAudiobook] = useState(null);
@@ -136,12 +138,23 @@ export const AppProvider = ({ children }) => {
         try {
             const res = await api.system.checkLicense();
             if (res && res.status === 'valid') {
-                setLicenseStatus('active');
+                setLicenseStatus('valid');
+                setLicenseTier(res.tier);
+                setLicenseLocked(false);
+            } else if (res && res.status === 'locked') {
+                setLicenseStatus('locked');
+                setLicenseTier(null);
+                setLicenseLocked(true);
             } else {
-                setLicenseStatus('locked'); // soft lock if just expired but not 402'ing yet
+                // Default to locked if status is not explicitly 'valid' or 'locked'
+                setLicenseStatus('locked');
+                setLicenseTier(null);
+                setLicenseLocked(true);
             }
         } catch (e) {
             setLicenseStatus('error');
+            setLicenseTier(null);
+            setLicenseLocked(true); // Assume locked on error
         }
     };
 
@@ -197,6 +210,7 @@ export const AppProvider = ({ children }) => {
             theme,
             toggleTheme,
             licenseStatus,
+            licenseTier, // Exposed licenseTier
             licenseLocked,
             API_BASE,
             token,

@@ -18,7 +18,7 @@ import PwaInstallPrompt from '../pwa/PwaInstallPrompt';
 
 const StandardLayout = ({ children }) => {
     const context = useAppContext() || {};
-    const { currentUser, logout, systemSettings, theme, toggleTheme, API_BASE } = context;
+    const { currentUser, logout, systemSettings, theme, toggleTheme, API_BASE, licenseTier } = context;
     const { isModuleActive } = useModules() || {};
     const { t } = useTranslation() || { t: k => k };
     const navigate = useNavigate();
@@ -100,8 +100,8 @@ const StandardLayout = ({ children }) => {
             ...(roleName.includes('TEACHER') || isAdmin ? [{ path: '/evaluations/manage', icon: <ClipboardList size={20} />, label: 'Utvärderingar' }] : []),
             ...(roleName === 'TEACHER' ? [{ path: '/?tab=COURSES', icon: <BookOpen size={20} />, label: t('sidebar.my_courses') || 'Mina kurser' }] : []),
             ...(roleName === 'STUDENT' ? [{ path: '/my-courses', icon: <BookOpen size={20} />, label: t('sidebar.my_courses') || 'Mina kurser' }] : []),
-            ...(roleName === 'STUDENT' || roleName === 'ROLE_STUDENT' ? [{ path: '/ai-hub', icon: <Brain size={20} />, label: 'EduAI Hub' }] : []),
-            ...(roleName.includes('STUDENT') || roleName.includes('TEACHER') || isAdmin ? [{ path: '/ebooks', icon: <Library size={20} />, label: t('sidebar.ebooks') }] : []),
+            ...(roleName === 'STUDENT' || roleName === 'ROLE_STUDENT' ? (licenseTier !== 'BASIC' ? [{ path: '/ai-hub', icon: <Brain size={20} />, label: 'EduAI Hub' }] : []) : []),
+            ...(roleName.includes('STUDENT') || roleName.includes('TEACHER') || isAdmin ? [{ path: '/ebooks', icon: <Library size={18} />, label: t('sidebar.ebooks') }] : []),
         ],
         tools: [
             { path: '/calendar', icon: <Calendar size={20} />, label: t('sidebar.calendar') },
@@ -117,6 +117,7 @@ const StandardLayout = ({ children }) => {
                 { path: '/health-dashboard', icon: <Heart size={20} className="text-rose-500" />, label: 'E-hälsa (Hälsoteam)' }
             ] : []),
             ...(isModuleActive('ANALYTICS') && (isAdmin || roleName.includes('TEACHER') || ['REKTOR', 'PRINCIPAL'].includes(roleName)) ? [{ path: '/analytics', icon: <BarChart2 size={20} />, label: t('sidebar.analytics') || 'Analyser & Insikter' }] : []),
+            ...(isAdmin && licenseTier !== 'BASIC' ? [{ path: '/admin/ai-audit', icon: <Zap size={20} />, label: 'AI Audit' }] : []),
         ],
         rektor: [
             ...(['REKTOR', 'ROLE_REKTOR', 'PRINCIPAL', 'ROLE_PRINCIPAL'].includes(roleName) ? [

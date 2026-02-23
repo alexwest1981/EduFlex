@@ -12,7 +12,7 @@
 | **Hög** | **Integrations Guide + 5 core** | LTI 1.3 (AGS/NRPS), Zoom/Teams, Skolverket batch, SIS, bibliotek. | 10 dagar | Kritiskt: "Plug-and-play". |
 | **Hög** | **Svensk Support Portal** | SLA, FAQ, video-guides, chat-widget, forum. | 7 dagar | Kritiskt: Skalbar support. |
 | **Hög** | **Pilot Kit** | Demo-data, onboarding-wizard, "EduFlex vs Canvas"-whitepaper. | 5 dagar | Kritiskt: Referenser. |
-| **Medel** | **Subscriptions Polish** | Auto-invoicing, tier-lås (nästan klart). | 3 dagar | Revenue-ready. |
+| **Medel** | **Subscriptions Polish** | Auto-invoicing, tier-lås. | ✅ **Klar** | Revenue-ready. |
 
 **Milstolpe:** Första pilot-pitch (t.ex. Falu/Botkyrka) – slutet av mars.
 
@@ -60,6 +60,7 @@
 | **LTI 1.3 Core** | Grundläggande launch-stöd för externa verktyg. | ✅ **Klar** | Sömlös verktygsinterop. |
 | **LTI 1.3 Advantage** | Stöd för AGS (Betyg) och NRPS (Roller/Namn). | ✅ **Stabil / Verifierad** | Automatiserad administration. |
 | **AI Audit Log** | Full spårbarhet av alla AI-beslut och rekommendationer för compliance och debugging. | ✅ **Klar** | **100%** transparens (XAI). |
+| **AI Credit Enforcement** | Tier-baserad åtkomstkontroll (BASIC/PRO/ENTERPRISE) och automatisk provisioning. | ✅ **Klar** | **v2.9.7** |
 | **xAPI & cmi5** | Modern spårning (LRS) för mobilt lärande och simuleringar. | ✅ **Verifierad** | Nästa generations analys. |
 | **Skills Gap Analysis** | Visualisering av kompetensluckor och progress (Radar charts). | ✅ **Klar** | **v2.5.0** |
 | **EduAI Center v2.0** | AI-driven studiehub (Spaced Repetition, AI Coach, Mini-Games). | ✅ **Klar** | **v2.1.0** |
@@ -110,6 +111,13 @@
 | **Sjukanmälan** | Komplett sjukanmälningssystem med statusuppdateringar, mentorsnotifieringar och historikspårning. | ✅ **Klar** | **-30%** adm-mail från vårdnadshavare. |
 
 ---
+
+### [v2.9.7] - 2026-02-23
+- **New Feature**: **AI Credit Enforcement & Tier Control**.
+- **Backend**: Tier-aware validation in `AiCreditService` and `GeminiService`.
+- **Provisioning**: Auto-initialization of 1,000 credits for PRO users; Unlimited for Enterprise.
+- **Frontend**: Context-driven feature toggling in Sidebar, Dashboard, and CourseDetail.
+- **Security**: Route protection in `App.jsx` for unlicensed tiers.
 
 ### [v2.8.5] - 2026-02-22
 - **Refactoring**: **Gamification Admin Relocation**.

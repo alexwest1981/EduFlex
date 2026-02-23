@@ -49,7 +49,7 @@ const CourseDetail = ({ currentUser }) => {
     const [isSavingEvaluation, setIsSavingEvaluation] = useState(false); // New state
     const [myResult, setMyResult] = useState(null);
     const [canClaim, setCanClaim] = useState(false);
-    const { API_BASE, token, setActiveCourseId } = useAppContext();
+    const { API_BASE, token, setActiveCourseId, licenseTier } = useAppContext();
 
     const userRole = currentUser?.role?.name || currentUser?.role;
     const isTeacher = currentUser && (userRole === 'TEACHER' || userRole === 'ADMIN' || userRole === 'REKTOR');
@@ -71,7 +71,7 @@ const CourseDetail = ({ currentUser }) => {
             key: 'material',
             comp: (props) => (
                 <div className="space-y-6">
-                    {!props.isTeacher && <AdaptiveRecommendationWidget courseId={props.courseId} studentId={props.currentUser.id} />}
+                    {!props.isTeacher && licenseTier !== 'BASIC' && <AdaptiveRecommendationWidget courseId={props.courseId} studentId={props.currentUser.id} />}
                     <CourseContentModule {...props} />
                 </div>
             ),
@@ -181,7 +181,7 @@ const CourseDetail = ({ currentUser }) => {
             comp: ({ courseId }) => <TeacherAnalyticsDashboard courseId={courseId} />,
             meta: { name: 'Mission Control' },
             icon: <Sparkles size={18} />,
-            enabled: true,
+            enabled: licenseTier !== 'BASIC',
             visibleFor: 'TEACHER'
         }
     ];
@@ -413,25 +413,27 @@ const CourseDetail = ({ currentUser }) => {
                                         <MessageSquare size={16} /> {t('evaluation.manage_btn') || 'Hantera Utvärdering'}
                                     </button>
 
-                                    <button
-                                        onClick={async () => {
-                                            if (!confirm("Vill du indexera allt material i kursen för AI-tutorn? Detta kan ta en stund.")) return;
-                                            try {
-                                                await api.ai.tutor.ingestCourse(course.id);
-                                                alert("Indexering startad i bakgrunden. Du kan fortsätta arbeta.");
-                                            } catch (e) {
-                                                console.error(e);
-                                                if (e.message && e.message.includes("403")) {
-                                                    alert("🔒 Denna funktion kräver en PRO eller ENTERPRISE licens.");
-                                                } else {
-                                                    alert("Kunde inte starta indexering.");
+                                    {licenseTier !== 'BASIC' && (
+                                        <button
+                                            onClick={async () => {
+                                                if (!confirm("Vill du indexera allt material i kursen för AI-tutorn? Detta kan ta en stund.")) return;
+                                                try {
+                                                    await api.ai.tutor.ingestCourse(course.id);
+                                                    alert("Indexering startad i bakgrunden. Du kan fortsätta arbeta.");
+                                                } catch (e) {
+                                                    console.error(e);
+                                                    if (e.message && e.message.includes("403")) {
+                                                        alert("🔒 Denna funktion kräver en PRO eller ENTERPRISE licens.");
+                                                    } else {
+                                                        alert("Kunde inte starta indexering.");
+                                                    }
                                                 }
-                                            }
-                                        }}
-                                        className="w-full bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 px-4 py-2 rounded-lg text-sm font-bold flex items-center justify-center gap-2 hover:bg-indigo-100 dark:hover:bg-indigo-900/40 transition-colors shadow-sm"
-                                    >
-                                        <Sparkles size={16} /> Indexera för AI
-                                    </button>
+                                            }}
+                                            className="w-full bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 px-4 py-2 rounded-lg text-sm font-bold flex items-center justify-center gap-2 hover:bg-indigo-100 dark:hover:bg-indigo-900/40 transition-colors shadow-sm"
+                                        >
+                                            <Sparkles size={16} /> Indexera för AI
+                                        </button>
+                                    )}
                                 </>
                             )}
                         </div>

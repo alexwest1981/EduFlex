@@ -83,7 +83,7 @@ const LandingPage = () => {
         {
             icon: <Layers className="w-7 h-7" />,
             title: t('landing.features.multi_tenancy.title'),
-            description: t('landing.features.multi_tenancy.desc'),
+            description: "Full isolering och kontroll över varje organisation. Master-admin kan nu styra moduler och licensnivåer (BASIC/PRO/ENT) per tenant.",
             color: 'text-brand-teal',
             bgColor: 'bg-brand-teal/10',
             hoverBorder: 'hover:border-brand-teal/50'
