@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {
     Users, BookOpen, FileText, Settings, Plus, Trash2, Search,
     Save, X, Upload, Edit2, Mail, UserCheck, UserX,
-    Moon, Cpu, Activity, Phone, MapPin, Badge
+    Moon, Cpu, Activity, Phone, MapPin, Badge, Rocket, ArrowRight
 } from 'lucide-react';
 import { api } from '../../services/api';
 import { useTranslation } from 'react-i18next';
@@ -18,6 +18,7 @@ import { useModules } from '../../context/ModuleContext';
 import UserImport from './UserImport';
 import AuditLogDashboard from './AuditLogDashboard';
 import DeployPanel from './DeployPanel';
+import PilotKitWizard from './PilotKitWizard';
 import SkolverketCourseSelector from '../../components/SkolverketCourseSelector';
 
 const AdminPanel = ({ currentUser }) => {
@@ -316,10 +317,31 @@ const AdminPanel = ({ currentUser }) => {
                 <p className="text-gray-500 dark:text-gray-400">Total kontroll över plattformen.</p>
             </div>
 
+            {/* VELKOMMEN BANNER (PILOT KIT TRIGGER) */}
+            {(systemSettings['site_name'] === 'EduFlex LMS' || !systemSettings['site_name']) && adminTab !== 'pilot' && (
+                <div className="mb-8 p-8 bg-gradient-to-r from-brand-teal to-brand-blue rounded-[2.5rem] shadow-2xl shadow-brand-teal/20 flex flex-col md:flex-row items-center justify-between gap-6 animate-in slide-in-from-top-4 duration-700">
+                    <div className="flex items-center gap-6">
+                        <div className="w-16 h-16 bg-white/20 backdrop-blur-xl rounded-2xl flex items-center justify-center border border-white/20">
+                            <Rocket className="w-8 h-8 text-white" />
+                        </div>
+                        <div className="text-white">
+                            <h2 className="text-2xl font-black mb-1">Dags att lyfta? 🚀</h2>
+                            <p className="text-white/80 font-bold">Vi ser att din portal inte är konfigurerad ännu. Kör Pilot Kit för en snabbstart!</p>
+                        </div>
+                    </div>
+                    <button
+                        onClick={() => setAdminTab('pilot')}
+                        className="px-8 py-4 bg-white text-slate-900 rounded-xl font-black shadow-xl hover:scale-105 active:scale-95 transition-all text-sm uppercase tracking-widest flex items-center gap-2"
+                    >
+                        Starta Pilot Kit <ArrowRight className="w-4 h-4" />
+                    </button>
+                </div>
+            )}
+
             <div className="flex flex-wrap gap-2 mb-8 border-b border-gray-200 dark:border-[#282a2c] pb-1">
-                {['users', 'courses', 'content', 'audit', 'settings', 'deploy'].map(tab => (
+                {['users', 'courses', 'content', 'audit', 'pilot', 'settings', 'deploy'].map(tab => (
                     <button key={tab} onClick={() => setAdminTab(tab)} className={`px-4 py-2 rounded-t-lg font-medium text-sm transition-colors flex items-center gap-2 capitalize ${adminTab === tab ? 'bg-gray-100 dark:bg-[#282a2c] text-indigo-600 dark:text-white border-b-2 border-indigo-500' : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200'}`}>
-                        {tab === 'users' ? 'Användare' : tab === 'courses' ? 'Kurser' : tab === 'content' ? 'Innehåll' : tab === 'audit' ? 'Audit Log' : tab === 'settings' ? 'Inställningar' : 'Deploy'}
+                        {tab === 'users' ? 'Användare' : tab === 'courses' ? 'Kurser' : tab === 'content' ? 'Innehåll' : tab === 'audit' ? 'Audit Log' : tab === 'pilot' ? 'Pilot Kit' : tab === 'settings' ? 'Inställningar' : 'Deploy'}
                     </button>
                 ))}
             </div>
@@ -619,6 +641,13 @@ const AdminPanel = ({ currentUser }) => {
                                 ))}
                             </div>
                         </div>
+                    </div>
+                )}
+
+                {/* PILOT KIT FLIK */}
+                {adminTab === 'pilot' && (
+                    <div className="animate-in fade-in zoom-in-95 duration-500">
+                        <PilotKitWizard onComplete={() => setAdminTab('settings')} />
                     </div>
                 )}
 

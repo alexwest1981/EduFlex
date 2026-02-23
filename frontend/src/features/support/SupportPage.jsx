@@ -3,7 +3,7 @@ import {
     Send, MessageSquare, History, AlertCircle,
     Search, Play, Shield, Zap, Globe,
     BookOpen, Video, ChevronRight, ExternalLink,
-    Clock, CheckCircle, Info
+    Clock, CheckCircle, Info, Users
 } from 'lucide-react';
 import { api } from '../../services/api';
 import { useAppContext } from '../../context/AppContext';
@@ -161,22 +161,29 @@ const SupportPage = () => {
     };
 
     return (
-        <div className="max-w-6xl mx-auto p-4 lg:p-8 space-y-12 animate-in fade-in duration-500">
+        <div className="max-w-7xl mx-auto p-4 lg:p-10 space-y-16 animate-in fade-in duration-700">
             {/* --- PREMIUM HERO SECTION --- */}
-            <header className="relative py-12 px-8 rounded-[2rem] bg-slate-900 border border-white/5 overflow-hidden shadow-2xl">
-                <div className="absolute top-0 right-0 w-64 h-64 bg-brand-teal/10 blur-[100px] -translate-y-1/2 translate-x-1/2"></div>
-                <div className="absolute bottom-0 left-0 w-64 h-64 bg-brand-blue/10 blur-[100px] translate-y-1/2 -translate-x-1/2"></div>
+            <header className="relative py-20 px-10 rounded-[2.5rem] bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 border border-white/10 overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
+                {/* Decorative Elements */}
+                <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-brand-teal/10 blur-[120px] -translate-y-1/2 translate-x-1/2 rounded-full animate-pulse"></div>
+                <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-brand-blue/10 blur-[100px] translate-y-1/2 -translate-x-1/2 rounded-full"></div>
+                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10 mix-blend-overlay"></div>
 
-                <div className="relative z-10 max-w-2xl space-y-4">
-                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-teal/10 border border-brand-teal/20 text-brand-teal text-xs font-bold uppercase tracking-wider">
-                        <MessageSquare className="w-3 h-3" /> EduFlex Help Center
+                <div className="relative z-10 max-w-3xl space-y-6">
+                    <div className="inline-flex items-center gap-3 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 backdrop-blur-md text-brand-teal text-xs font-black uppercase tracking-[0.2em]">
+                        <div className="w-2 h-2 bg-brand-teal rounded-full animate-ping"></div>
+                        EduFlex Help Center 2.0
                     </div>
-                    <h1 className="text-4xl lg:text-5xl font-black text-white tracking-tight">Hur kan vi hjälpa dig idag?</h1>
-                    <p className="text-slate-400 text-lg font-medium">Sök i vår kunskapsbank, titta på guider eller kontakta våra experter.</p>
+                    <h1 className="text-5xl lg:text-7xl font-black text-white tracking-tight leading-[1.1]">
+                        Hur kan vi <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-teal to-brand-blue">hjälpa dig</span> idag?
+                    </h1>
+                    <p className="text-slate-300 text-xl font-medium max-w-xl leading-relaxed">
+                        Sök i vår kunskapsbank, titta på guider eller kontakta våra experter för personlig assistans.
+                    </p>
 
-                    <div className="pt-4 flex items-center gap-3">
-                        <div className="relative flex-grow max-w-lg">
-                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 w-5 h-5" />
+                    <div className="pt-6 flex items-center gap-3">
+                        <div className="relative flex-grow max-w-xl group">
+                            <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-500 w-6 h-6 group-focus-within:text-brand-teal transition-colors" />
                             <input
                                 type="text"
                                 placeholder="Sök efter svar (t.ex. GDPR, LTI, AI)..."
@@ -185,17 +192,17 @@ const SupportPage = () => {
                                     setSearchQuery(e.target.value);
                                     if (view !== 'knowledge') setView('knowledge');
                                 }}
-                                className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-white placeholder:text-slate-600 focus:ring-2 focus:ring-brand-teal focus:border-transparent transition-all outline-none font-medium"
+                                className="w-full bg-white/10 border border-white/10 rounded-[1.5rem] py-5 pl-14 pr-6 text-white placeholder:text-slate-600 focus:ring-4 focus:ring-brand-teal/20 focus:bg-white/15 transition-all outline-none font-bold text-lg shadow-2xl backdrop-blur-xl"
                             />
                         </div>
                     </div>
                 </div>
             </header>
 
-            {/* --- NAVIGATION & SLA --- */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <div className="lg:col-span-2 space-y-6">
-                    <nav className="flex items-center gap-2 p-1.5 bg-slate-900/50 border border-white/5 rounded-2xl overflow-x-auto no-scrollbar">
+            {/* --- NAVIGATION & MAIN CONTENT --- */}
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-12">
+                <div className="lg:col-span-3 space-y-8">
+                    <nav className="flex items-center gap-3 p-2 bg-slate-900/80 backdrop-blur-md border border-white/5 rounded-2xl overflow-x-auto no-scrollbar shadow-xl">
                         {[
                             { id: 'knowledge', label: 'Kunskapsbank', icon: <BookOpen className="w-4 h-4" /> },
                             { id: 'videos', label: 'Video-guider', icon: <Video className="w-4 h-4" /> },
@@ -205,9 +212,9 @@ const SupportPage = () => {
                             <button
                                 key={tab.id}
                                 onClick={() => setView(tab.id)}
-                                className={`flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-bold transition-all whitespace-nowrap ${view === tab.id
-                                        ? 'bg-brand-teal text-slate-900 shadow-lg shadow-brand-teal/20'
-                                        : 'text-slate-400 hover:text-white hover:bg-white/5'
+                                className={`flex items-center gap-3 px-6 py-3.5 rounded-xl text-sm font-black transition-all whitespace-nowrap ${view === tab.id
+                                    ? 'bg-gradient-to-r from-brand-teal to-brand-emerald text-slate-900 shadow-xl shadow-brand-teal/20 scale-[1.02]'
+                                    : 'text-slate-400 hover:text-white hover:bg-white/5'
                                     }`}
                             >
                                 {tab.icon} {tab.label}
@@ -216,51 +223,62 @@ const SupportPage = () => {
                     </nav>
 
                     {/* MAIN CONTENT AREA */}
-                    <div className="min-h-[400px]">
+                    <div className="min-h-[500px]">
                         {view === 'knowledge' && (
-                            <div className="space-y-4 animate-in slide-in-from-bottom-2">
+                            <div className="grid grid-cols-1 gap-5 animate-in slide-in-from-bottom-4 duration-500">
                                 {filteredFaqs.length > 0 ? (
                                     filteredFaqs.map((faq, idx) => (
-                                        <div key={idx} className="bg-slate-900/40 border border-white/5 rounded-2xl p-6 hover:border-brand-teal/30 transition-colors group">
-                                            <div className="flex items-start gap-4">
-                                                <div className="p-2 bg-slate-800 rounded-lg text-brand-teal group-hover:scale-110 transition-transform">
-                                                    {faqCategories.find(c => c.id === faq.category)?.icon || <Info className="w-4 h-4" />}
+                                        <div key={idx} className="bg-white border border-slate-200 dark:bg-white/5 dark:border-white/10 rounded-3xl p-8 hover:bg-slate-50 dark:hover:bg-white/[0.08] hover:border-brand-teal/40 hover:-translate-y-1 transition-all duration-300 group cursor-default shadow-md hover:shadow-xl">
+                                            <div className="flex items-start gap-6">
+                                                <div className="p-4 bg-slate-100 dark:bg-slate-800/80 rounded-2xl text-brand-teal group-hover:bg-brand-teal group-hover:text-slate-900 transition-all duration-500 shadow-inner">
+                                                    {faqCategories.find(c => c.id === faq.category)?.icon || <Info className="w-5 h-5" />}
                                                 </div>
-                                                <div className="space-y-2">
-                                                    <h3 className="text-lg font-bold text-white leading-snug">{faq.q}</h3>
-                                                    <p className="text-slate-400 text-sm leading-relaxed font-medium">{faq.a}</p>
+                                                <div className="space-y-3">
+                                                    <h3 className="text-xl font-black text-slate-900 dark:text-white leading-tight group-hover:text-brand-teal transition-colors">
+                                                        {faq.q}
+                                                    </h3>
+                                                    <p className="text-slate-600 dark:text-slate-300 text-base leading-relaxed font-bold">
+                                                        {faq.a}
+                                                    </p>
                                                 </div>
                                             </div>
                                         </div>
                                     ))
                                 ) : (
-                                    <div className="text-center py-20 bg-slate-900/20 rounded-3xl border border-dashed border-white/10">
-                                        <Search className="w-12 h-12 text-slate-700 mx-auto mb-4" />
-                                        <h3 className="text-white font-bold text-xl">Inga träffar</h3>
-                                        <p className="text-slate-500">Vi kunde inte hitta något svar på "{searchQuery}". Testa ett annat ord eller kontakta support.</p>
+                                    <div className="text-center py-32 bg-slate-100 dark:bg-slate-900/40 rounded-[3rem] border-2 border-dashed border-slate-200 dark:border-white/5">
+                                        <Search className="w-16 h-16 text-slate-400 dark:text-slate-700 mx-auto mb-6 opacity-40" />
+                                        <h3 className="text-slate-900 dark:text-white font-black text-2xl">Inga träffar</h3>
+                                        <p className="text-slate-500 font-bold max-w-sm mx-auto">Vi hittade inget för "{searchQuery}". Pröva att söka på t.ex. "Säkerhet" eller "LTI".</p>
                                     </div>
                                 )}
                             </div>
                         )}
 
                         {view === 'videos' && (
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-in slide-in-from-bottom-2">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 animate-in slide-in-from-bottom-4 duration-500">
                                 {videoGuides.map((guide, idx) => (
-                                    <div key={idx} className="bg-slate-900/40 border border-white/5 rounded-3xl overflow-hidden group border hover:border-brand-blue/30 transition-all">
-                                        <div className={`aspect-video ${guide.thumbnail} relative flex items-center justify-center`}>
-                                            <div className="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                                <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-2xl scale-90 group-hover:scale-100 transition-transform">
-                                                    <Play className="w-8 h-8 text-slate-900 fill-slate-900 ml-1" />
+                                    <div key={idx} className="bg-white border border-slate-200 dark:bg-white/5 dark:border-white/10 rounded-[2.5rem] overflow-hidden group hover:border-brand-blue/50 hover:-translate-y-2 transition-all duration-500 shadow-lg hover:shadow-2xl">
+                                        <div className={`aspect-video ${guide.thumbnail} relative flex items-center justify-center overflow-hidden`}>
+                                            <div className="absolute inset-0 bg-slate-900/40 opacity-20 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-[2px]">
+                                                <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-2xl scale-75 group-hover:scale-100 transition-all duration-500">
+                                                    <Play className="w-10 h-10 text-slate-900 fill-slate-900 ml-1.5" />
                                                 </div>
                                             </div>
-                                            <div className="absolute bottom-3 right-3 px-2 py-1 bg-black/60 backdrop-blur-md rounded-md text-[10px] font-black text-white">
+                                            <div className="absolute top-4 right-4 px-3 py-1.5 bg-black/70 backdrop-blur-xl rounded-xl text-xs font-black text-white border border-white/10">
                                                 {guide.duration}
                                             </div>
-                                            <Video className="w-12 h-12 text-white/20" />
+                                            <Video className="w-16 h-16 text-slate-400 dark:text-white/10 group-hover:scale-110 transition-transform duration-700" />
                                         </div>
-                                        <div className="p-6 space-y-2">
-                                            <h3 className="text-lg font-bold text-white group-hover:text-brand-blue transition-colors">{guide.title}</h3>
-                                            <p className="text-sm text-slate-400 font-medium leading-relaxed">{guide.desc}</p>
+                                        <div className="p-8 space-y-3">
+                                            <h3 className="text-2xl font-black text-slate-900 dark:text-white group-hover:text-brand-blue transition-colors">
+                                                {guide.title}
+                                            </h3>
+                                            <p className="text-slate-600 dark:text-slate-400 font-bold text-sm leading-relaxed">
+                                                {guide.desc}
+                                            </p>
+                                            <div className="pt-4 flex items-center gap-2 text-brand-blue text-xs font-black uppercase tracking-widest">
+                                                Visa guide <ChevronRight className="w-4 h-4" />
+                                            </div>
                                         </div>
                                     </div>
                                 ))}
@@ -268,15 +286,16 @@ const SupportPage = () => {
                         )}
 
                         {view === 'new' && (
-                            <div className="bg-slate-900/40 border border-white/5 rounded-3xl p-8 animate-in slide-in-from-bottom-2">
-                                <form onSubmit={handleSubmit} className="space-y-6">
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        <div className="space-y-2">
-                                            <label className="text-xs font-black text-slate-500 uppercase tracking-widest pl-1">Kategori</label>
+                            <div className="bg-white/[0.03] backdrop-blur-xl border border-white/10 rounded-[3rem] p-10 shadow-2xl animate-in slide-in-from-bottom-4 duration-500 relative overflow-hidden">
+                                <div className="absolute -top-24 -right-24 w-48 h-48 bg-brand-teal/5 blur-[80px] rounded-full"></div>
+                                <form onSubmit={handleSubmit} className="space-y-8 relative z-10">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                        <div className="space-y-3">
+                                            <label className="text-xs font-black text-slate-500 uppercase tracking-widest ml-1">Kategori</label>
                                             <select
                                                 value={formData.category}
                                                 onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                                                className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-white focus:ring-2 focus:ring-brand-teal transition-all outline-none font-medium appearance-none"
+                                                className="w-full bg-white/5 border border-white/10 rounded-2xl p-5 text-white focus:ring-4 focus:ring-brand-teal/20 transition-all outline-none font-bold appearance-none cursor-pointer"
                                             >
                                                 <option value="" className="bg-slate-900 text-white">Välj kategori...</option>
                                                 <option value="Tekniskt fel" className="bg-slate-900 text-white">Tekniskt fel</option>
@@ -285,12 +304,12 @@ const SupportPage = () => {
                                                 <option value="Annat" className="bg-slate-900 text-white">Övrigt</option>
                                             </select>
                                         </div>
-                                        <div className="space-y-2">
-                                            <label className="text-xs font-black text-slate-500 uppercase tracking-widest pl-1">Prioritet</label>
+                                        <div className="space-y-3">
+                                            <label className="text-xs font-black text-slate-500 uppercase tracking-widest ml-1">Prioritet</label>
                                             <select
                                                 value={formData.severity}
                                                 onChange={(e) => setFormData({ ...formData, severity: e.target.value })}
-                                                className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-white focus:ring-2 focus:ring-brand-teal transition-all outline-none font-medium appearance-none"
+                                                className="w-full bg-white/5 border border-white/10 rounded-2xl p-5 text-white focus:ring-4 focus:ring-brand-teal/20 transition-all outline-none font-bold appearance-none cursor-pointer"
                                             >
                                                 <option value="LOW" className="bg-slate-900 text-white">Låg</option>
                                                 <option value="MEDIUM" className="bg-slate-900 text-white">Medium</option>
@@ -299,19 +318,19 @@ const SupportPage = () => {
                                             </select>
                                         </div>
                                     </div>
-                                    <div className="space-y-2">
-                                        <label className="text-xs font-black text-slate-500 uppercase tracking-widest pl-1">Beskrivning</label>
+                                    <div className="space-y-3">
+                                        <label className="text-xs font-black text-slate-500 uppercase tracking-widest ml-1">Beskrivning</label>
                                         <textarea
                                             value={formData.message}
                                             onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                                            className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-white focus:ring-2 focus:ring-brand-teal transition-all outline-none font-medium min-h-[150px]"
-                                            placeholder="Vad kan vi hjälpa dig med?"
+                                            className="w-full bg-white/5 border border-white/10 rounded-2xl p-6 text-white focus:ring-4 focus:ring-brand-teal/20 transition-all outline-none font-bold min-h-[180px] resize-none"
+                                            placeholder="Vad kan vi hjälpa dig med? Var så detaljerad som möjligt..."
                                         />
                                     </div>
                                     <button
                                         type="submit"
                                         disabled={submitting}
-                                        className="w-full bg-brand-teal text-slate-900 font-black py-5 rounded-2xl shadow-xl shadow-brand-teal/10 hover:scale-[1.02] transition-all flex items-center justify-center gap-2 group disabled:opacity-50"
+                                        className="w-full bg-gradient-to-r from-brand-teal to-brand-emerald text-slate-950 font-black py-6 rounded-2xl shadow-2xl shadow-brand-teal/30 hover:scale-[1.01] hover:brightness-110 active:scale-[0.99] transition-all flex items-center justify-center gap-3 group disabled:opacity-50"
                                     >
                                         {submitting ? 'Skickar...' : 'Skicka ärende'}
                                         <Send className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -321,31 +340,40 @@ const SupportPage = () => {
                         )}
 
                         {view === 'history' && (
-                            <div className="space-y-4 animate-in slide-in-from-bottom-2">
+                            <div className="space-y-6 animate-in slide-in-from-bottom-4 duration-500">
                                 {loading ? (
-                                    <div className="p-20 flex justify-center"><div className="w-8 h-8 border-2 border-brand-teal border-t-transparent animate-spin rounded-full"></div></div>
+                                    <div className="p-32 flex justify-center"><div className="w-12 h-12 border-4 border-brand-teal border-t-transparent animate-spin rounded-full"></div></div>
                                 ) : tickets.length === 0 ? (
-                                    <div className="text-center py-20 bg-slate-900/20 rounded-3xl border border-dashed border-white/10">
-                                        <History className="w-12 h-12 text-slate-700 mx-auto mb-4" />
-                                        <h3 className="text-white font-bold">Inga ärenden ännu</h3>
+                                    <div className="text-center py-32 bg-slate-100 dark:bg-slate-900/40 rounded-[3rem] border-2 border-dashed border-slate-200 dark:border-white/5">
+                                        <History className="w-16 h-16 text-slate-400 dark:text-slate-700 mx-auto mb-6 opacity-40" />
+                                        <h3 className="text-slate-900 dark:text-white font-black text-xl">Inga ärenden ännu</h3>
+                                        <p className="text-slate-500 font-bold">Dina skickade ärenden kommer att visas här.</p>
                                     </div>
                                 ) : (
                                     tickets.map(ticket => (
-                                        <div key={ticket.id} className="bg-slate-900/40 border border-white/5 rounded-2xl p-6">
-                                            <div className="flex justify-between items-start mb-4">
-                                                <div className="space-y-1">
-                                                    <div className="flex items-center gap-2">
-                                                        <span className="text-[10px] font-black text-slate-500 uppercase">#{ticket.id}</span>
-                                                        <span className={`px-2 py-0.5 rounded text-[10px] font-black uppercase ${ticket.status === 'RESOLVED' ? 'bg-brand-emerald/10 text-brand-emerald' : 'bg-brand-gold/10 text-brand-gold'
+                                        <div key={ticket.id} className="bg-white border border-slate-200 dark:bg-white/5 dark:border-white/10 rounded-3xl p-8 hover:bg-slate-50 dark:hover:bg-white/[0.08] transition-all shadow-md hover:shadow-xl group">
+                                            <div className="flex justify-between items-start mb-6">
+                                                <div className="space-y-2">
+                                                    <div className="flex items-center gap-3">
+                                                        <span className="text-xs font-black text-slate-500 uppercase tracking-widest">Ärende #{ticket.id}</span>
+                                                        <span className={`px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider ${ticket.status === 'RESOLVED' ? 'bg-brand-emerald/20 text-brand-emerald border border-brand-emerald/30' : 'bg-brand-gold/20 text-brand-gold border border-brand-gold/30'
                                                             }`}>
-                                                            {ticket.status === 'RESOLVED' ? 'Klar' : 'Pågående'}
+                                                            {ticket.status === 'RESOLVED' ? 'Åtgärdad' : 'Hanteras'}
                                                         </span>
                                                     </div>
-                                                    <h4 className="font-bold text-white">{ticket.category}</h4>
+                                                    <h4 className="text-2xl font-black text-slate-900 dark:text-white">{ticket.category}</h4>
                                                 </div>
-                                                <span className="text-[10px] text-slate-500 font-bold uppercase">{new Date(ticket.createdAt).toLocaleDateString()}</span>
+                                                <div className="flex flex-col items-end gap-1">
+                                                    <span className="text-[10px] text-slate-500 font-black uppercase">{new Date(ticket.createdAt).toLocaleDateString()}</span>
+                                                    <span className="text-[10px] text-slate-600 font-bold">{new Date(ticket.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                                                </div>
                                             </div>
-                                            <p className="text-sm text-slate-400 font-medium bg-white/5 p-4 rounded-xl italic">"{ticket.message}"</p>
+                                            <div className="relative">
+                                                <div className="absolute left-0 top-0 bottom-0 w-1 bg-slate-200 dark:bg-white/10 rounded-full"></div>
+                                                <p className="text-slate-700 dark:text-slate-300 text-base font-bold pl-6 leading-relaxed italic">
+                                                    "{ticket.message}"
+                                                </p>
+                                            </div>
                                         </div>
                                     ))
                                 )}
@@ -354,42 +382,76 @@ const SupportPage = () => {
                     </div>
                 </div>
 
-                {/* --- SLA DASHBOARD (SIDEBAR) --- */}
-                <aside className="space-y-6">
-                    <div className={`bg-gradient-to-br ${slaInfo.color} p-8 rounded-[2rem] text-white shadow-2xl relative overflow-hidden group`}>
-                        <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform">
-                            {slaInfo.icon}
-                        </div>
-                        <h3 className="text-xs font-black uppercase tracking-widest opacity-80 mb-2">Din Supportnivå</h3>
-                        <div className="text-3xl font-black mb-1">{slaInfo.name}</div>
-                        <div className="text-sm opacity-90 font-bold mb-6 flex items-center gap-2">
-                            <Clock className="w-4 h-4" /> Svarstid: {slaInfo.time}
-                        </div>
-
-                        <div className="space-y-3 pt-6 border-t border-white/20">
-                            {slaInfo.features.map((f, i) => (
-                                <div key={i} className="flex items-center gap-3 text-xs font-bold leading-tight">
-                                    <CheckCircle className="w-4 h-4 flex-shrink-0" /> {f}
+                {/* --- PREMIUM SIDEBAR --- */}
+                <aside className="space-y-8 lg:pt-2">
+                    {/* SLA DASHBOARD */}
+                    <div className={`relative p-1 rounded-[2.5rem] bg-gradient-to-br ${slaInfo.color} shadow-2xl group overflow-hidden`}>
+                        <div className="absolute inset-0 bg-slate-900/20 backdrop-blur-[2px]"></div>
+                        <div className="relative bg-white/95 dark:bg-slate-900/40 backdrop-blur-3xl rounded-[2.4rem] p-8 space-y-8 border border-white/10 shadow-inner">
+                            <div className="flex items-center justify-between">
+                                <div className={`p-4 rounded-3xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-brand-teal group-hover:scale-110 transition-transform duration-500`}>
+                                    {slaInfo.icon}
                                 </div>
-                            ))}
+                                <div className="text-right">
+                                    <div className="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest">Aktiv Nivå</div>
+                                    <div className="text-xl font-black text-slate-900 dark:text-white">{slaInfo.name}</div>
+                                </div>
+                            </div>
+
+                            <div className="space-y-2">
+                                <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-500">Garanterad Svarstid</h3>
+                                <div className="flex items-center gap-3 text-3xl font-black text-slate-900 dark:text-white">
+                                    <Clock className="w-8 h-8 text-brand-teal" /> {slaInfo.time}
+                                </div>
+                            </div>
+
+                            <div className="space-y-4 pt-6 border-t border-slate-200 dark:border-white/10">
+                                {slaInfo.features.map((f, i) => (
+                                    <div key={i} className="flex items-start gap-4 text-sm font-black text-slate-700 dark:text-slate-300 leading-tight">
+                                        <CheckCircle className="w-5 h-5 text-brand-teal flex-shrink-0 mt-0.5" /> {f}
+                                    </div>
+                                ))}
+                            </div>
                         </div>
                     </div>
 
-                    <div className="bg-slate-900/60 border border-white/5 rounded-3xl p-6 space-y-4">
-                        <h4 className="font-black text-white text-sm uppercase tracking-widest">Resurser</h4>
-                        <div className="space-y-2">
-                            <a href="#" className="flex items-center justify-between p-4 bg-white/5 rounded-2xl hover:bg-white/10 transition-colors group">
-                                <span className="text-sm font-bold text-slate-300">Community Forum</span>
-                                <ExternalLink className="w-4 h-4 text-slate-500 group-hover:text-brand-teal transition-colors" />
+                    {/* RESOURCE LINKS */}
+                    <div className="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-[2.5rem] p-8 space-y-6 shadow-xl relative overflow-hidden">
+                        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-brand-blue/50 to-transparent"></div>
+                        <h4 className="font-black text-slate-900 dark:text-white text-sm uppercase tracking-[0.2em]">Resurser</h4>
+                        <div className="space-y-3">
+                            <a href="#" className="flex items-center justify-between p-5 bg-slate-50 dark:bg-white/5 rounded-2xl hover:bg-slate-100 dark:hover:bg-white/[0.08] transition-all group border border-transparent hover:border-slate-300 dark:hover:border-white/10">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-8 h-8 rounded-lg bg-indigo-500/10 flex items-center justify-center text-indigo-500 dark:text-indigo-400 group-hover:bg-indigo-500 group-hover:text-white transition-all">
+                                        <Users className="w-4 h-4" />
+                                    </div>
+                                    <span className="text-sm font-black text-slate-700 dark:text-slate-300">Community Forum</span>
+                                </div>
+                                <ExternalLink className="w-4 h-4 text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors" />
                             </a>
-                            <a href="#" className="flex items-center justify-between p-4 bg-white/5 rounded-2xl hover:bg-white/10 transition-colors group">
-                                <span className="text-sm font-bold text-slate-300">Systemstatus</span>
+                            <a href="#" className="flex items-center justify-between p-5 bg-slate-50 dark:bg-white/5 rounded-2xl hover:bg-slate-100 dark:hover:bg-white/[0.08] transition-all group border border-transparent hover:border-slate-300 dark:hover:border-white/10">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-500 dark:text-emerald-400 group-hover:bg-emerald-500 group-hover:text-white transition-all">
+                                        <Zap className="w-4 h-4" />
+                                    </div>
+                                    <span className="text-sm font-black text-slate-700 dark:text-slate-300">Systemstatus</span>
+                                </div>
                                 <div className="flex items-center gap-2">
-                                    <div className="w-2 h-2 bg-brand-emerald rounded-full animate-pulse"></div>
-                                    <span className="text-[10px] font-black text-brand-emerald uppercase">Online</span>
+                                    <div className="w-2 h-2 bg-brand-emerald rounded-full animate-pulse shadow-[0_0_10px_rgba(0,212,170,0.5)]"></div>
+                                    <span className="text-[10px] font-black text-brand-emerald uppercase tracking-wider">Online</span>
                                 </div>
                             </a>
                         </div>
+                    </div>
+
+                    {/* CONTACT CARD */}
+                    <div className="bg-brand-teal rounded-[2rem] p-8 text-slate-950 flex flex-col items-center text-center space-y-4 shadow-2xl shadow-brand-teal/20">
+                        <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-md">
+                            <Play className="w-6 h-6 fill-slate-950" />
+                        </div>
+                        <h3 className="text-xl font-black">Personlig Demo?</h3>
+                        <p className="text-sm font-bold opacity-80">Behöver ni mer djupgående hjälp? Boka ett möte med en expert.</p>
+                        <button className="w-full bg-slate-950 text-white font-black py-4 rounded-xl hover:scale-105 transition-transform">Boka nu</button>
                     </div>
                 </aside>
             </div>

@@ -2,7 +2,7 @@
   <img src="docs/Logo_top.png" width="600" alt="EduFlex Logo" />
 </p>
 
-<h1 align="center">🎓 EduFlex LMS v2.3.0</h1>
+<h1 align="center">🎓 EduFlex LMS v3.0.0-dev</h1>
 
 <p align="center">
   <em>The Complete Enterprise Learning Platform for Modern Education</em><br/>
@@ -35,7 +35,22 @@
 
 <div id="-svenska"></div>
 
-## 🚀 Senaste uppdateringarna (23 feb 2026)
+## 🚀 Senaste uppdateringarna (23 feb 2026 – v3.0.0-dev)
+Här är en sammanfattning av de stora onboarding- och UI-förbättringarna:
+
+*   **🚀 Pilot Kit Onboarding Wizard (v3.0.0):**
+    *   **Ny Wizard-komponent:** Skapade `PilotKitWizard.jsx` – en multi-stegs onboarding-guide för nya tenants (Identitet → Estetik → AI-konfiguration → Klart).
+    *   **Välkomstbanner:** En dynamisk, gradient-banner visas i admingränssnittet för nya tenants och manar dem att starta Pilot Kit.
+    *   **Integrerad i Admin-panelen:** Ny dedikerad flik "Pilot Kit" i `AdminPanel.jsx` med smooth fade-animation.
+    *   **Tema-val:** Tenants kan välja designtema direkt i wizarden med live-förhandsvisning.
+    *   **AI-konfiguration:** Steget "AI-kraft" låter administratören aktivera/deaktivera AI-funktioner och sätta kredit-budget.
+
+*   **🎨 Help Center 2.0 – Premium UI (v2.9.9):**
+    *   **Glassmorphic Hero:** Dynamisk djup-indigo gradient som hero-sektion.
+    *   **Kontrastfix:** Förbättrad textläsbarhet på FAQ-kort och sidopanel för ljust och mörkt läge.
+    *   **Glassmorfisk flikrad:** Smooth tab-transition med aktiv-indikator.
+    *   **SLA-dashboard:** Mjukare gradienter och förbättrad typografi.
+
 Här är en sammanfattning av fixarna för Tenant-resolution, Master-isolering och Modul-kontroll:
 
 *   **🛠️- **Master Module Control**: Master admin can now whitelist specific modules for each tenant and edit their license tier (BASIC, PRO, ENTERPRISE) directly from the Tenant Management UI. This ensures sub-accounts only see features they are licensed for.
