@@ -78,7 +78,8 @@ public class TenantController {
                     null,
                     null,
                     request.getTier() != null ? com.eduflex.backend.model.LicenseType.valueOf(request.getTier())
-                            : com.eduflex.backend.model.LicenseType.BASIC);
+                            : com.eduflex.backend.model.LicenseType.BASIC,
+                    request.getAllowedModules());
             return ResponseEntity.ok(tenant);
 
         } catch (org.springframework.web.server.ResponseStatusException e) {

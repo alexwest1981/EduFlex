@@ -35,6 +35,11 @@ public class ModuleService {
                                 throw new RuntimeException("Modulen '" + key + "' ingår inte i din nuvarande licens ("
                                                 + tier + "). Uppgradera till PRO eller ENTERPRISE.");
                         }
+
+                        if (!licenseService.isModuleWhitelisted(key)) {
+                                throw new RuntimeException("Modulen '" + key
+                                                + "' har inaktiverats för din organisation av systemadministratören.");
+                        }
                 }
                 // ---------------------
 

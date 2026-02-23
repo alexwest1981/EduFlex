@@ -58,7 +58,8 @@ public class PublicTenantController {
                     request.getAdminLastName(),
                     null,
                     null,
-                    com.eduflex.backend.model.LicenseType.BASIC);
+                    com.eduflex.backend.model.LicenseType.BASIC,
+                    null);
 
             return ResponseEntity.ok(Map.of(
                     "message", "Organization registered successfully",

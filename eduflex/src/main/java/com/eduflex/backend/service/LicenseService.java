@@ -194,6 +194,24 @@ public class LicenseService {
         return isOfflineMode;
     }
 
+    public boolean isModuleWhitelisted(String moduleKey) {
+        String tenantId = com.eduflex.backend.config.tenant.TenantContext.getCurrentTenant();
+        if (tenantId == null || tenantId.equalsIgnoreCase("public")) {
+            return true; // Master always has all modules (restricted by its own license elsewhere)
+        }
+
+        return tenantRepository.findById(tenantId)
+                .map(tenant -> {
+                    String allowed = tenant.getAllowedModules();
+                    if (allowed == null || allowed.isBlank()) {
+                        return true; // If none specified, default to "all allowed by tier" for legacy/simplicity
+                    }
+                    java.util.List<String> allowedList = java.util.Arrays.asList(allowed.split(","));
+                    return allowedList.contains(moduleKey);
+                })
+                .orElse(true);
+    }
+
     public LicenseType getTier() {
         String tenantId = com.eduflex.backend.config.tenant.TenantContext.getCurrentTenant();
         if (tenantId != null && !tenantId.equalsIgnoreCase("public")) {

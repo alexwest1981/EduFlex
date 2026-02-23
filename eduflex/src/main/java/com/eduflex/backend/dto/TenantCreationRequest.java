@@ -25,6 +25,7 @@ public class TenantCreationRequest {
     private String registrationKey;
 
     private String tier; // BASIC, PRO, ENTERPRISE
+    private String allowedModules; // Comma-separated list of whitelisted module keys
 
     public String getTenantId() {
         return tenantId != null ? tenantId : organizationKey;
@@ -127,5 +128,13 @@ public class TenantCreationRequest {
 
     public void setTier(String tier) {
         this.tier = tier;
+    }
+
+    public String getAllowedModules() {
+        return allowedModules;
+    }
+
+    public void setAllowedModules(String allowedModules) {
+        this.allowedModules = allowedModules;
     }
 }

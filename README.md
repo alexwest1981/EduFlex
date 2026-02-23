@@ -36,15 +36,21 @@
 <div id="-svenska"></div>
 
 ## 🚀 Senaste uppdateringarna (23 feb 2026)
-Här är en sammanfattning av fixarna för Tenant-resolution och Master-isolering:
+Här är en sammanfattning av fixarna för Tenant-resolution, Master-isolering och Modul-kontroll:
+
+*   **🛠️ Master Module Control (v2.9.5):**
+    *   **Modul-Whitelisting:** Master-kontot kan nu explicit välja vilka moduler som ska vara tillgängliga för varje enskild tenant, oavsett licensnivå.
+    *   **Licensstyrd Menyvisning:** "Tenants"-menyn är nu strikt begränsad till Master-konton med PRO eller ENTERPRISE-licens.
+    *   **Granulär Provisionering:** Nya tenants kan nu konfigureras med ett urval av tillåtna moduler direkt vid skapandet.
 
 *   **🌐 Förbättrad Tenant-resolution (Multi-Tenancy):**
     *   **Referer Fallback:** Åtgärdat problem där proxade anrop (via Cloudflare/Nginx) till `api.eduflexlms.se` inte kände igen subdomänen. Systemet extraherar nu Tenant-ID även från `Referer` och `Origin` headers för att garantera rätt schema-mappning.
     *   **Demo-vyn:** Verifierat att `demo.eduflexlms.se` nu landar 100% korrekt i `tenant_demo`-schemat med dess specifika demodata.
 
-*   **🔒 Master/Sub-Account Isolering:**
-    *   **Backend-restriktioner:** Implementerat strikt kontroll i `TenantController` så att enbart Master-kontot (`public` schema) kan lista, skapa eller ta bort andra tenants. Anrop från sub-tenants blockeras nu med `403 Forbidden`.
-    *   **Frontend-skydd:** Döljt "Tenants"-menyn i systeminställningarna för alla domäner utom master-domänen (`eduflexlms.se` / `localhost`).
+*   **🔒 Master/Sub-Account Isolering (v2.9.5):**
+    *   **Meny-synlighet:** Uppdaterat `SystemSettings.jsx` så att "Tenants"-menyn enbart visas om Master-kontot har en PRO eller ENTERPRISE-licens.
+    *   **Backend-spärr:** `TenantController` blockerar nu alla anrop från sub-tenants med `403 Forbidden`.
+    *   **Modul-Kontroll:** Implementerat stöd för explicit whitelisting av moduler per organisation, vilket ger administratören total kontroll över funktionsutbudet.
 
 *   **💳 Kommersiell Tiering & Feature Locking (v2.9.0):**
     *   **Prenumerationsnivåer:** Introducerat stöd för per-tenant licensnivåer (BASIC, PRO, ENTERPRISE). Systemet kan nu styra funktionalitet och användargränser styrt av kundens plan.

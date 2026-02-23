@@ -318,7 +318,7 @@ const SystemSettings = ({ asTab = false }) => {
             category: 'Konfiguration',
             items: [
                 ...(isAdmin ? [
-                    ...(isMaster ? [{ id: 'tenants', label: 'Tenants', icon: Server }] : []),
+                    ...(isMaster && (licenseInfo?.tier === 'PRO' || licenseInfo?.tier === 'ENTERPRISE') ? [{ id: 'tenants', label: 'Tenants', icon: Server }] : []),
                     { id: 'skolverket', label: 'Skolverket', icon: Database }
                 ] : [])
             ]

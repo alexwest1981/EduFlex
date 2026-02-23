@@ -37,6 +37,9 @@ public class Tenant implements Serializable {
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
+    @Column
+    private String allowedModules; // Comma-separated list of whitelisted module keys
+
     private LocalDateTime updatedAt = LocalDateTime.now();
 
     @PreUpdate
@@ -117,6 +120,14 @@ public class Tenant implements Serializable {
 
     public void setTier(LicenseType tier) {
         this.tier = tier;
+    }
+
+    public String getAllowedModules() {
+        return allowedModules;
+    }
+
+    public void setAllowedModules(String allowedModules) {
+        this.allowedModules = allowedModules;
     }
 
     public LocalDateTime getCreatedAt() {
