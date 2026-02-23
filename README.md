@@ -37,6 +37,12 @@
 
 ## 🚀 Senaste uppdateringarna (23 feb 2026 – v3.0.0-dev)
 
+*   **🧠 Role-Specific AI Coaches (v3.0.0):**
+    *   **Student AI Coach:** Personal motivational tips and study recommendations based on VAK profiles, XP leagues, and identified learning gaps.
+    *   **Teacher AI Coach:** Actionable class-level insights, pedagogical tips for upcoming lessons, and automated intervention suggestions for students in the "Risk Zone".
+    *   **Principal AI Coach:** Strategic "School Health" summaries, anomaly detection in attendance/incidents, and executive advice for school leadership.
+    *   **Unified AI Interface:** New premium `AiCoachWidget` with glassmorphic design and `framer-motion` animations integrated across all primary dashboards.
+
 *   **📝 Support Content CMS (v3.0.0):**
     *   **Ny backend-entitet:** `SupportArticle` – admin-hanterade FAQ-artiklar och videoguider i en separat, isolerad tabell (`V76` Flyway-migration).
     *   **CRUD-API:** REST-endpoints på `/api/support/articles` – publicerade visas publikt, CRUD kräver ADMIN-roll.

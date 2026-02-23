@@ -840,6 +840,12 @@ export const api = {
         reportAbsence: (data) => api.post('/guardian/absence', data),
     },
 
+    aiCoach: {
+        getStudentInsight: () => api.get('/ai-coach/student'),
+        getTeacherInsight: (courseId) => api.get(`/ai-coach/teacher/${courseId}`),
+        getPrincipalInsight: () => api.get('/ai-coach/principal'),
+    },
+
     impact: {
         getOverview: () => api.get('/impact/overview'),
     },

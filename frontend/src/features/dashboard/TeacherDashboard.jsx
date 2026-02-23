@@ -13,6 +13,7 @@ import PredictiveRiskWidget from './components/teacher/PredictiveRiskWidget';
 import OnlineFriendsWidget from './widgets/OnlineFriendsWidget';
 import SurveyNotificationWidget from './widgets/SurveyNotificationWidget';
 import MentorCoachWidget from './components/teacher/MentorCoachWidget';
+import AiCoachWidget from '../../components/ai/AiCoachWidget';
 
 // --- IMPORTERA KOMPONENTER (NYTT!) ---
 import TeacherStats from './components/TeacherStats'; // Keep for backward compatibility if needed, or remove? I will remove usage.
@@ -221,6 +222,7 @@ const TeacherDashboard = ({ currentUser }) => {
                 <div className="space-y-8 animate-in slide-in-from-bottom-2 duration-300">
 
                     <SurveyNotificationWidget />
+                    <AiCoachWidget role="TEACHER" courseId={myCourses[0]?.id} />
 
                     {/* STATS ROW */}
                     <div className="flex flex-wrap gap-6">

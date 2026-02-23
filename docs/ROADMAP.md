@@ -23,7 +23,7 @@
 ### April 2026: Revenue & AI-Differentiator
 | Prioritet | Funktion | Beskrivning | Ansträngning | Varför |
 | :--- | :--- | :--- | :--- | :--- |
-| **Hög** | **Role-Specific AI Coaches** | Principal (KPI), Teacher (risk-warning), Student (study-plan). | 12 dagar | Killer-feature: Unik selling point. |
+| **Hög** | **Role-Specific AI Coaches** | Principal (KPI), Teacher (risk-warning), Student (study-plan). | ✅ **Klar** | Killer-feature: Unik selling point. |
 | **Hög** | **CSN/Upphandlings-rapporter** | Närvaro-export, GDPR-logs. | 6 dagar | Svenskt krav. |
 | **Medel** | **Partner Program** | Resellers (Edtech Studios), affiliate. | 5 dagar | Scale via partners. |
 | **Låg** | **Microservices Scale** | Load-test PDF/video (verifiera befintlig implementation). | 2 dagar | Verify. |

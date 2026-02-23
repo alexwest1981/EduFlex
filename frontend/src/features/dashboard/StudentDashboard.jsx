@@ -33,6 +33,7 @@ import EduAIDashboard from '../../components/gamification/EduAIDashboard';
 import SkillsGapDashboard from '../skills/SkillsGapDashboard';
 import CoachRecommendationBanner from '../eduai/components/CoachRecommendationBanner';
 import SmartReviewDeck from '../eduai/components/SmartReviewDeck';
+import AiCoachWidget from '../../components/ai/AiCoachWidget';
 
 const StudentDashboard = ({ currentUser }) => {
     const { t } = useTranslation();
@@ -218,7 +219,7 @@ const StudentDashboard = ({ currentUser }) => {
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     {/* LEFT COLUMN (Content) */}
                     <div className="lg:col-span-2 space-y-6">
-
+                        <AiCoachWidget role="STUDENT" />
                         <SurveyNotificationWidget />
                         <EvaluationNotificationWidget />
 

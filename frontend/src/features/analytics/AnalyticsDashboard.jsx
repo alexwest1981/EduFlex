@@ -9,6 +9,7 @@ import { TrendingUp, Users, AlertTriangle, BookOpen, Download, MessageSquare, Ac
 import ActivityHeatmap from '../../components/dashboard/ActivityHeatmap';
 import CourseDropOffAnalysis from '../../components/dashboard/CourseDropOffAnalysis';
 import RoiCenter from './RoiCenter';
+import AiCoachWidget from '../../components/ai/AiCoachWidget';
 
 const COLORS = ['#4f46e5', '#10b981', '#f59e0b', '#ef4444'];
 
@@ -125,6 +126,8 @@ const AnalyticsDashboard = () => {
                             </button>
                         </div>
                     </div>
+
+                    <AiCoachWidget role="PRINCIPAL" />
 
                     {/* KPI Cards */}
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
