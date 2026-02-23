@@ -895,3 +895,5 @@ export const getSafeUrl = (url) => {
 
     return finalUrl;
 };
+
+export default api;

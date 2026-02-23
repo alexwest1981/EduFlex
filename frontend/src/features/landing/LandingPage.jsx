@@ -5,7 +5,7 @@ import {
     BookOpen, Trophy, Shield, Users,
     Globe, Database, Server, Zap, BarChart,
     Check, ArrowRight, Menu, X, Play, Sparkles,
-    Award, TrendingUp, Layers, Gamepad2, Brain, Map, Flame, MessageSquare,
+    Award, TrendingUp, Layers, Gamepad2, Brain, Map, Flame, MessageSquare, Bell,
     FileText, ClipboardList, Thermometer, Target, Smartphone, Video as VideoIcon
 } from 'lucide-react';
 

@@ -21,7 +21,9 @@ const ClassSkillsHeatmap = ({ courseId, courseName }) => {
         try {
             setLoading(true);
             const response = await api.get(`/skills/class/${courseId}`);
-            setData(response.data);
+            // Check if response is an array or has a data property
+            const heatmapData = Array.isArray(response) ? response : (response?.data || []);
+            setData(heatmapData);
         } catch (err) {
             console.error('Failed to fetch heatmap data', err);
             setError('Kunde inte hämta heatmap-data.');
