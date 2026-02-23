@@ -1,12 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import { Sparkles, ArrowRight, Brain, Target, TrendingUp, Info } from 'lucide-react';
 import { api } from '../../services/api';
 
 const AiCoachWidget = ({ role, courseId }) => {
+    const navigate = useNavigate();
     const [insight, setInsight] = useState(null);
     const [loading, setLoading] = useState(true);
     const [expanded, setExpanded] = useState(false);
+
+    const handleNavigate = () => {
+        if (role === 'STUDENT') {
+            navigate('/ai-hub');
+        } else {
+            navigate('/analytics');
+        }
+    };
 
     useEffect(() => {
         const fetchInsight = async () => {
@@ -173,6 +183,7 @@ const AiCoachWidget = ({ role, courseId }) => {
                 <motion.button
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
+                    onClick={handleNavigate}
                     className={`flex items-center justify-center gap-2 w-full py-3.5 ${activeTheme.button} rounded-2xl font-black text-sm shadow-lg transition-all`}
                 >
                     {role === 'STUDENT' ? insight.quickAction : 'Se full analys'}
