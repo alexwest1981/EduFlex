@@ -13,8 +13,12 @@ const AiCoachWidget = ({ role, courseId }) => {
     const handleNavigate = () => {
         if (role === 'STUDENT') {
             navigate('/ai-hub');
+        } else if (role === 'TEACHER') {
+            navigate('/?tab=SKILLS');
+        } else if (role === 'PRINCIPAL' || role === 'RECTOR') {
+            navigate('/impact');
         } else {
-            navigate('/analytics');
+            navigate('/');
         }
     };
 
