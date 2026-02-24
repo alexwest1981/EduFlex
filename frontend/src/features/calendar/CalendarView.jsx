@@ -591,15 +591,22 @@ const CalendarView = () => {
         <div className="max-w-7xl mx-auto flex flex-col p-4 lg:p-6">
 
             {/* Header - Top Row */}
-            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-3 shrink-0 w-full">
+            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-4 shrink-0 w-full">
                 <div>
-                    <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-1">Calendar</h1>
-                    <div className="flex items-center gap-3">
-                        <p className="text-sm text-gray-500 dark:text-gray-400">Your Personalized Calendar</p>
+                    <div className="flex items-center gap-3 mb-1">
+                        <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center shadow-lg shadow-indigo-500/20">
+                            <CalIcon size={18} className="text-white" />
+                        </div>
+                        <h1 className="text-2xl font-extrabold text-gray-900 dark:text-white tracking-tight">Kalender</h1>
+                    </div>
+                    <div className="flex items-center gap-3 ml-12">
+                        <p className="text-xs text-gray-400 dark:text-gray-500 font-medium">
+                            {new Date().toLocaleDateString('sv-SE', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
+                        </p>
                         {isTeacherOrAdmin && (
-                            <div className="relative group ml-4">
+                            <div className="relative group">
                                 <span className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
-                                    <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg className="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                                     </svg>
                                 </span>
@@ -608,7 +615,7 @@ const CalendarView = () => {
                                     placeholder="Sök händelser..."
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="bg-gray-100 dark:bg-gray-800 border-none rounded-full py-1.5 pl-10 pr-4 text-xs w-64 focus:ring-2 ring-indigo-500 transition-all dark:text-white"
+                                    className="bg-gray-100 dark:bg-gray-800/80 border border-transparent focus:border-indigo-300 dark:focus:border-indigo-700 rounded-full py-1.5 pl-9 pr-4 text-xs w-52 focus:ring-2 focus:ring-indigo-500/20 transition-all dark:text-white placeholder-gray-400"
                                 />
                                 {searchQuery && (
                                     <button
@@ -625,22 +632,22 @@ const CalendarView = () => {
 
                 <div className="flex items-center gap-2 mt-3 lg:mt-0">
                     {/* Sync Google Calendar Button */}
-                    <button className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-sm font-medium text-gray-700 dark:text-gray-300">
-                        <CalIcon size={16} />
-                        <span className="hidden lg:inline">Sync Google Calendar</span>
+                    <button className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-gray-800/60 border border-gray-200 dark:border-gray-700/50 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700/60 transition-all text-xs font-semibold text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400">
+                        <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
+                        <span className="hidden lg:inline">Synka Google</span>
                     </button>
 
                     {/* User Profile */}
-                    <div className="flex items-center gap-2">
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold">
+                    <div className="flex items-center gap-2.5 pl-2 border-l border-gray-200 dark:border-gray-700/50 ml-1">
+                        <div className="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center text-white font-bold text-sm shadow-md shadow-indigo-500/20">
                             {currentUser?.firstName?.charAt(0)}{currentUser?.lastName?.charAt(0)}
                         </div>
                         <div className="hidden lg:block">
-                            <div className="text-sm font-semibold text-gray-900 dark:text-white">
+                            <div className="text-sm font-semibold text-gray-900 dark:text-white leading-tight">
                                 {currentUser?.firstName} {currentUser?.lastName}
                             </div>
-                            <div className="text-xs text-gray-500 dark:text-gray-400">
-                                {currentUser?.email}
+                            <div className="text-[10px] text-gray-400 dark:text-gray-500 font-medium">
+                                {currentUser?.role?.name || currentUser?.role || ''}
                             </div>
                         </div>
                     </div>
@@ -648,34 +655,31 @@ const CalendarView = () => {
             </div>
 
             {/* Statistics & Controls Row */}
-            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6 shrink-0 w-full gap-4">
-                {/* Statistics */}
-                <div className="flex items-center gap-4">
+            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-5 shrink-0 w-full gap-3">
+                {/* Statistics Chips */}
+                {isTeacherOrAdmin && (
                     <div className="flex items-center gap-2">
-                        <div className="flex -space-x-2">
-                            <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-900/30 border-2 border-white dark:border-[#1E1E1E] flex items-center justify-center">
-                                <Users size={14} className="text-indigo-600 dark:text-indigo-400" />
+                        <div className="flex items-center gap-2 px-3 py-1.5 bg-indigo-50 dark:bg-indigo-900/20 rounded-xl border border-indigo-100 dark:border-indigo-800/30">
+                            <div className="flex -space-x-1.5">
+                                <div className="w-5 h-5 rounded-full bg-indigo-400 border-2 border-white dark:border-indigo-900/20" />
+                                <div className="w-5 h-5 rounded-full bg-violet-400 border-2 border-white dark:border-indigo-900/20" />
+                                <div className="w-5 h-5 rounded-full bg-blue-400 border-2 border-white dark:border-indigo-900/20" />
                             </div>
-                            <div className="w-8 h-8 rounded-full bg-purple-100 dark:bg-purple-900/30 border-2 border-white dark:border-[#1E1E1E] flex items-center justify-center">
-                                <Users size={14} className="text-purple-600 dark:text-purple-400" />
-                            </div>
-                            <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 border-2 border-white dark:border-[#1E1E1E] flex items-center justify-center">
-                                <Users size={14} className="text-blue-600 dark:text-blue-400" />
-                            </div>
+                            <span className="text-xs font-bold text-indigo-700 dark:text-indigo-300">{stats.totalStudents} elever</span>
                         </div>
-                        <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">{stats.totalStudents} Students</span>
-                    </div>
-                    <div className="w-px h-6 bg-gray-300 dark:bg-gray-700"></div>
-                    <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 rounded-full bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center">
-                            <TrendingUp size={14} className="text-orange-600 dark:text-orange-400" />
+                        <div className="flex items-center gap-2 px-3 py-1.5 bg-amber-50 dark:bg-amber-900/20 rounded-xl border border-amber-100 dark:border-amber-800/30">
+                            <TrendingUp size={13} className="text-amber-600 dark:text-amber-400" />
+                            <span className="text-xs font-bold text-amber-700 dark:text-amber-300">{stats.totalClasses} lektioner</span>
                         </div>
-                        <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">{stats.totalClasses} Classes</span>
+                        <div className="flex items-center gap-2 px-3 py-1.5 bg-emerald-50 dark:bg-emerald-900/20 rounded-xl border border-emerald-100 dark:border-emerald-800/30">
+                            <CalIcon size={13} className="text-emerald-600 dark:text-emerald-400" />
+                            <span className="text-xs font-bold text-emerald-700 dark:text-emerald-300">{displayEvents.filter(e => { const d = e.start; const now = new Date(); return d.getDate() === now.getDate() && d.getMonth() === now.getMonth(); }).length} idag</span>
+                        </div>
                     </div>
-                </div>
+                )}
 
                 {/* Controls */}
-                <div className="flex items-center gap-3 w-full lg:w-auto justify-between lg:justify-end">
+                <div className="flex items-center gap-2 w-full lg:w-auto justify-between lg:justify-end ml-auto">
                     {/* Calendar Filter */}
                     <CalendarFilter
                         onFilterChange={handleFilterChange}
@@ -685,37 +689,35 @@ const CalendarView = () => {
                     />
 
                     {/* View Switcher */}
-                    <div className="flex bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
-                        <button
-                            onClick={() => setViewMode('day')}
-                            className={`px-3 py-1.5 text-xs font-bold rounded-md transition-all ${viewMode === 'day' ? 'bg-white dark:bg-gray-700 text-indigo-600 dark:text-white shadow-sm' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700'}`}
-                        >
-                            Dag
-                        </button>
-                        <button
-                            onClick={() => setViewMode('week')}
-                            className={`px-3 py-1.5 text-xs font-bold rounded-md transition-all ${viewMode === 'week' ? 'bg-white dark:bg-gray-700 text-indigo-600 dark:text-white shadow-sm' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700'}`}
-                        >
-                            Vecka
-                        </button>
-                        <button
-                            onClick={() => setViewMode('month')}
-                            className={`px-3 py-1.5 text-xs font-bold rounded-md transition-all ${viewMode === 'month' ? 'bg-white dark:bg-gray-700 text-indigo-600 dark:text-white shadow-sm' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700'}`}
-                        >
-                            Månad
-                        </button>
+                    <div className="flex bg-gray-100 dark:bg-gray-800/60 rounded-xl p-1 border border-gray-200/50 dark:border-gray-700/30">
+                        {['day', 'week', 'month'].map((mode) => (
+                            <button
+                                key={mode}
+                                onClick={() => setViewMode(mode)}
+                                className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${viewMode === mode
+                                    ? 'bg-white dark:bg-gray-700 text-indigo-600 dark:text-indigo-300 shadow-sm border border-gray-200/50 dark:border-gray-600/50'
+                                    : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'}`}
+                            >
+                                {mode === 'day' ? 'Dag' : mode === 'week' ? 'Vecka' : 'Månad'}
+                            </button>
+                        ))}
                     </div>
 
                     {/* Navigation */}
-                    <div className="flex items-center gap-2 bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
-                        <button onClick={handlePrev} className="p-2 hover:bg-white dark:hover:bg-gray-700 rounded-md transition-colors">
-                            <ChevronLeft size={18} className="text-gray-600 dark:text-gray-400" />
+                    <div className="flex items-center gap-1 bg-gray-100 dark:bg-gray-800/60 rounded-xl p-1 border border-gray-200/50 dark:border-gray-700/30">
+                        <button onClick={handlePrev} className="p-1.5 hover:bg-white dark:hover:bg-gray-700 rounded-lg transition-all hover:shadow-sm">
+                            <ChevronLeft size={16} className="text-gray-600 dark:text-gray-400" />
                         </button>
-                        <span className="px-2 lg:px-4 text-sm font-semibold text-gray-700 dark:text-gray-300 min-w-[100px] lg:min-w-[120px] text-center capitalize">
-                            {weekStart.toLocaleDateString('sv-SE', { month: 'long', year: 'numeric' })}
-                        </span>
-                        <button onClick={handleNext} className="p-2 hover:bg-white dark:hover:bg-gray-700 rounded-md transition-colors">
-                            <ChevronRight size={18} className="text-gray-600 dark:text-gray-400" />
+                        <button
+                            onClick={() => setWeekStart(viewMode === 'day' ? new Date() : getMonday(new Date()))}
+                            className="px-3 text-xs font-bold text-gray-700 dark:text-gray-200 min-w-[110px] text-center capitalize hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+                        >
+                            {viewMode === 'week'
+                                ? `v.${getWeekNumber(weekStart)} · ${weekStart.toLocaleDateString('sv-SE', { month: 'short', year: 'numeric' })}`
+                                : weekStart.toLocaleDateString('sv-SE', { month: 'long', year: 'numeric' })}
+                        </button>
+                        <button onClick={handleNext} className="p-1.5 hover:bg-white dark:hover:bg-gray-700 rounded-lg transition-all hover:shadow-sm">
+                            <ChevronRight size={16} className="text-gray-600 dark:text-gray-400" />
                         </button>
                     </div>
 
@@ -729,10 +731,10 @@ const CalendarView = () => {
                             setAvailabilityStatus({ isBusy: false, message: '' });
                             setShowBookingModal(true);
                         }}
-                        className="bg-orange-500 hover:bg-orange-600 text-white w-10 h-10 lg:w-auto lg:px-4 lg:py-2 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2 shadow-md"
+                        className="bg-indigo-600 hover:bg-indigo-700 text-white h-9 w-9 lg:w-auto lg:px-4 rounded-xl font-semibold transition-all flex items-center justify-center gap-2 shadow-md shadow-indigo-500/25 hover:shadow-lg hover:shadow-indigo-500/30 hover:-translate-y-px"
                     >
-                        <Plus size={20} />
-                        <span className="hidden lg:inline">New Event</span>
+                        <Plus size={18} />
+                        <span className="hidden lg:inline text-sm">Ny händelse</span>
                     </button>
                 </div>
             </div>
@@ -820,35 +822,60 @@ const CalendarView = () => {
             <div className="hidden lg:flex gap-6">
 
                 {/* Calendar Grid */}
-                <div className="flex-1 bg-white dark:bg-[#1E1E1E] rounded-2xl shadow-sm border border-gray-200 dark:border-gray-800">
+                <div className="flex-1 bg-white dark:bg-[#1E1E1E] rounded-2xl shadow-sm border border-gray-200 dark:border-gray-800/50 overflow-hidden">
 
                     {/* Day Headers */}
-                    <div className={`grid ${viewMode === 'day' ? 'grid-cols-[60px_1fr]' : 'grid-cols-[60px_repeat(7,1fr)]'} border-b border-gray-200 dark:border-gray-700 shrink-0 bg-white dark:bg-[#1E1E1E]`}>
-                        <div className="border-r border-gray-200 dark:border-gray-700" /> {/* Time column header */}
-                        {weekDays.map((d, i) => (
-                            <div key={i} className={`py-4 px-2 text-center border-r border-gray-100 dark:border-gray-800 transition-all ${d.getDay() === 0 ? 'bg-red-50/50 dark:bg-red-900/10' : ''}`}>
-                                <p className={`text-xs font-medium mb-1 ${d.getDay() === 0 ? 'text-red-500' : 'text-gray-400 dark:text-gray-500'}`}>
-                                    {d.toLocaleDateString('sv-SE', { weekday: 'short' })}, {String(d.getDate()).padStart(2, '0')}
-                                </p>
-                                {isSameDay(d, new Date()) && (
-                                    <div className="w-2 h-2 rounded-full bg-orange-500 mx-auto mt-1" />
-                                )}
-                            </div>
-                        ))}
+                    <div className={`grid ${viewMode === 'day' ? 'grid-cols-[60px_1fr]' : 'grid-cols-[60px_repeat(7,1fr)]'} border-b border-gray-200 dark:border-gray-700/50 shrink-0 bg-white dark:bg-[#1E1E1E]`}>
+                        <div className="border-r border-gray-200 dark:border-gray-700/50 flex items-end justify-center pb-2">
+                            <span className="text-[9px] font-semibold text-gray-300 dark:text-gray-600 uppercase tracking-widest">
+                                {viewMode === 'week' ? `V${getWeekNumber(weekStart)}` : ''}
+                            </span>
+                        </div>
+                        {weekDays.map((d, i) => {
+                            const isToday = isSameDay(d, new Date());
+                            const isSunday = d.getDay() === 0;
+                            const dayEvents = getEventsForDay(d);
+                            return (
+                                <div key={i} className={`py-3 px-2 text-center border-r border-gray-100 dark:border-gray-800/50 transition-all relative ${isSunday ? 'bg-red-50/40 dark:bg-red-900/5' : ''}`}>
+                                    <p className={`text-[10px] font-bold uppercase tracking-widest mb-1.5 ${isSunday ? 'text-red-400' : 'text-gray-400 dark:text-gray-500'}`}>
+                                        {d.toLocaleDateString('sv-SE', { weekday: 'short' })}
+                                    </p>
+                                    <div className={`w-8 h-8 mx-auto rounded-full flex items-center justify-center text-sm font-extrabold transition-all ${
+                                        isToday
+                                            ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/30'
+                                            : isSunday
+                                                ? 'text-red-400'
+                                                : 'text-gray-700 dark:text-gray-200'
+                                    }`}>
+                                        {d.getDate()}
+                                    </div>
+                                    {dayEvents.length > 0 && !isToday && (
+                                        <div className="flex justify-center gap-0.5 mt-1.5">
+                                            {dayEvents.slice(0, 3).map((_, idx) => (
+                                                <div key={idx} className="w-1 h-1 rounded-full bg-indigo-400 dark:bg-indigo-500 opacity-70" />
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            );
+                        })}
                     </div>
 
                     {/* Time Slots OR Month Grid */}
                     {viewMode === 'month' ? (
-                        <div className="grid grid-cols-7 grid-rows-6 bg-gray-50 dark:bg-gray-900">
+                        <div className="grid grid-cols-7 grid-rows-6">
                             {getMonthDays().map((d, i) => {
                                 const dayEvents = getEventsForDay(d);
                                 const isCurrentMonth = d.getMonth() === weekStart.getMonth();
+                                const isToday = isSameDay(d, new Date());
+                                const isSunday = d.getDay() === 0;
                                 return (
                                     <div
                                         key={i}
-                                        className={`border-b border-r border-gray-200 dark:border-gray-800 p-2 min-h-[100px] relative group cursor-pointer transition-colors hover:bg-white dark:hover:bg-[#252525]
-                                            ${!isCurrentMonth ? 'bg-gray-100/50 dark:bg-gray-900/50 opacity-50 text-gray-400' : 'bg-white dark:bg-[#1E1E1E] text-gray-900 dark:text-gray-100'}
-                                            ${d.getDay() === 0 ? 'bg-red-50/30 dark:bg-red-900/10' : ''}`}
+                                        className={`border-b border-r border-gray-100 dark:border-gray-800/40 p-1.5 min-h-[110px] relative group cursor-pointer transition-all
+                                            ${!isCurrentMonth ? 'bg-gray-50/60 dark:bg-black/20' : 'bg-white dark:bg-[#1E1E1E] hover:bg-indigo-50/30 dark:hover:bg-indigo-900/10'}
+                                            ${isSunday && isCurrentMonth ? 'bg-red-50/20 dark:bg-red-900/5' : ''}
+                                            ${isToday ? '!bg-indigo-50/50 dark:!bg-indigo-900/10' : ''}`}
                                         onClick={() => {
                                             if (!isCurrentMonth) {
                                                 setWeekStart(d);
@@ -857,75 +884,116 @@ const CalendarView = () => {
                                             }
                                         }}
                                     >
-                                        <div className="flex justify-between items-start">
-                                            <span className={`text-xs font-bold p-1 rounded-md mb-1 inline-block ${isSameDay(d, new Date()) ? 'bg-indigo-600 text-white' : ''} ${!isCurrentMonth ? 'text-gray-400' : ''}`}>
+                                        <div className="flex justify-between items-center mb-1">
+                                            <span className={`text-xs font-bold w-7 h-7 flex items-center justify-center rounded-full transition-all
+                                                ${isToday ? 'bg-indigo-600 text-white shadow-md shadow-indigo-400/30' : ''}
+                                                ${!isCurrentMonth ? 'text-gray-300 dark:text-gray-600' : isSunday ? 'text-red-400' : 'text-gray-700 dark:text-gray-200'}
+                                            `}>
                                                 {d.getDate()}
                                             </span>
-                                            <button
-                                                className="opacity-0 group-hover:opacity-100 p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-opacity"
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    handleSlotClick(d, 9);
-                                                }}
-                                            >
-                                                <Plus size={12} className="text-gray-500" />
-                                            </button>
+                                            {isCurrentMonth && (
+                                                <button
+                                                    className="opacity-0 group-hover:opacity-100 w-5 h-5 flex items-center justify-center bg-indigo-100 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 rounded-md transition-all hover:bg-indigo-200 dark:hover:bg-indigo-500/30"
+                                                    onClick={(e) => { e.stopPropagation(); handleSlotClick(d, 9); }}
+                                                >
+                                                    <Plus size={11} strokeWidth={2.5} />
+                                                </button>
+                                            )}
                                         </div>
 
-                                        <div className="flex flex-col gap-1">
-                                            {dayEvents.map(ev => (
+                                        <div className="flex flex-col gap-0.5">
+                                            {dayEvents.slice(0, 3).map(ev => (
                                                 <div
                                                     key={ev.id}
-                                                    className={`text-[10px] px-1.5 py-1 rounded border border-transparent hover:border-black/10 dark:hover:border-white/10 truncate font-medium transition-all ${getEventTypeStyles(ev.type, false, ev.status)}`}
+                                                    className={`text-[10px] px-1.5 py-0.5 rounded-md truncate font-semibold cursor-pointer transition-all hover:opacity-80 ${getEventTypeStyles(ev.type, false, ev.status)}`}
                                                     onClick={(e) => { e.stopPropagation(); setSelectedEvent(ev); setShowEventDetail(true); }}
-                                                    title={`${ev.title}`}
+                                                    title={ev.title}
                                                 >
-                                                    <span className="truncate">{ev.title}</span>
+                                                    {ev.title}
                                                 </div>
                                             ))}
+                                            {dayEvents.length > 3 && (
+                                                <div className="text-[10px] text-indigo-500 dark:text-indigo-400 font-bold px-1.5 py-0.5">
+                                                    +{dayEvents.length - 3} till
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                 );
                             })}
                         </div>
                     ) : (
-                        <div>
+                        <div className="relative">
+                            {/* Current Time Indicator */}
+                            {(() => {
+                                const now = new Date();
+                                const nowHour = now.getHours();
+                                const nowMin = now.getMinutes();
+                                const isVisible = nowHour >= 8 && nowHour < 19;
+                                const isCurrentWeek = weekDays.some(d => isSameDay(d, now));
+                                if (!isVisible || !isCurrentWeek) return null;
+                                const topPx = ((nowHour - 8) + nowMin / 60) * 80;
+                                const todayIndex = weekDays.findIndex(d => isSameDay(d, now));
+                                const colWidth = viewMode === 'day' ? 100 : 100 / 7;
+                                const leftPct = viewMode === 'day' ? 0 : todayIndex * colWidth;
+                                return (
+                                    <div
+                                        className="absolute z-30 pointer-events-none"
+                                        style={{
+                                            top: `${topPx}px`,
+                                            left: `calc(60px + ${leftPct}%)`,
+                                            right: viewMode === 'day' ? '0' : `${(6 - todayIndex) * colWidth}%`,
+                                        }}
+                                    >
+                                        <div className="flex items-center gap-1">
+                                            <div className="w-2.5 h-2.5 rounded-full bg-indigo-500 shadow-md shadow-indigo-400/50 ml-[-5px] shrink-0" />
+                                            <div className="flex-1 h-px bg-indigo-400/70" />
+                                        </div>
+                                    </div>
+                                );
+                            })()}
+
                             {hours.map(hour => (
-                                <div key={hour} className={`grid ${viewMode === 'day' ? 'grid-cols-[60px_1fr]' : 'grid-cols-[60px_repeat(7,1fr)]'} h-20 border-b border-gray-100 dark:border-gray-800/50 relative`}>
+                                <div key={hour} className={`grid ${viewMode === 'day' ? 'grid-cols-[60px_1fr]' : 'grid-cols-[60px_repeat(7,1fr)]'} h-20 border-b border-gray-100 dark:border-gray-800/40 relative`}>
 
                                     {/* Time Label */}
-                                    <div className="relative text-right pr-3 pt-1 text-[11px] font-medium text-gray-400 dark:text-gray-500 border-r border-gray-200 dark:border-gray-700">
+                                    <div className="relative text-right pr-3 pt-1 text-[10px] font-semibold text-gray-300 dark:text-gray-600 border-r border-gray-200 dark:border-gray-700/50 select-none">
                                         {String(hour).padStart(2, '0')}:00
                                     </div>
 
                                     {/* Days Columns */}
                                     {weekDays.map((d, i) => {
                                         const dayEvents = getEventsForDay(d);
+                                        const isToday = isSameDay(d, new Date());
                                         return (
                                             <div
                                                 key={i}
-                                                className={`relative border-r border-gray-100 dark:border-gray-800 hover:bg-gray-50/50 dark:hover:bg-white/[0.02] transition-colors group cursor-pointer ${d.getDay() === 0 ? 'bg-red-50/30 dark:bg-red-900/5' : ''}`}
+                                                className={`relative border-r border-gray-100 dark:border-gray-800/40 transition-colors group cursor-pointer
+                                                    ${d.getDay() === 0 ? 'bg-red-50/20 dark:bg-red-900/5' : ''}
+                                                    ${isToday ? 'bg-indigo-50/30 dark:bg-indigo-900/5' : 'hover:bg-gray-50/60 dark:hover:bg-white/[0.015]'}`}
                                                 onClick={() => handleSlotClick(d, hour)}
                                                 title={`Klicka för att boka ${hour}:00`}
                                             >
-                                                {/* Add Button Hint - Only show on first hour */}
-                                                {hour === 8 && dayEvents.length === 0 && (
+                                                {/* Hover + button hint */}
+                                                {hour === 8 && (
                                                     <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-200 z-0">
-                                                        <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
-                                                            <Plus size={16} strokeWidth={3} />
+                                                        <div className="w-7 h-7 rounded-full bg-indigo-100 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shadow-sm">
+                                                            <Plus size={14} strokeWidth={2.5} />
                                                         </div>
                                                     </div>
                                                 )}
 
-                                                {/* Events with absolute positioning - Only render on first hour to avoid duplicates */}
+                                                {/* Events - Only render on first hour to avoid duplicates */}
                                                 {hour === 8 && dayEvents.map(ev => {
                                                     const style = getEventStyle(ev);
-
                                                     return (
                                                         <div
                                                             key={`${ev.id}-${ev.isSecondary ? 'secondary' : 'primary'}`}
-                                                            className={`absolute inset-x-1 rounded-xl text-xs px-3 py-2 overflow-hidden shadow-sm hover:shadow-md transition-all cursor-pointer ${getEventTypeStyles(ev.type, ev.isSecondary, ev.status)}
-                                                            ${ev.isSecondary ? 'z-5 hover:z-15' : 'z-10 hover:z-20'}`}
+                                                            className={`absolute inset-x-1 rounded-xl text-xs px-2.5 py-2 overflow-hidden cursor-pointer
+                                                                transition-all duration-150 hover:-translate-y-px
+                                                                shadow-sm hover:shadow-md
+                                                                ${getEventTypeStyles(ev.type, ev.isSecondary, ev.status)}
+                                                                ${ev.isSecondary ? 'z-5 hover:z-15' : 'z-10 hover:z-20'}`}
                                                             style={style}
                                                             onClick={(e) => {
                                                                 e.stopPropagation();
@@ -933,11 +1001,12 @@ const CalendarView = () => {
                                                                 setShowEventDetail(true);
                                                             }}
                                                         >
-                                                            <div className="font-semibold truncate mb-0.5">
+                                                            <div className="font-bold truncate leading-tight">
                                                                 {ev.title}
                                                             </div>
-                                                            <div className="opacity-75 text-[10px] truncate">
-                                                                {ev.start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - {ev.end.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                            <div className="opacity-70 text-[10px] truncate mt-0.5 flex items-center gap-1">
+                                                                <Clock size={9} />
+                                                                {ev.start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}–{ev.end.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                                             </div>
                                                         </div>
                                                     );
@@ -952,7 +1021,7 @@ const CalendarView = () => {
                 </div>
 
                 {/* Right Sidebar */}
-                <div className="w-80 shrink-0 space-y-6">
+                <div className="w-72 shrink-0 space-y-4">
                     <MiniCalendar
                         currentDate={weekStart}
                         onDateSelect={(date) => {
@@ -979,11 +1048,18 @@ const CalendarView = () => {
 
             {/* Booking Modal */}
             {showBookingModal && (
-                <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center backdrop-blur-sm p-4">
-                    <div className="bg-white dark:bg-[#2A2A2A] w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in-95">
-                        <div className="p-6 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center">
-                            <h2 className="text-xl font-bold text-gray-900 dark:text-white">Boka Händelse</h2>
-                            <button onClick={() => setShowBookingModal(false)}><X size={20} className="text-gray-500" /></button>
+                <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center backdrop-blur-md p-4">
+                    <div className="bg-white dark:bg-[#1E1E1E] w-full max-w-lg rounded-2xl shadow-2xl border border-gray-200/50 dark:border-gray-700/30 overflow-hidden animate-in zoom-in-95 duration-200">
+                        <div className="px-6 py-5 border-b border-gray-100 dark:border-gray-800/60 flex justify-between items-center bg-gradient-to-r from-indigo-50/50 to-transparent dark:from-indigo-900/10">
+                            <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center shadow-md shadow-indigo-500/30">
+                                    <Plus size={16} className="text-white" />
+                                </div>
+                                <h2 className="text-lg font-bold text-gray-900 dark:text-white">Ny händelse</h2>
+                            </div>
+                            <button onClick={() => setShowBookingModal(false)} className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                                <X size={16} className="text-gray-500" />
+                            </button>
                         </div>
 
                         <form onSubmit={handleCreateEvent} className="p-6 space-y-4">
@@ -1133,9 +1209,13 @@ const CalendarView = () => {
                             <button
                                 type="submit"
                                 disabled={availabilityStatus.isBusy || isCheckingAvailability}
-                                className={`w-full font-bold py-3 rounded-xl shadow-lg transition-all ${availabilityStatus.isBusy ? 'bg-gray-400 cursor-not-allowed' : 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-indigo-500/30'}`}
+                                className={`w-full font-bold py-3 rounded-xl transition-all flex items-center justify-center gap-2 ${availabilityStatus.isBusy
+                                    ? 'bg-gray-200 dark:bg-gray-700 text-gray-400 cursor-not-allowed'
+                                    : 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-500/25 hover:shadow-xl hover:shadow-indigo-500/30 hover:-translate-y-px'}`}
                             >
-                                {availabilityStatus.isBusy ? 'Tiden är redan bokad' : 'Bekräfta Bokning'}
+                                {availabilityStatus.isBusy
+                                    ? <><AlertTriangle size={16} /> Tiden är redan bokad</>
+                                    : <><Check size={16} /> Bekräfta bokning</>}
                             </button>
 
                         </form>

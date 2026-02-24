@@ -50,10 +50,12 @@ const MiniCalendar = ({ currentDate, onDateSelect }) => {
                 <button
                     key={day}
                     onClick={() => onDateSelect(date)}
-                    className={`h-8 w-8 text-xs font-medium rounded-full flex items-center justify-center transition-colors
-                        ${isSelected ? 'bg-indigo-600 text-white' :
-                            isToday ? 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 font-bold' :
-                                'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}`}
+                    className={`h-7 w-7 text-xs rounded-full flex items-center justify-center transition-all
+                        ${isSelected
+                            ? 'bg-indigo-600 text-white font-bold shadow-md shadow-indigo-400/30'
+                            : isToday
+                                ? 'bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300 font-extrabold ring-1 ring-indigo-300 dark:ring-indigo-700'
+                                : 'text-gray-600 dark:text-gray-400 font-medium hover:bg-gray-100 dark:hover:bg-gray-800'}`}
                 >
                     {day}
                 </button>
@@ -63,30 +65,30 @@ const MiniCalendar = ({ currentDate, onDateSelect }) => {
     };
 
     return (
-        <div className="bg-white dark:bg-[#1E1E1E] rounded-2xl p-4 shadow-sm border border-gray-200 dark:border-gray-800">
-            <div className="flex items-center justify-between mb-4">
-                <span className="text-sm font-bold text-gray-900 dark:text-white capitalize">
+        <div className="bg-white dark:bg-[#1E1E1E] rounded-2xl p-4 shadow-sm border border-gray-200 dark:border-gray-800/50">
+            <div className="flex items-center justify-between mb-3">
+                <span className="text-sm font-extrabold text-gray-900 dark:text-white capitalize tracking-tight">
                     {viewDate.toLocaleDateString('sv-SE', { month: 'long', year: 'numeric' })}
                 </span>
-                <div className="flex gap-1">
-                    <button onClick={handlePrevMonth} className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
-                        <ChevronLeft size={16} className="text-gray-500" />
+                <div className="flex gap-0.5">
+                    <button onClick={handlePrevMonth} className="w-7 h-7 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
+                        <ChevronLeft size={14} className="text-gray-400" />
                     </button>
-                    <button onClick={handleNextMonth} className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
-                        <ChevronRight size={16} className="text-gray-500" />
+                    <button onClick={handleNextMonth} className="w-7 h-7 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
+                        <ChevronRight size={14} className="text-gray-400" />
                     </button>
                 </div>
             </div>
 
-            <div className="grid grid-cols-7 mb-2">
+            <div className="grid grid-cols-7 mb-1">
                 {['M', 'T', 'O', 'T', 'F', 'L', 'S'].map((d, i) => (
-                    <div key={i} className="h-8 flex items-center justify-center text-[10px] font-bold text-gray-400">
+                    <div key={i} className={`h-7 flex items-center justify-center text-[10px] font-bold tracking-wide ${i === 6 ? 'text-red-400' : 'text-gray-300 dark:text-gray-600'}`}>
                         {d}
                     </div>
                 ))}
             </div>
 
-            <div className="grid grid-cols-7 gap-y-1 justify-items-center">
+            <div className="grid grid-cols-7 gap-y-0.5 justify-items-center">
                 {renderCalendarDays()}
             </div>
         </div>
