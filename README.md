@@ -35,6 +35,14 @@
 
 <div id="-svenska"></div>
 
+## 🚀 Planerat för nästa release (v3.3.0 – Scalability & AI Video)
+*   **📡 Scalability Engine (Event Bus):**
+    - Migration till en formell Event Bus-arkitektur för att hantera 100+ skolor synkront.
+    - Förberett för Redis/RabbitMQ/Kafka för att eliminera flaskhalsar vid hög belastning.
+*   **🎬 AI Video Tutor (v2.0):**
+    - Automatisk generering av förklaringsvideor direkt från kursinnehåll.
+    - AI-genererade script och automatiserad media-stitching med FFMPEG.
+
 ## 🚀 Senaste uppdateringarna (24 feb 2026 – Advanced SCORM & ISO 27001 Security)
 *   **🎓 SCORM Persistence & xAPI (v3.2.0):**
     - **State API Integration**: SCORM-spelaren sparar och laddar nu automatiskt elevens framsteg (`suspend_data`, bokmärken) via det inbyggda xAPI State API:et.

@@ -176,6 +176,22 @@ const LandingPage = () => {
             bgColor: 'bg-amber-500/10',
             hoverBorder: 'hover:border-amber-500/50'
         },
+        {
+            icon: <Server className="w-7 h-7" />,
+            title: "Scalability Engine (Coming Soon)",
+            description: "En ny händelsestyrd arkitektur (Event Bus) som möjliggör prestanda för 100+ skolor i realtid utan fördröjning.",
+            color: 'text-green-400',
+            bgColor: 'bg-green-500/10',
+            hoverBorder: 'hover:border-green-500/50'
+        },
+        {
+            icon: <Play className="w-7 h-7" />,
+            title: "AI Video Tutor v2.0 (Planned)",
+            description: "Automatisk generering av interaktiva förklaringsvideor direkt från kursinnehåll via AI-script och smart rendering.",
+            color: 'text-red-400',
+            bgColor: 'bg-red-500/10',
+            hoverBorder: 'hover:border-red-500/50'
+        },
     ];
 
 

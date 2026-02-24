@@ -44,12 +44,12 @@
 
 ---
 
-### Juni–Augusti 2026: Skalbarhet & Mobil (v4.0)
+### Maj–Juni 2026: Skalbarhet & AI Tutor 2.0 (v3.3.0)
 | Prioritet | Funktion | Beskrivning | Ansträngning | Varför |
 | :--- | :--- | :--- | :--- | :--- |
-| **Hög** | **Event Bus (Kafka/RabbitMQ)** | Real-tidsmotor för att hantera 100+ skolor synkront. | 7 dagar | Oändlig skalbarhet. |
-| **Hög** | **Mobile Hybrid (App Store)** | Native-wrapper/Expo för att publicera i App Store vid behov. | 10 dagar | "Check-in-the-box" för IT. |
-| **Medel** | **AI Tutor 2.0 (Video)** | AI-genererade förklaringsvideor för kursinnehåll. | 15 dagar | Framtidens lärande. |
+| **Hög** | **Scalability Engine (v1.0)** | Implementera formell Event Bus (Redis/Kafka) för cross-service kommunikation. | [/] **Pågår** | Hantera 100+ skolor synkront. |
+| **Hög** | **AI Tutor 2.0 (Video)** | Automatisk generering av förklaringsvideor via Gemini-script & FFMPEG. | [/] **Pågår** | Nästa generations lärande. |
+| **Medel** | **Mobile Hybrid (Expo)** | Förberedelse för Native App Store-wrapper. | 10 dagar | "Check-in-the-box" för IT. |
 
 ---
 
