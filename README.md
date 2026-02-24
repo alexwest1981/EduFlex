@@ -37,6 +37,16 @@
 
 ## 🚀 Senaste uppdateringarna (24 feb 2026 – v3.0.0)
 
+*   **🔗 Integration Hub Pro (v3.0.0):**
+    *   **Integration Hub Dashboard:** Nytt admin-gränssnitt (`/admin/integrations`) med kortvyer, on/off toggles, konfigurationspaneler och anslutningstester för alla integrationer.
+    *   **LTI 1.3 (AGS/NRPS):** Befintlig mogen implementation med `postScore`, `syncGrade` och `getMemberships` – nu med statusövervakning i Integration Hub.
+    *   **Zoom Meetings:** Ny `MeetingIntegrationService` – skapa och hantera videomöten via Zoom OAuth2 API direkt från kursvyn.
+    *   **Microsoft Teams:** Ny integration för Teams-möten via Microsoft Graph API med tenant/client-konfiguration.
+    *   **Skolverket Kursplaner:** Utökad `SkolverketApiClientService` med `batchImportSubjects()` – hämtar alla ämnen och betygskriterier automatiskt.
+    *   **SIS Import (CSV):** Ny `SisImportService` – bulk-importera elever via CSV (förnamn, efternamn, email, personnummer) med dubbletthantering och felrapportering.
+    *   **Bibliotekssökning:** Ny `LibrarySearchService` – sök böcker via Open Library API (gratis, ingen API-nyckel) med bokomslag och ISBN-detaljer.
+    *   **Databas:** Flyway migration `V85` – `integration_configs` tabell med seed-data för alla 6 integrationstyper.
+
 *   **📋 CSN Rapportering Pro (v3.0.0):**
     *   **Utökat CSN-DTO:** `CsnAttendanceDto` innehåller nu `lastLogin`, `lastActive`, `activeMinutes`, `courseCode` och `courseResult` (PENDING/PASSED/FAILED) – komplett datablad per elev.
     *   **Bulk-export:** Ny `POST /api/reports/csn/attendance/bulk` endpoint för att generera rapporter för flera kurser samtidigt.

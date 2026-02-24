@@ -77,6 +77,7 @@ import ImpactDashboard from './features/impact/ImpactDashboard';
 import HealthCheckDashboard from './features/admin/HealthCheckDashboard';
 import DeveloperSettings from './features/settings/DeveloperSettings';
 import AiAuditDashboard from './features/admin/AiAuditDashboard';
+import IntegrationHub from './features/admin/IntegrationHub';
 import RoiCenter from './features/analytics/RoiCenter';
 
 // --- PROTECTED ROUTE ---
@@ -260,7 +261,7 @@ const AppRoutes = () => {
                 } />
 
                 <Route path="/principal/reports" element={
-                    <ProtectedRoute roles={['ADMIN', 'ROLE_REKTOR', 'REKTOR', 'PRINCIPAL']}>
+                    <ProtectedRoute roles={['ADMIN', 'ROLE_REKTOR', 'REKTOR', 'PRINCIPAL', 'TEACHER', 'ROLE_TEACHER']}>
                         <Layout currentUser={currentUser} handleLogout={logout}>
                             <ReportLibrary />
                         </Layout>
@@ -279,6 +280,14 @@ const AppRoutes = () => {
                     <ProtectedRoute roles={['ADMIN', 'ROLE_REKTOR', 'REKTOR', 'PRINCIPAL']}>
                         <Layout currentUser={currentUser} handleLogout={logout}>
                             <PrincipalTools />
+                        </Layout>
+                    </ProtectedRoute>
+                } />
+
+                <Route path="/admin/integrations" element={
+                    <ProtectedRoute roles={['ADMIN', 'ROLE_ADMIN']}>
+                        <Layout currentUser={currentUser} handleLogout={logout}>
+                            <IntegrationHub />
                         </Layout>
                     </ProtectedRoute>
                 } />

@@ -9,7 +9,7 @@
 ### Mars 2026: Dealbreakers – Pilot-Ready (Fokus: Sälja nu!)
 | Prioritet | Funktion | Beskrivning | Ansträngning | Varför |
 | :--- | :--- | :--- | :--- | :--- |
-| **Hög** | **Integrations Guide + 5 core** | LTI 1.3 (AGS/NRPS), Zoom/Teams, Skolverket batch, SIS, bibliotek. | 10 dagar | Kritiskt: "Plug-and-play". |
+| **Hög** | **Integrations Guide + 5 core** | LTI 1.3 (AGS/NRPS), Zoom/Teams, Skolverket batch, SIS CSV-import, Bibliotekssökning + Integration Hub admin-portal. | ✅ **Klar** (v3.0.0) | Kritiskt: "Plug-and-play". |
 | **Hög** | **Svensk Support Portal** | SLA, FAQ, video-guides, chat-widget, forum. | ✅ **Klar** | Kritiskt: Skalbar support. |
 | **Hög** | **Pilot Kit** | Demo-data, onboarding-wizard, "EduFlex vs Canvas"-whitepaper. | ✅ **Klar** | Kritiskt: Referenser. |
 ...

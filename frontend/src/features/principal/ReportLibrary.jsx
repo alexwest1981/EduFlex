@@ -26,12 +26,7 @@ import ReportGeneratorModal from './ReportGeneratorModal';
  * GDPR-fliken visar audit-loggar och registerutdrag.
  */
 const ReportLibrary = () => {
-    const [reports, setReports] = useState([
-        { id: 1, title: 'Terminsrapport HT25', type: 'ACADEMIC', date: '2025-12-20', size: '2.4 MB', author: 'System' },
-        { id: 2, title: 'Kvalitetsanalys Q4', type: 'QUALITY', date: '2026-01-15', size: '1.8 MB', author: 'Gert Lundgren' },
-        { id: 3, title: 'Ekonomisk översikt Jan', type: 'FINANCE', date: '2026-02-01', size: '540 KB', author: 'Ekobyrån' },
-        { id: 4, title: 'Likabehandlingsplan 2026', type: 'POLICY', date: '2026-01-05', size: '3.2 MB', author: 'EHT-Team' },
-    ]);
+    const [reports, setReports] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [activeTab, setActiveTab] = useState('ALL');
     const [isModalOpen, setIsModalOpen] = useState(false);

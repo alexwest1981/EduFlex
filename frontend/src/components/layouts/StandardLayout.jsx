@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
-import { LayoutDashboard, FileText, User, Settings, LogOut, Layers, Menu, X, Award, Zap, Moon, Sun, Calendar, BookOpen, TrendingUp, Users, HelpCircle, Store, Library, ClipboardList, ShieldCheck, MessageSquare, Heart, Thermometer, BarChart2, Brain } from 'lucide-react';
+import { LayoutDashboard, FileText, User, Settings, LogOut, Layers, Menu, X, Award, Zap, Moon, Sun, Calendar, BookOpen, TrendingUp, Users, HelpCircle, Store, Library, ClipboardList, ShieldCheck, MessageSquare, Heart, Thermometer, BarChart2, Brain, FolderOpen, Link2 } from 'lucide-react';
 import { useAppContext } from '../../context/AppContext';
 import { useModules } from '../../context/ModuleContext';
 import { useTranslation } from 'react-i18next';
@@ -118,12 +118,15 @@ const StandardLayout = ({ children }) => {
             ] : []),
             ...(isModuleActive('ANALYTICS') && (isAdmin || ['REKTOR', 'PRINCIPAL'].includes(roleName)) ? [{ path: '/analytics', icon: <BarChart2 size={20} />, label: t('sidebar.analytics') || 'Analyser & Insikter' }] : []),
             ...(isAdmin && licenseTier !== 'BASIC' ? [{ path: '/admin/ai-audit', icon: <Zap size={20} />, label: 'AI Audit' }] : []),
+            ...(isAdmin ? [{ path: '/admin/integrations', icon: <Link2 size={20} />, label: 'Integration Hub' }] : []),
+            ...(roleName === 'TEACHER' || roleName === 'ROLE_TEACHER' ? [{ path: '/principal/reports', icon: <FolderOpen size={20} />, label: 'CSN-Rapporter' }] : []),
         ],
         rektor: [
             ...(['REKTOR', 'ROLE_REKTOR', 'PRINCIPAL', 'ROLE_PRINCIPAL'].includes(roleName) ? [
                 { path: '/principal/dashboard', icon: <ShieldCheck size={20} />, label: 'Rektorspaket' },
                 { path: '/principal/quality', icon: <Award size={20} />, label: 'Kvalitetsarbete' },
                 { path: '/principal/management-reports', icon: <TrendingUp size={20} />, label: 'Ledningsrapport' },
+                { path: '/principal/reports', icon: <FolderOpen size={20} />, label: 'Rapportarkiv (CSN)' },
                 { path: '/principal/tools', icon: <Settings size={20} />, label: 'Verktyg & Admin' }
             ] : [])
         ],

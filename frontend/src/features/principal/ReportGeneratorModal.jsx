@@ -70,29 +70,18 @@ const ReportGeneratorModal = ({ isOpen, onClose, onGenerated }) => {
             const endStr = `${endDate}T23:59:59`;
 
             if (exportFormat === 'excel' && selectedCourses.length === 1) {
-                // Direkt Excel-download för enskild kurs
-                const response = await api.get(`/reports/csn/attendance/${selectedCourses[0]}/excel`, {
-                    params: { start: startStr, end: endStr },
-                    responseType: 'blob'
-                });
-
-                const blob = new Blob([response], {
-                    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-                });
-                const url = URL.createObjectURL(blob);
-                const link = document.createElement('a');
-                link.setAttribute('href', url);
-                link.setAttribute('download', `CSN_Rapport_${startDate}_${endDate}.xlsx`);
-                link.click();
-                URL.revokeObjectURL(url);
-
-                toast.success('Excel-rapport nedladdad!');
+                // Direkt Excel-download – öppnar i nytt fönster med token
+                const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+                const baseUrl = import.meta.env.VITE_API_URL || 'https://www.eduflexlms.se/api';
+                const excelUrl = `${baseUrl}/reports/csn/attendance/${selectedCourses[0]}/excel?start=${encodeURIComponent(startStr)}&end=${encodeURIComponent(endStr)}&token=${token}`;
+                window.open(excelUrl, '_blank');
+                toast.success('Excel-rapport öppnas...');
                 onClose();
             } else if (selectedCourses.length === 1) {
-                // Enskild kurs → JSON för tabellvisning
-                const response = await api.get(`/reports/csn/attendance/${selectedCourses[0]}`, {
-                    params: { start: startStr, end: endStr }
-                });
+                // Enskild kurs → JSON direkt med query-params i URL:en
+                const response = await api.get(
+                    `/reports/csn/attendance/${selectedCourses[0]}?start=${encodeURIComponent(startStr)}&end=${encodeURIComponent(endStr)}`
+                );
                 toast.success('Rapport genererad!');
                 onGenerated(response);
                 onClose();
