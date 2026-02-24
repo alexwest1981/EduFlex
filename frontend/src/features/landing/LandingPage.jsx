@@ -6,7 +6,7 @@ import {
     Globe, Database, Server, Zap, BarChart,
     Check, ArrowRight, Menu, X, Play, Sparkles,
     Award, TrendingUp, Layers, Gamepad2, Brain, Map, Flame, MessageSquare, Bell,
-    FileText, ClipboardList, Thermometer, Target, Smartphone, Video as VideoIcon, Link2
+    FileText, ClipboardList, Thermometer, Target, Smartphone, Video as VideoIcon, Link2, Lock
 } from 'lucide-react';
 
 // Assets
@@ -167,6 +167,14 @@ const LandingPage = () => {
             color: 'text-violet-400',
             bgColor: 'bg-violet-500/10',
             hoverBorder: 'hover:border-violet-500/50'
+        },
+        {
+            icon: <Lock className="w-7 h-7" />,
+            title: "Secure PII Masking",
+            description: "Känslig persondata (SSN) är nu maskerad som standard och kräver säker lösenordsverifiering för att visas. Trygghet genom design.",
+            color: 'text-amber-400',
+            bgColor: 'bg-amber-500/10',
+            hoverBorder: 'hover:border-amber-500/50'
         },
     ];
 

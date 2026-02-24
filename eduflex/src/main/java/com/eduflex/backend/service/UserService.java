@@ -29,6 +29,7 @@ public class UserService {
     private final ConnectionRepository connectionRepository;
     private final AchievementService achievementService;
     private final UserStreakService userStreakService;
+    private final com.eduflex.backend.security.KeycloakService keycloakService;
 
     public UserService(UserRepository userRepository,
             com.eduflex.backend.repository.RoleRepository roleRepository,
@@ -37,7 +38,8 @@ public class UserService {
             StorageService storageService,
             ConnectionRepository connectionRepository,
             AchievementService achievementService,
-            UserStreakService userStreakService) {
+            UserStreakService userStreakService,
+            com.eduflex.backend.security.KeycloakService keycloakService) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
@@ -47,6 +49,7 @@ public class UserService {
         this.connectionRepository = connectionRepository;
         this.achievementService = achievementService;
         this.userStreakService = userStreakService;
+        this.keycloakService = keycloakService;
     }
 
     public List<User> getAllUsers() {
@@ -125,14 +128,28 @@ public class UserService {
         }
         // ---------------------------
 
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
         if (user.getRole() == null) {
             com.eduflex.backend.model.Role studentRole = roleRepository.findByName("STUDENT")
                     .orElseThrow(() -> new RuntimeException("Default role STUDENT not found in database."));
             user.setRole(studentRole);
         }
         user.setActive(true);
-        return userRepository.save(user);
+
+        // --- KEYCLOAK SYNC ---
+        try {
+            String plaintextPassword = user.getPassword(); // Grab before encryption
+            user.setPassword(passwordEncoder.encode(plaintextPassword));
+            User saved = userRepository.save(user);
+
+            String kcId = keycloakService.syncUser(saved, plaintextPassword);
+            saved.setKeycloakUserId(kcId);
+            return userRepository.save(saved);
+        } catch (Exception e) {
+            System.err.println("Keycloak sync failed: " + e.getMessage());
+            // In a real production system, we might want to rollback or queue for retry
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+            return userRepository.save(user);
+        }
     }
 
     public void updateLastLogin(Long userId) {
@@ -330,7 +347,14 @@ public class UserService {
     }
 
     public void deleteUser(Long id) {
-        userRepository.deleteById(id);
+        userRepository.findById(id).ifPresent(user -> {
+            try {
+                keycloakService.deleteUser(user.getKeycloakUserId());
+            } catch (Exception e) {
+                System.err.println("Failed to delete user from Keycloak: " + e.getMessage());
+            }
+            userRepository.delete(user);
+        });
     }
 
     // --- GDPR EXPORT ---

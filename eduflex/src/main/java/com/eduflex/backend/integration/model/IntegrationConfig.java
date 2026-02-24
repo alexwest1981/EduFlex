@@ -18,6 +18,7 @@ import java.util.UUID;
  */
 @Entity
 @Table(name = "integration_config")
+@EntityListeners(com.eduflex.backend.service.AuditListener.class)
 @Data
 public class IntegrationConfig {
 

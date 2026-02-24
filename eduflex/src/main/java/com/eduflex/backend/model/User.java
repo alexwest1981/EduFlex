@@ -21,7 +21,10 @@ public class User implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Convert(converter = com.eduflex.backend.util.EncryptedStringConverter.class)
     private String firstName;
+
+    @Convert(converter = com.eduflex.backend.util.EncryptedStringConverter.class)
     private String lastName;
 
     @Column(unique = true)
@@ -59,6 +62,14 @@ public class User implements Serializable {
 
     @Column(columnDefinition = "boolean default true")
     private Boolean isActive = true;
+
+    // --- KEYCLOAK & MFA ---
+    private String keycloakUserId;
+
+    @Convert(converter = com.eduflex.backend.util.EncryptedStringConverter.class)
+    private String mfaSecret;
+
+    private boolean mfaEnabled = false;
 
     // --- ANALYS-FÄLT ---
     @Column(name = "last_login")
@@ -211,6 +222,30 @@ public class User implements Serializable {
 
     public void setSsn(String ssn) {
         this.ssn = ssn;
+    }
+
+    public String getKeycloakUserId() {
+        return keycloakUserId;
+    }
+
+    public void setKeycloakUserId(String keycloakUserId) {
+        this.keycloakUserId = keycloakUserId;
+    }
+
+    public String getMfaSecret() {
+        return mfaSecret;
+    }
+
+    public void setMfaSecret(String mfaSecret) {
+        this.mfaSecret = mfaSecret;
+    }
+
+    public boolean isMfaEnabled() {
+        return mfaEnabled;
+    }
+
+    public void setMfaEnabled(boolean mfaEnabled) {
+        this.mfaEnabled = mfaEnabled;
     }
 
     public String getLanguage() {

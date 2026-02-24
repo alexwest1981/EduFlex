@@ -32,15 +32,24 @@
 
 ---
 
-### Maj–Juni 2026: Enterprise & Mobile (v3.0)
+### April–Maj 2026: Enterprise Security & Compliance (Fokus: Kommuner & Universitet)
 | Prioritet | Funktion | Beskrivning | Ansträngning | Varför |
 | :--- | :--- | :--- | :--- | :--- |
-| **Hög** | **Mobile App (React Native)** | iOS/Android, push, offline-quiz. | 20 dagar | Mobil är 80% av användning. |
-| **Hög** | **Enterprise Compliance** | ISO 27001 prep, full AI-audit. | 8 dagar | Universitet/kommuner. |
-| **Medel** | **Event Bus** | Kafka/RabbitMQ för realtid. | 7 dagar | Scale 100+ skolor. |
-| **Låg** | **xAPI/SCORM 2.0** | Full import (Articulate/Captivate). | 5 dagar | Legacy-innehåll. |
+| **Hög** | **Security Hardening (ISO 27001)** | AES-256 kryptering (resten av PII), MFA stöd, Rate-limiting v2, Security Headers (CSP), Dependency Audit. | ✅ **Stabil** | Kritiskt för offentlig sektor. |
+| **Hög** | **Enhanced Audit Logs** | Global administrativ audit-log (vem gjorde vad, när). GDPR-spårbarhet för all dataåtkomst. | ✅ **Klar** | Compliance-krav. |
+| **Medel** | **MFA (Multi-Factor Auth)** | Stöd för TOTP (Google Authenticator) vid admin-inloggning. | ✅ **Klar** | Högre säkerhetskrav. |
+| **Medel** | **xAPI/SCORM 2.0** | Full import (Articulate/Captivate). | 5 dagar | Legacy-innehåll. |
 
-**Milstolpe:** 5 aktiva piloter, >50k SEK/mån, pitch Borås Ink.
+**Milstolpe:** Slutförd extern säkerhetsrevision + Pilot-deploy hos kommunal kund.
+
+---
+
+### Juni–Augusti 2026: Skalbarhet & Mobil (v4.0)
+| Prioritet | Funktion | Beskrivning | Ansträngning | Varför |
+| :--- | :--- | :--- | :--- | :--- |
+| **Hög** | **Event Bus (Kafka/RabbitMQ)** | Real-tidsmotor för att hantera 100+ skolor synkront. | 7 dagar | Oändlig skalbarhet. |
+| **Hög** | **Mobile Hybrid (App Store)** | Native-wrapper/Expo för att publicera i App Store vid behov. | 10 dagar | "Check-in-the-box" för IT. |
+| **Medel** | **AI Tutor 2.0 (Video)** | AI-genererade förklaringsvideor för kursinnehåll. | 15 dagar | Framtidens lärande. |
 
 ---
 

@@ -316,23 +316,33 @@ public class SecurityConfig {
                                 .successHandler(oAuth2LoginSuccessHandler)
                                 .failureHandler(oAuth2LoginFailureHandler));
 
-                http.headers(headers -> headers
-                                .frameOptions(frame -> frame.disable())
-                                .contentSecurityPolicy(csp -> csp
-                                                .policyDirectives(
-                                                                "default-src 'self' https://www.eduflexlms.se https://*.eduflexlms.se https://fonts.googleapis.com https://fonts.gstatic.com; "
-                                                                                +
-                                                                                "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.eduflexlms.se https://*.eduflexlms.se; "
-                                                                                +
-                                                                                "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
-                                                                                +
-                                                                                "font-src 'self' https://fonts.gstatic.com data:; "
-                                                                                +
-                                                                                "frame-src 'self' https://www.youtube.com https://*.eduflexlms.se; "
-                                                                                +
-                                                                                "connect-src 'self' https://www.eduflexlms.se https://*.eduflexlms.se wss://www.eduflexlms.se wss://*.eduflexlms.se; "
-                                                                                +
-                                                                                "img-src 'self' data: blob: https://www.eduflexlms.se https://*.eduflexlms.se https://storage.eduflexlms.se;")));
+                http.headers(headers -> {
+                        headers.frameOptions(frame -> frame.sameOrigin());
+                        headers.httpStrictTransportSecurity(hsts -> hsts
+                                        .includeSubDomains(true)
+                                        .maxAgeInSeconds(31536000));
+                        headers.referrerPolicy(referrer -> referrer.policy(
+                                        org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter.ReferrerPolicy.STRICT_ORIGIN_WHEN_CROSS_ORIGIN));
+                        headers.permissionsPolicy(permissions -> permissions.policy(
+                                        "geolocation=(), microphone=(), camera=(), magnetometer=(), gyroscope=(), payment=(), usb=()"));
+                        headers.contentSecurityPolicy(csp -> csp
+                                        .policyDirectives(
+                                                        "default-src 'self' https://www.eduflexlms.se https://*.eduflexlms.se https://fonts.googleapis.com https://fonts.gstatic.com; "
+                                                                        +
+                                                                        "script-src 'self' 'unsafe-inline' https://www.eduflexlms.se https://*.eduflexlms.se; "
+                                                                        +
+                                                                        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
+                                                                        +
+                                                                        "font-src 'self' https://fonts.gstatic.com data:; "
+                                                                        +
+                                                                        "frame-src 'self' https://www.youtube.com https://*.eduflexlms.se; "
+                                                                        +
+                                                                        "frame-ancestors 'self' https://*.eduflexlms.se; "
+                                                                        +
+                                                                        "connect-src 'self' https://www.eduflexlms.se https://*.eduflexlms.se wss://www.eduflexlms.se wss://*.eduflexlms.se; "
+                                                                        +
+                                                                        "img-src 'self' data: blob: https://www.eduflexlms.se https://*.eduflexlms.se https://storage.eduflexlms.se;"));
+                });
 
                 return http.build();
         }

@@ -35,6 +35,17 @@
 
 <div id="-svenska"></div>
 
+## 🚀 Senaste uppdateringarna (24 feb 2026 – Security & Data Integrity)
+*   **🛡️ Säker Personnummer-visning (SSN):**
+    *   Personnummer (SSN) i användarprofilen är nu maskerat som standard (`••••••••••••`).
+    *   Infört en "öga"-ikon som triggar en säker lösenordsverifiering innan känslig data visas.
+    *   **Frontend**: Ny `PasswordConfirmModal`-komponent för återautentisering.
+    *   **Backend**: Ny endpoint `/api/auth/verify-password` för att validera användarens identitet vid känsliga operationer.
+
+*   **🗄️ V88 – Schema-synkronisering (Keycloak & MFA):**
+    *   Ny Flyway-migration som lägger till saknade kolumner i `app_users`: `keycloak_user_id`, `mfa_secret`, `mfa_enabled` samt sociala medier-länkar.
+    *   Löser 500-fel vid backend-start relaterat till saknad `keycloak_user_id` kolumn i demo-datagenereringen.
+
 ## 🚀 Senaste uppdateringarna (24 feb 2026 – v3.1.0)
 
 *   **🏛️ Konsoliderat Admin-portal:**

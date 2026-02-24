@@ -100,46 +100,86 @@ public class AuthController {
 
             System.out.println("DEBUG: Authentication successful.");
 
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-            String jwt = jwtUtils.generateJwtToken(authentication);
-
             User user = userService.getUserByUsernameWithBadges(loginRequest.username());
 
-            try {
-                userService.updateLastLogin(user.getId());
-            } catch (Exception e) {
-                System.out.println("WARNING: Failed to update last login: " + e.getMessage());
+            // --- MFA CHECK ---
+            if (user.isMfaEnabled()) {
+                // Return 200 with metadata indicating MFA is required
+                return ResponseEntity.ok(new MfaChallengeResponse(user.getUsername()));
             }
+            // -----------------
 
-            // Logga inloggning i aktivitetshistoriken
-            try {
-                System.out.println("DEBUG: Attempting to log login activity...");
-                studentActivityService.logActivity(user.getId(), null, null, StudentActivityLog.ActivityType.LOGIN,
-                        "Inloggning via webb");
-                System.out.println("DEBUG: Login activity logged successfully.");
-            } catch (Throwable e) {
-                System.out.println("CRITICAL ERROR logging login activity: " + e.getMessage());
-                e.printStackTrace();
-            }
-
-            return ResponseEntity.ok(new JwtResponse(
-                    jwt,
-                    user.getId(),
-                    user.getUsername(),
-                    user.getFirstName(),
-                    user.getLastName(),
-                    user.getFullName(),
-                    user.getRole().getName(),
-                    user.getProfilePictureUrl(),
-                    user.getPoints(),
-                    user.getLevel(),
-                    user.getEarnedBadges()));
+            System.out.println("DEBUG: Authentication successful.");
+            return completeLogin(authentication, user);
         } catch (Throwable t) {
             System.out.println("FATAL ERROR in authenticateUser: " + t.getMessage());
             t.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Login failed due to server error: " + t.getMessage());
         }
+    }
+
+    @PostMapping("/verify-mfa")
+    public ResponseEntity<?> verifyMfa(@RequestBody MfaVerifyRequest request) {
+        User user = userService.getUserByUsername(request.username());
+        if (!user.isMfaEnabled()) {
+            return ResponseEntity.badRequest().body("MFA är inte aktiverat för denna användare.");
+        }
+
+        com.eduflex.backend.security.MfaService mfaService = com.eduflex.backend.config.BeanUtil
+                .getBean(com.eduflex.backend.security.MfaService.class);
+        if (mfaService.verifyCode(user.getMfaSecret(), Integer.parseInt(request.code()))) {
+            // Success! Generate token
+            Authentication authentication = new UsernamePasswordAuthenticationToken(user.getUsername(), null,
+                    java.util.Collections
+                            .singletonList(new org.springframework.security.core.authority.SimpleGrantedAuthority(
+                                    user.getRole().getName())));
+            return completeLogin(authentication, user);
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Ogiltig MFA-kod.");
+        }
+    }
+
+    private ResponseEntity<?> completeLogin(Authentication authentication, User user) {
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        String jwt = jwtUtils.generateJwtToken(authentication);
+
+        try {
+            userService.updateLastLogin(user.getId());
+        } catch (Exception e) {
+            System.out.println("WARNING: Failed to update last login: " + e.getMessage());
+        }
+
+        // Logga inloggning i aktivitetshistoriken
+        try {
+            studentActivityService.logActivity(user.getId(), null, null, StudentActivityLog.ActivityType.LOGIN,
+                    "Inloggning via webb");
+        } catch (Throwable e) {
+            System.out.println("CRITICAL ERROR logging login activity: " + e.getMessage());
+        }
+
+        return ResponseEntity.ok(new JwtResponse(
+                jwt,
+                user.getId(),
+                user.getUsername(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getFullName(),
+                user.getRole().getName(),
+                user.getProfilePictureUrl(),
+                user.getPoints(),
+                user.getLevel(),
+                user.getEarnedBadges()));
+    }
+
+    // Helper records for MFA
+    public record MfaChallengeResponse(String username, boolean mfaRequired) {
+        public MfaChallengeResponse(String username) {
+            this(username, true);
+        }
+    }
+
+    public record MfaVerifyRequest(String username, String code) {
     }
 
     // --- HÄR ÄR DEN NYA METODEN SOM SAKNADES ---
@@ -186,6 +226,25 @@ public class AuthController {
         userRepository.save(user);
 
         return ResponseEntity.ok("Användare registrerad!");
+    }
+
+    @PostMapping("/verify-password")
+    public ResponseEntity<?> verifyPassword(@RequestBody PasswordVerifyRequest request, Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Ej inloggad.");
+        }
+
+        User user = userRepository.findByUsername(authentication.getName())
+                .orElseThrow(() -> new RuntimeException("Användare hittades inte"));
+
+        if (passwordEncoder.matches(request.password(), user.getPassword())) {
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Fel lösenord.");
+        }
+    }
+
+    public record PasswordVerifyRequest(String password) {
     }
 
     private String getClientIp(HttpServletRequest request) {

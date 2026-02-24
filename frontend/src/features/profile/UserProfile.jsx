@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import {
     Camera, Mail, Phone, MapPin, Save, Lock, User, AlertTriangle, Globe,
-    Layout, Download, Shield, CreditCard, Check, X,
+    Layout, Download, Shield, CreditCard, Check, X, Eye, EyeOff,
     Linkedin, Instagram, Facebook, Twitter, Search, UserPlus, UserMinus, Ban, Award,
     Briefcase, LogOut, Zap, Bell, Smartphone, MessageSquare, Calendar
 } from 'lucide-react';
@@ -16,6 +16,8 @@ import ImageCropDialog from '../../components/common/ImageCropDialog';
 import AchievementsGallery from '../../components/gamification/AchievementsGallery';
 import { getGamificationAssetPath } from '../../utils/gamificationUtils';
 import eduGameService from '../../services/eduGameService';
+import MfaSetupModal from './MfaSetupModal';
+import PasswordConfirmModal from './PasswordConfirmModal';
 
 // ... (Keep existing ConnectionRequests and ConnectionManager components if not extracting them yet, 
 // for simplicity in this step I will include them or keep the logic inline if they were inline. 
@@ -258,6 +260,14 @@ const UserProfile = ({ currentUser, showMessage, refreshUser, logout }) => {
     // --- NOTIFICATION PREFERENCES ---
     const [preferences, setPreferences] = useState([]);
     const [isPrefLoading, setIsPrefLoading] = useState(false);
+
+    // MFA SETUP STATE
+    const [isMfaModalOpen, setIsMfaModalOpen] = useState(false);
+
+    // SECURE DATA STATE
+    const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
+    const [ssnRevealed, setSsnRevealed] = useState(false);
+    const [ssnValue, setSsnValue] = useState(''); // Holds decrypted/readable SSN
 
     useEffect(() => {
         if (activeTab === 'notifications') {
@@ -604,15 +614,26 @@ const UserProfile = ({ currentUser, showMessage, refreshUser, logout }) => {
                                         <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('profile.lastname')}</label><input className="w-full p-2.5 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-black focus:ring-2 focus:ring-indigo-500" value={formData.lastName} onChange={e => setFormData({ ...formData, lastName: e.target.value })} /></div>
                                     </div>
                                     <div className="p-4 rounded-xl bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800/40">
-                                        <label className="flex items-center gap-2 text-sm font-semibold text-amber-800 dark:text-amber-400 mb-2">
-                                            <Lock size={14} /> Personnummer (SSN)
-                                            <span className="text-xs font-normal text-amber-600 dark:text-amber-500">– Krypterat · Krävs för CSN-rapportering</span>
-                                        </label>
+                                        <div className="flex items-center justify-between mb-2">
+                                            <label className="flex items-center gap-2 text-sm font-semibold text-amber-800 dark:text-amber-400">
+                                                <Lock size={14} /> Personnummer (SSN)
+                                                <span className="text-xs font-normal text-amber-600 dark:text-amber-500">– Krypterat · Krävs för CSN-rapportering</span>
+                                            </label>
+                                            <button
+                                                type="button"
+                                                onClick={() => ssnRevealed ? setSsnRevealed(false) : setIsPasswordModalOpen(true)}
+                                                className="p-1 hover:bg-amber-100 dark:hover:bg-amber-900/30 rounded-lg text-amber-600 dark:text-amber-400 transition-colors"
+                                                title={ssnRevealed ? "Dölj" : "Visa"}
+                                            >
+                                                {ssnRevealed ? <EyeOff size={16} /> : <Eye size={16} />}
+                                            </button>
+                                        </div>
                                         <input
                                             className="w-full p-2.5 rounded-lg border border-amber-300 dark:border-amber-700 bg-white dark:bg-black focus:ring-2 focus:ring-amber-400 font-mono tracking-widest"
                                             placeholder="YYYYMMDDNNNN (12 siffror)"
                                             maxLength={12}
-                                            value={formData.ssn}
+                                            value={ssnRevealed ? formData.ssn : '••••••••••••'}
+                                            readOnly={!ssnRevealed}
                                             onChange={e => setFormData({ ...formData, ssn: e.target.value.replace(/\D/g, '') })}
                                         />
                                         <p className="text-xs text-amber-600 dark:text-amber-500 mt-1.5">Lagras krypterat. Delas aldrig publikt och används endast för officiell CSN-närvarodata.</p>
@@ -699,42 +720,64 @@ const UserProfile = ({ currentUser, showMessage, refreshUser, logout }) => {
                                 <div className="border-t border-gray-100 dark:border-gray-800 pt-8">
                                     <h3 className="text-2xl font-bold mb-6 dark:text-white flex items-center gap-2"><Shield size={24} className="text-green-500" /> Integritet & Data</h3>
 
-                                    <div className="space-y-6">
-                                        <div className="flex items-center justify-between p-4 bg-white dark:bg-black/20 rounded-xl border border-gray-200 dark:border-gray-800">
-                                            <div className="flex items-center gap-4">
-                                                <div className="p-3 bg-purple-100 dark:bg-purple-900/20 rounded-full text-purple-600">
-                                                    <Globe size={24} />
-                                                </div>
-                                                <div>
-                                                    <h4 className="font-bold text-gray-900 dark:text-white">Offentlig Profil</h4>
-                                                    <p className="text-sm text-gray-500">Gör din profil synlig för andra användare.</p>
-                                                </div>
+                                    <div className="flex items-center justify-between p-4 bg-white dark:bg-black/20 rounded-xl border border-gray-200 dark:border-gray-800">
+                                        <div className="flex items-center gap-4">
+                                            <div className="p-3 bg-indigo-100 dark:bg-indigo-900/20 rounded-full text-indigo-600">
+                                                <Smartphone size={24} />
                                             </div>
-                                            <input
-                                                type="checkbox"
-                                                className="w-6 h-6 text-indigo-600 rounded focus:ring-indigo-500"
-                                                checked={formData.dashboardSettings?.publicProfile !== false}
-                                                onChange={(e) => {
-                                                    const newSettings = { ...formData.dashboardSettings, publicProfile: e.target.checked };
-                                                    setFormData({ ...formData, dashboardSettings: newSettings });
-                                                }}
-                                            />
+                                            <div>
+                                                <h4 className="font-bold text-gray-900 dark:text-white">Tvåstegsverifiering (MFA)</h4>
+                                                <p className="text-sm text-gray-500">
+                                                    {displayUser.mfaEnabled ? 'Aktiverad - Ditt konto är extra säkert.' : 'Inaktiverad - Öka din säkerhet med MFA.'}
+                                                </p>
+                                            </div>
                                         </div>
+                                        <button
+                                            onClick={() => setIsMfaModalOpen(true)}
+                                            className={`px-4 py-2 text-sm font-bold rounded-lg transition-all ${displayUser.mfaEnabled
+                                                ? 'text-gray-400 bg-gray-100 cursor-not-allowed'
+                                                : 'text-indigo-600 bg-indigo-50 hover:bg-indigo-100'
+                                                }`}
+                                            disabled={displayUser.mfaEnabled}
+                                        >
+                                            {displayUser.mfaEnabled ? 'Aktiverad' : 'Konfigurera'}
+                                        </button>
+                                    </div>
 
-                                        <div className="flex items-center justify-between p-4 bg-white dark:bg-black/20 rounded-xl border border-gray-200 dark:border-gray-800">
-                                            <div className="flex items-center gap-4">
-                                                <div className="p-3 bg-blue-100 dark:bg-blue-900/20 rounded-full text-blue-600">
-                                                    <Download size={24} />
-                                                </div>
-                                                <div>
-                                                    <h4 className="font-bold text-gray-900 dark:text-white">Exportera Data</h4>
-                                                    <p className="text-sm text-gray-500">Ladda ner en kopia av din data.</p>
-                                                </div>
+                                    <div className="flex items-center justify-between p-4 bg-white dark:bg-black/20 rounded-xl border border-gray-200 dark:border-gray-800">
+                                        <div className="flex items-center gap-4">
+                                            <div className="p-3 bg-purple-100 dark:bg-purple-900/20 rounded-full text-purple-600">
+                                                <Globe size={24} />
                                             </div>
-                                            <button onClick={() => alert("Funktion kommer snart")} className="px-4 py-2 text-sm font-bold text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors">
-                                                Exportera
-                                            </button>
+                                            <div>
+                                                <h4 className="font-bold text-gray-900 dark:text-white">Offentlig Profil</h4>
+                                                <p className="text-sm text-gray-500">Gör din profil synlig för andra användare.</p>
+                                            </div>
                                         </div>
+                                        <input
+                                            type="checkbox"
+                                            className="w-6 h-6 text-indigo-600 rounded focus:ring-indigo-500"
+                                            checked={formData.dashboardSettings?.publicProfile !== false}
+                                            onChange={(e) => {
+                                                const newSettings = { ...formData.dashboardSettings, publicProfile: e.target.checked };
+                                                setFormData({ ...formData, dashboardSettings: newSettings });
+                                            }}
+                                        />
+                                    </div>
+
+                                    <div className="flex items-center justify-between p-4 bg-white dark:bg-black/20 rounded-xl border border-gray-200 dark:border-gray-800">
+                                        <div className="flex items-center gap-4">
+                                            <div className="p-3 bg-blue-100 dark:bg-blue-900/20 rounded-full text-blue-600">
+                                                <Download size={24} />
+                                            </div>
+                                            <div>
+                                                <h4 className="font-bold text-gray-900 dark:text-white">Exportera Data</h4>
+                                                <p className="text-sm text-gray-500">Ladda ner en kopia av din data.</p>
+                                            </div>
+                                        </div>
+                                        <button onClick={() => alert("Funktion kommer snart")} className="px-4 py-2 text-sm font-bold text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors">
+                                            Exportera
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -1028,6 +1071,29 @@ const UserProfile = ({ currentUser, showMessage, refreshUser, logout }) => {
                     }}
                 />
             )}
+
+            {/* MFA SETUP MODAL */}
+            <MfaSetupModal
+                isOpen={isMfaModalOpen}
+                onClose={() => setIsMfaModalOpen(false)}
+                onComplete={() => {
+                    refreshUser();
+                    setIsMfaModalOpen(false);
+                }}
+            />
+            {/* SECURE DATA ACCESS MODAL */}
+            <PasswordConfirmModal
+                isOpen={isPasswordModalOpen}
+                onClose={() => setIsPasswordModalOpen(false)}
+                onConfirm={(password) => {
+                    // In a more complex scenario, we might fetch the data here, 
+                    // but for now we just allow showing what was already in formData (assuming it's loaded)
+                    setSsnRevealed(true);
+                    setSsnValue(formData.ssn);
+                }}
+                title="Bekräfta åtkomst"
+                message="Ange ditt lösenord för att visa ditt personnummer."
+            />
         </div>
     );
 };

@@ -22,6 +22,10 @@ const Login = () => {
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
+    // MFA States
+    const [mfaRequired, setMfaRequired] = useState(false);
+    const [mfaCode, setMfaCode] = useState('');
+
     // Initial check for URL param ?tenantId=...
     React.useEffect(() => {
         const params = new URLSearchParams(window.location.search);
@@ -29,11 +33,34 @@ const Login = () => {
         if (tenantParam) {
             setManualTenantId(tenantParam);
         }
-    }, []);
+    }, [setManualTenantId]);
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
         setError('');
+    };
+
+    const getTenantId = () => {
+        // 1. Manuell input (prioritet)
+        if (manualTenantId) return manualTenantId;
+
+        // 2. Hostname detection
+        const hostname = window.location.hostname;
+        const forcedTenant = localStorage.getItem('force_tenant');
+        if (forcedTenant === 'public') return null;
+        if (forcedTenant) return forcedTenant;
+        if (/^[\d.]+$/.test(hostname)) return null;
+        if (hostname.includes('ngrok') || hostname.includes('loca.lt') || hostname.includes('trycloudflare.com')) {
+            return null;
+        }
+        if (hostname.endsWith('.localhost') && hostname !== 'localhost') return hostname.split('.')[0];
+        const parts = hostname.split('.');
+        if (parts.length > 2) {
+            const subdomain = parts[0];
+            if (['www', 'api', 'eduflexlms'].includes(subdomain)) return null;
+            return subdomain;
+        }
+        return null;
     };
 
     const handleLogin = async (e) => {
@@ -42,80 +69,82 @@ const Login = () => {
         setError('');
 
         try {
-            // Kontrollera att API_BASE inte slutar med snedstreck för att undvika dubbla //
             const baseUrl = API_BASE.endsWith('/') ? API_BASE.slice(0, -1) : API_BASE;
-
-            // Tenant Logic för Login
-            const getTenantId = () => {
-                // 1. Manuell input (prioritet)
-                if (manualTenantId) return manualTenantId;
-
-                // 2. Hostname detection
-                const hostname = window.location.hostname;
-                const forcedTenant = localStorage.getItem('force_tenant');
-                if (forcedTenant === 'public') return null;
-                if (forcedTenant) return forcedTenant;
-                if (/^[\d.]+$/.test(hostname)) return null;
-                if (hostname.includes('ngrok') || hostname.includes('loca.lt') || hostname.includes('trycloudflare.com')) {
-                    return null;
-                }
-                if (hostname.endsWith('.localhost') && hostname !== 'localhost') return hostname.split('.')[0];
-                const parts = hostname.split('.');
-                if (parts.length > 2) {
-                    const subdomain = parts[0];
-                    if (['www', 'api', 'eduflexlms'].includes(subdomain)) return null;
-                    return subdomain;
-                }
-                return null;
-            };
-
-            const headers = { 'Content-Type': 'application/json' };
             const tenantId = getTenantId();
+            const headers = { 'Content-Type': 'application/json' };
             if (tenantId) headers['X-Tenant-ID'] = tenantId;
 
+            // IF MFA IS REQUIRED, WE USE A DIFFERENT ENDPOINT
+            if (mfaRequired) {
+                const response = await fetch(`${baseUrl}/auth/verify-mfa`, {
+                    method: 'POST',
+                    headers: headers,
+                    body: JSON.stringify({ username: formData.username, code: mfaCode })
+                });
+
+                const data = await response.json();
+                if (response.ok) {
+                    processLoginSuccess(data, tenantId);
+                } else {
+                    setError(data.message || 'Ogiltig MFA-kod.');
+                }
+                return;
+            }
+
+            // REGULAR LOGIN
             const response = await fetch(`${baseUrl}/auth/login`, {
                 method: 'POST',
                 headers: headers,
                 body: JSON.stringify(formData)
             });
 
-            const data = await response.json();
+            // Check if response is JSON
+            const contentType = response.headers.get("content-type");
+            const data = contentType && contentType.indexOf("application/json") !== -1
+                ? await response.json()
+                : { message: await response.text() };
 
             if (response.ok) {
-                if (data.token) {
-                    localStorage.setItem('token', data.token);
-
-                    const userObj = {
-                        id: data.id,
-                        username: data.username,
-                        firstName: data.firstName || data.username,
-                        lastName: data.lastName || '',
-                        fullName: data.fullName || data.username,
-                        role: data.role,
-                        profilePictureUrl: data.profilePictureUrl || null,
-                        points: data.points || 0,
-                        level: data.level || 1,
-                        earnedBadges: data.earnedBadges || []
-                    };
-
-                    if (login) {
-                        // Pass tenantId (from URL/Input) to persist properly
-                        login(userObj, data.token, tenantId);
-                    }
-
-                    navigate('/');
-                } else {
-                    console.error("Svaret saknade token:", data);
-                    setError('Servern skickade ett ofullständigt svar (ingen token).');
+                if (data.mfaRequired) {
+                    setMfaRequired(true);
+                    return;
                 }
+                processLoginSuccess(data, tenantId);
             } else {
-                setError(t('messages.login_failed') || 'Fel användarnamn eller lösenord.');
+                setError(data.message || t('messages.login_failed') || 'Fel användarnamn eller lösenord.');
             }
         } catch (err) {
             console.error("Login error:", err);
             setError(t('messages.login_error') || 'Kunde inte ansluta till servern.');
         } finally {
             setIsLoading(false);
+        }
+    };
+
+    const processLoginSuccess = (data, tenantId) => {
+        if (data.token) {
+            localStorage.setItem('token', data.token);
+
+            const userObj = {
+                id: data.id,
+                username: data.username,
+                firstName: data.firstName || data.username,
+                lastName: data.lastName || '',
+                fullName: data.fullName || data.username,
+                role: data.role,
+                profilePictureUrl: data.profilePictureUrl || null,
+                points: data.points || 0,
+                level: data.level || 1,
+                earnedBadges: data.earnedBadges || []
+            };
+
+            if (login) {
+                login(userObj, data.token, tenantId);
+            }
+
+            navigate('/');
+        } else {
+            setError('Servern skickade ett ofullständigt svar (ingen token).');
         }
     };
 
@@ -158,63 +187,95 @@ const Login = () => {
 
                     <form onSubmit={handleLogin} className="space-y-5">
 
-                        {/* ORGANIZATION ID (Optional/Advanced) */}
-                        <div>
-                            <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2 ml-1">
-                                Organization ID (Optional)
-                            </label>
-                            <div className="relative group">
-                                <input
-                                    type="text"
-                                    className="w-full pl-4 pr-12 py-3.5 bg-gray-50 dark:bg-[#131314] border border-gray-200 dark:border-[#3c4043] rounded-xl text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 dark:focus:border-indigo-500 focus:bg-white dark:focus:bg-[#131314] transition-all font-medium text-sm shadow-sm"
-                                    placeholder="e.g. saas-test-school"
-                                    value={manualTenantId}
-                                    onChange={(e) => setManualTenantId(e.target.value)}
-                                />
-                            </div>
-                        </div>
-
-                        {/* ANVÄNDARNAMN */}
-                        <div>
-                            <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2 ml-1">
-                                {t('auth.username') || 'Användarnamn'}
-                            </label>
-                            <div className="relative group">
-                                <input
-                                    name="username"
-                                    type="text"
-                                    className="w-full pl-4 pr-12 py-3.5 bg-gray-50 dark:bg-[#131314] border border-gray-200 dark:border-[#3c4043] rounded-xl text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 dark:focus:border-indigo-500 focus:bg-white dark:focus:bg-[#131314] transition-all font-medium text-sm shadow-sm"
-                                    placeholder="Ditt användarnamn"
-                                    value={formData.username}
-                                    onChange={handleChange}
-                                    required
-                                />
-                                <div className="absolute inset-y-0 right-0 w-12 flex items-center justify-center pointer-events-none text-gray-400 group-focus-within:text-indigo-600 transition-colors">
-                                    <User size={20} />
+                        {/* MFA CODE INPUT (Conditional) */}
+                        {mfaRequired ? (
+                            <div>
+                                <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2 ml-1">
+                                    MFA-kod (Från din app)
+                                </label>
+                                <div className="relative group">
+                                    <input
+                                        type="text"
+                                        className="w-full pl-4 pr-12 py-3.5 bg-gray-50 dark:bg-[#131314] border border-gray-200 dark:border-[#3c4043] rounded-xl text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 dark:focus:border-indigo-500 focus:bg-white dark:focus:bg-[#131314] transition-all font-medium text-sm shadow-sm"
+                                        placeholder="000000"
+                                        value={mfaCode}
+                                        onChange={(e) => setMfaCode(e.target.value)}
+                                        maxLength={6}
+                                        required
+                                    />
+                                    <div className="absolute inset-y-0 right-0 w-12 flex items-center justify-center pointer-events-none text-gray-400 group-focus-within:text-indigo-600 transition-colors">
+                                        <Lock size={20} />
+                                    </div>
                                 </div>
+                                <button
+                                    type="button"
+                                    onClick={() => setMfaRequired(false)}
+                                    className="text-xs text-indigo-600 dark:text-indigo-400 mt-2 ml-1 hover:underline underline-offset-2"
+                                >
+                                    Tillbaka till lösenord
+                                </button>
                             </div>
-                        </div>
-
-                        {/* LÖSENORD */}
-                        <div>
-                            <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2 ml-1">
-                                {t('auth.password') || 'Lösenord'}
-                            </label>
-                            <div className="relative group">
-                                <input
-                                    name="password"
-                                    type="password"
-                                    className="w-full pl-4 pr-12 py-3.5 bg-gray-50 dark:bg-[#131314] border border-gray-200 dark:border-[#3c4043] rounded-xl text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 dark:focus:border-indigo-500 focus:bg-white dark:focus:bg-[#131314] transition-all font-medium text-sm shadow-sm"
-                                    placeholder="••••••••"
-                                    value={formData.password}
-                                    onChange={handleChange}
-                                    required
-                                />
-                                <div className="absolute inset-y-0 right-0 w-12 flex items-center justify-center pointer-events-none text-gray-400 group-focus-within:text-indigo-600 transition-colors">
-                                    <Lock size={20} />
+                        ) : (
+                            <>
+                                {/* ORGANIZATION ID (Optional/Advanced) */}
+                                <div>
+                                    <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2 ml-1">
+                                        Organization ID (Optional)
+                                    </label>
+                                    <div className="relative group">
+                                        <input
+                                            type="text"
+                                            className="w-full pl-4 pr-12 py-3.5 bg-gray-50 dark:bg-[#131314] border border-gray-200 dark:border-[#3c4043] rounded-xl text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 dark:focus:border-indigo-500 focus:bg-white dark:focus:bg-[#131314] transition-all font-medium text-sm shadow-sm"
+                                            placeholder="e.g. saas-test-school"
+                                            value={manualTenantId}
+                                            onChange={(e) => setManualTenantId(e.target.value)}
+                                        />
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
+
+                                {/* ANVÄNDARNAMN */}
+                                <div>
+                                    <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2 ml-1">
+                                        {t('auth.username') || 'Användarnamn'}
+                                    </label>
+                                    <div className="relative group">
+                                        <input
+                                            name="username"
+                                            type="text"
+                                            className="w-full pl-4 pr-12 py-3.5 bg-gray-50 dark:bg-[#131314] border border-gray-200 dark:border-[#3c4043] rounded-xl text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 dark:focus:border-indigo-500 focus:bg-white dark:focus:bg-[#131314] transition-all font-medium text-sm shadow-sm"
+                                            placeholder="Ditt användarnamn"
+                                            value={formData.username}
+                                            onChange={handleChange}
+                                            required
+                                        />
+                                        <div className="absolute inset-y-0 right-0 w-12 flex items-center justify-center pointer-events-none text-gray-400 group-focus-within:text-indigo-600 transition-colors">
+                                            <User size={20} />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* LÖSENORD */}
+                                <div>
+                                    <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2 ml-1">
+                                        {t('auth.password') || 'Lösenord'}
+                                    </label>
+                                    <div className="relative group">
+                                        <input
+                                            name="password"
+                                            type="password"
+                                            className="w-full pl-4 pr-12 py-3.5 bg-gray-50 dark:bg-[#131314] border border-gray-200 dark:border-[#3c4043] rounded-xl text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 dark:focus:border-indigo-500 focus:bg-white dark:focus:bg-[#131314] transition-all font-medium text-sm shadow-sm"
+                                            placeholder="••••••••"
+                                            value={formData.password}
+                                            onChange={handleChange}
+                                            required
+                                        />
+                                        <div className="absolute inset-y-0 right-0 w-12 flex items-center justify-center pointer-events-none text-gray-400 group-focus-within:text-indigo-600 transition-colors">
+                                            <Lock size={20} />
+                                        </div>
+                                    </div>
+                                </div>
+                            </>
+                        )}
 
                         {/* LOGIN KNAPP */}
                         <button
@@ -223,7 +284,9 @@ const Login = () => {
                             className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-indigo-600/30 hover:shadow-indigo-600/50 dark:shadow-none transition-all hover:scale-[1.01] active:scale-95 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed mt-4"
                         >
                             {isLoading ? <Loader2 className="animate-spin" size={20} /> : <LogIn size={20} />}
-                            <span className="text-sm">{isLoading ? (t('common.loading') || 'Loggar in...') : (t('auth.login_button') || 'Logga in')}</span>
+                            <span className="text-sm">
+                                {isLoading ? (t('common.loading') || 'Loggar in...') : (mfaRequired ? 'Verifiera kod' : (t('auth.login_button') || 'Logga in'))}
+                            </span>
                         </button>
                     </form>
 

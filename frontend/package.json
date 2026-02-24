@@ -35,6 +35,7 @@
     "i18next-browser-languagedetector": "^7.2.0",
     "livekit-client": "^2.17.1",
     "lucide-react": "^0.344.0",
+    "qrcode.react": "^4.2.0",
     "quill-table-better": "^1.2.3",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
