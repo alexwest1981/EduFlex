@@ -48,7 +48,7 @@ public class AIResourceService {
       - LESSON: En lektionsplanering med mål, genomgång och aktiviteter.
 
       VIKTIGT:
-      Svara ENDAST med giltig JSON. Ingen markdown-formatering.
+      Svara ALLTID med ETT enda JSON-objekt (INTE en array). Inget markdown. Inga kodblock. Börja direkt med { och sluta med }.
 
       FORMAT FÖR QUIZ:
       {
@@ -101,7 +101,17 @@ public class AIResourceService {
       String jsonResponse = geminiService.generateJsonContent(fullPrompt);
       jsonResponse = cleanJson(jsonResponse);
 
-      Map<String, Object> data = objectMapper.readValue(jsonResponse, Map.class);
+      // Gemini sometimes wraps the result in an array – unwrap if needed
+      Map<String, Object> data;
+      if (jsonResponse.startsWith("[")) {
+        List<Map<String, Object>> list = objectMapper.readValue(jsonResponse,
+            new com.fasterxml.jackson.core.type.TypeReference<List<Map<String, Object>>>() {});
+        if (list.isEmpty()) throw new RuntimeException("Gemini returned empty array");
+        data = list.get(0);
+      } else {
+        data = objectMapper.readValue(jsonResponse,
+            new com.fasterxml.jackson.core.type.TypeReference<Map<String, Object>>() {});
+      }
       String resourceTypeStr = ((String) data.get("type")).toUpperCase();
       Resource.ResourceType resourceType = Resource.ResourceType.valueOf(resourceTypeStr);
 
