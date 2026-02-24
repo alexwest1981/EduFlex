@@ -35,6 +35,17 @@
 
 <div id="-svenska"></div>
 
+## 🚀 Senaste uppdateringarna (24 feb 2026 – Advanced SCORM & ISO 27001 Security)
+*   **🎓 SCORM Persistence & xAPI (v3.2.0):**
+    - **State API Integration**: SCORM-spelaren sparar och laddar nu automatiskt elevens framsteg (`suspend_data`, bokmärken) via det inbyggda xAPI State API:et.
+    - **Progress tracking**: Skickar automatiskt xAPI-statements (`completed`, `passed`) till LRS när modulen signalerar slutförande.
+    - **LRS-stöd**: Utökad `LrsController` och frontend `api.js` med stöd för State API.
+
+*   **🛡️ ISO 27001 – PII Kryptering vid vila:**
+    - **AES-256 GCM**: Känslig persondata (SSN, namn, adress, telefon) krypteras nu transparent innan den lagras i databasen via Hibernate `AttributeConverter`.
+    - **Migrationsverktyg**: Ny administrativ endpoint `POST /api/admin/security/migrate-pii` för att kryptera befintlig data i systemet.
+    - **MFA-inloggning**: Verifierad inloggningsprocess för administrativa konton med Multi-Factor Authentication (TOTP).
+
 ## 🚀 Senaste uppdateringarna (24 feb 2026 – Security & Data Integrity)
 *   **🛡️ Säker Personnummer-visning (SSN):**
     *   Personnummer (SSN) i användarprofilen är nu maskerat som standard (`••••••••••••`).

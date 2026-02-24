@@ -17,6 +17,13 @@ const ScormPlayer = ({ packageId, onClose }) => {
     const [logs, setLogs] = useState([]);
     const [showLogs, setShowLogs] = useState(false);
     const [activeVersion, setActiveVersion] = useState(null); // '1.2' or '2004'
+    const [registrationId] = useState(() => {
+        const stored = localStorage.getItem(`scorm_reg_${packageId}`);
+        if (stored) return stored;
+        const newId = crypto.randomUUID();
+        localStorage.setItem(`scorm_reg_${packageId}`, newId);
+        return newId;
+    });
     const containerRef = useRef(null);
 
     const addLog = useCallback((ver, method, ...args) => {
@@ -67,6 +74,49 @@ const ScormPlayer = ({ packageId, onClose }) => {
             }
         };
 
+        const agent = JSON.stringify({ mbox: `mailto:${currentUser?.email || 'student@eduflex.se'}` });
+
+        const persistState = async () => {
+            try {
+                addLog("System", "LMSCommit", "Persisting state to LRS...");
+                await api.lrs.saveState(
+                    packageId,
+                    agent,
+                    "suspend_data",
+                    registrationId,
+                    JSON.stringify(state.data)
+                );
+
+                // TRIGGER XAPI COMPLETION IF STATUS CHANGED
+                const status = state.data["cmi.core.lesson_status"] || state.data["cmi.completion_status"] || state.data["cmi.success_status"];
+                if (status === "completed" || status === "passed") {
+                    addLog("System", "xAPI", "Status is " + status + ". Sending completion statement...");
+                    await api.lrs.sendStatement({
+                        actor: JSON.parse(agent),
+                        verb: { id: status === "passed" ? "http://adlnet.gov/expapi/verbs/passed" : "http://adlnet.gov/expapi/verbs/completed" },
+                        object: { id: launchUrl },
+                        context: { registration: registrationId }
+                    });
+                }
+            } catch (err) {
+                console.error("Failed to persist SCORM state", err);
+            }
+        };
+
+        const loadInitialState = async () => {
+            try {
+                const saved = await api.lrs.getState(packageId, agent, "suspend_data", registrationId);
+                if (saved && typeof saved === 'object' && Object.keys(saved).length > 0) {
+                    addLog("System", "LMSInitialize", "Loaded existing state from LRS");
+                    state.data = { ...state.data, ...saved };
+                }
+            } catch (err) {
+                console.warn("No existing state found or failed to load", err);
+            }
+        };
+
+        loadInitialState();
+
         // SCORM 1.1 / 1.2 API Adapter
         const api12 = {
             LMSInitialize: (param) => {
@@ -92,6 +142,7 @@ const ScormPlayer = ({ packageId, onClose }) => {
             },
             LMSCommit: (param) => {
                 addLog("1.2", "LMSCommit", param);
+                persistState();
                 return "true";
             },
             LMSGetLastError: () => state.lastError,
@@ -128,6 +179,7 @@ const ScormPlayer = ({ packageId, onClose }) => {
             },
             Commit: (param) => {
                 addLog("2004", "Commit", param);
+                persistState();
                 return "true";
             },
             GetLastError: () => state.lastError,

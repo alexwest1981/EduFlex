@@ -20,6 +20,8 @@ import com.eduflex.backend.service.RateLimitingService;
 import io.github.bucket4j.Bucket;
 import org.springframework.http.HttpStatus;
 import jakarta.servlet.http.HttpServletRequest;
+import com.eduflex.backend.security.MfaService;
+import com.warrenstrange.googleauth.GoogleAuthenticatorKey;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -41,6 +43,7 @@ public class AuthController {
     private final com.eduflex.backend.repository.RoleRepository roleRepository;
     private final StudentActivityService studentActivityService;
     private final com.eduflex.backend.security.RateLimitingFilter rateLimitingFilter;
+    private final MfaService mfaService;
 
     public AuthController(AuthenticationManager authenticationManager,
             UserRepository userRepository,
@@ -52,7 +55,8 @@ public class AuthController {
 
             com.eduflex.backend.repository.RoleRepository roleRepository,
             StudentActivityService studentActivityService,
-            com.eduflex.backend.security.RateLimitingFilter rateLimitingFilter) {
+            com.eduflex.backend.security.RateLimitingFilter rateLimitingFilter,
+            MfaService mfaService) {
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
         this.userService = userService;
@@ -63,6 +67,7 @@ public class AuthController {
         this.roleRepository = roleRepository;
         this.studentActivityService = studentActivityService;
         this.rateLimitingFilter = rateLimitingFilter;
+        this.mfaService = mfaService;
     }
 
     @Operation(summary = "Authenticate user", description = "Authenticates a user and returns a JWT token.")
@@ -126,8 +131,6 @@ public class AuthController {
             return ResponseEntity.badRequest().body("MFA är inte aktiverat för denna användare.");
         }
 
-        com.eduflex.backend.security.MfaService mfaService = com.eduflex.backend.config.BeanUtil
-                .getBean(com.eduflex.backend.security.MfaService.class);
         if (mfaService.verifyCode(user.getMfaSecret(), Integer.parseInt(request.code()))) {
             // Success! Generate token
             Authentication authentication = new UsernamePasswordAuthenticationToken(user.getUsername(), null,

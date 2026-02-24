@@ -583,6 +583,27 @@ export const api = {
         update: (id, data) => api.put(`/scorm/${id}`, data),
         delete: (id) => api.delete(`/scorm/${id}`)
     },
+    lrs: {
+        sendStatement: (statement) => api.post('/lrs/statements', statement),
+        getState: (activityId, agent, stateId, registration) => {
+            const params = new URLSearchParams({ activityId, agent, stateId });
+            if (registration) params.append('registration', registration);
+            return api.get(`/lrs/activities/state?${params}`);
+        },
+        saveState: (activityId, agent, stateId, registration, data) => {
+            const params = new URLSearchParams({ activityId, agent, stateId });
+            if (registration) params.append('registration', registration);
+            // State data in xAPI is often raw string/JSON
+            return fetch(`${API_BASE}/lrs/activities/state?${params}`, {
+                method: 'PUT',
+                headers: {
+                    ...getHeaders('application/json'),
+                    'X-Experience-API-Version': '1.0.3'
+                },
+                body: typeof data === 'string' ? data : JSON.stringify(data)
+            });
+        }
+    },
 
     cmi5: {
         upload: (courseId, formData) => api.post(`/cmi5/upload/${courseId}`, formData),

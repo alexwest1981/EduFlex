@@ -10,6 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.transaction.annotation.Transactional;
+import com.eduflex.backend.repository.UserRepository;
+import com.eduflex.backend.model.User;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -29,6 +32,9 @@ public class ServerManagementController {
 
     @Autowired
     private DatabaseManagementService databaseManagementService;
+
+    @Autowired
+    private UserRepository userRepository;
 
     // ==================== BACKUP ENDPOINTS ====================
 
@@ -92,5 +98,20 @@ public class ServerManagementController {
     public ResponseEntity<Map<String, String>> addDatabase(@RequestBody AddDatabaseRequest request) {
         databaseManagementService.addDatabase(request);
         return ResponseEntity.ok(Map.of("message", "Database added successfully"));
+    }
+
+    // ==================== SECURITY & COMPLIANCE (ISO 27001) ====================
+
+    @PostMapping("/security/migrate-pii")
+    @Transactional
+    public ResponseEntity<Map<String, String>> migratePii() {
+        List<User> users = userRepository.findAll();
+        for (User user : users) {
+            // Trigger JPA AttributeConverter by re-saving existing data
+            userRepository.save(user);
+        }
+        return ResponseEntity.ok(Map.of(
+                "message", "PII Encryption Migration Successful",
+                "usersProcessed", String.valueOf(users.size())));
     }
 }

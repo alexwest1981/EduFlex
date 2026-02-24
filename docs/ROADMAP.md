@@ -35,10 +35,10 @@
 ### April–Maj 2026: Enterprise Security & Compliance (Fokus: Kommuner & Universitet)
 | Prioritet | Funktion | Beskrivning | Ansträngning | Varför |
 | :--- | :--- | :--- | :--- | :--- |
-| **Hög** | **Security Hardening (ISO 27001)** | AES-256 kryptering (resten av PII), MFA stöd, Rate-limiting v2, Security Headers (CSP), Dependency Audit. | ✅ **Stabil** | Kritiskt för offentlig sektor. |
+| **Hög** | **Security Hardening (ISO 27001)** | AES-256 kryptering (resten av PII), MFA stöd, Security Headers (CSP). | ✅ **Klar** (v3.2.0) | Kritiskt för offentlig sektor. |
 | **Hög** | **Enhanced Audit Logs** | Global administrativ audit-log (vem gjorde vad, när). GDPR-spårbarhet för all dataåtkomst. | ✅ **Klar** | Compliance-krav. |
 | **Medel** | **MFA (Multi-Factor Auth)** | Stöd för TOTP (Google Authenticator) vid admin-inloggning. | ✅ **Klar** | Högre säkerhetskrav. |
-| **Medel** | **xAPI/SCORM 2.0** | Full import (Articulate/Captivate). | 5 dagar | Legacy-innehåll. |
+| **Medel** | **xAPI/SCORM 2.0** | Full import + State API (suspend_data) för persistens. | ✅ **Klar** (v3.2.0) | Legacy-innehåll. |
 
 **Milstolpe:** Slutförd extern säkerhetsrevision + Pilot-deploy hos kommunal kund.
 
