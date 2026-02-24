@@ -559,6 +559,12 @@ export const api = {
         submit: (quizId, resultData) => api.post(`/quizzes/${quizId}/submit`, resultData),
         delete: (id) => api.delete(`/quizzes/${id}`),
         generate: (data) => api.post('/quizzes/generate', data),
+        getUpcoming: () => api.get('/quizzes/upcoming'),
+        getActiveExams: () => api.get('/quizzes/active-exams'),
+        checkActive: (calendarEventId) => api.get(`/quizzes/exam-active/${calendarEventId}`),
+        gradeAi: (resultId) => api.post(`/quizzes/results/${resultId}/grade-ai`, {}),
+        getResults: (quizId) => api.get(`/quizzes/${quizId}/results`),
+        bookExam: (data) => api.post('/quizzes/book-exam', data),
     },
 
     questionBank: {
@@ -606,6 +612,11 @@ export const api = {
         getCourseLogs: (courseId) => api.get(`/activity/course/${courseId}`),
         getStudentLogs: (courseId, userId) => api.get(`/activity/course/${courseId}/student/${userId}`),
         getGlobalStudentLogs: (userId) => api.get(`/activity/student/${userId}`)
+    },
+    integrity: {
+        log: (data) => api.post('/integrity/log', data),
+        getRecent: (quizIds) => api.post('/integrity/recent', quizIds),
+        getByQuiz: (quizId) => api.get(`/integrity/quiz/${quizId}`),
     },
 
     logs: {

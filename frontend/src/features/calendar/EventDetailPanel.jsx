@@ -118,7 +118,7 @@ const EventDetailPanel = ({ event, isOpen, onClose, onDelete, onUpdateStatus, is
                             <div className="flex items-center gap-3 text-gray-700 dark:text-gray-300">
                                 {getPlatformIcon(event.platform)}
                                 <div>
-                                    <p className="font-semibold">{event.platform}</p>
+                                    <p className="font-semibold">{event.platform === 'EXAM_ROOM' ? 'Tentarum' : event.platform}</p>
                                     {event.meetingLink && (
                                         <a
                                             href={event.meetingLink}

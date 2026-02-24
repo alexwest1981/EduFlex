@@ -40,12 +40,12 @@ function getWeekNumber(d) {
 
 // ─── Event type config ────────────────────────────────────────────────────────
 const EVENT_CONFIG = {
-    LESSON:     { label: 'Lektion',   dot: 'bg-indigo-500',  pill: 'bg-indigo-50 dark:bg-indigo-500/15 text-indigo-800 dark:text-indigo-200 border-l-2 border-indigo-400' },
-    EXAM:       { label: 'Tenta',     dot: 'bg-rose-500',    pill: 'bg-rose-50 dark:bg-rose-500/15 text-rose-800 dark:text-rose-200 border-l-2 border-rose-400' },
-    WORKSHOP:   { label: 'Workshop',  dot: 'bg-emerald-500', pill: 'bg-emerald-50 dark:bg-emerald-500/15 text-emerald-800 dark:text-emerald-200 border-l-2 border-emerald-400' },
-    MEETING:    { label: 'Möte',      dot: 'bg-sky-500',     pill: 'bg-sky-50 dark:bg-sky-500/15 text-sky-800 dark:text-sky-200 border-l-2 border-sky-400' },
-    ASSIGNMENT: { label: 'Uppgift',   dot: 'bg-amber-500',   pill: 'bg-amber-50 dark:bg-amber-500/15 text-amber-800 dark:text-amber-200 border-l-2 border-amber-400' },
-    OTHER:      { label: 'Annat',     dot: 'bg-gray-400',    pill: 'bg-gray-50 dark:bg-gray-500/15 text-gray-700 dark:text-gray-300 border-l-2 border-gray-400' },
+    LESSON: { label: 'Lektion', dot: 'bg-indigo-500', pill: 'bg-indigo-50 dark:bg-indigo-500/15 text-indigo-800 dark:text-indigo-200 border-l-2 border-indigo-400' },
+    EXAM: { label: 'Tenta', dot: 'bg-rose-500', pill: 'bg-rose-50 dark:bg-rose-500/15 text-rose-800 dark:text-rose-200 border-l-2 border-rose-400' },
+    WORKSHOP: { label: 'Workshop', dot: 'bg-emerald-500', pill: 'bg-emerald-50 dark:bg-emerald-500/15 text-emerald-800 dark:text-emerald-200 border-l-2 border-emerald-400' },
+    MEETING: { label: 'Möte', dot: 'bg-sky-500', pill: 'bg-sky-50 dark:bg-sky-500/15 text-sky-800 dark:text-sky-200 border-l-2 border-sky-400' },
+    ASSIGNMENT: { label: 'Uppgift', dot: 'bg-amber-500', pill: 'bg-amber-50 dark:bg-amber-500/15 text-amber-800 dark:text-amber-200 border-l-2 border-amber-400' },
+    OTHER: { label: 'Annat', dot: 'bg-gray-400', pill: 'bg-gray-50 dark:bg-gray-500/15 text-gray-700 dark:text-gray-300 border-l-2 border-gray-400' },
 };
 const getConfig = (type) => EVENT_CONFIG[type] || EVENT_CONFIG.OTHER;
 
@@ -228,6 +228,13 @@ const CalendarView = () => {
         const timer = setTimeout(checkAvailability, 500);
         return () => clearTimeout(timer);
     }, [newEvent.date, newEvent.startTime, newEvent.endTime, newEvent.attendeeId, showBookingModal]);
+
+    // Auto-select Platform based on Type
+    useEffect(() => {
+        if (newEvent.type === 'EXAM' && newEvent.platform === 'NONE') {
+            setNewEvent(prev => ({ ...prev, platform: 'EXAM_ROOM' }));
+        }
+    }, [newEvent.type]);
 
     // ── Derived ──
     const displayEvents = primaryFilter ? filteredEvents : calEvents;
@@ -496,11 +503,10 @@ const CalendarView = () => {
                             <button
                                 key={mode}
                                 onClick={() => setViewMode(mode)}
-                                className={`px-3 py-1.5 rounded-lg transition-all ${
-                                    viewMode === mode
-                                        ? 'bg-white dark:bg-[#1a1b1d] text-gray-900 dark:text-white shadow-sm'
-                                        : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
-                                }`}
+                                className={`px-3 py-1.5 rounded-lg transition-all ${viewMode === mode
+                                    ? 'bg-white dark:bg-[#1a1b1d] text-gray-900 dark:text-white shadow-sm'
+                                    : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
+                                    }`}
                             >
                                 {label}
                             </button>
@@ -546,13 +552,12 @@ const CalendarView = () => {
                                 <button
                                     key={i}
                                     onClick={() => setSelectedMobileDate(d)}
-                                    className={`flex flex-col items-center py-2 rounded-xl transition-all ${
-                                        isSelected
-                                            ? 'bg-indigo-600 text-white'
-                                            : isToday
-                                                ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300'
-                                                : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-[#252628]'
-                                    }`}
+                                    className={`flex flex-col items-center py-2 rounded-xl transition-all ${isSelected
+                                        ? 'bg-indigo-600 text-white'
+                                        : isToday
+                                            ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300'
+                                            : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-[#252628]'
+                                        }`}
                                 >
                                     <span className="text-[9px] font-bold uppercase tracking-wider mb-1 opacity-70">
                                         {d.toLocaleDateString('sv-SE', { weekday: 'short' }).slice(0, 2)}
@@ -605,9 +610,8 @@ const CalendarView = () => {
                                         <span className={`text-[10px] font-semibold block mb-0.5 ${isSunday ? 'text-rose-400' : 'text-gray-400 dark:text-gray-500'}`}>
                                             {SE_DAYS[i === 0 && viewMode !== 'day' ? 0 : (viewMode === 'day' ? (d.getDay() + 6) % 7 : i)]}
                                         </span>
-                                        <span className={`text-xs font-black inline-flex items-center justify-center w-6 h-6 rounded-full mx-auto ${
-                                            isToday ? 'bg-indigo-600 text-white' : 'text-gray-800 dark:text-gray-200'
-                                        }`}>
+                                        <span className={`text-xs font-black inline-flex items-center justify-center w-6 h-6 rounded-full mx-auto ${isToday ? 'bg-indigo-600 text-white' : 'text-gray-800 dark:text-gray-200'
+                                            }`}>
                                             {d.getDate()}
                                         </span>
                                     </div>
@@ -852,8 +856,13 @@ const CalendarView = () => {
                                 </div>
                                 <div>
                                     <label className={labelCls}>Plattform</label>
-                                    <select value={newEvent.platform || 'NONE'} onChange={e => setNewEvent({ ...newEvent, platform: e.target.value })} className={inputCls}>
+                                    <select
+                                        value={newEvent.platform || 'NONE'}
+                                        onChange={e => setNewEvent({ ...newEvent, platform: e.target.value })}
+                                        className={inputCls}
+                                    >
                                         <option value="NONE">Fysisk / Ingen</option>
+                                        <option value="EXAM_ROOM">Tentarum</option>
                                         <option value="ZOOM">Zoom</option>
                                         <option value="TEAMS">Teams</option>
                                         <option value="MEETS">Google Meet</option>
@@ -888,11 +897,10 @@ const CalendarView = () => {
 
                             {/* Availability */}
                             {(isCheckingAvailability || availabilityStatus.message) && (
-                                <div className={`p-3 rounded-xl text-xs flex items-center gap-2 ${
-                                    availabilityStatus.isBusy
-                                        ? 'bg-rose-50 dark:bg-rose-900/15 text-rose-700 dark:text-rose-400 border border-rose-100 dark:border-rose-800/30'
-                                        : 'bg-sky-50 dark:bg-sky-900/15 text-sky-700 dark:text-sky-400 border border-sky-100 dark:border-sky-800/30'
-                                }`}>
+                                <div className={`p-3 rounded-xl text-xs flex items-center gap-2 ${availabilityStatus.isBusy
+                                    ? 'bg-rose-50 dark:bg-rose-900/15 text-rose-700 dark:text-rose-400 border border-rose-100 dark:border-rose-800/30'
+                                    : 'bg-sky-50 dark:bg-sky-900/15 text-sky-700 dark:text-sky-400 border border-sky-100 dark:border-sky-800/30'
+                                    }`}>
                                     {isCheckingAvailability
                                         ? <><Loader2 size={13} className="animate-spin" /> Kollar tillgänglighet...</>
                                         : <><AlertTriangle size={13} /> {availabilityStatus.message}</>
@@ -909,7 +917,7 @@ const CalendarView = () => {
                             </button>
                         </form>
                     </div>
-                </div>
+                </div >
             )}
 
             {/* ── EVENT DETAIL PANEL ── */}
@@ -923,94 +931,95 @@ const CalendarView = () => {
             />
 
             {/* ── CALENDAR SYNC MODAL ── */}
-            {showSyncModal && icalInfo && (
-                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-                    <div className="bg-white dark:bg-[#1a1b1d] w-full max-w-md rounded-2xl shadow-2xl border border-gray-100 dark:border-[#2a2b2d] overflow-hidden">
-                        <div className="h-0.5 bg-gradient-to-r from-indigo-500 to-violet-500" />
+            {
+                showSyncModal && icalInfo && (
+                    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                        <div className="bg-white dark:bg-[#1a1b1d] w-full max-w-md rounded-2xl shadow-2xl border border-gray-100 dark:border-[#2a2b2d] overflow-hidden">
+                            <div className="h-0.5 bg-gradient-to-r from-indigo-500 to-violet-500" />
 
-                        {/* Header */}
-                        <div className="px-5 py-3.5 border-b border-gray-100 dark:border-[#2a2b2d] flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                                <Rss size={15} className="text-indigo-500" />
-                                <h2 className="text-sm font-bold text-gray-900 dark:text-white">Synka kalender</h2>
+                            {/* Header */}
+                            <div className="px-5 py-3.5 border-b border-gray-100 dark:border-[#2a2b2d] flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                    <Rss size={15} className="text-indigo-500" />
+                                    <h2 className="text-sm font-bold text-gray-900 dark:text-white">Synka kalender</h2>
+                                </div>
+                                <button onClick={() => setShowSyncModal(false)} className="p-1.5 text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-[#252628] rounded-lg transition-colors">
+                                    <X size={15} />
+                                </button>
                             </div>
-                            <button onClick={() => setShowSyncModal(false)} className="p-1.5 text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-[#252628] rounded-lg transition-colors">
-                                <X size={15} />
-                            </button>
-                        </div>
 
-                        {/* Body */}
-                        <div className="p-5 space-y-4">
-                            <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
-                                Prenumerera på din personliga kalenderadress för att få dina lektioner och möten i Google Calendar, Apple Calendar, Outlook eller annan kalenderapp.
-                            </p>
+                            {/* Body */}
+                            <div className="p-5 space-y-4">
+                                <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
+                                    Prenumerera på din personliga kalenderadress för att få dina lektioner och möten i Google Calendar, Apple Calendar, Outlook eller annan kalenderapp.
+                                </p>
 
-                            {/* Feed URL */}
-                            <div>
-                                <label className="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Din kalenderadress</label>
-                                <div className="flex gap-2">
-                                    <div className="flex-1 min-w-0 bg-gray-50 dark:bg-[#0f1012] border border-gray-200 dark:border-[#2a2b2d] rounded-xl px-3 py-2 text-xs text-gray-600 dark:text-gray-300 truncate font-mono">
-                                        {icalInfo.fullUrl}
-                                    </div>
-                                    <button
-                                        onClick={copyIcalUrl}
-                                        className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition-all shrink-0 ${
-                                            copied
+                                {/* Feed URL */}
+                                <div>
+                                    <label className="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Din kalenderadress</label>
+                                    <div className="flex gap-2">
+                                        <div className="flex-1 min-w-0 bg-gray-50 dark:bg-[#0f1012] border border-gray-200 dark:border-[#2a2b2d] rounded-xl px-3 py-2 text-xs text-gray-600 dark:text-gray-300 truncate font-mono">
+                                            {icalInfo.fullUrl}
+                                        </div>
+                                        <button
+                                            onClick={copyIcalUrl}
+                                            className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition-all shrink-0 ${copied
                                                 ? 'bg-emerald-100 dark:bg-emerald-500/15 text-emerald-600 dark:text-emerald-400'
                                                 : 'bg-gray-100 dark:bg-[#252628] text-gray-600 dark:text-gray-300 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 hover:text-indigo-600'
-                                        }`}
-                                    >
-                                        {copied ? <><CheckCheck size={13} /> Kopierad</> : <><Copy size={13} /> Kopiera</>}
-                                    </button>
+                                                }`}
+                                        >
+                                            {copied ? <><CheckCheck size={13} /> Kopierad</> : <><Copy size={13} /> Kopiera</>}
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
 
-                            {/* App links */}
-                            <div>
-                                <label className="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2">Lägg till i din kalenderapp</label>
-                                <div className="space-y-2">
-                                    <a
-                                        href={`https://calendar.google.com/calendar/r/settings/addbyurl?url=${encodeURIComponent(icalInfo.fullUrl)}`}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="flex items-center justify-between w-full px-3.5 py-2.5 bg-gray-50 dark:bg-[#0f1012] border border-gray-200 dark:border-[#2a2b2d] rounded-xl hover:border-indigo-300 dark:hover:border-indigo-500/30 hover:bg-indigo-50/50 dark:hover:bg-indigo-500/5 transition-all group"
-                                    >
-                                        <div className="flex items-center gap-2.5">
-                                            <div className="w-6 h-6 rounded-md bg-white dark:bg-[#252628] shadow-sm flex items-center justify-center text-sm">🗓️</div>
-                                            <span className="text-xs font-semibold text-gray-700 dark:text-gray-200">Google Calendar</span>
-                                        </div>
-                                        <ExternalLink size={12} className="text-gray-400 group-hover:text-indigo-500 transition-colors" />
-                                    </a>
-                                    <a
-                                        href={`https://outlook.live.com/calendar/0/addcalendar?url=${encodeURIComponent(icalInfo.fullUrl)}&name=EduFlex`}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="flex items-center justify-between w-full px-3.5 py-2.5 bg-gray-50 dark:bg-[#0f1012] border border-gray-200 dark:border-[#2a2b2d] rounded-xl hover:border-indigo-300 dark:hover:border-indigo-500/30 hover:bg-indigo-50/50 dark:hover:bg-indigo-500/5 transition-all group"
-                                    >
-                                        <div className="flex items-center gap-2.5">
-                                            <div className="w-6 h-6 rounded-md bg-white dark:bg-[#252628] shadow-sm flex items-center justify-center text-sm">📅</div>
-                                            <span className="text-xs font-semibold text-gray-700 dark:text-gray-200">Outlook / Microsoft 365</span>
-                                        </div>
-                                        <ExternalLink size={12} className="text-gray-400 group-hover:text-indigo-500 transition-colors" />
-                                    </a>
-                                    <div className="flex items-start gap-2.5 px-3.5 py-2.5 bg-gray-50 dark:bg-[#0f1012] border border-gray-200 dark:border-[#2a2b2d] rounded-xl">
-                                        <div className="w-6 h-6 shrink-0 rounded-md bg-white dark:bg-[#252628] shadow-sm flex items-center justify-center text-sm mt-0.5">🍎</div>
-                                        <div>
-                                            <span className="text-xs font-semibold text-gray-700 dark:text-gray-200 block">Apple Calendar</span>
-                                            <span className="text-[11px] text-gray-400 leading-relaxed">Öppna Kalender → Arkiv → Ny kalenderprenumeration → klistra in adressen ovan.</span>
+                                {/* App links */}
+                                <div>
+                                    <label className="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2">Lägg till i din kalenderapp</label>
+                                    <div className="space-y-2">
+                                        <a
+                                            href={`https://calendar.google.com/calendar/r/settings/addbyurl?url=${encodeURIComponent(icalInfo.fullUrl)}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="flex items-center justify-between w-full px-3.5 py-2.5 bg-gray-50 dark:bg-[#0f1012] border border-gray-200 dark:border-[#2a2b2d] rounded-xl hover:border-indigo-300 dark:hover:border-indigo-500/30 hover:bg-indigo-50/50 dark:hover:bg-indigo-500/5 transition-all group"
+                                        >
+                                            <div className="flex items-center gap-2.5">
+                                                <div className="w-6 h-6 rounded-md bg-white dark:bg-[#252628] shadow-sm flex items-center justify-center text-sm">🗓️</div>
+                                                <span className="text-xs font-semibold text-gray-700 dark:text-gray-200">Google Calendar</span>
+                                            </div>
+                                            <ExternalLink size={12} className="text-gray-400 group-hover:text-indigo-500 transition-colors" />
+                                        </a>
+                                        <a
+                                            href={`https://outlook.live.com/calendar/0/addcalendar?url=${encodeURIComponent(icalInfo.fullUrl)}&name=EduFlex`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="flex items-center justify-between w-full px-3.5 py-2.5 bg-gray-50 dark:bg-[#0f1012] border border-gray-200 dark:border-[#2a2b2d] rounded-xl hover:border-indigo-300 dark:hover:border-indigo-500/30 hover:bg-indigo-50/50 dark:hover:bg-indigo-500/5 transition-all group"
+                                        >
+                                            <div className="flex items-center gap-2.5">
+                                                <div className="w-6 h-6 rounded-md bg-white dark:bg-[#252628] shadow-sm flex items-center justify-center text-sm">📅</div>
+                                                <span className="text-xs font-semibold text-gray-700 dark:text-gray-200">Outlook / Microsoft 365</span>
+                                            </div>
+                                            <ExternalLink size={12} className="text-gray-400 group-hover:text-indigo-500 transition-colors" />
+                                        </a>
+                                        <div className="flex items-start gap-2.5 px-3.5 py-2.5 bg-gray-50 dark:bg-[#0f1012] border border-gray-200 dark:border-[#2a2b2d] rounded-xl">
+                                            <div className="w-6 h-6 shrink-0 rounded-md bg-white dark:bg-[#252628] shadow-sm flex items-center justify-center text-sm mt-0.5">🍎</div>
+                                            <div>
+                                                <span className="text-xs font-semibold text-gray-700 dark:text-gray-200 block">Apple Calendar</span>
+                                                <span className="text-[11px] text-gray-400 leading-relaxed">Öppna Kalender → Arkiv → Ny kalenderprenumeration → klistra in adressen ovan.</span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
 
-                            <p className="text-[11px] text-gray-400 leading-relaxed border-t border-gray-100 dark:border-[#252628] pt-3">
-                                Adressen är personlig och privat — dela den inte med andra. Kalendern uppdateras automatiskt i din app ungefär en gång per timme.
-                            </p>
+                                <p className="text-[11px] text-gray-400 leading-relaxed border-t border-gray-100 dark:border-[#252628] pt-3">
+                                    Adressen är personlig och privat — dela den inte med andra. Kalendern uppdateras automatiskt i din app ungefär en gång per timme.
+                                </p>
+                            </div>
                         </div>
                     </div>
-                </div>
-            )}
-        </div>
+                )
+            }
+        </div >
     );
 };
 

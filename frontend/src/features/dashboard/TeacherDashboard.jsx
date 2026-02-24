@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {
     Users, BookOpen, CheckCircle,
     Calendar as CalendarIcon, Search, MessageSquare,
-    ArrowUpRight, Plus, UserPlus, Edit2, Target
+    ArrowUpRight, Plus, UserPlus, Edit2, Target, ShieldCheck
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -22,6 +22,8 @@ import { UngradedTable, ApplicationsTable } from './components/TeacherTables';
 import { CreateCourseModal, EditCourseModal } from './components/TeacherModals';
 import StudentContactModal from './components/StudentContactModal';
 import ClassSkillsHeatmap from '../skills/ClassSkillsHeatmap';
+import TentaManager from '../../components/TentaManager';
+import ProctoringDashboard from '../proctoring/ProctoringDashboard';
 
 // --- SHARED ---
 import { useDashboardWidgets } from '../../hooks/useDashboardWidgets';
@@ -38,12 +40,23 @@ const TeacherDashboard = ({ currentUser }) => {
     const [activeTab, setActiveTab] = useState(initialTab);
     const [isLoading, setIsLoading] = useState(true);
 
+    // Sync activeTab with URL query params
+    useEffect(() => {
+        const currentParams = new URLSearchParams(window.location.search);
+        const currentTabInUrl = currentParams.get('tab') || 'OVERVIEW';
+        if (currentTabInUrl !== activeTab) {
+            const newSearch = activeTab === 'OVERVIEW' ? '' : `?tab=${activeTab}`;
+            navigate({ search: newSearch }, { replace: true });
+        }
+    }, [activeTab, navigate]);
+
     // Data
     const [myCourses, setMyCourses] = useState([]);
     const [allStudents, setAllStudents] = useState([]);
     const [applications, setApplications] = useState([]);
     const [ungradedSubmissions, setUngradedSubmissions] = useState([]);
     const [upcomingEvents, setUpcomingEvents] = useState([]);
+    const [activeExams, setActiveExams] = useState([]);
 
     // UI
     const [searchTerm, setSearchTerm] = useState('');
@@ -53,6 +66,9 @@ const TeacherDashboard = ({ currentUser }) => {
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
     const [courseToEdit, setCourseToEdit] = useState(null);
+    const [showTentaModal, setShowTentaModal] = useState(false);
+    const [tentaCourseId, setTentaCourseId] = useState(null);
+    const [selectedProctoringQuiz, setSelectedProctoringQuiz] = useState(null);
 
     // Widget State via Hook
     const { widgets, toggleWidget } = useDashboardWidgets('teacher', {
@@ -161,6 +177,34 @@ const TeacherDashboard = ({ currentUser }) => {
             }));
             setUngradedSubmissions(ungraded);
 
+            // Also fetch quizzes that need manual grading
+            await Promise.all(teacherCourses.map(async (course) => {
+                try {
+                    const quizzes = await api.quiz.getByCourse(course.id);
+                    for (const quiz of quizzes) {
+                        if (quiz.gradingType === 'MANUAL' || quiz.isExam) {
+                            const results = await api.quiz.getResults(quiz.id); // Assuming this endpoint exists or similar
+                            const pending = results.filter(r => r.score === null || r.score === 0 && !r.teacherFeedback);
+                            pending.forEach(p => ungraded.push({
+                                ...p,
+                                courseName: course.name,
+                                assignmentTitle: quiz.title,
+                                courseId: course.id,
+                                courseSlug: course.slug,
+                                isQuiz: true
+                            }));
+                        }
+                    }
+                } catch (e) { /* ignore */ }
+            }));
+            setUngradedSubmissions([...ungraded]);
+
+            // Active Exams for Proctoring
+            try {
+                const active = await api.quiz.getActiveExams();
+                setActiveExams(active || []);
+            } catch (e) { console.error("Kunde inte hämta aktiva tentor"); }
+
         } catch (error) { console.error(error); } finally { setIsLoading(false); }
     };
 
@@ -192,9 +236,9 @@ const TeacherDashboard = ({ currentUser }) => {
                     { id: 'OVERVIEW', label: t('teacher_dashboard.tab_overview'), icon: <ArrowUpRight size={18} /> },
                     { id: 'GRADING', label: `${t('teacher_dashboard.tab_grading')} ${ungradedSubmissions.length > 0 ? `(${ungradedSubmissions.length})` : ''}`, icon: <CheckCircle size={18} /> },
                     { id: 'APPLICATIONS', label: `${t('teacher_dashboard.tab_applications')} ${applications.length > 0 ? `(${applications.length})` : ''}`, icon: <UserPlus size={18} /> },
+                    { id: 'PROCTORING', label: `Tentamensvakt ${activeExams.length > 0 ? `(${activeExams.length})` : ''}`, icon: <ShieldCheck size={18} /> },
                     { id: 'STUDENTS', label: t('teacher_dashboard.tab_students'), icon: <Users size={18} /> },
                     { id: 'SKILLS', label: t('teacher_dashboard.tab_skills', 'Kompetensanalys'), icon: <Target size={18} /> },
-                    { id: 'COMMUNICATION', label: t('teacher_dashboard.tab_communication'), icon: <MessageSquare size={18} /> },
                 ].map(tab => (
                     <button key={tab.id} onClick={() => setActiveTab(tab.id)} className={`flex items-center gap-2 px-6 py-3 font-bold text-sm border-b-2 transition-colors whitespace-nowrap ${activeTab === tab.id ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700'}`}>
                         {tab.icon} {tab.label}
@@ -267,9 +311,17 @@ const TeacherDashboard = ({ currentUser }) => {
                                     <h3 className="font-bold text-lg mb-4">{t('teacher_dashboard.section_shortcuts')}</h3>
                                     <div className="grid grid-cols-2 gap-4">
                                         <button onClick={() => navigate('/calendar')} className="p-4 bg-indigo-50 dark:bg-indigo-900/20 rounded-xl text-indigo-700 dark:text-indigo-300 font-bold text-sm hover:bg-indigo-100 transition-colors text-left">📅 {t('shortcuts.calendar')}</button>
+                                        <button
+                                            onClick={() => {
+                                                setTentaCourseId(myCourses[0]?.id);
+                                                setShowTentaModal(true);
+                                            }}
+                                            className="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-xl text-amber-700 dark:text-amber-300 font-bold text-sm hover:bg-amber-100 transition-colors text-left"
+                                        >
+                                            📝 Boka Tentamen
+                                        </button>
                                         <button onClick={() => setActiveTab('STUDENTS')} className="p-4 bg-pink-50 dark:bg-pink-900/20 rounded-xl text-pink-700 dark:text-pink-300 font-bold text-sm hover:bg-pink-100 transition-colors text-left">🎓 {t('shortcuts.students')}</button>
-                                        <button onClick={() => setActiveTab('GRADING')} className="p-4 bg-orange-50 dark:bg-orange-900/20 rounded-xl text-orange-700 dark:text-orange-300 font-bold text-sm hover:bg-orange-100 transition-colors text-left">📝 {t('shortcuts.grading')}</button>
-                                        <button onClick={() => setActiveTab('COMMUNICATION')} className="p-4 bg-green-50 dark:bg-green-900/20 rounded-xl text-green-700 dark:text-green-300 font-bold text-sm hover:bg-green-100 transition-colors text-left">💬 {t('shortcuts.messages')}</button>
+                                        <button onClick={() => setActiveTab('GRADING')} className="p-4 bg-orange-50 dark:bg-orange-900/20 rounded-xl text-orange-700 dark:text-orange-300 font-bold text-sm hover:bg-orange-100 transition-colors text-left">📋 {t('shortcuts.grading')}</button>
                                     </div>
                                 </div>
                             )}
@@ -298,11 +350,82 @@ const TeacherDashboard = ({ currentUser }) => {
 
             {activeTab === 'APPLICATIONS' && <ApplicationsTable applications={applications} onHandleApplication={handleApplication} />}
 
+            {activeTab === 'PROCTORING' && (
+                <div className="space-y-8 animate-in slide-in-from-bottom-2 duration-300">
+                    <div className="bg-white dark:bg-[#1E1F20] p-8 rounded-3xl border border-gray-200 dark:border-[#3c4043] shadow-sm">
+                        <div className="mb-8 flex items-center justify-between">
+                            <div>
+                                <h2 className="text-2xl font-black text-gray-900 dark:text-white">Tentamensvakt Pro</h2>
+                                <p className="text-gray-500 text-sm mt-1">Övervaka pågående tentamina med realtidsvideo och AI-analys.</p>
+                            </div>
+                            {selectedProctoringQuiz && (
+                                <button
+                                    onClick={() => setSelectedProctoringQuiz(null)}
+                                    className="px-4 py-2 text-sm font-bold text-gray-500 hover:text-indigo-600 transition-colors"
+                                >
+                                    ← Tillbaka till listan
+                                </button>
+                            )}
+                        </div>
+
+                        {selectedProctoringQuiz ? (
+                            <ProctoringDashboard
+                                quizId={selectedProctoringQuiz.quizId}
+                                quizTitle={selectedProctoringQuiz.title}
+                            />
+                        ) : activeExams.length > 0 ? (
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                {activeExams.map(exam => (
+                                    <div
+                                        key={exam.id}
+                                        className="p-6 rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/40 hover:border-indigo-300 dark:hover:border-indigo-900 transition-all cursor-pointer group"
+                                        onClick={() => setSelectedProctoringQuiz(exam)}
+                                    >
+                                        <div className="flex items-center justify-between mb-4">
+                                            <div className="p-3 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-xl">
+                                                <ShieldCheck size={24} />
+                                            </div>
+                                            <span className="flex items-center gap-1.5 text-[10px] font-bold text-emerald-600 uppercase tracking-widest bg-emerald-100 dark:bg-emerald-900/30 px-2.5 py-1 rounded-full">
+                                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                                                Aktiv
+                                            </span>
+                                        </div>
+                                        <h3 className="font-bold text-lg text-slate-900 dark:text-white group-hover:text-indigo-600 transition-colors">{exam.title}</h3>
+                                        <p className="text-sm text-slate-500 mb-6">{exam.courseName}</p>
+
+                                        <button className="w-full py-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold text-slate-700 dark:text-slate-300 hover:bg-indigo-600 hover:text-white hover:border-indigo-600 transition-all">
+                                            Öppna Övervakning
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="p-24 text-center bg-slate-50 dark:bg-[#131314] rounded-3xl border-2 border-dashed border-slate-200 dark:border-[#3c4043]">
+                                <ShieldCheck className="mx-auto text-slate-200 dark:text-slate-800 w-24 h-24 mb-6" />
+                                <h3 className="text-xl font-bold text-slate-400">Inga aktiva tentamina</h3>
+                                <p className="text-slate-400 text-sm max-w-sm mx-auto mt-2">När en student startar en tentamen kommer den att dyka upp här för övervakning.</p>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            )}
+
             {activeTab === 'COURSES' && (
                 <div className="space-y-6 animate-in slide-in-from-bottom-2 duration-300">
                     <div className="flex justify-between items-center bg-gray-50 dark:bg-[#1E1F20] p-4 rounded-xl border border-gray-200 dark:border-[#3c4043]">
                         <h3 className="font-bold text-gray-700 dark:text-white">{t('teacher_dashboard.section_admin')}</h3>
-                        <button onClick={() => setShowCreateModal(true)} className="bg-indigo-600 text-white px-4 py-2 rounded-lg font-bold flex items-center gap-2 hover:bg-indigo-700 shadow-lg"><Plus size={18} /> {t('admin.create_course')}</button>
+                        <div className="flex gap-2">
+                            <button
+                                onClick={() => {
+                                    setTentaCourseId(myCourses[0]?.id); // Default to first course if none selected
+                                    setShowTentaModal(true);
+                                }}
+                                className="bg-amber-600 text-white px-4 py-2 rounded-lg font-bold flex items-center gap-2 hover:bg-amber-700 shadow-lg"
+                            >
+                                <CalendarIcon size={18} /> Boka Tentamen
+                            </button>
+                            <button onClick={() => setShowCreateModal(true)} className="bg-indigo-600 text-white px-4 py-2 rounded-lg font-bold flex items-center gap-2 hover:bg-indigo-700 shadow-lg"><Plus size={18} /> {t('admin.create_course')}</button>
+                        </div>
                     </div>
 
                     <div className="grid grid-cols-1 gap-4">
@@ -313,6 +436,15 @@ const TeacherDashboard = ({ currentUser }) => {
                                     <div className="flex items-center gap-4 text-xs text-gray-400 font-mono"><span>{course.courseCode}</span><span>•</span><span>{course.students?.length}/{course.maxStudents} {t('admin.students').toLowerCase()}</span></div>
                                 </div>
                                 <div className="flex gap-2">
+                                    <button
+                                        onClick={() => {
+                                            setTentaCourseId(course.id);
+                                            setShowTentaModal(true);
+                                        }}
+                                        className="px-4 py-2 bg-amber-50 text-amber-700 rounded-lg font-bold text-sm hover:bg-amber-100 flex items-center gap-2"
+                                    >
+                                        <CalendarIcon size={16} /> Tenta
+                                    </button>
                                     <button onClick={() => navigate(`/course/${course.slug || course.id}`)} className="px-4 py-2 bg-gray-100 dark:bg-[#282a2c] hover:bg-gray-200 text-gray-700 dark:text-white rounded-lg font-bold text-sm">{t('course_modal.go_to_course')}</button>
                                     <button onClick={() => { setCourseToEdit(course); setShowEditModal(true); }} className="px-4 py-2 bg-indigo-50 text-indigo-700 rounded-lg font-bold text-sm hover:bg-indigo-100 flex items-center gap-2"><Edit2 size={16} /> {t('common.edit')}</button>
                                 </div>
@@ -375,6 +507,15 @@ const TeacherDashboard = ({ currentUser }) => {
 
             <CreateCourseModal isOpen={showCreateModal} onClose={() => setShowCreateModal(false)} onCourseCreated={loadDashboardData} currentUser={currentUser} />
             <EditCourseModal isOpen={showEditModal} onClose={() => setShowEditModal(false)} onCourseUpdated={loadDashboardData} courseToEdit={courseToEdit} />
+
+            {showTentaModal && (
+                <TentaManager
+                    courseId={tentaCourseId}
+                    teacherId={currentUser.id}
+                    onClose={() => setShowTentaModal(false)}
+                    onSave={() => loadDashboardData()}
+                />
+            )}
 
             {/* Kontakt Modal */}
             <StudentContactModal

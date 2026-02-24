@@ -22,14 +22,46 @@ public class Question {
     @JsonIgnoreProperties("question")
     private List<Option> options;
 
+    @Column(columnDefinition = "integer default 1")
+    private int difficulty = 1;
+
     // Getters & Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-    public String getText() { return text; }
-    public void setText(String text) { this.text = text; }
-    public Quiz getQuiz() { return quiz; }
-    public void setQuiz(Quiz quiz) { this.quiz = quiz; }
-    public List<Option> getOptions() { return options; }
+    public int getDifficulty() {
+        return difficulty;
+    }
+
+    public void setDifficulty(int difficulty) {
+        this.difficulty = difficulty;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
+    }
+
+    public Quiz getQuiz() {
+        return quiz;
+    }
+
+    public void setQuiz(Quiz quiz) {
+        this.quiz = quiz;
+    }
+
+    public List<Option> getOptions() {
+        return options;
+    }
+
     public void setOptions(List<Option> options) {
         this.options = options;
         if (options != null) {

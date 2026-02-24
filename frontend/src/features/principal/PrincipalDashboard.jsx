@@ -161,7 +161,7 @@ const PrincipalDashboard = () => {
         { label: 'Vikarie', icon: UserPlus, color: 'emerald', action: () => navigate('/principal/staffing') },
         { label: 'Risk-lista', icon: ShieldAlert, color: 'red', action: () => navigate('/principal/reports') },
         { label: 'Ledningsrapport', icon: TrendingUp, color: 'blue', action: () => navigate('/principal/management-reports') },
-        { label: 'Arkiv', icon: FileText, color: 'indigo', action: () => navigate('/principal/reports') },
+        { label: 'Arkiv (CSN)', icon: FileText, color: 'indigo', action: () => navigate('/principal/reports') },
         { label: 'Kalender', icon: Calendar, color: 'amber', action: () => navigate('/calendar') },
     ];
 

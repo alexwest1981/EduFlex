@@ -13,6 +13,9 @@ import java.util.List;
 public interface CalendarEventRepository extends JpaRepository<CalendarEvent, Long> {
     List<CalendarEvent> findByCourseIdOrderByStartTimeAsc(Long courseId);
 
+    List<CalendarEvent> findByCourseIdAndStartTimeBetweenOrderByStartTimeAsc(Long courseId, LocalDateTime start,
+            LocalDateTime end);
+
     List<CalendarEvent> findByOwnerIdOrderByStartTimeAsc(Long ownerId);
 
     List<CalendarEvent> findByStartTimeBetweenOrderByStartTimeAsc(LocalDateTime start, LocalDateTime end);

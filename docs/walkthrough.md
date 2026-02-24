@@ -1,67 +1,48 @@
-# Premium PWA Experience Implementation
+# Walkthrough: Role-Specific AI Coaches & Compliance Reporting (v3.0.0)
 
-I have upgraded the EduFlex Progressive Web App (PWA) experience to feel like a premium, native-app-like platform. 
+This release introduces tailored AI coaching for students, teachers, and principals, along with critical Swedish compliance reporting (CSN & GDPR).
 
-### Key Features Implemented:
+## 🚀 Key Features
 
-1.  **Dedicated Installation Prompt**:
-    *   Added a modern, non-intrusive install banner that appears when the app is "Installable".
-    *   Includes a "Hämta appen"-button that triggers the native browser installation flow.
-    *   Automatically hides after installation or if the user dismisses it.
+### 🎓 AI Coach Widget
+Each role receives targeted, actionable insights powered by Google Gemini.
+- **Student:** Focuses on learning profiles (VAK), XP leagues, and motivation.
+- **Teacher:** Identifies students at risk and suggests pedagogical interventions.
+- **Principal:** High-level strategic oversight of institutional KPIs (attendance, incidents).
 
-2.  **Automatic Image Resizing (Cloud-Scale Precision)**:
-    *   **NO MORE MANUAL RESIZING**: You can now upload any square image (e.g., your high-res logo) and the dashboard will automatically **scale and crop** it to exactly **192x192** and **512x512** pixels right in your browser.
-    *   This ensures 100% compatibility with Chrome/Android and preventing "incorrect size" warnings in the console.
+### 🇸🇪 CSN Reporting
+Automated attendance aggregation for formal education requirements.
+- **Course-Specific:** Filter by course and time period.
+- **CSV Export:** Generate reports that schools can use for CSN reporting.
+- **Compliance:** Tracks attendance percentage and total lesson count.
 
-3.  **Premium Frontend Experience**
-- **`LiveMeeting.jsx`**: A new, glassmorphic meeting interface built with React.
-- **`LiveLessonButton.jsx`**: Updated to handle LiveKit tokens and initiate sessions seamlessly.
-- **Functional Header**: Interactive buttons for Participants, Chat, and Settings.
-- **Responsive Layout**: Optimized container logic to ensure all controls (Mic, Camera, Share) are accessible on all screens.
-- **Background Blur**: Integrated `@livekit/track-processors` for a Zoom-like background blur effect. ✨
-- **Components**: Integrated `@livekit/components-react` for high-quality audio/video rendering.
+### 🛡️ GDPR Audit Logging
+Specialized tracking for access to sensitive personal data (PII).
+- **Read-Access Tracking:** Logs when administrators access or export sensitive student data.
+- **Traceability:** Records who accessed what data, when, and why (e.g., during report generation).
+- **Dedicated UI:** A view for auditors and admins to review these logs.
 
-4.  **Whitelabel Admin Control**:
-    *   New settings in **Enterprise Whitelabel -> PWA (Mobilapp)** allow you to set:
-        *   **Appnamn**: How the app appears on the home screen.
-        *   **Kortnamn**: Used where space is limited.
-        *   **Ikoner**: Dedicated uploaders for 192px and 512px icons (powered by the new auto-resizer).
-        *   **Färger**: Theme and background colors for the splash screen.
+## 🎨 UI/UX Enhancements
+- **High-Contrast Design:** Improved readability for the AI Coach widget.
+- **Clear Navigation:** Added direct links to "**Rapportarkiv (CSN)**" in the sidebar and dashboard for Principals.
+- **Role-Aware Navigation:** "Se full analys" buttons now lead to relevant dashboards (AI Hub, Impact Dashboard, or Competence Analysis).
 
-5.  **Backend Robustness & Frontend**:
-  - [x] Implemented `LiveMeeting.jsx` with a premium, glassmorphic UI.
-  - [x] Integrated `@livekit/components-react` for a native-like experience.
-  - [x] **Fixed UI Interaction**: Made header buttons (Participants, Chat, Settings) functional.
-  - [x] **Layout Optimization**: Fixed issue where bottom controls were cut off or inaccessible.
-  - [x] **Premium Video**: Added support for **Background Blur** in the settings panel. ✨
-    *   Implemented a dynamic manifest generator that serves your custom assets.
-    *   Added detailed diagnostic logging to track upload status and catch any asset-specific issues.
-    *   Fixed a naming collision in the admin menu that was causing a dashboard crash.
+## 🛠️ Implementation Summary
 
-### How to use:
-1.  Go to **Enterprise Whitelabel -> PWA (Mobilapp)**.
-2.  Ladda upp en bild (Auto-resizern fixar storleken!).
-3.  Spara ändringar.
-4.  Öppna EduFlex i Chrome på din telefon/dator - du bör nu se den nya installations-prompten och dina egna ikoner!
+### Backend
+- **ReportController:** Exposes endpoints for CSN data and GDPR logs.
+- **Services:** `CsnReportService`, `GdprAuditService`.
+- **Logic:** Integrated into existing `Attendance` and `AuditLog` systems.
 
----
+### Frontend
+- **ReportLibrary:** Unified interface for all institutional reports.
+- **ReportGeneratorModal:** Parameter selection for specialized exports.
 
-## PWA & Mobil-app Konsolidering
-
-Vi har förenklat whitelabel-upplevelsen genom att slå ihop Mobil- och PWA-inställningar till en enda kraftfull flik.
-
-### Genomförda förbättringar:
-- [x] Slå ihop Mobil och PWA branding till en flik "PWA & Mobil-app"
-- [x] Ta bort redundant `mobile/` mapp (React Native)
-- [x] Synka PWA färg med mobil-tema färg automatiskt
-- [x] Aktivera "Texter & Meddelanden" fliken och centralisera texter
-- [x] Aktivera "Avancerad CSS" fliken med fungerande editor
-- [x] Ta bort redundant text-input från "Allmänt"-fliken
-- [x] Uppdatera versionsnummer till **v2.0.18** i samtliga vyer
+## ✅ Verification
+- [x] **CSN Reports:** Verified attendance calculation logic.
+- [x] **GDPR Logs:** Verified that report generation triggers access logs.
+- [x] **AI Coach:** Verified role-specific prompt generation and UI contrast.
 
 ---
 
-### Senaste uppdateringar:
-*   **v2.0.18 Release**: Synkroniserat versionsnummer i hela applikationen.
-*   **Whitelabel 2.0 Rollout**: Fullt aktiverade flikar för Texter & Meddelanden samt Avancerad CSS.
-*   **PWA Synergy**: Fixat manifest-konflikter och säkerställt stabil klientsidubearbetning av ikoner.
+*This update marks a milestone in making EduFlex compliant and ready for the Swedish formal education market.*

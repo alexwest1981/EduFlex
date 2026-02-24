@@ -29,35 +29,41 @@ const SidebarSection = ({ title, items, sidebarOpen, roleName }) => {
             {/* SECTION ITEMS */}
             <div className={`space-y-1 transition-all duration-300 overflow-hidden ${isCollapsed && sidebarOpen ? 'max-h-0 opacity-0' : 'max-h-[1000px] opacity-100'}`}>
                 {items.map((item) => {
-                    const isActive = location.pathname === item.path ||
-                        (item.path === '/admin' && location.pathname.startsWith('/enterprise'));
+                    const fullCurrentPath = location.pathname + location.search;
+
+                    // Robust check for active state:
+                    // 1. If item.path has query params, must match exactly
+                    // 2. If item.path is base '/', match exactly or with OVERVIEW tab
+                    // 3. Otherwise match pathname (standard behavior)
+                    const isBaseDashboard = item.path === '/' || item.path === '/principal/dashboard';
+                    const isActive = item.path.includes('?')
+                        ? fullCurrentPath === item.path
+                        : (isBaseDashboard
+                            ? (location.pathname === item.path && (location.search === '' || location.search === '?tab=OVERVIEW'))
+                            : (location.pathname === item.path || (item.path === '/admin' && location.pathname.startsWith('/enterprise'))));
 
                     return (
                         <NavLink
                             key={item.path}
                             to={item.path}
-                            className={({ isActive: navActive }) => {
-                                const active = navActive || (item.path === '/admin' && location.pathname.startsWith('/enterprise'));
-                                return `relative flex items-center px-4 py-2 rounded-xl transition-all duration-200 group ${active
+                            className={() => {
+                                return `relative flex items-center px-4 py-2 rounded-xl transition-all duration-200 group ${isActive
                                     ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300 shadow-sm'
                                     : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-[#282a2c] hover:text-gray-900 dark:hover:text-gray-200'
                                     }`;
                             }}
                         >
-                            {({ isActive: navActive }) => {
-                                const active = navActive || (item.path === '/admin' && location.pathname.startsWith('/enterprise'));
+                            {() => {
                                 return (
                                     <>
-                                        {active && sidebarOpen && (
+                                        {isActive && sidebarOpen && (
                                             <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-indigo-600 rounded-r-full"></div>
                                         )}
-
-                                        <div className={`${!sidebarOpen && 'mx-auto'} ${active ? 'scale-110 text-indigo-600 dark:text-indigo-400' : 'text-gray-400'}`}>
+                                        <div className={`${!sidebarOpen && 'mx-auto'} ${isActive ? 'scale-110 text-indigo-600 dark:text-indigo-400' : 'text-gray-400'}`}>
                                             {React.cloneElement(item.icon, { size: 20 })}
                                         </div>
-
                                         {sidebarOpen && (
-                                            <span className={`ml-3 text-sm font-medium ${active ? 'font-semibold' : ''}`}>
+                                            <span className={`ml-3 text-sm font-medium ${isActive ? 'font-semibold' : ''}`}>
                                                 {item.label}
                                             </span>
                                         )}

@@ -93,6 +93,7 @@ const Sidebar = ({ currentUser, logout, siteName, version }) => {
             items.push({ path: '/principal/dashboard', label: 'Rektorspaket', icon: <ShieldCheck size={20} /> });
             items.push({ path: '/principal/quality', label: 'Kvalitetsarbete', icon: <Award size={20} /> });
             items.push({ path: '/principal/management-reports', label: 'Ledningsrapport', icon: <TrendingUp size={20} /> });
+            items.push({ path: '/principal/reports', label: 'Rapportarkiv (CSN)', icon: <FolderOpen size={20} /> });
             items.push({ path: '/principal/tools', label: 'Verktyg & Admin', icon: <Settings2 size={20} /> });
         }
         if (roleName === 'GUARDIAN' || roleName === 'ROLE_GUARDIAN') {
@@ -186,29 +187,42 @@ const Sidebar = ({ currentUser, logout, siteName, version }) => {
 
             {/* NAVIGATION */}
             <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
-                {getMenuItems().map(item => (
-                    <button
-                        key={item.path}
-                        onClick={() => navigate(item.path)}
-                        className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-200 font-medium text-sm
-                            ${currentPath === item.path
-                                ? 'bg-indigo-50 text-indigo-700 shadow-sm border border-indigo-100'
-                                : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'
-                            }`}
-                    >
-                        <div className="flex items-center gap-3">
-                            <div className={`${currentPath === item.path ? 'text-indigo-600' : 'text-gray-400'}`}>
-                                {item.icon}
+                {getMenuItems().map(item => {
+                    // Specific logic for active state:
+                    // 1. If item has query params, match full path (pathname + search)
+                    // 2. If item is base '/', match exactly pathname === '/' AND search is empty
+                    // 3. Otherwise match pathname
+                    const fullCurrentPath = location.pathname + location.search;
+                    const isActive = item.path.includes('?')
+                        ? fullCurrentPath === item.path
+                        : (item.path === '/' || item.path === '/principal/dashboard'
+                            ? (location.pathname === item.path && (location.search === '' || location.search === '?tab=OVERVIEW'))
+                            : location.pathname === item.path);
+
+                    return (
+                        <button
+                            key={item.path}
+                            onClick={() => navigate(item.path)}
+                            className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-200 font-medium text-sm
+                                ${isActive
+                                    ? 'bg-indigo-50 text-indigo-700 shadow-sm border border-indigo-100'
+                                    : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'
+                                }`}
+                        >
+                            <div className="flex items-center gap-3">
+                                <div className={`${isActive ? 'text-indigo-600' : 'text-gray-400'}`}>
+                                    {item.icon}
+                                </div>
+                                {item.label}
                             </div>
-                            {item.label}
-                        </div>
-                        {item.badge && (
-                            <span className="bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
-                                {item.badge}
-                            </span>
-                        )}
-                    </button>
-                ))}
+                            {item.badge && (
+                                <span className="bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                                    {item.badge}
+                                </span>
+                            )}
+                        </button>
+                    )
+                })}
             </nav>
 
             {/* FOOTER */}

@@ -24,7 +24,7 @@
 | Prioritet | Funktion | Beskrivning | Ansträngning | Varför |
 | :--- | :--- | :--- | :--- | :--- |
 | **Hög** | **Role-Specific AI Coaches** | Principal (KPI), Teacher (risk-warning), Student (study-plan). | ✅ **Klar** | Killer-feature: Unik selling point. |
-| **Hög** | **CSN/Upphandlings-rapporter** | Närvaro-export, GDPR-logs. | 6 dagar | Svenskt krav. |
+| **Hög** | **CSN/Upphandlings-rapporter** | Närvaro-export, GDPR-logs. | 🔶 **Påbörjad** (Aktivitetsdata i DTO:er klar) | Svenskt krav. |
 | **Medel** | **Partner Program** | Resellers (Edtech Studios), affiliate. | 5 dagar | Scale via partners. |
 | **Låg** | **Microservices Scale** | Load-test PDF/video (verifiera befintlig implementation). | 2 dagar | Verify. |
 
@@ -62,6 +62,7 @@
 | **LTI 1.3 Core** | Grundläggande launch-stöd för externa verktyg. | ✅ **Klar** | Sömlös verktygsinterop. |
 | **LTI 1.3 Advantage** | Stöd för AGS (Betyg) och NRPS (Roller/Namn). | ✅ **Stabil / Verifierad** | Automatiserad administration. |
 | **AI Audit Log** | Full spårbarhet av alla AI-beslut och rekommendationer för compliance och debugging. | ✅ **Klar** | **100%** transparens (XAI). |
+| **Exam Integrity Pro** | Realtidsvideo övervakning och AI-baserad integritetskontroll för tentamen. | ✅ **Klar** | **v3.0.0** | Förbättrad rättssäkerhet vid distansprov. |
 | **AI Credit Enforcement** | Tier-baserad åtkomstkontroll (BASIC/PRO/ENTERPRISE) och automatisk provisioning. | ✅ **Klar** | **v2.9.7** |
 | **xAPI & cmi5** | Modern spårning (LRS) för mobilt lärande och simuleringar. | ✅ **Verifierad** | Nästa generations analys. |
 | **Skills Gap Analysis** | Visualisering av kompetensluckor och progress (Radar charts). | ✅ **Klar** | **v2.5.0** |
@@ -113,6 +114,23 @@
 | **Sjukanmälan** | Komplett sjukanmälningssystem med statusuppdateringar, mentorsnotifieringar och historikspårning. | ✅ **Klar** | **-30%** adm-mail från vårdnadshavare. |
 
 ---
+
+### [v3.0.0] - 2026-02-24
+- **New Feature**: **Exam Integrity Pro**.
+  - **Proctoring**: Real-time video proctoring with LiveKit integration.
+  - **Enforcement**: Automated "Clear Video" enforcement (disables background blur/effects).
+  - **Dashboard**: New "Tentamensvakt Pro" teacher dashboard with live video grid and WebSocket alerts.
+  - **Security**: Granular participant grants and encrypted event logging.
+- **New Feature**: **Student Activity Tracking (CSN-förberedelse)**.
+  - **DTO**: Utökat `UserSummaryDTO` med `lastLogin`, `lastActive` och `activeMinutes`.
+  - **Mappning**: `CourseService.convertToDTO()` mappar nu aktivitetsdata korrekt.
+  - **Risknivå**: Lärarens dashboard visar "Dagar sedan inloggning" och "Risknivå" baserat på live-data.
+- **Bug Fix**: Resolved 500 Error in Quiz fetching (V83: missing `difficulty` column).
+- **Bug Fix**: Resolved 500 Error in Student Analytics (V84: missing `teacher_feedback` and `answer_feedback_json` columns).
+- **Bug Fix**: Added missing `/api/quizzes/{id}/results` endpoint in `QuizController`.
+- **Bug Fix**: Resolved `ReferenceError: useState is not defined` in `UpcomingExamAlert.jsx`.
+- **Bug Fix**: Fixed dual active states in `SidebarSection.jsx` navigation highlighting.
+- **Enhancement**: Synced `TeacherDashboard` tabs with URL query parameters for consistent navigation.
 
 ### [v2.9.7] - 2026-02-23
 - **New Feature**: **AI Credit Enforcement & Tier Control**.

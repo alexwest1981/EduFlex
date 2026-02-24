@@ -2,7 +2,7 @@
   <img src="docs/Logo_top.png" width="600" alt="EduFlex Logo" />
 </p>
 
-<h1 align="center">🎓 EduFlex LMS v3.0.0-dev</h1>
+<h1 align="center">🎓 EduFlex LMS v3.0.0</h1>
 
 <p align="center">
   <em>The Complete Enterprise Learning Platform for Modern Education</em><br/>
@@ -35,13 +35,33 @@
 
 <div id="-svenska"></div>
 
-## 🚀 Senaste uppdateringarna (23 feb 2026 – v3.0.0-dev)
+## 🚀 Senaste uppdateringarna (24 feb 2026 – v3.0.0)
 
 *   **🧠 Role-Specific AI Coaches (v3.0.0):**
     *   **Student AI Coach:** Personal motivational tips and study recommendations based on VAK profiles, XP leagues, and identified learning gaps.
     *   **Teacher AI Coach:** Actionable class-level insights, pedagogical tips for upcoming lessons, and automated intervention suggestions for students in the "Risk Zone".
     *   **Principal AI Coach:** Strategic "School Health" summaries, anomaly detection in attendance/incidents, and executive advice for school leadership.
     *   **Unified AI Interface:** New premium `AiCoachWidget` with glassmorphic design and `framer-motion` animations integrated across all primary dashboards.
+
+*   **🛡️ Exam Integrity Pro (v3.0.0):**
+    *   **Realtidsövervakning:** Integrerad LiveKit-videoövervakning direkt i tentamensvyn.
+    *   **Video Integrity Enforcement:** Automatiskt blockerande av bakgrundsoskärpa och videoeffekter för att säkerställa en tydlig vy för tentamensvakten.
+    *   **Integrity Dashboard:** Ny dedikerad vy i lärarens dashboard ("Tentamensvakt Pro") för att övervaka hela klassen i realtid.
+    *   **Realtidslarm:** WebSocket-baserade notiser när en student tappar fokus, byter flik eller försöker fuska under tentamen.
+    *   **Granulär Behörighet:** LiveKit-tokens med begränsade rättigheter (Student kan endast publicera, Lärare kan styra och prenumerera).
+
+*   **📊 Student Activity Tracking (CSN-förberedelse, v3.0.0):**
+    *   **Aktivitetsdata i DTO:** Utökat `UserSummaryDTO` med fälten `lastLogin`, `lastActive` och `activeMinutes` för att korrekt visa studenters senaste aktivitet.
+    *   **CSN-redo:** Lärarens dashboard visar nu korrekt "Dagar sedan inloggning" och "Risknivå" baserat på live-data – avgörande för CSN-rapportering.
+    *   **Backend-mappning:** Uppdaterat `CourseService.convertToDTO()` för att mappa aktivitetsdata från `User`-entiteten till frontend.
+
+*   **🛠️ Stabilitet & Bugfixar (v3.0.0):**
+    *   **Databasfix (`V83`):** Lagt till saknad `difficulty`-kolumn i `quiz_questions` för att lösa 500-fel vid hämtning av quiz.
+    *   **Databasfix (`V84`):** Lagt till saknade kolumner `teacher_feedback` och `answer_feedback_json` i `quiz_results` för att lösa 500-fel i studentanalysen.
+    *   **API-fix:** Implementerat den saknade `/api/quizzes/{id}/results`-endpointen i `QuizController` för att lösa 500-fel vid hämtning av tentamensresultat.
+    *   **UI-kraschfix:** Åtgärdat `ReferenceError: useState is not defined` i `UpcomingExamAlert.jsx` genom att lägga till saknade React-imports.
+    *   **Navigationsfix:** Korrigerat felaktig dubbelmarkering i sidomenyn (`SidebarSection.jsx`) genom förbättrad URL-matchningslogik med hantering av query parameters.
+    *   **Dashboard-synk:** Implementerat synkronisering av aktiv flik med URL-parametrar i `TeacherDashboard.jsx` för konsekvent navigation.
 
 *   **📝 Support Content CMS (v3.0.0):**
     *   **Ny backend-entitet:** `SupportArticle` – admin-hanterade FAQ-artiklar och videoguider i en separat, isolerad tabell (`V76` Flyway-migration).

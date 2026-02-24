@@ -22,7 +22,7 @@ export const registerPush = async (userId) => {
         console.log('Service Worker registered');
 
         const response = await api.get('/notifications/vapid-public-key');
-        const publicVapidKey = response.data.publicKey;
+        const publicVapidKey = response.publicKey;
 
         const subscription = await registration.pushManager.subscribe({
             userVisibleOnly: true,

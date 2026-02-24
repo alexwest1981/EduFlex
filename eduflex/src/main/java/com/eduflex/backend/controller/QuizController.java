@@ -2,9 +2,14 @@ package com.eduflex.backend.controller;
 
 import com.eduflex.backend.model.*;
 import com.eduflex.backend.repository.*;
+import com.eduflex.backend.service.ExamService;
+import com.eduflex.backend.dto.ExamBookingRequest;
 import com.eduflex.backend.service.GamificationService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.http.HttpStatus;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,15 +29,63 @@ public class QuizController {
     private final UserRepository userRepository;
     private final GamificationService gamificationService;
     private final QuestionBankRepository bankRepo;
+    private final ExamService examService;
 
     public QuizController(QuizRepository q, QuizResultRepository r, CourseRepository c, UserRepository u,
-            GamificationService g, QuestionBankRepository b) {
+            GamificationService g, QuestionBankRepository b, ExamService examService) {
         this.quizRepository = q;
         this.resultRepository = r;
         this.courseRepository = c;
         this.userRepository = u;
         this.gamificationService = g;
         this.bankRepo = b;
+        this.examService = examService;
+    }
+
+    @PostMapping("/book-exam")
+    public ResponseEntity<CalendarEvent> bookExam(@RequestBody ExamBookingRequest request) {
+        return ResponseEntity.ok(examService.bookExam(request));
+    }
+
+    private User getCurrentUser(Authentication auth) {
+        String username = auth.getName();
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+    }
+
+    @GetMapping("/upcoming")
+    public List<Map<String, Object>> getUpcomingExams(Authentication auth) {
+        User user = getCurrentUser(auth);
+        return examService.getUpcomingExamsForStudent(user);
+    }
+
+    @GetMapping("/exam-active/{calendarEventId}")
+    public Map<String, Boolean> checkExamActive(@PathVariable Long calendarEventId) {
+        return Collections.singletonMap("active", examService.isExamActive(calendarEventId));
+    }
+
+    @GetMapping("/active-exams")
+    public List<Map<String, Object>> getActiveExams(Authentication auth) {
+        User user = getCurrentUser(auth);
+        return examService.getActiveExamsForTeacher(user);
+    }
+
+    @PostMapping("/results/{resultId}/grade-ai")
+    public ResponseEntity<Map<String, Object>> gradeExamWithAi(@PathVariable Long resultId) {
+        return ResponseEntity.ok(examService.gradeExamWithAi(resultId));
+    }
+
+    @PostMapping("/results/{resultId}/feedback")
+    public ResponseEntity<QuizResult> submitFeedback(@PathVariable Long resultId,
+            @RequestBody Map<String, String> payload) {
+        QuizResult result = resultRepository.findById(resultId).orElseThrow();
+        result.setTeacherFeedback(payload.get("feedback"));
+        if (payload.containsKey("answerFeedbackJson")) {
+            result.setAnswerFeedbackJson(payload.get("answerFeedbackJson"));
+        }
+        QuizResult saved = resultRepository.save(result);
+        examService.sendResultsToInBox(saved);
+        return ResponseEntity.ok(saved);
     }
 
     @GetMapping("/course/{courseId}")
@@ -58,6 +111,11 @@ public class QuizController {
         existingQuiz.setDescription(quizData.getDescription());
         existingQuiz.setAvailableFrom(quizData.getAvailableFrom());
         existingQuiz.setAvailableTo(quizData.getAvailableTo());
+
+        // New Exam fields
+        existingQuiz.setExam(quizData.isExam());
+        existingQuiz.setDurationMinutes(quizData.getDurationMinutes());
+        existingQuiz.setGradingType(quizData.getGradingType());
 
         if (quizData.getCourse() != null) {
             existingQuiz.setCourse(quizData.getCourse());
@@ -95,6 +153,11 @@ public class QuizController {
             quizData.setCourse(course);
         }
 
+        // New Exam fields - Added for creation as well
+        quizData.setExam(quizData.isExam());
+        quizData.setDurationMinutes(quizData.getDurationMinutes());
+        quizData.setGradingType(quizData.getGradingType() != null ? quizData.getGradingType() : GradingType.MANUAL);
+
         if (quizData.getQuestions() != null) {
             for (Question q : quizData.getQuestions()) {
                 q.setQuiz(quizData);
@@ -131,6 +194,10 @@ public class QuizController {
         Quiz quiz = new Quiz();
         quiz.setTitle(title);
         quiz.setDescription("Genererat quiz från kategori: " + category);
+        quiz.setExam(req.get("isExam") != null && (boolean) req.get("isExam"));
+        if (req.containsKey("durationMinutes")) {
+            quiz.setDurationMinutes(Integer.parseInt(req.get("durationMinutes").toString()));
+        }
 
         User author = userRepository.findById(userId).orElseThrow();
         quiz.setAuthor(author);
@@ -212,5 +279,10 @@ public class QuizController {
     @GetMapping("/results/student/{studentId}/course/{courseId}")
     public List<QuizResult> getCourseQuizResultsForStudent(@PathVariable Long studentId, @PathVariable Long courseId) {
         return resultRepository.findByStudentIdAndQuizCourseId(studentId, courseId);
+    }
+
+    @GetMapping("/{quizId}/results")
+    public List<QuizResult> getQuizResults(@PathVariable Long quizId) {
+        return resultRepository.findByQuizId(quizId);
     }
 }

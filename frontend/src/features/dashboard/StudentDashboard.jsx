@@ -24,6 +24,7 @@ import EduQuestWidget from '../edugame/EduQuestWidget';
 import EduAiHubWidget from './widgets/EduAiHubWidget';
 import LeagueStatusWidget from './widgets/LeagueStatusWidget';
 import ClassPrideWidget from './widgets/ClassPrideWidget';
+import UpcomingExamAlert from './widgets/UpcomingExamAlert';
 
 // --- SHARED ---
 import { useDashboardWidgets } from '../../hooks/useDashboardWidgets';
@@ -219,6 +220,7 @@ const StudentDashboard = ({ currentUser }) => {
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     {/* LEFT COLUMN (Content) */}
                     <div className="lg:col-span-2 space-y-6">
+                        <UpcomingExamAlert />
                         <AiCoachWidget role="STUDENT" />
                         <SurveyNotificationWidget />
                         <EvaluationNotificationWidget />

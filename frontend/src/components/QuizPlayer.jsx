@@ -1,13 +1,39 @@
-import React, { useState } from 'react';
-import { CheckCircle, XCircle, ChevronRight, AlertTriangle } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { CheckCircle, XCircle, ChevronRight, AlertTriangle, Clock, ShieldCheck } from 'lucide-react';
 import { api } from '../services/api';
 import { useTranslation } from 'react-i18next';
+import ExamIntegrityMonitor from '../features/courses/components/ExamIntegrityMonitor';
+import ProctoringCamera from '../features/proctoring/components/ProctoringCamera';
 
 const QuizPlayer = ({ quiz, currentUser, onClose, isPractice = false }) => {
     const { t } = useTranslation();
     const [answers, setAnswers] = useState({}); // { questionId: optionIdOrIndex }
     const [submitted, setSubmitted] = useState(false);
     const [result, setResult] = useState(null);
+    const [timeLeft, setTimeLeft] = useState(quiz.durationMinutes ? quiz.durationMinutes * 60 : null);
+    const timerRef = useRef(null);
+
+    useEffect(() => {
+        if (quiz.durationMinutes && !submitted) {
+            timerRef.current = setInterval(() => {
+                setTimeLeft(prev => {
+                    if (prev <= 1) {
+                        clearInterval(timerRef.current);
+                        handleSubmit(); // Auto-submit when time is up
+                        return 0;
+                    }
+                    return prev - 1;
+                });
+            }, 1000);
+        }
+        return () => { if (timerRef.current) clearInterval(timerRef.current); };
+    }, [quiz.durationMinutes, submitted]);
+
+    const formatTime = (seconds) => {
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `${mins}:${secs.toString().padStart(2, '0')}`;
+    };
 
     // Helper: Get robust ID for question
     const getQId = (q, idx) => isPractice ? `q-${idx}` : q.id;
@@ -79,12 +105,44 @@ const QuizPlayer = ({ quiz, currentUser, onClose, isPractice = false }) => {
                 <div className="p-8 border-b border-gray-100 dark:border-[#3c4043] bg-indigo-600 text-white">
                     <div className="flex justify-between items-start">
                         <div>
-                            <h2 className="text-2xl font-bold">{quiz.title}</h2>
+                            <div className="flex items-center gap-2">
+                                <h2 className="text-2xl font-bold">{quiz.title}</h2>
+                                {quiz.isExam && (
+                                    <span className="flex items-center gap-1 bg-white/20 px-2 py-0.5 rounded-full text-[10px] uppercase font-bold tracking-wider">
+                                        <ShieldCheck className="w-3 h-3" />
+                                        Övervakad Tenta
+                                    </span>
+                                )}
+                            </div>
                             <p className="text-indigo-100 mt-2">{quiz.description}</p>
                             {isPractice && <span className="inline-block mt-2 px-2 py-0.5 bg-white/20 rounded text-xs">AI Practice Mode</span>}
                         </div>
+
+                        {timeLeft !== null && !submitted && (
+                            <div className={`flex items-center gap-2 px-4 py-2 rounded-xl border-2 font-mono text-xl ${timeLeft < 300 ? 'bg-red-500 border-red-400 animate-pulse' : 'bg-white/10 border-white/20'}`}>
+                                <Clock className="w-5 h-5" />
+                                {formatTime(timeLeft)}
+                            </div>
+                        )}
                     </div>
                 </div>
+
+                {/* Integrity Monitor (Headless) */}
+                {quiz.isExam && currentUser && (
+                    <ExamIntegrityMonitor
+                        quizId={quiz.id}
+                        studentId={currentUser.id}
+                        isExam={true}
+                    />
+                )}
+
+                {/* Proctoring Camera (Video Feed) */}
+                {quiz.isExam && currentUser && (
+                    <ProctoringCamera
+                        quizId={quiz.id}
+                        studentId={currentUser.id}
+                    />
+                )}
 
                 {/* Questions List */}
                 <div className="flex-1 overflow-y-auto p-8 space-y-8 bg-gray-50 dark:bg-[#131314]">

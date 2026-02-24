@@ -34,6 +34,12 @@ public class Quiz {
 
     private String sourceCommunityItemId;
 
+    private boolean isExam = false;
+    private Integer durationMinutes;
+
+    @Enumerated(EnumType.STRING)
+    private GradingType gradingType = GradingType.MANUAL;
+
     // Getters & Setters
     public String getSourceCommunityItemId() {
         return sourceCommunityItemId;
@@ -97,6 +103,30 @@ public class Quiz {
 
     public void setAuthor(User author) {
         this.author = author;
+    }
+
+    public boolean isExam() {
+        return isExam;
+    }
+
+    public void setExam(boolean exam) {
+        isExam = exam;
+    }
+
+    public Integer getDurationMinutes() {
+        return durationMinutes;
+    }
+
+    public void setDurationMinutes(Integer durationMinutes) {
+        this.durationMinutes = durationMinutes;
+    }
+
+    public GradingType getGradingType() {
+        return gradingType;
+    }
+
+    public void setGradingType(GradingType gradingType) {
+        this.gradingType = gradingType;
     }
 
     public List<Question> getQuestions() {

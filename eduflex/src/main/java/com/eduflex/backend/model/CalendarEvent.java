@@ -19,7 +19,7 @@ public class CalendarEvent {
     }
 
     public enum EventPlatform {
-        ZOOM, TEAMS, MEETS, NONE
+        ZOOM, TEAMS, MEETS, EXAM_ROOM, NONE
     }
 
     @Id
@@ -46,6 +46,7 @@ public class CalendarEvent {
     private Boolean isMandatory = false;
     private String topic;
     private Boolean isUnmanned = false; // NYTT: För Mission Control (obemannad lektion)
+    private Long quizId; // Linked Quiz/Exam
 
     // Optional: Event related to a course
     @ManyToOne
@@ -183,5 +184,13 @@ public class CalendarEvent {
 
     public void setIsUnmanned(Boolean unmanned) {
         isUnmanned = unmanned;
+    }
+
+    public Long getQuizId() {
+        return quizId;
+    }
+
+    public void setQuizId(Long quizId) {
+        this.quizId = quizId;
     }
 }

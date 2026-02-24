@@ -144,6 +144,14 @@ const LandingPage = () => {
             bgColor: 'bg-purple-500/10',
             hoverBorder: 'hover:border-purple-500/50'
         },
+        {
+            icon: <Shield className="w-7 h-7" />,
+            title: "Exam Integrity Pro",
+            description: "Säkerställ rättvisa tentamen med realtidsvideo-proctoring. AI-övervakning upptäcker misstänkt beteende och tvingar fram tydligt videomaterial.",
+            color: 'text-rose-400',
+            bgColor: 'bg-rose-500/10',
+            hoverBorder: 'hover:border-rose-500/50'
+        },
     ];
 
 
@@ -315,7 +323,7 @@ const LandingPage = () => {
                         <div className="size-10 brand-gradient rounded-full flex items-center justify-center shadow-lg shadow-brand-teal/20 relative">
                             <img src={logoMain} alt="EduFlex" className="w-6 h-6 brightness-0 invert" />
                         </div>
-                        <span className="text-xl font-bold tracking-tight">EduFlex <span className="text-brand-teal">2.0</span></span>
+                        <span className="text-xl font-bold tracking-tight">EduFlex <span className="text-brand-teal">3.0</span></span>
                     </div>
 
                     <div className="hidden md:flex items-center gap-8 text-slate-300">
@@ -420,7 +428,7 @@ const LandingPage = () => {
                         {/* Badge */}
                         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-gold/10 border border-brand-gold/20 text-brand-gold text-xs font-bold uppercase tracking-widest shadow-[0_0_15px_rgba(255,183,3,0.2)]">
                             <Sparkles className="w-3.5 h-3.5" />
-                            Nyhet: EduAI Hub 2.0
+                            Nyhet: Exam Integrity Pro & AI Coaches v3.0
                         </div>
 
                         {/* Heading */}
@@ -710,7 +718,7 @@ const LandingPage = () => {
                             <div className="brand-gradient p-2 rounded-lg">
                                 <img src={logoMain} alt="EduFlex" className="w-5 h-5 brightness-0 invert" />
                             </div>
-                            <span className="text-xl font-bold">EduFlex <span className="text-brand-teal">2.0</span></span>
+                            <span className="text-xl font-bold">EduFlex <span className="text-brand-teal">3.0</span></span>
                         </div>
                         <p className="text-slate-500 text-sm leading-relaxed">
                             {t('landing.footer.tagline')}

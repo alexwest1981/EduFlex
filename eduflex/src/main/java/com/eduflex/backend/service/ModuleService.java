@@ -99,6 +99,10 @@ public class ModuleService {
                                 "Konfidentiell kontaktmodul för studenter med direktkoppling till hälsoteamet. Strikt tystnadsplikt.",
                                 "1.0.0", false, true);
 
+                createIfNotExists("EXAM_INTEGRITY_PRO", "Exam Integrity Pro",
+                                "Avancerad tentavakt med fokus-detektering och LiveKit-proctoring. Kräver PRO eller ENTERPRISE.",
+                                "1.0.0", false, true);
+
                 logger.info("=== ModuleService: Module initialization complete. Total modules: {} ===",
                                 moduleRepository.count());
         }

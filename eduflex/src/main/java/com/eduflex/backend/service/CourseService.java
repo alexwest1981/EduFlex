@@ -738,7 +738,10 @@ public class CourseService {
                     c.getTeacher().getFullName(),
                     c.getTeacher().getUsername(),
                     c.getTeacher().getRole().getName(),
-                    c.getTeacher().getProfilePictureUrl());
+                    c.getTeacher().getProfilePictureUrl(),
+                    c.getTeacher().getLastLogin(),
+                    c.getTeacher().getLastActive(),
+                    c.getTeacher().getActiveMinutes());
         }
         List<UserSummaryDTO> studentDTOs = c.getStudents().stream()
                 .map(s -> new UserSummaryDTO(
@@ -748,7 +751,10 @@ public class CourseService {
                         s.getFullName(),
                         s.getUsername(),
                         s.getRole().getName(),
-                        s.getProfilePictureUrl()))
+                        s.getProfilePictureUrl(),
+                        s.getLastLogin(),
+                        s.getLastActive(),
+                        s.getActiveMinutes()))
                 .collect(Collectors.toList());
 
         return new CourseDTO(

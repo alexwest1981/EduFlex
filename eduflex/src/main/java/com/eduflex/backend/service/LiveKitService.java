@@ -38,14 +38,22 @@ public class LiveKitService {
         token.setIdentity(identity);
         token.setName(name);
 
-        token.addGrants(List.of(
-                new RoomJoin(true),
-                new RoomName(roomName)));
-
         if (isHost) {
+            // Teacher/Admin permissions
             token.addGrants(List.of(
+                    new RoomJoin(true),
+                    new RoomName(roomName),
                     new RoomCreate(true),
-                    new RoomAdmin(true)));
+                    new RoomAdmin(true),
+                    new io.livekit.server.CanPublish(false),
+                    new io.livekit.server.CanSubscribe(true)));
+        } else {
+            // Student/Proctoree permissions
+            token.addGrants(List.of(
+                    new RoomJoin(true),
+                    new RoomName(roomName),
+                    new io.livekit.server.CanPublish(true),
+                    new io.livekit.server.CanSubscribe(false)));
         }
 
         logger.info("Generated LiveKit token for room: {}, identity: {}, host: {}", roomName, identity, isHost);

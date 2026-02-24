@@ -35,7 +35,15 @@ export const UngradedTable = ({ ungradedSubmissions }) => {
                             <td className="p-4 text-gray-500">{sub.courseName}</td>
                             <td className="p-4 text-gray-500">{new Date(sub.submittedAt).toLocaleDateString()}</td>
                             <td className="p-4 text-right">
-                                <button onClick={() => navigate(`/course/${sub.courseSlug || sub.courseCode || sub.courseId || sub.assignment?.courseSlug || sub.assignment?.courseCode || sub.assignment?.courseId || ''}?tab=assignments`)} className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-xs font-bold hover:bg-indigo-700 shadow-sm">{t('teacher_tables.go_to_grading')}</button>
+                                <button
+                                    onClick={() => {
+                                        const tab = sub.isQuiz ? 'quiz' : 'assignments';
+                                        navigate(`/course/${sub.courseSlug || sub.courseCode || sub.courseId || ''}?tab=${tab}`);
+                                    }}
+                                    className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-xs font-bold hover:bg-indigo-700 shadow-sm"
+                                >
+                                    {t('teacher_tables.go_to_grading')}
+                                </button>
                             </td>
                         </tr>
                     ))}

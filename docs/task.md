@@ -1,39 +1,28 @@
-- [x] Configure Native WSL Docker Engine
-- [x] Migrate Docker contexts and credentials
-- [x] Create dedicated base migration for `embeddings` table (`V4_1`)
-- [x] **Documentation & Finalization**:
-  - [x] Updated `README.md` with latest updates.
-  - [x] Updated `ROADMAP.md` (v2.0.21).
-  - [x] Updated `LandingPage.jsx` with Premium Video feature.
-  - [x] Cleaned up documentation (moved legacy MDs to `docs/`).
-  - [x] Performed final Git Push.
-- [ ] **Debugging & Stability**:
-  - [x] Fix `ReferenceError: Smartphone is not defined` in `FeaturesPage.jsx`.
-  - [x] Fix `HS256` JWT secret length error.
-  - [x] Fix `Flyway` checksum repair issues.
-  - [x] Fix Signal "Failed to fetch" (host/protocol detection).
-  - [/] Fix Media/ICE "Departure Timeout" (TURN server config).
-    - [x] Enable internal TURN in `livekit.yaml`.
-    - [x] Expose TURN ports in `docker-compose.yml`.
-    - [ ] Add `turn.eduflexlms.se` to Cloudflare Tunnel.
-- [x] Create dedicated base migration for `elevhalsa_cases` table (`V20_1`)
-- [x] Create dedicated base migration for `guardian_child_links` (`V21_1`)
-- [x] Create dedicated base migration for `message_attachments` (`V22_1`)
-- [x] Implement Premium PWA Installation Prompt
-- [x] Fix `ImageIcon` constructor / naming collision in Admin Dashboard
-- [x] Add 192x192 and 512x512 PWA Icon uploaders to Whitelabel Dashboard
-- [x] Implement Dynamic Manifest backend serving (MinIO integration)
-- [x] Implement client-side image resizing (automatic scale/crop in browser)
-- [x] Fix backend 500 error during PWA icon upload
-    - [x] Add detailed logging to `BrandingController`
-    - [x] Add defensive JSON handling to `BrandingService`
-    - [x] Refactor frontend to use authorized `api` service (Fixed 500 Error)
-- [x] Add missing "Save Changes" button to PWA tab (Fixed missing feedback)
-- [x] Dynamically update PWA Preview and Global Manifest (Fixed "Nothing happens" issue)
-- [x] Final verification of PWA branding flow
-- [x] Aktivera "Texter & Meddelanden" fliken och centralisera texter
-- [x] Aktivera "Avancerad CSS" fliken med fungerande editor
-- [x] Ta bort redundant text-input från "Allmänt"-fliken
-- [x] Uppdatera versionsnummer till v2.0.18 i alla vyer
-- [x] Konsolidera PWA & Mobil-app branding till en flik
-- [x] Slutlig walkthrough och push till GitHub
+# Task History & Progress
+
+## Completed Tasks
+
+### AI Coach Improvements
+- [x] UI Readability & Accessibility
+    - [x] Improve contrast in `AiCoachWidget.jsx`
+    - [x] Verify colors on light theme
+    - [x] Fix "Se full analys" navigation
+    - [x] Refine teacher-specific navigation (targeted skill analysis tab)
+
+### CSN & GDPR Reports
+- [x] Research Attendance & Audit models
+- [x] Create `CsnReportService`
+- [x] Create `GdprAuditService`
+- [x] Update `ReportController` and `ReportLibrary`
+- [x] Update Sidebar & Dashboard navigation (Added explicit CSN links)
+- [x] Verify exports and logs
+
+### Hotfixes
+- [x] Fix `api.js` default export issue
+- [x] Fix `Bell` ReferenceError in `LandingPage.jsx`
+- [x] Fix metadata error in `ClassSkillsHeatmap.jsx`
+
+## Next Steps
+- [ ] Implement Automated CSN Export Scheduler
+- [ ] Add more granular GDPR data filters
+- [ ] Prepare for official v3.0.0 release push
