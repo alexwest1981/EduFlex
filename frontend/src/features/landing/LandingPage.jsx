@@ -6,7 +6,7 @@ import {
     Globe, Database, Server, Zap, BarChart,
     Check, ArrowRight, Menu, X, Play, Sparkles,
     Award, TrendingUp, Layers, Gamepad2, Brain, Map, Flame, MessageSquare, Bell,
-    FileText, ClipboardList, Thermometer, Target, Smartphone, Video as VideoIcon
+    FileText, ClipboardList, Thermometer, Target, Smartphone, Video as VideoIcon, Link2
 } from 'lucide-react';
 
 // Assets
@@ -151,6 +151,22 @@ const LandingPage = () => {
             color: 'text-rose-400',
             bgColor: 'bg-rose-500/10',
             hoverBorder: 'hover:border-rose-500/50'
+        },
+        {
+            icon: <Link2 className="w-7 h-7" />,
+            title: "Integration Hub Pro",
+            description: "Koppla EduFlex till LTI 1.3, Zoom, Microsoft Teams, Skolverkets API, SIS-import och Bibliotekssökning – allt hanterat från ett enda admin-centrum.",
+            color: 'text-cyan-400',
+            bgColor: 'bg-cyan-500/10',
+            hoverBorder: 'hover:border-cyan-500/50'
+        },
+        {
+            icon: <Brain className="w-7 h-7" />,
+            title: "AI Compliance Portal",
+            description: "Full spårbarhet för varje AI-beslut. Granska prompt, svar, modell och användar-ID i realtid – GDPR-redo och klart för revision.",
+            color: 'text-violet-400',
+            bgColor: 'bg-violet-500/10',
+            hoverBorder: 'hover:border-violet-500/50'
         },
     ];
 
@@ -428,7 +444,7 @@ const LandingPage = () => {
                         {/* Badge */}
                         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-gold/10 border border-brand-gold/20 text-brand-gold text-xs font-bold uppercase tracking-widest shadow-[0_0_15px_rgba(255,183,3,0.2)]">
                             <Sparkles className="w-3.5 h-3.5" />
-                            Nyhet: Exam Integrity Pro & AI Coaches v3.0
+                            v3.1: Integration Hub Pro & AI Compliance Portal
                         </div>
 
                         {/* Heading */}
@@ -528,7 +544,7 @@ const LandingPage = () => {
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 stagger-animation fade-in-section">
-                        {features.slice(0, 4).map((feature, idx) => (
+                        {features.slice(0, 8).map((feature, idx) => (
                             <div
                                 key={idx}
                                 className={`glass-card p-8 rounded-3xl group ${feature.hoverBorder} transition-all duration-300 feature-card`}

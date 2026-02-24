@@ -2,7 +2,7 @@
   <img src="docs/Logo_top.png" width="600" alt="EduFlex Logo" />
 </p>
 
-<h1 align="center">🎓 EduFlex LMS v3.0.0</h1>
+<h1 align="center">🎓 EduFlex LMS v3.1.0</h1>
 
 <p align="center">
   <em>The Complete Enterprise Learning Platform for Modern Education</em><br/>
@@ -34,6 +34,26 @@
 ---
 
 <div id="-svenska"></div>
+
+## 🚀 Senaste uppdateringarna (24 feb 2026 – v3.1.0)
+
+*   **🏛️ Konsoliderat Admin-portal:**
+    *   All admin-funktionalitet – **AI Compliance Portal, Integration Hub, Audit Log, Deploy-panel och Globala dokument** – är nu samlade i ett enda `AdministrationPanel`. Den gamla `AdminPanel`-komponenten är helt borttagen och routing är renodlad.
+    *   Standalone-routes för `/admin/ai-audit` och `/admin/integrations` är borttagna.
+
+*   **🤖 Komplett AI Audit Logging (GeminiService):**
+    *   Alla 6 publika metoder i `GeminiService` loggar nu varje AI-anrop till `ai_audit_log` via ett try/catch/finally-mönster:
+        `generateCourseStructure`, `generateQuizQuestionsFromTopic`, `generateQuizQuestions`, `generateResponse`, `analyzeStudentPerformance`, `generateJsonContent`.
+    *   **AI Compliance Portal** – Nytt admin-gränssnitt för att inspektera varje AI-beslut: prompt, svar, modell, användar-ID, felorsak och tidpunkt. Fullt GDPR-spårbart.
+
+*   **🔧 AI Resource Generation – Robusthet:**
+    *   `AIResourceService` hanterar nu Gemini-svar som returneras som JSON-array (`[{…}]`) istället för enskilt objekt (`{…}`) via automatisk uppackning. Eliminerar 500-fel med `JsonToken.START_ARRAY`.
+    *   Typsäker deserialisering via `TypeReference<Map<String, Object>>`. Förstärkt system-prompt.
+
+*   **🗄️ V87 – Databasrensning (Integration Hub):**
+    *   Ny Flyway-migration tar bort föräldralösa `integration_config`-rader med `display_name = NULL` (arv från rader som föregick V86-seeden). Integration Hub visar nu korrekt exakt 6 konfigurerade integrationer.
+
+---
 
 ## 🚀 Senaste uppdateringarna (24 feb 2026 – v3.0.0)
 
@@ -174,11 +194,8 @@ Här är en sammanfattning av dagens stora uppdateringar för att öka engageman
     *   **Backend-förstärkning:** Implementerat nya säkra endpoints i `GamificationAdminController` för hantering av globala konfigurationsvärden via `SystemSettingRepository`.
     *   **UX-fokus:** Rensat `SystemSettings.jsx` för att undvika dubbel lagring och säkerställa att administratören hittar rätt inställningar på rätt plats.
 
-## 🧭 Roadmap mot v3.0 (Mars–Juni 2026)
-Vi rör oss nu in i en fas av kommersialisering och skalning. Vårt fokus ligger på att eliminera "dealbreakers" för svenska kommuner och universitet:
-*   **Mars:** Pilot-Ready (Integrationer, Supportportal, Pilot-kit).
-*   **April:** Revenue & AI Coaches (Rollspecifika AI-assistenter, CSN-rapportering).
-*   **Maj–Juni:** Enterprise & Mobile (React Native app, ISO 27001 prep, Skalbarhet).
+## 🧭 Roadmap mot v4.0 (Q2–Q4 2026)
+Vi rör oss nu in i en fas av Enterprise-skalning och mobilisering. v3.1 är produktionsredo för svenska kommuner och friskolor.
 
 ## 🚀 Senaste uppdateringarna (21 feb 2026)
 Här är en sammanfattning av det stora arbetet med att ena plattformens intelligens-funktioner under **EduAI Hub**:
@@ -948,12 +965,6 @@ X-Tenant-ID: acme
    | **Grafana** | http://localhost:3000 | admin / admin |
    | **Keycloak** | http://localhost:8180 | admin / admin |
    | **Prometheus** | http://localhost:9090 | – |
-## Phase 2: Role-Specific AI Coachers [x]
-- [x] **Principal Coach**: KPI-driven priorities & Weekly Focus <!-- id: 105 -->
-- [x] **Mentor Coach**: Development talk preparation & Guardian comms prep <!-- id: 106 -->
-- [x] **EHT Coach**: Group-level pattern identification <!-- id: 107 -->
-- [x] **Student Coach**: Study planning based on schedule/deadlines <!-- id: 108 -->
-
 #### Local Development
 
 **Backend (Spring Boot):**
@@ -1111,10 +1122,26 @@ helm install eduflex ./helm/eduflex \
 | AI-powered Quiz Generation (Gemini) | ✅ Implemented |
 | Advanced Analytics Dashboard | ✅ Implemented |
 | PWA (Installable App & Offline Support) | ✅ Implemented |
+| Integration Hub Pro (LTI, Zoom, Teams, SIS, Skolverket, Bibliotek) | ✅ Implemented |
+| CSN Rapportering Pro (Excel, Bulk-export, GDPR Art. 15) | ✅ Implemented |
+| Exam Integrity Pro (LiveKit Proctoring & AI-larm) | ✅ Implemented |
+| Rollspecifika AI-coacher (Student / Lärare / Rektor) | ✅ Implemented |
+| AI Compliance Portal (Full audit trail för alla AI-anrop) | ✅ Implemented |
+| Social Gamification (Ligor & Klassmål) | ✅ Implemented |
+| Prediktiv AI-analys (At-Risk Early Warning) | ✅ Implemented |
+| Adaptivt Lärande Engine (VAK-profilering + Gemini) | ✅ Implemented |
+| Guardian Portal 2.0 (AI-status & digital sjukanmälan) | ✅ Implemented |
+| Principal Mission Control (Live KPI Dashboard) | ✅ Implemented |
+| Support Content CMS (Admin-hanterade FAQ & guider) | ✅ Implemented |
+| SKA-motor (Systematiskt Kvalitetsarbete) | ✅ Implemented |
+| Multi-Channel Notifikationer (Email / SMS / Push) | ✅ Implemented |
+| Pilot Kit Onboarding Wizard | ✅ Implemented |
+| AI Resource Generator (Quiz, Lektion, Uppgift via Gemini) | ✅ Implemented |
 | Microservices Split (Video/PDF) | 🔜 Q2 2026 |
+| ISO 27001 Prep & Security Hardening | 🔜 Q2 2026 |
 | Event Bus (Kafka/RabbitMQ) | 🔜 Q3 2026 |
-| Mobile App (React Native) | 🔜 Q4 2026 |
-| Push Notifications (Mobile) | 🔜 Q4 2026 |
+| Mobile App (React Native) | 🔜 Q3 2026 |
+| Push Notifications (Mobile) | 🔜 Q3 2026 |
 
 ---
 
@@ -1165,4 +1192,4 @@ For inquiries: 📧 **alexwestrom81@gmail.com**
 
 ---
 
-*Last updated: 2026-02-17 (Skills Gap Analysis - v2.0.20)*
+*Last updated: 2026-02-24 (Integration Hub Pro, AI Compliance Portal, Admin Consolidation - v3.1.0)*
