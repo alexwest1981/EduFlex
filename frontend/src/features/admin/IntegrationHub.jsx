@@ -54,8 +54,8 @@ const IntegrationHub = () => {
     const toggleIntegration = async (type) => {
         try {
             const updated = await api.put(`/integrations/${type}/toggle`);
-            setIntegrations(prev => prev.map(i => i.integrationType === type ? updated : i));
-            toast.success(`${type} ${updated.enabled ? 'aktiverad' : 'avaktiverad'}`);
+            setIntegrations(prev => prev.map(i => i.platform === type ? updated : i));
+            toast.success(`${type} ${updated.active ? 'aktiverad' : 'avaktiverad'}`);
         } catch (err) {
             toast.error('Kunde inte ändra status');
         }
@@ -135,7 +135,7 @@ const IntegrationHub = () => {
             }}>
                 <StatusPill label="Totalt" value={integrations.length} color="#6366f1" />
                 <StatusPill label="Anslutna" value={integrations.filter(i => i.status === 'CONNECTED').length} color="#10b981" />
-                <StatusPill label="Avstängda" value={integrations.filter(i => !i.enabled).length} color="#9ca3af" />
+                <StatusPill label="Avstängda" value={integrations.filter(i => !i.active).length} color="#9ca3af" />
                 <StatusPill label="Fel" value={integrations.filter(i => i.status === 'ERROR').length} color="#ef4444" />
             </div>
 
@@ -146,13 +146,13 @@ const IntegrationHub = () => {
                 gap: '1.25rem'
             }}>
                 {integrations.map(integration => {
-                    const Icon = INTEGRATION_ICONS[integration.integrationType] || Link2;
+                    const Icon = INTEGRATION_ICONS[integration.platform] || Link2;
                     const statusInfo = STATUS_COLORS[integration.status] || STATUS_COLORS.NOT_CONFIGURED;
-                    const isExpanded = expandedCard === integration.integrationType;
-                    const fields = CONFIG_FIELDS[integration.integrationType] || [];
+                    const isExpanded = expandedCard === integration.platform;
+                    const fields = CONFIG_FIELDS[integration.platform] || [];
 
                     return (
-                        <div key={integration.integrationType} style={{
+                        <div key={integration.platform} style={{
                             background: 'var(--card-bg, #fff)',
                             borderRadius: '16px',
                             border: '1px solid var(--border-color, #e5e7eb)',
@@ -168,7 +168,7 @@ const IntegrationHub = () => {
                                 justifyContent: 'space-between',
                                 cursor: 'pointer',
                             }}
-                                onClick={() => setExpandedCard(isExpanded ? null : integration.integrationType)}
+                                onClick={() => setExpandedCard(isExpanded ? null : integration.platform)}
                             >
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                                     <div style={{
@@ -197,9 +197,9 @@ const IntegrationHub = () => {
 
                                 {/* Toggle-knapp */}
                                 <button
-                                    onClick={(e) => { e.stopPropagation(); toggleIntegration(integration.integrationType); }}
+                                    onClick={(e) => { e.stopPropagation(); toggleIntegration(integration.platform); }}
                                     style={{
-                                        background: integration.enabled ? '#10b981' : '#d1d5db',
+                                        background: integration.active ? '#10b981' : '#d1d5db',
                                         border: 'none',
                                         borderRadius: '999px',
                                         width: 48, height: 26,
@@ -207,14 +207,14 @@ const IntegrationHub = () => {
                                         position: 'relative',
                                         transition: 'background 0.3s',
                                     }}
-                                    title={integration.enabled ? 'Avaktivera' : 'Aktivera'}
+                                    title={integration.active ? 'Avaktivera' : 'Aktivera'}
                                 >
                                     <div style={{
                                         width: 20, height: 20, borderRadius: '50%',
                                         background: '#fff',
                                         position: 'absolute',
                                         top: 3,
-                                        left: integration.enabled ? 25 : 3,
+                                        left: integration.active ? 25 : 3,
                                         transition: 'left 0.3s',
                                         boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
                                     }} />
@@ -250,8 +250,8 @@ const IntegrationHub = () => {
                                                     <input
                                                         type={field.type || 'text'}
                                                         placeholder={field.placeholder}
-                                                        value={(configValues[integration.integrationType] || {})[field.key] || ''}
-                                                        onChange={(e) => handleConfigChange(integration.integrationType, field.key, e.target.value)}
+                                                        value={(configValues[integration.platform] || {})[field.key] || ''}
+                                                        onChange={(e) => handleConfigChange(integration.platform, field.key, e.target.value)}
                                                         style={{
                                                             width: '100%', padding: '0.5rem 0.75rem',
                                                             borderRadius: '8px', border: '1px solid #d1d5db',
@@ -262,7 +262,7 @@ const IntegrationHub = () => {
                                                 </div>
                                             ))}
                                             <button
-                                                onClick={() => saveConfig(integration.integrationType)}
+                                                onClick={() => saveConfig(integration.platform)}
                                                 style={{
                                                     background: '#6366f1', color: '#fff',
                                                     border: 'none', borderRadius: '8px',
@@ -276,18 +276,18 @@ const IntegrationHub = () => {
                                         </>
                                     ) : (
                                         <p style={{ fontSize: '0.85rem', color: '#6b7280', margin: 0 }}>
-                                            {integration.integrationType === 'SKOLVERKET'
+                                            {integration.platform === 'SKOLVERKET'
                                                 ? 'Ingen konfiguration krävs – använder Skolverkets publika API.'
-                                                : integration.integrationType === 'SIS'
+                                                : integration.platform === 'SIS'
                                                     ? 'Ladda upp CSV-filer via SIS Import-sidan.'
-                                                    : integration.integrationType === 'LIBRARY'
+                                                    : integration.platform === 'LIBRARY'
                                                         ? 'Ingen konfiguration krävs – använder Open Library API.'
                                                         : 'Ingen extra konfiguration tillgänglig.'}
                                         </p>
                                     )}
 
                                     <button
-                                        onClick={() => testConnection(integration.integrationType)}
+                                        onClick={() => testConnection(integration.platform)}
                                         style={{
                                             background: 'transparent', color: '#6366f1',
                                             border: '1px solid #6366f1', borderRadius: '8px',

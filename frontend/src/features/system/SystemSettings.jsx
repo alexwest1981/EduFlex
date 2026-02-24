@@ -50,7 +50,7 @@ const SystemSettings = ({ asTab = false }) => {
     const navigate = useNavigate();
     const { themeId, themes } = useTheme();
     const { modules, refreshModules } = useModules();
-    const { currentUser } = useAppContext();
+    const { currentUser, systemSettings } = useAppContext();
     const { hasAccess } = useBranding();
     const [isThemeModalOpen, setIsThemeModalOpen] = useState(false);
     const [toggling, setToggling] = useState(null);

@@ -1,14 +1,16 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Users, Settings, Database, Edit3, Server, Globe, MessageSquare, Store, Trophy, BookOpen, Rocket } from 'lucide-react';
+import { Users, Settings, Database, Edit3, Server, Globe, MessageSquare, Store, Trophy, BookOpen, Rocket, Link2, Zap } from 'lucide-react';
 import { useModules } from '../../../../context/ModuleContext';
+import { useAppContext } from '../../../../context/AppContext';
 
 const AdminNavbar = () => {
     const { t } = useTranslation();
     const navigate = useNavigate();
     const location = useLocation();
     const { isModuleActive } = useModules();
+    const { licenseTier } = useAppContext();
 
     // Parse query param or active route
     const searchParams = new URLSearchParams(location.search);

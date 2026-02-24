@@ -1,6 +1,6 @@
 package com.eduflex.backend.service;
 
-import com.eduflex.backend.repository.IntegrationConfigRepository;
+import com.eduflex.backend.integration.repository.IntegrationConfigRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -67,10 +67,10 @@ public class SkolverketApiClientService {
             }
 
             // Uppdatera synk-status
-            configRepository.findByIntegrationType("SKOLVERKET").ifPresent(config -> {
+            configRepository.findByPlatform("SKOLVERKET").ifPresent(config -> {
                 config.setLastSync(LocalDateTime.now());
                 config.setStatus("CONNECTED");
-                config.setEnabled(true);
+                config.setActive(true);
                 config.setErrorCount(0);
                 config.setLastError(null);
                 configRepository.save(config);
@@ -87,7 +87,7 @@ public class SkolverketApiClientService {
         } catch (Exception e) {
             log.error("❌ Skolverket batch-import misslyckades: {}", e.getMessage());
 
-            configRepository.findByIntegrationType("SKOLVERKET").ifPresent(config -> {
+            configRepository.findByPlatform("SKOLVERKET").ifPresent(config -> {
                 config.setStatus("ERROR");
                 config.setLastError(e.getMessage());
                 config.setErrorCount(config.getErrorCount() + 1);
@@ -102,10 +102,10 @@ public class SkolverketApiClientService {
      * Returnerar aktuell synk-status för Skolverket-integrationen.
      */
     public Map<String, Object> getSyncStatus() {
-        return configRepository.findByIntegrationType("SKOLVERKET")
+        return configRepository.findByPlatform("SKOLVERKET")
                 .map(config -> {
                     Map<String, Object> status = new HashMap<>();
-                    status.put("enabled", config.getEnabled());
+                    status.put("enabled", config.isActive());
                     status.put("status", config.getStatus());
                     status.put("lastSync", config.getLastSync() != null ? config.getLastSync().toString() : "Aldrig");
                     status.put("errorCount", config.getErrorCount());

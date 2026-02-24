@@ -17,13 +17,13 @@ public class AiAuditController {
     private final AiAuditService aiAuditService;
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'SUPERADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN', 'SUPERADMIN', 'ROLE_SUPERADMIN')")
     public ResponseEntity<List<AiAuditLog>> getAllAuditLogs() {
         return ResponseEntity.ok(aiAuditService.getAllLogs());
     }
 
     @GetMapping("/user/{userId}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'SUPERADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN', 'SUPERADMIN', 'ROLE_SUPERADMIN')")
     public ResponseEntity<List<AiAuditLog>> getAuditLogsByUser(@PathVariable Long userId) {
         // Since we log by username (actorId), we need to fetch user first or assume
         // actorId is username

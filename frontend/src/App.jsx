@@ -70,14 +70,10 @@ import WellbeingCenter from './features/health/WellbeingCenter';
 import WellbeingInbox from './features/health/WellbeingInbox';
 import AdaptiveLearningDashboard from './features/adaptive/AdaptiveLearningDashboard';
 import EduAiHubPage from './features/ai/EduAiHubPage';
-import AdminPanel from './features/admin/AdminPanel';
-
 import ManagementReportCenter from './features/principal/ManagementReportCenter';
 import ImpactDashboard from './features/impact/ImpactDashboard';
 import HealthCheckDashboard from './features/admin/HealthCheckDashboard';
 import DeveloperSettings from './features/settings/DeveloperSettings';
-import AiAuditDashboard from './features/admin/AiAuditDashboard';
-import IntegrationHub from './features/admin/IntegrationHub';
 import RoiCenter from './features/analytics/RoiCenter';
 
 // --- PROTECTED ROUTE ---
@@ -284,14 +280,6 @@ const AppRoutes = () => {
                     </ProtectedRoute>
                 } />
 
-                <Route path="/admin/integrations" element={
-                    <ProtectedRoute roles={['ADMIN', 'ROLE_ADMIN']}>
-                        <Layout currentUser={currentUser} handleLogout={logout}>
-                            <IntegrationHub />
-                        </Layout>
-                    </ProtectedRoute>
-                } />
-
                 <Route path="/impact" element={
                     <ProtectedRoute roles={['ADMIN', 'PRINCIPAL', 'ROLE_REKTOR', 'REKTOR']}>
                         <Layout currentUser={currentUser} handleLogout={logout}>
@@ -423,19 +411,6 @@ const AppRoutes = () => {
                         <Layout currentUser={currentUser} handleLogout={logout}>
                             <CommunityAdmin />
                         </Layout>
-                    </ProtectedRoute>
-                } />
-
-                {/* AI AUDIT PORTAL (ADMIN ONLY) */}
-                <Route path="/admin/ai-audit" element={
-                    <ProtectedRoute roles={['ADMIN']}>
-                        {licenseTier !== 'BASIC' ? (
-                            <Layout currentUser={currentUser} handleLogout={logout}>
-                                <AiAuditDashboard />
-                            </Layout>
-                        ) : (
-                            <Navigate to="/" replace />
-                        )}
                     </ProtectedRoute>
                 } />
 

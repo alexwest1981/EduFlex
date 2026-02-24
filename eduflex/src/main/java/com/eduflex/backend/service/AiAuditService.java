@@ -48,6 +48,6 @@ public class AiAuditService {
     }
 
     public List<AiAuditLog> getAllLogs() {
-        return aiAuditLogRepository.findAll();
+        return aiAuditLogRepository.findAllByOrderByTimestampDesc();
     }
 }

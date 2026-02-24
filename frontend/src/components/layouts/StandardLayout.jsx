@@ -117,8 +117,6 @@ const StandardLayout = ({ children }) => {
                 { path: '/health-dashboard', icon: <Heart size={20} className="text-rose-500" />, label: 'E-hälsa (Hälsoteam)' }
             ] : []),
             ...(isModuleActive('ANALYTICS') && (isAdmin || ['REKTOR', 'PRINCIPAL'].includes(roleName)) ? [{ path: '/analytics', icon: <BarChart2 size={20} />, label: t('sidebar.analytics') || 'Analyser & Insikter' }] : []),
-            ...(isAdmin && licenseTier !== 'BASIC' ? [{ path: '/admin/ai-audit', icon: <Zap size={20} />, label: 'AI Audit' }] : []),
-            ...(isAdmin ? [{ path: '/admin/integrations', icon: <Link2 size={20} />, label: 'Integration Hub' }] : []),
             ...(roleName === 'TEACHER' || roleName === 'ROLE_TEACHER' ? [{ path: '/principal/reports', icon: <FolderOpen size={20} />, label: 'CSN-Rapporter' }] : []),
         ],
         rektor: [

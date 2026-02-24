@@ -12,4 +12,6 @@ public interface AiAuditLogRepository extends JpaRepository<AiAuditLog, UUID> {
     List<AiAuditLog> findByActorIdOrderByTimestampDesc(String actorId);
 
     List<AiAuditLog> findByActionTypeOrderByTimestampDesc(String actionType);
+
+    List<AiAuditLog> findAllByOrderByTimestampDesc();
 }

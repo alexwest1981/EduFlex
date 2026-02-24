@@ -1,7 +1,7 @@
 package com.eduflex.backend.service;
 
 import com.eduflex.backend.model.User;
-import com.eduflex.backend.repository.IntegrationConfigRepository;
+import com.eduflex.backend.integration.repository.IntegrationConfigRepository;
 import com.eduflex.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -109,10 +109,10 @@ public class SisImportService {
     }
 
     private void updateSyncStatus(int count) {
-        configRepository.findByIntegrationType("SIS").ifPresent(config -> {
+        configRepository.findByPlatform("SIS").ifPresent(config -> {
             config.setLastSync(LocalDateTime.now());
             config.setStatus("CONNECTED");
-            config.setEnabled(true);
+            config.setActive(true);
             configRepository.save(config);
         });
     }

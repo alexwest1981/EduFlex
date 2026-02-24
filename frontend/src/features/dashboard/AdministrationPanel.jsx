@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Users, BookOpen, DollarSign, FileText, Settings, Tag, Shield, Terminal, Award } from 'lucide-react';
+import { Users, BookOpen, DollarSign, FileText, Settings, Tag, Shield, Terminal, Award, Link2, Zap, Upload, Trash2, Search, Server } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { AdminUserTable, AdminCourseRegistry } from './components/admin/AdminTables';
 import RolesAdmin from './components/admin/RolesAdmin';
@@ -19,6 +19,85 @@ import { HardDrive, Building2 } from 'lucide-react';
 import SchoolStructureManagement from '../principal/SchoolStructureManagement';
 
 import GuardianManager from './components/admin/GuardianManager';
+import IntegrationHub from '../admin/IntegrationHub';
+import AiAuditDashboard from '../admin/AiAuditDashboard';
+import AuditLogDashboard from '../admin/AuditLogDashboard';
+import DeployPanel from '../admin/DeployPanel';
+
+const AdminGlobalDocuments = () => {
+    const [docs, setDocs] = useState([]);
+    const [searchTerm, setSearchTerm] = useState('');
+    const inputClass = "w-full px-3 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-indigo-500 bg-white border-gray-300 text-gray-900 dark:bg-[#131314] dark:border-[#3c4043] dark:text-white";
+
+    const fetchDocs = async () => {
+        try { setDocs(await api.documents.getAll()); } catch (e) { console.error(e); }
+    };
+
+    useEffect(() => { fetchDocs(); }, []);
+
+    const handleUpload = async (e) => {
+        e.preventDefault();
+        const file = e.target.file.files[0];
+        const title = e.target.title.value;
+        if (!file || !title) return;
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('title', title);
+        try {
+            const token = localStorage.getItem('token');
+            await fetch(`${window.location.origin}/api/documents/upload`, {
+                method: 'POST', headers: { 'Authorization': `Bearer ${token}` }, body: formData
+            });
+            e.target.reset();
+            fetchDocs();
+        } catch (err) { alert('Uppladdning misslyckades.'); }
+    };
+
+    const handleDelete = async (id) => {
+        if (!window.confirm('Radera fil?')) return;
+        try { await api.documents.delete(id); fetchDocs(); } catch (e) { alert('Fel vid radering.'); }
+    };
+
+    const filtered = docs.filter(d =>
+        (d.title || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (d.filename || '').toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    return (
+        <div className="space-y-6 animate-in fade-in">
+            <div className="bg-blue-50 dark:bg-blue-900/10 p-6 rounded-xl border border-blue-100 dark:border-blue-900/30">
+                <h3 className="font-bold text-blue-900 dark:text-blue-200 mb-4 flex items-center gap-2"><Upload size={20} /> Ladda upp global fil</h3>
+                <form onSubmit={handleUpload} className="flex gap-4 items-end flex-wrap">
+                    <div className="flex-1 min-w-[200px]"><label className="text-xs font-bold text-gray-500 mb-1 block">Fil</label><input name="file" type="file" className={inputClass} required /></div>
+                    <div className="flex-1 min-w-[200px]"><label className="text-xs font-bold text-gray-500 mb-1 block">Titel</label><input name="title" className={inputClass} placeholder="Dokumentnamn" required /></div>
+                    <button className="bg-blue-600 text-white px-6 py-2.5 rounded-lg font-bold hover:bg-blue-700 h-[42px]">Ladda upp</button>
+                </form>
+            </div>
+            <div className="relative"><Search className="absolute left-3 top-2.5 text-gray-400" size={16} /><input placeholder="Sök dokument..." className={inputClass + " pl-9"} value={searchTerm} onChange={e => setSearchTerm(e.target.value)} /></div>
+            <div className="overflow-x-auto border border-gray-200 dark:border-[#3c4043] rounded-xl">
+                <table className="w-full text-left text-sm">
+                    <thead className="bg-gray-50 dark:bg-[#282a2c] text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-[#3c4043]">
+                        <tr><th className="px-4 py-3">Titel</th><th className="px-4 py-3">Ägare</th><th className="px-4 py-3 text-right">Åtgärd</th></tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-100 dark:divide-[#3c4043]">
+                        {filtered.length === 0
+                            ? <tr><td colSpan="3" className="p-8 text-center text-gray-500 dark:text-gray-400">Inga dokument hittades.</td></tr>
+                            : filtered.map(d => (
+                                <tr key={d.id} className="hover:bg-gray-50 dark:hover:bg-[#282a2c]/50">
+                                    <td className="px-4 py-3 text-gray-900 dark:text-white">
+                                        <div className="font-medium">{d.title || 'Namnlös'}</div>
+                                        {d.filename && d.filename !== d.title && <div className="text-xs text-gray-400">{d.filename}</div>}
+                                    </td>
+                                    <td className="px-4 py-3 text-gray-500 dark:text-gray-400">{d.owner?.fullName || 'System'}</td>
+                                    <td className="px-4 py-3 text-right"><button onClick={() => handleDelete(d.id)} className="text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 p-1.5 rounded-lg"><Trash2 size={16} /></button></td>
+                                </tr>
+                            ))}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    );
+};
 
 const AdminStorageStats = () => {
     const [stats, setStats] = useState(null);
@@ -135,8 +214,13 @@ const AdministrationPanel = ({ users, courses, teachers, fetchStats }) => {
             category: 'System',
             items: [
                 { id: 'storage', label: 'Lagring', icon: HardDrive },
+                { id: 'content', label: 'Dokument (Global)', icon: Upload },
                 { id: 'logs', label: 'Systemloggar (Fil)', icon: FileText },
                 { id: 'terminal', label: 'Debug Terminal (Live)', icon: Terminal },
+                { id: 'audit-log', label: 'Audit Log', icon: Shield },
+                { id: 'integrations', label: 'Integration Hub', icon: Link2 },
+                { id: 'ai-audit', label: 'AI Audit', icon: Zap },
+                { id: 'deploy', label: 'Deploy', icon: Server },
             ]
         }
     ];
@@ -162,8 +246,13 @@ const AdministrationPanel = ({ users, courses, teachers, fetchStats }) => {
             case 'guardians': return <GuardianManager />;
             case 'roles': return <RolesAdmin />;
             case 'storage': return <AdminStorageStats />;
+            case 'content': return <AdminGlobalDocuments />;
             case 'logs': return <LogDashboard />;
             case 'terminal': return <RealTimeLogViewer />;
+            case 'audit-log': return <AuditLogDashboard />;
+            case 'integrations': return <IntegrationHub />;
+            case 'ai-audit': return <AiAuditDashboard />;
+            case 'deploy': return <DeployPanel />;
 
             // Revenue
             case 'revenue': return <SubscriptionPlans />; // Fallback or Overview

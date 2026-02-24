@@ -82,12 +82,6 @@ const Sidebar = ({ currentUser, logout, siteName, version }) => {
             items.push({ path: '/system', label: t('sidebar.system') || 'System', icon: <Settings2 size={20} /> });
         }
 
-        if (adminRoles.includes(roleName)) {
-            if (licenseTier !== 'BASIC') {
-                items.push({ path: '/admin/ai-audit', label: 'AI Audit', icon: <Sparkles size={20} /> });
-            }
-        }
-
         // --- REKTOR / PRINCIPAL NAVIGATION ---
         if (principalRoles.includes(roleName)) {
             items.push({ path: '/principal/dashboard', label: 'Rektorspaket', icon: <ShieldCheck size={20} /> });

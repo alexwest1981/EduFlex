@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import com.eduflex.backend.model.User;
 import com.eduflex.backend.repository.UserRepository;
+import com.eduflex.backend.service.AiAuditService;
 import com.eduflex.backend.service.AiCreditService;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -45,6 +46,9 @@ public class GeminiService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private AiAuditService aiAuditService;
 
     @Value("${gemini.model:gemini-2.0-flash}")
     private String model;
@@ -138,17 +142,24 @@ public class GeminiService {
     public String generateCourseStructure(String documentText) {
         validateAndSpendCredits(5, "AI Course Generation");
         logger.info("Generating course structure from document text length: {}", documentText.length());
-
-        // Truncate if too long (approx 30k chars to stay within token limits for Flash
-        // model)
-        // Gemini 1.5/2.0 handle huge context, but let's be safe or just pass it all if
-        // using 1.5 Pro/Flash.
-        // The default model is gemini-2.0-flash which has 1M context, so passing full
-        // text is fine usually.
-        // But let's check config.
+        String actorId = SecurityContextHolder.getContext().getAuthentication().getName();
 
         String prompt = COURSE_SYSTEM_PROMPT + "\n\nKÄLLTEXT:\n---\n" + documentText + "\n---\n";
-        return callGemini(prompt);
+        String result = null;
+        boolean success = false;
+        String errorMsg = null;
+        try {
+            result = callGemini(prompt);
+            success = true;
+            return result;
+        } catch (Exception e) {
+            errorMsg = e.getMessage();
+            throw e;
+        } finally {
+            aiAuditService.logDecision("CONTENT_GENERATION", model, actorId,
+                    "Course structure from document (" + documentText.length() + " chars)", result,
+                    null, success, errorMsg);
+        }
     }
 
     /**
@@ -156,7 +167,6 @@ public class GeminiService {
      */
     public String generateQuizQuestionsFromTopic(String topic, int questionCount,
             int difficultyLevel, String language) {
-        // Map numeric difficulty (1-5) to description
         String difficultyDesc = switch (difficultyLevel) {
             case 1 -> "mycket grundläggande (nybörjare, faktafrågor)";
             case 2 -> "enkla (förståelse)";
@@ -170,7 +180,22 @@ public class GeminiService {
                 + buildTopicUserPrompt(topic, questionCount, difficultyDesc, language);
 
         validateAndSpendCredits(questionCount, "AI Quiz Generation (" + topic + ")");
-        return callGemini(fullPrompt, true);
+        String actorId = SecurityContextHolder.getContext().getAuthentication().getName();
+        String result = null;
+        boolean success = false;
+        String errorMsg = null;
+        try {
+            result = callGemini(fullPrompt, true);
+            success = true;
+            return result;
+        } catch (Exception e) {
+            errorMsg = e.getMessage();
+            throw e;
+        } finally {
+            aiAuditService.logDecision("QUIZ_GENERATION", model, actorId,
+                    "Topic: " + topic + ", count: " + questionCount + ", difficulty: " + difficultyLevel, result,
+                    null, success, errorMsg);
+        }
     }
 
     private String buildTopicUserPrompt(String topic, int questionCount, String difficultyDesc, String language) {
@@ -261,9 +286,24 @@ public class GeminiService {
         validateAndSpendCredits(questionCount, "AI Quiz Generation");
         logger.info("Generating {} quiz questions at {} difficulty using Gemini", questionCount, difficulty);
         questionCount = Math.max(1, Math.min(15, questionCount));
+        String actorId = SecurityContextHolder.getContext().getAuthentication().getName();
         String fullPrompt = QUIZ_SYSTEM_PROMPT + "\n\n"
                 + buildUserPrompt(documentText, questionCount, difficulty, language);
-        return callGemini(fullPrompt, true);
+        String result = null;
+        boolean success = false;
+        String errorMsg = null;
+        try {
+            result = callGemini(fullPrompt, true);
+            success = true;
+            return result;
+        } catch (Exception e) {
+            errorMsg = e.getMessage();
+            throw e;
+        } finally {
+            aiAuditService.logDecision("QUIZ_GENERATION", model, actorId,
+                    "Document quiz: " + questionCount + " questions, difficulty: " + difficulty, result,
+                    null, success, errorMsg);
+        }
     }
 
     /**
@@ -271,13 +311,15 @@ public class GeminiService {
      */
     public String generateResponse(String prompt) {
         validateAndSpendCredits(1, "AI Chat/Generic Response");
-        // Simple chat generation without JSON constraints
+        String actorId = SecurityContextHolder.getContext().getAuthentication().getName();
         Map<String, Object> requestBody = Map.of(
                 "contents", List.of(
                         Map.of("parts", List.of(
                                 Map.of("text", prompt)))));
-        // No responseMimeType: application/json here
 
+        String result = null;
+        boolean success = false;
+        String errorMsg = null;
         try {
             String url = String.format(GEMINI_API_URL, model, getApiKey());
             HttpHeaders headers = new HttpHeaders();
@@ -285,10 +327,18 @@ public class GeminiService {
             HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
 
             ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
-            return extractContentFromResponse(response.getBody());
+            result = extractContentFromResponse(response.getBody());
+            success = true;
+            return result;
         } catch (Exception e) {
             logger.error("Failed to generate generic response", e);
-            return "Tyvärr, jag kunde inte generera ett svar just nu.";
+            errorMsg = e.getMessage();
+            result = "Tyvärr, jag kunde inte generera ett svar just nu.";
+            return result;
+        } finally {
+            aiAuditService.logDecision("CHAT_INTERACTION", model, actorId,
+                    prompt.length() > 500 ? prompt.substring(0, 500) + "..." : prompt,
+                    result, null, success, errorMsg);
         }
     }
 
@@ -296,7 +346,22 @@ public class GeminiService {
      * Generates content ensuring JSON output format.
      */
     public String generateJsonContent(String prompt) {
-        return callGemini(prompt, false);
+        String actorId = SecurityContextHolder.getContext().getAuthentication().getName();
+        String result = null;
+        boolean success = false;
+        String errorMsg = null;
+        try {
+            result = callGemini(prompt, false);
+            success = true;
+            return result;
+        } catch (Exception e) {
+            errorMsg = e.getMessage();
+            throw e;
+        } finally {
+            aiAuditService.logDecision("CONTENT_GENERATION", model, actorId,
+                    prompt.length() > 500 ? prompt.substring(0, 500) + "..." : prompt,
+                    result, null, success, errorMsg);
+        }
     }
 
     /**
@@ -462,8 +527,23 @@ public class GeminiService {
      */
     public String analyzeStudentPerformance(String performanceData) {
         validateAndSpendCredits(2, "AI Performance Analysis");
+        String actorId = SecurityContextHolder.getContext().getAuthentication().getName();
         String prompt = ANALYSIS_SYSTEM_PROMPT + "\n\nSTUDENTDATA:\n---\n" + performanceData + "\n---\n";
-        return callGemini(prompt, false); // Validate JSON manually in calling service if needed, or add validation here
+        String result = null;
+        boolean success = false;
+        String errorMsg = null;
+        try {
+            result = callGemini(prompt, false);
+            success = true;
+            return result;
+        } catch (Exception e) {
+            errorMsg = e.getMessage();
+            throw e;
+        } finally {
+            aiAuditService.logDecision("ADAPTIVE_ANALYSIS", model, actorId,
+                    "Student performance data (" + performanceData.length() + " chars)", result,
+                    null, success, errorMsg);
+        }
     }
 
     /**
