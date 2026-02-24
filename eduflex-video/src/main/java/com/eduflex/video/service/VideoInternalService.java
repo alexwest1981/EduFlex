@@ -66,4 +66,48 @@ public class VideoInternalService {
             log.error("Processing failed", e);
         }
     }
+
+    @Async
+    public void generateAiTutorVideo(String fileId, String scriptJson) {
+        log.info("Generating AI Tutor video for fileId={}", fileId);
+
+        try {
+            // Simplified script parsing (we assume it's valid JSON from Gemini)
+            // In a real scenario, use Jackson to parse 'segments'
+            // For now, let's create a 10-second demo video with the title
+
+            String outputPath = "/tmp/ai_video_" + fileId + ".mp4";
+
+            // Basic FFMPEG to create a video from a color block and add text
+            // We use a dark blue background (#06141b) to match EduFlex theme
+            ProcessBuilder pb = new ProcessBuilder(
+                    "ffmpeg", "-y",
+                    "-f", "lavfi", "-i", "color=c=0x06141b:s=1280x720:d=10",
+                    "-vf",
+                    "drawtext=text='AI Tutor: Lektion " + fileId
+                            + "':fontcolor=white:fontsize=48:x=(w-text_w)/2:y=(h-text_h)/2",
+                    "-c:v", "libx264", "-pix_fmt", "yuv420p",
+                    outputPath);
+
+            pb.redirectErrorStream(true);
+            Process process = pb.start();
+
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    log.debug(line);
+                }
+            }
+
+            int exitCode = process.waitFor();
+            if (exitCode == 0) {
+                log.info("AI Video generated successfully at {}", outputPath);
+            } else {
+                log.error("AI Video generation failed with exit code {}", exitCode);
+            }
+
+        } catch (Exception e) {
+            log.error("AI Video generation failed", e);
+        }
+    }
 }

@@ -28,6 +28,10 @@ public class VideoEventListener {
             if ("PROCESS_VIDEO".equals(action)) {
                 log.info("Processing video fileId={} from path={}", fileId, path);
                 videoService.processVideo(fileId, path);
+            } else if ("GENERATE_AI_VIDEO".equals(action)) {
+                String script = event.get("script");
+                log.info("Generating AI Video for fileId={}", fileId);
+                videoService.generateAiTutorVideo(fileId, script);
             }
         } catch (IOException e) {
             log.error("Error parsing message", e);

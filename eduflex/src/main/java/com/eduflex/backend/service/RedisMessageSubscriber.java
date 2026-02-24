@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 
 @Service
-public class RedisMessageSubscriber implements MessageListener {
+public class RedisMessageSubscriber implements MessageListener, EventBusService.EventListener {
 
     private final SimpMessagingTemplate messagingTemplate;
     private final ObjectMapper objectMapper;
@@ -21,20 +21,18 @@ public class RedisMessageSubscriber implements MessageListener {
     }
 
     @Override
-    public void onMessage(Message message, byte[] pattern) {
+    public void onMessage(String message) {
         try {
-            // 1. Deserialisera meddelandet från Redis (JSON)
-            ChatMessage chatMessage = objectMapper.readValue(message.getBody(), ChatMessage.class);
-
-            // 2. Skicka till den LOKALA WebSocket-brokern
-            // Detta gör att användaren som är ansluten till JUST DENNA server får
-            // meddelandet
+            ChatMessage chatMessage = objectMapper.readValue(message, ChatMessage.class);
             messagingTemplate.convertAndSend("/topic/messages/" + chatMessage.getRecipientId(), chatMessage);
-
-            System.out.println("Forwarded Redis message to local websocket: " + chatMessage.getId());
-
+            System.out.println("EventBus [Chat] Forwarded message: " + chatMessage.getId());
         } catch (IOException e) {
-            System.err.println("Failed to handle Redis message: " + e.getMessage());
+            System.err.println("EventBus [Chat] Error: " + e.getMessage());
         }
+    }
+
+    @Override
+    public void onMessage(Message message, byte[] pattern) {
+        onMessage(new String(message.getBody()));
     }
 }

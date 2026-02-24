@@ -1,12 +1,12 @@
 package com.eduflex.backend.controller;
 
+import com.eduflex.backend.service.EventBusService;
 import com.eduflex.backend.model.CourseMaterial;
 import com.eduflex.backend.repository.CourseMaterialRepository;
 import com.eduflex.backend.service.StorageService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -25,7 +25,7 @@ public class VideoController {
     private final CourseMaterialRepository materialRepository;
     private final StorageService storageService;
 
-    private final StringRedisTemplate redisTemplate;
+    private final EventBusService eventBusService;
     private final ObjectMapper objectMapper;
 
     @Value("${file.upload-dir}")
@@ -36,11 +36,11 @@ public class VideoController {
 
     public VideoController(CourseMaterialRepository materialRepository,
             StorageService storageService,
-            StringRedisTemplate redisTemplate,
+            EventBusService eventBusService,
             ObjectMapper objectMapper) {
         this.materialRepository = materialRepository;
         this.storageService = storageService;
-        this.redisTemplate = redisTemplate;
+        this.eventBusService = eventBusService;
         this.objectMapper = objectMapper;
     }
 
@@ -98,7 +98,7 @@ public class VideoController {
                 event.put("path", fileUrl);
 
                 String message = objectMapper.writeValueAsString(event);
-                redisTemplate.convertAndSend("video.upload", message);
+                eventBusService.publish("video.upload", message);
             } catch (Exception e) {
                 e.printStackTrace(); // Log but don't fail the request
             }

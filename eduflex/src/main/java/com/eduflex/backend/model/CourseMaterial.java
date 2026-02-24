@@ -39,6 +39,9 @@ public class CourseMaterial {
     @Column(columnDefinition = "TEXT")
     private String videoChapters; // JSON array of {time: seconds, title: string}
 
+    @Column(columnDefinition = "TEXT")
+    private String aiVideoScript; // JSON script for AI-generated videos
+
     // NYTT: Datumstyrning
     @com.fasterxml.jackson.annotation.JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     private java.time.LocalDateTime availableFrom;
@@ -218,5 +221,13 @@ public class CourseMaterial {
 
     public void setPrerequisiteMaterial(CourseMaterial prerequisiteMaterial) {
         this.prerequisiteMaterial = prerequisiteMaterial;
+    }
+
+    public String getAiVideoScript() {
+        return aiVideoScript;
+    }
+
+    public void setAiVideoScript(String aiVideoScript) {
+        this.aiVideoScript = aiVideoScript;
     }
 }

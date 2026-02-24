@@ -136,6 +136,57 @@ public class GeminiService {
             5. Svara på SAMMA SPRÅK som källtexten.
             """;
 
+    private static final String VIDEO_SCRIPT_SYSTEM_PROMPT = """
+            Du är en expert på pedagogisk videoproduktion och storytelling.
+            Din uppgift är att skapa ett detaljerat manus för en kort förklaringsvideo (AI-tutor) baserat på materialet.
+
+            FORMAT:
+            Du MÅSTE svara med giltig JSON enligt denna struktur:
+            {
+              "title": "Videons titel",
+              "language": "sv | en",
+              "segments": [
+                {
+                  "narration": "Det här är vad AI-rösten kommer att säga...",
+                  "visualCue": "Bild på en soluppgång / Text dyker upp på skärmen: 'Fotonterapi'...",
+                  "duration": 5
+                }
+              ]
+            }
+
+            REGLER:
+            1. Språket ska vara pedagogiskt och engagerande.
+            2. Varje segment ska ha en tydlig 'visualCue' som beskriver vad som visas på skärmen.
+            3. 'duration' mäts i sekunder och bör korrelera med mängden text i 'narration'.
+            4. Svara på SAMMA SPRÅK som källtexten.
+            """;
+
+    /**
+     * Generates a video script for an AI tutor lesson using Gemini.
+     */
+    public String generateVideoScript(String documentText) {
+        validateAndSpendCredits(5, "AI Video Script Generation");
+        logger.info("Generating video script from material length: {}", documentText.length());
+        String actorId = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        String prompt = VIDEO_SCRIPT_SYSTEM_PROMPT + "\n\nKÄLLTEXT:\n---\n" + documentText + "\n---\n";
+        String result = null;
+        boolean success = false;
+        String errorMsg = null;
+        try {
+            result = callGemini(prompt, false);
+            success = true;
+            return result;
+        } catch (Exception e) {
+            errorMsg = e.getMessage();
+            throw e;
+        } finally {
+            aiAuditService.logDecision("VIDEO_GENERATION", model, actorId,
+                    "Video script from material (" + documentText.length() + " chars)", result,
+                    null, success, errorMsg);
+        }
+    }
+
     /**
      * Generates a full course structure from document text using Gemini.
      */
