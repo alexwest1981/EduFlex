@@ -37,6 +37,16 @@
 
 ## 🚀 Senaste uppdateringarna (24 feb 2026 – v3.0.0)
 
+*   **📋 CSN Rapportering Pro (v3.0.0):**
+    *   **Utökat CSN-DTO:** `CsnAttendanceDto` innehåller nu `lastLogin`, `lastActive`, `activeMinutes`, `courseCode` och `courseResult` (PENDING/PASSED/FAILED) – komplett datablad per elev.
+    *   **Bulk-export:** Ny `POST /api/reports/csn/attendance/bulk` endpoint för att generera rapporter för flera kurser samtidigt.
+    *   **Excel-export:** Ny `GET /api/reports/csn/attendance/{courseId}/excel` endpoint med Apache POI – genererar `.xlsx`-filer med svenska kolumnrubriker.
+    *   **GDPR Registerutdrag (Art. 15):** Ny `GET /api/reports/gdpr/student/{studentId}` endpoint som returnerar all lagrad persondata och loggar åtkomst via `GdprAuditService`.
+    *   **Läraråtkomst:** Lärare har nu tillgång till CSN-rapporter för sina egna kurser via sidebar-länk och rollbaserad behörighet.
+    *   **Frontend – ReportGeneratorModal:** Flervals-kurslista med checkboxar, "Välj alla", exportformat-väljare (Tabell/CSV vs Excel .xlsx), förfyllda datum (senaste 30 dagarna).
+    *   **Frontend – ReportLibrary:** CSN-tabell med 8 kolumner (elev, personnr, kurs, närvaro%, lektioner, senaste inlogg, aktiva min, resultat). GDPR-flik med audit-loggar och registerutdrag-sökning per student-ID. CSV-export med BOM-encoding för korrekt svenska i Excel.
+    *   **GDPR Audit:** Nya `logDataDeletionRequest()` och `logRegisterExtract()` metoder i `GdprAuditService` för fullständig spårbarhet.
+
 *   **🧠 Role-Specific AI Coaches (v3.0.0):**
     *   **Student AI Coach:** Personal motivational tips and study recommendations based on VAK profiles, XP leagues, and identified learning gaps.
     *   **Teacher AI Coach:** Actionable class-level insights, pedagogical tips for upcoming lessons, and automated intervention suggestions for students in the "Risk Zone".

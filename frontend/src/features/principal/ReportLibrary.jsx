@@ -3,7 +3,6 @@ import {
     FileText,
     Search,
     Download,
-    Filter,
     BookOpen,
     Archive,
     FileSpreadsheet,
@@ -13,12 +12,19 @@ import {
     Folder,
     ShieldAlert,
     FileCheck,
-    AlertCircle
+    AlertCircle,
+    User,
+    Loader2
 } from 'lucide-react';
 import { api } from '../../services/api';
 import toast from 'react-hot-toast';
 import ReportGeneratorModal from './ReportGeneratorModal';
 
+/**
+ * Rapportarkiv med CSN-, GDPR- och allmänna rapporter.
+ * CSN-fliken visar närvaro, aktivitetsdata och kursresultat per elev.
+ * GDPR-fliken visar audit-loggar och registerutdrag.
+ */
 const ReportLibrary = () => {
     const [reports, setReports] = useState([
         { id: 1, title: 'Terminsrapport HT25', type: 'ACADEMIC', date: '2025-12-20', size: '2.4 MB', author: 'System' },
@@ -31,6 +37,11 @@ const ReportLibrary = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [gdprLogs, setGdprLogs] = useState([]);
     const [generatedCsnData, setGeneratedCsnData] = useState(null);
+
+    // GDPR Registerutdrag
+    const [registerSearchId, setRegisterSearchId] = useState('');
+    const [registerData, setRegisterData] = useState(null);
+    const [registerLoading, setRegisterLoading] = useState(false);
 
     const filteredReports = reports.filter(r =>
         (activeTab === 'ALL' || r.type === activeTab) &&
@@ -53,12 +64,53 @@ const ReportLibrary = () => {
         }
     };
 
+    const fetchRegisterExtract = async () => {
+        if (!registerSearchId) {
+            toast.error('Ange ett student-ID');
+            return;
+        }
+        setRegisterLoading(true);
+        try {
+            const response = await api.get(`/reports/gdpr/student/${registerSearchId}`);
+            setRegisterData(response);
+            toast.success('Registerutdrag hämtat');
+        } catch (error) {
+            console.error('Register extract failed', error);
+            toast.error('Kunde inte hämta registerutdrag');
+        } finally {
+            setRegisterLoading(false);
+        }
+    };
+
     const downloadCsv = (data, filename) => {
         if (!data || data.length === 0) return;
 
-        const headers = Object.keys(data[0]).join(',');
-        const rows = data.map(obj => Object.values(obj).join(',')).join('\n');
-        const csvContent = `${headers}\n${rows}`;
+        // Anpassade svenska rubriker
+        const headerMap = {
+            studentName: 'Elev',
+            ssn: 'Personnummer',
+            courseName: 'Kursnamn',
+            courseCode: 'Kurskod',
+            totalLessons: 'Totalt Lektioner',
+            attendedLessons: 'Närvarade Lektioner',
+            attendancePercentage: 'Närvaro %',
+            lastLogin: 'Senaste Inloggning',
+            lastActive: 'Senast Aktiv',
+            activeMinutes: 'Aktiva Minuter',
+            courseResult: 'Kursresultat'
+        };
+
+        const keys = Object.keys(headerMap);
+        const headers = keys.map(k => headerMap[k]).join(',');
+        const rows = data.map(obj =>
+            keys.map(k => {
+                const val = obj[k];
+                if (val === null || val === undefined) return '';
+                // Escape kommatecken i strängar
+                return typeof val === 'string' && val.includes(',') ? `"${val}"` : val;
+            }).join(',')
+        ).join('\n');
+        const csvContent = `\uFEFF${headers}\n${rows}`; // BOM för korrekt encoding i Excel
 
         const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
         const url = URL.createObjectURL(blob);
@@ -82,12 +134,18 @@ const ReportLibrary = () => {
         }
     };
 
+    const formatDateTime = (dateStr) => {
+        if (!dateStr) return 'Aldrig';
+        const date = new Date(dateStr);
+        return date.toLocaleDateString('sv-SE') + ' ' + date.toLocaleTimeString('sv-SE', { hour: '2-digit', minute: '2-digit' });
+    };
+
     return (
         <div className="p-8 space-y-8 animate-in fade-in duration-500">
             <header className="flex justify-between items-end">
                 <div>
                     <h1 className="text-3xl font-black text-gray-900 dark:text-white">Rapportarkiv</h1>
-                    <p className="text-sm font-bold text-gray-400 uppercase tracking-widest">Bibliotek • Dokumentation • Insyn</p>
+                    <p className="text-sm font-bold text-gray-400 uppercase tracking-widest">Bibliotek • CSN • GDPR • Insyn</p>
                 </div>
                 <div className="flex gap-4">
                     <div className="relative w-64">
@@ -118,59 +176,112 @@ const ReportLibrary = () => {
             </div>
 
             {activeTab === 'GDPR' ? (
-                <div className="bg-white dark:bg-[#1c1c1e] rounded-[2.5rem] p-8 border border-gray-100 dark:border-gray-800 shadow-sm animate-in slide-in-from-bottom-4 duration-500">
-                    <div className="flex items-center gap-4 mb-8">
-                        <div className="p-4 bg-rose-50 dark:bg-rose-900/20 rounded-2xl text-rose-600">
-                            <ShieldAlert size={32} />
+                <div className="space-y-6">
+                    {/* GDPR Audit Loggar */}
+                    <div className="bg-white dark:bg-[#1c1c1e] rounded-[2.5rem] p-8 border border-gray-100 dark:border-gray-800 shadow-sm animate-in slide-in-from-bottom-4 duration-500">
+                        <div className="flex items-center gap-4 mb-8">
+                            <div className="p-4 bg-rose-50 dark:bg-rose-900/20 rounded-2xl text-rose-600">
+                                <ShieldAlert size={32} />
+                            </div>
+                            <div>
+                                <h2 className="text-xl font-black">GDPR Audit Loggar</h2>
+                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Spårbarhet för känslig personuppgifts-åtkomst</p>
+                            </div>
                         </div>
-                        <div>
-                            <h2 className="text-xl font-black">GDPR Audit Loggar</h2>
-                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Spårbarhet för känslig personuppgifts-åtkomst</p>
+
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-left text-sm font-bold">
+                                <thead>
+                                    <tr className="text-gray-400 uppercase text-[10px] tracking-widest border-b border-gray-100 dark:border-gray-800">
+                                        <th className="pb-4 pl-2">Tidpunkt</th>
+                                        <th className="pb-4">Aktion</th>
+                                        <th className="pb-4">Användare</th>
+                                        <th className="pb-4">Entitet</th>
+                                        <th className="pb-4">Detaljer</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-gray-50 dark:divide-gray-800">
+                                    {gdprLogs.map(log => (
+                                        <tr key={log.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                                            <td className="py-4 pl-2 text-gray-500">{new Date(log.timestamp).toLocaleString()}</td>
+                                            <td className="py-4">
+                                                <span className="bg-rose-50 dark:bg-rose-900/20 text-rose-600 px-3 py-1 rounded-lg text-[10px] uppercase">
+                                                    {log.action}
+                                                </span>
+                                            </td>
+                                            <td className="py-4">{log.modifiedBy}</td>
+                                            <td className="py-4">{log.entityName} #{log.entityId}</td>
+                                            <td className="py-4 text-[10px] text-gray-400 font-mono truncate max-w-[200px]">{log.changeData}</td>
+                                        </tr>
+                                    ))}
+                                    {gdprLogs.length === 0 && (
+                                        <tr>
+                                            <td colSpan="5" className="py-12 text-center text-gray-400 font-bold">Inga GDPR-loggar hittades</td>
+                                        </tr>
+                                    )}
+                                </tbody>
+                            </table>
                         </div>
                     </div>
 
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-left text-sm font-bold">
-                            <thead>
-                                <tr className="text-gray-400 uppercase text-[10px] tracking-widest border-b border-gray-100 dark:border-gray-800">
-                                    <th className="pb-4 pl-2">Tidpunkt</th>
-                                    <th className="pb-4">Aktion</th>
-                                    <th className="pb-4">Användare</th>
-                                    <th className="pb-4">Entitet</th>
-                                    <th className="pb-4">Detaljer</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-gray-50 dark:divide-gray-800">
-                                {gdprLogs.map(log => (
-                                    <tr key={log.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
-                                        <td className="py-4 pl-2 text-gray-500">{new Date(log.timestamp).toLocaleString()}</td>
-                                        <td className="py-4">
-                                            <span className="bg-rose-50 dark:bg-rose-900/20 text-rose-600 px-3 py-1 rounded-lg text-[10px] uppercase">
-                                                {log.action}
+                    {/* GDPR Registerutdrag (Art. 15) */}
+                    <div className="bg-white dark:bg-[#1c1c1e] rounded-[2.5rem] p-8 border border-gray-100 dark:border-gray-800 shadow-sm animate-in slide-in-from-bottom-4 duration-500">
+                        <div className="flex items-center gap-4 mb-6">
+                            <div className="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-2xl text-amber-600">
+                                <User size={32} />
+                            </div>
+                            <div>
+                                <h2 className="text-xl font-black">Registerutdrag (Art. 15)</h2>
+                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">All sparad persondata per elev – GDPR</p>
+                            </div>
+                        </div>
+
+                        <div className="flex gap-3 mb-6">
+                            <input
+                                type="number"
+                                placeholder="Ange Student-ID"
+                                value={registerSearchId}
+                                onChange={(e) => setRegisterSearchId(e.target.value)}
+                                className="flex-1 bg-gray-50 dark:bg-gray-900 border-none rounded-2xl px-6 py-3.5 text-sm font-bold shadow-inner focus:ring-2 ring-amber-500 transition-all"
+                            />
+                            <button
+                                onClick={fetchRegisterExtract}
+                                disabled={registerLoading}
+                                className="px-8 py-3 bg-amber-600 hover:bg-amber-700 disabled:opacity-50 text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-lg transition-all flex items-center gap-2"
+                            >
+                                {registerLoading ? <Loader2 className="animate-spin" size={16} /> : <Search size={16} />}
+                                Hämta
+                            </button>
+                        </div>
+
+                        {registerData && (
+                            <div className="bg-gray-50 dark:bg-gray-900 rounded-2xl p-6 space-y-3">
+                                <h3 className="text-sm font-black text-gray-900 dark:text-white mb-4">
+                                    Registerutdrag för: {registerData.firstName} {registerData.lastName}
+                                </h3>
+                                <div className="grid grid-cols-2 gap-4 text-sm">
+                                    {Object.entries(registerData).map(([key, value]) => (
+                                        <div key={key} className="flex flex-col">
+                                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{key}</span>
+                                            <span className="font-bold text-gray-900 dark:text-white truncate">
+                                                {value !== null && value !== undefined ? String(value) : '—'}
                                             </span>
-                                        </td>
-                                        <td className="py-4">{log.modifiedBy}</td>
-                                        <td className="py-4">{log.entityName} #{log.entityId}</td>
-                                        <td className="py-4 text-[10px] text-gray-400 font-mono truncate max-w-[200px]">{log.changeData}</td>
-                                    </tr>
-                                ))}
-                                {gdprLogs.length === 0 && (
-                                    <tr>
-                                        <td colSpan="5" className="py-12 text-center text-gray-400 font-bold">Inga GDPR-loggar hittades</td>
-                                    </tr>
-                                )}
-                            </tbody>
-                        </table>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
             ) : activeTab === 'CSN' ? (
                 <div className="space-y-6 animate-in slide-in-from-bottom-4 duration-500">
+                    {/* CSN Hero-sektion */}
                     <div className="bg-gradient-to-br from-indigo-600 to-violet-700 rounded-[2.5rem] p-10 text-white shadow-xl shadow-indigo-100 dark:shadow-none flex flex-col md:flex-row justify-between items-center gap-8">
                         <div className="space-y-4">
                             <h2 className="text-3xl font-black">CSN Rapportering</h2>
                             <p className="text-indigo-100 font-bold text-sm max-w-lg opacity-80">
-                                Generera officiella närvaro-sammanställningar för svenska myndighetskrav.
-                                Välj kurs och tidsperiod för att sammanställa elevers närvarograd.
+                                Generera fullständiga närvarorapporter för CSN med aktivitetsdata, kursresultat och exportfunktion.
+                                Välj en eller flera kurser och tidsperiod.
                             </p>
                             <button
                                 onClick={() => setIsModalOpen(true)}
@@ -184,17 +295,20 @@ const ReportLibrary = () => {
                         </div>
                     </div>
 
+                    {/* CSN-resultat med nya kolumner */}
                     {generatedCsnData && (
                         <div className="bg-white dark:bg-[#1c1c1e] rounded-[2.5rem] p-8 border border-gray-100 dark:border-gray-800 shadow-sm">
                             <div className="flex justify-between items-center mb-6">
                                 <h3 className="text-lg font-black">Senaste Resultat ({generatedCsnData.length} elever)</h3>
-                                <button
-                                    onClick={() => downloadCsv(generatedCsnData, `CSN_Report_${new Date().toISOString().split('T')[0]}.csv`)}
-                                    className="flex items-center gap-2 px-6 py-2 bg-emerald-50 text-emerald-600 rounded-xl font-bold text-xs hover:bg-emerald-600 hover:text-white transition-all"
-                                >
-                                    <Download size={16} />
-                                    Hämta CSV-fil
-                                </button>
+                                <div className="flex gap-3">
+                                    <button
+                                        onClick={() => downloadCsv(generatedCsnData, `CSN_Report_${new Date().toISOString().split('T')[0]}.csv`)}
+                                        className="flex items-center gap-2 px-6 py-2 bg-emerald-50 text-emerald-600 rounded-xl font-bold text-xs hover:bg-emerald-600 hover:text-white transition-all"
+                                    >
+                                        <Download size={16} />
+                                        Hämta CSV
+                                    </button>
+                                </div>
                             </div>
                             <div className="overflow-x-auto">
                                 <table className="w-full text-left text-sm font-bold">
@@ -202,8 +316,12 @@ const ReportLibrary = () => {
                                         <tr className="text-gray-400 uppercase text-[10px] tracking-widest border-b border-gray-100 dark:border-gray-800">
                                             <th className="pb-4 pl-2">Elev</th>
                                             <th className="pb-4">Personnr (SSN)</th>
+                                            <th className="pb-4">Kurs</th>
                                             <th className="pb-4 text-center">Närvaro %</th>
-                                            <th className="pb-4 text-center">Lektioner (Närv/Tot)</th>
+                                            <th className="pb-4 text-center">Lektioner</th>
+                                            <th className="pb-4 text-center">Senaste Inlogg</th>
+                                            <th className="pb-4 text-center">Aktiva min</th>
+                                            <th className="pb-4 text-center">Resultat</th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-gray-50 dark:divide-gray-800">
@@ -211,12 +329,29 @@ const ReportLibrary = () => {
                                             <tr key={idx} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
                                                 <td className="py-4 pl-2">{row.studentName}</td>
                                                 <td className="py-4 font-mono text-gray-500">{row.ssn || 'Saknas'}</td>
+                                                <td className="py-4 text-gray-500">
+                                                    <div>{row.courseName}</div>
+                                                    {row.courseCode && <div className="text-[10px] text-gray-400">{row.courseCode}</div>}
+                                                </td>
                                                 <td className="py-4 text-center">
-                                                    <span className={`px-3 py-1 rounded-lg text-[10px] ${row.attendancePercentage < 80 ? 'bg-amber-50 text-amber-600' : 'bg-green-50 text-green-600'}`}>
+                                                    <span className={`px-3 py-1 rounded-lg text-[10px] ${row.attendancePercentage < 50 ? 'bg-red-50 text-red-600' :
+                                                        row.attendancePercentage < 80 ? 'bg-amber-50 text-amber-600' : 'bg-green-50 text-green-600'}`}>
                                                         {row.attendancePercentage.toFixed(1)}%
                                                     </span>
                                                 </td>
                                                 <td className="py-4 text-center text-gray-400">{row.attendedLessons} / {row.totalLessons}</td>
+                                                <td className="py-4 text-center text-gray-400 text-xs">{formatDateTime(row.lastLogin)}</td>
+                                                <td className="py-4 text-center">
+                                                    <span className="text-xs font-bold">{row.activeMinutes || 0} min</span>
+                                                </td>
+                                                <td className="py-4 text-center">
+                                                    <span className={`px-3 py-1 rounded-lg text-[10px] font-black uppercase ${row.courseResult === 'PASSED' ? 'bg-green-50 text-green-600' :
+                                                        row.courseResult === 'FAILED' ? 'bg-red-50 text-red-600' :
+                                                            'bg-gray-100 text-gray-500'}`}>
+                                                        {row.courseResult === 'PASSED' ? 'Godkänd' :
+                                                            row.courseResult === 'FAILED' ? 'Underkänd' : 'Ej bedömd'}
+                                                    </span>
+                                                </td>
                                             </tr>
                                         ))}
                                     </tbody>
@@ -258,7 +393,7 @@ const ReportLibrary = () => {
                         </div>
                     ))}
 
-                    {/* Template for generating new reports */}
+                    {/* Knapp för att generera ny rapport */}
                     <div
                         onClick={() => setIsModalOpen(true)}
                         className="bg-indigo-50 dark:bg-indigo-900/10 p-6 rounded-[2rem] border-2 border-dashed border-indigo-200 dark:border-indigo-800 flex flex-col items-center justify-center text-center gap-4 group cursor-pointer hover:bg-indigo-100 transition-colors"
@@ -284,7 +419,7 @@ const ReportLibrary = () => {
                 }}
             />
 
-            {/* Collections / Folders */}
+            {/* Samlingar */}
             <div className="space-y-4 pt-8">
                 <h2 className="text-lg font-black flex items-center gap-2">
                     <Folder className="text-amber-500" size={20} />

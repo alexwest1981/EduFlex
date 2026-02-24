@@ -96,6 +96,11 @@ const Sidebar = ({ currentUser, logout, siteName, version }) => {
             items.push({ path: '/principal/reports', label: 'Rapportarkiv (CSN)', icon: <FolderOpen size={20} /> });
             items.push({ path: '/principal/tools', label: 'Verktyg & Admin', icon: <Settings2 size={20} /> });
         }
+
+        // Lärare får tillgång till CSN-rapporter för sina egna kurser
+        if (teacherRoles.includes(roleName) && !principalRoles.includes(roleName)) {
+            items.push({ path: '/principal/reports', label: 'CSN-Rapporter', icon: <FolderOpen size={20} /> });
+        }
         if (roleName === 'GUARDIAN' || roleName === 'ROLE_GUARDIAN') {
             items.push({ path: '/', label: 'Barnens Dashboard', icon: <Users size={20} /> });
         }

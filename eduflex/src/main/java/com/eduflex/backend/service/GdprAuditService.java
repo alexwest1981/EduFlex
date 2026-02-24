@@ -54,6 +54,36 @@ public class GdprAuditService {
         log.info("GDPR Audit: Bulk PII Export logged: {} by {}", reportName, actor);
     }
 
+    public void logDataDeletionRequest(Long userId, String reason) {
+        String actor = getCurrentUsername();
+
+        AuditLog auditLog = new AuditLog();
+        auditLog.setAction("GDPR_DELETION_REQUEST");
+        auditLog.setEntityName("User");
+        auditLog.setEntityId(String.valueOf(userId));
+        auditLog.setModifiedBy(actor);
+        auditLog.setTimestamp(LocalDateTime.now());
+        auditLog.setChangeData(String.format("{\"reason\": \"%s\", \"requestedBy\": \"%s\"}", reason, actor));
+
+        auditLogRepository.save(auditLog);
+        log.info("GDPR Audit: Data deletion request logged for user #{} by {}", userId, actor);
+    }
+
+    public void logRegisterExtract(Long userId) {
+        String actor = getCurrentUsername();
+
+        AuditLog auditLog = new AuditLog();
+        auditLog.setAction("GDPR_REGISTER_EXTRACT");
+        auditLog.setEntityName("User");
+        auditLog.setEntityId(String.valueOf(userId));
+        auditLog.setModifiedBy(actor);
+        auditLog.setTimestamp(LocalDateTime.now());
+        auditLog.setChangeData(String.format("{\"type\": \"Art. 15 registerutdrag\", \"requestedBy\": \"%s\"}", actor));
+
+        auditLogRepository.save(auditLog);
+        log.info("GDPR Audit: Register extract (Art. 15) logged for user #{} by {}", userId, actor);
+    }
+
     private String getCurrentUsername() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         return (auth != null && auth.isAuthenticated()) ? auth.getName() : "SYSTEM";
