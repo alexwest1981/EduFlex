@@ -237,7 +237,7 @@ const UserProfile = ({ currentUser, showMessage, refreshUser, logout }) => {
     const [isLoading, setIsLoading] = useState(false);
 
     const [formData, setFormData] = useState({
-        firstName: '', lastName: '', email: '', phone: '',
+        firstName: '', lastName: '', email: '', phone: '', ssn: '',
         street: '', zip: '', city: '', country: '', language: 'sv',
         dashboardSettings: { showCalendar: true, showMessages: true, showStats: true },
         linkedinUrl: '', instagramUrl: '', facebookUrl: '', twitterUrl: ''
@@ -406,7 +406,7 @@ const UserProfile = ({ currentUser, showMessage, refreshUser, logout }) => {
 
         setFormData({
             firstName: user.firstName || '', lastName: user.lastName || '',
-            email: user.email || '', phone: user.phone || '',
+            email: user.email || '', phone: user.phone || '', ssn: user.ssn || '',
             street, zip, city, country, language: userLang,
             dashboardSettings: dbSettings,
             linkedinUrl: user.linkedinUrl || '',
@@ -452,6 +452,7 @@ const UserProfile = ({ currentUser, showMessage, refreshUser, logout }) => {
         const payload = {
             firstName: formData.firstName, lastName: formData.lastName,
             email: formData.email, phone: formData.phone,
+            ssn: formData.ssn || null,
             address: fullAddress, language: formData.language,
             settings: JSON.stringify(formData.dashboardSettings),
             linkedinUrl: formData.linkedinUrl,
@@ -601,6 +602,20 @@ const UserProfile = ({ currentUser, showMessage, refreshUser, logout }) => {
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('profile.firstname')}</label><input className="w-full p-2.5 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-black focus:ring-2 focus:ring-indigo-500" value={formData.firstName} onChange={e => setFormData({ ...formData, firstName: e.target.value })} /></div>
                                         <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('profile.lastname')}</label><input className="w-full p-2.5 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-black focus:ring-2 focus:ring-indigo-500" value={formData.lastName} onChange={e => setFormData({ ...formData, lastName: e.target.value })} /></div>
+                                    </div>
+                                    <div className="p-4 rounded-xl bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800/40">
+                                        <label className="flex items-center gap-2 text-sm font-semibold text-amber-800 dark:text-amber-400 mb-2">
+                                            <Lock size={14} /> Personnummer (SSN)
+                                            <span className="text-xs font-normal text-amber-600 dark:text-amber-500">– Krypterat · Krävs för CSN-rapportering</span>
+                                        </label>
+                                        <input
+                                            className="w-full p-2.5 rounded-lg border border-amber-300 dark:border-amber-700 bg-white dark:bg-black focus:ring-2 focus:ring-amber-400 font-mono tracking-widest"
+                                            placeholder="YYYYMMDDNNNN (12 siffror)"
+                                            maxLength={12}
+                                            value={formData.ssn}
+                                            onChange={e => setFormData({ ...formData, ssn: e.target.value.replace(/\D/g, '') })}
+                                        />
+                                        <p className="text-xs text-amber-600 dark:text-amber-500 mt-1.5">Lagras krypterat. Delas aldrig publikt och används endast för officiell CSN-närvarodata.</p>
                                     </div>
                                     <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('profile.language')}</label>
                                         <select

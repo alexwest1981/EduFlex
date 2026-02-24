@@ -171,6 +171,10 @@ public class UserController {
                 user.setSettings((String) updates.get("settings"));
             }
 
+            // SSN (Personnummer) – krypteras via EncryptedStringConverter
+            if (updates.containsKey("ssn"))
+                user.setSsn((String) updates.get("ssn"));
+
             // NYTT: Social Media
             if (updates.containsKey("linkedinUrl"))
                 user.setLinkedinUrl((String) updates.get("linkedinUrl"));
