@@ -13,23 +13,33 @@ const NotificationBell = ({ className = "" }) => {
     const dropdownRef = useRef(null);
     const navigate = useNavigate();
 
-    // Poll for unread count every 30 seconds
+    // Poll for unread count – with silent failure and exponential backoff
     useEffect(() => {
         if (!currentUser?.id) return;
 
-        const fetchUnreadCount = async () => {
+        let consecutiveFailures = 0;
+        let timeoutId = null;
+
+        const scheduleNext = (delayMs) => {
+            timeoutId = setTimeout(poll, delayMs);
+        };
+
+        const poll = async () => {
             try {
                 const response = await api.notifications.getUnreadCount(currentUser.id);
                 setUnreadCount(response.count || 0);
-            } catch (error) {
-                console.error('Failed to fetch unread count:', error);
+                consecutiveFailures = 0;
+                scheduleNext(30000); // Back to normal 30s interval on success
+            } catch {
+                consecutiveFailures++;
+                // Back off: 30s → 60s → 120s → 300s (5 min max)
+                const backoff = Math.min(30000 * Math.pow(2, consecutiveFailures - 1), 300000);
+                scheduleNext(backoff);
             }
         };
 
-        fetchUnreadCount();
-        const interval = setInterval(fetchUnreadCount, 30000); // Poll every 30s
-
-        return () => clearInterval(interval);
+        poll();
+        return () => clearTimeout(timeoutId);
     }, [currentUser?.id]);
 
     // Fetch notifications when dropdown opens
