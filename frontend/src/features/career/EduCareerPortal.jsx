@@ -19,6 +19,11 @@ import { useAppContext } from '../../context/AppContext';
 
 const EduCareerPortal = () => {
     const { currentUser } = useAppContext();
+    const [searchQuery, setSearchQuery] = useState('');
+    const [jobs, setJobs] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [location, setLocation] = useState('Hela Sverige');
+    const [savedJobs, setSavedJobs] = useState([]);
     const [radius, setRadius] = useState(50);
     const [selectedCity, setSelectedCity] = useState('');
 
@@ -222,8 +227,8 @@ const EduCareerPortal = () => {
                                         key={city}
                                         onClick={() => handleCityClick(city === 'Hela Sverige' ? '' : city)}
                                         className={`w-full flex justify-between items-center text-sm py-2 px-3 rounded-xl transition-all ${(selectedCity === city || (city === 'Hela Sverige' && !selectedCity))
-                                                ? 'bg-indigo-50 dark:bg-indigo-950 text-indigo-600 font-bold'
-                                                : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'
+                                            ? 'bg-indigo-50 dark:bg-indigo-950 text-indigo-600 font-bold'
+                                            : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'
                                             }`}
                                     >
                                         <div className="flex items-center gap-2">
