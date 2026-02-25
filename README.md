@@ -40,6 +40,7 @@
     - **Primär ISP-vy**: SYV-användare landar nu direkt i den individuella studieplanen (ISP) genom en renodlad översikt.
     - **Sidebar Cleanup**: Optimerat sidomenyn för SYV genom att ta bort redundanta länkar (Studieplaner/Meddelanden) och dölja irrelevanta moduler (Butik).
     - **Bengt Fix**: Åtgärdat inloggningsproblem för SYV-kontot genom databassynkronisering.
+    - **Filtrerad Elevlista**: Vid skapande av ISP visas nu enbart aktiva elever (enrolled/active students). Bakgrundsfiltrering på `isActive=true` och `role=STUDENT` för att förhindra att obehöriga eller inaktiva konton väljs.
 
 *   **🎓 ISP Komvux Compliance (v3.2.5):**
     - **Examensmål & Poängkrav**: Stöd för att definiera examensmål och totala poängkrav på studieplansnivå.

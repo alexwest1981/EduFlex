@@ -19,6 +19,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     java.util.List<User> findByRole_Name(String roleName);
 
+    java.util.List<User> findByRole_NameAndIsActive(String roleName, Boolean isActive);
+
     long countByRole(com.eduflex.backend.model.Role role);
 
     long countByRole_Name(String roleName);

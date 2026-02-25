@@ -13,6 +13,7 @@ SYV-användare landar nu direkt i **Studieplaner (ISP)** genom den primära "Öv
   - Tog bort redundant "Studieplaner (ISP)" länk då "Översikt" nu fyller denna funktion.
   - Fixade dubbla "Meddelanden"-länkar.
   - Dolde "Butik" och "E-hälsa" då dessa inte är relevanta för SYV-rollen.
+- **Filtrerad Elevlista**: Vid skapande av ny ISP filtreras nu studentlistan strikt så att enbart aktiva elever (`isActive = true`) med rollen `STUDENT` visas. Detta förhindrar att administratörer eller inaktiva konton dyker upp i listan.
 - **Live Data**: ISP-vyn hämtar nu studentlista och planer direkt från backend utan mock-data.
 
 ## 3. Komvux Compliance i ISP

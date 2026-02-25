@@ -56,6 +56,10 @@ public class UserService {
         return userRepository.findAll();
     }
 
+    public List<User> getActiveUsersByRole(String roleName) {
+        return userRepository.findByRole_NameAndIsActive(roleName, true);
+    }
+
     public List<User> searchUsers(String query) {
         String q = query.toLowerCase();
         return userRepository.findAll().stream()

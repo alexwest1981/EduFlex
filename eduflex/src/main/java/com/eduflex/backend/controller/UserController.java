@@ -85,8 +85,20 @@ public class UserController {
     }
 
     @GetMapping
-    public Page<User> getAllUsers(@PageableDefault(size = 20) Pageable pageable) {
-        return userService.getAllUsers(pageable);
+    public ResponseEntity<?> getAllUsers(
+            @PageableDefault(size = 20) Pageable pageable,
+            @RequestParam(value = "role", required = false) String role,
+            @RequestParam(value = "onlyActive", defaultValue = "true") boolean onlyActive) {
+
+        if (role != null && !role.isEmpty()) {
+            if (onlyActive) {
+                return ResponseEntity.ok(userService.getActiveUsersByRole(role));
+            } else {
+                return ResponseEntity.ok(userRepository.findByRole_Name(role));
+            }
+        }
+
+        return ResponseEntity.ok(userService.getAllUsers(pageable));
     }
 
     @GetMapping("/search")
