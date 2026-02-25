@@ -21,19 +21,27 @@ public class JobTechApiClientService {
         this.restTemplate = new RestTemplate();
     }
 
-    public Map<String, Object> searchJobs(String query, String city, int limit) {
+    public Map<String, Object> searchJobs(String query, String city, Double lat, Double lon, Integer radius,
+            int limit) {
         try {
             UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(SEARCH_URL)
-                    .queryParam("q", query)
                     .queryParam("limit", limit);
+
+            if (query != null && !query.isEmpty()) {
+                builder.queryParam("q", query);
+            } else {
+                builder.queryParam("q", "LIA APL praktik");
+            }
 
             if (city != null && !city.isEmpty()) {
                 builder.queryParam("location", city);
             }
 
-            // Standard filter for LIA/Praktik if query is empty
-            if (query == null || query.isEmpty()) {
-                builder.queryParam("q", "LIA APL praktik");
+            if (lat != null && lon != null) {
+                builder.queryParam("position", lat + "," + lon);
+                if (radius != null) {
+                    builder.queryParam("position.radius", radius);
+                }
             }
 
             String url = builder.encode().toUriString();

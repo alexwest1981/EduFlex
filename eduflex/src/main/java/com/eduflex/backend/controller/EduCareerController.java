@@ -19,9 +19,13 @@ public class EduCareerController {
     private final UserRepository userRepo;
 
     @GetMapping("/search")
-    public ResponseEntity<Map<String, Object>> searchInternships(Principal principal) {
+    public ResponseEntity<Map<String, Object>> searchInternships(
+            Principal principal,
+            @RequestParam(required = false) String q,
+            @RequestParam(required = false) String city,
+            @RequestParam(required = false) Integer radius) {
         User user = getUserFromPrincipal(principal);
-        return ResponseEntity.ok(careerService.getRecommendedInternships(user.getId()));
+        return ResponseEntity.ok(careerService.getRecommendedInternships(user.getId(), q, city, radius));
     }
 
     @PostMapping("/save")

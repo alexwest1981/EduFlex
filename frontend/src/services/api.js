@@ -794,7 +794,13 @@ export const api = {
         getUserAnalysis: (userId) => api.get(`/personalization/analyze/${userId}`)
     },
     career: {
-        search: (query) => api.get(`/career/search${query ? `?q=${encodeURIComponent(query)}` : ''}`),
+        search: (q, city, radius) => {
+            const params = new URLSearchParams();
+            if (q) params.append('q', q);
+            if (city) params.append('city', city);
+            if (radius) params.append('radius', radius);
+            return api.get(`/career/search?${params.toString()}`);
+        },
         save: (job) => api.post('/career/save', job),
         getSaved: () => api.get('/career/saved'),
         getAnalysis: () => api.get('/career/analysis'),

@@ -19,21 +19,18 @@ import { useAppContext } from '../../context/AppContext';
 
 const EduCareerPortal = () => {
     const { currentUser } = useAppContext();
-    const [searchQuery, setSearchQuery] = useState('');
-    const [jobs, setJobs] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [location, setLocation] = useState('Hela Sverige');
-    const [savedJobs, setSavedJobs] = useState([]);
+    const [radius, setRadius] = useState(50);
+    const [selectedCity, setSelectedCity] = useState('');
 
     useEffect(() => {
-        fetchRecommendations();
+        fetchRecommendations(searchQuery, selectedCity, radius);
         fetchSavedJobs();
-    }, []);
+    }, [selectedCity, radius]);
 
-    const fetchRecommendations = async (query = '') => {
+    const fetchRecommendations = async (query = '', city = '', rad = 50) => {
         setLoading(true);
         try {
-            const response = await api.career.search(query);
+            const response = await api.career.search(query || searchQuery, city, rad);
             setJobs(response.hits || []);
             setLocation(response.location || 'Hela Sverige');
         } catch (error) {
@@ -44,7 +41,12 @@ const EduCareerPortal = () => {
     };
 
     const handleSearch = () => {
-        fetchRecommendations(searchQuery);
+        fetchRecommendations(searchQuery, selectedCity, radius);
+    };
+
+    const handleCityClick = (city) => {
+        setSelectedCity(city);
+        setSearchQuery(''); // Clear search when picking a city shortcut
     };
 
     const fetchSavedJobs = async () => {
@@ -118,24 +120,42 @@ const EduCareerPortal = () => {
 
             <main className="max-w-7xl mx-auto">
                 {/* SEARCH BAR */}
-                <div className="relative mb-12">
-                    <div className="absolute inset-y-0 left-6 flex items-center pointer-events-none">
-                        <Search className="text-indigo-500" size={24} />
+                <div className="flex flex-col md:flex-row gap-4 mb-12">
+                    <div className="relative flex-grow">
+                        <div className="absolute inset-y-0 left-6 flex items-center pointer-events-none">
+                            <Search className="text-indigo-500" size={24} />
+                        </div>
+                        <input
+                            type="text"
+                            placeholder="Sök på yrke, teknik eller företag..."
+                            className="w-full h-16 pl-16 pr-6 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl shadow-xl focus:ring-2 focus:ring-indigo-500 transition-all outline-none text-lg text-gray-900 dark:text-white"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                        />
+                        <div className="absolute inset-y-0 right-4 flex items-center">
+                            <button
+                                onClick={handleSearch}
+                                className="px-6 py-2 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition-colors shadow-lg"
+                            >
+                                Sök live
+                            </button>
+                        </div>
                     </div>
-                    <input
-                        type="text"
-                        placeholder="Sök på yrke, teknik eller företag..."
-                        className="w-full h-16 pl-16 pr-6 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl shadow-xl focus:ring-2 focus:ring-indigo-500 transition-all outline-none text-lg text-gray-900 dark:text-white"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                    />
-                    <div className="absolute inset-y-0 right-4 flex items-center">
-                        <button
-                            onClick={handleSearch}
-                            className="px-6 py-2 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition-colors shadow-lg"
-                        >
-                            Sök live
-                        </button>
+
+                    <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-4 flex flex-col justify-center min-w-[200px] shadow-lg">
+                        <div className="flex justify-between items-center mb-1">
+                            <span className="text-[10px] font-bold uppercase text-gray-400">Sökradie</span>
+                            <span className="text-xs font-bold text-indigo-600">{radius} km</span>
+                        </div>
+                        <input
+                            type="range"
+                            min="5"
+                            max="200"
+                            step="5"
+                            value={radius}
+                            onChange={(e) => setRadius(parseInt(e.target.value))}
+                            className="w-full accent-indigo-600"
+                        />
                     </div>
                 </div>
 
@@ -197,10 +217,20 @@ const EduCareerPortal = () => {
                                 Populära städer
                             </h3>
                             <div className="space-y-3">
-                                {['Stockholm', 'Göteborg', 'Malmö', 'Borås'].map(city => (
-                                    <button key={city} className="w-full flex justify-between items-center text-sm text-gray-600 dark:text-gray-400 hover:text-indigo-600 py-1">
-                                        <span>{city}</span>
-                                        <span className="text-[10px] bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded-full font-bold">150+</span>
+                                {['Hela Sverige', 'Stockholm', 'Göteborg', 'Malmö', 'Borås'].map(city => (
+                                    <button
+                                        key={city}
+                                        onClick={() => handleCityClick(city === 'Hela Sverige' ? '' : city)}
+                                        className={`w-full flex justify-between items-center text-sm py-2 px-3 rounded-xl transition-all ${(selectedCity === city || (city === 'Hela Sverige' && !selectedCity))
+                                                ? 'bg-indigo-50 dark:bg-indigo-950 text-indigo-600 font-bold'
+                                                : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'
+                                            }`}
+                                    >
+                                        <div className="flex items-center gap-2">
+                                            <MapPin size={14} className={selectedCity === city ? 'text-indigo-600' : 'text-gray-400'} />
+                                            <span>{city}</span>
+                                        </div>
+                                        <span className="text-[10px] bg-white dark:bg-gray-900 px-2 py-0.5 rounded-full border border-gray-100 dark:border-gray-800 shadow-sm">150+</span>
                                     </button>
                                 ))}
                             </div>

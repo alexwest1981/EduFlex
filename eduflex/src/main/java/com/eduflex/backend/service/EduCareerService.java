@@ -22,18 +22,36 @@ public class EduCareerService {
     private final UserRepository userRepo;
     private final com.eduflex.backend.service.ai.GeminiService geminiService;
 
-    public Map<String, Object> getRecommendedInternships(Long userId) {
+    public Map<String, Object> getRecommendedInternships(Long userId, String q, String city, Integer radius) {
         User user = userRepo.findById(userId).orElseThrow();
-        String city = extractCityFromAddress(user.getAddress());
 
-        // We'll search for LIA, APL, and Praktik
-        Map<String, Object> rawResults = jobTechClient.searchJobs("LIA APL praktik", city, 20);
+        // If city is null but radius is provided, try to use user's city
+        if (city == null && q == null) {
+            city = extractCityFromAddress(user.getAddress());
+        }
+
+        // Placeholder for coords - in a real app we'd use a geocoding service
+        Double lat = null;
+        Double lon = null;
+
+        // Simple mock geocoding for popular cities to demonstrate radius
+        if ("Stockholm".equalsIgnoreCase(city)) {
+            lat = 59.3293;
+            lon = 18.0686;
+        } else if ("Göteborg".equalsIgnoreCase(city)) {
+            lat = 57.7089;
+            lon = 11.9746;
+        } else if ("Malmö".equalsIgnoreCase(city)) {
+            lat = 55.6050;
+            lon = 13.0038;
+        }
+
+        Map<String, Object> rawResults = jobTechClient.searchJobs(q, city, lat, lon, radius, 20);
 
         List<Map<String, Object>> hits = (List<Map<String, Object>>) rawResults.get("hits");
         if (hits == null)
             hits = Collections.emptyList();
 
-        // Add Match Score and filter out "Arbetspraktik" if necessary
         List<Map<String, Object>> processed = hits.stream()
                 .filter(hit -> !isArbetspraktik(hit))
                 .map(hit -> {
