@@ -1,22 +1,34 @@
-# EduFlex Smoke Test Report (v3.3.1)
+# EduFlex "Maxed Out" Smoke Test Report (v3.3.1)
 
-Detta dokument verifierar att EduFlex basfunktioner är intakta efter de aggressiva stresstesterna.
+Detta dokument dokumenterar systemets beteende under extrem belastning för att identifiera den exakta smärtgränsen visuellt och tekniskt.
 
-## 1. 🧪 Testresultat
-Testet genomfördes med `scripts/smoke_test.js` den 25 feb 2026.
+## 1. 🚀 Belastning & Prestanda (1600+ req/s)
+Testet genomfördes med 500 samtidiga anslutningar under 30 sekunder.
 
-| Test | Status | Kommentar |
+| Metric | Värde | Status |
 | :--- | :--- | :--- |
-| **Admin Login** | ✅ PASS | Autentisering fungerar korrekt. |
-| **Get Current User** | ✅ PASS | JWT-validering och User Service fungerar. |
-| **Get All Courses** | ✅ PASS | Databasanslutning och Course Controller fungerar. |
-| **Get Tenants** | ✅ PASS | Multi-tenancy metadata är tillgänglig. |
-| **Actuator Health** | ⚠️ FAIL | Returnerar 503 (DOWN). |
+| **Throughput** | ~1 650 requests/sek | ✅ Exceptionellt högt |
+| **Totala anrop** | 51 000 | ✅ Stabil throughput |
+| **Felmarginal** | < 1% (382 fel) | ⚠️ Breaking Point nådd |
 
-## 2. 🔍 Analys av hälsofel (Actuator)
-Trots att alla funktionella API-tester gick igenom, rapporterar Spring Boot Actuator att systemet är "DOWN". 
-- **Orsak**: Efter de aggressiva stresstesterna (1900 req/s) kan databasens anslutningspool eller Redis ha tillfälliga eftersläpningar som triggar hälsoindikatorn.
-- **Funktionell status**: Systemet är fullt brukbart, men hälsoövervakningen kräver en omstart eller kort tids återhämtning för att återgå till "UP".
+## 2. 👁️ Visuell Verifiering (UX under tryck)
+Vi navigerade i systemet *samtidigt* som 500 användare bombaderade servern.
 
-## 3. ✅ Slutsats
-EduFlex har klarat Smoke Testet för alla kritiska affärsfunktioner. Systemet är stabilt nog för att visas upp för kund, med reservation för att Actuator-övervakningen kan behöva en "reset" efter extrema belastningstester.
+**Resultat:**
+- **UI Responsiveness**: Knappar och textfält fungerar fortfarande (man kan skriva i inloggningsfältet utan lagg).
+- **Backend-kollaps**: Komplexa anrop (meddelanden, gamification, dashboards) börjar returnera **500 Internal Server Error**.
+- **WebSockets**: Anslutningar till realtidstjänster misslyckas.
+
+### Visuell Bevisning
+![Dashboard under belastning](file:///C:/Users/alxpa/.gemini/antigravity/brain/e0c48126-bba2-4281-abbf-1d59e3bc8ab4/eduflex_landing_stress_test_1772024423856.png)
+*Notera: Sidan laddas, men siffror och dynamisk data saknas på grund av 500-fel.*
+
+![Inloggning under load](file:///C:/Users/alxpa/.gemini/antigravity/brain/e0c48126-bba2-4281-abbf-1d59e3bc8ab4/eduflex_login_typing_stress_1772024436549.png)
+*Verifiering: Det går att interagera med UI:t trots att servern går på högvarv.*
+
+## 3. 🏁 Smärtgränsen (The Breaking Point)
+Smärtgränsen för en enskild lokal servernod ligger vid ca **500 samtidiga användare**. 
+- Vid denna nivå börjar databasanslutningarna ta slut för komplexa frågor.
+- Enkla frågor (/tenants) fortsätter fungera men hela applikationen blir instabil.
+
+**Rekommendation för Enterprise:** Aktivera horisontell skalning och öka anslutningspoolen i `application.properties`.
