@@ -34,19 +34,32 @@ public class EduCareerService {
         Double lat = null;
         Double lon = null;
 
-        // Simple mock geocoding for popular cities to demonstrate radius
+        // Simple mock geocoding and municipality codes
+        String municipalityCode = null;
         if ("Stockholm".equalsIgnoreCase(city)) {
             lat = 59.3293;
             lon = 18.0686;
+            municipalityCode = "0180";
         } else if ("Göteborg".equalsIgnoreCase(city)) {
             lat = 57.7089;
             lon = 11.9746;
+            municipalityCode = "1480";
         } else if ("Malmö".equalsIgnoreCase(city)) {
             lat = 55.6050;
             lon = 13.0038;
+            municipalityCode = "1280";
+        } else if ("Borås".equalsIgnoreCase(city)) {
+            lat = 57.7210;
+            lon = 12.9401;
+            municipalityCode = "1490";
         }
 
-        Map<String, Object> rawResults = jobTechClient.searchJobs(q, city, lat, lon, radius, 20);
+        // If we have a code, use it. Otherwise use the name if provided.
+        String locParam = (municipalityCode != null) ? municipalityCode : city;
+
+        log.info("🚀 Söker praktikplatser: q={}, loc={}, lat={}, lon={}, radius={}", q, locParam, lat, lon, radius);
+
+        Map<String, Object> rawResults = jobTechClient.searchJobs(q, locParam, lat, lon, radius, 20);
 
         List<Map<String, Object>> hits = (List<Map<String, Object>>) rawResults.get("hits");
         if (hits == null)

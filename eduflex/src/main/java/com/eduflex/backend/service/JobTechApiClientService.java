@@ -34,11 +34,12 @@ public class JobTechApiClientService {
             }
 
             if (city != null && !city.isEmpty()) {
-                builder.queryParam("location", city);
+                builder.queryParam("municipality", city);
             }
 
             if (lat != null && lon != null) {
-                builder.queryParam("position", lat + "," + lon);
+                builder.queryParam("position.latitude", lat);
+                builder.queryParam("position.longitude", lon);
                 if (radius != null) {
                     builder.queryParam("position.radius", radius);
                 }
@@ -48,7 +49,11 @@ public class JobTechApiClientService {
             log.info("🔍 Anropar JobTech Search: {}", url);
 
             ResponseEntity<Map> response = restTemplate.getForEntity(url, Map.class);
-            return response.getBody();
+            Map<String, Object> body = response.getBody();
+            if (body != null && body.containsKey("total")) {
+                log.info("✅ JobTech svar: {} träffar hittades.", body.get("total"));
+            }
+            return body;
         } catch (Exception e) {
             log.error("❌ JobTech search failed: {}", e.getMessage());
             return Map.of("hits", Collections.emptyList(), "total", 0);
