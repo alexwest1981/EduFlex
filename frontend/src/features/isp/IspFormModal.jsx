@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, ChevronRight, ChevronLeft, Plus, Trash2, Loader2, GraduationCap } from 'lucide-react';
+import { X, ChevronRight, ChevronLeft, Plus, Trash2, Loader2, GraduationCap, Sparkles, Wand2 } from 'lucide-react';
 import { api } from '../../services/api';
 import toast from 'react-hot-toast';
 
@@ -18,6 +18,7 @@ const emptyForm = {
     counselorNotes: '',
     examensmal: '',
     kravPoang: 2500,
+    validering: '',
     courses: [],
 };
 
@@ -58,6 +59,7 @@ const IspFormModal = ({ isOpen, onClose, onSaved, existingPlan }) => {
                     counselorNotes: existingPlan.counselorNotes || '',
                     examensmal: existingPlan.examensmal || '',
                     kravPoang: existingPlan.kravPoang || 2500,
+                    validering: existingPlan.validering || '',
                     courses: (existingPlan.plannedCourses || []).map(c => ({
                         courseName: c.courseName || '',
                         courseCode: c.courseCode || '',
@@ -129,6 +131,7 @@ const IspFormModal = ({ isOpen, onClose, onSaved, existingPlan }) => {
                 })),
                 plannedStart: form.plannedStart || null,
                 plannedEnd: form.plannedEnd || null,
+                validering: form.validering,
             };
 
             if (isEditing) {
@@ -144,6 +147,33 @@ const IspFormModal = ({ isOpen, onClose, onSaved, existingPlan }) => {
             toast.error('Kunde inte spara studieplanen');
         } finally {
             setSaving(false);
+        }
+    };
+
+    const handleAiSuggestions = async () => {
+        if (!form.examensmal) {
+            toast.error('Ange ett examensmål först för att AI ska veta vad den ska föreslå.');
+            return;
+        }
+
+        const id = toast.loading('AI skriver kursförslag...');
+        try {
+            const suggestions = await api.post('/isp/suggest-courses', {
+                examObjective: form.examensmal,
+                studentId: form.studentId
+            });
+
+            if (Array.isArray(suggestions)) {
+                setForm(prev => ({
+                    ...prev,
+                    courses: [...prev.courses, ...suggestions]
+                }));
+                toast.success(`Hittade ${suggestions.length} relevanta kurser!`, { id });
+                setStep(2); // Gå till kurslistan
+            }
+        } catch (err) {
+            console.error('AI Suggestion failed', err);
+            toast.error('Kunde inte hämta AI-förslag just nu', { id });
         }
     };
 
@@ -281,6 +311,27 @@ const IspFormModal = ({ isOpen, onClose, onSaved, existingPlan }) => {
                                         className="w-full bg-gray-50 dark:bg-gray-900 border-none rounded-2xl px-4 py-3 text-sm font-bold shadow-inner focus:ring-2 ring-indigo-500 transition-all"
                                     />
                                 </div>
+                            </div>
+
+                            <div className="space-y-1.5">
+                                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Validering / Tidigare meriter</label>
+                                <textarea
+                                    value={form.validering}
+                                    onChange={e => set('validering', e.target.value)}
+                                    placeholder="Tidigare kurser som tillgodoräknas..."
+                                    rows={2}
+                                    className="w-full bg-gray-50 dark:bg-gray-900 border-none rounded-2xl px-4 py-3 text-sm font-medium shadow-inner focus:ring-2 ring-indigo-500 transition-all resize-none"
+                                />
+                            </div>
+
+                            <div className="pt-2">
+                                <button
+                                    onClick={handleAiSuggestions}
+                                    className="w-full flex items-center justify-center gap-2 py-4 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-lg transform hover:-translate-y-0.5 transition-all"
+                                >
+                                    <Sparkles size={16} />
+                                    Få intelligenta kursförslag med AI
+                                </button>
                             </div>
                         </>
                     )}

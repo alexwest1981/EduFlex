@@ -185,12 +185,20 @@ const LandingPage = () => {
             hoverBorder: 'hover:border-green-500/50'
         },
         {
+            icon: <Map className="w-7 h-7" />,
+            title: "Next-Gen ISP (AI & PDF)",
+            description: "Revolutionera studieplaneringen med AI-kursförslag, automatisk poängberäkning och Komvux-kompatibla PDF-exporter med ett klick.",
+            color: 'text-brand-gold',
+            bgColor: 'bg-brand-gold/10',
+            hoverBorder: 'hover:border-brand-gold/50'
+        },
+        {
             icon: <Play className="w-7 h-7" />,
             title: "AI Video Tutor v2.0 (Planned)",
             description: "Automatisk generering av interaktiva förklaringsvideor direkt från kursinnehåll via AI-script och smart rendering.",
             color: 'text-red-400',
-            bgColor: 'bg-red-500/10',
-            hoverBorder: 'hover:border-red-500/50'
+            bgColor: 'bg-brand-red/10',
+            hoverBorder: 'hover:border-brand-red/50'
         },
     ];
 

@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import {
     X, CheckCircle, AlertCircle, Edit2, PlayCircle, RotateCcw, Flag,
-    GraduationCap, User, Calendar, BookOpen, Loader2, ChevronDown
+    GraduationCap, User, Calendar, BookOpen, Loader2, ChevronDown,
+    Download, BarChart2, Award, Info
 } from 'lucide-react';
 import { api } from '../../services/api';
 import toast from 'react-hot-toast';
@@ -24,6 +25,13 @@ const IspDetailModal = ({ plan: initialPlan, onClose, onEdit }) => {
     const acknowledged = !!plan.studentAcknowledgedAt;
 
     const totalPoints = (plan.plannedCourses || []).reduce((sum, c) => sum + (c.points || 0), 0);
+    const completedPoints = (plan.plannedCourses || [])
+        .filter(c => c.status === 'COMPLETED')
+        .reduce((sum, c) => sum + (c.points || 0), 0);
+
+    const goalPoints = plan.kravPoang || 2500;
+    const progressPct = Math.min(100, Math.round(((completedPoints + 0) / goalPoints) * 100)); // Simpelt för nu
+    const plannedPct = Math.min(100, Math.round(((totalPoints) / goalPoints) * 100));
 
     const performAction = async (endpoint, successMsg) => {
         setLoading(true);
@@ -36,6 +44,24 @@ const IspDetailModal = ({ plan: initialPlan, onClose, onEdit }) => {
             toast.error('Åtgärden misslyckades. Kontrollera att du har behörighet.');
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleExportPdf = async () => {
+        const id = toast.loading('Genererar PDF...');
+        try {
+            const response = await api.get(`/isp/${plan.id}/export`, { responseType: 'blob' });
+            const url = window.URL.createObjectURL(new Blob([response]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', `ISP_${plan.student?.lastName}_${new Date().toISOString().split('T')[0]}.pdf`);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            toast.success('PDF laddas ner!', { id });
+        } catch (err) {
+            console.error('PDF export failed', err);
+            toast.error('Kunde inte generera PDF', { id });
         }
     };
 
@@ -99,12 +125,51 @@ const IspDetailModal = ({ plan: initialPlan, onClose, onEdit }) => {
                         ))}
                     </div>
 
+                    {/* Progress Visualization */}
+                    <div className="bg-indigo-50/50 dark:bg-indigo-900/10 rounded-2xl p-6 border border-indigo-100 dark:border-indigo-900/30">
+                        <div className="flex justify-between items-end mb-3">
+                            <div>
+                                <h3 className="text-sm font-black text-indigo-900 dark:text-indigo-400">Progression mot examensmål</h3>
+                                <p className="text-[10px] font-black text-indigo-600 uppercase tracking-widest">{plan.examensmal || 'Gymnasieexamen'}</p>
+                            </div>
+                            <div className="text-right">
+                                <span className="text-xl font-black text-indigo-600">{completedPoints}</span>
+                                <span className="text-sm font-bold text-gray-400 mx-1">/</span>
+                                <span className="text-sm font-bold text-gray-500">{goalPoints} po</span>
+                            </div>
+                        </div>
+
+                        <div className="relative h-3 bg-gray-200 dark:bg-gray-800 rounded-full overflow-hidden">
+                            {/* Planned progress */}
+                            <div
+                                className="absolute left-0 top-0 h-full bg-indigo-200 dark:bg-indigo-900/40 transition-all duration-500"
+                                style={{ width: `${plannedPct}%` }}
+                            />
+                            {/* Completed progress */}
+                            <div
+                                className="absolute left-0 top-0 h-full bg-indigo-600 transition-all duration-500 shadow-[0_0_10px_rgba(79,70,229,0.3)]"
+                                style={{ width: `${progressPct}%` }}
+                            />
+                        </div>
+
+                        <div className="flex justify-between mt-2">
+                            <div className="flex items-center gap-1.5">
+                                <div className="w-2 h-2 rounded-full bg-indigo-600" />
+                                <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Klara ({completedPoints}p)</span>
+                            </div>
+                            <div className="flex items-center gap-1.5">
+                                <div className="w-2 h-2 rounded-full bg-indigo-200" />
+                                <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Planerade ({totalPoints}p)</span>
+                            </div>
+                        </div>
+                    </div>
+
                     {/* Kvittering */}
                     <div className={`flex items-center gap-3 px-5 py-4 rounded-2xl ${acknowledged
-                            ? 'bg-green-50 dark:bg-green-900/20'
-                            : plan.status === 'ACTIVE'
-                                ? 'bg-amber-50 dark:bg-amber-900/20'
-                                : 'bg-gray-50 dark:bg-gray-900'
+                        ? 'bg-green-50 dark:bg-green-900/20'
+                        : plan.status === 'ACTIVE'
+                            ? 'bg-amber-50 dark:bg-amber-900/20'
+                            : 'bg-gray-50 dark:bg-gray-900'
                         }`}>
                         {acknowledged ? (
                             <>
@@ -158,9 +223,9 @@ const IspDetailModal = ({ plan: initialPlan, onClose, onEdit }) => {
                                             </div>
                                         </div>
                                         <span className={`text-[10px] font-black px-2.5 py-1 rounded-lg uppercase tracking-widest ${c.status === 'COMPLETED' ? 'bg-green-100 text-green-700' :
-                                                c.status === 'IN_PROGRESS' ? 'bg-blue-100 text-blue-700' :
-                                                    c.status === 'DROPPED' ? 'bg-red-100 text-red-600' :
-                                                        'bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400'
+                                            c.status === 'IN_PROGRESS' ? 'bg-blue-100 text-blue-700' :
+                                                c.status === 'DROPPED' ? 'bg-red-100 text-red-600' :
+                                                    'bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400'
                                             }`}>
                                             {c.status === 'PLANNED' ? 'Planerad' : c.status === 'IN_PROGRESS' ? 'Pågår' :
                                                 c.status === 'COMPLETED' ? 'Klar' : 'Avhoppad'}
@@ -175,12 +240,21 @@ const IspDetailModal = ({ plan: initialPlan, onClose, onEdit }) => {
                 {/* Action footer */}
                 <div className="px-8 py-6 border-t border-gray-100 dark:border-gray-800 shrink-0">
                     <div className="flex flex-wrap gap-3 justify-between items-center">
-                        <button
-                            onClick={onClose}
-                            className="px-5 py-2.5 rounded-2xl font-black text-xs uppercase tracking-widest text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all"
-                        >
-                            Stäng
-                        </button>
+                        <div className="flex gap-2">
+                            <button
+                                onClick={handleExportPdf}
+                                className="flex items-center gap-2 px-5 py-2.5 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-2xl font-black text-xs uppercase tracking-widest transition-all"
+                            >
+                                <Download size={14} />
+                                Exportera PDF
+                            </button>
+                            <button
+                                onClick={onClose}
+                                className="px-5 py-2.5 rounded-2xl font-black text-xs uppercase tracking-widest text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all"
+                            >
+                                Stäng
+                            </button>
+                        </div>
 
                         <div className="flex flex-wrap gap-2">
                             {/* Edit — only for DRAFT or REVISED */}

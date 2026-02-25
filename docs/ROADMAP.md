@@ -44,10 +44,11 @@
 
 ---
 
-### Maj–Juni 2026: Skalbarhet & AI Tutor 2.0 (v3.3.0)
+### Maj–Juni 2026: Skalbarhet & ISP AI (v3.3.0)
 | Prioritet | Funktion | Beskrivning | Ansträngning | Varför |
 | :--- | :--- | :--- | :--- | :--- |
-| **Hög** | **Scalability Engine (v1.0)** | Implementera formell Event Bus (Redis/Kafka) för cross-service kommunikation. | [/] **Pågår** | Hantera 100+ skolor synkront. |
+| **Hög** | **Next-Gen ISP (AI & PDF)** | AI-kursförslag via Gemini, Komvux-PDF export, poäng-visualisering. | ✅ **Klar** (v3.3.0) | Kritiskt för SYV-arbetet. |
+| **Hög** | **Scalability Engine (v1.0)** | Implementera formell Event Bus (Redis/Kafka) för cross-service kommunikation. | ✅ **Klar** (v3.3.0) | Hantera 100+ skolor synkront. |
 | **Hög** | **AI Tutor 2.0 (Video)** | Automatisk generering av förklaringsvideor via Gemini-script & FFMPEG. | [/] **Pågår** | Nästa generations lärande. |
 | **Medel** | **Mobile Hybrid (Expo)** | Förberedelse för Native App Store-wrapper. | 10 dagar | "Check-in-the-box" för IT. |
 

@@ -84,6 +84,10 @@ public class IndividualStudyPlan {
     /** Krav på poäng för examen. */
     private Integer kravPoang;
 
+    /** Validering / Tillgodoräknande — tidigare kurser/meriter. */
+    @Column(columnDefinition = "TEXT")
+    private String validering;
+
     /**
      * Tidpunkt då studenten bekräftade/kvitterade sin plan. Null = ej kvitterad.
      */

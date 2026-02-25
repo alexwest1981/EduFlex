@@ -3,7 +3,9 @@ package com.eduflex.backend.service;
 import com.eduflex.backend.model.IndividualStudyPlan;
 import com.eduflex.backend.model.IspPlannedCourse;
 import com.eduflex.backend.model.User;
+import com.eduflex.backend.service.ai.GeminiService;
 import com.eduflex.backend.repository.IndividualStudyPlanRepository;
+
 import com.eduflex.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,6 +13,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -29,6 +33,7 @@ public class IspService {
 
     private final IndividualStudyPlanRepository ispRepository;
     private final UserRepository userRepository;
+    private final GeminiService geminiService;
     private final GdprAuditService gdprAuditService;
 
     // -----------------------------------------------------------------------
@@ -124,6 +129,7 @@ public class IspService {
                 .plannedEnd(req.getPlannedEnd())
                 .examensmal(req.getExamensmal())
                 .kravPoang(req.getKravPoang())
+                .validering(req.getValidering())
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
@@ -157,6 +163,7 @@ public class IspService {
         plan.setPlannedEnd(req.getPlannedEnd());
         plan.setExamensmal(req.getExamensmal());
         plan.setKravPoang(req.getKravPoang());
+        plan.setValidering(req.getValidering());
         plan.setUpdatedAt(LocalDateTime.now());
 
         // Ersätt kurserna
@@ -234,6 +241,33 @@ public class IspService {
         return ispRepository.save(plan);
     }
 
+    public List<IspCourseDto> suggestCourses(String examObjective, Long studentId) {
+        log.info("Suggesting courses for studentId={} and objective='{}'", studentId, examObjective);
+
+        String prompt = "Du är en SYV (Studie- och yrkesvägledare) på Komvux. " +
+                "En elev vill ha hjälp att välja kurser för att nå sitt examensmål: '" + examObjective + "'. " +
+                "Svara med en JSON-lista som innehåller objekt med fälten: courseName, courseCode (valfri), points (heltal), level (t.ex. Gymnasial), studyPacePct (heltal, standard 100), plannedStart (null), plannedEnd (null). "
+                +
+                "Ge ca 5 relevanta kurser. Svara ENDAST med JSON-listan.";
+
+        try {
+            String response = geminiService.generateResponse(prompt);
+            // Städa JSON om Gemini skickar markdown
+            if (response.contains("```json")) {
+                response = response.substring(response.indexOf("```json") + 7, response.lastIndexOf("```"));
+            } else if (response.contains("```")) {
+                response = response.substring(response.indexOf("```") + 3, response.lastIndexOf("```"));
+            }
+
+            ObjectMapper mapper = new ObjectMapper();
+            return mapper.readValue(response, new TypeReference<List<IspCourseDto>>() {
+            });
+        } catch (Exception e) {
+            log.error("Failed to get AI course suggestions", e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "AI-förslag misslyckades");
+        }
+    }
+
     // -----------------------------------------------------------------------
     // Interna hjälpmetoder
     // -----------------------------------------------------------------------
@@ -303,6 +337,7 @@ public class IspService {
         private LocalDate plannedEnd;
         private String examensmal;
         private Integer kravPoang;
+        private String validering;
         private List<IspCourseDto> courses;
     }
 
@@ -319,6 +354,7 @@ public class IspService {
         private LocalDate plannedEnd;
         private String examensmal;
         private Integer kravPoang;
+        private String validering;
         private List<IspCourseDto> courses;
     }
 

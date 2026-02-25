@@ -2,7 +2,7 @@
   <img src="docs/Logo_top.png" width="600" alt="EduFlex Logo" />
 </p>
 
-<h1 align="center">🎓 EduFlex LMS v3.1.0</h1>
+<h1 align="center">🎓 EduFlex LMS v3.3.0</h1>
 
 <p align="center">
   <em>The Complete Enterprise Learning Platform for Modern Education</em><br/>
@@ -35,26 +35,21 @@
 
 <div id="-svenska"></div>
 
-## 🚀 Senaste uppdateringarna (25 feb 2026 – SYV Dashboard & ISP Compliance)
-*   **📊 SYV Dashboard Refactor:**
-    - **Primär ISP-vy**: SYV-användare landar nu direkt i den individuella studieplanen (ISP) genom en renodlad översikt.
-    - **Sidebar Cleanup**: Optimerat sidomenyn för SYV genom att ta bort redundanta länkar (Studieplaner/Meddelanden) och dölja irrelevanta moduler (Butik).
-    - **Bengt Fix**: Åtgärdat inloggningsproblem för SYV-kontot genom databassynkronisering.
-    - **Filtrerad Elevlista**: Vid skapande av ISP visas nu enbart aktiva elever (enrolled/active students). Bakgrundsfiltrering på `isActive=true` och `role=STUDENT` för att förhindra att obehöriga eller inaktiva konton väljs.
+## 🚀 Senaste uppdateringarna (25 feb 2026 – v3.3.0: Next Gen ISP & Event Bus Foundation)
+*   **🧠 AI-Powered ISP (v3.3.0):**
+    - **Automatiserade Kursförslag**: Integrerad Google Gemini för att generera skräddarsydda studieplaner baserat på elevens examensmål.
+    - **Komvux Compliance PDF**: Officiell PDF-export av studieplaner med digitala signaturfält, QR-verifiering och fullständig poängöversikt (Skollagen 20:11).
+    - **Progress Visualization**: Ny grafisk mätare i realtid som jämför avklarade och planerade poäng mot slutmålet.
+    - **Validering & Meriter**: Nytt stöd för dokumentation av tidigare betyg och tillgodoräknande direkt i studieplanen.
 
-*   **🎓 ISP Komvux Compliance (v3.2.5):**
-    - **Examensmål & Poängkrav**: Stöd för att definiera examensmål och totala poängkrav på studieplansnivå.
-    - **Kursnivå-detaljer**: Tillagt fält för kurspoäng och studienivå (Gymnasial/Grundläggande/SFI) för varje planerad kurs.
-    - **Automatisk Beräkning**: Detaljvyn beräknar nu automatiskt totalt planerade poäng mot uppsatt mål.
-    - **Backend-stöd**: Uppdaterat `IspService` och underliggande databasschema (V93) för att hantera de nya efterlevnadsfälten.
+*   **📊 SYV Dashboard & Filtering:**
+    - **Primär ISP-vy**: SYV-användare landar nu direkt i ISP-översikten.
+    - **Smart Elevfiltrering**: Vid skapande av ISP filtreras listan automatiskt för att endast visa aktiva och inskrivna elever.
+    - **Sidebar Optimerad**: Rensat bort irrelevanta moduler (Butik/Marknad) för SYV-rollen för en renare arbetsmiljö.
 
-## 🚀 Planerat för nästa release (v3.3.0 – Scalability & AI Video)
-*   **📡 Scalability Engine (Event Bus):**
-    - Migration till en formell Event Bus-arkitektur för att hantera 100+ skolor synkront.
-    - Förberett för Redis/RabbitMQ/Kafka för att eliminera flaskhalsar vid hög belastning.
-*   **🎬 AI Video Tutor (v2.0):**
-    - Automatisk generering av förklaringsvideor direkt från kursinnehåll.
-    - AI-genererade script och automatiserad media-stitching med FFMPEG.
+## 🚀 Planerat för nästa release (v3.4.0 – Mobile App & AI Video 2.0)
+*   **📱 Native Mobile App**: Första versionen av hybrid-appen (Expo/React Native) för smidigare kommunikation.
+*   **🎬 AI Video Tutor (v2.0)**: Automatisk generering av förklaringsvideor direkt från kursinnehåll.
 
 ## 🚀 Senaste uppdateringarna (24 feb 2026 – Advanced SCORM & ISO 27001 Security)
 *   **🎓 SCORM Persistence & xAPI (v3.2.0):**

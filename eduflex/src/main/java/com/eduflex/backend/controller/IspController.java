@@ -3,6 +3,7 @@ package com.eduflex.backend.controller;
 import com.eduflex.backend.model.IndividualStudyPlan;
 import com.eduflex.backend.model.User;
 import com.eduflex.backend.repository.UserRepository;
+import com.eduflex.backend.service.IspPdfService;
 import com.eduflex.backend.service.IspService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +29,7 @@ import java.util.Map;
 public class IspController {
 
     private final IspService ispService;
+    private final IspPdfService ispPdfService;
     private final UserRepository userRepository;
 
     /**
@@ -153,6 +155,37 @@ public class IspController {
     @PreAuthorize("hasAnyAuthority('ADMIN','ROLE_ADMIN','SYV','ROLE_SYV')")
     public ResponseEntity<IndividualStudyPlan> completePlan(@PathVariable Long id) {
         return ResponseEntity.ok(ispService.completePlan(id, getCurrentUser()));
+    }
+
+    /**
+     * POST /api/isp/suggest-courses
+     * SYV/Admin hämtar AI-förslag på kurser baserat på examensmål.
+     */
+    @PostMapping("/suggest-courses")
+    @PreAuthorize("hasAnyAuthority('ADMIN','ROLE_ADMIN','SYV','ROLE_SYV')")
+    public ResponseEntity<List<IspService.IspCourseDto>> suggestCourses(@RequestBody Map<String, String> body) {
+        String examObjective = body.get("examObjective");
+        Long studentId = body.containsKey("studentId") ? Long.parseLong(body.get("studentId")) : null;
+        return ResponseEntity.ok(ispService.suggestCourses(examObjective, studentId));
+    }
+
+    /**
+     * GET /api/isp/{id}/export
+     * Exporterar ISP till PDF.
+     */
+    @GetMapping("/{id}/export")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<byte[]> exportPdf(@PathVariable Long id) {
+        try {
+            byte[] pdf = ispPdfService.generateIspPdf(id, getCurrentUser());
+            return ResponseEntity.ok()
+                    .header("Content-Type", "application/pdf")
+                    .header("Content-Disposition", "attachment; filename=ISP_" + id + ".pdf")
+                    .body(pdf);
+        } catch (Exception e) {
+            log.error("Failed to export ISP PDF", e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Kunde inte exportera PDF");
+        }
     }
 
     /**
