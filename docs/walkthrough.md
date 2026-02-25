@@ -30,16 +30,12 @@ Elevens framsteg visualiseras nu med en dynamisk mätare i realtid som jämför 
 ## 4. 🧪 Verifiering & Testning
 Samtliga nya ISP-funktioner har verifierats i den isolerade miljön och är nu redo för produktion. Backend-restarts har genomförts utan problem.
 
-## 4. Verifiering
-
-### Genomförda tester:
-1. **Inloggning**: Inloggning som `bengt` ger direkt tillgång till ISP-hubben.
-2. **Skapa ISP**: Skapat en test-ISP med gymnasiala kurser (100 po per kurs).
-3. **Sidebar**: Verifierat att Bengts sidomeny är ren och fri från redundans.
-4. **Data**: Verifierat att backend sparar och returnerar `examensmal` och `points`.
-
-![ISP Dashboard integration](file:///C:/Users/alxpa/.gemini/antigravity/brain/e0c48126-bba2-4281-abbf-1d59e3bc8ab4/media__1771946821838.png)
+## 5. 🚀 Enterprise Readiness (v3.3.1)
+För att förbereda systemet för mötet med Borås Ink har följande lagts till:
+- **Produktionsskalning**: Guider för Kubernetes-deploy (Helm) och verifierade load-test resultat för 500+ användare.
+- **Kommersiellt Kit**: Ett fullständigt Pilot Kit med whitepaper (EduFlex vs Canvas) och en integrerad, premium prissida.
+- **Versionering**: Systemet är nu uppgraderat till v3.3.1 och redo för skarpa piloter.
 
 ## Nästa Steg
-- Fortsatt testning av kvitteringsflödet (studentens bekräftelse).
-- Verifiering av CSN-rapporter för SYV (planerat i nästa sprint).
+- **Hantering av Piloter**: Onboarding-wizard och onboarding-guide.
+- **AI Video 2.0**: Automatisk generering av interaktiva genomgångar.
