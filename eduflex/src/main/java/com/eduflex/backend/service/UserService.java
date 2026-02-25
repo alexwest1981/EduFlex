@@ -146,8 +146,7 @@ public class UserService {
             return userRepository.save(saved);
         } catch (Exception e) {
             System.err.println("Keycloak sync failed: " + e.getMessage());
-            // In a real production system, we might want to rollback or queue for retry
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
+            // Password is already encoded from the try block above — do NOT re-encode
             return userRepository.save(user);
         }
     }

@@ -7,6 +7,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,6 +16,8 @@ import java.util.List;
 
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
+
+    private static final Logger log = LoggerFactory.getLogger(CustomUserDetailsService.class);
 
     private final UserRepository userRepository;
 
@@ -24,10 +28,19 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        log.info("[AUTH] loadUserByUsername: '{}'", username);
+
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Användare hittades inte: " + username));
+                .orElseThrow(() -> {
+                    log.warn("[AUTH] User not found in DB: '{}'", username);
+                    return new UsernameNotFoundException("Användare hittades inte: " + username);
+                });
+
+        log.info("[AUTH] User found: id={}, isActive={}, role={}", user.getId(), user.getIsActive(),
+                user.getRole() != null ? user.getRole().getName() : "NULL");
 
         if (user.getRole() == null) {
+            log.warn("[AUTH] User '{}' has no role assigned (role is null)", username);
             throw new UsernameNotFoundException("Användaren " + username + " saknar roll.");
         }
 
@@ -59,10 +72,13 @@ public class CustomUserDetailsService implements UserDetailsService {
             }
         }
 
+        boolean enabled = user.getIsActive() == null || user.getIsActive();
+        log.info("[AUTH] Returning UserDetails for '{}': enabled={}, authorities={}", username, enabled, authorities);
+
         return new org.springframework.security.core.userdetails.User(
                 user.getUsername(),
                 user.getPassword(),
-                user.getIsActive(), // enabled
+                enabled, // enabled — null = aktiv
                 true, // accountNonExpired
                 true, // credentialsNonExpired
                 true, // accountNonLocked

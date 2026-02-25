@@ -76,6 +76,11 @@ import HealthCheckDashboard from './features/admin/HealthCheckDashboard';
 import DeveloperSettings from './features/settings/DeveloperSettings';
 import RoiCenter from './features/analytics/RoiCenter';
 
+// --- ISP (Individuell Studieplan) ---
+import IspDashboard from './features/isp/IspDashboard';
+import StudentIspPage from './features/isp/StudentIspPage';
+import PrincipalIspOverview from './features/isp/PrincipalIspOverview';
+
 // --- PROTECTED ROUTE ---
 const ProtectedRoute = ({ children, roles, permission }) => {
     const { currentUser, licenseStatus } = useAppContext();
@@ -561,6 +566,31 @@ const AppRoutes = () => {
                         ) : (
                             <Navigate to="/" replace />
                         )}
+                    </ProtectedRoute>
+                } />
+
+                {/* --- ISP (INDIVIDUELL STUDIEPLAN) --- */}
+                <Route path="/study-plans" element={
+                    <ProtectedRoute roles={['ADMIN', 'ROLE_ADMIN', 'SYV', 'ROLE_SYV']}>
+                        <Layout currentUser={currentUser} handleLogout={logout}>
+                            <IspDashboard />
+                        </Layout>
+                    </ProtectedRoute>
+                } />
+
+                <Route path="/my-study-plan" element={
+                    <ProtectedRoute roles={['STUDENT', 'ROLE_STUDENT']}>
+                        <Layout currentUser={currentUser} handleLogout={logout}>
+                            <StudentIspPage />
+                        </Layout>
+                    </ProtectedRoute>
+                } />
+
+                <Route path="/principal/study-plans" element={
+                    <ProtectedRoute roles={['ADMIN', 'ROLE_ADMIN', 'REKTOR', 'ROLE_REKTOR']}>
+                        <Layout currentUser={currentUser} handleLogout={logout}>
+                            <PrincipalIspOverview />
+                        </Layout>
                     </ProtectedRoute>
                 } />
 

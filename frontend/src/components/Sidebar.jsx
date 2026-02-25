@@ -49,7 +49,7 @@ const Sidebar = ({ currentUser, logout, siteName, version }) => {
         const principalRoles = ['ADMIN', 'ROLE_ADMIN', 'ROLE_REKTOR', 'REKTOR', 'PRINCIPAL'];
         const adminRoles = ['ADMIN', 'ROLE_ADMIN'];
         const teacherRoles = ['TEACHER', 'ROLE_TEACHER'];
-
+        const syvRoles = ['SYV', 'ROLE_SYV'];
         const dashboardPath = principalRoles.includes(roleName) ? '/principal/dashboard' : '/';
 
         const items = [
@@ -125,10 +125,6 @@ const Sidebar = ({ currentUser, logout, siteName, version }) => {
             items.push({ path: '/ebooks', label: t('sidebar.ebooks') || 'E-books', icon: <BookOpen size={20} /> });
         }
 
-        if (hasPermission('ACCESS_SHOP') && isModuleActive('GAMIFICATION')) {
-            items.push({ path: '/shop', label: t('sidebar.shop') || 'Butik', icon: <Store size={20} /> });
-        }
-
         if (isModuleActive('WELLBEING_CENTER')) {
             const wellbeingRoles = ['STUDENT', 'ROLE_STUDENT', 'ADMIN', 'ROLE_ADMIN', 'ROLE_REKTOR', 'REKTOR'];
             if (wellbeingRoles.includes(roleName)) {
@@ -137,6 +133,11 @@ const Sidebar = ({ currentUser, logout, siteName, version }) => {
             if (roleName === 'HALSOTEAM' || roleName === 'ROLE_HALSOTEAM' || adminRoles.includes(roleName)) {
                 items.push({ path: '/wellbeing-center/inbox', label: 'E-hälsa Inbox', icon: <Heart size={20} className="text-brand-teal" /> });
             }
+        }
+
+        // Hide shop for SYV
+        if (hasPermission('ACCESS_SHOP') && isModuleActive('GAMIFICATION') && !syvRoles.includes(roleName)) {
+            items.push({ path: '/shop', label: t('sidebar.shop') || 'Butik', icon: <Store size={20} /> });
         }
 
         items.push({ path: '/calendar', label: t('sidebar.calendar'), icon: <Calendar size={20} /> });

@@ -35,6 +35,18 @@
 
 <div id="-svenska"></div>
 
+## 🚀 Senaste uppdateringarna (25 feb 2026 – SYV Dashboard & ISP Compliance)
+*   **📊 SYV Dashboard Refactor:**
+    - **Primär ISP-vy**: SYV-användare landar nu direkt i den individuella studieplanen (ISP) genom en renodlad översikt.
+    - **Sidebar Cleanup**: Optimerat sidomenyn för SYV genom att ta bort redundanta länkar (Studieplaner/Meddelanden) och dölja irrelevanta moduler (Butik).
+    - **Bengt Fix**: Åtgärdat inloggningsproblem för SYV-kontot genom databassynkronisering.
+
+*   **🎓 ISP Komvux Compliance (v3.2.5):**
+    - **Examensmål & Poängkrav**: Stöd för att definiera examensmål och totala poängkrav på studieplansnivå.
+    - **Kursnivå-detaljer**: Tillagt fält för kurspoäng och studienivå (Gymnasial/Grundläggande/SFI) för varje planerad kurs.
+    - **Automatisk Beräkning**: Detaljvyn beräknar nu automatiskt totalt planerade poäng mot uppsatt mål.
+    - **Backend-stöd**: Uppdaterat `IspService` och underliggande databasschema (V93) för att hantera de nya efterlevnadsfälten.
+
 ## 🚀 Planerat för nästa release (v3.3.0 – Scalability & AI Video)
 *   **📡 Scalability Engine (Event Bus):**
     - Migration till en formell Event Bus-arkitektur för att hantera 100+ skolor synkront.

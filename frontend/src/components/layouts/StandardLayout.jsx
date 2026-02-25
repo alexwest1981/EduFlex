@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
-import { LayoutDashboard, FileText, User, Settings, LogOut, Layers, Menu, X, Award, Zap, Moon, Sun, Calendar, BookOpen, TrendingUp, Users, HelpCircle, Store, Library, ClipboardList, ShieldCheck, MessageSquare, Heart, Thermometer, BarChart2, Brain, FolderOpen, Link2 } from 'lucide-react';
+import { LayoutDashboard, FileText, User, Settings, LogOut, Layers, Menu, X, Award, Zap, Moon, Sun, Calendar, BookOpen, TrendingUp, Users, HelpCircle, Store, Library, ClipboardList, ShieldCheck, MessageSquare, Heart, Thermometer, BarChart2, Brain, FolderOpen, Link2, GraduationCap } from 'lucide-react';
 import { useAppContext } from '../../context/AppContext';
 import { useModules } from '../../context/ModuleContext';
 import { useTranslation } from 'react-i18next';
@@ -100,6 +100,7 @@ const StandardLayout = ({ children }) => {
             ...(roleName.includes('TEACHER') || isAdmin ? [{ path: '/evaluations/manage', icon: <ClipboardList size={20} />, label: 'Utvärderingar' }] : []),
             ...(roleName === 'TEACHER' ? [{ path: '/?tab=COURSES', icon: <BookOpen size={20} />, label: t('sidebar.my_courses') || 'Mina kurser' }] : []),
             ...(roleName === 'STUDENT' ? [{ path: '/my-courses', icon: <BookOpen size={20} />, label: t('sidebar.my_courses') || 'Mina kurser' }] : []),
+            ...(roleName === 'STUDENT' || roleName === 'ROLE_STUDENT' ? [{ path: '/my-study-plan', icon: <GraduationCap size={20} />, label: 'Min Studieplan (ISP)' }] : []),
             ...(roleName === 'STUDENT' || roleName === 'ROLE_STUDENT' ? (licenseTier !== 'BASIC' ? [{ path: '/ai-hub', icon: <Brain size={20} />, label: 'EduAI Hub' }] : []) : []),
             ...(roleName.includes('STUDENT') || roleName.includes('TEACHER') || isAdmin ? [{ path: '/ebooks', icon: <Library size={18} />, label: t('sidebar.ebooks') }] : []),
         ],
@@ -108,8 +109,8 @@ const StandardLayout = ({ children }) => {
             { path: '/documents', icon: <FileText size={20} />, label: t('sidebar.documents') },
             { path: '/communication', icon: <MessageSquare size={20} />, label: t('shortcuts.messages') || 'Meddelanden' },
             { path: '/support', icon: <HelpCircle size={20} />, label: t('sidebar.support') },
-            ...(isModuleActive('EDUGAME') ? [{ path: '/shop', icon: <Store size={20} />, label: 'Butik' }] : []),
-            ...(isModuleActive('WELLBEING_CENTER') && !['HALSOTEAM', 'ROLE_HALSOTEAM'].includes(roleName) ? [{ path: '/wellbeing-center', icon: <Heart size={20} />, label: 'Sjukanmälan & E-hälsa' }] : [])
+            ...(isModuleActive('EDUGAME') && !['SYV', 'ROLE_SYV'].includes(roleName) ? [{ path: '/shop', icon: <Store size={20} />, label: 'Butik' }] : []),
+            ...(isModuleActive('WELLBEING_CENTER') && !['HALSOTEAM', 'ROLE_HALSOTEAM', 'SYV', 'ROLE_SYV'].includes(roleName) ? [{ path: '/wellbeing-center', icon: <Heart size={20} />, label: 'Sjukanmälan & E-hälsa' }] : [])
         ],
         admin: [
             ...(isAdmin ? [{ path: '/admin', icon: <Settings size={20} />, label: t('sidebar.admin') }] : []),
@@ -125,9 +126,11 @@ const StandardLayout = ({ children }) => {
                 { path: '/principal/quality', icon: <Award size={20} />, label: 'Kvalitetsarbete' },
                 { path: '/principal/management-reports', icon: <TrendingUp size={20} />, label: 'Ledningsrapport' },
                 { path: '/principal/reports', icon: <FolderOpen size={20} />, label: 'Rapportarkiv (CSN)' },
+                { path: '/principal/study-plans', icon: <GraduationCap size={20} />, label: 'Studieplaner (ISP)' },
                 { path: '/principal/tools', icon: <Settings size={20} />, label: 'Verktyg & Admin' }
             ] : [])
         ],
+        syv: [],
         guardian: [
             ...(roleName === 'GUARDIAN' || roleName === 'ROLE_GUARDIAN' ? [
                 { path: '/', icon: <LayoutDashboard size={20} />, label: 'Vårdnadshavare' },
@@ -188,6 +191,13 @@ const StandardLayout = ({ children }) => {
                         <SidebarSection
                             title="Rektorspaket"
                             items={navItems.rektor}
+                            sidebarOpen={sidebarOpen}
+                        />
+                    )}
+                    {navItems.syv.length > 0 && (
+                        <SidebarSection
+                            title="Studie- och yrkesvägledning"
+                            items={navItems.syv}
                             sidebarOpen={sidebarOpen}
                         />
                     )}

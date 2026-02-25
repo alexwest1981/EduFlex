@@ -38,6 +38,12 @@ public class SystemSettingService {
         createIfMissing("eduai_credit_earn_rate", "5", "Antal AI-Credits per slutförd lektion.");
         createIfMissing("eduai_proactivity", "MEDIUM", "Hur ofta AI-Coachen tar kontakt (LOW, MEDIUM, HIGH).");
 
+        // --- CSN-RAPPORTERING ---
+        createIfMissing("csn.school.code",            "",        "CSN skolkod (4-5 siffror, tilldelas av CSN).");
+        createIfMissing("csn.municipality.code",      "",        "Kommunkod (4 siffror, t.ex. 1280 för Malmö). Krävs för Komvux.");
+        createIfMissing("csn.default.education.type", "KOMVUX",  "Standard utbildningstyp för CSN-export: KOMVUX, YH eller HOGSKOLA.");
+        createIfMissing("csn.default.study.scope",    "100",     "Standard studieomfattning i % (25, 50, 75 eller 100). Används för Komvux.");
+
         // --- TA BORT MODULERNA HÄRIFRÅN ---
         // Vi tar bort chat_enabled, gamification_enabled etc. härifrån
         // eftersom de nu ligger i ModuleService istället.

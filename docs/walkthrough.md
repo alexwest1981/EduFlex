@@ -1,48 +1,47 @@
-# Walkthrough: Role-Specific AI Coaches & Compliance Reporting (v3.0.0)
+# Walkthrough: SYV Hub & Studieplaner (ISP) - v3.2.5
 
-This release introduces tailored AI coaching for students, teachers, and principals, along with critical Swedish compliance reporting (CSN & GDPR).
+Jag har genomfört en omfattande refaktorisering av SYV-upplevelsen för att prioritera den Individuella Studieplanen (ISP) och säkerställa att den följer Komvux regler för poäng och nivåer.
 
-## 🚀 Key Features
+## 1. Åtgärdat: SYV Inloggningsproblem
+Användaren `bengt` (SYV) kan nu logga in utan problem. Felet berodde på en korrupt lösenordshash i den lokala databasen, vilket nu är synkroniserat.
 
-### 🎓 AI Coach Widget
-Each role receives targeted, actionable insights powered by Google Gemini.
-- **Student:** Focuses on learning profiles (VAK), XP leagues, and motivation.
-- **Teacher:** Identifies students at risk and suggests pedagogical interventions.
-- **Principal:** High-level strategic oversight of institutional KPIs (attendance, incidents).
+## 2. Refaktorisering av SYV-panelen & Sidebar
+SYV-användare landar nu direkt i **Studieplaner (ISP)** genom den primära "Översikt"-länken. Sidomenyn har städats upp för att ge en renare arbetsmiljö för Bengt.
 
-### 🇸🇪 CSN Reporting
-Automated attendance aggregation for formal education requirements.
-- **Course-Specific:** Filter by course and time period.
-- **CSV Export:** Generate reports that schools can use for CSN reporting.
-- **Compliance:** Tracks attendance percentage and total lesson count.
+- **Dashboard Integration**: `Dashboard.jsx` mappar rollen `SYV` direkt till `IspDashboard`.
+- **Sidebar Cleanup**: 
+  - Tog bort redundant "Studieplaner (ISP)" länk då "Översikt" nu fyller denna funktion.
+  - Fixade dubbla "Meddelanden"-länkar.
+  - Dolde "Butik" och "E-hälsa" då dessa inte är relevanta för SYV-rollen.
+- **Live Data**: ISP-vyn hämtar nu studentlista och planer direkt från backend utan mock-data.
 
-### 🛡️ GDPR Audit Logging
-Specialized tracking for access to sensitive personal data (PII).
-- **Read-Access Tracking:** Logs when administrators access or export sensitive student data.
-- **Traceability:** Records who accessed what data, when, and why (e.g., during report generation).
-- **Dedicated UI:** A view for auditors and admins to review these logs.
+## 3. Komvux Compliance i ISP
+Eftersom Komvux kräver specifika data för gymnasiala studier har följande lagts till:
 
-## 🎨 UI/UX Enhancements
-- **High-Contrast Design:** Improved readability for the AI Coach widget.
-- **Clear Navigation:** Added direct links to "**Rapportarkiv (CSN)**" in the sidebar and dashboard for Principals.
-- **Role-Aware Navigation:** "Se full analys" buttons now lead to relevant dashboards (AI Hub, Impact Dashboard, or Competence Analysis).
+### Backend-uppdateringar
+- **Databas**: Nya kolumner för `examensmål` och `krav_poäng` i tabellen `individual_study_plans`.
+- **Kurshantering**: Lagt till `poäng` (points) och `nivå` (level, t.ex. Gymnasial/Grundläggande) för alla planerade kurser.
+- **Service**: `IspService` hanterar nu korrekt mappning av dessa fält vid skapande och uppdatering av planer.
 
-## 🛠️ Implementation Summary
+### Frontend-uppdateringar
+- **Skapa/Redigera ISP**:
+  - Nytt fält för **Examensmål** (t.ex. "Högskoleförberedande examen").
+  - Nytt fält för **Krav på poäng** (standard 2500 poäng).
+  - Möjlighet att ange **Poäng** och **Nivå** för varje enskild kurs.
+- **Detaljvy**:
+  - Automatisk beräkning av totalt antal planerade poäng.
+  - Tydlig visning av om studenten når upp till poängkravet.
 
-### Backend
-- **ReportController:** Exposes endpoints for CSN data and GDPR logs.
-- **Services:** `CsnReportService`, `GdprAuditService`.
-- **Logic:** Integrated into existing `Attendance` and `AuditLog` systems.
+## 4. Verifiering
 
-### Frontend
-- **ReportLibrary:** Unified interface for all institutional reports.
-- **ReportGeneratorModal:** Parameter selection for specialized exports.
+### Genomförda tester:
+1. **Inloggning**: Inloggning som `bengt` ger direkt tillgång till ISP-hubben.
+2. **Skapa ISP**: Skapat en test-ISP med gymnasiala kurser (100 po per kurs).
+3. **Sidebar**: Verifierat att Bengts sidomeny är ren och fri från redundans.
+4. **Data**: Verifierat att backend sparar och returnerar `examensmal` och `points`.
 
-## ✅ Verification
-- [x] **CSN Reports:** Verified attendance calculation logic.
-- [x] **GDPR Logs:** Verified that report generation triggers access logs.
-- [x] **AI Coach:** Verified role-specific prompt generation and UI contrast.
+![ISP Dashboard integration](file:///C:/Users/alxpa/.gemini/antigravity/brain/e0c48126-bba2-4281-abbf-1d59e3bc8ab4/media__1771946821838.png)
 
----
-
-*This update marks a milestone in making EduFlex compliant and ready for the Swedish formal education market.*
+## Nästa Steg
+- Fortsatt testning av kvitteringsflödet (studentens bekräftelse).
+- Verifiering av CSN-rapporter för SYV (planerat i nästa sprint).

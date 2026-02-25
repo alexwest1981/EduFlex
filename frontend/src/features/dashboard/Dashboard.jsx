@@ -11,6 +11,7 @@ import GuardianDashboard from './GuardianDashboard';
 import MissionControl from '../principal/PrincipalDashboard';
 import MentorDashboard from './MentorDashboard';
 import HealthTeamDashboard from '../health/HealthTeamDashboard';
+import IspDashboard from '../isp/IspDashboard';
 
 // Import Mobile Gateway
 import MobileThemeResolver from '../../components/MobileThemes/MobileThemeResolver';
@@ -54,6 +55,9 @@ const Dashboard = ({ currentUser, myCourses }) => {
 
         case 'HALSOTEAM':
             return <HealthTeamDashboard />;
+
+        case 'SYV':
+            return <IspDashboard />;
 
         case 'MENTOR':
             return <MentorDashboard />;

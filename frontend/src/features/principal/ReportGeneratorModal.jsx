@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { X, Calendar, Book, Download, Loader2, FileSpreadsheet, FileText, Layers } from 'lucide-react';
+import { X, Calendar, Download, Loader2, FileSpreadsheet, FileText, FileCode } from 'lucide-react';
 import { api } from '../../services/api';
 import toast from 'react-hot-toast';
 
 /**
  * Modal för att generera CSN-rapporter.
  * Stödjer enskild kurs eller bulk-export (alla valda kurser).
- * Exportformat: JSON (rendererad tabell) eller Excel (.xlsx).
+ * Exportformat: JSON (rendererad tabell), Excel (.xlsx) eller XML (CSN-format).
  */
 const ReportGeneratorModal = ({ isOpen, onClose, onGenerated }) => {
     const [courses, setCourses] = useState([]);
@@ -15,7 +15,10 @@ const ReportGeneratorModal = ({ isOpen, onClose, onGenerated }) => {
     const [endDate, setEndDate] = useState('');
     const [loading, setLoading] = useState(false);
     const [fetchingCourses, setFetchingCourses] = useState(false);
-    const [exportFormat, setExportFormat] = useState('json'); // json = tabell, excel = .xlsx
+    const [exportFormat, setExportFormat] = useState('json'); // json | excel | xml
+    const [educationType, setEducationType] = useState('KOMVUX'); // KOMVUX | YH | HOGSKOLA
+    const [niva, setNiva] = useState('GY'); // GY | GR (Komvux only)
+    const [studieomfattning, setStudieomfattning] = useState(100); // 25/50/75/100
 
     useEffect(() => {
         if (isOpen) {
@@ -77,6 +80,46 @@ const ReportGeneratorModal = ({ isOpen, onClose, onGenerated }) => {
                 window.open(excelUrl, '_blank');
                 toast.success('Excel-rapport öppnas...');
                 onClose();
+
+            } else if (exportFormat === 'xml') {
+                // CSN XML-export – stöder flera kurser och alla utbildningstyper
+                const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+                const baseUrl = import.meta.env.VITE_API_URL || 'https://www.eduflexlms.se/api';
+
+                const response = await fetch(`${baseUrl}/reports/csn/xml`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        courseIds: selectedCourses,
+                        start: startStr,
+                        end: endStr,
+                        educationType,
+                        niva: educationType === 'KOMVUX' ? niva : null,
+                        studieomfattning: educationType === 'KOMVUX' ? studieomfattning : null
+                    })
+                });
+
+                if (!response.ok) {
+                    const text = await response.text();
+                    throw new Error(text || 'XML-generering misslyckades');
+                }
+
+                const blob = await response.blob();
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `CSN_Rapport_${educationType}_${new Date().toISOString().split('T')[0]}.xml`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+
+                toast.success(`CSN XML genererad för ${selectedCourses.length} kurs${selectedCourses.length > 1 ? 'er' : ''}!`);
+                onClose();
+
             } else if (selectedCourses.length === 1) {
                 // Enskild kurs → JSON direkt med query-params i URL:en
                 const response = await api.get(
@@ -197,7 +240,7 @@ const ReportGeneratorModal = ({ isOpen, onClose, onGenerated }) => {
                     {/* Exportformat */}
                     <div className="space-y-2">
                         <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Exportformat</label>
-                        <div className="grid grid-cols-2 gap-3">
+                        <div className="grid grid-cols-3 gap-3">
                             <button
                                 onClick={() => setExportFormat('json')}
                                 className={`flex items-center justify-center gap-2 py-3 rounded-2xl font-bold text-xs uppercase tracking-widest transition-all ${exportFormat === 'json'
@@ -206,7 +249,7 @@ const ReportGeneratorModal = ({ isOpen, onClose, onGenerated }) => {
                                     }`}
                             >
                                 <FileText size={16} />
-                                Tabell / CSV
+                                Tabell
                             </button>
                             <button
                                 onClick={() => setExportFormat('excel')}
@@ -217,15 +260,85 @@ const ReportGeneratorModal = ({ isOpen, onClose, onGenerated }) => {
                                     } ${selectedCourses.length > 1 ? 'opacity-50 cursor-not-allowed' : ''}`}
                             >
                                 <FileSpreadsheet size={16} />
-                                Excel (.xlsx)
+                                Excel
+                            </button>
+                            <button
+                                onClick={() => setExportFormat('xml')}
+                                className={`flex items-center justify-center gap-2 py-3 rounded-2xl font-bold text-xs uppercase tracking-widest transition-all ${exportFormat === 'xml'
+                                    ? 'bg-violet-600 text-white shadow-lg shadow-violet-100 dark:shadow-none'
+                                    : 'bg-gray-50 dark:bg-gray-900 text-gray-400 hover:text-gray-600'
+                                    }`}
+                            >
+                                <FileCode size={16} />
+                                CSN XML
                             </button>
                         </div>
                         {selectedCourses.length > 1 && exportFormat === 'json' && (
                             <p className="text-[10px] font-bold text-amber-500 ml-1">
-                                Bulk-export stödjer tabell/CSV. Excel-export fungerar för enskild kurs.
+                                Bulk-export stödjer tabell och XML. Excel-export fungerar för enskild kurs.
                             </p>
                         )}
                     </div>
+
+                    {/* XML-specifika inställningar */}
+                    {exportFormat === 'xml' && (
+                        <div className="space-y-4 bg-violet-50 dark:bg-violet-900/10 rounded-2xl p-5 border border-violet-100 dark:border-violet-800">
+                            <p className="text-[10px] font-black text-violet-500 uppercase tracking-widest">CSN XML-inställningar</p>
+
+                            {/* Utbildningstyp */}
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Utbildningstyp</label>
+                                <div className="grid grid-cols-3 gap-2">
+                                    {['KOMVUX', 'YH', 'HOGSKOLA'].map(type => (
+                                        <button
+                                            key={type}
+                                            onClick={() => setEducationType(type)}
+                                            className={`py-2 rounded-xl font-bold text-xs uppercase tracking-widest transition-all ${educationType === type
+                                                ? 'bg-violet-600 text-white'
+                                                : 'bg-white dark:bg-gray-800 text-gray-400 hover:text-gray-600 border border-gray-200 dark:border-gray-700'
+                                                }`}
+                                        >
+                                            {type === 'HOGSKOLA' ? 'Högskola' : type}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Komvux-specifika fält */}
+                            {educationType === 'KOMVUX' && (
+                                <div className="grid grid-cols-2 gap-3">
+                                    <div className="space-y-1.5">
+                                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Nivå</label>
+                                        <select
+                                            value={niva}
+                                            onChange={(e) => setNiva(e.target.value)}
+                                            className="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2.5 text-xs font-bold focus:ring-2 ring-violet-500 transition-all"
+                                        >
+                                            <option value="GY">GY – Gymnasial</option>
+                                            <option value="GR">GR – Grundläggande</option>
+                                        </select>
+                                    </div>
+                                    <div className="space-y-1.5">
+                                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Studietakt</label>
+                                        <select
+                                            value={studieomfattning}
+                                            onChange={(e) => setStudieomfattning(Number(e.target.value))}
+                                            className="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2.5 text-xs font-bold focus:ring-2 ring-violet-500 transition-all"
+                                        >
+                                            <option value={100}>100% – Heltid</option>
+                                            <option value={75}>75%</option>
+                                            <option value={50}>50% – Halvtid</option>
+                                            <option value={25}>25%</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            )}
+
+                            <p className="text-[10px] text-violet-400 font-bold">
+                                Skolkod och kommunkod konfigureras under CSN-inställningar i rapportarkivet.
+                            </p>
+                        </div>
+                    )}
 
                     <div className="pt-4">
                         <button
@@ -234,7 +347,10 @@ const ReportGeneratorModal = ({ isOpen, onClose, onGenerated }) => {
                             className="w-full bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white py-4 rounded-2xl font-black text-sm uppercase tracking-widest shadow-lg shadow-indigo-100 dark:shadow-none transition-all flex items-center justify-center gap-3"
                         >
                             {loading ? <Loader2 className="animate-spin" size={20} /> : <Download size={20} />}
-                            {loading ? 'Genererar...' : exportFormat === 'excel' ? 'Ladda ner Excel' : 'Skapa Rapport'}
+                            {loading ? 'Genererar...' :
+                                exportFormat === 'excel' ? 'Ladda ner Excel' :
+                                exportFormat === 'xml' ? 'Ladda ner CSN XML' :
+                                'Skapa Rapport'}
                         </button>
                     </div>
                 </div>

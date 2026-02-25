@@ -14,7 +14,11 @@ import {
     FileCheck,
     AlertCircle,
     User,
-    Loader2
+    Loader2,
+    Settings,
+    Save,
+    Trash2,
+    Eye
 } from 'lucide-react';
 import { api } from '../../services/api';
 import toast from 'react-hot-toast';
@@ -38,16 +42,71 @@ const ReportLibrary = () => {
     const [registerData, setRegisterData] = useState(null);
     const [registerLoading, setRegisterLoading] = useState(false);
 
+    // CSN-inställningar
+    const [csnSettings, setCsnSettings] = useState({
+        'csn.school.code': '',
+        'csn.municipality.code': '',
+        'csn.default.education.type': 'KOMVUX',
+        'csn.default.study.scope': '100'
+    });
+    const [csnSettingsLoading, setCsnSettingsLoading] = useState(false);
+    const [csnSettingsSaving, setCsnSettingsSaving] = useState(false);
+
     const filteredReports = reports.filter(r =>
-        (activeTab === 'ALL' || r.type === activeTab) &&
+        (activeTab === 'ALL' || r.reportType === activeTab) &&
         r.title.toLowerCase().includes(searchTerm.toLowerCase())
     );
+
+    useEffect(() => {
+        fetchArchivedReports();
+    }, []);
 
     useEffect(() => {
         if (activeTab === 'GDPR') {
             fetchGdprLogs();
         }
+        if (activeTab === 'CSN') {
+            fetchCsnSettings();
+        }
     }, [activeTab]);
+
+    const fetchArchivedReports = async () => {
+        try {
+            const response = await api.get('/reports/archive');
+            setReports(response || []);
+        } catch (error) {
+            console.error('Failed to fetch archived reports', error);
+        }
+    };
+
+    const openArchivedReport = async (report) => {
+        if (report.format !== 'JSON') {
+            toast('XML- och Excel-rapporter laddas ned direkt och sparas inte i arkivet.', { icon: 'ℹ️' });
+            return;
+        }
+        try {
+            const full = await api.get(`/reports/archive/${report.id}`);
+            const data = JSON.parse(full.dataJson);
+            setGeneratedCsnData(data);
+            setActiveTab('CSN');
+            toast.success(`Rapport öppnad: ${report.title}`);
+        } catch (error) {
+            console.error('Failed to open archived report', error);
+            toast.error('Kunde inte öppna rapporten');
+        }
+    };
+
+    const deleteArchivedReport = async (report, e) => {
+        e.stopPropagation();
+        try {
+            await api.delete(`/reports/archive/${report.id}`);
+            setReports(prev => prev.filter(r => r.id !== report.id));
+            toast.success('Rapport borttagen');
+        } catch (error) {
+            console.error('Failed to delete report', error);
+            toast.error('Kunde inte ta bort rapporten');
+        }
+    };
 
     const fetchGdprLogs = async () => {
         try {
@@ -56,6 +115,41 @@ const ReportLibrary = () => {
         } catch (error) {
             console.error('Failed to fetch GDPR logs', error);
             toast.error('Kunde inte hämta GDPR-loggar');
+        }
+    };
+
+    const fetchCsnSettings = async () => {
+        setCsnSettingsLoading(true);
+        try {
+            const all = await api.get('/settings');
+            const keys = Object.keys(csnSettings);
+            const updates = {};
+            keys.forEach(key => {
+                const found = all.find(s => s.settingKey === key);
+                if (found) updates[key] = found.settingValue || '';
+            });
+            setCsnSettings(prev => ({ ...prev, ...updates }));
+        } catch (error) {
+            console.error('Failed to fetch CSN settings', error);
+        } finally {
+            setCsnSettingsLoading(false);
+        }
+    };
+
+    const saveCsnSettings = async () => {
+        setCsnSettingsSaving(true);
+        try {
+            await Promise.all(
+                Object.entries(csnSettings).map(([key, value]) =>
+                    api.put(`/settings/${key}`, { value })
+                )
+            );
+            toast.success('CSN-inställningar sparade');
+        } catch (error) {
+            console.error('Failed to save CSN settings', error);
+            toast.error('Kunde inte spara CSN-inställningar');
+        } finally {
+            setCsnSettingsSaving(false);
         }
     };
 
@@ -290,6 +384,101 @@ const ReportLibrary = () => {
                         </div>
                     </div>
 
+                    {/* CSN-inställningar */}
+                    <div className="bg-white dark:bg-[#1c1c1e] rounded-[2.5rem] p-8 border border-gray-100 dark:border-gray-800 shadow-sm">
+                        <div className="flex items-center gap-4 mb-6">
+                            <div className="p-4 bg-violet-50 dark:bg-violet-900/20 rounded-2xl text-violet-600">
+                                <Settings size={28} />
+                            </div>
+                            <div>
+                                <h3 className="text-lg font-black">CSN-inställningar</h3>
+                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Skolkod och kommunkod för XML-rapporter</p>
+                            </div>
+                        </div>
+
+                        {csnSettingsLoading ? (
+                            <div className="flex justify-center py-6">
+                                <Loader2 className="animate-spin text-violet-400" size={24} />
+                            </div>
+                        ) : (
+                            <div className="space-y-4">
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-1.5">
+                                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">
+                                            Skolkod (CSN)
+                                        </label>
+                                        <input
+                                            type="text"
+                                            placeholder="T.ex. 1234"
+                                            value={csnSettings['csn.school.code']}
+                                            onChange={e => setCsnSettings(p => ({ ...p, 'csn.school.code': e.target.value }))}
+                                            maxLength={5}
+                                            className="w-full bg-gray-50 dark:bg-gray-900 border-none rounded-2xl px-4 py-3 text-sm font-bold shadow-inner focus:ring-2 ring-violet-500 transition-all"
+                                        />
+                                        <p className="text-[10px] text-gray-400 font-bold ml-1">4–5 siffror, tilldelas av CSN</p>
+                                    </div>
+                                    <div className="space-y-1.5">
+                                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">
+                                            Kommunkod
+                                        </label>
+                                        <input
+                                            type="text"
+                                            placeholder="T.ex. 1280"
+                                            value={csnSettings['csn.municipality.code']}
+                                            onChange={e => setCsnSettings(p => ({ ...p, 'csn.municipality.code': e.target.value }))}
+                                            maxLength={4}
+                                            className="w-full bg-gray-50 dark:bg-gray-900 border-none rounded-2xl px-4 py-3 text-sm font-bold shadow-inner focus:ring-2 ring-violet-500 transition-all"
+                                        />
+                                        <p className="text-[10px] text-gray-400 font-bold ml-1">4 siffror – läns- och kommunkod</p>
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-1.5">
+                                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">
+                                            Standard utbildningstyp
+                                        </label>
+                                        <select
+                                            value={csnSettings['csn.default.education.type']}
+                                            onChange={e => setCsnSettings(p => ({ ...p, 'csn.default.education.type': e.target.value }))}
+                                            className="w-full bg-gray-50 dark:bg-gray-900 border-none rounded-2xl px-4 py-3 text-sm font-bold shadow-inner focus:ring-2 ring-violet-500 transition-all"
+                                        >
+                                            <option value="KOMVUX">Komvux</option>
+                                            <option value="YH">Yrkeshögskola (YH)</option>
+                                            <option value="HOGSKOLA">Högskola</option>
+                                        </select>
+                                    </div>
+                                    <div className="space-y-1.5">
+                                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">
+                                            Standard studietakt
+                                        </label>
+                                        <select
+                                            value={csnSettings['csn.default.study.scope']}
+                                            onChange={e => setCsnSettings(p => ({ ...p, 'csn.default.study.scope': e.target.value }))}
+                                            className="w-full bg-gray-50 dark:bg-gray-900 border-none rounded-2xl px-4 py-3 text-sm font-bold shadow-inner focus:ring-2 ring-violet-500 transition-all"
+                                        >
+                                            <option value="100">100% – Heltid</option>
+                                            <option value="75">75%</option>
+                                            <option value="50">50% – Halvtid</option>
+                                            <option value="25">25%</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div className="flex justify-end pt-2">
+                                    <button
+                                        onClick={saveCsnSettings}
+                                        disabled={csnSettingsSaving}
+                                        className="flex items-center gap-2 px-8 py-3 bg-violet-600 hover:bg-violet-700 disabled:opacity-50 text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-lg transition-all"
+                                    >
+                                        {csnSettingsSaving ? <Loader2 className="animate-spin" size={16} /> : <Save size={16} />}
+                                        Spara inställningar
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
                     {/* CSN-resultat med nya kolumner */}
                     {generatedCsnData && (
                         <div className="bg-white dark:bg-[#1c1c1e] rounded-[2.5rem] p-8 border border-gray-100 dark:border-gray-800 shadow-sm">
@@ -356,49 +545,91 @@ const ReportLibrary = () => {
                     )}
                 </div>
             ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    {filteredReports.map((report) => (
-                        <div key={report.id} className="bg-white dark:bg-[#1c1c1e] p-6 rounded-[2rem] border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-xl transition-all group flex flex-col justify-between">
-                            <div>
-                                <div className="flex justify-between items-start mb-6">
-                                    <div className="p-3 bg-gray-50 dark:bg-gray-800 rounded-2xl group-hover:scale-110 transition-transform">
-                                        {getIcon(report.type)}
-                                    </div>
-                                    <button className="text-gray-300 hover:text-indigo-600">
-                                        <ExternalLink size={18} />
-                                    </button>
-                                </div>
-                                <h3 className="font-black text-gray-900 dark:text-white mb-1 group-hover:text-indigo-600 transition-colors">{report.title}</h3>
-                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-4">{report.type}</p>
+                <div className="space-y-6 animate-in fade-in duration-300">
+                    {filteredReports.length === 0 && (
+                        <div className="text-center py-16 text-gray-400">
+                            <Archive size={48} className="mx-auto mb-4 opacity-30" />
+                            <p className="font-black">Inga rapporter i arkivet</p>
+                            <p className="text-xs mt-1">Generera en CSN-rapport så sparas den automatiskt här.</p>
+                        </div>
+                    )}
 
-                                <div className="space-y-2 mt-4 text-[10px] font-bold text-gray-500">
-                                    <div className="flex items-center gap-2">
-                                        <Clock size={12} /> {report.date}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {filteredReports.map((report) => (
+                            <div
+                                key={report.id}
+                                onClick={() => openArchivedReport(report)}
+                                className="bg-white dark:bg-[#1c1c1e] p-6 rounded-[2rem] border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-xl hover:border-indigo-200 dark:hover:border-indigo-700 transition-all group flex flex-col justify-between cursor-pointer"
+                            >
+                                <div>
+                                    <div className="flex justify-between items-start mb-5">
+                                        <div className="p-3 bg-gray-50 dark:bg-gray-800 rounded-2xl group-hover:scale-110 transition-transform">
+                                            {getIcon(report.reportType)}
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <span className={`text-[10px] font-black px-2.5 py-1 rounded-lg uppercase tracking-widest ${
+                                                report.format === 'JSON' ? 'bg-indigo-50 text-indigo-600 dark:bg-indigo-900/20' :
+                                                report.format === 'XML'  ? 'bg-violet-50 text-violet-600 dark:bg-violet-900/20' :
+                                                                           'bg-emerald-50 text-emerald-600 dark:bg-emerald-900/20'
+                                            }`}>
+                                                {report.format}
+                                            </span>
+                                            <button
+                                                onClick={(e) => deleteArchivedReport(report, e)}
+                                                className="p-1.5 text-gray-300 hover:text-red-500 rounded-lg transition-colors"
+                                                title="Ta bort"
+                                            >
+                                                <Trash2 size={14} />
+                                            </button>
+                                        </div>
                                     </div>
-                                    <div className="flex items-center gap-2">
-                                        <FileType size={12} /> {report.size}
+
+                                    <h3 className="font-black text-gray-900 dark:text-white mb-1 group-hover:text-indigo-600 transition-colors text-sm leading-snug">
+                                        {report.title}
+                                    </h3>
+                                    {report.educationType && (
+                                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">
+                                            {report.educationType}
+                                        </p>
+                                    )}
+
+                                    <div className="space-y-1.5 mt-4 text-[10px] font-bold text-gray-400">
+                                        <div className="flex items-center gap-2">
+                                            <Clock size={11} />
+                                            {new Date(report.createdAt).toLocaleString('sv-SE', { dateStyle: 'short', timeStyle: 'short' })}
+                                        </div>
+                                        {report.periodStart && (
+                                            <div className="flex items-center gap-2">
+                                                <FileType size={11} />
+                                                {report.periodStart} → {report.periodEnd}
+                                            </div>
+                                        )}
+                                        <div className="flex items-center gap-2">
+                                            <User size={11} />
+                                            {report.rowCount} elev{report.rowCount !== 1 ? 'er' : ''} · {report.generatedBy}
+                                        </div>
                                     </div>
+                                </div>
+
+                                <div className="w-full mt-5 flex items-center justify-center gap-2 py-2.5 bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded-xl font-bold group-hover:bg-indigo-600 group-hover:text-white transition-all text-xs">
+                                    {report.format === 'JSON' ? <Eye size={14} /> : <Download size={14} />}
+                                    {report.format === 'JSON' ? 'Öppna rapport' : 'Återgenerera för nedladdning'}
                                 </div>
                             </div>
+                        ))}
 
-                            <button className="w-full mt-6 flex items-center justify-center gap-2 py-3 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white rounded-xl font-bold group-hover:bg-indigo-600 group-hover:text-white transition-all text-xs">
-                                <Download size={14} />
-                                Hämta PDF
-                            </button>
-                        </div>
-                    ))}
-
-                    {/* Knapp för att generera ny rapport */}
-                    <div
-                        onClick={() => setIsModalOpen(true)}
-                        className="bg-indigo-50 dark:bg-indigo-900/10 p-6 rounded-[2rem] border-2 border-dashed border-indigo-200 dark:border-indigo-800 flex flex-col items-center justify-center text-center gap-4 group cursor-pointer hover:bg-indigo-100 transition-colors"
-                    >
-                        <div className="p-4 bg-white dark:bg-indigo-900/20 rounded-full text-indigo-600">
-                            <Archive size={32} />
-                        </div>
-                        <div>
-                            <h4 className="font-black text-indigo-900 dark:text-indigo-200">Ny Rapport</h4>
-                            <p className="text-[10px] font-bold text-indigo-400 uppercase">Generera sammanställning</p>
+                        {/* Knapp för att generera ny rapport */}
+                        <div
+                            onClick={() => setIsModalOpen(true)}
+                            className="bg-indigo-50 dark:bg-indigo-900/10 p-6 rounded-[2rem] border-2 border-dashed border-indigo-200 dark:border-indigo-800 flex flex-col items-center justify-center text-center gap-4 group cursor-pointer hover:bg-indigo-100 dark:hover:bg-indigo-900/20 transition-colors min-h-[220px]"
+                        >
+                            <div className="p-4 bg-white dark:bg-indigo-900/20 rounded-full text-indigo-600 group-hover:scale-110 transition-transform">
+                                <Archive size={32} />
+                            </div>
+                            <div>
+                                <h4 className="font-black text-indigo-900 dark:text-indigo-200">Ny Rapport</h4>
+                                <p className="text-[10px] font-bold text-indigo-400 uppercase">Generera sammanställning</p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -411,6 +642,8 @@ const ReportLibrary = () => {
                 onGenerated={(data) => {
                     setGeneratedCsnData(data);
                     setActiveTab('CSN');
+                    // Uppdatera arkivet i bakgrunden så nyaste rapporten syns direkt
+                    fetchArchivedReports();
                 }}
             />
 
