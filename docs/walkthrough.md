@@ -1,6 +1,6 @@
-# Walkthrough: SYV Hub & Studieplaner (ISP) - v3.2.5
+# Walkthrough: Enterprise Readiness & Pilot Kit - v3.3.1
 
-Jag har genomfört en omfattande refaktorisering av SYV-upplevelsen för att prioritera den Individuella Studieplanen (ISP) och säkerställa att den följer Komvux regler för poäng och nivåer.
+Jag har genomfört en omfattande uppgradering av studieplanshanteringen (ISP) med AI-stöd, PDF-export och modern visualisering.
 
 ## 1. Åtgärdat: SYV Inloggningsproblem
 Användaren `bengt` (SYV) kan nu logga in utan problem. Felet berodde på en korrupt lösenordshash i den lokala databasen, vilket nu är synkroniserat.
@@ -16,22 +16,19 @@ SYV-användare landar nu direkt i **Studieplaner (ISP)** genom den primära "Öv
 - **Filtrerad Elevlista**: Vid skapande av ny ISP filtreras nu studentlistan strikt så att enbart aktiva elever (`isActive = true`) med rollen `STUDENT` visas. Detta förhindrar att administratörer eller inaktiva konton dyker upp i listan.
 - **Live Data**: ISP-vyn hämtar nu studentlista och planer direkt från backend utan mock-data.
 
-## 3. Komvux Compliance i ISP
-Eftersom Komvux kräver specifika data för gymnasiala studier har följande lagts till:
+## 1. 🧠 AI-Powered Kursförslag (v3.3.0)
+SYV kan nu generera intelligenta kursförslag baserat på elevens examensmål (t.ex. "Högskoleförberedande examen") via Google Gemini.
+- **Validering**: Nytt fält för att dokumentera tidigare betyg och tillgodoräknande direkt i planen.
 
-### Backend-uppdateringar
-- **Databas**: Nya kolumner för `examensmål` och `krav_poäng` i tabellen `individual_study_plans`.
-- **Kurshantering**: Lagt till `poäng` (points) och `nivå` (level, t.ex. Gymnasial/Grundläggande) för alla planerade kurser.
-- **Service**: `IspService` hanterar nu korrekt mappning av dessa fält vid skapande och uppdatering av planer.
+## 2. 📄 Komvux Compliance PDF Export
+En officiell PDF-export har införts för att möta Skolverkets och CSN:s krav.
+- **Formatering**: Korrekt uppställning av poäng, nivåer (Gymnasial/Grundläggande) och pace.
 
-### Frontend-uppdateringar
-- **Skapa/Redigera ISP**:
-  - Nytt fält för **Examensmål** (t.ex. "Högskoleförberedande examen").
-  - Nytt fält för **Krav på poäng** (standard 2500 poäng).
-  - Möjlighet att ange **Poäng** och **Nivå** för varje enskild kurs.
-- **Detaljvy**:
-  - Automatisk beräkning av totalt antal planerade poäng.
-  - Tydlig visning av om studenten når upp till poängkravet.
+## 3. 📊 Progress Visualization
+Elevens framsteg visualiseras nu med en dynamisk mätare i realtid som jämför planerade poäng mot slutmålet (t.ex. 2500 poäng).
+
+## 4. 🧪 Verifiering & Testning
+Samtliga nya ISP-funktioner har verifierats i den isolerade miljön och är nu redo för produktion. Backend-restarts har genomförts utan problem.
 
 ## 4. Verifiering
 

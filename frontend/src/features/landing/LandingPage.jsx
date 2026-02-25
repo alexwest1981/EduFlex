@@ -378,6 +378,7 @@ const LandingPage = () => {
                         <a className="text-sm font-medium hover:text-brand-teal transition-colors" href="#features">{t('landing.nav.features')}</a>
                         <button onClick={() => navigate('/features#gamification')} className="text-sm font-medium hover:text-brand-teal transition-colors">Gamification</button>
                         <button onClick={() => navigate('/features#showcase')} className="text-sm font-medium hover:text-brand-teal transition-colors">Showcase</button>
+                        <button onClick={() => navigate('/pricing')} className="text-sm font-medium hover:text-brand-teal transition-colors">Prissättning</button>
                         <button onClick={() => navigate('/features#highlights')} className="text-sm font-medium hover:text-brand-teal transition-colors">Teknologi</button>
                     </div>
 

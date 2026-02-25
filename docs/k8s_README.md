@@ -163,6 +163,8 @@ kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/late
 
 - Configure TLS certificates for production
 - Set up monitoring with Prometheus/Grafana
+- [Produktionsmiljö & Skalbarhet (Helm)](./kubernetes/production_setup.md)
+- [Simulerade Load-test Resultat](./kubernetes/load_test_results.md)
 - Configure backup automation
 - Implement CI/CD pipeline
 

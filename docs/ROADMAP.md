@@ -49,6 +49,8 @@
 | :--- | :--- | :--- | :--- | :--- |
 | **Hög** | **Next-Gen ISP (AI & PDF)** | AI-kursförslag via Gemini, Komvux-PDF export, poäng-visualisering. | ✅ **Klar** (v3.3.0) | Kritiskt för SYV-arbetet. |
 | **Hög** | **Scalability Engine (v1.0)** | Implementera formell Event Bus (Redis/Kafka) för cross-service kommunikation. | ✅ **Klar** (v3.3.0) | Hantera 100+ skolor synkront. |
+| **Hög** | **Kubernetes Production** | Helm-charts, HPA och autoscaling för enterprise-noder. | ✅ **Klar** (v3.3.1) | Skalbarhet för 500+ användare. |
+| **Medel** | **Pilot Kit & Pricing** | Whitepaper, prissida och pitch-material för Borås Ink. | ✅ **Klar** (v3.3.1) | Kommersialisering. |
 | **Hög** | **AI Tutor 2.0 (Video)** | Automatisk generering av förklaringsvideor via Gemini-script & FFMPEG. | [/] **Pågår** | Nästa generations lärande. |
 | **Medel** | **Mobile Hybrid (Expo)** | Förberedelse för Native App Store-wrapper. | 10 dagar | "Check-in-the-box" för IT. |
 

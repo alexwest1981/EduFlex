@@ -14,6 +14,7 @@ import Layout from './components/Layout';
 import LandingPage from './features/landing/LandingPage';
 import FeaturesPage from './features/landing/FeaturesPage';
 import Login from './features/auth/Login';
+import PricingPage from './features/landing/PricingPage';
 import RegisterOrganization from './features/auth/RegisterOrganization';
 import OAuth2Callback from './features/auth/OAuth2Callback';
 import LtiSuccess from './features/auth/LtiSuccess';
@@ -182,6 +183,7 @@ const AppRoutes = () => {
                 <Route path="/lti-success" element={<LtiSuccess />} />
                 <Route path="/lti/deep-link" element={<LtiDeepLinking />} />
                 <Route path="/features" element={<FeaturesPage />} />
+                <Route path="/pricing" element={<PricingPage />} />
 
                 {/* ROOT ROUTE: Landing for Guests / Dashboard for Users */}
                 <Route path="/" element={
