@@ -86,6 +86,11 @@ EduFlex is a high-performance, multi-tenant Learning Management System (LMS) des
 - Deep integration with national education registries.
 - Advanced Predictive Analytics for student success.
 
+## 9. Risk Management & Commercial Scalability
+- **Key-Man Risk Mitigation**: High focus on standardized architectural patterns (SOLID, Spring Boot, React) and extensive documentation ensures the system is "Transfer Friendly" for larger teams. Automated DevOps scripts further reduce dependency on individual knowledge.
+- **Mobile Strategy**: Current PWA (Progressive Web App) architecture provides offline-first capabilities and push notifications, covering ~80% of native app use cases. A dedicated Native Hybrid app (Expo/React Native) is scheduled for Q3 2026 to capture the frontline worker segment.
+- **Commercial & ARR Path**: Transitioning from a technical proof-of-concept to a "Commercial Pilot" phase. Implementation of the `Pilot Kit`, `Pricing Tiers`, and Stripe-integrated subscription engine provides a clear technical path to Annual Recurring Revenue (ARR).
+
 ---
 *Last Updated: 2026-02-25*
 *Status: Production Ready (v3.4.1)*
