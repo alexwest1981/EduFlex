@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
-import { LayoutDashboard, FileText, User, Settings, LogOut, Layers, Menu, X, Award, Zap, Moon, Sun, Calendar, BookOpen, TrendingUp, Users, HelpCircle, Store, Library, ClipboardList, ShieldCheck, MessageSquare, Heart, Thermometer, BarChart2, Brain, FolderOpen, Link2, GraduationCap } from 'lucide-react';
+import { LayoutDashboard, FileText, User, Settings, LogOut, Layers, Menu, X, Award, Zap, Moon, Sun, Calendar, BookOpen, TrendingUp, Users, HelpCircle, Store, Library, ClipboardList, ShieldCheck, MessageSquare, Heart, Thermometer, BarChart2, Brain, FolderOpen, Link2, GraduationCap, Briefcase } from 'lucide-react';
 import { useAppContext } from '../../context/AppContext';
 import { useModules } from '../../context/ModuleContext';
 import { useTranslation } from 'react-i18next';
@@ -101,7 +101,7 @@ const StandardLayout = ({ children }) => {
             ...(roleName === 'TEACHER' ? [{ path: '/?tab=COURSES', icon: <BookOpen size={20} />, label: t('sidebar.my_courses') || 'Mina kurser' }] : []),
             ...(roleName === 'STUDENT' ? [{ path: '/my-courses', icon: <BookOpen size={20} />, label: t('sidebar.my_courses') || 'Mina kurser' }] : []),
             ...(roleName === 'STUDENT' || roleName === 'ROLE_STUDENT' ? [{ path: '/my-study-plan', icon: <GraduationCap size={20} />, label: 'Min Studieplan (ISP)' }] : []),
-            ...(roleName === 'STUDENT' || roleName === 'ROLE_STUDENT' ? (licenseTier !== 'BASIC' ? [{ path: '/ai-hub', icon: <Brain size={20} />, label: 'EduAI Hub' }] : []) : []),
+            ...(roleName === 'STUDENT' || roleName === 'ROLE_STUDENT' ? (licenseTier !== 'BASIC' ? [{ path: '/ai-hub', icon: <Brain size={20} />, label: 'EduAI Hub' }, { path: '/career', icon: <Briefcase size={20} />, label: 'EduCareer' }] : []) : []),
             ...(roleName.includes('STUDENT') || roleName.includes('TEACHER') || isAdmin ? [{ path: '/ebooks', icon: <Library size={18} />, label: t('sidebar.ebooks') }] : []),
         ],
         tools: [

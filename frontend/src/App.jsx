@@ -76,6 +76,7 @@ import ImpactDashboard from './features/impact/ImpactDashboard';
 import HealthCheckDashboard from './features/admin/HealthCheckDashboard';
 import DeveloperSettings from './features/settings/DeveloperSettings';
 import RoiCenter from './features/analytics/RoiCenter';
+import EduCareerPortal from './features/career/EduCareerPortal';
 
 // --- ISP (Individuell Studieplan) ---
 import IspDashboard from './features/isp/IspDashboard';
@@ -564,6 +565,18 @@ const AppRoutes = () => {
                         {licenseTier !== 'BASIC' ? (
                             <Layout currentUser={currentUser} handleLogout={logout}>
                                 <EduAiHubPage />
+                            </Layout>
+                        ) : (
+                            <Navigate to="/" replace />
+                        )}
+                    </ProtectedRoute>
+                } />
+
+                <Route path="/career" element={
+                    <ProtectedRoute roles={['STUDENT', 'ROLE_STUDENT']}>
+                        {licenseTier !== 'BASIC' ? (
+                            <Layout currentUser={currentUser} handleLogout={logout}>
+                                <EduCareerPortal />
                             </Layout>
                         ) : (
                             <Navigate to="/" replace />

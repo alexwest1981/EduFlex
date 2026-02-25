@@ -41,6 +41,10 @@
     *   **Automated Knowledge Injection**: AI-genererade studiepass läggs nu automatiskt in i studentens Spaced Repetition-kö för långsiktig retention.
     *   **Radar Chart Precision**: Uppdaterat beräkningsmodellen för Live Radar så att den väger samman både SM-2 baserad mastery och live-sessionsresultat för en korrekt kognitiv profil.
     *   **Service Integration**: Fullständig synkronisering mellan `EduAIService`, `QuizService` och `StudentActivityService` mot AI Huben.
+*   **💼 EduCareer Portal (v3.4.0):**
+    - **JobTech API Integration**: Nu kan elever hitta lokala LIA-platser och praktikplatser direkt i plattformen via Arbetsförmedlingens realtidsdata.
+    - **AI Match Score**: Visualiserar hur väl en praktikplats matchar elevens unika kognitiva profil och kursmål.
+    - **Premium UI**: Ny glassmorphic dashboard placerad under Intelligence Center för en sömlös karriärresa.
 
 *   **📡 Production Scalability (v3.3.1):**
     - **Kubernetes Production Guide**: Formell guide för Helm-deployments på DigitalOcean/AWS EKS.
