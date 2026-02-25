@@ -94,7 +94,16 @@ public class EduCareerService {
     }
 
     private boolean isArbetspraktik(Map<String, Object> hit) {
-        String description = (String) hit.get("description");
+        Object descObj = hit.get("description");
+        String description = null;
+
+        if (descObj instanceof Map) {
+            Map<String, Object> descMap = (Map<String, Object>) descObj;
+            description = (String) descMap.get("text");
+        } else if (descObj instanceof String) {
+            description = (String) descObj;
+        }
+
         if (description == null)
             return false;
         String descLower = description.toLowerCase();
