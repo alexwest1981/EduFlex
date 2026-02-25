@@ -310,6 +310,8 @@ public class SecurityConfig {
 
                 // OAuth2 Login (for social login and Keycloak browser-based SSO)
                 http.oauth2Login(oauth2 -> oauth2
+                                .authorizationEndpoint(authorization -> authorization
+                                                .baseUri("/api/oauth2/authorization"))
                                 .userInfoEndpoint(userInfo -> userInfo
                                                 .userService(customOAuth2UserService)
                                                 .oidcUserService(customOidcUserService))

@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { User, Lock, LogIn, AlertCircle, Loader2 } from 'lucide-react';
 import { useAppContext } from '../../context/AppContext';
+import bankIdLogo from '../../assets/auth/bankid-logo.png';
+import keycloakLogo from '../../assets/auth/keycloak-logo.png';
 
 const Login = () => {
     const { t } = useTranslation();
@@ -298,10 +300,20 @@ const Login = () => {
                     <div className="space-y-3">
                         <button
                             type="button"
-                            onClick={handleKeycloakLogin}
-                            className="w-full bg-indigo-50 dark:bg-indigo-900/20 hover:bg-indigo-100 dark:hover:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300 font-bold py-3.5 rounded-xl border border-indigo-200 dark:border-indigo-800 transition-all flex items-center justify-center gap-3 group text-sm shadow-sm"
+                            onClick={() => window.location.href = `${API_BASE}/oauth2/authorization/bankid`}
+                            className="w-full bg-white dark:bg-[#282a2c] hover:bg-gray-50 dark:hover:bg-[#3c4043] text-gray-700 dark:text-white font-bold py-3.5 rounded-xl border border-gray-200 dark:border-[#3c4043] hover:border-[#003f8a] transition-all flex items-center justify-center gap-3 group text-sm shadow-sm hover:shadow-md"
                         >
-                            Logga in med Keycloak
+                            <img src={bankIdLogo} alt="BankID" className="h-6 w-auto object-contain" />
+                            Logga in med BankID
+                        </button>
+
+                        <button
+                            type="button"
+                            onClick={handleKeycloakLogin}
+                            className="w-full bg-white dark:bg-[#282a2c] hover:bg-gray-50 dark:hover:bg-[#3c4043] text-gray-700 dark:text-white font-bold py-3.5 rounded-xl border border-gray-200 dark:border-[#3c4043] hover:border-blue-400 transition-all flex items-center justify-center gap-3 group text-sm shadow-sm hover:shadow-md"
+                        >
+                            <img src={keycloakLogo} alt="Keycloak" className="h-5 w-auto object-contain" />
+                            Logga in med Keycloak (SSO)
                         </button>
                         <button type="button" onClick={handleGoogleLogin} className="w-full bg-white dark:bg-[#282a2c] hover:bg-gray-50 dark:hover:bg-[#3c4043] text-gray-700 dark:text-white font-bold py-3.5 rounded-xl border border-gray-200 dark:border-[#3c4043] hover:border-gray-300 dark:hover:border-gray-500 transition-all flex items-center justify-center gap-3 group text-sm shadow-sm hover:shadow-md">
                             Logga in med Google

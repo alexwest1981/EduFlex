@@ -35,7 +35,13 @@
 
 <div id="-svenska"></div>
 
-## 🚀 Senaste uppdateringarna (25 feb 2026 – v3.3.1: Enterprise Scaling & Pilot Kit)
+## 🚀 Senaste uppdateringarna (25 feb 2026 – AI Hub & Radar Refinement)
+*   **🧠 AI Hub & Spaced Repetition Refinement:**
+    *   **Unified Category Mapping**: Implementerat en robust mappningsmotor (`EduAiHubService`) som förenar data från Quiz, Lektioner, AI-sessioner och övningar till de fyra Radar-kategorierna (Teori, Praktik, Focus, Analys).
+    *   **Automated Knowledge Injection**: AI-genererade studiepass läggs nu automatiskt in i studentens Spaced Repetition-kö för långsiktig retention.
+    *   **Radar Chart Precision**: Uppdaterat beräkningsmodellen för Live Radar så att den väger samman både SM-2 baserad mastery och live-sessionsresultat för en korrekt kognitiv profil.
+    *   **Service Integration**: Fullständig synkronisering mellan `EduAIService`, `QuizService` och `StudentActivityService` mot AI Huben.
+
 *   **📡 Production Scalability (v3.3.1):**
     - **Kubernetes Production Guide**: Formell guide för Helm-deployments på DigitalOcean/AWS EKS.
     - **Load Test Verified**: Simulerade metrics för 500+ samtidiga användare med bibehållen prestanda (<200ms svarstid).

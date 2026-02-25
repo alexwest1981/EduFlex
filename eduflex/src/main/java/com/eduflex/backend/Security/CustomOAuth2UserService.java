@@ -19,11 +19,14 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     private final UserRepository userRepository;
     private final com.eduflex.backend.repository.RoleRepository roleRepository;
+    private final com.eduflex.backend.repository.UserBankIdIdentityRepository bankIdRepository;
 
     public CustomOAuth2UserService(UserRepository userRepository,
-            com.eduflex.backend.repository.RoleRepository roleRepository) {
+            com.eduflex.backend.repository.RoleRepository roleRepository,
+            com.eduflex.backend.repository.UserBankIdIdentityRepository bankIdRepository) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
+        this.bankIdRepository = bankIdRepository;
     }
 
     @Override
@@ -53,8 +56,10 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         }
 
         if (email == null || email.isEmpty()) {
-            // Some providers (like GitHub) might verify emails via API call if null here.
-            // For simplicity, we require email.
+            // BankID might not provide email, only SSN
+            if ("bankid".equalsIgnoreCase(registrationId)) {
+                return handleBankIdUser(registrationId, oAuth2User);
+            }
             throw new OAuth2AuthenticationException("Email not found from OAuth2 provider");
         }
 
@@ -68,6 +73,47 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             user = userRepository.save(user);
         } else {
             user = registerNewUser(email, name);
+        }
+
+        return new CustomOAuth2User(user, oAuth2User);
+    }
+
+    private OAuth2User handleBankIdUser(String registrationId, OAuth2User oAuth2User) {
+        String ssn = (String) oAuth2User.getAttribute("ssn");
+        if (ssn == null)
+            ssn = (String) oAuth2User.getAttribute("personal_number");
+        if (ssn == null)
+            ssn = (String) oAuth2User.getAttribute("sub");
+
+        if (ssn == null) {
+            throw new OAuth2AuthenticationException("BankID: SSN not found in attributes");
+        }
+
+        // Use SHA-256 for searching
+        String ssnHash = org.apache.commons.codec.digest.DigestUtils.sha256Hex(ssn);
+
+        Optional<com.eduflex.backend.model.UserBankIdIdentity> identityOptional = bankIdRepository
+                .findBySsnHash(ssnHash);
+        User user;
+
+        if (identityOptional.isPresent()) {
+            user = identityOptional.get().getUser();
+            user.setLastLogin(LocalDateTime.now());
+            user.setLoginCount(user.getLoginCount() + 1);
+            user = userRepository.save(user);
+        } else {
+            // For Sandbox: create a dummy email if none provided
+            String name = oAuth2User.getAttribute("name");
+            String email = oAuth2User.getAttribute("email");
+            if (email == null)
+                email = "bankid-" + ssnHash.substring(0, 8) + "@eduflexlms.se";
+
+            user = registerNewUser(email, name);
+            user.setSsn(ssn); // Optional: store encrypted ssn for reference
+            user = userRepository.save(user);
+
+            // Link BankID identity
+            bankIdRepository.save(new com.eduflex.backend.model.UserBankIdIdentity(user, ssnHash));
         }
 
         return new CustomOAuth2User(user, oAuth2User);

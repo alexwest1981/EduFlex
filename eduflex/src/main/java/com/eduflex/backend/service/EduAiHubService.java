@@ -71,8 +71,10 @@ public class EduAiHubService {
     public Map<String, Integer> getRadarStats(Long userId) {
         // --- 1. Fetch data from SpacedRepetition (Flashcards/Queue) ---
         List<SpacedRepetitionItem> allSpacedItems = spacedRepetitionRepository.findByUserId(userId);
+
+        // Group items using determineRadarCategory
         Map<String, List<SpacedRepetitionItem>> groupedSpacedItems = allSpacedItems.stream()
-                .collect(Collectors.groupingBy(item -> item.getCategory() != null ? item.getCategory() : "Allmänt"));
+                .collect(Collectors.groupingBy(item -> determineRadarCategory(item.getCategory())));
 
         // --- 2. Fetch data from AiSessionResult (Smart Sessions) ---
         List<AiSessionResult> allSessionItems = aiSessionResultRepository.findByUserId(userId);
@@ -99,15 +101,9 @@ public class EduAiHubService {
             double sessionTotal = 0.0;
             int sessionCount = 0;
             for (AiSessionResult session : allSessionItems) {
-                boolean matchesCategory = false;
-                if ("Teori".equals(cat) && "SUMMARY".equals(session.getSessionType()))
-                    matchesCategory = true;
-                if ("Praktik".equals(cat) && "PRACTICE".equals(session.getSessionType()))
-                    matchesCategory = true;
-                if ("Analys".equals(cat) && "EXAM_PREP".equals(session.getSessionType()))
-                    matchesCategory = true;
+                String sessionCat = determineRadarCategory(session.getSessionType());
 
-                if (matchesCategory && session.getMaxScore() > 0) {
+                if (cat.equals(sessionCat) && session.getMaxScore() > 0) {
                     sessionTotal += (double) session.getScore() / session.getMaxScore();
                     sessionCount++;
                 }
@@ -126,6 +122,23 @@ public class EduAiHubService {
             }
         }
         return stats;
+    }
+
+    /**
+     * Helper to map various source types/categories to the 4 main Radar segments.
+     */
+    private String determineRadarCategory(String category) {
+        if (category == null)
+            return "Teori";
+        String cat = category.toUpperCase();
+
+        return switch (cat) {
+            case "QUIZ", "LESSON", "SUMMARY", "TEORI" -> "Teori";
+            case "PRACTICE", "PRAKTIK", "LAB" -> "Praktik";
+            case "EXAM_PREP", "ANALYS", "EXAM" -> "Analys";
+            case "FOCUS", "TIME_ATTACK", "STREAK" -> "Focus";
+            default -> "Teori";
+        };
     }
 
     /**

@@ -46,6 +46,7 @@ public class EduAIService {
     private final SubmissionRepository submissionRepository;
     private final AiSessionResultRepository aiSessionResultRepository;
     private final SkillsGapService skillsGapService;
+    private final com.eduflex.backend.service.EduAiHubService eduAiHubService;
 
     public EduAIService(GeminiService geminiService, EduAIQuestRepository questRepository,
             UserRepository userRepository, CourseRepository courseRepository,
@@ -55,7 +56,8 @@ public class EduAIService {
             ObjectMapper objectMapper,
             SubmissionRepository submissionRepository,
             AiSessionResultRepository aiSessionResultRepository,
-            SkillsGapService skillsGapService) {
+            SkillsGapService skillsGapService,
+            com.eduflex.backend.service.EduAiHubService eduAiHubService) {
         this.geminiService = geminiService;
         this.questRepository = questRepository;
         this.userRepository = userRepository;
@@ -68,6 +70,7 @@ public class EduAIService {
         this.submissionRepository = submissionRepository;
         this.aiSessionResultRepository = aiSessionResultRepository;
         this.skillsGapService = skillsGapService;
+        this.eduAiHubService = eduAiHubService;
     }
 
     private static final String QUEST_SYSTEM_PROMPT = """
@@ -401,6 +404,10 @@ public class EduAIService {
             double masteryPercentage = (double) score / maxScore * 100.0;
             skillsGapService.processPerformanceResult(user.getId(), courseId, masteryPercentage);
         }
+
+        // Add to Spaced Repetition Hub
+        eduAiHubService.addKnowledgeFragment(user, "AI Session: " + sessionType,
+                "Repetition av AI-genererat material för " + sessionType, sessionType, newResult.getId());
 
         Map<String, Object> response = new HashMap<>();
         response.put("score", score);
