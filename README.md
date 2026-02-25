@@ -35,16 +35,14 @@
 
 <div id="-svenska"></div>
 
-## 🚀 Senaste uppdateringarna (25 feb 2026 – AI Hub & Radar Refinement)
-*   **🧠 AI Hub & Spaced Repetition Refinement:**
-    *   **Unified Category Mapping**: Implementerat en robust mappningsmotor (`EduAiHubService`) som förenar data från Quiz, Lektioner, AI-sessioner och övningar till de fyra Radar-kategorierna (Teori, Praktik, Focus, Analys).
-    *   **Automated Knowledge Injection**: AI-genererade studiepass läggs nu automatiskt in i studentens Spaced Repetition-kö för långsiktig retention.
-    *   **Radar Chart Precision**: Uppdaterat beräkningsmodellen för Live Radar så att den väger samman både SM-2 baserad mastery och live-sessionsresultat för en korrekt kognitiv profil.
-    *   **Service Integration**: Fullständig synkronisering mellan `EduAIService`, `QuizService` och `StudentActivityService` mot AI Huben.
-*   **💼 EduCareer Portal (v3.4.0):**
-    - **JobTech API Integration**: Nu kan elever hitta lokala LIA-platser och praktikplatser direkt i plattformen via Arbetsförmedlingens realtidsdata.
-    - **AI Match Score**: Visualiserar hur väl en praktikplats matchar elevens unika kognitiva profil och kursmål.
-    - **Premium UI**: Ny glassmorphic dashboard placerad under Intelligence Center för en sömlös karriärresa.
+## 🚀 Senaste uppdateringarna (25 feb 2026 – Sidebar Refactor & EduCareer Live)
+*   **📂 Centraliserad Sidomeny:**
+    *   **Single Source of Truth**: Implementerat `navigation.jsx` för att centralisera alla menyval, ikoner och behörighetsregler för 8 olika användarroller.
+    *   **Konsistent Upplevelse**: Garanterar att alla moduler visas korrekt oavsett layoutval eller roll, vilket eliminerar döda länkar och inkonsistens.
+*   **💼 EduCareer Portal (v3.4.0) – Nu helt Live:**
+    - **Realtidssökning**: Direktintegration med JobTech APIs för livesökning av LIA- och praktikplatser.
+    - **Sparade Platser**: Möjlighet att spara intressanta annonser direkt till studentprofilen.
+    - **AI Career Analysis**: Ny analysvy som matchar studentens kognitiva radar mot marknadens behov och ger konkreta studieråd.
 
 *   **📡 Production Scalability (v3.3.1):**
     - **Kubernetes Production Guide**: Formell guide för Helm-deployments på DigitalOcean/AWS EKS.

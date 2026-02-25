@@ -37,6 +37,12 @@ public class EduCareerController {
         return ResponseEntity.ok(careerService.getSavedInternships(user.getId()));
     }
 
+    @GetMapping("/analysis")
+    public ResponseEntity<Map<String, Object>> getCareerAnalysis(Principal principal) {
+        User user = getUserFromPrincipal(principal);
+        return ResponseEntity.ok(careerService.getCareerAnalysis(user.getId()));
+    }
+
     private User getUserFromPrincipal(Principal principal) {
         return userRepo.findByUsername(principal.getName())
                 .orElseThrow(() -> new RuntimeException("User not found"));

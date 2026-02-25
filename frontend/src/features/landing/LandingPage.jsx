@@ -177,12 +177,12 @@ const LandingPage = () => {
             hoverBorder: 'hover:border-amber-500/50'
         },
         {
-            icon: <Server className="w-7 h-7" />,
-            title: "Scalability Engine (Coming Soon)",
-            description: "En ny händelsestyrd arkitektur (Event Bus) som möjliggör prestanda för 100+ skolor i realtid utan fördröjning.",
-            color: 'text-green-400',
-            bgColor: 'bg-green-500/10',
-            hoverBorder: 'hover:border-green-500/50'
+            icon: <Map className="w-7 h-7" />,
+            title: "EduCareer Portal (Live)",
+            description: "Hitta din nästa LIA- eller praktikplats direkt i EduFlex via realtidsdata från JobTech. Inkluderar AI-driven matchningsanalys.",
+            color: 'text-brand-teal',
+            bgColor: 'bg-brand-teal/10',
+            hoverBorder: 'hover:border-brand-teal/50'
         },
         {
             icon: <Map className="w-7 h-7" />,
@@ -477,7 +477,7 @@ const LandingPage = () => {
                         {/* Badge */}
                         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-gold/10 border border-brand-gold/20 text-brand-gold text-xs font-bold uppercase tracking-widest shadow-[0_0_15px_rgba(255,183,3,0.2)]">
                             <Sparkles className="w-3.5 h-3.5" />
-                            v3.1: Integration Hub Pro & AI Compliance Portal
+                            v3.4: EduCareer Live & Centralized Sidebar
                         </div>
 
                         {/* Heading */}

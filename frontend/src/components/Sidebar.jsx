@@ -7,6 +7,7 @@ import { api } from '../services/api';
 import { useModules } from '../context/ModuleContext';
 import { useAppContext } from '../context/AppContext';
 import { usePwaInstall } from '../hooks/usePwaInstall';
+import { getNavigationConfig } from '../config/navigation';
 
 const Sidebar = ({ currentUser, logout, siteName, version }) => {
     const { t } = useTranslation();
@@ -44,111 +45,13 @@ const Sidebar = ({ currentUser, logout, siteName, version }) => {
     }, []);
 
     const getMenuItems = () => {
-        const role = currentUser?.role?.name || currentUser?.role || '';
-        const roleName = role.toUpperCase();
-        const principalRoles = ['ADMIN', 'ROLE_ADMIN', 'ROLE_REKTOR', 'REKTOR', 'PRINCIPAL'];
-        const adminRoles = ['ADMIN', 'ROLE_ADMIN'];
-        const teacherRoles = ['TEACHER', 'ROLE_TEACHER'];
-        const syvRoles = ['SYV', 'ROLE_SYV'];
-        const dashboardPath = principalRoles.includes(roleName) ? '/principal/dashboard' : '/';
-
-        const items = [
-            { path: dashboardPath, label: t('sidebar.dashboard'), icon: <LayoutDashboard size={20} /> }
-        ];
-
-        if (teacherRoles.includes(roleName) || adminRoles.includes(roleName)) {
-            items.push({ path: '/resources', label: t('sidebar.resource_bank'), icon: <BookOpen size={20} /> });
-            // Direct link to My Courses for Teachers
-            if (teacherRoles.includes(roleName)) {
-                items.push({ path: '/?tab=COURSES', label: t('sidebar.my_courses'), icon: <BookOpen size={20} /> });
-            }
-            // Only show AI Quiz if module is active AND tier is not BASIC
-            if (isModuleActive('AI_QUIZ') && licenseTier !== 'BASIC') {
-                items.push({ path: '/ai-quiz', label: t('sidebar.ai_quiz') || 'AI Quiz', icon: <Sparkles size={20} /> });
-            }
-        }
-
-        if (roleName === 'STUDENT' || roleName === 'ROLE_STUDENT') {
-            items.push({ path: '/my-courses', label: t('sidebar.my_courses'), icon: <BookOpen size={20} /> });
-            if (licenseTier !== 'BASIC') {
-                items.push({ path: '/ai-hub', label: 'EduAI Hub', icon: <Brain size={20} /> });
-                items.push({ path: '/career', label: 'EduCareer', icon: <Briefcase size={20} /> });
-            }
-            items.push({ path: '/catalog', label: t('sidebar.catalog'), icon: <BookOpen size={20} /> });
-        }
-
-        if (adminRoles.includes(roleName) || teacherRoles.includes(roleName)) {
-            items.push({ path: '/admin', label: t('sidebar.admin'), icon: <Users size={20} /> });
-            items.push({ path: '/analytics', label: t('sidebar.analytics'), icon: <TrendingUp size={20} /> });
-            items.push({ path: '/system', label: t('sidebar.system') || 'System', icon: <Settings2 size={20} /> });
-        }
-
-        // --- REKTOR / PRINCIPAL NAVIGATION ---
-        if (principalRoles.includes(roleName)) {
-            items.push({ path: '/principal/dashboard', label: 'Rektorspaket', icon: <ShieldCheck size={20} /> });
-            items.push({ path: '/principal/quality', label: 'Kvalitetsarbete', icon: <Award size={20} /> });
-            items.push({ path: '/principal/management-reports', label: 'Ledningsrapport', icon: <TrendingUp size={20} /> });
-            items.push({ path: '/principal/reports', label: 'Rapportarkiv (CSN)', icon: <FolderOpen size={20} /> });
-            items.push({ path: '/principal/tools', label: 'Verktyg & Admin', icon: <Settings2 size={20} /> });
-        }
-
-        // Lärare får tillgång till CSN-rapporter för sina egna kurser
-        if (teacherRoles.includes(roleName) && !principalRoles.includes(roleName)) {
-            items.push({ path: '/principal/reports', label: 'CSN-Rapporter', icon: <FolderOpen size={20} /> });
-        }
-        if (roleName === 'GUARDIAN' || roleName === 'ROLE_GUARDIAN') {
-            items.push({ path: '/', label: 'Barnens Dashboard', icon: <Users size={20} /> });
-        }
-
-        // Helper to check permissions
-        const hasPermission = (perm) => {
-            if (currentUser?.role?.isSuperAdmin || currentUser?.role?.superAdmin) return true;
-            return currentUser?.role?.permissions?.includes(perm);
-        };
-
-        const isGuardian = roleName === 'GUARDIAN' || roleName === 'ROLE_GUARDIAN';
-        if (!adminRoles.includes(roleName) && !isGuardian) {
-            items.push({ path: '/documents', label: t('sidebar.documents'), icon: <FolderOpen size={20} /> });
-        }
-
-        // Communication with unread badge
-        items.push({
-            path: '/communication',
-            label: t('shortcuts.messages') || 'Kommunikation',
-            icon: <MessageSquare size={20} />,
-            badge: unreadMessages > 0 ? unreadMessages : null
-        });
-
-        // E-books: Only for STUDENT, ADMIN, TEACHER
-        const allowedEbookRoles = ['STUDENT', 'ADMIN', 'TEACHER', 'ROLE_STUDENT', 'ROLE_ADMIN', 'ROLE_TEACHER'];
-
-        if (hasPermission('ACCESS_EBOOKS') && allowedEbookRoles.includes(roleName)) {
-            items.push({ path: '/ebooks', label: t('sidebar.ebooks') || 'E-books', icon: <BookOpen size={20} /> });
-        }
-
-        if (isModuleActive('WELLBEING_CENTER')) {
-            const wellbeingRoles = ['STUDENT', 'ROLE_STUDENT', 'ADMIN', 'ROLE_ADMIN', 'ROLE_REKTOR', 'REKTOR'];
-            if (wellbeingRoles.includes(roleName)) {
-                items.push({ path: '/wellbeing-center', label: 'Well-being Center', icon: <Heart size={20} className="text-brand-teal" /> });
-            }
-            if (roleName === 'HALSOTEAM' || roleName === 'ROLE_HALSOTEAM' || adminRoles.includes(roleName)) {
-                items.push({ path: '/wellbeing-center/inbox', label: 'E-hälsa Inbox', icon: <Heart size={20} className="text-brand-teal" /> });
-            }
-        }
-
-        // Hide shop for SYV
-        if (hasPermission('ACCESS_SHOP') && isModuleActive('GAMIFICATION') && !syvRoles.includes(roleName)) {
-            items.push({ path: '/shop', label: t('sidebar.shop') || 'Butik', icon: <Store size={20} /> });
-        }
-
-        items.push({ path: '/calendar', label: t('sidebar.calendar'), icon: <Calendar size={20} /> });
-        items.push({ path: '/support', label: t('sidebar.support'), icon: <FileQuestion size={20} /> });
-
-
-        console.log('Sidebar Role:', role);
-        console.log('Sidebar Items:', items);
-        return items;
+        const navItemsConfig = getNavigationConfig(currentUser, t, isModuleActive, licenseTier, { unreadMessages });
+        // Flatten the sections into a single list as Sidebar.jsx expects
+        const flattened = Object.values(navItemsConfig).flat();
+        console.log('Sidebar flattening:', flattened);
+        return flattened;
     };
+
 
     // FIX: Använd getSafeUrl för att hantera MinIO och https korrekt
     const profileImg = currentUser?.profilePictureUrl ? getSafeUrl(currentUser.profilePictureUrl) : null;

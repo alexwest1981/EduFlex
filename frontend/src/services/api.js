@@ -793,6 +793,12 @@ export const api = {
         getMyAnalysis: () => api.get('/personalization/analyze'),
         getUserAnalysis: (userId) => api.get(`/personalization/analyze/${userId}`)
     },
+    career: {
+        search: (query) => api.get(`/career/search${query ? `?q=${encodeURIComponent(query)}` : ''}`),
+        save: (job) => api.post('/career/save', job),
+        getSaved: () => api.get('/career/saved'),
+        getAnalysis: () => api.get('/career/analysis'),
+    },
 
     principal: {
         // --- School Structure ---

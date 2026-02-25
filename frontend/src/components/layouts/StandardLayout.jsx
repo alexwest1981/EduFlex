@@ -4,7 +4,8 @@ import { LayoutDashboard, FileText, User, Settings, LogOut, Layers, Menu, X, Awa
 import { useAppContext } from '../../context/AppContext';
 import { useModules } from '../../context/ModuleContext';
 import { useTranslation } from 'react-i18next';
-import { getSafeUrl } from '../../services/api';
+import { getSafeUrl, api } from '../../services/api';
+import { getNavigationConfig } from '../../config/navigation';
 
 import ChatModule from '../../modules/chat/ChatModule';
 import GlobalSearch from '../GlobalSearch';
@@ -90,56 +91,8 @@ const StandardLayout = ({ children }) => {
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
-    const navItems = {
-        main: [
-            { path: '/', icon: <LayoutDashboard size={20} />, label: t('sidebar.dashboard') },
-            { path: '/catalog', icon: <Layers size={20} />, label: t('sidebar.catalog') },
-        ],
-        education: [
-            ...(roleName.includes('TEACHER') || isAdmin ? [{ path: '/resources', icon: <BookOpen size={20} />, label: t('sidebar.resource_bank') }] : []),
-            ...(roleName.includes('TEACHER') || isAdmin ? [{ path: '/evaluations/manage', icon: <ClipboardList size={20} />, label: 'Utvärderingar' }] : []),
-            ...(roleName === 'TEACHER' ? [{ path: '/?tab=COURSES', icon: <BookOpen size={20} />, label: t('sidebar.my_courses') || 'Mina kurser' }] : []),
-            ...(roleName === 'STUDENT' ? [{ path: '/my-courses', icon: <BookOpen size={20} />, label: t('sidebar.my_courses') || 'Mina kurser' }] : []),
-            ...(roleName === 'STUDENT' || roleName === 'ROLE_STUDENT' ? [{ path: '/my-study-plan', icon: <GraduationCap size={20} />, label: 'Min Studieplan (ISP)' }] : []),
-            ...(roleName === 'STUDENT' || roleName === 'ROLE_STUDENT' ? (licenseTier !== 'BASIC' ? [{ path: '/ai-hub', icon: <Brain size={20} />, label: 'EduAI Hub' }, { path: '/career', icon: <Briefcase size={20} />, label: 'EduCareer' }] : []) : []),
-            ...(roleName.includes('STUDENT') || roleName.includes('TEACHER') || isAdmin ? [{ path: '/ebooks', icon: <Library size={18} />, label: t('sidebar.ebooks') }] : []),
-        ],
-        tools: [
-            { path: '/calendar', icon: <Calendar size={20} />, label: t('sidebar.calendar') },
-            { path: '/documents', icon: <FileText size={20} />, label: t('sidebar.documents') },
-            { path: '/communication', icon: <MessageSquare size={20} />, label: t('shortcuts.messages') || 'Meddelanden' },
-            { path: '/support', icon: <HelpCircle size={20} />, label: t('sidebar.support') },
-            ...(isModuleActive('EDUGAME') && !['SYV', 'ROLE_SYV'].includes(roleName) ? [{ path: '/shop', icon: <Store size={20} />, label: 'Butik' }] : []),
-            ...(isModuleActive('WELLBEING_CENTER') && !['HALSOTEAM', 'ROLE_HALSOTEAM', 'SYV', 'ROLE_SYV'].includes(roleName) ? [{ path: '/wellbeing-center', icon: <Heart size={20} />, label: 'Sjukanmälan & E-hälsa' }] : [])
-        ],
-        admin: [
-            ...(isAdmin ? [{ path: '/admin', icon: <Settings size={20} />, label: t('sidebar.admin') }] : []),
-            ...(roleName === 'HALSOTEAM' || roleName === 'ROLE_HALSOTEAM' ? [
-                { path: '/health-dashboard', icon: <Heart size={20} className="text-rose-500" />, label: 'E-hälsa (Hälsoteam)' }
-            ] : []),
-            ...(isModuleActive('ANALYTICS') && (isAdmin || ['REKTOR', 'PRINCIPAL'].includes(roleName)) ? [{ path: '/analytics', icon: <BarChart2 size={20} />, label: t('sidebar.analytics') || 'Analyser & Insikter' }] : []),
-            ...(roleName === 'TEACHER' || roleName === 'ROLE_TEACHER' ? [{ path: '/principal/reports', icon: <FolderOpen size={20} />, label: 'CSN-Rapporter' }] : []),
-        ],
-        rektor: [
-            ...(['REKTOR', 'ROLE_REKTOR', 'PRINCIPAL', 'ROLE_PRINCIPAL'].includes(roleName) ? [
-                { path: '/principal/dashboard', icon: <ShieldCheck size={20} />, label: 'Rektorspaket' },
-                { path: '/principal/quality', icon: <Award size={20} />, label: 'Kvalitetsarbete' },
-                { path: '/principal/management-reports', icon: <TrendingUp size={20} />, label: 'Ledningsrapport' },
-                { path: '/principal/reports', icon: <FolderOpen size={20} />, label: 'Rapportarkiv (CSN)' },
-                { path: '/principal/study-plans', icon: <GraduationCap size={20} />, label: 'Studieplaner (ISP)' },
-                { path: '/principal/tools', icon: <Settings size={20} />, label: 'Verktyg & Admin' }
-            ] : [])
-        ],
-        syv: [],
-        guardian: [
-            ...(roleName === 'GUARDIAN' || roleName === 'ROLE_GUARDIAN' ? [
-                { path: '/', icon: <LayoutDashboard size={20} />, label: 'Vårdnadshavare' },
-                { path: '/communication', icon: <MessageSquare size={20} />, label: 'Meddelanden' },
-                { path: '/calendar', icon: <Calendar size={20} />, label: 'Schema' },
-                { path: '/support', icon: <HelpCircle size={20} />, label: 'Support' }
-            ] : [])
-        ]
-    };
+    const navItems = getNavigationConfig(currentUser, t, isModuleActive, licenseTier, { unreadMessages: 0 }); // Placeholder for unreadMessages if needed
+
 
     return (
         <div className="flex min-h-screen text-gray-900 dark:text-[#E3E3E3] font-sans transition-colors duration-300" style={{ background: 'var(--app-background)' }}>

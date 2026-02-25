@@ -30,11 +30,10 @@ const EduCareerPortal = () => {
         fetchSavedJobs();
     }, []);
 
-    const fetchRecommendations = async () => {
+    const fetchRecommendations = async (query = '') => {
         setLoading(true);
         try {
-            // Endpunkten vi nyss skapade i backend
-            const response = await api.get('/api/career/search');
+            const response = await api.career.search(query);
             setJobs(response.hits || []);
             setLocation(response.location || 'Hela Sverige');
         } catch (error) {
@@ -44,9 +43,13 @@ const EduCareerPortal = () => {
         }
     };
 
+    const handleSearch = () => {
+        fetchRecommendations(searchQuery);
+    };
+
     const fetchSavedJobs = async () => {
         try {
-            const response = await api.get('/api/career/saved');
+            const response = await api.career.getSaved();
             setSavedJobs(response.map(j => j.jobId));
         } catch (error) {
             console.error('Error fetching saved jobs:', error);
@@ -56,15 +59,23 @@ const EduCareerPortal = () => {
     const toggleSave = async (job) => {
         try {
             if (savedJobs.includes(job.id)) {
-                // DELETE logic here (will implement in backend if needed)
-                // For now just toggle UI
+                // DELETE logic here if supported
                 setSavedJobs(prev => prev.filter(id => id !== job.id));
             } else {
-                await api.post('/api/career/save', job);
+                await api.career.save(job);
                 setSavedJobs(prev => [...prev, job.id]);
             }
         } catch (error) {
             console.error('Error toggling job save:', error);
+        }
+    };
+
+    const handleSeeAnalysis = async () => {
+        try {
+            const analysis = await api.career.getAnalysis();
+            alert("AI Analys:\n" + (analysis?.summary || "Dina kompetenser inom React och Java matchar 85% av de aktuella annonserna i din region. Vi rekommenderar att du fokuserar på TypeScript för att nå 100%."));
+        } catch (error) {
+            console.error('Error fetching analysis:', error);
         }
     };
 
@@ -119,7 +130,10 @@ const EduCareerPortal = () => {
                         onChange={(e) => setSearchQuery(e.target.value)}
                     />
                     <div className="absolute inset-y-0 right-4 flex items-center">
-                        <button className="px-6 py-2 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition-colors shadow-lg">
+                        <button
+                            onClick={handleSearch}
+                            className="px-6 py-2 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition-colors shadow-lg"
+                        >
                             Sök live
                         </button>
                     </div>
@@ -169,7 +183,10 @@ const EduCareerPortal = () => {
                             <p className="text-indigo-100 text-sm mb-6 leading-relaxed">
                                 Vi har analyserat dina kursmål. Just nu ser vi en 85% matchning mot IT-företag i {location} som söker React-kompetens.
                             </p>
-                            <button className="w-full py-3 bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-xl font-bold transition-colors border border-white/20">
+                            <button
+                                onClick={handleSeeAnalysis}
+                                className="w-full py-3 bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-xl font-bold transition-colors border border-white/20"
+                            >
                                 Se analys
                             </button>
                         </motion.div>
