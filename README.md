@@ -39,8 +39,8 @@
 *   **📂 Centraliserad Sidomeny:**
     *   **Single Source of Truth**: Implementerat `navigation.jsx` för att centralisera alla menyval, ikoner och behörighetsregler för 8 olika användarroller.
     *   **Konsistent Upplevelse**: Garanterar att alla moduler visas korrekt oavsett layoutval eller roll, vilket eliminerar döda länkar och inkonsistens.
-*   **💼 EduCareer Portal (v3.4.0) – Nu helt Live:**
-    - **Realtidssökning**: Direktintegration med JobTech APIs för livesökning av LIA- och praktikplatser.
+*   **💼 EduCareer Portal (v3.4.1) – Nu helt Live:**
+    - **Realtidssökning**: Direktintegration med JobTech APIs för livesökning av LIA- och praktikplatser. (Fix: Åtgärdat 500-fel vid beskrivningshantering).
     - **Sparade Platser**: Möjlighet att spara intressanta annonser direkt till studentprofilen.
     - **AI Career Analysis**: Ny analysvy som matchar studentens kognitiva radar mot marknadens behov och ger konkreta studieråd.
 
@@ -471,6 +471,7 @@ Hitta rätt dokumentation snabbare baserat på din roll i organisationen:
     *   [Vårdnadshavarkontakt](docs/docs/GuardianDashboard_Specification.md) – Sjukanmälan och statusuppdateringar.
 
 *   **💻 För IT-drift & Tekniker:**
+    *   [Due Diligence Guide](docs/DueDiligence.md) – Komplett teknisk genomgång för investerare/IT-revision.
     *   [Infrastrukturguide](docs/InfrastructureGuide.md) – Docker, MinIO, Redis och PostgreSQL.
     *   [Multi-Tenancy Setup](docs/TENANT_ADMIN_GUIDE.md) – Schema-baserad isolering och organisationer.
     *   [API-referens](docs/api/README.md) – Swagger och integrationer (LTI 1.3, xAPI).
