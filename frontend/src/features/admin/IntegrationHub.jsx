@@ -19,7 +19,8 @@ const INTEGRATION_ICONS = {
     TEAMS: Users,
     SKOLVERKET: BookOpen,
     SIS: FileSpreadsheet,
-    LIBRARY: Library
+    LIBRARY: Library,
+    BANKID: Link2
 };
 
 // Färg-mappning per status
@@ -106,6 +107,11 @@ const IntegrationHub = () => {
         SKOLVERKET: [],
         SIS: [],
         LIBRARY: [],
+        BANKID: [
+            { key: 'issuerUrl', label: 'Issuer URL (OIDC)', placeholder: 'https://eduflex-sandbox.criipto.id' },
+            { key: 'clientId', label: 'Client ID', placeholder: 'BankID Client ID' },
+            { key: 'clientSecret', label: 'Client Secret', placeholder: 'BankID Client Secret', type: 'password' },
+        ],
     };
 
     if (loading) {
@@ -125,7 +131,7 @@ const IntegrationHub = () => {
                     Integration Hub
                 </h1>
                 <p style={{ color: '#6b7280', fontSize: '0.95rem' }}>
-                    Konfigurera och övervaka alla externa integrationer – LTI, Zoom, Teams, Skolverket, SIS och bibliotek.
+                    Konfigurera och övervaka alla externa integrationer – LTI, Zoom, Teams, Skolverket, SIS, bibliotek och BankID.
                 </p>
             </div>
 
@@ -282,7 +288,9 @@ const IntegrationHub = () => {
                                                     ? 'Ladda upp CSV-filer via SIS Import-sidan.'
                                                     : integration.platform === 'LIBRARY'
                                                         ? 'Ingen konfiguration krävs – använder Open Library API.'
-                                                        : 'Ingen extra konfiguration tillgänglig.'}
+                                                        : integration.platform === 'BANKID'
+                                                            ? 'Konfigurerar OIDC-anslutningen för BankID. Växla mellan Sandbox och Live genom att ändra Issuer URL.'
+                                                            : 'Ingen extra konfiguration tillgänglig.'}
                                         </p>
                                     )}
 

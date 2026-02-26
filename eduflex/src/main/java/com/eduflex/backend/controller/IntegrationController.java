@@ -104,4 +104,17 @@ public class IntegrationController {
                 })
                 .orElse(ResponseEntity.notFound().build());
     }
+
+    @GetMapping("/public/{platform}/status")
+    @Operation(summary = "Kontrollera om en integration är aktiv (Publik)")
+    public ResponseEntity<Map<String, Object>> getPublicStatus(@PathVariable String platform) {
+        return configRepository.findByPlatform(platform.toUpperCase())
+                .map(config -> {
+                    Map<String, Object> status = new java.util.HashMap<>();
+                    status.put("platform", platform.toUpperCase());
+                    status.put("active", config.isActive());
+                    return ResponseEntity.ok(status);
+                })
+                .orElse(ResponseEntity.notFound().build());
+    }
 }

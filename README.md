@@ -2,7 +2,7 @@
   <img src="docs/Logo_top.png" width="600" alt="EduFlex Logo" />
 </p>
 
-<h1 align="center">🎓 EduFlex LMS v3.3.1</h1>
+<h1 align="center">🎓 EduFlex LMS v3.5.1</h1>
 
 <p align="center">
   <em>The Complete Enterprise Learning Platform for Modern Education</em><br/>
@@ -35,24 +35,21 @@
 
 <div id="-svenska"></div>
 
-## 🚀 Senaste uppdateringarna (26 feb 2026 – BankID Integration & Ebook Stability)
-*   **🏦 BankID-integration (via Keycloak):**
-    *   **Identity Broker Support**: Implementerat stöd för BankID via Keycloak med `kc_idp_hint`.
-    *   **SSN Mapping**: Läggit till automatisk mappning av personnummer (SSN) från externa IdPs till EduFlex användarkonton.
-    *   **Custom OAuth Resolver**: Skapat en anpassad `OAuth2AuthorizationRequestResolver` för att hantera dynamiska parametrar i auth-flödet.
-*   **📚 E-bokshantering & Uppladdning:**
-    *   **Upload Fix**: Åtgärdat 400 Bad Request vid uppladdning genom att tillåta längre beskrivningar (TEXT) och korrigera parameterhantering för `courseIds`.
-    *   **Auth Filter Resilience**: Förstärkt `AuthTokenFilter` för att hantera ogiltiga tokens mer graciöst på publika endpoints.
-    *   **Admin Access Fix**: Åtgärdat problem där Butik-länken var dold för administratörer trots aktiv modul. Verifierat att `EDUGAME`-modulen nu styr synligheten korrekt.
-    *   **License Filter Fix**: Löst ett kritiskt kompileringsfel i `LicenseFilter.java` som hindrade backend från att starta efter nyligen införda behörighetsändringar. (Fix: Korrekt matchning mot roll-ID).
-*   **🛡️ Pre-push Verification Hooks:**
-    *   **Git Integrity**: Implementerat en robust `pre-push`-hook som automatiskt kör `verify_before_push.ps1`.
-    *   **Cross-Platform Automation**: Scriptet validerar att backend kompilerar (`mvn clean compile`) och att frontend passerar linting (`npm run lint`) innan en push tillåts. Detta minskar risken för trasiga builds i GitHub Actions.
-*   **✨ Frontend Quality (0 Lint Errors):**
-    *   **Linting Overhaul**: Åtgärdat 37 återstående ESLint-blockers i filer som `Sidebar.jsx`, `MidnightLayout.jsx` och `ChatOverlay.jsx`.
-    *   **Zero-Tolerance Policy**: Frontend har nu 0 kompileringsfel och 0 kritiska lint-blockers, vilket garanterar en stabil bas för framtida features.
-*   **🧹 Infrastructure Optimization:**
-    *   **Disk Recovery**: Odramatisk borttagning av 100GB+ föråldrad Docker-data på E:-enheten. Säkrat WSL-miljön för fortsatt stabil drift.
+## 🚀 Senaste uppdateringarna (26 feb 2026 – BankID Identity Hub & Dynamic OIDC)
+*   **🏦 BankID Integration Hub (v3.5.1):**
+    *   **Dynamic Identity Provider**: Fullt stöd för BankID via OIDC, konfigurerbart i runtime via det nya Integration Hub-gränssnittet.
+    *   **Dynamic Client Registration**: Implementerat `DynamicClientRegistrationRepository` som tillåter registrering av OAuth2-klienter (Client ID, Secret, Issuer) utan omstart av backend.
+    *   **Public Status Endpoint**: Ny säker endpoint `/api/integrations/public/{platform}/status` som tillåter frontend att kontrollera om BankID är aktivt innan inloggning.
+    *   **Inloggningssynk**: Landningssidan och inloggningsskärmen känner nu av i realtid om BankID är aktiverat och döljer/visar knappar därefter.
+*   **🛠️ Backend-stabilitet:**
+    *   **Dependency Injection Fix**: Åtgärdat ett kritiskt startup-fel relaterat till `InMemoryClientRegistrationRepository` genom att använda `ObjectProvider` för valfri injicering.
+    *   **Flyway Lock Recovery**: Förbättrad hantering av databaslås i `run_backend_local.ps1` och uppdaterad error-handling för Docker-stopp.
+    *   **Migration Alignment**: Renamerat `V88` till `V97` för att undvika versionskonflikter och säkerställa korrekt exekveringsordning.
+*   **📚 E-bokshantering & Uppladdning (Från tidigare idag):**
+    *   **Upload Fix**: Förbättrad hantering av EPUB-uppladdningar och behörighetskontroll för administratörer.
+    *   **Admin Access**: Verifierat att `EDUGAME`-modulen nu styr synligheten av Butiken korrekt för administratörsroller.
+*   **✨ Frontend Quality:**
+    *   **Landing Page 3.5**: Uppdaterat landningssidan med fokus på BankID Identity Broker och premium-animationsstöd.
 
 ## 🚀 Senaste uppdateringarna (25 feb 2026 – Sidebar Refactor & EduCareer Live)
 *   **📂 Centraliserad Sidomeny:**

@@ -193,8 +193,16 @@ const LandingPage = () => {
             hoverBorder: 'hover:border-brand-gold/50'
         },
         {
+            icon: <Lock className="w-7 h-7" />,
+            title: "BankID Identity Broker",
+            description: "Säker inloggning med svenskt BankID via OIDC. Fullt konfigurerbart för både Sandbox och Live direkt via vår Integration Hub.",
+            color: 'text-brand-teal',
+            bgColor: 'bg-brand-teal/10',
+            hoverBorder: 'hover:border-brand-teal/50'
+        },
+        {
             icon: <Play className="w-7 h-7" />,
-            title: "AI Video Tutor v2.0 (Planned)",
+            title: "AI Video Tutor v3.0 (Planned)",
             description: "Automatisk generering av interaktiva förklaringsvideor direkt från kursinnehåll via AI-script och smart rendering.",
             color: 'text-red-400',
             bgColor: 'bg-brand-red/10',
@@ -477,7 +485,7 @@ const LandingPage = () => {
                         {/* Badge */}
                         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-gold/10 border border-brand-gold/20 text-brand-gold text-xs font-bold uppercase tracking-widest shadow-[0_0_15px_rgba(255,183,3,0.2)]">
                             <Sparkles className="w-3.5 h-3.5" />
-                            v3.4.7: Maven Test Isolation & Fix
+                            v3.5.1: BankID Identity Hub & Dynamic OIDC
                         </div>
 
                         {/* Heading */}

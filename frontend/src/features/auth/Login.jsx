@@ -23,19 +23,34 @@ const Login = () => {
     const [manualTenantId, setManualTenantId] = useState('');
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [isBankIdEnabled, setIsBankIdEnabled] = useState(false);
 
     // MFA States
     const [mfaRequired, setMfaRequired] = useState(false);
     const [mfaCode, setMfaCode] = useState('');
 
-    // Initial check for URL param ?tenantId=...
+    // Initial check for URL param ?tenantId=... and BankID status
     React.useEffect(() => {
         const params = new URLSearchParams(window.location.search);
         const tenantParam = params.get('tenantId');
         if (tenantParam) {
             setManualTenantId(tenantParam);
         }
-    }, [setManualTenantId]);
+
+        const checkBankIdStatus = async () => {
+            try {
+                const baseUrl = API_BASE.endsWith('/') ? API_BASE.slice(0, -1) : API_BASE;
+                const response = await fetch(`${baseUrl}/integrations/public/BANKID/status`);
+                if (response.ok) {
+                    const data = await response.json();
+                    setIsBankIdEnabled(data.active);
+                }
+            } catch (err) {
+                console.error("Failed to check BankID status:", err);
+            }
+        };
+        checkBankIdStatus();
+    }, [setManualTenantId, API_BASE]);
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -298,14 +313,16 @@ const Login = () => {
                         <div className="relative flex justify-center text-xs uppercase"><span className="bg-white dark:bg-[#1E1F20] px-3 text-gray-400 font-bold tracking-wider">Eller</span></div>
                     </div>
                     <div className="space-y-3">
-                        <button
-                            type="button"
-                            onClick={() => window.location.href = `${API_BASE}/oauth2/authorization/keycloak?kc_idp_hint=bankid`}
-                            className="w-full bg-white dark:bg-[#282a2c] hover:bg-gray-50 dark:hover:bg-[#3c4043] text-gray-700 dark:text-white font-bold py-3.5 rounded-xl border border-gray-200 dark:border-[#3c4043] hover:border-[#003f8a] transition-all flex items-center justify-center gap-3 group text-sm shadow-sm hover:shadow-md"
-                        >
-                            <img src={bankIdLogo} alt="BankID" className="h-6 w-auto object-contain" />
-                            Logga in med BankID
-                        </button>
+                        {isBankIdEnabled && (
+                            <button
+                                type="button"
+                                onClick={() => window.location.href = `${API_BASE}/oauth2/authorization/keycloak?kc_idp_hint=bankid`}
+                                className="w-full bg-white dark:bg-[#282a2c] hover:bg-gray-50 dark:hover:bg-[#3c4043] text-gray-700 dark:text-white font-bold py-3.5 rounded-xl border border-gray-200 dark:border-[#3c4043] hover:border-[#003f8a] transition-all flex items-center justify-center gap-3 group text-sm shadow-sm hover:shadow-md"
+                            >
+                                <img src={bankIdLogo} alt="BankID" className="h-6 w-auto object-contain" />
+                                Logga in med BankID
+                            </button>
+                        )}
 
                         <button
                             type="button"
