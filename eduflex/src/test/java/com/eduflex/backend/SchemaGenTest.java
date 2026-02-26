@@ -25,6 +25,9 @@ class SchemaGenTest {
     @org.springframework.boot.test.mock.mockito.MockBean
     private com.eduflex.backend.config.DataInitializer dataInitializer;
 
+    @org.springframework.boot.test.mock.mockito.MockBean
+    private org.springframework.mail.javamail.JavaMailSender mailSender;
+
     @Test
     void contextLoads() {
         // Just loading context triggers schema generation if properties are set

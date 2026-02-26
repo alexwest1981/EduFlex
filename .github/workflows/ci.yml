@@ -61,5 +61,48 @@ jobs:
     - name: Lint Frontend
       run: npm run lint
 
-    - name: Build Frontend
-      run: npm run build
+  build-and-push-images:
+    runs-on: ubuntu-latest
+    needs: [backend-test, frontend-build]
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Log in to the Container registry
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Extract metadata (tags, labels) for Docker
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: |
+          ghcr.io/${{ github.repository_owner }}/eduflex-backend
+          ghcr.io/${{ github.repository_owner }}/eduflex-frontend
+
+    - name: Build and push Backend image
+      uses: docker/build-push-action@v5
+      with:
+        context: ./eduflex
+        push: true
+        tags: |
+          ghcr.io/${{ github.repository_owner }}/eduflex-backend:latest
+          ghcr.io/${{ github.repository_owner }}/eduflex-backend:${{ github.sha }}
+        labels: ${{ steps.meta.outputs.labels }}
+
+    - name: Build and push Frontend image
+      uses: docker/build-push-action@v5
+      with:
+        context: ./frontend
+        push: true
+        tags: |
+          ghcr.io/${{ github.repository_owner }}/eduflex-frontend:latest
+          ghcr.io/${{ github.repository_owner }}/eduflex-frontend:${{ github.sha }}
+        labels: ${{ steps.meta.outputs.labels }}

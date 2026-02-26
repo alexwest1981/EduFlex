@@ -164,7 +164,7 @@ const SurveyResponseForm = () => {
                     {/* MULTIPLE CHOICE */}
                     {q.questionType === 'MULTIPLE_CHOICE' && (() => {
                         let options = [];
-                        try { options = JSON.parse(q.optionsJson); } catch (e) { }
+                        try { options = JSON.parse(q.optionsJson); } catch (e) { console.error("Error parsing question options", e); }
                         return (
                             <div className="space-y-2 pt-1">
                                 {options.map((opt, oi) => (

@@ -95,7 +95,7 @@ const TimeAttack = () => {
 
         if (correct > highScore) {
             setHighScore(correct);
-            try { localStorage.setItem('eduai_timeattack_highscore', String(correct)); } catch { }
+            try { localStorage.setItem('eduai_timeattack_highscore', String(correct)); } catch (e) { console.warn("Failed to save highscore", e); }
         }
 
         api.post('/gamification/xp/award', { amount: total, source: 'TIME_ATTACK' })

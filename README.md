@@ -35,6 +35,19 @@
 
 <div id="-svenska"></div>
 
+## 🚀 Senaste uppdateringarna (26 feb 2026 – Code Integrity & Shop Stability)
+*   **🛒 Butik & Modulstabilitet:**
+    *   **Admin Access Fix**: Åtgärdat problem där Butik-länken var dold för administratörer trots aktiv modul. Verifierat att `EDUGAME`-modulen nu styr synligheten korrekt.
+    *   **License Filter Fix**: Löst ett kritiskt kompileringsfel i `LicenseFilter.java` som hindrade backend från att starta efter nyligen införda behörighetsändringar. (Fix: Korrekt matchning mot roll-ID).
+*   **🛡️ Pre-push Verification Hooks:**
+    *   **Git Integrity**: Implementerat en robust `pre-push`-hook som automatiskt kör `verify_before_push.ps1`.
+    *   **Cross-Platform Automation**: Scriptet validerar att backend kompilerar (`mvn clean compile`) och att frontend passerar linting (`npm run lint`) innan en push tillåts. Detta minskar risken för trasiga builds i GitHub Actions.
+*   **✨ Frontend Quality (0 Lint Errors):**
+    *   **Linting Overhaul**: Åtgärdat 37 återstående ESLint-blockers i filer som `Sidebar.jsx`, `MidnightLayout.jsx` och `ChatOverlay.jsx`.
+    *   **Zero-Tolerance Policy**: Frontend har nu 0 kompileringsfel och 0 kritiska lint-blockers, vilket garanterar en stabil bas för framtida features.
+*   **🧹 Infrastructure Optimization:**
+    *   **Disk Recovery**: Odramatisk borttagning av 100GB+ föråldrad Docker-data på E:-enheten. Säkrat WSL-miljön för fortsatt stabil drift.
+
 ## 🚀 Senaste uppdateringarna (25 feb 2026 – Sidebar Refactor & EduCareer Live)
 *   **📂 Centraliserad Sidomeny:**
     *   **Single Source of Truth**: Implementerat `navigation.jsx` för att centralisera alla menyval, ikoner och behörighetsregler för 8 olika användarroller.
@@ -227,8 +240,10 @@ Här är en sammanfattning av fixarna för Tenant-resolution, Master-isolering o
     *   **Deprecated API Fix:** Uppdaterat `TenantFilter` till moderna Java 21-metoder för URL-hantering.
     *   **CORS & CSP:** Utökat Content Security Policy för att inkludera subdomäner (`*.eduflexlms.se`) för sömlös interaktion mellan portal och API.
 
-## 🚀 Senaste uppdateringarna (22 feb 2026)
-Här är en sammanfattning av dagens stora uppdateringar för att öka engagemanget och stödja studenter:
+### Senaste uppdateringarna
+- **Butiken åtgärdad**: Fixat problem där butikslänken var gömd för administratörer och säkerställt konsekvent modulhantering (`EDUGAME`).
+- **Granulära notiser**: Implementerat möjligheten att styra notiser mer detaljerat.
+- **UI-förbättringar**: Uppdaterat inloggningssidan med BankID och Keycloak-logotyper.
 
 *   **🏆 Social Gamification (Ligor & Klassmål):**
     *   **Ligasystem:** Introducerat ett icke-kompetitivt progressionssystem med 5 ligor (Brons till Rubin) baserat på elevens totala XP.

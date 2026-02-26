@@ -179,7 +179,7 @@ const ChatOverlay = () => {
     const sendAIMessage = async (content) => {
         // Primary source: Global context (activeCourseId)
         // Fallback: Extract course ID from URL if global context is not yet set
-        const match = location.pathname.match(/\/course\/([^\/]+)/);
+        const match = location.pathname.match(/\/course\/([^/]+)/);
         const urlCourseIdentifier = match ? match[1] : null;
 
         const effectiveCourseId = activeCourseId || urlCourseIdentifier;

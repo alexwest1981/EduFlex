@@ -12,6 +12,14 @@ Run with: `.\scripts\powershell\run_backend_local.ps1`
 Forcefully stops the local backend process by killing whatever is listening on port 8080. Used by Control Center.
 Run with: `.\scripts\powershell\stop_backend_local.ps1`
 
+### [verify_before_push.ps1](file:///e:/Projekt/EduFlex/scripts/powershell/verify_before_push.ps1)
+Kör samma verifieringssteg som GitHub Actions lokalt (Backend verify + Frontend lint/build). Används automatiskt som git pre-push hook.
+Run with: `.\scripts\powershell\verify_before_push.ps1`
+
+### [setup_git_hooks.ps1](file:///e:/Projekt/EduFlex/scripts/powershell/setup_git_hooks.ps1)
+Installerar git-hooks så att verifieringsskriptet körs automatiskt vid `git push`.
+Run with: `.\scripts\powershell\setup_git_hooks.ps1`
+
 ### [cold_start.ps1](file:///e:/Projekt/EduFlex/scripts/powershell/cold_start.ps1)
 A comprehensive script for a fresh start. It cleans up stale processes (Cloudflared, Java, Node), starts Docker infrastructure, and launches Backend, Frontend, and the Cloudflare Tunnel in separate windows.
 Run with: `.\scripts\powershell\cold_start.ps1`

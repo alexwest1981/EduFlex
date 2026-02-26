@@ -201,7 +201,6 @@ const DocumentManager = () => {
                     link.click();
                 }
                 break;
-                break;
             case 'edit':
                 setEditingDoc(item);
                 setShowEditor(true);

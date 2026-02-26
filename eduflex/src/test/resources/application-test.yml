@@ -1,6 +1,8 @@
 spring:
   main:
     allow-circular-references: true
+  mail:
+    from: noreply@eduflex.se
   kafka:
     enabled: false
   datasource:
@@ -40,6 +42,10 @@ eduflex:
     access-key: mock
     secret-key: mock
     bucket: mockbucket
+  webpush:
+    public-key: mock
+    private-key: mock
+    subject: mailto:admin@eduflex.se
 
 logging:
   level:

@@ -82,11 +82,14 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
                 fetch(quizUrl, { headers: { 'Authorization': `Bearer ${token}` } })
             ]);
 
+            let mappedLessons = [];
+            let qData = [];
+
             if (resLessons.ok) {
                 const data = await resLessons.json();
 
                 // MAP resources to Lesson format
-                const mappedLessons = data.map(item => {
+                mappedLessons = data.map(item => {
                     // If it's a generic Resource, map it. If it's a legacy Lesson, keep it.
                     if (item.content && typeof item.content === 'string' && item.content.startsWith('{')) {
                         try {
@@ -136,7 +139,7 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
             }
 
             if (resQuizzes.ok) {
-                const qData = await resQuizzes.json();
+                qData = await resQuizzes.json();
                 setQuizzes(qData);
             }
 

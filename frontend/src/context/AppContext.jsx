@@ -80,7 +80,7 @@ export const AppProvider = ({ children }) => {
                             setCurrentUser(merged);
                         }).catch(e => console.error("Failed xp refresh", e));
                     }
-                } catch (e) { }
+                } catch (e) { console.warn("LMS refresh failed", e); }
             }
         };
 

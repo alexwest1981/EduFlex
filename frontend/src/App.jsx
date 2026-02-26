@@ -104,8 +104,9 @@ const ProtectedRoute = ({ children, roles, permission }) => {
 
     // Specifik rättighetskontroll (t.ex. ACCESS_EBOOKS)
     if (permission) {
-        const rawRole = (currentUser.role?.name || currentUser.role || '').toUpperCase();
-        const isAdmin = rawRole.includes('ADMIN') || rawRole.includes('SUPERADMIN') || currentUser.role?.isSuperAdmin || currentUser.role?.superAdmin;
+        const role = currentUser?.role?.name || currentUser?.role || '';
+        const roleName = typeof role === 'string' ? role.toUpperCase() : '';
+        const isAdmin = roleName.includes('ADMIN') || roleName.includes('SUPERADMIN') || currentUser?.role?.isSuperAdmin || currentUser?.role?.superAdmin;
 
         const hasPermission = isAdmin || currentUser.role?.permissions?.includes(permission);
         if (!hasPermission) {
@@ -115,14 +116,15 @@ const ProtectedRoute = ({ children, roles, permission }) => {
 
     // Roll-kontroll
     if (roles) {
-        const rawRole = (currentUser.role?.name || currentUser.role || '').toUpperCase();
-        const isAdmin = rawRole.includes('ADMIN') || rawRole.includes('SUPERADMIN') || currentUser.role?.isSuperAdmin || currentUser.role?.superAdmin;
+        const role = currentUser?.role?.name || currentUser?.role || '';
+        const roleName = typeof role === 'string' ? role.toUpperCase() : '';
+        const isAdmin = roleName.includes('ADMIN') || roleName.includes('SUPERADMIN') || currentUser?.role?.isSuperAdmin || currentUser?.role?.superAdmin;
 
         const uppercaseRoles = roles.map(r => r.toUpperCase());
         const hasRole = isAdmin ||
-            uppercaseRoles.includes(rawRole) ||
-            (rawRole === 'ROLE_ADMIN' && uppercaseRoles.includes('ADMIN')) ||
-            (rawRole === 'ADMIN' && uppercaseRoles.includes('ROLE_ADMIN'));
+            uppercaseRoles.includes(roleName) ||
+            (roleName === 'ROLE_ADMIN' && uppercaseRoles.includes('ADMIN')) ||
+            (roleName === 'ADMIN' && uppercaseRoles.includes('ROLE_ADMIN'));
 
         if (!hasRole) {
             return <Navigate to="/" replace />;
@@ -494,13 +496,9 @@ const AppRoutes = () => {
 
                 <Route path="/shop" element={
                     <ProtectedRoute permission="ACCESS_SHOP">
-                        {isModuleActive('GAMIFICATION') ? (
-                            <Layout currentUser={currentUser} handleLogout={logout}>
-                                <ShopView />
-                            </Layout>
-                        ) : (
-                            <Navigate to="/" replace />
-                        )}
+                        <Layout currentUser={currentUser} handleLogout={logout}>
+                            <ShopView />
+                        </Layout>
                     </ProtectedRoute>
                 } />
 

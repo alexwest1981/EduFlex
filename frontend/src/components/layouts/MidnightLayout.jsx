@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 
 import ChatModule from '../../modules/chat/ChatModule';
 
+import logoTop from '../../assets/images/Logo_top.png';
 import GlobalSearch from '../GlobalSearch';
 import NotificationBell from '../NotificationBell';
 import { getSafeUrl, api } from '../../services/api';

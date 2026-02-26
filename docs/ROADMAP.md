@@ -117,12 +117,13 @@
 ## 🛡️ Kategori 5: Infrastruktur & Säkerhet
 *Teknisk ryggrad och skydd av användardata.*
 
-| Funktion | Beskrivning | Status | Mål / Outcome |
-| :--- | :--- | :--- | :--- |
+| Prioritet | Funktion | Beskrivning | Status | Mål / Outcome |
+| :--- | :--- | :--- | :--- | :--- |
 | **Advanced Security** | Domän-låsning, AES-256 GCM kryptering (PII) och Rate-limiting. | ✅ **Klar** | Högsta dataskyddsnivå (GDPR). |
 | **Unified Storage** | MinIO standalone restoration & auto-bucket sync. | ✅ **Klar** | Noll dataförlust & hög tillgänglighet. |
-| **CI/CD Pipeline** | Fullt automatiserade tester och deployment. | 📅 **Planerad** | Snabbare time-to-market. |
-| **Kubernetes Migration** | Helm-charts för skalbarhet. | 📅 **Planerad** | Oändlig skalbarhet (Cloud-native). |
+| **Hög** | **CI/CD Pipeline (Git Hooks)** | Fullt automatiserade pre-push hooks och verifieringsscript. | ✅ **Klar** | Snabbare time-to-market. |
+| **Hög** | **Linting & Code Quality** | 0 lint-fel i frontend och backend-validering. | ✅ **Klar** | Stabilare kodbas. |
+| **Medel** | **Kubernetes Migration** | Helm-charts för skalbarhet. | 📅 **Planerad** | Oändlig skalbarhet (Cloud-native). |
 | **Live Classrooms** | LiveKit-powered video conferencing with scheduling, background blur, and glassmorphic UI. | ✅ **Klar** | **+20%** engagemang i distansundervisning. |
 | **Rektorspaket (Mission Control)** | Komplett skolledningslager: Organisationshierarki, Dashboard för nyckeltal (8 realtids-KPIer), Incidenthantering, Elevhälsa och Masskommunikation. | ✅ **Klar** | **Mission Control** för hela verksamheten. |
 | **PDF Whitelabeling** | Visuell editor för certifikat- och betygsmallar. Ladda upp logotyp, bakgrundsbild, konfigurera färger, texter, QR-position och layout. Live-förhandsvisning. | ✅ **Klar** | Professionell visuell identitet. |

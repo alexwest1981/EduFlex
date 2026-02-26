@@ -25,6 +25,7 @@ public class LicenseFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
+        String path = request.getRequestURI();
 
         // --- ANTI-RE: RUNTIME CHECK ---
         if (runtimeGuard != null) {
@@ -40,7 +41,6 @@ public class LicenseFilter extends OncePerRequestFilter {
             }
 
             // 2. Om systemet är LÅST (ingen giltig licens)
-            String path = request.getRequestURI();
             if (path.startsWith("/api/auth")
                     || path.startsWith("/api/tenants")
                     || path.startsWith("/api/system/license")
@@ -59,7 +59,6 @@ public class LicenseFilter extends OncePerRequestFilter {
             response.getWriter()
                     .write("{\"error\": \"INVALID_LICENSE\", \"message\": \"Systemet är låst. Din licens är ogiltig eller obetald. Kontakta EduFlex support.\"}");
         } catch (Exception e) {
-            String path = request.getRequestURI();
             System.err.println("❌ ERROR in LicenseFilter [" + path + "]: " + e.getMessage());
             e.printStackTrace();
             // Re-throw to allow Spring Security / Spring Web to handle it correctly (e.g.

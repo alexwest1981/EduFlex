@@ -3,7 +3,7 @@ import { LayoutDashboard, BookOpen, FolderOpen, Users, UserCircle, LogOut, Shiel
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
-import { api } from '../services/api';
+import { api, getSafeUrl } from '../services/api';
 import { useModules } from '../context/ModuleContext';
 import { useAppContext } from '../context/AppContext';
 import { usePwaInstall } from '../hooks/usePwaInstall';
@@ -125,7 +125,7 @@ const Sidebar = ({ currentUser, logout, siteName, version }) => {
                                 </span>
                             )}
                         </button>
-                    )
+                    );
                 })}
             </nav>
 
@@ -134,27 +134,25 @@ const Sidebar = ({ currentUser, logout, siteName, version }) => {
                 {canInstall && !isInstalled && (
                     <button
                         onClick={install}
-                        className="w-full flex items-center gap-3 px-4 py-3 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 rounded-xl transition-all text-sm font-bold mb-3 border border-indigo-100 group"
+                        className="w-full flex items-center justify-center gap-2 py-2 px-4 bg-indigo-50 text-indigo-700 rounded-lg text-xs font-bold hover:bg-indigo-100 transition-colors mb-3"
                     >
-                        <div className="bg-white p-1.5 rounded-lg shadow-sm group-hover:scale-110 transition-transform">
-                            <Download size={16} className="text-indigo-600" />
-                        </div>
-                        <div className="text-left">
-                            <p className="text-[10px] uppercase opacity-70 leading-none mb-0.5">Applikation</p>
-                            <p>Ladda ner EduFlex</p>
-                        </div>
+                        <Download size={14} /> INSTALLERA APP
                     </button>
                 )}
-
                 <button
                     onClick={logout}
-                    className="w-full flex items-center gap-2 px-4 py-3 text-red-600 hover:bg-red-50 rounded-xl transition-colors text-sm font-medium mb-2"
+                    className="w-full flex items-center gap-3 px-4 py-3 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all duration-200 font-medium text-sm group"
                 >
-                    <LogOut size={18} /> {t('sidebar.logout')}
+                    <div className="text-gray-400 group-hover:text-red-500">
+                        <LogOut size={20} />
+                    </div>
+                    Logga ut
                 </button>
-                <div className="text-center text-[10px] text-gray-400 font-mono">
-                    v{version || '2.0.18'}
-                </div>
+                {version && (
+                    <div className="mt-4 text-[10px] text-gray-400 text-center font-mono">
+                        v{version}
+                    </div>
+                )}
             </div>
         </aside>
     );
