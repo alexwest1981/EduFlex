@@ -19,7 +19,7 @@ export const getNavigationConfig = (currentUser, t, isModuleActive, licenseTier,
     const isAdmin = roleName.includes('ADMIN') || roleName.includes('SUPERADMIN') || currentUser?.role?.isSuperAdmin || currentUser?.role?.superAdmin;
     const isTeacher = roleName.includes('TEACHER');
     const isStudent = roleName === 'STUDENT' || roleName === 'ROLE_STUDENT';
-    const isPrincipal = ['ADMIN', 'ROLE_ADMIN', 'ROLE_REKTOR', 'REKTOR', 'PRINCIPAL', 'ROLE_PRINCIPAL'].includes(roleName);
+    const isPrincipal = ['ROLE_REKTOR', 'REKTOR', 'PRINCIPAL', 'ROLE_PRINCIPAL'].includes(roleName);
     const isGuardian = roleName === 'GUARDIAN' || roleName === 'ROLE_GUARDIAN';
     const isSyv = roleName === 'SYV' || roleName === 'ROLE_SYV';
 
@@ -44,9 +44,9 @@ export const getNavigationConfig = (currentUser, t, isModuleActive, licenseTier,
         sections.education.push({ path: '/evaluations/manage', label: 'Utvärderingar', icon: <ClipboardList size={20} /> });
         if (isTeacher) {
             sections.education.push({ path: '/?tab=COURSES', label: t('sidebar.my_courses') || 'Mina kurser', icon: <BookOpen size={20} /> });
-        }
-        if (isModuleActive?.('AI_QUIZ') && licenseTier !== 'BASIC') {
-            sections.education.push({ path: '/ai-quiz', label: t('sidebar.ai_quiz') || 'AI Quiz', icon: <Sparkles size={20} /> });
+            if (isModuleActive?.('AI_QUIZ') && licenseTier !== 'BASIC') {
+                sections.education.push({ path: '/ai-quiz', label: t('sidebar.ai_quiz') || 'AI Quiz', icon: <Sparkles size={20} /> });
+            }
         }
     }
 
@@ -91,7 +91,6 @@ export const getNavigationConfig = (currentUser, t, isModuleActive, licenseTier,
     // Admin Section
     if (isAdmin) {
         sections.admin.push({ path: '/admin', label: t('sidebar.admin'), icon: <Settings size={20} /> });
-        sections.admin.push({ path: '/system', label: t('sidebar.system') || 'System', icon: <Settings2 size={20} /> });
     }
     if (roleName === 'HALSOTEAM' || roleName === 'ROLE_HALSOTEAM') {
         sections.admin.push({ path: '/health-dashboard', label: 'E-hälsa (Hälsoteam)', icon: <Heart size={20} className="text-rose-500" /> });
