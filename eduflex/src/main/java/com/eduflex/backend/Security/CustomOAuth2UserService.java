@@ -39,27 +39,29 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     }
 
     private OAuth2User processOAuth2User(String registrationId, OAuth2User oAuth2User) {
-        String email;
-        String name;
+        String email = oAuth2User.getAttribute("email");
+        String name = oAuth2User.getAttribute("name");
 
-        // Handle different providers if needed, though most follow OIDC/Standard
+        // Handle specific provider differences if needed
         if ("github".equalsIgnoreCase(registrationId)) {
             Map<String, Object> attributes = oAuth2User.getAttributes();
-            email = (String) attributes.get("email");
-            name = (String) attributes.get("name");
             if (name == null)
                 name = (String) attributes.get("login");
-        } else {
-            // Google and others
-            email = oAuth2User.getAttribute("email");
-            name = oAuth2User.getAttribute("name");
+        }
+
+        // NEW: Check for SSN attribute. If present, we treat it as a BankID/Identity
+        // login
+        // regardless of the registrationId (e.g. if Keycloak is used as a broker for
+        // BankID)
+        String ssn = oAuth2User.getAttribute("ssn");
+        if (ssn == null)
+            ssn = oAuth2User.getAttribute("personal_number");
+
+        if (ssn != null) {
+            return handleBankIdUser(registrationId, oAuth2User);
         }
 
         if (email == null || email.isEmpty()) {
-            // BankID might not provide email, only SSN
-            if ("bankid".equalsIgnoreCase(registrationId)) {
-                return handleBankIdUser(registrationId, oAuth2User);
-            }
             throw new OAuth2AuthenticationException("Email not found from OAuth2 provider");
         }
 

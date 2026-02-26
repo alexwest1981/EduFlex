@@ -132,13 +132,19 @@ const EbookLibrary = () => {
         // Always send required fields even if empty string — backend has no required=false on them
         formData.append('title', uploadData.title);
         formData.append('author', uploadData.author || '');
-        formData.append('description', uploadData.description || '');
+        // Limit description length for UI stability, though DB now supports TEXT
+        const cleanDescription = (uploadData.description || '').substring(0, 30000);
+        formData.append('description', cleanDescription);
         formData.append('category', uploadData.category || '');
         formData.append('language', uploadData.language || 'Svenska');
         if (uploadData.isbn) formData.append('isbn', uploadData.isbn);
         formData.append('file', files.epub);
         if (files.cover) formData.append('cover', files.cover);
-        if (selectedCourses.length > 0) formData.append('courseIds', selectedCourses.join(','));
+
+        // Append course IDs individually so Spring's List<Long> can parse them correctly
+        if (selectedCourses.length > 0) {
+            selectedCourses.forEach(id => formData.append('courseIds', id));
+        }
 
         try {
             await new Promise((resolve, reject) => {
@@ -419,11 +425,10 @@ const EbookLibrary = () => {
                                     <button
                                         key={cat}
                                         onClick={() => setCategoryFilter(cat)}
-                                        className={`w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all flex items-center gap-2.5 mb-0.5 ${
-                                            categoryFilter === cat
+                                        className={`w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all flex items-center gap-2.5 mb-0.5 ${categoryFilter === cat
                                                 ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200 dark:shadow-indigo-900/30'
                                                 : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-[#232426]'
-                                        }`}
+                                            }`}
                                     >
                                         {cat === 'Alla' ? <BookOpen size={14} className="shrink-0" /> : <Tag size={14} className="shrink-0" />}
                                         <span className="truncate">{cat}</span>

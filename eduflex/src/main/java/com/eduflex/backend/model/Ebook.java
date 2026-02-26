@@ -16,7 +16,7 @@ public class Ebook {
 
     private String author;
 
-    @Column(length = 2000)
+    @Column(columnDefinition = "TEXT")
     private String description;
 
     @Column(nullable = false)

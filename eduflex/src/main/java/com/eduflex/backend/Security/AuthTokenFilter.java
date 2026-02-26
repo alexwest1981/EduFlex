@@ -128,18 +128,15 @@ public class AuthTokenFilter extends OncePerRequestFilter {
             logger.error("Cannot set user authentication: {}", e.getMessage());
         }
 
-        // Neutralize corrupted frontend tokens to prevent OAuth2 filters from throwing
-        // 500
+        // If we have an Authorization header but it wasn't validated above,
+        // it might be an invalid/expired internal token. We should strip it
+        // to prevent BearerTokenAuthenticationFilter from failing the request
+        // on public endpoints.
         String headerAuth = request.getHeader("Authorization");
-        if (headerAuth != null) {
-            if (headerAuth.equalsIgnoreCase("Bearer null") ||
-                    headerAuth.equalsIgnoreCase("Bearer undefined") ||
-                    headerAuth.equalsIgnoreCase("Bearer [object Object]")) {
-
-                HttpServletRequest wrapper = wrapRequestToHideAuth(request);
-                filterChain.doFilter(wrapper, response);
-                return;
-            }
+        if (StringUtils.hasText(headerAuth) && headerAuth.startsWith("Bearer ")) {
+            HttpServletRequest wrapper = wrapRequestToHideAuth(request);
+            filterChain.doFilter(wrapper, response);
+            return;
         }
 
         filterChain.doFilter(request, response);

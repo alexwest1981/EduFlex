@@ -39,10 +39,10 @@ public class EbookController {
     @PostMapping("/upload")
     public ResponseEntity<?> uploadEbook(
             @RequestParam("title") String title,
-            @RequestParam("author") String author,
-            @RequestParam("description") String description,
-            @RequestParam("category") String category,
-            @RequestParam("language") String language,
+            @RequestParam(value = "author", required = false) String author,
+            @RequestParam(value = "description", required = false) String description,
+            @RequestParam(value = "category", required = false) String category,
+            @RequestParam(value = "language", required = false) String language,
             @RequestParam(value = "isbn", required = false) String isbn,
             @RequestParam("file") MultipartFile file,
             @RequestParam(value = "cover", required = false) MultipartFile cover,
@@ -52,6 +52,8 @@ public class EbookController {
                     courseIds);
             return ResponseEntity.ok(ebook);
         } catch (Exception e) {
+            org.slf4j.LoggerFactory.getLogger(EbookController.class).error("Ebook upload failed: {}", e.getMessage(),
+                    e);
             return ResponseEntity.badRequest().body(Map.of("message", "Upload failed: " + e.getMessage()));
         }
     }

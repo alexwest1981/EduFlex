@@ -35,8 +35,14 @@
 
 <div id="-svenska"></div>
 
-## 🚀 Senaste uppdateringarna (26 feb 2026 – Code Integrity & Shop Stability)
-*   **🛒 Butik & Modulstabilitet:**
+## 🚀 Senaste uppdateringarna (26 feb 2026 – BankID Integration & Ebook Stability)
+*   **🏦 BankID-integration (via Keycloak):**
+    *   **Identity Broker Support**: Implementerat stöd för BankID via Keycloak med `kc_idp_hint`.
+    *   **SSN Mapping**: Läggit till automatisk mappning av personnummer (SSN) från externa IdPs till EduFlex användarkonton.
+    *   **Custom OAuth Resolver**: Skapat en anpassad `OAuth2AuthorizationRequestResolver` för att hantera dynamiska parametrar i auth-flödet.
+*   **📚 E-bokshantering & Uppladdning:**
+    *   **Upload Fix**: Åtgärdat 400 Bad Request vid uppladdning genom att tillåta längre beskrivningar (TEXT) och korrigera parameterhantering för `courseIds`.
+    *   **Auth Filter Resilience**: Förstärkt `AuthTokenFilter` för att hantera ogiltiga tokens mer graciöst på publika endpoints.
     *   **Admin Access Fix**: Åtgärdat problem där Butik-länken var dold för administratörer trots aktiv modul. Verifierat att `EDUGAME`-modulen nu styr synligheten korrekt.
     *   **License Filter Fix**: Löst ett kritiskt kompileringsfel i `LicenseFilter.java` som hindrade backend från att starta efter nyligen införda behörighetsändringar. (Fix: Korrekt matchning mot roll-ID).
 *   **🛡️ Pre-push Verification Hooks:**

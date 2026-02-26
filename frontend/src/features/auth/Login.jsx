@@ -300,7 +300,7 @@ const Login = () => {
                     <div className="space-y-3">
                         <button
                             type="button"
-                            onClick={() => window.location.href = `${API_BASE}/oauth2/authorization/bankid`}
+                            onClick={() => window.location.href = `${API_BASE}/oauth2/authorization/keycloak?kc_idp_hint=bankid`}
                             className="w-full bg-white dark:bg-[#282a2c] hover:bg-gray-50 dark:hover:bg-[#3c4043] text-gray-700 dark:text-white font-bold py-3.5 rounded-xl border border-gray-200 dark:border-[#3c4043] hover:border-[#003f8a] transition-all flex items-center justify-center gap-3 group text-sm shadow-sm hover:shadow-md"
                         >
                             <img src={bankIdLogo} alt="BankID" className="h-6 w-auto object-contain" />

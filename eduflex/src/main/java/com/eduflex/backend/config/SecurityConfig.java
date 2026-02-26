@@ -42,6 +42,7 @@ public class SecurityConfig {
         private final com.eduflex.backend.security.RateLimitingFilter rateLimitingFilter;
         private final PasswordEncoder passwordEncoder;
         private final com.eduflex.backend.security.ApiKeyAuthFilter apiKeyAuthFilter;
+        private final org.springframework.security.oauth2.client.registration.ClientRegistrationRepository clientRegistrationRepository;
 
         @Value("${eduflex.auth.mode:hybrid}")
         private String authMode;
@@ -65,7 +66,8 @@ public class SecurityConfig {
                         com.eduflex.backend.security.LoggingAuthenticationEntryPoint loggingAuthenticationEntryPoint,
                         com.eduflex.backend.security.RateLimitingFilter rateLimitingFilter,
                         PasswordEncoder passwordEncoder,
-                        com.eduflex.backend.security.ApiKeyAuthFilter apiKeyAuthFilter) {
+                        com.eduflex.backend.security.ApiKeyAuthFilter apiKeyAuthFilter,
+                        @org.springframework.beans.factory.annotation.Autowired(required = false) org.springframework.security.oauth2.client.registration.ClientRegistrationRepository clientRegistrationRepository) {
                 this.userDetailsService = userDetailsService;
                 this.customOAuth2UserService = customOAuth2UserService;
                 this.authTokenFilter = authTokenFilter;
@@ -79,6 +81,7 @@ public class SecurityConfig {
                 this.rateLimitingFilter = rateLimitingFilter;
                 this.passwordEncoder = passwordEncoder;
                 this.apiKeyAuthFilter = apiKeyAuthFilter;
+                this.clientRegistrationRepository = clientRegistrationRepository;
         }
 
         @Bean
@@ -309,14 +312,22 @@ public class SecurityConfig {
                 http.addFilterBefore(apiKeyAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
                 // OAuth2 Login (for social login and Keycloak browser-based SSO)
-                http.oauth2Login(oauth2 -> oauth2
-                                .authorizationEndpoint(authorization -> authorization
-                                                .baseUri("/api/oauth2/authorization"))
-                                .userInfoEndpoint(userInfo -> userInfo
-                                                .userService(customOAuth2UserService)
-                                                .oidcUserService(customOidcUserService))
-                                .successHandler(oAuth2LoginSuccessHandler)
-                                .failureHandler(oAuth2LoginFailureHandler));
+                http.oauth2Login(oauth2 -> {
+                        oauth2.authorizationEndpoint(authorization -> {
+                                authorization.baseUri("/api/oauth2/authorization");
+                                if (clientRegistrationRepository != null) {
+                                        authorization.authorizationRequestResolver(
+                                                        new EduFlexAuthorizationRequestResolver(
+                                                                        clientRegistrationRepository,
+                                                                        "/api/oauth2/authorization"));
+                                }
+                        })
+                                        .userInfoEndpoint(userInfo -> userInfo
+                                                        .userService(customOAuth2UserService)
+                                                        .oidcUserService(customOidcUserService))
+                                        .successHandler(oAuth2LoginSuccessHandler)
+                                        .failureHandler(oAuth2LoginFailureHandler);
+                });
 
                 http.headers(headers -> {
                         headers.frameOptions(frame -> frame.sameOrigin());
