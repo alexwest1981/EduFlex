@@ -127,9 +127,11 @@ public class SecurityConfig {
                                                                 "/api/webhooks/**",
                                                                 "/api/lrs/**", // LRS endpoints must be accessible
                                                                                // without auth for Content/AUs
-                                                                "/api/calendar/ical/feed/**") // iCal feed - public so
+                                                                "/api/calendar/ical/feed/**", // iCal feed - public so
                                                                                               // Google Calendar, Apple
                                                                                               // Calendar etc. can poll
+                                                                "/api/ai-tutor/video-callback") // Callback for video
+                                                                                                // gen
                                                 .permitAll()
                                                 .requestMatchers(HttpMethod.POST, "/api/tenants").permitAll() // Explicitly
                                                                                                               // allow
