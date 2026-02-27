@@ -1,8 +1,50 @@
 import React, { useState } from 'react';
 import { ReactReader } from 'react-reader';
 
-const EpubViewer = ({ url, title, location, onLocationChange }) => {
+const EpubViewer = ({ ebookId, url, title }) => {
     const [size, setSize] = useState(100);
+    const [lastLocation, setLastLocation] = useState(null);
+
+    React.useEffect(() => {
+        const fetchProgress = async () => {
+            try {
+                const response = await fetch(`/api/ebooks/${ebookId}/progress`, {
+                    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data && data.lastLocation) {
+                        setLastLocation(data.lastLocation);
+                    }
+                }
+            } catch (error) {
+                console.error('Failed to fetch progress:', error);
+            }
+        };
+        fetchProgress();
+    }, [ebookId]);
+
+    const handleLocationChange = (newLocation) => {
+        setLastLocation(newLocation);
+        saveProgress(newLocation);
+    };
+
+    const saveProgress = async (locationCfi) => {
+        try {
+            await fetch(`/api/ebooks/${ebookId}/progress`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    lastLocation: locationCfi
+                })
+            });
+        } catch (error) {
+            console.error('Failed to save progress:', error);
+        }
+    };
 
     return (
         <div className="flex flex-col h-full bg-white dark:bg-gray-900 rounded-xl overflow-hidden shadow-lg border border-gray-200 dark:border-gray-800">
@@ -21,8 +63,8 @@ const EpubViewer = ({ url, title, location, onLocationChange }) => {
                 <ReactReader
                     url={url}
                     title={title}
-                    location={location}
-                    locationChanged={onLocationChange}
+                    location={lastLocation}
+                    locationChanged={handleLocationChange}
                     getRendition={(rendition) => {
                         rendition.themes.fontSize(`${size}%`);
                     }}

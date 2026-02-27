@@ -77,7 +77,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                 }
             }
 
-            if (StringUtils.hasText(headerAuth) && headerAuth.startsWith("Bearer ")) {
+            if (headerAuth != null && headerAuth.startsWith("Bearer ")) {
                 String jwt = headerAuth.substring(7);
                 if (jwtUtils.validateJwtToken(jwt)) {
                     String username = jwtUtils.getUserNameFromJwtToken(jwt);
@@ -133,7 +133,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
         // to prevent BearerTokenAuthenticationFilter from failing the request
         // on public endpoints.
         String headerAuth = request.getHeader("Authorization");
-        if (StringUtils.hasText(headerAuth) && headerAuth.startsWith("Bearer ")) {
+        if (headerAuth != null && headerAuth.startsWith("Bearer ")) {
             HttpServletRequest wrapper = wrapRequestToHideAuth(request);
             filterChain.doFilter(wrapper, response);
             return;

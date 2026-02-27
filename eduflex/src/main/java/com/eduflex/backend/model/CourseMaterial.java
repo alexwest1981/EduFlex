@@ -42,6 +42,8 @@ public class CourseMaterial {
     @Column(columnDefinition = "TEXT")
     private String aiVideoScript; // JSON script for AI-generated videos
 
+    private String aiVideoUrl; // URL for the generated AI video explanation
+
     // NYTT: Datumstyrning
     @com.fasterxml.jackson.annotation.JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     private java.time.LocalDateTime availableFrom;
@@ -229,5 +231,13 @@ public class CourseMaterial {
 
     public void setAiVideoScript(String aiVideoScript) {
         this.aiVideoScript = aiVideoScript;
+    }
+
+    public String getAiVideoUrl() {
+        return aiVideoUrl;
+    }
+
+    public void setAiVideoUrl(String aiVideoUrl) {
+        this.aiVideoUrl = aiVideoUrl;
     }
 }

@@ -10,7 +10,47 @@ const FloatingAudioPlayer = () => {
     const [volume, setVolume] = useState(1);
     const [playbackSpeed, setPlaybackSpeed] = useState(1);
     const [error, setError] = useState(null);
+    const [lastFetchId, setLastFetchId] = useState(null);
     const audioRef = useRef(null);
+
+    // Fetch progress when activeAudiobook changes
+    const fetchProgress = async (ebookId) => {
+        setLastFetchId(ebookId);
+        try {
+            const response = await fetch(`/api/ebooks/${ebookId}/progress`, {
+                headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+            });
+            if (response.ok) {
+                const data = await response.json();
+                if (data && data.timestamp && audioRef.current) {
+                    audioRef.current.currentTime = data.timestamp;
+                }
+            }
+        } catch (error) {
+            console.error('Failed to fetch progress:', error);
+        }
+    };
+
+    const saveProgress = async () => {
+        if (!activeAudiobook || !audioRef.current) return;
+        try {
+            const currentTime = audioRef.current.currentTime;
+            const total = audioRef.current.duration;
+            await fetch(`/api/ebooks/${activeAudiobook.id}/progress`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    timestamp: currentTime,
+                    percentage: total ? (currentTime / total) * 100 : 0
+                })
+            });
+        } catch (error) {
+            console.error('Failed to save progress:', error);
+        }
+    };
 
     // Reset error and sync isPlaying when activeAudiobook changes
     useEffect(() => {
@@ -28,9 +68,20 @@ const FloatingAudioPlayer = () => {
                     });
                 }
                 setIsPlaying(true);
+                fetchProgress(activeAudiobook.id);
             }
         }
     }, [activeAudiobook?.id]);
+
+    // Save progress periodically
+    useEffect(() => {
+        const interval = setInterval(() => {
+            if (activeAudiobook && audioRef.current && isPlaying) {
+                saveProgress();
+            }
+        }, 5000);
+        return () => clearInterval(interval);
+    }, [activeAudiobook?.id, isPlaying]);
 
     useEffect(() => {
         if (audioRef.current) {
@@ -57,6 +108,7 @@ const FloatingAudioPlayer = () => {
                     });
             }
         }
+        saveProgress();
     };
 
     const handleTimeUpdate = () => {
@@ -101,6 +153,7 @@ const FloatingAudioPlayer = () => {
     const handleClose = (e) => {
         if (e) e.stopPropagation();
         if (audioRef.current) {
+            saveProgress();
             audioRef.current.pause();
         }
         setActiveAudiobook(null);

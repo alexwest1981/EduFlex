@@ -35,7 +35,17 @@
 
 <div id="-svenska"></div>
 
-## 🚀 Senaste uppdateringarna (26 feb 2026 – BankID Identity Hub & Dynamic OIDC)
+## 🚀 Senaste uppdateringarna (27 feb 2026 – AI Video, Smart Library & UI Fixes)
+*   **🎬 AI Video Tutor Integration (v3.5.2):**
+    *   **Direct Visibility**: AI-genererade videor dyker nu upp direkt i lektionsvyn när de är färdigställda.
+    *   **Database Sync**: Tillagt stöd för `ai_video_url` i `CourseMaterial` för att permanent länka genererat innehåll till rätt lektion.
+*   **📚 Smart Library & E-böcker:**
+    *   **Persistent Bookmarking**: Systemet kommer nu ihåg exakt var du slutade läsa i en PDF/EPUB eller lyssna på en ljudbok.
+    *   **AI Indexing Plus**: E-böcker som länkas till en kurs indexeras nu automatiskt till den kursen, vilket gör att AI Study Pal kan hämta information direkt från kurslitteraturen.
+    *   **Nyhetssektion**: Ny dynamisk sektion för de 10 senaste böckerna med hover-effekter och förbättrad kategorisortering ("Alla" först).
+*   **🛠️ UI & Sidebar Fixes:**
+    *   **Admin Sidebar**: Återställt länken till "Filer & Dokument" för administratörer.
+    *   **Butik-fix**: Åtgärdat behörighetsproblem som hindrade elever från att se Butiken trots att modulen var aktiv.
 *   **🏦 BankID Integration Hub (v3.5.1):**
     *   **Dynamic Identity Provider**: Fullt stöd för BankID via OIDC, konfigurerbart i runtime via det nya Integration Hub-gränssnittet.
     *   **Dynamic Client Registration**: Implementerat `DynamicClientRegistrationRepository` som tillåter registrering av OAuth2-klienter (Client ID, Secret, Issuer) utan omstart av backend.

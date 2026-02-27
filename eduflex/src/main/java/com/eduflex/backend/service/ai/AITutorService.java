@@ -27,6 +27,8 @@ public class AITutorService {
     private final CourseMaterialRepository materialRepository;
     private final StorageService storageService;
     private final com.eduflex.backend.service.GamificationService gamificationService;
+    private final org.springframework.data.redis.core.StringRedisTemplate redisTemplate;
+    private final com.fasterxml.jackson.databind.ObjectMapper objectMapper;
     private final Tika tika = new Tika();
 
     private final com.eduflex.backend.repository.EbookRepository ebookRepository;
@@ -36,13 +38,17 @@ public class AITutorService {
             CourseMaterialRepository materialRepository,
             StorageService storageService,
             com.eduflex.backend.repository.EbookRepository ebookRepository,
-            com.eduflex.backend.service.GamificationService gamificationService) {
+            com.eduflex.backend.service.GamificationService gamificationService,
+            org.springframework.data.redis.core.StringRedisTemplate redisTemplate,
+            com.fasterxml.jackson.databind.ObjectMapper objectMapper) {
         this.geminiService = geminiService;
         this.embeddingRepository = embeddingRepository;
         this.materialRepository = materialRepository;
         this.storageService = storageService;
         this.ebookRepository = ebookRepository;
         this.gamificationService = gamificationService;
+        this.redisTemplate = redisTemplate;
+        this.objectMapper = objectMapper;
     }
 
     private static final int CHUNK_SIZE = 1000;
@@ -113,11 +119,65 @@ public class AITutorService {
     @Transactional
     public void ingestCourse(Long courseId) {
         logger.info("Starting bulk ingestion for course {}", courseId);
+
+        // 1. Ingest Standard Materials
         List<CourseMaterial> materials = materialRepository.findByCourseId(courseId);
         for (CourseMaterial material : materials) {
             ingestMaterial(courseId, material.getId());
         }
+
+        // 2. Ingest Linked E-books
+        List<com.eduflex.backend.model.Ebook> linkedEbooks = ebookRepository.findByCoursesId(courseId);
+        logger.info("Found {} linked ebooks for course {}", linkedEbooks.size(), courseId);
+        for (com.eduflex.backend.model.Ebook ebook : linkedEbooks) {
+            ingestEbookForCourse(ebook, courseId);
+        }
+
         logger.info("Finished bulk ingestion for course {}", courseId);
+    }
+
+    private void ingestEbookForCourse(com.eduflex.backend.model.Ebook ebook, Long courseId) {
+        try {
+            logger.info("Targeted ingestion of ebook '{}' for course {}", ebook.getTitle(), courseId);
+
+            // Delete existing embeddings for this specific ebook+course combination
+            embeddingRepository.deleteBySourceTypeAndSourceIdAndCourseId("EBOOK", ebook.getId(), courseId);
+
+            String storageId = ebook.getFileUrl();
+            if (storageId.contains("/api/storage/"))
+                storageId = storageId.substring(storageId.lastIndexOf("/") + 1);
+            else if (storageId.contains("/api/files/"))
+                storageId = storageId.substring(storageId.lastIndexOf("/") + 1);
+
+            String text = "";
+            try (InputStream stream = storageService.load(storageId)) {
+                text = tika.parseToString(stream);
+            } catch (Exception e) {
+                logger.warn("Failed to extract text from ebook {} for course {}: {}", ebook.getId(), courseId,
+                        e.getMessage());
+                return;
+            }
+
+            if (text == null || text.isBlank())
+                return;
+
+            List<String> chunks = splitText(text);
+            for (String chunk : chunks) {
+                List<Double> vector = geminiService.generateEmbedding(chunk);
+                VectorStoreEntry embedding = new VectorStoreEntry();
+                embedding.setCourseId(courseId);
+                embedding.setSourceType("EBOOK");
+                embedding.setSourceId(ebook.getId());
+                embedding.setSourceTitle("Bok: " + ebook.getTitle());
+                embedding.setTextChunk(chunk);
+                embedding.setEmbeddingVector(vector.toArray(new Double[0]));
+                embeddingRepository.save(embedding);
+            }
+            logger.info("Successfully indexed ebook '{}' ({} chunks) for course {}", ebook.getTitle(), chunks.size(),
+                    courseId);
+        } catch (Exception e) {
+            logger.error("Failed to ingest ebook {} for course {}", ebook.getId(), courseId, e);
+        }
     }
 
     @Transactional
@@ -237,6 +297,106 @@ public class AITutorService {
         } catch (Exception e) {
             logger.error("Error generating study tip for user {} on lesson {}", student.getId(), lesson.getId(), e);
             return "Kom igen! Du fixar det här. Ta en liten paus och försök igen med fräscha ögon!";
+        }
+    }
+
+    public String generateVideoScript(Long courseId, Long materialId) {
+        try {
+            logger.info("Generating video script for material {} in course {}", materialId, courseId);
+
+            List<VectorStoreEntry> courseEmbeddings = embeddingRepository.findByCourseId(courseId);
+            String context = "";
+
+            if (courseEmbeddings.isEmpty()) {
+                logger.info("No embeddings found for course {}, falling back to material content", courseId);
+                CourseMaterial material = materialRepository.findById(materialId)
+                        .orElseThrow(() -> new RuntimeException("Materialet hittades inte."));
+                context = material.getContent();
+            } else {
+                // Get some context from the material
+                List<VectorStoreEntry> materialEmbeddings = courseEmbeddings.stream()
+                        .filter(e -> "MATERIAL".equals(e.getSourceType()) && materialId.equals(e.getSourceId()))
+                        .limit(5)
+                        .collect(Collectors.toList());
+
+                if (materialEmbeddings.isEmpty()) {
+                    logger.info("No specific embeddings for material {}, using general course context", materialId);
+                    context = courseEmbeddings.stream()
+                            .limit(5)
+                            .map(VectorStoreEntry::getTextChunk)
+                            .collect(Collectors.joining("\n\n"));
+                } else {
+                    context = materialEmbeddings.stream()
+                            .map(VectorStoreEntry::getTextChunk)
+                            .collect(Collectors.joining("\n\n"));
+                }
+            }
+
+            if (context == null || context.isBlank()) {
+                throw new RuntimeException(
+                        "Ingen text hittades för att skapa ett manus. Lägg till innehåll i lektionen först.");
+            }
+
+            String prompt = "Du är en AI-pedagog på EduFlex. Skapa ett videomanus (JSON) baserat på följande sammanhang. "
+                    +
+                    "Videon ska vara ca 30-45 sekunder lång och förklara de viktigaste punkterna.\n\n" +
+                    "Svara ENDAST med ett giltigt JSON-objekt i detta format:\n" +
+                    "{\n" +
+                    "  \"title\": \"Lektionstitel\",\n" +
+                    "  \"scenes\": [\n" +
+                    "    { \"text\": \"Kort text att visa i scenen\", \"duration\": 5 },\n" +
+                    "    { \"text\": \"Nästa punk...\", \"duration\": 8 }\n" +
+                    "  ]\n" +
+                    "}\n\n" +
+                    "Sammanhang:\n" + context;
+
+            String response = geminiService.generateResponse(prompt);
+            // Basic cleanup if Gemini adds markdown blocks
+            if (response.contains("```json")) {
+                response = response.substring(response.indexOf("```json") + 7);
+                response = response.substring(0, response.indexOf("```"));
+            }
+            return response.trim();
+        } catch (Exception e) {
+            logger.error("Failed to generate video script", e);
+            throw new RuntimeException("Kunde inte skapa manus: " + e.getMessage());
+        }
+    }
+
+    public void triggerVideoGeneration(Long courseId, Long materialId) {
+        try {
+            String scriptJson = generateVideoScript(courseId, materialId);
+
+            Map<String, String> message = new HashMap<>();
+            message.put("action", "GENERATE_AI_VIDEO");
+            message.put("fileId", materialId.toString());
+            message.put("script", scriptJson);
+
+            String jsonMessage = objectMapper.writeValueAsString(message);
+            redisTemplate.convertAndSend("video.upload", jsonMessage);
+
+            logger.info("Successfully sent video generation message for material {}", materialId);
+        } catch (Exception e) {
+            logger.error("Failed to trigger video generation", e);
+            throw new RuntimeException("Kunde inte starta videogenerering: " + e.getMessage());
+        }
+    }
+
+    @Transactional
+    public void handleVideoCallback(Long materialId, String videoUrl) {
+        try {
+            logger.info("Received video callback for material {}. URL: {}", materialId, videoUrl);
+            CourseMaterial original = materialRepository.findById(materialId)
+                    .orElseThrow(() -> new RuntimeException("Original material not found"));
+
+            // Instead of creating a NEW material, we link it to the existing one
+            original.setAiVideoUrl(videoUrl);
+            original.setType(CourseMaterial.MaterialType.VIDEO); // Ensure it's treated as video if it was just text
+
+            materialRepository.save(original);
+            logger.info("Successfully updated original material {} with AI video URL", materialId);
+        } catch (Exception e) {
+            logger.error("Failed to handle video callback", e);
         }
     }
 

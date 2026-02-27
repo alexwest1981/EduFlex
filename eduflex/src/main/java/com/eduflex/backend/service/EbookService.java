@@ -23,14 +23,17 @@ public class EbookService {
     private final com.eduflex.backend.repository.CourseRepository courseRepository;
     private final org.springframework.web.client.RestTemplate restTemplate;
     private final com.eduflex.backend.service.ai.TtsService ttsService;
+    private final com.eduflex.backend.repository.UserEbookProgressRepository progressRepository;
 
     public EbookService(EbookRepository ebookRepository, StorageService storageService,
             com.eduflex.backend.repository.CourseRepository courseRepository,
-            com.eduflex.backend.service.ai.TtsService ttsService) {
+            com.eduflex.backend.service.ai.TtsService ttsService,
+            com.eduflex.backend.repository.UserEbookProgressRepository progressRepository) {
         this.ebookRepository = ebookRepository;
         this.storageService = storageService;
         this.courseRepository = courseRepository;
         this.ttsService = ttsService;
+        this.progressRepository = progressRepository;
         this.restTemplate = new org.springframework.web.client.RestTemplate();
     }
 
@@ -476,5 +479,28 @@ public class EbookService {
             }
         }
         return null;
+    }
+
+    public com.eduflex.backend.model.UserEbookProgress getProgress(Long ebookId, com.eduflex.backend.model.User user) {
+        return progressRepository.findByUserIdAndEbookId(user.getId(), ebookId)
+                .orElse(new com.eduflex.backend.model.UserEbookProgress(user, getEbookById(ebookId)));
+    }
+
+    public com.eduflex.backend.model.UserEbookProgress saveProgress(Long ebookId, com.eduflex.backend.model.User user,
+            Map<String, Object> progressData) {
+        com.eduflex.backend.model.UserEbookProgress progress = progressRepository
+                .findByUserIdAndEbookId(user.getId(), ebookId)
+                .orElse(new com.eduflex.backend.model.UserEbookProgress(user, getEbookById(ebookId)));
+
+        if (progressData.containsKey("lastLocation"))
+            progress.setLastLocation((String) progressData.get("lastLocation"));
+        if (progressData.containsKey("lastPage"))
+            progress.setLastPage(Integer.valueOf(progressData.get("lastPage").toString()));
+        if (progressData.containsKey("lastTimestamp"))
+            progress.setLastTimestamp(Double.valueOf(progressData.get("lastTimestamp").toString()));
+        if (progressData.containsKey("percentage"))
+            progress.setPercentage(Double.valueOf(progressData.get("percentage").toString()));
+
+        return progressRepository.save(progress);
     }
 }

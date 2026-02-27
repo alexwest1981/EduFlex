@@ -28,7 +28,8 @@ export const getNavigationConfig = (currentUser, t, isModuleActive, licenseTier,
     const sections = {
         main: [
             { path: dashboardPath, label: t('sidebar.dashboard'), icon: <LayoutDashboard size={20} /> },
-            { path: '/catalog', label: t('sidebar.catalog'), icon: <Layers size={20} /> }
+            { path: '/catalog', label: t('sidebar.catalog'), icon: <Layers size={20} /> },
+            { path: '/documents', label: t('sidebar.documents'), icon: <FileText size={20} /> },
         ],
         education: [],
         tools: [],
@@ -65,9 +66,6 @@ export const getNavigationConfig = (currentUser, t, isModuleActive, licenseTier,
 
     // Tools Section
     sections.tools.push({ path: '/calendar', label: t('sidebar.calendar'), icon: <Calendar size={20} /> });
-    if (!isAdmin && !isGuardian) {
-        sections.tools.push({ path: '/documents', label: t('sidebar.documents'), icon: <FolderOpen size={20} /> });
-    }
 
     sections.tools.push({
         path: '/communication',
@@ -78,7 +76,7 @@ export const getNavigationConfig = (currentUser, t, isModuleActive, licenseTier,
 
     sections.tools.push({ path: '/support', label: t('sidebar.support'), icon: <HelpCircle size={20} /> });
 
-    if (isModuleActive?.('EDUGAME') && isStudent) {
+    if (isModuleActive?.('EDUGAME') && (isStudent || isAdmin)) {
         sections.tools.push({ path: '/shop', label: t('sidebar.shop') || 'Butik', icon: <Store size={20} /> });
     }
 

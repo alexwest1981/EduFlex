@@ -4,6 +4,7 @@ import com.eduflex.backend.model.BookType;
 import com.eduflex.backend.model.Ebook;
 import com.eduflex.backend.repository.CourseRepository;
 import com.eduflex.backend.repository.EbookRepository;
+import com.eduflex.backend.repository.UserEbookProgressRepository;
 import com.eduflex.backend.service.ai.TtsService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,6 +34,9 @@ class EbookServiceTest {
     @Mock
     private TtsService ttsService;
 
+    @Mock
+    private UserEbookProgressRepository userEbookProgressRepository;
+
     private EbookService ebookService;
 
     @BeforeEach
@@ -46,7 +50,8 @@ class EbookServiceTest {
         // It instantiates RestTemplate internally: `this.restTemplate = new
         // RestTemplate();`
         // So this constructor call is correct.
-        ebookService = new EbookService(ebookRepository, storageService, courseRepository, ttsService);
+        ebookService = new EbookService(ebookRepository, storageService, courseRepository, ttsService,
+                userEbookProgressRepository);
     }
 
     @Test

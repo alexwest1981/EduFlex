@@ -10,6 +10,11 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.concurrent.TimeUnit;
 import java.util.List;
 import java.util.Map;
+import com.eduflex.backend.model.User;
+import com.eduflex.backend.repository.UserRepository;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import com.eduflex.backend.model.UserEbookProgress;
 
 @RestController
 @RequestMapping("/api/ebooks")
@@ -17,9 +22,23 @@ import java.util.Map;
 public class EbookController {
 
     private final EbookService ebookService;
+    private final UserRepository userRepository;
 
-    public EbookController(EbookService ebookService) {
+    public EbookController(EbookService ebookService, UserRepository userRepository) {
         this.ebookService = ebookService;
+        this.userRepository = userRepository;
+    }
+
+    private User getCurrentUser() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username;
+        if (principal instanceof UserDetails) {
+            username = ((UserDetails) principal).getUsername();
+        } else {
+            username = principal.toString();
+        }
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
     }
 
     @GetMapping
@@ -170,6 +189,27 @@ public class EbookController {
             return ResponseEntity.ok(ebook);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Map.of("message", "Regeneration failed: " + e.getMessage()));
+        }
+    }
+
+    @GetMapping("/{id}/progress")
+    public ResponseEntity<UserEbookProgress> getProgress(@PathVariable Long id) {
+        try {
+            User user = getCurrentUser();
+            return ResponseEntity.ok(ebookService.getProgress(id, user));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @PostMapping("/{id}/progress")
+    public ResponseEntity<UserEbookProgress> saveProgress(@PathVariable Long id,
+            @RequestBody Map<String, Object> data) {
+        try {
+            User user = getCurrentUser();
+            return ResponseEntity.ok(ebookService.saveProgress(id, user, data));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
         }
     }
 }

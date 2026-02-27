@@ -11,4 +11,6 @@ public interface EbookRepository extends JpaRepository<Ebook, Long> {
     List<Ebook> findByCategory(String category);
 
     List<Ebook> findByTitleContainingIgnoreCaseOrAuthorContainingIgnoreCase(String title, String author);
+
+    List<Ebook> findByCoursesId(Long courseId);
 }

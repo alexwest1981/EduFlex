@@ -12,6 +12,8 @@ import java.util.Map;
 @RequestMapping("/api/ai-tutor")
 public class AITutorController {
 
+    private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(AITutorController.class);
+
     private final AITutorService aiTutorService;
     private final com.eduflex.backend.service.ModuleService moduleService;
     private final com.eduflex.backend.repository.CourseRepository courseRepository;
@@ -153,5 +155,56 @@ public class AITutorController {
         new Thread(() -> aiTutorService.ingestCourse(finalCourseId)).start();
 
         return ResponseEntity.ok("Bulk ingestion started. Please wait a few minutes.");
+    }
+
+    /**
+     * Generate an AI explain video for a specific material.
+     */
+    @PostMapping("/generate-video")
+    @PreAuthorize("hasAnyRole('STUDENT', 'TEACHER', 'ADMIN')")
+    public ResponseEntity<?> generateVideo(@RequestBody Map<String, Object> payload) {
+        try {
+            moduleService.toggleModule("AI_TUTOR", true);
+        } catch (Exception e) {
+            return ResponseEntity.status(403).body("AI Tutor module is not available in your license.");
+        }
+
+        Object courseIdObj = payload.get("courseId");
+        Object materialIdObj = payload.get("materialId");
+
+        if (courseIdObj == null || materialIdObj == null) {
+            return ResponseEntity.badRequest().body("Missing courseId or materialId");
+        }
+
+        try {
+            Long courseId = Long.valueOf(courseIdObj.toString());
+            Long materialId = Long.valueOf(materialIdObj.toString());
+            aiTutorService.triggerVideoGeneration(courseId, materialId);
+            return ResponseEntity.ok(Map.of("message", "Videogenerering har startats. Det tar ca 1 minuter."));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Fel vid videogenerering: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Callback for AI video generation completion.
+     */
+    @PostMapping("/video-callback")
+    public ResponseEntity<?> videoCallback(@RequestBody Map<String, Object> payload) {
+        try {
+            Long materialId = Long.valueOf(payload.get("fileId").toString());
+            String videoUrl = (String) payload.get("videoUrl");
+            String status = (String) payload.get("status");
+
+            if ("SUCCESS".equals(status) && videoUrl != null) {
+                aiTutorService.handleVideoCallback(materialId, videoUrl);
+            } else {
+                logger.error("Video generation failed or returned bad status for material {}: {}", materialId, status);
+            }
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            logger.error("Error in video callback", e);
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 }

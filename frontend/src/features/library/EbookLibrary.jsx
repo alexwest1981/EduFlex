@@ -59,11 +59,26 @@ const EbookLibrary = () => {
         title: '', author: '', category: '', language: 'Svenska', description: '', isbn: ''
     });
     const [ttsLoading, setTtsLoading] = useState(false);
+    const [gridSize, setGridSize] = useState('medium');
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 20;
 
-    const availableCategories = useMemo(() =>
-        ['Alla', ...new Set(ebooks.map(b => b.category).filter(Boolean))].sort(),
-        [ebooks]
-    );
+    const availableCategories = useMemo(() => {
+        const cats = [...new Set(ebooks.map(b => b.category).filter(Boolean))].sort();
+        return ['Alla', ...cats];
+    }, [ebooks]);
+
+    const newsBooks = useMemo(() => {
+        return [...ebooks]
+            .sort((a, b) => (b.id || 0) - (a.id || 0))
+            .slice(0, 10);
+    }, [ebooks]);
+
+    const gridColsClass = useMemo(() => {
+        if (gridSize === 'small') return 'grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7';
+        if (gridSize === 'large') return 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3';
+        return 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4';
+    }, [gridSize]);
 
     const audiobookCount = useMemo(() => ebooks.filter(b => b.type === 'AUDIO').length, [ebooks]);
     const categoryCount = useMemo(() => availableCategories.length - 1, [availableCategories]);
@@ -80,6 +95,13 @@ const EbookLibrary = () => {
         else if (sortBy === 'type') result.sort((a, b) => (a.type || '').localeCompare(b.type || ''));
         return result;
     }, [ebooks, categoryFilter, searchTerm, sortBy]);
+
+    const paginatedBooks = useMemo(() => {
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        return filteredBooks.slice(startIndex, startIndex + itemsPerPage);
+    }, [filteredBooks, currentPage]);
+
+    const totalPages = Math.ceil(filteredBooks.length / itemsPerPage);
 
     const fetchEbooks = async () => {
         try {
@@ -383,6 +405,25 @@ const EbookLibrary = () => {
                         )}
                     </p>
                     <div className="flex items-center gap-2">
+                        {/* Grid Size Selector */}
+                        <div className="flex bg-white dark:bg-[#1a1b1d] border border-gray-200 dark:border-[#2a2b2d] rounded-xl overflow-hidden mr-2">
+                            {[
+                                { id: 'small', icon: <LayoutGrid size={12} />, label: 'S' },
+                                { id: 'medium', icon: <LayoutGrid size={14} />, label: 'M' },
+                                { id: 'large', icon: <LayoutGrid size={16} />, label: 'L' }
+                            ].map(size => (
+                                <button
+                                    key={size.id}
+                                    onClick={() => setGridSize(size.id)}
+                                    className={`px-2.5 py-1.5 transition-colors text-xs font-bold flex items-center gap-1.5 ${gridSize === size.id ? 'bg-indigo-600 text-white' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'}`}
+                                    title={`Ikonstorlek: ${size.id}`}
+                                >
+                                    {size.icon}
+                                    <span>{size.label}</span>
+                                </button>
+                            ))}
+                        </div>
+
                         <label className="flex items-center gap-2 bg-white dark:bg-[#1a1b1d] border border-gray-200 dark:border-[#2a2b2d] rounded-xl px-3 py-2 cursor-pointer">
                             <SortAsc size={13} className="text-gray-400 shrink-0" />
                             <select
@@ -413,6 +454,38 @@ const EbookLibrary = () => {
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-4 gap-7">
+                    {/* ─── NEWS SECTION (Top) ─── */}
+                    {newsBooks.length > 0 && categoryFilter === 'Alla' && !searchTerm && (
+                        <div className="lg:col-span-4 mb-8">
+                            <div className="flex items-center gap-2 mb-4">
+                                <SparklesIcon size={16} className="text-amber-500" />
+                                <h3 className="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider">Senaste Nyheterna</h3>
+                                <div className="h-px flex-1 bg-gradient-to-r from-gray-200 to-transparent dark:from-[#2a2b2d]" />
+                            </div>
+                            <div className="flex gap-4 overflow-x-auto pb-4 px-1 custom-scrollbar scroll-smooth">
+                                {newsBooks.map(book => (
+                                    <div
+                                        key={`news-${book.id}`}
+                                        className="relative shrink-0 w-24 group cursor-pointer"
+                                        onClick={() => openBook(book)}
+                                    >
+                                        <div className="aspect-[2/3] rounded-xl overflow-hidden border border-gray-100 dark:border-[#2a2b2d] shadow-sm transition-all duration-300 group-hover:scale-110 group-hover:shadow-xl group-hover:shadow-indigo-500/20 group-hover:z-10 group-hover:-translate-y-1">
+                                            <img
+                                                src={`/api/ebooks/${book.id}/cover`}
+                                                alt={book.title}
+                                                className="w-full h-full object-cover"
+                                                onError={(e) => { e.target.onerror = null; e.target.src = `https://placehold.co/100x150/1e1b4b/818cf8?text=📚`; }}
+                                            />
+                                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-2">
+                                                <p className="text-[8px] leading-tight font-bold text-white truncate">{book.title}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
                     {/* ─── SIDEBAR ─── */}
                     <aside className="lg:col-span-1">
                         <div className="bg-white dark:bg-[#1a1b1d] rounded-2xl border border-gray-100 dark:border-[#2a2b2d] overflow-hidden sticky top-6 shadow-sm">
@@ -426,8 +499,8 @@ const EbookLibrary = () => {
                                         key={cat}
                                         onClick={() => setCategoryFilter(cat)}
                                         className={`w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all flex items-center gap-2.5 mb-0.5 ${categoryFilter === cat
-                                                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200 dark:shadow-indigo-900/30'
-                                                : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-[#232426]'
+                                            ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200 dark:shadow-indigo-900/30'
+                                            : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-[#232426]'
                                             }`}
                                     >
                                         {cat === 'Alla' ? <BookOpen size={14} className="shrink-0" /> : <Tag size={14} className="shrink-0" />}
@@ -484,53 +557,84 @@ const EbookLibrary = () => {
                                 )}
                             </div>
                         ) : viewMode === 'grid' ? (
-                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-5">
-                                {filteredBooks.map(book => (
-                                    <div key={book.id} className="group bg-white dark:bg-[#1a1b1d] rounded-2xl border border-gray-100 dark:border-[#2a2b2d] overflow-hidden hover:shadow-xl hover:shadow-gray-200/60 dark:hover:shadow-black/40 hover:-translate-y-0.5 transition-all duration-300 flex flex-col">
-                                        <div className="relative overflow-hidden cursor-pointer aspect-[2/3]" onClick={() => openBook(book)}>
-                                            <img
-                                                src={`/api/ebooks/${book.id}/cover`}
-                                                alt={book.title}
-                                                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                                                onError={(e) => { e.target.onerror = null; e.target.src = `https://placehold.co/300x450/1e1b4b/818cf8?text=${encodeURIComponent(book.title?.slice(0, 20) || 'Bok')}`; }}
-                                            />
-                                            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-300 flex items-center justify-center">
-                                                <div className="opacity-0 group-hover:opacity-100 transform translate-y-3 group-hover:translate-y-0 transition-all duration-300 bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm p-3 rounded-2xl shadow-xl">
-                                                    {book.type === 'AUDIO' ? <Headphones size={22} className="text-indigo-600" /> : <BookOpen size={22} className="text-indigo-600" />}
+                            <>
+                                <div className={`grid ${gridColsClass} gap-5`}>
+                                    {paginatedBooks.map(book => (
+                                        <div key={book.id} className="group bg-white dark:bg-[#1a1b1d] rounded-2xl border border-gray-100 dark:border-[#2a2b2d] overflow-hidden hover:shadow-xl hover:shadow-gray-200/60 dark:hover:shadow-black/40 hover:-translate-y-0.5 transition-all duration-300 flex flex-col">
+                                            <div className="relative overflow-hidden cursor-pointer aspect-[2/3]" onClick={() => openBook(book)}>
+                                                <img
+                                                    src={`/api/ebooks/${book.id}/cover`}
+                                                    alt={book.title}
+                                                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                                                    onError={(e) => { e.target.onerror = null; e.target.src = `https://placehold.co/300x450/1e1b4b/818cf8?text=${encodeURIComponent(book.title?.slice(0, 20) || 'Bok')}`; }}
+                                                />
+                                                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-300 flex items-center justify-center">
+                                                    <div className="opacity-0 group-hover:opacity-100 transform translate-y-3 group-hover:translate-y-0 transition-all duration-300 bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm p-3 rounded-2xl shadow-xl">
+                                                        {book.type === 'AUDIO' ? <Headphones size={22} className="text-indigo-600" /> : <BookOpen size={22} className="text-indigo-600" />}
+                                                    </div>
                                                 </div>
+                                                {book.category && (
+                                                    <span className="absolute bottom-2 left-2 bg-black/60 backdrop-blur-md text-white text-[10px] font-bold px-2 py-0.5 rounded-lg max-w-[70%] truncate">{book.category}</span>
+                                                )}
+                                                {book.type === 'AUDIO' && (
+                                                    <div className="absolute top-2 left-2 bg-violet-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-lg flex items-center gap-1">
+                                                        <Music size={9} /> AUDIO
+                                                    </div>
+                                                )}
                                             </div>
-                                            {book.category && (
-                                                <span className="absolute bottom-2 left-2 bg-black/60 backdrop-blur-md text-white text-[10px] font-bold px-2 py-0.5 rounded-lg max-w-[70%] truncate">{book.category}</span>
-                                            )}
-                                            {book.type === 'AUDIO' && (
-                                                <div className="absolute top-2 left-2 bg-violet-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-lg flex items-center gap-1">
-                                                    <Music size={9} /> AUDIO
-                                                </div>
-                                            )}
+                                            <div className="p-4 flex-1 flex flex-col">
+                                                <h3 className="font-bold text-gray-900 dark:text-white text-sm leading-snug line-clamp-2 mb-0.5 cursor-pointer hover:text-indigo-600 transition-colors" onClick={() => openBook(book)}>
+                                                    {book.title}
+                                                </h3>
+                                                <p className="text-xs text-gray-400 dark:text-gray-500 mb-3 truncate">{book.author}</p>
+                                                {isAdmin(currentUser) && (
+                                                    <div className="mt-auto flex items-center justify-end gap-0.5 pt-2 border-t border-gray-100 dark:border-[#2a2b2d]">
+                                                        {book.type === 'AUDIO' && (
+                                                            <button onClick={() => handleRegenerateAudio(book)} className="p-2 text-gray-400 hover:text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg transition-colors" title="Återskapa ljudfil"><RefreshCw size={14} /></button>
+                                                        )}
+                                                        <button onClick={() => handleListenWithAI(book)} className="p-2 text-gray-400 hover:text-pink-500 hover:bg-pink-50 dark:hover:bg-pink-900/20 rounded-lg transition-colors" title="Lyssna med AI"><Volume2 size={14} /></button>
+                                                        <button onClick={() => handleIndexForAI(book.id)} className="p-2 text-gray-400 hover:text-violet-500 hover:bg-violet-50 dark:hover:bg-violet-900/20 rounded-lg transition-colors" title="Indexera för AI"><SparklesIcon size={14} /></button>
+                                                        <button onClick={() => { setUploadData({ ...book, description: book.description || '' }); setSelectedCourses(book.courses?.map(c => c.id) || []); setSelectedBook(book); setIsEditModalOpen(true); }} className="p-2 text-gray-400 hover:text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg transition-colors" title="Redigera"><Settings size={14} /></button>
+                                                        <button onClick={() => handleDelete(book.id)} className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors" title="Ta bort"><Trash2 size={14} /></button>
+                                                    </div>
+                                                )}
+                                            </div>
                                         </div>
-                                        <div className="p-4 flex-1 flex flex-col">
-                                            <h3 className="font-bold text-gray-900 dark:text-white text-sm leading-snug line-clamp-2 mb-0.5 cursor-pointer hover:text-indigo-600 transition-colors" onClick={() => openBook(book)}>
-                                                {book.title}
-                                            </h3>
-                                            <p className="text-xs text-gray-400 dark:text-gray-500 mb-3 truncate">{book.author}</p>
-                                            {isAdmin(currentUser) && (
-                                                <div className="mt-auto flex items-center justify-end gap-0.5 pt-2 border-t border-gray-100 dark:border-[#2a2b2d]">
-                                                    {book.type === 'AUDIO' && (
-                                                        <button onClick={() => handleRegenerateAudio(book)} className="p-2 text-gray-400 hover:text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg transition-colors" title="Återskapa ljudfil"><RefreshCw size={14} /></button>
-                                                    )}
-                                                    <button onClick={() => handleListenWithAI(book)} className="p-2 text-gray-400 hover:text-pink-500 hover:bg-pink-50 dark:hover:bg-pink-900/20 rounded-lg transition-colors" title="Lyssna med AI"><Volume2 size={14} /></button>
-                                                    <button onClick={() => handleIndexForAI(book.id)} className="p-2 text-gray-400 hover:text-violet-500 hover:bg-violet-50 dark:hover:bg-violet-900/20 rounded-lg transition-colors" title="Indexera för AI"><SparklesIcon size={14} /></button>
-                                                    <button onClick={() => { setUploadData({ ...book, description: book.description || '' }); setSelectedCourses(book.courses?.map(c => c.id) || []); setSelectedBook(book); setIsEditModalOpen(true); }} className="p-2 text-gray-400 hover:text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg transition-colors" title="Redigera"><Settings size={14} /></button>
-                                                    <button onClick={() => handleDelete(book.id)} className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors" title="Ta bort"><Trash2 size={14} /></button>
-                                                </div>
-                                            )}
-                                        </div>
+                                    ))}
+                                </div>
+
+                                {/* Pagination */}
+                                {totalPages > 1 && (
+                                    <div className="mt-10 flex items-center justify-center gap-2">
+                                        <button
+                                            disabled={currentPage === 1}
+                                            onClick={() => setCurrentPage(p => p - 1)}
+                                            className="p-2 rounded-xl border border-gray-200 dark:border-[#2a2b2d] bg-white dark:bg-[#1a1b1d] text-gray-600 dark:text-gray-400 disabled:opacity-50 hover:bg-gray-50 dark:hover:bg-[#252628] transition-colors"
+                                        >
+                                            <Search size={14} className="rotate-180" />
+                                        </button>
+                                        {[...Array(totalPages)].map((_, i) => (
+                                            <button
+                                                key={i}
+                                                onClick={() => setCurrentPage(i + 1)}
+                                                className={`w-9 h-9 rounded-xl text-xs font-bold transition-all ${currentPage === i + 1 ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200 dark:shadow-indigo-900/30' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-[#252628]'}`}
+                                            >
+                                                {i + 1}
+                                            </button>
+                                        ))}
+                                        <button
+                                            disabled={currentPage === totalPages}
+                                            onClick={() => setCurrentPage(p => p + 1)}
+                                            className="p-2 rounded-xl border border-gray-200 dark:border-[#2a2b2d] bg-white dark:bg-[#1a1b1d] text-gray-600 dark:text-gray-400 disabled:opacity-50 hover:bg-gray-50 dark:hover:bg-[#252628] transition-colors"
+                                        >
+                                            <Search size={14} />
+                                        </button>
                                     </div>
-                                ))}
-                            </div>
+                                )}
+                            </>
                         ) : (
                             <div className="flex flex-col gap-2.5">
-                                {filteredBooks.map(book => (
+                                {paginatedBooks.map(book => (
                                     <div key={book.id} className="group bg-white dark:bg-[#1a1b1d] rounded-2xl border border-gray-100 dark:border-[#2a2b2d] overflow-hidden hover:shadow-md hover:border-indigo-200 dark:hover:border-indigo-900/50 transition-all duration-200 flex items-center">
                                         <div className="w-14 h-20 shrink-0 overflow-hidden cursor-pointer" onClick={() => openBook(book)}>
                                             <img
@@ -719,7 +823,7 @@ const EbookLibrary = () => {
                                 </div>
                             </div>
                         ) : (selectedBook.fileUrl?.toLowerCase().endsWith('.epub') || selectedBook.type === 'EPUB') ? (
-                            <EpubViewer url={selectedBook.fileUrl} title={selectedBook.title} />
+                            <EpubViewer ebookId={selectedBook.id} url={selectedBook.fileUrl} title={selectedBook.title} />
                         ) : (
                             <PdfViewer ebookId={selectedBook.id} title={selectedBook.title} />
                         )}

@@ -724,6 +724,7 @@ export const api = {
             chat: (courseId, question) => api.post('/ai-tutor/chat', { courseId, question }),
             ingest: (courseId, documentId) => api.post('/ai-tutor/ingest', { courseId, documentId }),
             ingestCourse: (courseId) => api.post('/ai-tutor/ingest-course', { courseId }),
+            generateVideo: (courseId, materialId) => api.post('/ai-tutor/generate-video', { courseId, materialId }),
         },
         resources: {
             generate: (userId, type, prompt, context) => {

@@ -39,7 +39,8 @@ public class DataInitializer implements CommandLineRunner {
                                 com.eduflex.backend.model.Permission.GRADE_ASSIGN));
 
                 createRoleIfNotFound("STUDENT", "Student", "STUDENT", false, java.util.Set.of(
-                                com.eduflex.backend.model.Permission.VIEW_COURSES));
+                                com.eduflex.backend.model.Permission.VIEW_COURSES,
+                                com.eduflex.backend.model.Permission.ACCESS_SHOP));
 
                 createRoleIfNotFound("PRINCIPAL", "Rektor", "PRINCIPAL", false, java.util.Set.of(
                                 com.eduflex.backend.model.Permission.VIEW_COURSES));

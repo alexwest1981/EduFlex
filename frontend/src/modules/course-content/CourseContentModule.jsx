@@ -24,6 +24,7 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
     const [activeQuizRunner, setActiveQuizRunner] = useState(null); // For Modal
     const [isEditing, setIsEditing] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
+    const [isVideoGenerating, setIsVideoGenerating] = useState(false);
     const [onlyOfficeDoc, setOnlyOfficeDoc] = useState(null);
 
     // Calendar Integration
@@ -504,7 +505,7 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
             <div className="lg:col-span-3 min-w-0 bg-white dark:bg-[#1E1F20] rounded-xl border border-gray-200 dark:border-[#3c4043] p-8 flex flex-col">
                 {isEditing ? (
                     /* EDITOR MODE */
-                    <div className="space-y-4 flex-1 animate-in fade-in relative">
+                    <div className="space-y-4 flex-1 animate-in fade-in relative pb-24">
                         {isSaving && (
                             <div className="absolute inset-0 bg-white/80 dark:bg-black/80 z-10 flex items-center justify-center backdrop-blur-sm rounded-xl">
                                 <div className="flex flex-col items-center gap-2">
@@ -689,9 +690,9 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
                             )}
                         </div>
 
-                        <div className="flex gap-3 pt-4 border-t dark:border-[#3c4043]">
-                            <button onClick={handleSave} disabled={isSaving} className="bg-indigo-600 text-white px-6 py-2.5 rounded-lg font-bold flex items-center gap-2 hover:bg-indigo-700 disabled:opacity-50"><Save size={18} /> Spara Lektion</button>
-                            <button onClick={() => { setIsEditing(false); if (!selectedLesson && lessons.length > 0) setSelectedLesson(lessons[0]); }} disabled={isSaving} className="bg-gray-100 dark:bg-[#3c4043] text-gray-700 dark:text-white px-6 py-2.5 rounded-lg font-bold">Avbryt</button>
+                        <div className="flex gap-3 pt-6 border-t dark:border-[#3c4043] mt-8">
+                            <button onClick={handleSave} disabled={isSaving} className="bg-indigo-600 text-white px-6 py-2.5 rounded-lg font-bold flex items-center gap-2 hover:bg-indigo-700 disabled:opacity-50 shadow-lg shadow-indigo-200 dark:shadow-none transition-all active:scale-95"><Save size={18} /> Spara Lektion</button>
+                            <button onClick={() => { setIsEditing(false); if (!selectedLesson && lessons.length > 0) setSelectedLesson(lessons[0]); }} disabled={isSaving} className="bg-gray-100 dark:bg-[#3c4043] text-gray-700 dark:text-white px-6 py-2.5 rounded-lg font-bold hover:bg-gray-200 dark:hover:bg-[#4a4d51] transition-colors">Avbryt</button>
                         </div>
                     </div>
                 ) : selectedQuiz ? (
@@ -744,8 +745,37 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
                             </div>
                             {isTeacher && (
                                 <div className="flex gap-2">
-                                    <button onClick={() => startEditing(selectedLesson)} className="p-2 text-gray-500 hover:text-indigo-600 hover:bg-gray-100 dark:hover:bg-[#3c4043] rounded-lg transition-colors"><Edit2 size={18} /></button>
-                                    <button onClick={() => handleDelete(selectedLesson.id)} className="p-2 text-gray-500 hover:text-red-600 hover:bg-gray-100 dark:hover:bg-[#3c4043] rounded-lg transition-colors"><Trash2 size={18} /></button>
+                                    <button
+                                        onClick={async () => {
+                                            if (isVideoGenerating) return;
+                                            if (!confirm("Vill du skapa en AI-videoförklaring för denna lektion? Det tar ca 1-2 minuter.")) return;
+                                            setIsVideoGenerating(true);
+                                            try {
+                                                const res = await api.ai.tutor.generateVideo(courseId, selectedLesson.id);
+                                                alert(res.message || "Videogenerering har startats!");
+                                            } catch (e) {
+                                                console.error(e);
+                                                if (e.message && e.message.includes("403")) {
+                                                    alert("🔒 Denna funktion kräver en PRO eller ENTERPRISE licens.");
+                                                } else {
+                                                    alert("Kunde inte starta videogenerering.");
+                                                }
+                                            } finally {
+                                                setIsVideoGenerating(false);
+                                            }
+                                        }}
+                                        disabled={isVideoGenerating}
+                                        className={`flex items-center gap-2 px-4 py-2 text-sm font-bold rounded-lg shadow-sm border border-transparent transition-all ${isVideoGenerating
+                                            ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                                            : 'bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white shadow-md shadow-purple-200 dark:shadow-none'
+                                            }`}
+                                        title="Skapa AI-videoförklaring"
+                                    >
+                                        {isVideoGenerating ? <Loader2 size={16} className="animate-spin" /> : <Sparkles size={16} />}
+                                        {isVideoGenerating ? 'Genererar...' : 'Skapa AI-Video'}
+                                    </button>
+                                    <button onClick={() => startEditing(selectedLesson)} className="p-2 text-gray-500 hover:text-indigo-600 hover:bg-gray-100 dark:hover:bg-[#3c4043] rounded-lg transition-colors" title="Redigera"><Edit2 size={18} /></button>
+                                    <button onClick={() => handleDelete(selectedLesson.id)} className="p-2 text-gray-500 hover:text-red-600 hover:bg-gray-100 dark:hover:bg-[#3c4043] rounded-lg transition-colors" title="Ta bort"><Trash2 size={18} /></button>
                                 </div>
                             )}
                         </div>
@@ -819,6 +849,21 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
                                     <EpubViewer
                                         url={getSafeUrl(selectedLesson.fileUrl)}
                                         title={selectedLesson.title}
+                                    />
+                                </div>
+                            )}
+
+                            {/* 5. AI GENERATED VIDEO (NYTT!) */}
+                            {selectedLesson.aiVideoUrl && (
+                                <div className="space-y-2">
+                                    <div className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-bold text-sm bg-indigo-50 dark:bg-indigo-900/20 p-2 rounded-lg border border-indigo-100 dark:border-indigo-800">
+                                        <Sparkles size={16} />
+                                        <span>AI-Förklaring för denna lektion</span>
+                                    </div>
+                                    <VideoPlayer
+                                        src={getSafeUrl(selectedLesson.aiVideoUrl)}
+                                        title={`AI Förklaring: ${selectedLesson.title}`}
+                                        poster={getSafeUrl(selectedLesson.thumbnailUrl)}
                                     />
                                 </div>
                             )}

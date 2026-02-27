@@ -54,7 +54,7 @@
 | **Hög** | **EduAI Hub Refinement** | Refinement av kategori-mappning, Spaced Repetition-integration och Live Radar precision. | ✅ **Klar** | Förbättrad kognitiv profilering. |
 | **Hög** | **EduCareer Portal** | Integration med JobTech APIs för lokaliserad LIA-sökning och AI-matchning. | ✅ **Klar** (v3.4.0) | Studenternas karriärstöd. |
 | **Hög** | **BankID-integration (v3.5.1)** | Keycloak som Identity Broker, Dynamic Client Registration, Integration Hub Support, SSN-mappning. | ✅ **Klar** | Kritiskt för svensk offentlig sektor. |
-| **Hög** | **AI Tutor 2.0 (Video)** | Automatisk generering av förklaringsvideor via Gemini-script & FFMPEG. | [/] **Pågår** | Nästa generations lärande. |
+| **Hög** | **AI Tutor 2.0 (Video)** | Automatisk generering av förklaringsvideor via Gemini-script & FFMPEG. | ✅ **Klar** (v3.6.0) | Nästa generations lärande. |
 | **Medel** | **Komplett Systemmanual** | Omfattande manual för alla rörda roller. | ✅ **Klar** | Förbättrad onboarding. |
 | **Medel** | **Mobile Hybrid (Expo)** | Förberedelse för Native App Store-wrapper. | 10 dagar | "Check-in-the-box" för IT. |
 

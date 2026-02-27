@@ -8,7 +8,11 @@ const PdfViewer = ({ ebookId, title }) => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
     useEffect(() => {
-        fetchMetadata();
+        const init = async () => {
+            await fetchMetadata();
+            await fetchProgress();
+        };
+        init();
     }, [ebookId]);
 
     const fetchMetadata = async () => {
@@ -21,6 +25,47 @@ const PdfViewer = ({ ebookId, title }) => {
             setIsLoading(false);
         } catch (error) {
             console.error('Failed to fetch PDF metadata:', error);
+        }
+    };
+
+    const fetchProgress = async () => {
+        try {
+            const response = await fetch(`/api/ebooks/${ebookId}/progress`, {
+                headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+            });
+            if (response.ok) {
+                const data = await response.json();
+                if (data && data.page) {
+                    setCurrentPage(data.page);
+                }
+            }
+        } catch (error) {
+            console.error('Failed to fetch progress:', error);
+        }
+    };
+
+    const saveProgress = async (page) => {
+        try {
+            await fetch(`/api/ebooks/${ebookId}/progress`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    page: page,
+                    percentage: metadata ? (page / metadata.pageCount) * 100 : 0
+                })
+            });
+        } catch (error) {
+            console.error('Failed to save progress:', error);
+        }
+    };
+
+    const handlePageChange = (newPage) => {
+        if (newPage > 0 && metadata && newPage <= metadata.pageCount) {
+            setCurrentPage(newPage);
+            saveProgress(newPage);
         }
     };
 
@@ -41,7 +86,7 @@ const PdfViewer = ({ ebookId, title }) => {
                         {metadata.chapters.map((chapter, idx) => (
                             <button
                                 key={idx}
-                                onClick={() => setCurrentPage(chapter.pageNumber)}
+                                onClick={() => handlePageChange(chapter.pageNumber)}
                                 className={`w-full text-left px-3 py-2 rounded text-sm transition-colors ${currentPage === chapter.pageNumber ? 'bg-indigo-600 text-white' : 'hover:bg-gray-800 text-gray-400'
                                     }`}
                             >
@@ -71,7 +116,7 @@ const PdfViewer = ({ ebookId, title }) => {
                     <div className="flex items-center gap-4 bg-[#1e1e1e] px-3 py-1 rounded-lg">
                         <button
                             disabled={currentPage <= 1}
-                            onClick={() => setCurrentPage(p => p - 1)}
+                            onClick={() => handlePageChange(currentPage - 1)}
                             className="p-1 hover:text-white disabled:opacity-20"
                         >
                             <ChevronLeft size={20} />
@@ -82,7 +127,7 @@ const PdfViewer = ({ ebookId, title }) => {
                                 value={currentPage}
                                 onChange={(e) => {
                                     const val = parseInt(e.target.value);
-                                    if (val > 0 && val <= metadata.pageCount) setCurrentPage(val);
+                                    if (val > 0 && val <= metadata.pageCount) handlePageChange(val);
                                 }}
                                 className="w-10 bg-transparent text-center border-b border-gray-600 focus:border-indigo-500 outline-none"
                             />
@@ -90,7 +135,7 @@ const PdfViewer = ({ ebookId, title }) => {
                         </div>
                         <button
                             disabled={currentPage >= metadata.pageCount}
-                            onClick={() => setCurrentPage(p => p + 1)}
+                            onClick={() => handlePageChange(currentPage + 1)}
                             className="p-1 hover:text-white disabled:opacity-20"
                         >
                             <ChevronRight size={20} />

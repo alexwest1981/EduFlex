@@ -5,7 +5,6 @@ import com.eduflex.backend.model.VectorStoreEntry;
 import com.eduflex.backend.repository.EbookRepository;
 import com.eduflex.backend.repository.EmbeddingRepository;
 import com.eduflex.backend.service.StorageService;
-import org.apache.tika.metadata.Metadata;
 import org.apache.tika.Tika;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,65 +44,53 @@ public class AiStudyPalService {
             Ebook ebook = ebookRepository.findById(ebookId)
                     .orElseThrow(() -> new RuntimeException("Ebook not found: " + ebookId));
 
+            // Clear existing embeddings for this ebook
             embeddingRepository.deleteBySourceTypeAndSourceId("EBOOK", ebookId);
 
             String storageId = ebook.getFileUrl();
             if (storageId.contains("/api/storage/"))
                 storageId = storageId.substring(storageId.lastIndexOf("/") + 1);
+            else if (storageId.contains("/api/files/"))
+                storageId = storageId.substring(storageId.lastIndexOf("/") + 1);
 
             StringBuilder textBuilder = new StringBuilder();
             try (InputStream is = storageService.load(storageId)) {
                 logger.info("📄 AI Study Pal: Startar textutvinning för fil: {}", storageId);
-
-                Metadata metadata = new Metadata();
-                metadata.set("resourceName", storageId);
-
-                String extracted = tika.parseToString(is, metadata);
+                String extracted = tika.parseToString(is);
                 if (extracted != null && !extracted.trim().isEmpty()) {
                     textBuilder.append(extracted);
-                    logger.info("✅ AI Study Pal: Lyckades utvinna {} tecken från {}", extracted.length(), storageId);
-                } else {
-                    logger.warn("⚠️ AI Study Pal: Ingen text kunde utvinnas från {}", storageId);
                 }
             } catch (Exception e) {
                 logger.error("❌ AI Study Pal: Textutvinning misslyckades för {}. Fel: {}", storageId, e.getMessage());
             }
 
             String fullText = textBuilder.toString().trim();
-            if (fullText.isEmpty()) {
-                logger.warn("🚫 Indexering avbruten: Inget innehåll hittades i e-bok {}", ebookId);
+            if (fullText.isEmpty())
                 return;
-            }
 
             List<String> chunks = splitText(fullText);
-            logger.info("🧩 Delar upp text i {} segment för AI-analys", chunks.size());
 
-            int successCount = 0;
-            for (String chunk : chunks) {
-                try {
-                    List<Double> vector = geminiService.generateEmbedding(chunk);
-                    VectorStoreEntry entry = new VectorStoreEntry();
-                    entry.setSourceType("EBOOK");
-                    entry.setSourceId(ebookId);
-                    entry.setSourceTitle(ebook.getTitle());
-                    entry.setTextChunk(chunk);
-                    entry.setEmbeddingVector(vector.toArray(new Double[0]));
-                    embeddingRepository.save(entry);
-                    successCount++;
-                } catch (Exception chunkError) {
-                    logger.error("⚠️ Kunde inte skapa embedding för ett segment i e-bok {}: {}", ebookId,
-                            chunkError.getMessage());
+            // Index for each associated course
+            for (com.eduflex.backend.model.Course course : ebook.getCourses()) {
+                logger.info("🧩 Indexerar e-bok '{}' för kurs: {}", ebook.getTitle(), course.getName());
+                for (String chunk : chunks) {
+                    try {
+                        List<Double> vector = geminiService.generateEmbedding(chunk);
+                        VectorStoreEntry entry = new VectorStoreEntry();
+                        entry.setCourseId(course.getId()); // ASSOCIATE WITH COURSE
+                        entry.setSourceType("EBOOK");
+                        entry.setSourceId(ebookId);
+                        entry.setSourceTitle("Bok: " + ebook.getTitle());
+                        entry.setTextChunk(chunk);
+                        entry.setEmbeddingVector(vector.toArray(new Double[0]));
+                        embeddingRepository.save(entry);
+                    } catch (Exception e) {
+                        /* log and continue */ }
                 }
             }
-
-            if (successCount > 0) {
-                logger.info("✅ Indexering klar för e-bok {}: {}/{} segment sparade", ebookId, successCount,
-                        chunks.size());
-            } else {
-                logger.error("❌ Indexering misslyckades helt för e-bok {}: Inga segment kunde bearbetas", ebookId);
-            }
+            logger.info("✅ AI Study Pal: Indexering klar för e-bok {} i {} kurser", ebookId, ebook.getCourses().size());
         } catch (Exception e) {
-            logger.error("Hoppsan! Något gick fel vid indexering av e-bok {}: {}", ebookId, e.getMessage());
+            logger.error("Hoppsan! Något gick fel vid indexering: {}", e.getMessage());
         }
     }
 
@@ -111,16 +98,13 @@ public class AiStudyPalService {
         try {
             List<Double> questionVector = geminiService.generateEmbedding(question);
 
-            // 1. Get Course/Lesson Context
-            List<VectorStoreEntry> candidates = new ArrayList<>(embeddingRepository.findByCourseId(courseId));
-
-            // 2. If no context or for extra knowledge, check Library Books in same category
-            // We'll just fetch a few relevant ones for now
-            List<VectorStoreEntry> ebookCandidates = embeddingRepository.findBySourceType("EBOOK");
-            candidates.addAll(ebookCandidates);
+            // 1. Only get embeddings for the SPECIFIC course
+            // This now includes both materials and linked ebooks because they share the
+            // courseId
+            List<VectorStoreEntry> candidates = embeddingRepository.findByCourseId(courseId);
 
             if (candidates.isEmpty()) {
-                return "Hej kompis! Jag ser att det saknas material här just nu, men jag finns här för dig ändå. Vad funderar du på? Vi kan försöka lista ut det tillsammans!";
+                return "Hej kompis! Jag ser att det saknas material i den här kursen just nu. Be din lärare att klicka på 'Indexera för AI' så jag kan lära mig allt om dina böcker och lektioner! 🌟";
             }
 
             List<VectorStoreEntry> relevantChunks = findTopK(questionVector, candidates, 5);
