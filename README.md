@@ -2,7 +2,7 @@
   <img src="docs/Logo_top.png" width="600" alt="EduFlex Logo" />
 </p>
 
-<h1 align="center">🎓 EduFlex LMS v3.5.1</h1>
+<h1 align="center">🎓 EduFlex LMS v2.6.0-Beta</h1>
 
 <p align="center">
   <em>The Complete Enterprise Learning Platform for Modern Education</em><br/>
@@ -35,8 +35,13 @@
 
 <div id="-svenska"></div>
 
-## 🚀 Senaste uppdateringarna (27 feb 2026 – AI Video, Smart Library & UI Fixes)
-*   **🎬 AI Video Tutor Integration (v3.5.2):**
+## 🚀 Senaste uppdateringarna (Feb 2026 – AI Video, Smart Library & UI Fixes)
+*   **🎬 AI Video & Docker Portability (v2.6.1):**
+    *   **Zero-Config Portability**: `ffmpeg` är nu integrerat direkt i Docker-bilderna för både `backend` och `eduflex-video`. Detta gör systemet helt oberoende av servermiljön – ingen lokal installation krävs vid flytt.
+    *   **Automation**: Nytt script `docker-rebuild.ps1` som automatiserar ombyggnation och verifierar att all mjukvara finns på plats i containrarna.
+*   **💾 Course Content Saving Fix:**
+    *   **Multi-Tenancy Security**: Refaktorerat `CourseContentModule.jsx` för att konsekvent använda `api`-servicen. Detta garanterar att `X-Tenant-ID` skickas med varje sparning, vilket löser problem med att lektioner, uppgifter och quiz inte sparades korrekt till specifika kurser.
+*   **🎬 AI Video Tutor Integration (v2.6.0):**
     *   **Direct Visibility**: AI-genererade videor dyker nu upp direkt i lektionsvyn när de är färdigställda.
     *   **Database Sync**: Tillagt stöd för `ai_video_url` i `CourseMaterial` för att permanent länka genererat innehåll till rätt lektion.
 *   **📚 Smart Library & E-böcker:**
@@ -46,7 +51,7 @@
 *   **🛠️ UI & Sidebar Fixes:**
     *   **Admin Sidebar**: Återställt länken till "Filer & Dokument" för administratörer.
     *   **Butik-fix**: Åtgärdat behörighetsproblem som hindrade elever från att se Butiken trots att modulen var aktiv.
-*   **🏦 BankID Integration Hub (v3.5.1):**
+*   **🏦 BankID Integration Hub (v2.5.9):**
     *   **Dynamic Identity Provider**: Fullt stöd för BankID via OIDC, konfigurerbart i runtime via det nya Integration Hub-gränssnittet.
     *   **Dynamic Client Registration**: Implementerat `DynamicClientRegistrationRepository` som tillåter registrering av OAuth2-klienter (Client ID, Secret, Issuer) utan omstart av backend.
     *   **Public Status Endpoint**: Ny säker endpoint `/api/integrations/public/{platform}/status` som tillåter frontend att kontrollera om BankID är aktivt innan inloggning.

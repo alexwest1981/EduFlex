@@ -132,6 +132,14 @@
 
 ---
 
+### [v3.6.1] - 2026-02-27
+- **New Feature**: **Docker-Integrated FFmpeg**.
+  - **Zero-Config**: Integrated `ffmpeg` directly into `backend` and `video-service` Docker images for seamless server migration.
+  - **Maintenance Tools**: Added `docker-rebuild.ps1` script for automated image rebuilding and dependency verification.
+- **Security & Multi-Tenancy**: **Course Content Saving Fix**.
+  - **Header Integrity**: Refactored `CourseContentModule.jsx` to ensure `X-Tenant-ID` is correctly sent via the `api` service for all course materials.
+  - **Bug Fix**: Resolved persistence issues for Lessons, Assignments, and Quizzes in specific courses.
+
 ### [v3.5.1] - 2026-02-26
 - **New Feature**: **BankID Identity Hub**.
   - **Dynamic OIDC**: Runtime configuration of BankID client credentials via Integration Hub.

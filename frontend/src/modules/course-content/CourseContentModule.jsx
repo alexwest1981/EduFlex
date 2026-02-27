@@ -68,29 +68,21 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
 
     const loadLessons = async () => {
         try {
-            const token = localStorage.getItem('token');
-            let url = `${window.location.origin}/api/courses/${courseId}/materials`;
-            let quizUrl = `${window.location.origin}/api/quizzes/course/${courseId}`;
-
-            if (mode === 'GLOBAL') {
-                // Fetch generic Resources of type LESSON
-                url = `${window.location.origin}/api/resources/my?userId=${currentUser?.id}&type=LESSON`;
-                quizUrl = `${window.location.origin}/api/quizzes/my?userId=${currentUser?.id}`;
-            }
-
-            const [resLessons, resQuizzes] = await Promise.all([
-                fetch(url, { headers: { 'Authorization': `Bearer ${token}` } }),
-                fetch(quizUrl, { headers: { 'Authorization': `Bearer ${token}` } })
+            const [lessonsData, quizzesData] = await Promise.all([
+                mode === 'GLOBAL'
+                    ? api.lessons.getMy(currentUser.id)
+                    : api.lessons.getByCourse(courseId),
+                mode === 'GLOBAL'
+                    ? api.quiz.getMy(currentUser.id)
+                    : api.quiz.getByCourse(courseId)
             ]);
 
             let mappedLessons = [];
-            let qData = [];
+            let qData = quizzesData || [];
 
-            if (resLessons.ok) {
-                const data = await resLessons.json();
-
+            if (lessonsData) {
                 // MAP resources to Lesson format
-                mappedLessons = data.map(item => {
+                mappedLessons = lessonsData.map(item => {
                     // If it's a generic Resource, map it. If it's a legacy Lesson, keep it.
                     if (item.content && typeof item.content === 'string' && item.content.startsWith('{')) {
                         try {
@@ -139,10 +131,7 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
                 }
             }
 
-            if (resQuizzes.ok) {
-                qData = await resQuizzes.json();
-                setQuizzes(qData);
-            }
+            setQuizzes(qData);
 
             // --- AUTO SELECT ITEM FROM URL ---
             const query = new URLSearchParams(window.location.search);
@@ -163,19 +152,17 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
                     return;
                 }
                 // Check quizzes
-                if (resQuizzes.ok) {
-                    const foundQuiz = qData.find(q => String(q.id) === itemId);
-                    if (foundQuiz) {
-                        setSelectedQuiz(foundQuiz);
-                        setSelectedLesson(null);
-                        // Add a small delay to allow the list to render before scrolling
-                        setTimeout(() => {
-                            const element = document.getElementById(`quiz-item-${itemId}`);
-                            if (element) {
-                                element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                            }
-                        }, 500);
-                    }
+                const foundQuiz = qData.find(q => String(q.id) === itemId);
+                if (foundQuiz) {
+                    setSelectedQuiz(foundQuiz);
+                    setSelectedLesson(null);
+                    // Add a small delay to allow the list to render before scrolling
+                    setTimeout(() => {
+                        const element = document.getElementById(`quiz-item-${itemId}`);
+                        if (element) {
+                            element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }
+                    }, 500);
                 }
             }
         } catch (e) {
@@ -196,7 +183,6 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
 
     const handleSave = async () => {
         setIsSaving(true);
-        const token = localStorage.getItem('token');
         const fd = new FormData();
 
         // --- VIKTIGT: Mappar datan korrekt mot backend ---
@@ -222,33 +208,24 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
         if (file) fd.append('file', file);
 
         try {
-            let url = `${window.location.origin}/api/courses/${courseId}/materials?userId=${currentUser?.id}`;
-            let method = 'POST';
-
-            if (mode === 'GLOBAL') {
-                url = `${window.location.origin}/api/lessons/create?userId=${currentUser?.id}`;
-            }
-
+            let savedItem;
             if (selectedLesson && selectedLesson.id) {
-                // Vid update är det samma endpoint oavsett global/course
-                url = `${window.location.origin}/api/courses/materials/${selectedLesson.id}`;
-                method = 'PUT'; // LessonController har @PutMapping("/{id}") för update
+                // UPDATE
+                savedItem = await api.lessons.update(selectedLesson.id, fd);
+            } else if (mode === 'GLOBAL') {
+                // CREATE GLOBAL
+                savedItem = await api.lessons.createGlobal(currentUser.id, fd);
+            } else {
+                // CREATE FOR COURSE
+                savedItem = await api.lessons.create(courseId, currentUser.id, fd);
             }
 
-            const res = await fetch(url, {
-                method: method,
-                headers: { 'Authorization': `Bearer ${token}` },
-                body: fd
-            });
-
-            if (res.ok) {
-                const savedItem = await res.json();
-
-                if (method === 'POST') {
-                    setLessons([...lessons, savedItem]);
+            if (savedItem) {
+                if (selectedLesson && selectedLesson.id) {
+                    setLessons(lessons.map(l => l.id === savedItem.id ? savedItem : l));
                     setSelectedLesson(savedItem);
                 } else {
-                    setLessons(lessons.map(l => l.id === savedItem.id ? savedItem : l));
+                    setLessons([...lessons, savedItem]);
                     setSelectedLesson(savedItem);
                 }
 
@@ -264,23 +241,11 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
                             status: 'CONFIRMED',
                             courseId: courseId
                         };
-                        console.log("Saving to calendar with payload:", eventReq);
-                        const calRes = await fetch(`${window.location.origin}/api/events`, {
-                            method: 'POST',
-                            headers: {
-                                'Authorization': `Bearer ${token}`,
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify(eventReq)
-                        });
 
-                        if (!calRes.ok) {
-                            console.error("Failed to save to calendar", await calRes.text());
-                            alert("Lektionen sparades, men det gick inte att lägga till den i kalendern.");
-                        }
+                        await api.events.create(eventReq);
                     } catch (calErr) {
                         console.error("Error saving to calendar", calErr);
-                        alert("Ett nätverksfel uppstod när lektionen skulle läggas till i kalendern.");
+                        alert("Lektionen sparades, men det gick inte att lägga till den i kalendern.");
                     }
                 }
                 // --- END CALENDAR INTEGRATION ---
@@ -288,12 +253,11 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
                 setIsEditing(false);
                 setFile(null);
             } else {
-                const errText = await res.text();
-                alert(`Kunde inte spara: ${errText || "Okänt fel"}`);
+                alert("Kunde inte spara: Okänt fel på servern.");
             }
         } catch (e) {
             console.error(e);
-            alert("Kunde inte ansluta till servern.");
+            alert("Kunde inte spara lektionen: " + (e.message || "Anslutningsfel"));
         } finally {
             setIsSaving(false);
         }
@@ -302,12 +266,7 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
     const handleDelete = async (id) => {
         if (!window.confirm("Är du säker på att du vill radera lektionen?")) return;
         try {
-            const token = localStorage.getItem('token');
-            await fetch(`${window.location.origin}/api/courses/materials/${id}`, {
-                method: 'DELETE',
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-
+            await api.lessons.delete(id);
             const remaining = lessons.filter(l => l.id !== id);
             setLessons(remaining);
             setSelectedLesson(remaining.length > 0 ? remaining[0] : null);
@@ -792,9 +751,6 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
                                         className="w-full h-full"
                                         frameBorder="0"
                                         allowFullScreen
-                                        onLoad={() => {
-                                            // TODO: YouTube tracking is limited with iframe, sticking to VIEW_LESSON for now
-                                        }}
                                     ></iframe>
                                 </div>
                             )}
@@ -807,9 +763,7 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
                                     chapters={selectedLesson.videoChapters ? JSON.parse(selectedLesson.videoChapters) : []}
                                     poster={getSafeUrl(selectedLesson.thumbnailUrl)}
                                     onProgress={({ currentTime, duration }) => {
-                                        // Track progress for student analytics
                                         if (!isTeacher && currentTime > 0 && currentTime % 30 < 1) {
-                                            // Log every ~30 seconds
                                             const percent = Math.round((currentTime / duration) * 100);
                                             console.log(`Video progress: ${percent}%`);
                                         }
@@ -825,25 +779,17 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
                                             }).catch(console.error);
                                         }
                                     }}
-                                    onMetadataLoaded={({ duration }) => {
-                                        // Could update backend with duration if not set
-                                        if (!selectedLesson.videoDuration && duration && isTeacher) {
-                                            api.patch(`/videos/${selectedLesson.id}/metadata`, {
-                                                duration: Math.floor(duration)
-                                            }).catch(console.error);
-                                        }
-                                    }}
                                 />
                             )}
 
-                            {/* 3. BILD (NYTT!) */}
+                            {/* 3. BILD */}
                             {selectedLesson.fileUrl && isImageFile(selectedLesson.fileUrl) && (
                                 <div className="rounded-xl overflow-hidden shadow-lg border border-gray-200 dark:border-[#3c4043]">
                                     <img src={getSafeUrl(selectedLesson.fileUrl)} alt="Lektionsmaterial" className="w-full h-auto object-contain max-h-[600px] bg-gray-50 dark:bg-black/50" />
                                 </div>
                             )}
 
-                            {/* 4. EPUB E-BOK (NYTT!) */}
+                            {/* 4. EPUB E-BOK */}
                             {selectedLesson.fileUrl && isEpubFile(selectedLesson.fileUrl) && (
                                 <div className="h-[700px] rounded-xl overflow-hidden shadow-lg border border-gray-200 dark:border-[#3c4043]">
                                     <EpubViewer
@@ -853,7 +799,7 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
                                 </div>
                             )}
 
-                            {/* 5. AI GENERATED VIDEO (NYTT!) */}
+                            {/* 5. AI GENERATED VIDEO */}
                             {selectedLesson.aiVideoUrl && (
                                 <div className="space-y-2">
                                     <div className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-bold text-sm bg-indigo-50 dark:bg-indigo-900/20 p-2 rounded-lg border border-indigo-100 dark:border-indigo-800">
@@ -879,56 +825,58 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
                                         <p className="font-bold text-gray-900 dark:text-white text-sm">Bifogad fil</p>
                                     </div>
                                 </div>
-                                <a
-                                    href={getSafeUrl(selectedLesson.fileUrl)}
-                                    download
-                                    target="_blank"
-                                    rel="noreferrer"
-                                    className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-[#1E1F20] hover:bg-gray-50 dark:hover:bg-[#282a2c] text-sm font-bold text-gray-700 dark:text-gray-200 rounded-lg shadow-sm border border-gray-200 dark:border-[#3c4043] transition-colors"
-                                    onClick={() => {
-                                        if (!isTeacher) {
-                                            api.activity.log({
-                                                userId: currentUser.id,
-                                                courseId: courseId,
-                                                materialId: selectedLesson.id,
-                                                type: 'DOWNLOAD_FILE',
-                                                details: selectedLesson.fileUrl.split('/').pop()
-                                            }).catch(console.error);
-                                        }
-                                    }}
-                                >
-                                    <Download size={16} /> Ladda ner
-                                </a>
-                                {isTeacher && isEditable(selectedLesson.fileUrl) && (
-                                    <button
-                                        onClick={() => setOnlyOfficeDoc(selectedLesson)}
-                                        className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-sm font-bold text-white rounded-lg shadow-sm border border-transparent transition-colors"
-                                    >
-                                        <Edit2 size={16} /> Redigera Inline
-                                    </button>
-                                )}
-                                {isTeacher && (
-                                    <button
-                                        onClick={async () => {
-                                            if (!confirm("Vill du indexera detta dokument för AI-tutorn?")) return;
-                                            try {
-                                                await api.ai.tutor.ingest(courseId, selectedLesson.id);
-                                                alert("Dokumentet har indexerats!");
-                                            } catch (e) {
-                                                console.error(e);
-                                                if (e.message && e.message.includes("403")) {
-                                                    alert("🔒 Denna funktion kräver en PRO eller ENTERPRISE licens.");
-                                                } else {
-                                                    alert("Kunde inte indexera dokumentet.");
-                                                }
+                                <div className="flex gap-2">
+                                    <a
+                                        href={getSafeUrl(selectedLesson.fileUrl)}
+                                        download
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-[#1E1F20] hover:bg-gray-50 dark:hover:bg-[#282a2c] text-sm font-bold text-gray-700 dark:text-gray-200 rounded-lg shadow-sm border border-gray-200 dark:border-[#3c4043] transition-colors"
+                                        onClick={() => {
+                                            if (!isTeacher) {
+                                                api.activity.log({
+                                                    userId: currentUser.id,
+                                                    courseId: courseId,
+                                                    materialId: selectedLesson.id,
+                                                    type: 'DOWNLOAD_FILE',
+                                                    details: selectedLesson.fileUrl.split('/').pop()
+                                                }).catch(console.error);
                                             }
                                         }}
-                                        className="flex items-center gap-2 px-4 py-2 bg-purple-100 hover:bg-purple-200 text-sm font-bold text-purple-700 rounded-lg shadow-sm border border-transparent transition-colors"
-                                        title="Indexera för AI-tutor"
                                     >
-                                        <Sparkles size={16} /> Indexera
-                                    </button>
-                                )}
+                                        <Download size={16} /> Ladda ner
+                                    </a>
+                                    {isTeacher && isEditable(selectedLesson.fileUrl) && (
+                                        <button
+                                            onClick={() => setOnlyOfficeDoc(selectedLesson)}
+                                            className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-sm font-bold text-white rounded-lg shadow-sm border border-transparent transition-colors"
+                                        >
+                                            <Edit2 size={16} /> Redigera Inline
+                                        </button>
+                                    )}
+                                    {isTeacher && (
+                                        <button
+                                            onClick={async () => {
+                                                if (!confirm("Vill du indexera detta dokument för AI-tutorn?")) return;
+                                                try {
+                                                    await api.ai.tutor.ingest(courseId, selectedLesson.id);
+                                                    alert("Dokumentet har indexerats!");
+                                                } catch (e) {
+                                                    console.error(e);
+                                                    if (e.message && e.message.includes("403")) {
+                                                        alert("🔒 Denna funktion kräver en PRO eller ENTERPRISE licens.");
+                                                    } else {
+                                                        alert("Kunde inte indexera dokumentet.");
+                                                    }
+                                                }
+                                            }}
+                                            className="flex items-center gap-2 px-4 py-2 bg-purple-100 hover:bg-purple-200 text-sm font-bold text-purple-700 rounded-lg shadow-sm border border-transparent transition-colors"
+                                            title="Indexera för AI-tutor"
+                                        >
+                                            <Sparkles size={16} /> Indexera
+                                        </button>
+                                    )}
+                                </div>
                             </div>
                         )}
 
@@ -955,6 +903,7 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
                     </div>
                 )}
             </div>
+
             {onlyOfficeDoc && (
                 <OnlyOfficeEditor
                     entityType={mode === 'COURSE' ? 'MATERIAL' : 'LESSON'}

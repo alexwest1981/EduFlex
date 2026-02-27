@@ -195,12 +195,25 @@ public class AITutorController {
             Long materialId = Long.valueOf(payload.get("fileId").toString());
             String videoUrl = (String) payload.get("videoUrl");
             String status = (String) payload.get("status");
+            String tenantId = (String) payload.get("tenantId");
 
-            if ("SUCCESS".equals(status) && videoUrl != null) {
-                aiTutorService.handleVideoCallback(materialId, videoUrl);
-            } else {
-                logger.error("Video generation failed or returned bad status for material {}: {}", materialId, status);
+            logger.info("Callback received for material {} with status {} and tenant {}", materialId, status, tenantId);
+
+            if (tenantId != null && !tenantId.isBlank()) {
+                com.eduflex.backend.config.tenant.TenantContext.setCurrentTenant(tenantId);
             }
+
+            try {
+                if ("SUCCESS".equals(status) && videoUrl != null) {
+                    aiTutorService.handleVideoCallback(materialId, videoUrl);
+                } else {
+                    logger.error("Video generation failed or returned bad status for material {}: {}", materialId,
+                            status);
+                }
+            } finally {
+                com.eduflex.backend.config.tenant.TenantContext.clear();
+            }
+
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             logger.error("Error in video callback", e);

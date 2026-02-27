@@ -366,16 +366,21 @@ public class AITutorService {
     public void triggerVideoGeneration(Long courseId, Long materialId) {
         try {
             String scriptJson = generateVideoScript(courseId, materialId);
+            String tenantId = com.eduflex.backend.config.tenant.TenantContext.getCurrentTenant();
+            logger.info("Triggering video generation for material {} in course {}. Tenant: {}", materialId, courseId,
+                    tenantId);
 
             Map<String, String> message = new HashMap<>();
             message.put("action", "GENERATE_AI_VIDEO");
             message.put("fileId", materialId.toString());
             message.put("script", scriptJson);
+            message.put("tenantId", tenantId != null ? tenantId : "public");
 
             String jsonMessage = objectMapper.writeValueAsString(message);
             redisTemplate.convertAndSend("video.upload", jsonMessage);
 
-            logger.info("Successfully sent video generation message for material {}", materialId);
+            logger.info("Successfully sent video generation message for material {} with tenant {}", materialId,
+                    tenantId);
         } catch (Exception e) {
             logger.error("Failed to trigger video generation", e);
             throw new RuntimeException("Kunde inte starta videogenerering: " + e.getMessage());
@@ -389,12 +394,23 @@ public class AITutorService {
             CourseMaterial original = materialRepository.findById(materialId)
                     .orElseThrow(() -> new RuntimeException("Original material not found"));
 
-            // Instead of creating a NEW material, we link it to the existing one
-            original.setAiVideoUrl(videoUrl);
-            original.setType(CourseMaterial.MaterialType.VIDEO); // Ensure it's treated as video if it was just text
+            // Requirement: Create a NEW material in the sidebar instead of updating the
+            // original
+            CourseMaterial videoLesson = new CourseMaterial();
+            videoLesson.setTitle("Videolektion - " + original.getTitle());
+            videoLesson.setCourse(original.getCourse());
+            videoLesson.setType(CourseMaterial.MaterialType.VIDEO);
+            videoLesson.setFileUrl(videoUrl);
+            videoLesson.setAiVideoUrl(videoUrl);
+            videoLesson.setAvailableFrom(java.time.LocalDateTime.now());
 
-            materialRepository.save(original);
-            logger.info("Successfully updated original material {} with AI video URL", materialId);
+            // Set sort order to be right after the original
+            videoLesson.setSortOrder(original.getSortOrder() + 1);
+
+            materialRepository.save(videoLesson);
+
+            logger.info("Successfully created separate AI video lesson for material {} with title: {}", materialId,
+                    videoLesson.getTitle());
         } catch (Exception e) {
             logger.error("Failed to handle video callback", e);
         }

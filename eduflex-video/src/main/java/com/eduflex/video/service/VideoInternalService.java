@@ -75,8 +75,8 @@ public class VideoInternalService {
     }
 
     @Async
-    public void generateAiTutorVideo(String fileId, String scriptJson) {
-        log.info("Generating AI Tutor video for fileId={}", fileId);
+    public void generateAiTutorVideo(String fileId, String scriptJson, String tenantId) {
+        log.info("Generating AI Tutor video for fileId={}, tenantId={}", fileId, tenantId);
 
         try {
             com.fasterxml.jackson.databind.JsonNode root = objectMapper.readTree(scriptJson);
@@ -138,7 +138,7 @@ public class VideoInternalService {
 
                 // 1. Upload to MinIO
                 File videoFile = new File(outputPath);
-                String destinationPath = "ai-videos/" + java.util.UUID.randomUUID() + ".mp4";
+                String destinationPath = "ai-videos/" + fileId + "_" + java.util.UUID.randomUUID() + ".mp4";
                 String videoUrl = minioService.uploadFile(videoFile, destinationPath, "video/mp4");
 
                 // 2. Notify Core
@@ -146,9 +146,10 @@ public class VideoInternalService {
                 callbackPayload.put("fileId", fileId);
                 callbackPayload.put("videoUrl", videoUrl);
                 callbackPayload.put("status", "SUCCESS");
+                callbackPayload.put("tenantId", tenantId);
 
                 String callbackUrl = coreUrl + "/api/ai-tutor/video-callback";
-                log.info("Sending callback to Core: {}", callbackUrl);
+                log.info("Sending callback to Core (Tenant: {}): {}", tenantId, callbackUrl);
                 restTemplate.postForEntity(callbackUrl, callbackPayload, Void.class);
 
                 // Clean up local temp file
@@ -161,6 +162,7 @@ public class VideoInternalService {
                 java.util.Map<String, Object> callbackPayload = new java.util.HashMap<>();
                 callbackPayload.put("fileId", fileId);
                 callbackPayload.put("status", "FAILED");
+                callbackPayload.put("tenantId", tenantId);
                 restTemplate.postForEntity(coreUrl + "/api/ai-tutor/video-callback", callbackPayload, Void.class);
             }
 

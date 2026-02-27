@@ -202,8 +202,8 @@ const LandingPage = () => {
         },
         {
             icon: <Play className="w-7 h-7" />,
-            title: "AI Video Tutor v3.0 (Planned)",
-            description: "Automatisk generering av interaktiva förklaringsvideor direkt från kursinnehåll via AI-script och smart rendering.",
+            title: "AI Video Tutor v3.6 (Live)",
+            description: "Automatisk generering av interaktiva förklaringsvideor direkt från kursinnehåll via AI-script och Docker-optimerad rendering.",
             color: 'text-red-400',
             bgColor: 'bg-brand-red/10',
             hoverBorder: 'hover:border-brand-red/50'
@@ -485,7 +485,7 @@ const LandingPage = () => {
                         {/* Badge */}
                         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-gold/10 border border-brand-gold/20 text-brand-gold text-xs font-bold uppercase tracking-widest shadow-[0_0_15px_rgba(255,183,3,0.2)]">
                             <Sparkles className="w-3.5 h-3.5" />
-                            v3.5.1: BankID Identity Hub & Dynamic OIDC
+                            v3.6.1: Zero-Config Docker & Fixed Content Saving
                         </div>
 
                         {/* Heading */}

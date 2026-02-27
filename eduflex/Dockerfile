@@ -16,8 +16,8 @@ RUN mvn clean package -Dmaven.test.skip=true -B
 FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
 
-# Install postgresql-client for backups
-RUN apk add --no-cache postgresql-client
+# Install dependencies
+RUN apk add --no-cache postgresql-client ffmpeg
 
 # Create backups directory and set permissions
 RUN mkdir -p /app/backups && \
