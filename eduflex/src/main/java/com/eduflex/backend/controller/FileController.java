@@ -9,9 +9,52 @@ import org.springframework.web.bind.annotation.*;
 public class FileController {
 
     private final StorageService storageService;
+    private final com.eduflex.backend.repository.SystemSettingRepository settingRepository;
 
-    public FileController(StorageService storageService) {
+    public FileController(StorageService storageService,
+            com.eduflex.backend.repository.SystemSettingRepository settingRepository) {
         this.storageService = storageService;
+        this.settingRepository = settingRepository;
+    }
+
+    /**
+     * Health check for storage (MinIO).
+     */
+    @GetMapping("/api/files/health")
+    public ResponseEntity<java.util.Map<String, Object>> health() {
+        java.util.Map<String, Object> status = new java.util.HashMap<>();
+        try {
+            // Check if we can list buckets or similar
+            // This depends on the StorageService implementation having a health check or
+            // ping
+            // For now, we'll try a simple load check if possible or just check connectivity
+            // based on the configuration or a dummy load.
+            String healthStatus = "UP";
+            String message = "Storage service is responsive";
+
+            // Attempt to trigger a connectivity check indirectly if StorageService doesn't
+            // have a direct ping
+            try {
+                storageService.load("health-check-dummy-" + System.currentTimeMillis());
+            } catch (Exception e) {
+                // If it's a "Not Found", it means it reached MinIO!
+                if (!e.getMessage().toLowerCase().contains("connection refused") &&
+                        !e.getMessage().toLowerCase().contains("timeout")) {
+                    healthStatus = "UP";
+                } else {
+                    healthStatus = "OFFLINE";
+                    message = e.getMessage();
+                }
+            }
+
+            status.put("status", healthStatus);
+            status.put("message", message);
+            return ResponseEntity.ok(status);
+        } catch (Exception e) {
+            status.put("status", "OFFLINE");
+            status.put("message", e.getMessage());
+            return ResponseEntity.ok(status);
+        }
     }
 
     /**

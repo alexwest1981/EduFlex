@@ -488,18 +488,45 @@ public class EbookService {
 
     public com.eduflex.backend.model.UserEbookProgress saveProgress(Long ebookId, com.eduflex.backend.model.User user,
             Map<String, Object> progressData) {
+        if (ebookId == null || user == null) {
+            throw new IllegalArgumentException("Ebook ID and User must not be null");
+        }
+
         com.eduflex.backend.model.UserEbookProgress progress = progressRepository
                 .findByUserIdAndEbookId(user.getId(), ebookId)
-                .orElse(new com.eduflex.backend.model.UserEbookProgress(user, getEbookById(ebookId)));
+                .orElseGet(() -> {
+                    com.eduflex.backend.model.UserEbookProgress p = new com.eduflex.backend.model.UserEbookProgress();
+                    p.setUser(user);
+                    p.setEbook(getEbookById(ebookId));
+                    return p;
+                });
 
-        if (progressData.containsKey("lastLocation"))
-            progress.setLastLocation((String) progressData.get("lastLocation"));
-        if (progressData.containsKey("lastPage"))
-            progress.setLastPage(Integer.valueOf(progressData.get("lastPage").toString()));
-        if (progressData.containsKey("lastTimestamp"))
-            progress.setLastTimestamp(Double.valueOf(progressData.get("lastTimestamp").toString()));
-        if (progressData.containsKey("percentage"))
-            progress.setPercentage(Double.valueOf(progressData.get("percentage").toString()));
+        if (progressData.containsKey("lastLocation") && progressData.get("lastLocation") != null)
+            progress.setLastLocation(progressData.get("lastLocation").toString());
+
+        if (progressData.containsKey("lastPage") && progressData.get("lastPage") != null) {
+            try {
+                progress.setLastPage(Integer.valueOf(progressData.get("lastPage").toString()));
+            } catch (NumberFormatException e) {
+                logger.warn("Invalid lastPage value: {}", progressData.get("lastPage"));
+            }
+        }
+
+        if (progressData.containsKey("lastTimestamp") && progressData.get("lastTimestamp") != null) {
+            try {
+                progress.setLastTimestamp(Double.valueOf(progressData.get("lastTimestamp").toString()));
+            } catch (NumberFormatException e) {
+                logger.warn("Invalid lastTimestamp value: {}", progressData.get("lastTimestamp"));
+            }
+        }
+
+        if (progressData.containsKey("percentage") && progressData.get("percentage") != null) {
+            try {
+                progress.setPercentage(Double.valueOf(progressData.get("percentage").toString()));
+            } catch (NumberFormatException e) {
+                logger.warn("Invalid percentage value: {}", progressData.get("percentage"));
+            }
+        }
 
         return progressRepository.save(progress);
     }
