@@ -6,7 +6,7 @@ import {
     Globe, Database, Server, Zap, BarChart,
     Check, ArrowRight, Menu, X, Play, Sparkles,
     Award, TrendingUp, Layers, Gamepad2, Brain, Map, Flame, MessageSquare, Bell,
-    FileText, ClipboardList, Thermometer, Target, Smartphone, Video as VideoIcon, Link2, Lock, Building2
+    FileText, ClipboardList, Thermometer, Target, Smartphone, Video as VideoIcon, Link2, Lock, Building2, ShoppingCart
 } from 'lucide-react';
 
 // Assets
