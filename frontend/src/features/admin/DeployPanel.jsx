@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Rocket, Copy, Check, Server, Globe, Terminal, RefreshCw, CheckCircle, Clock, Play } from 'lucide-react';
-import logoMain from '../../assets/images/logo_main.png';
+import logoTop from '../../assets/images/Logo_top.png';
 import { useAppContext } from '../../context/AppContext';
 
 const DeployPanel = () => {
@@ -114,8 +114,8 @@ const DeployPanel = () => {
             {/* HEADER */}
             <div className="flex items-start justify-between gap-4">
                 <div className="flex items-start gap-4">
-                    <div className="p-2 bg-white dark:bg-[#1E1F20] rounded-xl shadow-sm border border-gray-200 dark:border-[#3c4043]">
-                        <img src={logoMain} alt="EduFlex Logo" className="w-10 h-10 object-contain" />
+                    <div className="p-2 flex items-center justify-center bg-white dark:bg-[#1E1F20] rounded-xl shadow-sm border border-gray-200 dark:border-[#3c4043]">
+                        <img src={logoTop} alt="EduFlex Logo" className="w-10 h-10 object-contain" />
                     </div>
                     <div>
                         <h3 className="text-lg font-bold text-gray-900 dark:text-white">EduFlex Ops</h3>
