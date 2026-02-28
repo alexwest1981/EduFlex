@@ -76,7 +76,7 @@ export const getNavigationConfig = (currentUser, t, isModuleActive, licenseTier,
 
     sections.tools.push({ path: '/support', label: t('sidebar.support'), icon: <HelpCircle size={20} /> });
 
-    if (isModuleActive?.('EDUGAME') && (isStudent || isAdmin)) {
+    if (isModuleActive?.('EDUGAME') && (isStudent || isAdmin || isTeacher)) {
         sections.tools.push({ path: '/shop', label: t('sidebar.shop') || 'Butik', icon: <Store size={20} /> });
     }
 

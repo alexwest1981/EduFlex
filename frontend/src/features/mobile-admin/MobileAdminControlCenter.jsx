@@ -40,7 +40,7 @@ const MobileAdminControlCenter = ({ isOpen, onClose }) => {
         { icon: Shield, label: 'Säkerhet', path: '/system?tab=security' },
         { icon: Activity, label: 'Analys', path: '/analytics' },
         { icon: Database, label: 'Resurser', path: '/resources' },
-        { icon: FileText, label: 'Loggar', path: '/admin' }, // Placeholder as explicit logs page might not exist
+        { icon: Server, label: 'EduFlex Ops', path: '/admin' }, // Links to administration where Ops is available
         { icon: Globe, label: 'Whitelabel', path: '/enterprise/whitelabel' },
     ];
 
@@ -99,7 +99,7 @@ const MobileAdminControlCenter = ({ isOpen, onClose }) => {
                     {/* Footer Stats / Info */}
                     <div className="p-4 bg-gray-50/50 dark:bg-black/20 border-t border-gray-100/50 dark:border-white/5">
                         <div className="flex justify-between items-center text-xs text-gray-500 dark:text-gray-400">
-                            <span>EduFlex v2.0.18</span>
+                            <span>EduFlex v3.0.0</span>
                             <div className="flex items-center gap-2">
                                 <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
                                 System OK

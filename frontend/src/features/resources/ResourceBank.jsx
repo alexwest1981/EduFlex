@@ -58,7 +58,13 @@ const ResourceBank = () => {
         setAiGenerating(true);
         setGeneratedResource(null);
         try {
-            const data = await api.ai.resources.generate(currentUser.id, aiType, aiPrompt, aiContext);
+            const data = await api.ai.resources.generate(
+                currentUser.id,
+                aiType,
+                aiPrompt,
+                aiContext,
+                selectedCourse === 'ALL' ? null : selectedCourse
+            );
             setGeneratedResource(data);
             setRefreshKey(prev => prev + 1);
         } catch (err) {
@@ -188,6 +194,10 @@ const ResourceBank = () => {
                         onGenerate={handleAiGenerate}
                         generatedResource={generatedResource}
                         setActiveTab={setActiveTab}
+                        courses={courses}
+                        selectedCourse={selectedCourse}
+                        setSelectedCourse={setSelectedCourse}
+                        currentUser={currentUser}
                     />
                 )}
             </div>
@@ -200,8 +210,10 @@ const ResourceBank = () => {
 // AI Generator Tab Component
 const AIGeneratorTab = ({
     type, setType, prompt, setPrompt, context, setContext,
-    generating, onGenerate, generatedResource, setActiveTab
+    generating, onGenerate, generatedResource, setActiveTab,
+    courses, selectedCourse, setSelectedCourse, currentUser
 }) => {
+    const roleName = currentUser?.role?.name || currentUser?.role;
     return (
         <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4">
             <div className="bg-white dark:bg-[#1E1F20] rounded-3xl border border-gray-200 dark:border-[#3c4043] p-8 shadow-xl shadow-purple-500/5">

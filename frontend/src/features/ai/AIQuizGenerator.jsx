@@ -43,11 +43,23 @@ export default function AIQuizGenerator() {
   const [addToBank, setAddToBank] = useState(true);
   const [editingIndex, setEditingIndex] = useState(null);
   const [dragActive, setDragActive] = useState(false);
+  const [courses, setCourses] = useState([]);
+  const [selectedCourse, setSelectedCourse] = useState('ALL');
 
   // Check AI availability on mount
   useEffect(() => {
     checkAIStatus();
+    fetchCourses();
   }, []);
+
+  const fetchCourses = async () => {
+    try {
+      const data = await api.courses.getAll();
+      setCourses(data);
+    } catch (err) {
+      console.error('Failed to fetch courses:', err);
+    }
+  };
 
   const checkAIStatus = async () => {
     try {
@@ -173,7 +185,8 @@ export default function AIQuizGenerator() {
     setError(null);
 
     try {
-      const response = await api.post('/ai/quiz/save', {
+      const courseId = selectedCourse === 'ALL' ? null : selectedCourse;
+      const response = await api.post('/ai/quiz/save' + (courseId ? `?courseId=${courseId}` : ''), {
         userId: user.id,
         addToQuestionBank: addToBank,
         generatedQuiz: {
@@ -183,13 +196,13 @@ export default function AIQuizGenerator() {
       });
 
       if (response.success) {
-        navigate(`/course/${response.quizId}`); // Navigate to course or quiz view
+        navigate('/resources?tab=quiz');
       } else {
-        setError(response.error || 'Kunde inte spara quizet.');
+        setError(response.error || response.errorMessage || 'Kunde inte spara quizet.');
       }
     } catch (err) {
       console.error('Save error:', err);
-      setError('Kunde inte spara quizet.');
+      setError('Kunde inte spara quizet: ' + err.message);
     } finally {
       setIsSaving(false);
     }
@@ -234,17 +247,17 @@ export default function AIQuizGenerator() {
         <div className={`border rounded-xl p-6 ${isModuleDisabled
           ? 'bg-gray-50 dark:bg-gray-900/20 border-gray-200 dark:border-gray-700'
           : 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800'
-        }`}>
+          }`}>
           <div className="flex items-start gap-4">
             <AlertCircle className={`w-6 h-6 flex-shrink-0 mt-0.5 ${isModuleDisabled
               ? 'text-gray-500 dark:text-gray-400'
               : 'text-yellow-600 dark:text-yellow-400'
-            }`} />
+              }`} />
             <div>
               <h3 className={`font-semibold ${isModuleDisabled
                 ? 'text-gray-700 dark:text-gray-200'
                 : 'text-yellow-800 dark:text-yellow-200'
-              }`}>
+                }`}>
                 {isModuleDisabled
                   ? 'AI Quiz-modulen är inte aktiverad'
                   : 'AI Quiz-generering är inte tillgänglig'}
@@ -252,7 +265,7 @@ export default function AIQuizGenerator() {
               <p className={`mt-1 ${isModuleDisabled
                 ? 'text-gray-600 dark:text-gray-400'
                 : 'text-yellow-700 dark:text-yellow-300'
-              }`}>
+                }`}>
                 {isModuleDisabled
                   ? 'Kontakta administratören för att aktivera AI Quiz-modulen under System → Moduler.'
                   : isApiNotConfigured
@@ -289,6 +302,19 @@ export default function AIQuizGenerator() {
             Tillbaka
           </button>
           <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
+              <label className="text-xs font-bold text-gray-500 uppercase">Kurs:</label>
+              <select
+                value={selectedCourse}
+                onChange={(e) => setSelectedCourse(e.target.value)}
+                className="bg-gray-100 dark:bg-gray-700 border-none rounded-lg py-1 px-3 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="ALL">Ingen (Endast bank)</option>
+                {courses.filter(c => user?.role?.name === 'ADMIN' || user?.role?.isSuperAdmin || c.teacherId === user?.id || c.teacher?.id === user?.id).map(course => (
+                  <option key={course.id} value={course.id}>{course.name}</option>
+                ))}
+              </select>
+            </div>
             <label className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
               <input
                 type="checkbox"
@@ -296,15 +322,15 @@ export default function AIQuizGenerator() {
                 onChange={(e) => setAddToBank(e.target.checked)}
                 className="rounded border-gray-300 dark:border-gray-600"
               />
-              Lägg till i Frågebanken
+              Bank
             </label>
             <button
               onClick={handleSave}
               disabled={isSaving || generatedQuiz.questions.length === 0}
-              className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg disabled:opacity-50"
+              className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg disabled:opacity-50 font-bold"
             >
               {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-              Spara Quiz
+              Spara
             </button>
           </div>
         </div>
@@ -412,8 +438,8 @@ export default function AIQuizGenerator() {
                           <button
                             onClick={() => handleCorrectAnswerChange(qIndex, oIndex)}
                             className={`flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center ${question.correctIndex === oIndex
-                                ? 'border-green-500 bg-green-500 text-white'
-                                : 'border-gray-300 dark:border-gray-600 hover:border-green-400'
+                              ? 'border-green-500 bg-green-500 text-white'
+                              : 'border-gray-300 dark:border-gray-600 hover:border-green-400'
                               }`}
                           >
                             {question.correctIndex === oIndex && <Check className="w-4 h-4" />}
@@ -423,8 +449,8 @@ export default function AIQuizGenerator() {
                             value={option}
                             onChange={(e) => handleOptionEdit(qIndex, oIndex, e.target.value)}
                             className={`flex-1 px-3 py-2 border rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white ${question.correctIndex === oIndex
-                                ? 'border-green-300 dark:border-green-700'
-                                : 'border-gray-200 dark:border-gray-600'
+                              ? 'border-green-300 dark:border-green-700'
+                              : 'border-gray-200 dark:border-gray-600'
                               }`}
                           />
                         </div>
@@ -493,8 +519,8 @@ export default function AIQuizGenerator() {
           <button
             onClick={() => setInputMode('file')}
             className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-lg font-medium transition ${inputMode === 'file'
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+              ? 'bg-blue-600 text-white'
+              : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
               }`}
           >
             <Upload className="w-5 h-5" />
@@ -503,8 +529,8 @@ export default function AIQuizGenerator() {
           <button
             onClick={() => setInputMode('text')}
             className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-lg font-medium transition ${inputMode === 'text'
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+              ? 'bg-blue-600 text-white'
+              : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
               }`}
           >
             <Edit3 className="w-5 h-5" />
@@ -520,10 +546,10 @@ export default function AIQuizGenerator() {
             onDragOver={handleDrag}
             onDrop={handleDrop}
             className={`border-2 border-dashed rounded-xl p-8 text-center transition ${dragActive
-                ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
-                : file
-                  ? 'border-green-300 dark:border-green-700 bg-green-50 dark:bg-green-900/20'
-                  : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'
+              ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+              : file
+                ? 'border-green-300 dark:border-green-700 bg-green-50 dark:bg-green-900/20'
+                : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'
               }`}
           >
             {file ? (

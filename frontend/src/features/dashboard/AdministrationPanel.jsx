@@ -220,7 +220,7 @@ const AdministrationPanel = ({ users, courses, teachers, fetchStats }) => {
                 { id: 'audit-log', label: 'Audit Log', icon: Shield },
                 { id: 'integrations', label: 'Integration Hub', icon: Link2 },
                 { id: 'ai-audit', label: 'AI Audit', icon: Zap },
-                { id: 'deploy', label: 'Deploy', icon: Server },
+                { id: 'deploy', label: 'EduFlex Ops', icon: Server },
             ]
         }
     ];

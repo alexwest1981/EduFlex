@@ -1,5 +1,8 @@
 package com.eduflex.backend.controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.eduflex.backend.dto.BackupResponse;
 
 import com.eduflex.backend.dto.AddDatabaseRequest;
@@ -26,6 +29,8 @@ import java.util.Map;
 @RequestMapping("/api/admin")
 @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN')")
 public class ServerManagementController {
+
+    private static final Logger logger = LoggerFactory.getLogger(ServerManagementController.class);
 
     @Autowired
     private BackupService backupService;
@@ -113,5 +118,19 @@ public class ServerManagementController {
         return ResponseEntity.ok(Map.of(
                 "message", "PII Encryption Migration Successful",
                 "usersProcessed", String.valueOf(users.size())));
+    }
+
+    @PostMapping("/system/start-all")
+    public ResponseEntity<Map<String, String>> startAllServices() {
+        try {
+            logger.info("Starting all services via script...");
+            ProcessBuilder pb = new ProcessBuilder("powershell.exe", ".\\scripts\\powershell\\run_backend_local.ps1");
+            pb.directory(new File(".."));
+            pb.start();
+            return ResponseEntity.ok(Map.of("message", "Start command initiated successfully"));
+        } catch (Exception e) {
+            logger.error("Failed to start services", e);
+            return ResponseEntity.internalServerError().body(Map.of("error", e.getMessage()));
+        }
     }
 }

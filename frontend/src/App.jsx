@@ -458,7 +458,7 @@ const AppRoutes = () => {
 
 
                 <Route path="/ebooks" element={
-                    <ProtectedRoute permission="ACCESS_EBOOKS">
+                    <ProtectedRoute roles={['ADMIN', 'TEACHER', 'STUDENT', 'ROLE_STUDENT']}>
                         <Layout currentUser={currentUser} handleLogout={logout}>
                             <EbookLibrary />
                         </Layout>
@@ -495,7 +495,7 @@ const AppRoutes = () => {
                 } />
 
                 <Route path="/shop" element={
-                    <ProtectedRoute permission="ACCESS_SHOP">
+                    <ProtectedRoute roles={['ADMIN', 'STUDENT', 'ROLE_STUDENT']}>
                         <Layout currentUser={currentUser} handleLogout={logout}>
                             <ShopView />
                         </Layout>

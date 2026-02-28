@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import { Rocket, Copy, Check, Server, Globe, Terminal, RefreshCw, CheckCircle, Clock } from 'lucide-react';
+import { Rocket, Copy, Check, Server, Globe, Terminal, RefreshCw, CheckCircle, Clock, Play } from 'lucide-react';
+import logoMain from '../../assets/images/logo_main.png';
+import { useAppContext } from '../../context/AppContext';
 
 const DeployPanel = () => {
     const [copiedCmd, setCopiedCmd] = useState(null);
@@ -51,11 +53,17 @@ const DeployPanel = () => {
 
     const statusChecks = [
         { label: 'Backend API', url: '/api/actuator/health', key: 'backend' },
-        { label: 'Frontend', url: '/', key: 'frontend' },
+        { label: 'Frontend App', url: '/', key: 'frontend' },
+        { label: 'Database (PG)', url: '/api/admin/database/connections', key: 'db' },
+        { label: 'MinIO Storage', url: '/api/files/health', key: 'minio' },
+        { label: 'Redis Cache', url: '/api/actuator/health', key: 'redis' },
+        { label: 'OnlyOffice', url: '/api/onlyoffice/health', key: 'onlyoffice' },
+        { label: 'Video Service', url: '/api/ai-video/health', key: 'video' },
+        { label: 'PDF Service', url: '/api/templates/health', key: 'pdf' },
     ];
 
-    const [serviceStatus, setServiceStatus] = useState({});
-    const [checking, setChecking] = useState(false);
+    const { API_BASE = '/api' } = useAppContext() || {};
+    const [startingAll, setStartingAll] = useState(false);
 
     const checkServices = async () => {
         setChecking(true);
@@ -68,7 +76,7 @@ const DeployPanel = () => {
                 const latency = Date.now() - start;
                 results[svc.key] = { ok: res.ok, latency, status: res.status };
             } catch {
-                results[svc.key] = { ok: false, latency: 0, status: 'Timeout' };
+                results[svc.key] = { ok: false, latency: 0, status: 'Offline' };
             }
         }
 
@@ -76,21 +84,52 @@ const DeployPanel = () => {
         setChecking(false);
     };
 
+    const handleStartAll = async () => {
+        if (!window.confirm("Är du säker på att du vill starta ALLA tjänster? Detta kan ta några minuter.")) return;
+
+        setStartingAll(true);
+        try {
+            const baseUrl = API_BASE.endsWith('/') ? API_BASE.slice(0, -1) : API_BASE;
+            const res = await fetch(`${baseUrl}/admin/system/start-all`, { method: 'POST' });
+            if (res.ok) {
+                alert("Start-kommando skickat! Uppdatera status om en liten stund.");
+                setTimeout(checkServices, 5000);
+            } else {
+                alert("Misslyckades att starta tjänster.");
+            }
+        } catch (err) {
+            console.error("Start all error:", err);
+            alert("Ett fel uppstod vid start av tjänster.");
+        } finally {
+            setStartingAll(false);
+        }
+    };
+
     React.useEffect(() => { checkServices(); }, []);
 
     return (
         <div className="space-y-8 animate-in fade-in">
             {/* HEADER */}
-            <div className="flex items-start gap-4">
-                <div className="p-3 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-xl">
-                    <Rocket size={24} />
+            <div className="flex items-start justify-between gap-4">
+                <div className="flex items-start gap-4">
+                    <div className="p-2 bg-white dark:bg-[#1E1F20] rounded-xl shadow-sm border border-gray-200 dark:border-[#3c4043]">
+                        <img src={logoMain} alt="EduFlex Logo" className="w-10 h-10 object-contain" />
+                    </div>
+                    <div>
+                        <h3 className="text-lg font-bold text-gray-900 dark:text-white">EduFlex Ops</h3>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                            Kontrollcenter för systemdrift och microservices
+                        </p>
+                    </div>
                 </div>
-                <div>
-                    <h3 className="text-lg font-bold text-gray-900 dark:text-white">Deploy till Produktion</h3>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">
-                        Bygg och deploya till <span className="font-mono font-bold text-indigo-600 dark:text-indigo-400">eduflexlms.se</span> via Docker
-                    </p>
-                </div>
+                <button
+                    onClick={handleStartAll}
+                    disabled={startingAll}
+                    className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-bold text-sm shadow-lg shadow-indigo-600/20 transition-all active:scale-95 disabled:opacity-50"
+                >
+                    {startingAll ? <RefreshCw size={16} className="animate-spin" /> : <Play size={16} fill="currentColor" />}
+                    Starta ALLA tjänster
+                </button>
             </div>
 
             {/* SERVICE STATUS */}
@@ -114,13 +153,12 @@ const DeployPanel = () => {
                         return (
                             <div
                                 key={svc.key}
-                                className={`flex items-center justify-between p-3 rounded-lg border ${
-                                    status?.ok
-                                        ? 'bg-green-50 dark:bg-green-900/10 border-green-200 dark:border-green-900/30'
-                                        : status
-                                            ? 'bg-red-50 dark:bg-red-900/10 border-red-200 dark:border-red-900/30'
-                                            : 'bg-gray-100 dark:bg-[#282a2c] border-gray-200 dark:border-[#3c4043]'
-                                }`}
+                                className={`flex items-center justify-between p-3 rounded-lg border ${status?.ok
+                                    ? 'bg-green-50 dark:bg-green-900/10 border-green-200 dark:border-green-900/30'
+                                    : status
+                                        ? 'bg-red-50 dark:bg-red-900/10 border-red-200 dark:border-red-900/30'
+                                        : 'bg-gray-100 dark:bg-[#282a2c] border-gray-200 dark:border-[#3c4043]'
+                                    }`}
                             >
                                 <div className="flex items-center gap-2">
                                     {status?.ok ? (
@@ -167,11 +205,10 @@ const DeployPanel = () => {
                                 </div>
                                 <button
                                     onClick={() => copyToClipboard(cmd.cmd, cmd.id)}
-                                    className={`flex-shrink-0 p-2 rounded-lg transition-colors ${
-                                        copiedCmd === cmd.id
-                                            ? 'bg-green-100 dark:bg-green-900/30 text-green-600'
-                                            : 'bg-gray-100 dark:bg-[#282a2c] text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/20'
-                                    }`}
+                                    className={`flex-shrink-0 p-2 rounded-lg transition-colors ${copiedCmd === cmd.id
+                                        ? 'bg-green-100 dark:bg-green-900/30 text-green-600'
+                                        : 'bg-gray-100 dark:bg-[#282a2c] text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/20'
+                                        }`}
                                     title="Kopiera till urklipp"
                                 >
                                     {copiedCmd === cmd.id ? <Check size={16} /> : <Copy size={16} />}

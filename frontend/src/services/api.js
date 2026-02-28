@@ -102,7 +102,10 @@ const handleResponse = async (res) => {
         }
 
         console.error('[API ERROR]', res.status, errorText.substring(0, 200));
-        throw new Error(errorText || `HTTP Error: ${res.status}`);
+        const error = new Error(errorText || `HTTP Error: ${res.status}`);
+        error.status = res.status;
+        error.response = { status: res.status, data: errorText }; // For compatibility
+        throw error;
     }
 
     if (res.status === 204) return null;
@@ -727,9 +730,14 @@ export const api = {
             generateVideo: (courseId, materialId) => api.post('/ai-tutor/generate-video', { courseId, materialId }),
         },
         resources: {
-            generate: (userId, type, prompt, context) => {
-                const params = new URLSearchParams({ userId: userId.toString(), type, prompt });
+            generate: (userId, type, prompt, context, courseId) => {
+                const params = new URLSearchParams({
+                    userId: userId.toString(),
+                    type,
+                    prompt
+                });
                 if (context) params.append('context', context);
+                if (courseId) params.append('courseId', courseId);
                 return api.post(`/ai/resources/generate?${params}`);
             }
         },

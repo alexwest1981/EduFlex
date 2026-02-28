@@ -35,8 +35,8 @@ const PdfViewer = ({ ebookId, title }) => {
             });
             if (response.ok) {
                 const data = await response.json();
-                if (data && data.page) {
-                    setCurrentPage(data.page);
+                if (data && data.lastPage) {
+                    setCurrentPage(data.lastPage);
                 }
             }
         } catch (error) {
@@ -53,7 +53,7 @@ const PdfViewer = ({ ebookId, title }) => {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    page: page,
+                    lastPage: page,
                     percentage: metadata ? (page / metadata.pageCount) * 100 : 0
                 })
             });

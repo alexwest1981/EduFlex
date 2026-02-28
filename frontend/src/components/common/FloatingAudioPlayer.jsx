@@ -22,8 +22,8 @@ const FloatingAudioPlayer = () => {
             });
             if (response.ok) {
                 const data = await response.json();
-                if (data && data.timestamp && audioRef.current) {
-                    audioRef.current.currentTime = data.timestamp;
+                if (data && data.lastTimestamp && audioRef.current) {
+                    audioRef.current.currentTime = data.lastTimestamp;
                 }
             }
         } catch (error) {
@@ -43,7 +43,7 @@ const FloatingAudioPlayer = () => {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    timestamp: currentTime,
+                    lastTimestamp: currentTime,
                     percentage: total ? (currentTime / total) * 100 : 0
                 })
             });

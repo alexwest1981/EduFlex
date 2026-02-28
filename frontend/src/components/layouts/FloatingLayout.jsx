@@ -116,7 +116,7 @@ const FloatingLayout = ({ children }) => {
                         <LogOut size={20} />
                         {sidebarOpen && <span className="ml-3 font-bold text-sm">{t('sidebar.logout')}</span>}
                     </button>
-                    {sidebarOpen && <p className="text-[10px] text-gray-300 dark:text-gray-600 text-center mt-2">EduFlex v2.0.18</p>}
+                    {sidebarOpen && <p className="text-[10px] text-gray-300 dark:text-gray-600 text-center mt-2">EduFlex v3.0.0</p>}
                 </div>
             </aside>
 

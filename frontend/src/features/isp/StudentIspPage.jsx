@@ -83,7 +83,8 @@ const StudentIspPage = () => {
                     </div>
                     <h2 className="text-xl font-black text-gray-900 dark:text-white">Ingen aktiv studieplan</h2>
                     <p className="text-sm text-gray-400 font-medium">
-                        Du har ingen aktiv individuell studieplan ännu. Kontakta din studie- och yrkesvägledare (SYV) för att påbörja processen.
+                        Det finns ingen aktiv studieplan. Kontakta din studie- och yrkesvägledare (SYV) via{' '}
+                        <a href="/support" className="text-indigo-500 hover:underline">kontaktformuläret</a> för att påbörja din planering.
                     </p>
                 </div>
             </div>
@@ -127,11 +128,10 @@ const StudentIspPage = () => {
                                 onChange={e => setConfirmChecked(e.target.checked)}
                                 className="sr-only"
                             />
-                            <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all ${
-                                confirmChecked
+                            <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all ${confirmChecked
                                     ? 'bg-amber-500 border-amber-500'
                                     : 'border-amber-300 dark:border-amber-700 group-hover:border-amber-500'
-                            }`}>
+                                }`}>
                                 {confirmChecked && <CheckCircle size={13} className="text-white" />}
                             </div>
                         </div>
@@ -211,14 +211,13 @@ const StudentIspPage = () => {
                                         {c.plannedStart && <span className="ml-3">{c.plannedStart}{c.plannedEnd ? ' → ' + c.plannedEnd : ''}</span>}
                                     </div>
                                 </div>
-                                <span className={`text-[10px] font-black px-2.5 py-1 rounded-lg uppercase tracking-widest ${
-                                    c.status === 'COMPLETED' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' :
-                                    c.status === 'IN_PROGRESS' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' :
-                                    c.status === 'DROPPED' ? 'bg-red-100 text-red-600' :
-                                    'bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400'
-                                }`}>
+                                <span className={`text-[10px] font-black px-2.5 py-1 rounded-lg uppercase tracking-widest ${c.status === 'COMPLETED' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' :
+                                        c.status === 'IN_PROGRESS' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' :
+                                            c.status === 'DROPPED' ? 'bg-red-100 text-red-600' :
+                                                'bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400'
+                                    }`}>
                                     {c.status === 'PLANNED' ? 'Planerad' : c.status === 'IN_PROGRESS' ? 'Pågår' :
-                                     c.status === 'COMPLETED' ? 'Klar' : 'Avhoppad'}
+                                        c.status === 'COMPLETED' ? 'Klar' : 'Avhoppad'}
                                 </span>
                             </div>
                         ))}
