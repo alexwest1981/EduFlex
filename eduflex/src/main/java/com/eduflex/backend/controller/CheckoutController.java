@@ -225,7 +225,8 @@ public class CheckoutController {
             return ResponseEntity.status(401).body(Map.of("error", "Unauthorized"));
         User user = userRepository.findByUsername(authentication.getName()).orElse(null);
         if (user == null
-                || (!user.getRole().getName().contains("ADMIN") && !user.getRole().getName().contains("REKTOR"))) {
+                || (!user.getRole().getName().contains("ADMIN") && !user.getRole().getName().contains("REKTOR")
+                        && !user.getRole().getName().contains("RESELLER"))) {
             return ResponseEntity.status(403).body(Map.of("error", "Forbidden"));
         }
         return ResponseEntity.ok(courseOrderRepository.findAllByOrderByCreatedAtDesc());

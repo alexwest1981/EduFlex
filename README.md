@@ -54,7 +54,10 @@
     - **Public Storefront**: Ny vacker butikssida (`/store`) för externa besökare.
     - **Shopping Cart & Checkout**: Komplett utcheckningsprocess via Stripe med `/checkout`, Success och Cancel-sidor. Provisionerar automatiskt kursen vid lyckad betalning.
     - **Sales Dashboard**: Ny "Försäljning"-flik för Rektorer/Admins (`/admin/sales`) där man kan följa försäljning, KPI:er, ordrar och belopp i en snygg översikt.
-    - **Discount Codes**: Backend & Frontend stöd för rabattkoder (Promo codes).
+    - **Reseller Role**: Introduktion av `ROLE_RESELLER` som hanterar kursförsäljning med least-privilege.
+    - **Store Administration**: Flikar under Sales Dashboard för att dynamiskt ändra kurspriser, aktivera/inaktivera Store-synlighet samt skapa kampanjkoder (Discount codes).
+    - **Discount Code Implementation**: Möjlighet att lägga in koder i kassan (`/checkout`) som live-valideras mot `/api/promocodes` innan Stripeskick.
+    - **B2B Extended Enterprise**: Struktur för att sälja licenser ut i systemets Global Library istället för statiska filkopior.
 *   **📱 Gap 1: Native Mobile Foundation**:
     - **Mobile Project**: Uppstart av React Native-strukturen i `/mobile`.
     - **Sync Architecture**: Dokumenterad strategi för offline-synk och data-persistens.

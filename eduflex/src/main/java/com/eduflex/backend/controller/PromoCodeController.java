@@ -26,25 +26,25 @@ public class PromoCodeController {
     // --- Admin Endpoints ---
 
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN', 'REKTOR', 'ROLE_REKTOR', 'RESELLER', 'ROLE_RESELLER')")
     public ResponseEntity<List<PromoCode>> getAllPromoCodes() {
         return ResponseEntity.ok(promoCodeRepository.findAll());
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN', 'REKTOR', 'ROLE_REKTOR', 'RESELLER', 'ROLE_RESELLER')")
     public ResponseEntity<PromoCode> createPromoCode(@RequestBody PromoCode promoCode) {
         return ResponseEntity.ok(promoCodeService.createPromoCode(promoCode));
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN', 'REKTOR', 'ROLE_REKTOR', 'RESELLER', 'ROLE_RESELLER')")
     public ResponseEntity<PromoCode> updatePromoCode(@PathVariable Long id, @RequestBody PromoCode promoCode) {
         return ResponseEntity.ok(promoCodeService.updatePromoCode(id, promoCode));
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN', 'REKTOR', 'ROLE_REKTOR', 'RESELLER', 'ROLE_RESELLER')")
     public ResponseEntity<Void> deletePromoCode(@PathVariable Long id) {
         promoCodeService.deletePromoCode(id);
         return ResponseEntity.noContent().build();

@@ -208,6 +208,14 @@ const LandingPage = () => {
             bgColor: 'bg-brand-red/10',
             hoverBorder: 'hover:border-brand-red/50'
         },
+        {
+            icon: <ShoppingCart className="w-7 h-7" />,
+            title: "B2B Extended Enterprise",
+            description: "Inbyggd butik för provisionering av kurser. Fullt stöd för rabattkoder, Stripe-checkout och detaljerade försäljningsdashboards.",
+            color: 'text-green-400',
+            bgColor: 'bg-green-500/10',
+            hoverBorder: 'hover:border-green-500/50'
+        },
     ];
 
 

@@ -22,8 +22,9 @@ export const getNavigationConfig = (currentUser, t, isModuleActive, licenseTier,
     const isPrincipal = ['ROLE_REKTOR', 'REKTOR', 'PRINCIPAL', 'ROLE_PRINCIPAL'].includes(roleName);
     const isGuardian = roleName === 'GUARDIAN' || roleName === 'ROLE_GUARDIAN';
     const isSyv = roleName === 'SYV' || roleName === 'ROLE_SYV';
+    const isReseller = roleName === 'RESELLER' || roleName === 'ROLE_RESELLER';
 
-    const dashboardPath = isPrincipal ? '/principal/dashboard' : '/';
+    const dashboardPath = isReseller ? '/admin/sales' : (isPrincipal ? '/principal/dashboard' : '/');
 
     const sections = {
         main: [
@@ -89,6 +90,8 @@ export const getNavigationConfig = (currentUser, t, isModuleActive, licenseTier,
     // Admin Section
     if (isAdmin) {
         sections.admin.push({ path: '/admin', label: t('sidebar.admin'), icon: <Settings size={20} /> });
+    }
+    if (isAdmin || isReseller) {
         sections.admin.push({ path: '/admin/sales', label: 'Försäljning', icon: <TrendingUp size={20} /> });
     }
     if (roleName === 'HALSOTEAM' || roleName === 'ROLE_HALSOTEAM') {

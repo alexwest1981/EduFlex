@@ -11,8 +11,35 @@ const Checkout = () => {
     const navigate = useNavigate();
 
     const [promoCode, setPromoCode] = useState('');
+    const [appliedPromo, setAppliedPromo] = useState(null);
+    const [validatingPromo, setValidatingPromo] = useState(false);
+    const [promoError, setPromoError] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+
+    const handleApplyPromo = async () => {
+        if (!promoCode.trim()) return;
+        setValidatingPromo(true);
+        setPromoError('');
+        try {
+            const response = await fetch('/api/promocodes/validate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ code: promoCode, originalPrice: total.toString() })
+            });
+            const data = await response.json();
+            if (response.ok && data.valid) {
+                setAppliedPromo(data);
+            } else {
+                setPromoError(data.message || 'Ogiltig rabattkod');
+                setAppliedPromo(null);
+            }
+        } catch (err) {
+            setPromoError('Kunde inte validera koden');
+        } finally {
+            setValidatingPromo(false);
+        }
+    };
 
     if (cart.length === 0) {
         return (
@@ -68,7 +95,7 @@ const Checkout = () => {
                 },
                 body: JSON.stringify({
                     courseIds,
-                    promoCode,
+                    promoCode: appliedPromo ? appliedPromo.code : null,
                     successUrl,
                     cancelUrl
                 })
@@ -157,15 +184,40 @@ const Checkout = () => {
                                         type="text"
                                         placeholder="T.ex. STUDENT20"
                                         value={promoCode}
-                                        onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
-                                        className="flex-1 bg-gray-50 dark:bg-[#0f1012] border border-gray-200 dark:border-white/10 rounded-xl px-4 py-2 text-sm outline-none focus:border-brand-teal dark:text-white transition-colors"
+                                        onChange={(e) => {
+                                            setPromoCode(e.target.value.toUpperCase());
+                                            setPromoError('');
+                                        }}
+                                        disabled={appliedPromo !== null}
+                                        className="flex-1 bg-gray-50 dark:bg-[#0f1012] border border-gray-200 dark:border-white/10 rounded-xl px-4 py-2 text-sm outline-none focus:border-brand-teal dark:text-white transition-colors disabled:opacity-50"
                                     />
+                                    {!appliedPromo ? (
+                                        <button
+                                            onClick={handleApplyPromo}
+                                            disabled={validatingPromo || !promoCode.trim()}
+                                            className="px-4 py-2 bg-gray-200 dark:bg-white/10 dark:text-white font-bold rounded-xl text-sm hover:bg-gray-300 transition-colors disabled:opacity-50"
+                                        >
+                                            {validatingPromo ? <Loader2 className="animate-spin" size={16} /> : 'Använd'}
+                                        </button>
+                                    ) : (
+                                        <button
+                                            onClick={() => { setAppliedPromo(null); setPromoCode(''); }}
+                                            className="px-4 py-2 bg-red-100 text-red-600 font-bold rounded-xl text-sm hover:bg-red-200 transition-colors"
+                                        >
+                                            Ta bort
+                                        </button>
+                                    )}
                                 </div>
+                                {promoError && <p className="text-xs text-red-500 mt-2 font-bold">{promoError}</p>}
+                                {appliedPromo && <p className="text-xs text-green-500 mt-2 font-bold">Rabattkod applicerad: -{appliedPromo.calculatedDiscount} kr</p>}
                             </div>
 
                             <div className="pt-4 border-t border-gray-200 dark:border-white/5 flex items-center justify-between mb-6">
                                 <span className="font-bold text-lg dark:text-white">Totalt</span>
-                                <span className="text-2xl font-black text-brand-teal">{total} kr</span>
+                                <div className="text-right">
+                                    {appliedPromo && <div className="text-sm line-through text-gray-400">{total} kr</div>}
+                                    <span className="text-2xl font-black text-brand-teal">{appliedPromo ? appliedPromo.finalPrice : total} kr</span>
+                                </div>
                             </div>
 
                             {error && (

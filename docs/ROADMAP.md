@@ -132,6 +132,13 @@
 
 ---
 
+### [v3.1.0] - 2026-02-28
+- **New Feature**: **Advanced E-commerce Engine**.
+  - **Storefront**: External `/store` for browsing and purchasing courses.
+  - **Checkout**: Integrated Stripe checkout with backend validation of Promo Codes.
+  - **Reseller Role**: A newly isolated `ROLE_RESELLER` with least-privilege access designed explicitly for B2B/B2C course sales.
+  - **Full Store Management**: A 3-tab Sales Dashboard for Principals/Resellers handling Orders, Pricing, and Discount Codes dynamically.
+
 ### [v3.2.0] - 2026-02-28
 - **Database Fix**: Resolved `resources_visibility_check` constraint violation in `resources` table.
 - **Live Data**: Transformed "Global Library" from mock data to live DB-driven content.

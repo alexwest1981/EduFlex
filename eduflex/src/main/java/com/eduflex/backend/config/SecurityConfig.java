@@ -189,13 +189,16 @@ public class SecurityConfig {
 
                                                 // ENDAST LÃ¤rare och Admins fÃ¥r Ã¤ndra/skapa kurser generellt
                                                 .requestMatchers(HttpMethod.POST, "/api/courses/**")
-                                                .hasAnyAuthority("ADMIN", "ROLE_ADMIN", "TEACHER", "ROLE_TEACHER")
+                                                .hasAnyAuthority("ADMIN", "ROLE_ADMIN", "TEACHER", "ROLE_TEACHER",
+                                                                "RESELLER", "ROLE_RESELLER")
 
                                                 .requestMatchers(HttpMethod.PUT, "/api/courses/**")
-                                                .hasAnyAuthority("ADMIN", "ROLE_ADMIN", "TEACHER", "ROLE_TEACHER")
+                                                .hasAnyAuthority("ADMIN", "ROLE_ADMIN", "TEACHER", "ROLE_TEACHER",
+                                                                "RESELLER", "ROLE_RESELLER")
 
                                                 .requestMatchers(HttpMethod.DELETE, "/api/courses/**")
-                                                .hasAnyAuthority("ADMIN", "ROLE_ADMIN", "TEACHER", "ROLE_TEACHER")
+                                                .hasAnyAuthority("ADMIN", "ROLE_ADMIN", "TEACHER", "ROLE_TEACHER",
+                                                                "RESELLER", "ROLE_RESELLER")
 
                                                 // Alla inloggade fÃ¥r lÃ¤sa kurser (GET)
                                                 .requestMatchers(HttpMethod.GET, "/api/courses/**").authenticated()
