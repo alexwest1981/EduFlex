@@ -12,9 +12,10 @@ import java.util.List;
 import java.util.Map;
 import com.eduflex.backend.model.User;
 import com.eduflex.backend.repository.UserRepository;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import com.eduflex.backend.model.UserEbookProgress;
+import com.eduflex.backend.util.SecurityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @RestController
 @RequestMapping("/api/ebooks")
@@ -29,17 +30,7 @@ public class EbookController {
         this.userRepository = userRepository;
     }
 
-    private User getCurrentUser() {
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String username;
-        if (principal instanceof UserDetails) {
-            username = ((UserDetails) principal).getUsername();
-        } else {
-            username = principal.toString();
-        }
-        return userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-    }
+    private static final Logger logger = LoggerFactory.getLogger(EbookController.class);
 
     @GetMapping
     public List<Ebook> getAllEbooks() {
@@ -195,9 +186,12 @@ public class EbookController {
     @GetMapping("/{id}/progress")
     public ResponseEntity<UserEbookProgress> getProgress(@PathVariable Long id) {
         try {
-            User user = getCurrentUser();
+            User user = SecurityUtils.getCurrentUser(userRepository);
             return ResponseEntity.ok(ebookService.getProgress(id, user));
+        } catch (org.springframework.web.server.ResponseStatusException e) {
+            return ResponseEntity.status(e.getStatusCode()).build();
         } catch (Exception e) {
+            logger.error("Error fetching progress for ebook {}: {}", id, e.getMessage());
             return ResponseEntity.badRequest().build();
         }
     }
@@ -206,10 +200,36 @@ public class EbookController {
     public ResponseEntity<UserEbookProgress> saveProgress(@PathVariable Long id,
             @RequestBody Map<String, Object> data) {
         try {
-            User user = getCurrentUser();
+            User user = SecurityUtils.getCurrentUser(userRepository);
             return ResponseEntity.ok(ebookService.saveProgress(id, user, data));
+        } catch (org.springframework.web.server.ResponseStatusException e) {
+            return ResponseEntity.status(e.getStatusCode()).build();
+        } catch (Exception e) {
+            logger.error("Error saving progress for ebook {}: {}", id, e.getMessage());
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @PostMapping("/{id}/toggle-saved")
+    public ResponseEntity<Map<String, Boolean>> toggleSaved(@PathVariable Long id) {
+        try {
+            User user = SecurityUtils.getCurrentUser(userRepository);
+            boolean isSaved = ebookService.toggleSaved(id, user);
+            return ResponseEntity.ok(Map.of("saved", isSaved));
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
+    }
+
+    @GetMapping("/saved")
+    public List<Ebook> getSavedEbooks() {
+        User user = SecurityUtils.getCurrentUser(userRepository);
+        return ebookService.getSavedEbooks(user);
+    }
+
+    @GetMapping("/saved-ids")
+    public List<Long> getSavedEbookIds() {
+        User user = SecurityUtils.getCurrentUser(userRepository);
+        return ebookService.getSavedEbookIds(user);
     }
 }

@@ -58,6 +58,7 @@ const EbookLibrary = () => {
     const [uploadData, setUploadData] = useState({
         title: '', author: '', category: '', language: 'Svenska', description: '', isbn: ''
     });
+    const [savedBookIds, setSavedBookIds] = useState([]);
     const [ttsLoading, setTtsLoading] = useState(false);
     const [gridSize, setGridSize] = useState('medium');
     const [currentPage, setCurrentPage] = useState(1);
@@ -85,7 +86,12 @@ const EbookLibrary = () => {
 
     const filteredBooks = useMemo(() => {
         let result = ebooks.filter(book => {
-            const matchesCat = categoryFilter === 'Alla' || book.category === categoryFilter;
+            let matchesCat = true;
+            if (categoryFilter === 'Alla') matchesCat = true;
+            else if (categoryFilter === 'Sparade') matchesCat = savedBookIds.includes(book.id);
+            else if (categoryFilter === 'Ljudböcker') matchesCat = book.type === 'AUDIO';
+            else matchesCat = book.category === categoryFilter;
+
             const q = searchTerm.toLowerCase();
             const matchesSearch = book.title?.toLowerCase().includes(q) || book.author?.toLowerCase().includes(q);
             return matchesCat && matchesSearch;
@@ -106,10 +112,14 @@ const EbookLibrary = () => {
     const fetchEbooks = async () => {
         try {
             setLoading(true);
-            const response = await fetch('/api/ebooks', {
-                headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-            });
-            if (response.ok) setEbooks(await response.json());
+            const headers = { 'Authorization': `Bearer ${localStorage.getItem('token')}` };
+            const [ebRes, savedRes] = await Promise.all([
+                fetch('/api/ebooks', { headers }),
+                fetch('/api/ebooks/saved-ids', { headers })
+            ]);
+
+            if (ebRes.ok) setEbooks(await ebRes.json());
+            if (savedRes.ok) setSavedBookIds(await savedRes.json());
         } catch {
             toast.error(t('messages.fetch_error'));
         } finally {
@@ -212,6 +222,23 @@ const EbookLibrary = () => {
             } else throw new Error();
         } catch {
             toast.error('Kunde inte spara ändringar');
+        }
+    };
+
+    const toggleSaveBook = async (e, bookId) => {
+        e.stopPropagation();
+        try {
+            const res = await fetch(`/api/ebooks/${bookId}/toggle-saved`, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+            });
+            if (res.ok) {
+                const { saved } = await res.json();
+                setSavedBookIds(prev => saved ? [...prev, bookId] : prev.filter(id => id !== bookId));
+                toast.success(saved ? 'Boken har sparats' : 'Boken har tagits bort från sparade');
+            }
+        } catch {
+            toast.error('Kunde inte ändra spara-status');
         }
     };
 
@@ -494,7 +521,42 @@ const EbookLibrary = () => {
                                 <h3 className="text-xs font-bold text-gray-500 dark:text-gray-400 tracking-widest uppercase">Kategorier</h3>
                             </div>
                             <div className="p-3 max-h-[72vh] overflow-y-auto custom-scrollbar">
-                                {availableCategories.map(cat => (
+                                <button
+                                    onClick={() => setCategoryFilter('Alla')}
+                                    className={`w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all flex items-center gap-2.5 mb-0.5 ${categoryFilter === 'Alla'
+                                        ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200 dark:shadow-indigo-900/30'
+                                        : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-[#232426]'
+                                        }`}
+                                >
+                                    <BookOpen size={14} className="shrink-0" />
+                                    <span>Alla böcker</span>
+                                </button>
+                                <button
+                                    onClick={() => setCategoryFilter('Sparade')}
+                                    className={`w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all flex items-center gap-2.5 mb-0.5 ${categoryFilter === 'Sparade'
+                                        ? 'bg-pink-500 text-white shadow-lg shadow-pink-200 dark:shadow-pink-900/30'
+                                        : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-[#232426]'
+                                        }`}
+                                >
+                                    <SparklesIcon size={14} className="shrink-0 text-pink-400" />
+                                    <span>Sparade böcker</span>
+                                </button>
+                                <button
+                                    onClick={() => setCategoryFilter('Ljudböcker')}
+                                    className={`w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all flex items-center gap-2.5 mb-2 ${categoryFilter === 'Ljudböcker'
+                                        ? 'bg-violet-600 text-white shadow-lg shadow-violet-200 dark:shadow-violet-900/30'
+                                        : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-[#232426]'
+                                        }`}
+                                >
+                                    <Headphones size={14} className="shrink-0 text-violet-400" />
+                                    <span>Ljudböcker</span>
+                                </button>
+
+                                <div className="px-3.5 py-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest border-t border-gray-50 dark:border-[#2a2b2d] mt-2 mb-1">
+                                    Andra kategorier
+                                </div>
+
+                                {availableCategories.filter(c => c !== 'Alla').map(cat => (
                                     <button
                                         key={cat}
                                         onClick={() => setCategoryFilter(cat)}
@@ -503,7 +565,7 @@ const EbookLibrary = () => {
                                             : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-[#232426]'
                                             }`}
                                     >
-                                        {cat === 'Alla' ? <BookOpen size={14} className="shrink-0" /> : <Tag size={14} className="shrink-0" />}
+                                        <Tag size={14} className="shrink-0" />
                                         <span className="truncate">{cat}</span>
                                     </button>
                                 ))}
@@ -576,6 +638,15 @@ const EbookLibrary = () => {
                                                 {book.category && (
                                                     <span className="absolute bottom-2 left-2 bg-black/60 backdrop-blur-md text-white text-[10px] font-bold px-2 py-0.5 rounded-lg max-w-[70%] truncate">{book.category}</span>
                                                 )}
+                                                <button
+                                                    onClick={(e) => toggleSaveBook(e, book.id)}
+                                                    className={`absolute top-2 right-2 p-2 rounded-xl backdrop-blur-md transition-all ${savedBookIds.includes(book.id)
+                                                        ? 'bg-pink-500 text-white'
+                                                        : 'bg-black/40 text-white/70 hover:bg-black/60 hover:text-white'
+                                                        }`}
+                                                >
+                                                    <SparklesIcon size={14} fill={savedBookIds.includes(book.id) ? "currentColor" : "none"} />
+                                                </button>
                                                 {book.type === 'AUDIO' && (
                                                     <div className="absolute top-2 left-2 bg-violet-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-lg flex items-center gap-1">
                                                         <Music size={9} /> AUDIO
@@ -658,6 +729,12 @@ const EbookLibrary = () => {
                                                 <p className="text-xs text-gray-400 truncate">{book.author}</p>
                                             </div>
                                             <div className="flex items-center gap-1 shrink-0">
+                                                <button
+                                                    onClick={(e) => toggleSaveBook(e, book.id)}
+                                                    className={`p-2 rounded-xl transition-all ${savedBookIds.includes(book.id) ? 'text-pink-500 bg-pink-50 dark:bg-pink-900/20' : 'text-gray-400 hover:text-pink-500 hover:bg-pink-50 dark:hover:bg-pink-900/20'}`}
+                                                >
+                                                    <SparklesIcon size={15} fill={savedBookIds.includes(book.id) ? "currentColor" : "none"} />
+                                                </button>
                                                 <button onClick={() => openBook(book)} className="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-600 text-white rounded-xl text-xs font-bold hover:bg-indigo-700 transition-colors shadow-md shadow-indigo-200 dark:shadow-indigo-900/30 mr-1">
                                                     {book.type === 'AUDIO' ? <Headphones size={12} /> : <BookOpen size={12} />}
                                                     {book.type === 'AUDIO' ? 'Lyssna' : 'Läs'}

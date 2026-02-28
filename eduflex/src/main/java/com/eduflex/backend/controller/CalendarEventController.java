@@ -9,6 +9,7 @@ import com.eduflex.backend.repository.UserRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
+import com.eduflex.backend.util.SecurityUtils;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpStatus;
@@ -43,33 +44,7 @@ public class CalendarEventController {
      * Internal)
      */
     private User getCurrentUser(Authentication auth) {
-        if (auth == null || !auth.isAuthenticated()) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication required");
-        }
-
-        Object principal = auth.getPrincipal();
-        String username = null;
-
-        if (principal instanceof Jwt) {
-            Jwt jwt = (Jwt) principal;
-            username = jwt.getClaimAsString("email");
-            if (username == null) {
-                username = jwt.getClaimAsString("preferred_username");
-            }
-        } else if (principal instanceof UserDetails) {
-            username = ((UserDetails) principal).getUsername();
-        } else if (principal instanceof String) {
-            username = (String) principal;
-        }
-
-        if (username == null) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User identity not found in token");
-        }
-
-        final String finalUsername = username;
-        return userRepository.findByEmail(finalUsername)
-                .orElseGet(() -> userRepository.findByUsername(finalUsername)
-                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found")));
+        return SecurityUtils.getCurrentUser(userRepository);
     }
 
     @GetMapping("/dashboard-summary")

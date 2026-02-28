@@ -9,8 +9,8 @@ import com.eduflex.backend.service.SystemSettingService;
 import com.eduflex.backend.service.ai.EduAIService;
 import com.eduflex.backend.service.ai.EduAiRecommendationService;
 import lombok.RequiredArgsConstructor;
+import com.eduflex.backend.util.SecurityUtils;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -106,8 +106,6 @@ public class EduAiHubController {
     }
 
     private User getCurrentUser() {
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        return userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        return SecurityUtils.getCurrentUser(userRepository);
     }
 }

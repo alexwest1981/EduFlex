@@ -9,10 +9,11 @@ import org.springframework.web.multipart.MultipartFile;
 import com.eduflex.backend.service.reader.PdfBookContent;
 import org.springframework.util.StreamUtils;
 
-import java.io.InputStream;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import com.eduflex.backend.model.*;
+import com.eduflex.backend.repository.*;
 
 @Service
 @Transactional
@@ -24,16 +25,19 @@ public class EbookService {
     private final org.springframework.web.client.RestTemplate restTemplate;
     private final com.eduflex.backend.service.ai.TtsService ttsService;
     private final com.eduflex.backend.repository.UserEbookProgressRepository progressRepository;
+    private final com.eduflex.backend.repository.UserSavedEbookRepository savedEbookRepository;
 
     public EbookService(EbookRepository ebookRepository, StorageService storageService,
             com.eduflex.backend.repository.CourseRepository courseRepository,
             com.eduflex.backend.service.ai.TtsService ttsService,
-            com.eduflex.backend.repository.UserEbookProgressRepository progressRepository) {
+            com.eduflex.backend.repository.UserEbookProgressRepository progressRepository,
+            com.eduflex.backend.repository.UserSavedEbookRepository savedEbookRepository) {
         this.ebookRepository = ebookRepository;
         this.storageService = storageService;
         this.courseRepository = courseRepository;
         this.ttsService = ttsService;
         this.progressRepository = progressRepository;
+        this.savedEbookRepository = savedEbookRepository;
         this.restTemplate = new org.springframework.web.client.RestTemplate();
     }
 
@@ -529,5 +533,32 @@ public class EbookService {
         }
 
         return progressRepository.save(progress);
+    }
+
+    public List<Ebook> getSavedEbooks(User user) {
+        return savedEbookRepository.findByUser(user).stream()
+                .map(UserSavedEbook::getEbook)
+                .collect(java.util.stream.Collectors.toList());
+    }
+
+    public List<Long> getSavedEbookIds(User user) {
+        return savedEbookRepository.findByUser(user).stream()
+                .map(saved -> saved.getEbook().getId())
+                .collect(java.util.stream.Collectors.toList());
+    }
+
+    @Transactional
+    public boolean toggleSaved(Long ebookId, User user) {
+        Ebook ebook = ebookRepository.findById(ebookId)
+                .orElseThrow(() -> new RuntimeException("Ebook not found"));
+
+        Optional<UserSavedEbook> existing = savedEbookRepository.findByUserAndEbook(user, ebook);
+        if (existing.isPresent()) {
+            savedEbookRepository.delete(existing.get());
+            return false;
+        } else {
+            savedEbookRepository.save(new UserSavedEbook(user, ebook));
+            return true;
+        }
     }
 }

@@ -45,8 +45,12 @@
 *   **🎓 ISP (Individuell Studieplan) Fixes:**
     *   **404 Handling**: Förbättrad felhantering när en student saknar en aktiv plan. Istället för ett tekniskt fel visas nu ett hjälpsamt meddelande med direktlänk till supporten.
     *   **Link Persistence**: Korrigerat API-kopplingar för att säkerställa att `/api/isp/my` fungerar korrekt i alla miljöer.
-*   **📚 E-bokshantering:**
-    *   **Student Access**: Fixat behörighetsbugg som gjorde att elever omdirigerades från biblioteket. Nu har alla roller korrekt tillgång till kurslitteratur.
+*   **📚 E-bokshantering & Kvalitet:**
+    *   **Sparade böcker**: Implementerat personliga bokmärken för att spara litteratur.
+    *   **Ljudböcker**: Ny dedikerad kategori i biblioteket för enklare navigering till ljudfiler.
+    *   **Student Access**: Fixat behörighetsbugg som gjorde att elever omdirigerades från biblioteket.
+    *   **Progress Stability**: Fixat 400 Bad Request-fel och SQL-fel för framstegssparande via `SecurityUtils` och Flyway.
+    *   **Enhetlig Säkerhet**: Refaktorerat samtliga controllers för stabil användar-lookup.
 *   **✨ Sidomeny-uppdatering**: Uppdaterat sidomenyn så att den nu visar rätt versionsnummer (**v3.0.0**).
 *   **💾 Course Content Saving Fix:** Garanterar att `X-Tenant-ID` skickas med varje sparning, vilket löser problem med att lektioner, uppgifter och quiz inte sparades korrekt.
 
@@ -178,8 +182,12 @@ Hitta rätt dokumentation snabbare baserat på din roll i organisationen:
 *   **🎓 ISP (Individual Study Plan) Fixes:**
     *   **Graceful 404 Handling**: Improved UX for students without an active plan. Message with direct support link instead of error.
     *   **API Stability**: Fixed `/api/isp/my` endpoint consistency across environments.
-*   **📚 E-book Management:**
+*   **📚 E-book Management & Quality:**
+    *   **Saved Books**: Implemented personal bookmarks for saving literature.
+    *   **Audiobooks**: New dedicated category in the library for easier navigation to audio files.
     *   **Student Access Fix**: Resolved redirection bug for student roles in the library.
+    *   **Progress & Stability**: Resolved 400 Bad Request and SQL errors for progress saving using `SecurityUtils` and Flyway migrations.
+    *   **Unified Security**: Refactored controllers for robust user identification.
 *   **✨ Versioning Alignment**: Updated sidebar and dashboards to the official **v3.0.0** release.
 
 ---
