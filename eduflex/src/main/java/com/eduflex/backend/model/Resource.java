@@ -52,7 +52,7 @@ public class Resource {
     }
 
     public enum ResourceVisibility {
-        PRIVATE, TENANT, PUBLIC
+        PRIVATE, TENANT, PUBLIC, GLOBAL_LIBRARY
     }
 
     // Getters & Setters

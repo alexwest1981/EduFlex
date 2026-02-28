@@ -26,11 +26,6 @@ public class LtiNrpsController {
      */
     @PostMapping("/sync/{courseId}")
     public ResponseEntity<Map<String, String>> syncMembers(@PathVariable Long courseId) {
-        // Find a valid LTI Launch with NRPS capabilities for this course
-        com.eduflex.backend.repository.LtiLaunchRepository ltiLaunchRepository = org.springframework.web.context.ContextLoader
-                .getCurrentWebApplicationContext()
-                .getBean(com.eduflex.backend.repository.LtiLaunchRepository.class);
-
         // We search for ".../courses/{courseId}"
         // NOTE: This assumes the LTI launch Target Link URI follows our standard
         // pattern

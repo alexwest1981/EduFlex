@@ -3,7 +3,6 @@ package com.eduflex.backend.controller;
 import com.eduflex.backend.model.*;
 import com.eduflex.backend.repository.*;
 import com.eduflex.backend.service.ForumService;
-import com.eduflex.backend.service.GamificationService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -20,22 +19,14 @@ public class ForumController {
     private final ForumPostRepository postRepository;
     private final ForumCategoryRepository categoryRepository;
     private final CourseRepository courseRepository;
-    private final UserRepository userRepository;
-
-    // Vi använder GamificationService för poäng (via Service nu)
-    // private final GamificationService gamificationService; -> Flyttad till
-    // Service
-
     private final ForumService forumService;
 
-    // --- RÄTTAD KONSTRUKTOR ---
     public ForumController(ForumThreadRepository t, ForumPostRepository p, ForumCategoryRepository cat,
-            CourseRepository c, UserRepository u, ForumService forumService) {
+            CourseRepository c, ForumService forumService) {
         this.threadRepository = t;
         this.postRepository = p;
         this.categoryRepository = cat;
         this.courseRepository = c;
-        this.userRepository = u;
         this.forumService = forumService;
     }
 

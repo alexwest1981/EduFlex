@@ -11,7 +11,6 @@ import org.springframework.context.annotation.Configuration;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -34,7 +33,8 @@ public class FileSyncConfig {
 
     /**
      * Synkar filer från disk till databas. Inaktiverad som standard för att
-     * undvika att raderade filer återregistreras. Aktivera med file.sync.enabled=true
+     * undvika att raderade filer återregistreras. Aktivera med
+     * file.sync.enabled=true
      * om du behöver importera befintliga filer (t.ex. vid databasåterställning).
      */
     @PostConstruct
@@ -45,10 +45,12 @@ public class FileSyncConfig {
         }
 
         File folder = new File(uploadDir);
-        if (!folder.exists() || !folder.isDirectory()) return;
+        if (!folder.exists() || !folder.isDirectory())
+            return;
 
         File[] files = folder.listFiles();
-        if (files == null) return;
+        if (files == null)
+            return;
 
         Optional<User> defaultOwner = userRepository.findById(1L);
 

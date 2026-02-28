@@ -43,6 +43,8 @@ const ResourceBank = () => {
     const [aiContext, setAiContext] = useState('');
     const [aiGenerating, setAiGenerating] = useState(false);
     const [generatedResource, setGeneratedResource] = useState(null);
+    const [globalResources, setGlobalResources] = useState([]);
+    const [globalLoading, setGlobalLoading] = useState(false);
 
     const roleName = currentUser?.role?.name || currentUser?.role;
     const canPublish = roleName === 'TEACHER' || roleName === 'ADMIN';
@@ -50,6 +52,27 @@ const ResourceBank = () => {
     useEffect(() => {
         api.courses.getAll().then(data => setCourses(data));
     }, []);
+
+    useEffect(() => {
+        if (activeTab === 'global-library') {
+            setGlobalLoading(true);
+            api.globalLibrary.getAll()
+                .then(setGlobalResources)
+                .catch(err => console.error('Failed to load global resources:', err))
+                .finally(() => setGlobalLoading(false));
+        }
+    }, [activeTab]);
+
+    const handleInstallGlobal = async (resourceId) => {
+        try {
+            await api.community.install(resourceId);
+            alert('Innehållet har lagts till i din personliga resursbank!');
+            setRefreshKey(prev => prev + 1);
+        } catch (err) {
+            console.error('Failed to install global resource:', err);
+            alert('Kunde inte lägga till resurs: ' + (err.message || 'Okänt fel'));
+        }
+    };
 
 
 
@@ -79,7 +102,8 @@ const ResourceBank = () => {
         { key: 'assignments', label: 'Mina Uppgifter', icon: <FileText size={18} /> },
         { key: 'lessons', label: 'Mina Lektioner', icon: <BookOpen size={18} /> },
         { key: 'community', label: 'Community', icon: <Store size={18} />, highlight: true },
-        { key: 'ai-generate', label: 'AI Generator', icon: <Sparkles size={18} />, highlight: true }
+        { key: 'ai-generate', label: 'AI Generator', icon: <Sparkles size={18} />, highlight: true },
+        { key: 'global-library', label: 'Global Library', icon: <Store size={18} />, highlight: true }
     ];
 
     const viewingMode = selectedCourse === 'ALL' ? 'GLOBAL' : 'COURSE';
@@ -199,6 +223,63 @@ const ResourceBank = () => {
                         setSelectedCourse={setSelectedCourse}
                         currentUser={currentUser}
                     />
+                )}
+                {activeTab === 'global-library' && (
+                    <div className="space-y-8 animate-in fade-in">
+                        <div className="bg-gradient-to-r from-indigo-700 via-indigo-600 to-violet-700 rounded-3xl p-10 text-white relative overflow-hidden shadow-2xl shadow-indigo-500/20">
+                            <div className="relative z-10">
+                                <span className="inline-block px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-xs font-bold mb-4 tracking-wider uppercase">Färdigt innehåll</span>
+                                <h2 className="text-4xl font-black mb-4 leading-tight">Built-in Content Library</h2>
+                                <p className="text-indigo-100 max-w-xl text-lg opacity-90">
+                                    Upptäck professionella kurspaket, certifieringar och djupdykningar. Allt här är verifierat och klart att importeras direkt till din undervisning.
+                                </p>
+                            </div>
+                            <Store className="absolute right-[-40px] bottom-[-40px] size-72 text-white/10 -rotate-12 transition-transform hover:rotate-0 duration-700" />
+                        </div>
+
+                        {globalLoading ? (
+                            <div className="flex flex-col items-center justify-center py-20">
+                                <Loader2 className="animate-spin text-indigo-600 mb-4" size={48} />
+                                <p className="text-gray-500 font-bold">Hämtar bibliotek...</p>
+                            </div>
+                        ) : globalResources.length > 0 ? (
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                {globalResources.map((item) => (
+                                    <div key={item.id} className="group bg-white dark:bg-[#1E1F20] border border-gray-200 dark:border-[#3c4043] rounded-3xl p-6 hover:shadow-2xl transition-all hover:-translate-y-1 relative overflow-hidden">
+                                        <div className="flex justify-between items-start mb-6">
+                                            <div className="flex flex-col gap-1">
+                                                <span className="px-3 py-1 bg-indigo-50 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 text-[10px] font-black rounded-lg uppercase tracking-widest border border-indigo-100 dark:border-indigo-800">
+                                                    {item.type}
+                                                </span>
+                                                <span className="text-[10px] text-gray-400 font-bold px-1 uppercase tracking-tighter">System Verified</span>
+                                            </div>
+                                            <button
+                                                onClick={() => handleInstallGlobal(item.id)}
+                                                className="px-4 py-2 bg-indigo-600 text-white text-sm font-bold rounded-xl hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-500/20 active:scale-95"
+                                            >
+                                                Importera
+                                            </button>
+                                        </div>
+                                        <h4 className="text-lg font-black text-gray-900 dark:text-white mb-2 leading-snug group-hover:text-indigo-600 transition-colors">{item.name}</h4>
+                                        <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-3 mb-4">{item.description}</p>
+
+                                        <div className="flex flex-wrap gap-2 pt-2 border-t border-gray-100 dark:border-[#3c4043]">
+                                            {(item.tags || '').split(',').map((tag, i) => (
+                                                <span key={i} className="text-[10px] font-bold text-gray-400 bg-gray-50 dark:bg-[#282a2c] px-2 py-1 rounded-md">
+                                                    #{tag.trim()}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="bg-gray-50 dark:bg-[#1E1F20] rounded-3xl p-20 text-center border-2 border-dashed border-gray-200 dark:border-[#3c4043]">
+                                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Biblioteket är tomt för tillfället</h3>
+                                <p className="text-gray-500">Kontakta systemadministratören för att lägga till globalt material.</p>
+                            </div>
+                        )}
+                    </div>
                 )}
             </div>
 

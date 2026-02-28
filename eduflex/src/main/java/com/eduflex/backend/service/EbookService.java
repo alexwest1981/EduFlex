@@ -10,10 +10,11 @@ import com.eduflex.backend.service.reader.PdfBookContent;
 import org.springframework.util.StreamUtils;
 
 import java.util.List;
+import java.io.InputStream;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import com.eduflex.backend.model.*;
-import com.eduflex.backend.repository.*;
 
 @Service
 @Transactional

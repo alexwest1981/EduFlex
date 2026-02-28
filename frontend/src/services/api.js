@@ -767,6 +767,9 @@ export const api = {
         updateVisibility: (id, visibility) => api.patch(`/resources/${id}/visibility?visibility=${visibility}`)
     },
 
+    globalLibrary: {
+        getAll: () => get('/global-library'),
+    },
     community: {
         browse: (params = {}) => {
             const searchParams = new URLSearchParams();

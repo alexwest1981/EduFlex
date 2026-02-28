@@ -9,12 +9,9 @@ import org.springframework.web.bind.annotation.*;
 public class FileController {
 
     private final StorageService storageService;
-    private final com.eduflex.backend.repository.SystemSettingRepository settingRepository;
 
-    public FileController(StorageService storageService,
-            com.eduflex.backend.repository.SystemSettingRepository settingRepository) {
+    public FileController(StorageService storageService) {
         this.storageService = storageService;
-        this.settingRepository = settingRepository;
     }
 
     /**

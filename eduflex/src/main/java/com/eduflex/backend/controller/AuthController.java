@@ -21,7 +21,6 @@ import io.github.bucket4j.Bucket;
 import org.springframework.http.HttpStatus;
 import jakarta.servlet.http.HttpServletRequest;
 import com.eduflex.backend.security.MfaService;
-import com.warrenstrange.googleauth.GoogleAuthenticatorKey;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -99,14 +98,18 @@ public class AuthController {
             } catch (org.springframework.security.authentication.BadCredentialsException bce) {
                 String ip = getClientIp(request);
                 System.out.println("DEBUG: Failed login for " + loginRequest.username() + " from IP " + ip
-                        + " | cause: " + (bce.getCause() != null ? bce.getCause().getClass().getSimpleName() + ": " + bce.getCause().getMessage() : bce.getMessage()));
+                        + " | cause: "
+                        + (bce.getCause() != null
+                                ? bce.getCause().getClass().getSimpleName() + ": " + bce.getCause().getMessage()
+                                : bce.getMessage()));
                 rateLimitingFilter.recordAttempt(ip);
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Ogiltigt användarnamn eller lösenord.");
             } catch (org.springframework.security.authentication.DisabledException de) {
                 System.out.println("DEBUG: Account DISABLED for " + loginRequest.username());
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Kontot är inaktiverat.");
             } catch (org.springframework.security.core.AuthenticationException ae) {
-                System.out.println("DEBUG: Auth exception for " + loginRequest.username() + ": " + ae.getClass().getSimpleName() + " - " + ae.getMessage());
+                System.out.println("DEBUG: Auth exception for " + loginRequest.username() + ": "
+                        + ae.getClass().getSimpleName() + " - " + ae.getMessage());
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Inloggning misslyckades.");
             }
 

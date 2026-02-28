@@ -2,7 +2,7 @@
   <img src="docs/Logo_top.png" width="600" alt="EduFlex Logo" />
 </p>
 
-<h1 align="center">🎓 EduFlex LMS v3.0.0</h1>
+<h1 align="center">🎓 EduFlex LLP v3.0.0</h1>
 
 <p align="center">
   <em>The Complete Enterprise Learning Platform for Modern Education</em><br/>
@@ -33,11 +33,31 @@
 
 ---
 
+### 🚀 **v3.2.0** (28 feb 2026) – Database Resilience & Quality
+*   **🛡️ Database Resilience**: Löste en kritisk blockerare vid uppstart genom att uppdatera `resources_visibility_check`-contrainten för att tillåta den nya `GLOBAL_LIBRARY`-siktbarheten via Flyway-migration (V103).
+*   **📚 Global Library Live Data**: Helt övergått från mockups till 100% live-data från databasen i Resource Bank.
+*   **✨ Code Optimization**: Genomfört en storskalig rensning av oanvända imports och fält i över 15 backend-controllers för förbättrad stabilitet och underhållsvänlighet.
+
+---
+
 <div id="-svenska"></div>
 
-## 🚀 Senaste uppdateringarna (Feb 2026)
+### 🚀 **v3.1.0** (28 feb 2026) – EduFlex LLP & Gap Closures
+*   **🚀 Branding Transition (LLP)**: Omdöpt plattformen från LMS till **Learning Lifecycle Platform (LLP)** för att bättre spegla systemets helhetsansvar. Uppdaterat ikoner, titlar och meta-data i hela systemet.
+*   **🛒 Gap 3: Advanced E-commerce**: 
+    - **Public Storefront**: Ny vacker butikssida (`/store`) för externa besökare.
+    - **Shopping Cart**: Fullt integrerad kundvagn med stöd för flera kurser.
+    - **Discount Codes**: Backend-stöd för rabattkoder och kampanjer.
+*   **📚 Gap 2: Built-in Content Library**:
+    - **Global Library**: Ny flik i Resource Bank för färdigt kurshaterial.
+    - **LTI & xAPI Mocks**: Förberedda integrationer för att hämta kurser från externa bibliotek.
+*   **📱 Gap 1: Native Mobile Foundation**:
+    - **Mobile Project**: Uppstart av React Native-strukturen i `/mobile`.
+    - **Sync Architecture**: Dokumenterad strategi för offline-synk och data-persistens.
 
-### 🚀 **v3.0.0** (28 feb 2026) – Control Center & Quality Fixes
+---
+
+### 🚀 **v3.0.0** (28 feb 2026) – Ops Control Center & Quality Fixes
 *   **🛠️ Control Center (EduFlex Ops):**
     *   **Unified Overview**: Helt ombyggd kontrollpanel som visar status för samtliga tjänster (Backend, Frontend, PG, MinIO, Redis, OnlyOffice, Video, PDF).
     *   **One-Click Start**: Ny "Starta alla tjänster"-knapp som exekverar en optimerad startsekvens.
@@ -172,7 +192,13 @@ Hitta rätt dokumentation snabbare baserat på din roll i organisationen:
 
 ## 🇬🇧 English
 
-### 🚀 Latest Updates (Feb 2026)
+### 🚀 **v3.2.0** (Feb 28, 2026) – Database Resilience & Quality
+*   **🛡️ Database Resilience**: Resolved a critical startup blocker by updating the `resources_visibility_check` constraint to allow the new `GLOBAL_LIBRARY` visibility.
+*   **📚 Global Library Live Data**: Successfully transitioned the Global Library from mockups to 100% database-driven resources.
+*   **✨ Code Optimization**: Performed large-scale linting and cleanup of unused imports and fields across 15+ backend controllers.
+
+---
+
 
 ### 🚀 **v3.0.0** (Feb 28, 2026) – Control Center & Quality Fixes
 *   **🛠️ Control Center (EduFlex Ops):**
@@ -249,7 +275,7 @@ Hitta rätt dokumentation snabbare baserat på din roll i organisationen:
 
 ### 🏫 About the Project
 
-**EduFlex 2.0** is a robust, cloud-native Learning Management System (LMS) engineered for scalability and user engagement. It bridges the gap between traditional enterprise LMS (often clunky and boring) and modern consumer apps (gamified, fast, and beautiful).
+**EduFlex 2.0** is a robust, cloud-native Learning Lifecycle Platform (LLP) engineered for scalability and user engagement. It bridges the gap between traditional enterprise LMS (often clunky and boring) and modern consumer apps (gamified, fast, and beautiful).
 
 **Key Differentiators:**
 - 🏢 **True Multi-Tenancy:** Schema-per-tenant isolation for complete data separation
@@ -287,7 +313,7 @@ Hitta rätt dokumentation snabbare baserat på din roll i organisationen:
 | **Activity Tracking** | Detailed student activity logs |
 | **Per-Tenant Config** | Admins can enable/disable gamification features per organization |
 | **EduAI Center v2.0** | AI-driven study hub (Spaced Repetition, AI Coach, Mini-Games). |
-| **Workflow Integration** | Training directly in Slack/Teams/Salesforce ("Headless LMS"). |
+| **Workflow Integration** | Training directly in Slack/Teams/Salesforce ("Headless LLP"). |
 
 #### 🇸🇪 Skolverket Integration
 | Feature | Description |
@@ -572,7 +598,7 @@ X-Tenant-ID: acme
 3. **Access the Application**
    | Service | URL | Credentials |
    |---------|-----|-------------|
-   | **Frontend (LMS)** | http://localhost:5173 | – |
+   | **Frontend (LLP)** | http://localhost:5173 | – |
    | **Backend API** | http://localhost:8080/api | – |
    | **Swagger Docs** | http://localhost:8080/swagger-ui.html | – |
    | **MinIO Console** | http://localhost:9001 | minioadmin / minioadmin |

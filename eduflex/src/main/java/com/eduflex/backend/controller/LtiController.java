@@ -109,6 +109,7 @@ public class LtiController {
             String issuer = (String) request.get("iss");
             String deploymentId = (String) request.get("deploy");
             String data = (String) request.get("data");
+            @SuppressWarnings("unchecked")
             java.util.List<Map<String, Object>> contentItems = (java.util.List<Map<String, Object>>) request
                     .get("contentItems");
 

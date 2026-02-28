@@ -4,7 +4,6 @@ import com.eduflex.backend.model.Connection;
 import com.eduflex.backend.model.ConnectionStatus;
 import com.eduflex.backend.service.ConnectionService;
 import com.eduflex.backend.repository.UserRepository;
-import com.eduflex.backend.model.User;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

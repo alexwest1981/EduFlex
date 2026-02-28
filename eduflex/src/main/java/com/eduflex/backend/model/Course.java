@@ -39,6 +39,7 @@ public class Course {
     // --- NYA FÄLT: DIGITALA RUM ---
     private String classroomLink; // URL till mötet
     private String classroomType; // T.ex. "ZOOM", "TEAMS", "MEET"
+    private Double price; // e.g., 995.0
 
     private String examLink; // URL till tentarum
     private String examType; // T.ex. "ZOOM", "INSPO"
@@ -239,6 +240,14 @@ public class Course {
 
     public void setClassroomType(String classroomType) {
         this.classroomType = classroomType;
+    }
+
+    public Double getPrice() {
+        return price;
+    }
+
+    public void setPrice(Double price) {
+        this.price = price;
     }
 
     public String getExamLink() {

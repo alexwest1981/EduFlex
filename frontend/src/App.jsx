@@ -5,6 +5,7 @@ import { ModuleProvider, useModules } from './context/ModuleContext';
 import { GamificationProvider } from './context/GamificationContext';
 import { BrandingProvider } from './context/BrandingContext';
 import { DesignSystemProvider } from './context/DesignSystemContext';
+import { CartProvider } from './context/CartContext';
 import ErrorBoundary from './components/common/ErrorBoundary';
 
 // --- LAYOUT ---
@@ -77,6 +78,7 @@ import HealthCheckDashboard from './features/admin/HealthCheckDashboard';
 import DeveloperSettings from './features/settings/DeveloperSettings';
 import RoiCenter from './features/analytics/RoiCenter';
 import EduCareerPortal from './features/career/EduCareerPortal';
+import PublicStorefront from './features/ecommerce/PublicStorefront';
 
 // --- ISP (Individuell Studieplan) ---
 import IspDashboard from './features/isp/IspDashboard';
@@ -187,6 +189,7 @@ const AppRoutes = () => {
                 <Route path="/lti/deep-link" element={<LtiDeepLinking />} />
                 <Route path="/features" element={<FeaturesPage />} />
                 <Route path="/pricing" element={<PricingPage />} />
+                <Route path="/store" element={<PublicStorefront />} />
 
                 {/* ROOT ROUTE: Landing for Guests / Dashboard for Users */}
                 <Route path="/" element={
@@ -617,25 +620,27 @@ const App = () => {
     return (
         <AppProvider>
             <DesignSystemProvider>
-                <ModuleProvider>
-                    <GamificationProvider>
-                        <ErrorBoundary>
-                            <HelmetProvider>
-                                <Helmet>
-                                    <title>EduFlex LMS</title>
+                <CartProvider>
+                    <ModuleProvider>
+                        <GamificationProvider>
+                            <ErrorBoundary>
+                                <HelmetProvider>
+                                    <Helmet>
+                                        <title>EduFlex LLP</title>
 
-                                    <meta http-equiv="X-XSS-Protection" content="1; mode=block" />
-                                </Helmet>
-                                <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-                                    <Toaster position="top-right" />
-                                    <AchievementToast />
-                                    <FloatingAudioPlayer />
-                                    <AppRoutes />
-                                </Router>
-                            </HelmetProvider>
-                        </ErrorBoundary>
-                    </GamificationProvider>
-                </ModuleProvider>
+                                        <meta http-equiv="X-XSS-Protection" content="1; mode=block" />
+                                    </Helmet>
+                                    <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+                                        <Toaster position="top-right" />
+                                        <AchievementToast />
+                                        <FloatingAudioPlayer />
+                                        <AppRoutes />
+                                    </Router>
+                                </HelmetProvider>
+                            </ErrorBoundary>
+                        </GamificationProvider>
+                    </ModuleProvider>
+                </CartProvider>
             </DesignSystemProvider>
         </AppProvider>
     );

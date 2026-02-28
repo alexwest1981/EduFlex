@@ -39,6 +39,10 @@ public class ResourceService {
         return resourceRepository.findByVisibility(Resource.ResourceVisibility.PUBLIC);
     }
 
+    public List<Resource> getGlobalResources() {
+        return resourceRepository.findByVisibility(Resource.ResourceVisibility.GLOBAL_LIBRARY);
+    }
+
     @Transactional
     public Resource createResource(Long userId, Resource resource) {
         User owner = userRepository.findById(userId).orElseThrow();

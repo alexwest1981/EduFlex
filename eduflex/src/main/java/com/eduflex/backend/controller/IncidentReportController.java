@@ -2,7 +2,6 @@ package com.eduflex.backend.controller;
 
 import com.eduflex.backend.model.IncidentReport;
 import com.eduflex.backend.repository.IncidentReportRepository;
-import com.eduflex.backend.repository.UserRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -15,11 +14,9 @@ import java.util.List;
 public class IncidentReportController {
 
     private final IncidentReportRepository incidentReportRepository;
-    private final UserRepository userRepository;
 
-    public IncidentReportController(IncidentReportRepository incidentReportRepository, UserRepository userRepository) {
+    public IncidentReportController(IncidentReportRepository incidentReportRepository) {
         this.incidentReportRepository = incidentReportRepository;
-        this.userRepository = userRepository;
     }
 
     @GetMapping
@@ -34,14 +31,17 @@ public class IncidentReportController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<IncidentReport> updateIncident(@PathVariable Long id, @RequestBody IncidentReport incidentDetails) {
+    public ResponseEntity<IncidentReport> updateIncident(@PathVariable Long id,
+            @RequestBody IncidentReport incidentDetails) {
         IncidentReport incident = incidentReportRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Incident not found"));
-        
+
         incident.setStatus(incidentDetails.getStatus());
-        if (incidentDetails.getInvestigationNotes() != null) incident.setInvestigationNotes(incidentDetails.getInvestigationNotes());
-        if (incidentDetails.getActionsTaken() != null) incident.setActionsTaken(incidentDetails.getActionsTaken());
-        
+        if (incidentDetails.getInvestigationNotes() != null)
+            incident.setInvestigationNotes(incidentDetails.getInvestigationNotes());
+        if (incidentDetails.getActionsTaken() != null)
+            incident.setActionsTaken(incidentDetails.getActionsTaken());
+
         return ResponseEntity.ok(incidentReportRepository.save(incident));
     }
 

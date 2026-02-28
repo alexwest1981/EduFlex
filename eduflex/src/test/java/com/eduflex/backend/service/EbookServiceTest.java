@@ -51,7 +51,7 @@ class EbookServiceTest {
         // RestTemplate();`
         // So this constructor call is correct.
         ebookService = new EbookService(ebookRepository, storageService, courseRepository, ttsService,
-                userEbookProgressRepository);
+                userEbookProgressRepository, null);
     }
 
     @Test

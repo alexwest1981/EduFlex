@@ -8,7 +8,6 @@ import com.eduflex.backend.repository.DocumentRepository;
 import com.eduflex.backend.repository.LessonRepository;
 import com.eduflex.backend.repository.SystemSettingRepository;
 import com.eduflex.backend.service.StorageService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
@@ -58,7 +57,6 @@ public class OnlyOfficeController {
     private final CourseMaterialRepository materialRepository;
     private final LessonRepository lessonRepository;
     private final SystemSettingRepository settingRepository;
-    private final ObjectMapper objectMapper;
     private final com.eduflex.backend.security.JwtUtils jwtUtils;
     private final StorageService storageService;
 
@@ -66,14 +64,12 @@ public class OnlyOfficeController {
             CourseMaterialRepository materialRepository,
             LessonRepository lessonRepository,
             SystemSettingRepository settingRepository,
-            ObjectMapper objectMapper,
             com.eduflex.backend.security.JwtUtils jwtUtils,
             StorageService storageService) {
         this.documentRepository = documentRepository;
         this.materialRepository = materialRepository;
         this.lessonRepository = lessonRepository;
         this.settingRepository = settingRepository;
-        this.objectMapper = objectMapper;
         this.jwtUtils = jwtUtils;
         this.storageService = storageService;
     }
@@ -228,19 +224,21 @@ public class OnlyOfficeController {
                     + (lesson.getId() != null ? lesson.getId().hashCode() : System.currentTimeMillis());
         }
 
-        // Use Public URL for download/callback to ensure reachability from Docker container
-        // This avoids host.docker.internal issues if DNS is not set up correctly in the container
+        // Use Public URL for download/callback to ensure reachability from Docker
+        // container
+        // This avoids host.docker.internal issues if DNS is not set up correctly in the
+        // container
         String baseUrl = publicAppUrl;
 
         // Fallback to internal if public is not set (though it should be)
         if (baseUrl == null || baseUrl.isEmpty() || baseUrl.contains("localhost")) {
-             baseUrl = internalBackendUrl;
+            baseUrl = internalBackendUrl;
         }
 
         String downloadUrl = baseUrl + "/api/onlyoffice/download/" + type + "/" + id
-                        + (tenantId != null ? "?tenantId=" + tenantId : "");
+                + (tenantId != null ? "?tenantId=" + tenantId : "");
         String callbackUrl = baseUrl + "/api/onlyoffice/callback/" + type + "/" + id
-                        + (tenantId != null ? "?tenantId=" + tenantId : "");
+                + (tenantId != null ? "?tenantId=" + tenantId : "");
 
         logger.info("[ONLYOFFICE] Generated URLs - Download: {}, Callback: {}", downloadUrl, callbackUrl);
 
@@ -319,7 +317,7 @@ public class OnlyOfficeController {
             if (status == 2 || status == 6) { // 2 = Ready for saving, 6 = Client closed (forced save)
                 String downloadUrl = (String) body.get("url");
                 if (downloadUrl != null) {
-                    URL url = new URL(downloadUrl);
+                    URL url = URI.create(downloadUrl).toURL();
                     Path tempFile = Files.createTempFile("onlyoffice_", getExtension("file"));
                     try (InputStream is = url.openStream()) {
                         Files.copy(is, tempFile, StandardCopyOption.REPLACE_EXISTING);

@@ -379,7 +379,7 @@ const LandingPage = () => {
                         <div className="size-10 brand-gradient rounded-full flex items-center justify-center shadow-lg shadow-brand-teal/20 relative">
                             <img src={logoMain} alt="EduFlex" className="w-6 h-6 brightness-0 invert" />
                         </div>
-                        <span className="text-xl font-bold tracking-tight">EduFlex <span className="text-brand-teal">3.0</span></span>
+                        <span className="text-xl font-bold tracking-tight">EduFlex <span className="text-brand-teal">LLP</span></span>
                     </div>
 
                     <div className="hidden md:flex items-center gap-8 text-slate-300">
@@ -490,7 +490,7 @@ const LandingPage = () => {
 
                         {/* Heading */}
                         <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-black leading-[1.1] tracking-tight">
-                            Framtidens Lärande med <br /><span className="text-gradient drop-shadow-lg">EduAI Hub</span>
+                            Framtidens <span className="text-brand-teal">LLP</span> med <br /><span className="text-gradient drop-shadow-lg">EduAI Hub</span>
                         </h1>
 
                         {/* Subtitle */}
@@ -775,7 +775,7 @@ const LandingPage = () => {
                             <div className="brand-gradient p-2 rounded-lg">
                                 <img src={logoMain} alt="EduFlex" className="w-5 h-5 brightness-0 invert" />
                             </div>
-                            <span className="text-xl font-bold">EduFlex <span className="text-brand-teal">3.0</span></span>
+                            <span className="text-xl font-bold">EduFlex <span className="text-brand-teal">LLP</span></span>
                         </div>
                         <p className="text-slate-500 text-sm leading-relaxed">
                             {t('landing.footer.tagline')}

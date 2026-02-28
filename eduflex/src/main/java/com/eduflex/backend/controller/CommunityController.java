@@ -9,8 +9,6 @@ import com.eduflex.backend.repository.UserRepository;
 import com.eduflex.backend.service.CommunityService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -27,8 +25,6 @@ import java.util.Map;
 @CrossOrigin(origins = "*")
 @Tag(name = "Community", description = "EduFlex Community - Marketplace for educational content")
 public class CommunityController {
-
-    private static final Logger logger = LoggerFactory.getLogger(CommunityController.class);
 
     private final CommunityService communityService;
     private final UserRepository userRepository;

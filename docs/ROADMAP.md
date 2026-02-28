@@ -132,6 +132,12 @@
 
 ---
 
+### [v3.2.0] - 2026-02-28
+- **Database Fix**: Resolved `resources_visibility_check` constraint violation in `resources` table.
+- **Live Data**: Transformed "Global Library" from mock data to live DB-driven content.
+- **Code Quality**: Removed unused imports and fields from 15+ backend controllers.
+- **Refactoring**: Corrected `LtiController` and `OnlyOfficeController` cleanups.
+
 ### [v3.6.1] - 2026-02-27
 - **New Feature**: **Docker-Integrated FFmpeg**.
   - **Zero-Config**: Integrated `ffmpeg` directly into `backend` and `video-service` Docker images for seamless server migration.
