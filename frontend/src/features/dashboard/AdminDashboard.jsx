@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { LayoutDashboard, Loader2, MessageSquare } from 'lucide-react';
+import { LayoutDashboard, Loader2, MessageSquare, Shield } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { api } from '../../services/api';
 
 // --- COMPONENTS ---
 import AdminOverview from './AdminOverview';
 import MessageCenter from '../messages/MessageCenter';
+import CompanyLicenses from './CompanyLicenses';
 
 // --- SHARED ---
 import { useDashboardWidgets } from '../../hooks/useDashboardWidgets';
@@ -148,6 +149,17 @@ const AdminDashboard = () => {
                         </span>
                     )}
                 </button>
+                <button
+                    onClick={() => setActiveTab('licenses')}
+                    className={`flex items-center gap-2 px-6 py-2.5 rounded-full text-sm font-bold transition-all duration-300
+                        ${activeTab === 'licenses'
+                            ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-100 dark:shadow-none'
+                            : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
+                        }`}
+                >
+                    <Shield size={18} />
+                    Företagslicenser
+                </button>
             </div>
 
             {/* --- CONTENT AREA --- */}
@@ -167,6 +179,12 @@ const AdminDashboard = () => {
                 {activeTab === 'communication' && (
                     <div className="bg-white dark:bg-[#1c1c1e] rounded-[2.5rem] border border-gray-100 dark:border-gray-800 p-8 shadow-sm h-[750px] overflow-hidden">
                         <MessageCenter />
+                    </div>
+                )}
+
+                {activeTab === 'licenses' && (
+                    <div className="p-2 sm:p-0">
+                        <CompanyLicenses />
                     </div>
                 )}
             </main>

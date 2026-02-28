@@ -33,6 +33,13 @@
 
 ---
 
+### 🚀 **v3.4.0** (28 feb 2026) – Enterprise B2B & Global i18n
+*   **🌍 AI-Driven i18n Localization**: Automatiskt översättningssystem lanserat som stödjer 8 språk (Engelska, Franska, Tyska, Spanska, Arabiska, Norska, Danska, Finska) utöver Svenska via Gemini AI-driven pipeline.
+*   **💼 B2B Extended Enterprise Engine**: "Pointer"-baserad distribution för företag, som gör att de kan köpa paket med Seat Licenses och manuellt tilldela platser inom sin egen organisation (Tenant Isolation).
+*   **🛒 Reseller Module Finalization**: Analysfunktioner med total försäljning, antal ordrar samt distribuerade licenser via dedikerad API Analytics-endpoint in i Sales Dashboard.
+
+---
+
 ### 🚀 **v3.2.0** (28 feb 2026) – Database Resilience & Quality
 *   **🛡️ Database Resilience**: Löste en kritisk blockerare vid uppstart genom att uppdatera `resources_visibility_check`-contrainten för att tillåta den nya `GLOBAL_LIBRARY`-siktbarheten via Flyway-migration (V103).
 *   **📚 Global Library Live Data**: Helt övergått från mockups till 100% live-data från databasen i Resource Bank.
@@ -199,6 +206,13 @@ Hitta rätt dokumentation snabbare baserat på din roll i organisationen:
 <div id="-english"></div>
 
 ## 🇬🇧 English
+
+### 🚀 **v3.4.0** (Feb 28, 2026) – Enterprise B2B & Global i18n
+*   **🌍 AI-Driven i18n Localization**: Automatic translation system launched supporting 8 languages (English, French, German, Spanish, Arabic, Norwegian, Danish, Finnish) in addition to Swedish via a Gemini AI-driven pipeline.
+*   **💼 B2B Extended Enterprise Engine**: "Pointer"-based distribution for companies, allowing them to purchase packages of Seat Licenses and manually assign seats within their own organization (Tenant Isolation).
+*   **🛒 Reseller Module Finalization**: Analytics features including total sales, number of orders, and distributed licenses via dedicated API frontend in the Sales Dashboard.
+
+---
 
 ### 🚀 **v3.2.0** (Feb 28, 2026) – Database Resilience & Quality
 *   **🛡️ Database Resilience**: Resolved a critical startup blocker by updating the `resources_visibility_check` constraint to allow the new `GLOBAL_LIBRARY` visibility.

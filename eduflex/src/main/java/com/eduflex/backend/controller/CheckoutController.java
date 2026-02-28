@@ -285,4 +285,38 @@ public class CheckoutController {
         }
         return ResponseEntity.ok(courseOrderRepository.findByCustomer_IdOrderByCreatedAtDesc(user.getId()));
     }
+
+    @GetMapping("/analytics")
+    @Operation(summary = "Get sales analytics", description = "Returns aggregated sales data for the reseller dashboard.")
+    @Transactional(readOnly = true)
+    public ResponseEntity<?> getAnalytics(Authentication authentication) {
+        if (authentication == null)
+            return ResponseEntity.status(401).body(Map.of("error", "Unauthorized"));
+        User user = userRepository.findByUsername(authentication.getName()).orElse(null);
+        if (user == null || (!user.getRole().getName().contains("ADMIN") && !user.getRole().getName().contains("REKTOR")
+                && !user.getRole().getName().contains("RESELLER"))) {
+            return ResponseEntity.status(403).body(Map.of("error", "Forbidden"));
+        }
+
+        List<CourseOrder> allOrders = courseOrderRepository.findAll();
+        BigDecimal totalRevenue = BigDecimal.ZERO;
+        int totalCompletedOrders = 0;
+        for (CourseOrder order : allOrders) {
+            if (order.getStatus() == CourseOrder.OrderStatus.COMPLETED) {
+                totalRevenue = totalRevenue.add(order.getTotalAmount());
+                totalCompletedOrders++;
+            }
+        }
+
+        List<CourseLicense> allLicenses = courseLicenseRepository.findAll();
+        int totalSeatLicensesSold = 0;
+        for (CourseLicense license : allLicenses) {
+            totalSeatLicensesSold += license.getTotalSeats();
+        }
+
+        return ResponseEntity.ok(Map.of(
+                "totalRevenue", totalRevenue,
+                "completedOrders", totalCompletedOrders,
+                "totalSeatLicensesSold", totalSeatLicensesSold));
+    }
 }

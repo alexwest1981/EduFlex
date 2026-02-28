@@ -5,28 +5,28 @@ import { useModules } from '../../context/ModuleContext';
 
 const SalesOverview = () => {
     const [orders, setOrders] = useState([]);
+    const [analytics, setAnalytics] = useState({ totalRevenue: 0, completedOrders: 0, totalSeatLicensesSold: 0 });
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const fetchOrders = async () => {
+        const fetchData = async () => {
             try {
-                const data = await api.get('/checkout/orders');
-                setOrders(data);
+                const [ordersData, analyticsData] = await Promise.all([
+                    api.get('/checkout/orders'),
+                    api.get('/checkout/analytics')
+                ]);
+                setOrders(ordersData);
+                setAnalytics(analyticsData);
             } catch (err) {
-                console.error("Failed to load orders", err);
+                console.error("Failed to load sales data", err);
             } finally {
                 setLoading(false);
             }
         };
-        fetchOrders();
+        fetchData();
     }, []);
 
-    const totalRevenue = orders.reduce((sum, order) => {
-        if (order.status === 'COMPLETED') return sum + order.totalAmount;
-        return sum;
-    }, 0);
-
-    const completedOrders = orders.filter(o => o.status === 'COMPLETED').length;
+    const { totalRevenue, completedOrders, totalSeatLicensesSold } = analytics;
 
     const StatusBadge = ({ status }) => {
         if (status === 'COMPLETED') return <span className="flex items-center gap-1 text-green-600 bg-green-50 px-2 py-1 rounded-md text-xs font-bold w-max"><CheckCircle2 size={14} /> Genomförd</span>;
@@ -59,12 +59,12 @@ const SalesOverview = () => {
                     </div>
                 </div>
                 <div className="bg-white dark:bg-[#1a1b1d] p-6 rounded-2xl border border-gray-200 dark:border-white/5 flex items-center gap-4">
-                    <div className="size-12 rounded-xl bg-brand-purple/10 flex items-center justify-center text-brand-purple">
-                        <Tag size={24} />
+                    <div className="size-12 rounded-xl bg-brand-gold/10 flex items-center justify-center text-brand-gold">
+                        <Percent size={24} />
                     </div>
                     <div>
-                        <div className="text-sm font-bold text-gray-500 uppercase tracking-widest">Snittordervärde</div>
-                        <div className="text-2xl font-black dark:text-white">{completedOrders > 0 ? Math.round(totalRevenue / completedOrders).toLocaleString() : 0} kr</div>
+                        <div className="text-sm font-bold text-gray-500 uppercase tracking-widest">Sålda Seat Licenses</div>
+                        <div className="text-2xl font-black dark:text-white">{totalSeatLicensesSold} platser</div>
                     </div>
                 </div>
             </div>
