@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import {
     X, Settings, Users, Shield, Palette, Database,
-    Activity, FileText, Globe, Lock, Bell
+    Activity, FileText, Globe, Lock, Bell, Server
 } from 'lucide-react';
 import { useBranding } from '../../context/BrandingContext';
 import { useAppContext } from '../../context/AppContext';

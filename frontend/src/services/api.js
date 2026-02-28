@@ -768,7 +768,7 @@ export const api = {
     },
 
     globalLibrary: {
-        getAll: () => get('/global-library'),
+        getAll: () => api.get('/global-library'),
     },
     community: {
         browse: (params = {}) => {

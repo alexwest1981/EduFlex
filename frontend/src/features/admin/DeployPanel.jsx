@@ -6,6 +6,8 @@ import { useAppContext } from '../../context/AppContext';
 const DeployPanel = () => {
     const [copiedCmd, setCopiedCmd] = useState(null);
     const [deployLog, setDeployLog] = useState([]);
+    const [serviceStatus, setServiceStatus] = useState({});
+    const [checking, setChecking] = useState(false);
 
     const copyToClipboard = (text, id) => {
         navigator.clipboard.writeText(text);

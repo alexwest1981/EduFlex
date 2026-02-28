@@ -1,0 +1,758 @@
+﻿
+> frontend@3.0.0 lint
+> eslint .
+
+
+E:\Projekt\EduFlex\frontend\src\components\Catalog.jsx
+  35:18  warning  'e' is defined but never used  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\components\ContactModal.jsx
+  48:18  warning  'error' is defined but never used  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\components\DocumentArchive.jsx
+  36:18  warning  'e' is defined but never used  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\components\ErrorBoundary.jsx
+  12:37  warning  'error' is defined but never used. Allowed unused args must match /^_/u                   no-unused-vars
+  52:11  warning  'navigate' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\components\MobileThemes\EduFlexCosmic.jsx
+    1:38  warning  'useMemo' is defined but never used. Allowed unused vars must match /^[A-Z_]/u                   no-unused-vars
+   70:58  warning  'onThemeChange' is defined but never used. Allowed unused args must match /^_/u                  no-unused-vars
+  190:13  warning  't' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u                no-unused-vars
+  197:12  warning  'activeFilter' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u     no-unused-vars
+  197:26  warning  'setActiveFilter' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+  243:11  warning  'filters' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u          no-unused-vars
+  246:11  warning  'profileImg' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u       no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\components\MobileThemes\EduFlexFinsights.jsx
+   1:38  warning  'useMemo' is defined but never used. Allowed unused vars must match /^[A-Z_]/u   no-unused-vars
+  65:58  warning  'onThemeChange' is defined but never used. Allowed unused args must match /^_/u  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\components\MobileThemes\EduFlexFresh.jsx
+    2:10  warning  'useTranslation' is defined but never used. Allowed unused vars must match /^[A-Z_]/u    no-unused-vars
+   49:58  warning  'onThemeChange' is defined but never used. Allowed unused args must match /^_/u          no-unused-vars
+  143:12  warning  'loading' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\components\MobileThemes\MobileThemeResolver.jsx
+  41:26  warning  'Component' is defined but never used. Allowed unused args must match /^_/u  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\components\MobileThemes\mobilecomponents\MobileFloatingNav.jsx
+  3:10  warning  'useBranding' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\components\MobileThemes\mobilecomponents\MobileScheduleItem.jsx
+  10:71  warning  'isActive' is assigned a value but never used. Allowed unused args must match /^_/u  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\components\MobileThemes\mobilecomponents\MobileThemeSelector.jsx
+  14:29  warning  'updateBranding' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\components\MobileThemes\mobilecomponents\MobileWidget.jsx
+  34:35  warning  'accentColor' is defined but never used. Allowed unused args must match /^_/u  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\components\MobileThemes\views\MobileCalendarView.jsx
+  93:39  warning  'isSelected' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\components\MobileThemes\views\MobileDashboardView.jsx
+  63:22  warning  'e' is defined but never used  no-unused-vars
+  68:82  warning  'e' is defined but never used  no-unused-vars
+  88:26  warning  'e' is defined but never used  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\components\MobileThemes\views\MobileProfileView.jsx
+  8:11  warning  'navigate' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\components\Sidebar.jsx
+  16:11  warning  'currentPath' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\components\SidebarSection.jsx
+  5:54  warning  'roleName' is defined but never used. Allowed unused args must match /^_/u  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\components\TentaManager.jsx
+  11:13  warning  't' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\components\ai\AiCoachWidget.jsx
+  2:10  warning  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\components\common\ErrorBoundary.jsx
+  11:37  warning  'error' is defined but never used. Allowed unused args must match /^_/u  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\components\common\FloatingAudioPlayer.jsx
+  13:12  warning  'lastFetchId' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\components\common\StudyPalWidget.jsx
+  43:18  warning  'error' is defined but never used  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\components\gamification\AchievementsGallery.jsx
+  7:13  warning  't' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\components\gamification\EduAIDashboard.jsx
+    4:10  warning  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u                  no-unused-vars
+  108:11  warning  'completeQuest' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\components\layouts\EmberLayout.jsx
+   1:17  warning  'useEffect' is defined but never used. Allowed unused vars must match /^[A-Z_]/u             no-unused-vars
+  17:50  warning  'theme' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u        no-unused-vars
+  17:57  warning  'toggleTheme' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+  21:11  warning  'location' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u     no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\components\layouts\FloatingLayout.jsx
+   1:17  warning  'useEffect' is defined but never used. Allowed unused vars must match /^[A-Z_]/u                    no-unused-vars
+  21:25  warning  'setSidebarOpen' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u      no-unused-vars
+  28:11  warning  'gamificationActive' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\components\layouts\HorizonLayout.jsx
+   1:17  warning  'useEffect' is defined but never used. Allowed unused vars must match /^[A-Z_]/u                    no-unused-vars
+  14:50  warning  'theme' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u               no-unused-vars
+  14:57  warning  'toggleTheme' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u         no-unused-vars
+  20:11  warning  'handleLogout' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u        no-unused-vars
+  24:11  warning  'gamificationActive' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+  26:11  warning  'darkModeActive' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u      no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\components\layouts\MidnightLayout.jsx
+   1:17  warning  'useEffect' is defined but never used. Allowed unused vars must match /^[A-Z_]/u             no-unused-vars
+  13:22  warning  'api' is defined but never used. Allowed unused vars must match /^[A-Z_]/u                   no-unused-vars
+  16:50  warning  'theme' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u        no-unused-vars
+  16:57  warning  'toggleTheme' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\components\layouts\NebulaLayout.jsx
+   1:17  warning  'useEffect' is defined but never used. Allowed unused vars must match /^[A-Z_]/u                    no-unused-vars
+  14:50  warning  'theme' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u               no-unused-vars
+  14:57  warning  'toggleTheme' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u         no-unused-vars
+  24:11  warning  'gamificationActive' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+  25:11  warning  'analyticsActive' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u     no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\components\layouts\PulseLayout.jsx
+   1:17  warning  'useEffect' is defined but never used. Allowed unused vars must match /^[A-Z_]/u                no-unused-vars
+  16:34  warning  'systemSettings' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+  16:50  warning  'theme' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u           no-unused-vars
+  16:57  warning  'toggleTheme' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u     no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\components\layouts\StandardLayout.jsx
+   1:28  warning  'useState' is defined but never used. Allowed unused vars must match /^[A-Z_]/u                     no-unused-vars
+   7:22  warning  'api' is defined but never used. Allowed unused vars must match /^[A-Z_]/u                          no-unused-vars
+  48:11  warning  'gamificationActive' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+  49:11  warning  'analyticsActive' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u     no-unused-vars
+  55:11  warning  'isAdmin' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u             no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\components\layouts\VoltageLayout.jsx
+   1:17  warning  'useEffect' is defined but never used. Allowed unused vars must match /^[A-Z_]/u             no-unused-vars
+  12:22  warning  'api' is defined but never used. Allowed unused vars must match /^[A-Z_]/u                   no-unused-vars
+  15:50  warning  'theme' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u        no-unused-vars
+  15:57  warning  'toggleTheme' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+  19:11  warning  'location' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u     no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\components\pwa\PwaInstallPrompt.jsx
+  2:10  warning  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\context\AppContext.jsx
+  154:18  warning  'e' is defined but never used                                                                                                   no-unused-vars
+  230:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+E:\Projekt\EduFlex\frontend\src\context\BrandingContext.jsx
+   19:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  103:14  warning  'error' is defined but never used                                                                                               no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\context\CartContext.jsx
+  5:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+E:\Projekt\EduFlex\frontend\src\context\DesignSystemContext.jsx
+    7:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  521:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+E:\Projekt\EduFlex\frontend\src\context\GamificationContext.jsx
+   7:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  19:12  warning  'lastUnlockedIds' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u                                 no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\context\ModuleContext.jsx
+  73:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+E:\Projekt\EduFlex\frontend\src\context\ThemeContext.jsx
+   97:22  warning  'e' is defined but never used                                                                                                   no-unused-vars
+  160:92  warning  'e' is defined but never used                                                                                                   no-unused-vars
+  182:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+E:\Projekt\EduFlex\frontend\src\features\adaptive\AdaptiveLearningDashboard.jsx
+  32:13  warning  't' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u            no-unused-vars
+  33:13  warning  'currentUser' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+  99:18  warning  'e' is defined but never used                                                                no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\adaptive\AdaptiveWidget.jsx
+  9:13  warning  't' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\admin\AiAuditDashboard.jsx
+  10:13  warning  't' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u        no-unused-vars
+  13:18  warning  'setPage' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+  62:18  warning  'e' is defined but never used                                                            no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\admin\AuditLogDashboard.jsx
+  11:13  warning  't' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+  71:18  warning  'e' is defined but never used                                                      no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\admin\DeployPanel.jsx
+    8:12  warning  'deployLog' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u     no-unused-vars
+    8:23  warning  'setDeployLog' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+   69:9   error    'setChecking' is not defined                                                                  no-undef
+   83:9   error    'setServiceStatus' is not defined                                                             no-undef
+   84:9   error    'setChecking' is not defined                                                                  no-undef
+  143:35  error    'checking' is not defined                                                                     no-undef
+  146:57  error    'checking' is not defined                                                                     no-undef
+  147:26  error    'checking' is not defined                                                                     no-undef
+  152:40  error    'serviceStatus' is not defined                                                                no-undef
+
+E:\Projekt\EduFlex\frontend\src\features\admin\EnterpriseWhitelabel.jsx
+   50:12  warning  'message' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u            no-unused-vars
+  187:11  warning  'mobileThemes' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u       no-unused-vars
+  343:11  warning  'handleToggleTheme' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\admin\IntegrationHub.jsx
+  48:18  warning  'err' is defined but never used  no-unused-vars
+  60:18  warning  'err' is defined but never used  no-unused-vars
+  69:18  warning  'err' is defined but never used  no-unused-vars
+  79:18  warning  'err' is defined but never used  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\admin\InvoiceManagement.jsx
+  11:12  warning  'stats' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u            no-unused-vars
+  11:19  warning  'setStats' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u         no-unused-vars
+  18:12  warning  'showCreateModal' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\admin\PdfTemplateEditor.jsx
+   32:32  warning  'Icon' is defined but never used. Allowed unused args must match /^_/u  no-unused-vars
+  325:18  warning  'err' is defined but never used                                         no-unused-vars
+  340:18  warning  'err' is defined but never used                                         no-unused-vars
+  355:18  warning  'err' is defined but never used                                         no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\admin\PilotKitWizard.jsx
+   1:27  warning  'useEffect' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+  54:18  warning  'error' is defined but never used                                                 no-unused-vars
+  79:18  warning  'error' is defined but never used                                                 no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\admin\SettingsTab.jsx
+  11:13  warning  't' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+  47:18  warning  'e' is defined but never used                                                      no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\admin\SkolverketDataEntry.jsx
+  64:18  warning  'error' is defined but never used  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\admin\SkolverketManager.jsx
+  3:10  warning  'api' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\admin\SupportArticleManager.jsx
+   47:18   warning  'e' is defined but never used                                           no-unused-vars
+  102:18   warning  'e' is defined but never used                                           no-unused-vars
+  115:18   warning  'e' is defined but never used                                           no-unused-vars
+  125:18   warning  'e' is defined but never used                                           no-unused-vars
+  182:119  warning  'Icon' is defined but never used. Allowed unused args must match /^_/u  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\admin\TenantManagement.jsx
+    8:13  warning  't' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+  115:18  warning  'error' is defined but never used                                                  no-unused-vars
+  126:18  warning  'error' is defined but never used                                                  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\admin\shop\AdminShopDashboard.jsx
+  12:11  warning  'navigate' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\ai\AIQuizGenerator.jsx
+  68:14  warning  'err' is defined but never used  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\ai\EduAiHubPage.jsx
+    8:10  warning  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u            no-unused-vars
+   18:37  warning  'Icon' is defined but never used. Allowed unused args must match /^_/u                   no-unused-vars
+  133:12  warning  'loading' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\ai\PracticeQuizSetupModal.jsx
+  5:43  warning  'currentUser' is defined but never used. Allowed unused args must match /^_/u  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\ai\components\HubQuests.jsx
+  3:10  warning  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\ai\components\HubReviewDeck.jsx
+   7:10  warning  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u                no-unused-vars
+  23:12  warning  'oldMaxScore' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\analytics\AnalyticsDashboard.jsx
+  65:18  warning  'e' is defined but never used  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\analytics\components\BusinessOutcomeImport.jsx
+  7:12  warning  'loading' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\analytics\components\RoiDashboard.jsx
+  44:18  warning  'e' is defined but never used  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\auth\LicenseActivation.jsx
+  21:18  warning  'err' is defined but never used  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\billing\UserBilling.jsx
+  95:18  warning  'error' is defined but never used  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\calendar\CalendarView.jsx
+  56:13  warning  't' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u         no-unused-vars
+  57:11  warning  'navigate' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+  59:13  warning  'theme' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u     no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\calendar\components\CalendarFilter.jsx
+  96:11  warning  'clearFilter' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\calendar\components\MonthView.jsx
+   10:5   warning  'events' is assigned a value but never used. Allowed unused args must match /^_/u  no-unused-vars
+  202:84  warning  'eventIndex' is defined but never used. Allowed unused args must match /^_/u       no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\calendar\components\TimeSlotGrid.jsx
+    9:5   warning  'currentUser' is defined but never used. Allowed unused args must match /^_/u        no-unused-vars
+  144:36  warning  'dayIndex' is assigned a value but never used. Allowed unused args must match /^_/u  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\career\EduCareerPortal.jsx
+   2:10  warning  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u                no-unused-vars
+  21:13  warning  'currentUser' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\community\components\PublishModal.jsx
+  276:38  warning  'e' is defined but never used                                              no-unused-vars
+  672:5   warning  'setStep' is defined but never used. Allowed unused args must match /^_/u  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\courses\CourseDetail.jsx
+   50:12  warning  'myResult' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u             no-unused-vars
+   51:12  warning  'canClaim' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u             no-unused-vars
+  202:22  warning  'e' is defined but never used                                                                        no-unused-vars
+  284:11  warning  'downloadCertificate' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\courses\StudentCoursesPage.jsx
+  5:22  warning  'formatTime' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\courses\components\InteractiveModules.jsx
+   8:10  warning  'useAppContext' is defined but never used. Allowed unused vars must match /^[A-Z_]/u      no-unused-vars
+  14:52  warning  'currentUser' is defined but never used. Allowed unused args must match /^_/u             no-unused-vars
+  15:11  warning  'navigate' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\courses\components\TeacherAnalyticsDashboard.jsx
+   18:10  warning  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+  261:47  warning  'b' is defined but never used. Allowed unused args must match /^_/u            no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\dashboard\AdminAdministrationPage.jsx
+  15:13  warning  't' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\dashboard\AdminOverview.jsx
+  13:13  warning  'currentUser' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\dashboard\AdministrationPanel.jsx
+  53:18  warning  'err' is defined but never used  no-unused-vars
+  58:69  warning  'e' is defined but never used    no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\dashboard\GuardianDashboard.jsx
+  24:30  warning  'currentUser' is defined but never used. Allowed unused args must match /^_/u                        no-unused-vars
+  25:13  warning  't' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u                    no-unused-vars
+  26:13  warning  'currentDesignSystem' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\dashboard\MentorDashboard.jsx
+    9:10  warning  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u      no-unused-vars
+   17:8   warning  'toast' is defined but never used. Allowed unused vars must match /^[A-Z_]/u       no-unused-vars
+   50:13  warning  't' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+  289:40  warning  'Icon' is defined but never used. Allowed unused args must match /^_/u             no-unused-vars
+  349:31  warning  'Icon' is defined but never used. Allowed unused args must match /^_/u             no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\dashboard\StudentDashboard.jsx
+  43:13  warning  'currentDesignSystem' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\dashboard\TeacherDashboard.jsx
+  153:22  warning  'e' is defined but never used  no-unused-vars
+  176:26  warning  'e' is defined but never used  no-unused-vars
+  198:26  warning  'e' is defined but never used  no-unused-vars
+  206:22  warning  'e' is defined but never used  no-unused-vars
+  216:18  warning  'e' is defined but never used  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\dashboard\components\TeacherModals.jsx
+   45:18  warning  'error' is defined but never used  no-unused-vars
+  146:18  warning  'error' is defined but never used  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\dashboard\components\admin\AdminHeader.jsx
+  2:10  warning  'useTranslation' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\dashboard\components\admin\AdminModals.jsx
+   42:18  warning  'error' is defined but never used  no-unused-vars
+  128:18  warning  'error' is defined but never used  no-unused-vars
+  203:18  warning  'error' is defined but never used  no-unused-vars
+  353:18  warning  'error' is defined but never used  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\dashboard\components\admin\AdminNavbar.jsx
+  13:13  warning  'licenseTier' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\dashboard\components\admin\AdminStats.jsx
+  19:11  warning  'principalCount' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\dashboard\components\admin\GuardianDetailsModal.jsx
+   7:13  warning  't' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+  61:18  warning  'error' is defined but never used                                                  no-unused-vars
+  72:22  warning  'error' is defined but never used                                                  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\dashboard\components\admin\RolesAdmin.jsx
+   8:12  warning  'isLoading' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+  70:18  warning  'error' is defined but never used                                                          no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\dashboard\components\student\StudentSidebar.jsx
+  7:27  warning  'upcomingAssignments' is defined but never used. Allowed unused args must match /^_/u  no-unused-vars
+  7:60  warning  'isModuleActive' is defined but never used. Allowed unused args must match /^_/u       no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\dashboard\components\teacher\ExamIntegrityLog.jsx
+  7:13  warning  't' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\dashboard\components\teacher\PredictiveRiskWidget.jsx
+  38:18  warning  'error' is defined but never used  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\dashboard\components\teacher\TeacherAttendanceView.jsx
+  6:42  warning  'currentUser' is defined but never used. Allowed unused args must match /^_/u         no-unused-vars
+  6:55  warning  'API_BASE' is defined but never used. Allowed unused args must match /^_/u            no-unused-vars
+  6:65  warning  'token' is defined but never used. Allowed unused args must match /^_/u               no-unused-vars
+  7:16  warning  'i18n' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\dashboard\widgets\AIPersonalizationWidget.jsx
+  7:13  warning  't' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\dashboard\widgets\AchievementsWidget.jsx
+  8:13  warning  'currentDesignSystem' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\dashboard\widgets\ClassPrideWidget.jsx
+  3:10  warning  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\dashboard\widgets\EduAiHubWidget.jsx
+  5:10  warning  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\dashboard\widgets\EvaluationNotificationWidget.jsx
+  11:13  warning  't' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\dashboard\widgets\LeagueStatusWidget.jsx
+   3:10  warning  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u                     no-unused-vars
+  30:11  warning  'currentLeagueMin' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\dashboard\widgets\SurveyNotificationWidget.jsx
+  11:13  warning  't' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\dashboard\widgets\UpcomingExamAlert.jsx
+  4:8  warning  'toast' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\documents\DocumentManager.jsx
+  118:18  warning  'e' is defined but never used  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\documents\components\AdvancedShareModal.jsx
+   1:27  warning  'useEffect' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+  71:18  warning  'e' is defined but never used                                                     no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\documents\components\FileSidebar.jsx
+  21:5  warning  'folderPath' is assigned a value but never used. Allowed unused args must match /^_/u  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\ecommerce\PublicStorefront.jsx
+  17:12  warning  'viewMode' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u     no-unused-vars
+  17:22  warning  'setViewMode' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+  18:20  warning  'setSortBy' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u    no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\eduai\components\MemoryMatch.jsx
+  2:10  warning  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\eduai\components\TimeAttack.jsx
+  2:10  warning  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\edugame\EduQuestWidget.jsx
+  5:8   warning  'eduGameService' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+  9:13  warning  't' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u      no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\edugame\ShopView.jsx
+  3:10  warning  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\health\HealthTeamDashboard.jsx
+   57:13  warning  'currentUser' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+  101:18  warning  'error' is defined but never used                                                            no-unused-vars
+  112:11  warning  'activeCases' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\health\SurveyBuilder.jsx
+  115:18  warning  'err' is defined but never used  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\health\SurveyDistributionManager.jsx
+  41:18  warning  'err' is defined but never used  no-unused-vars
+  68:18  warning  'err' is defined but never used  no-unused-vars
+  81:18  warning  'err' is defined but never used  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\health\SurveyResponseForm.jsx
+  26:20  warning  'err' is defined but never used. Allowed unused args must match /^_/u  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\health\WellbeingCenter.jsx
+   36:12  warning  'sickLeaveLoading' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u     no-unused-vars
+   36:30  warning  'setSickLeaveLoading' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+   74:18  warning  'e' is defined but never used                                                                        no-unused-vars
+   89:18  warning  'e' is defined but never used                                                                        no-unused-vars
+  123:18  warning  'e' is defined but never used                                                                        no-unused-vars
+  150:18  warning  'err' is defined but never used                                                                      no-unused-vars
+  164:18  warning  'err' is defined but never used                                                                      no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\health\WellbeingInbox.jsx
+  28:18  warning  'e' is defined but never used  no-unused-vars
+  44:18  warning  'e' is defined but never used  no-unused-vars
+  56:18  warning  'e' is defined but never used  no-unused-vars
+  74:18  warning  'e' is defined but never used  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\health\components\BookingSystem.jsx
+  113:11  warning  'formatDate' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\health\components\JournalSystem.jsx
+  47:19  warning  'entry' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\impact\ImpactDashboard.jsx
+  8:13  warning  'currentUser' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\isp\IspDashboard.jsx
+  56:11  warning  'openEdit' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u    no-unused-vars
+  78:11  warning  'totalDraft' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\isp\PrincipalIspOverview.jsx
+  46:11  warning  'draftCount' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\landing\LandingPage.jsx
+   15:8   warning  'eduflexConnectImg' is defined but never used. Allowed unused vars must match /^[A-Z_]/u        no-unused-vars
+  214:11  warning  'screenshotData' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\library\EbookLibrary.jsx
+  14:36  warning  'Icon' is defined but never used. Allowed unused args must match /^_/u                      no-unused-vars
+  62:12  warning  'ttsLoading' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\messages\MessageCenter.jsx
+   13:13  warning  'currentUser' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+   77:18  warning  'e' is defined but never used                                                                no-unused-vars
+   87:18  warning  'e' is defined but never used                                                                no-unused-vars
+  163:18  warning  'e' is defined but never used                                                                no-unused-vars
+  534:72  warning  'idx' is defined but never used. Allowed unused args must match /^_/u                        no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\mobile-admin\MobileAdminControlCenter.jsx
+  24:11  warning  'activeColor' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+  43:17  error    'Server' is not defined                                                                      no-undef
+
+E:\Projekt\EduFlex\frontend\src\features\nav\LtiDeepLinking.jsx
+  37:27  warning  'quizzes' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\principal\AcademicGovernance.jsx
+  19:12  warning  'loading' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+  39:18  warning  'err' is defined but never used                                                          no-unused-vars
+  53:18  warning  'err' is defined but never used                                                          no-unused-vars
+  63:18  warning  'err' is defined but never used                                                          no-unused-vars
+  75:18  warning  'err' is defined but never used                                                          no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\principal\IncidentManager.jsx
+  37:18  warning  'err' is defined but never used  no-unused-vars
+  51:18  warning  'err' is defined but never used  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\principal\ManagementReportCenter.jsx
+  83:18  warning  'err' is defined but never used  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\principal\PrincipalDashboard.jsx
+  29:8  warning  'toast' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\principal\PrincipalTools.jsx
+   19:13  warning  'currentUser' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+   19:26  warning  'refreshUser' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+   26:12  warning  'departments' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+   27:12  warning  'programs' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u     no-unused-vars
+   27:22  warning  'setPrograms' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+   28:12  warning  'classes' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u      no-unused-vars
+   28:21  warning  'setClasses' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u   no-unused-vars
+   41:18  warning  'e' is defined but never used                                                                no-unused-vars
+   61:19  warning  'allD' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u         no-unused-vars
+   77:18  warning  'err' is defined but never used                                                              no-unused-vars
+   95:18  warning  'err' is defined but never used                                                              no-unused-vars
+  109:18  warning  'err' is defined but never used                                                              no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\principal\SKAManager.jsx
+   7:10  warning  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u                no-unused-vars
+  10:13  warning  'currentUser' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+  47:18  warning  'error' is defined but never used                                                            no-unused-vars
+  65:18  warning  'error' is defined but never used                                                            no-unused-vars
+  76:18  warning  'error' is defined but never used                                                            no-unused-vars
+  86:18  warning  'error' is defined but never used                                                            no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\principal\SchoolStructureManagement.jsx
+   32:12  warning  'loading' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+   74:18  warning  'err' is defined but never used                                                          no-unused-vars
+   85:18  warning  'err' is defined but never used                                                          no-unused-vars
+   94:18  warning  'err' is defined but never used                                                          no-unused-vars
+  106:18  warning  'err' is defined but never used                                                          no-unused-vars
+  121:18  warning  'err' is defined but never used                                                          no-unused-vars
+  136:18  warning  'err' is defined but never used                                                          no-unused-vars
+  146:18  warning  'err' is defined but never used                                                          no-unused-vars
+  156:18  warning  'err' is defined but never used                                                          no-unused-vars
+  167:18  warning  'err' is defined but never used                                                          no-unused-vars
+  177:18  warning  'err' is defined but never used                                                          no-unused-vars
+  189:18  warning  'err' is defined but never used                                                          no-unused-vars
+  206:18  warning  'err' is defined but never used                                                          no-unused-vars
+  221:18  warning  'err' is defined but never used                                                          no-unused-vars
+  232:18  warning  'err' is defined but never used                                                          no-unused-vars
+  269:18  warning  'err' is defined but never used                                                          no-unused-vars
+  279:18  warning  'err' is defined but never used                                                          no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\principal\StaffingControl.jsx
+  18:25  warning  'setSubstitutes' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+  22:12  warning  'loading' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u         no-unused-vars
+  36:18  warning  'err' is defined but never used                                                                 no-unused-vars
+  49:18  warning  'err' is defined but never used                                                                 no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\principal\YearCycleVisualization.jsx
+  5:10  warning  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\profile\MfaSetupModal.jsx
+   1:27  warning  'useEffect' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+  63:18  warning  'err' is defined but never used                                                   no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\profile\PasswordConfirmModal.jsx
+   4:8   warning  'toast' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+  52:18  warning  'err' is defined but never used                                               no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\profile\PublicProfile.jsx
+   8:26  warning  'currentUser' is defined but never used. Allowed unused args must match /^_/u      no-unused-vars
+  10:13  warning  't' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\profile\UserProfile.jsx
+    10:15  warning  'getSafeUrl' is defined but never used. Allowed unused vars must match /^[A-Z_]/u              no-unused-vars
+    28:40  warning  'currentUser' is defined but never used. Allowed unused args must match /^_/u                  no-unused-vars
+   234:63  warning  'logout' is defined but never used. Allowed unused args must match /^_/u                       no-unused-vars
+   262:12  warning  'isPrefLoading' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+   270:12  warning  'ssnValue' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u       no-unused-vars
+   304:18  warning  'e' is defined but never used                                                                  no-unused-vars
+   478:18  warning  'err' is defined but never used                                                                no-unused-vars
+  1088:29  warning  'password' is defined but never used. Allowed unused args must match /^_/u                     no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\resources\ResourceBank.jsx
+    1:38  warning  'useCallback' is defined but never used. Allowed unused vars must match /^[A-Z_]/u        no-unused-vars
+   17:13  warning  't' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u         no-unused-vars
+  295:5   warning  'courses' is defined but never used. Allowed unused args must match /^_/u                 no-unused-vars
+  295:14  warning  'selectedCourse' is defined but never used. Allowed unused args must match /^_/u          no-unused-vars
+  295:30  warning  'setSelectedCourse' is defined but never used. Allowed unused args must match /^_/u       no-unused-vars
+  297:11  warning  'roleName' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\scorm\ScormPlayer.jsx
+  153:32   warning  'errCode' is defined but never used. Allowed unused args must match /^_/u  no-unused-vars
+  186:30   warning  'errCode' is defined but never used. Allowed unused args must match /^_/u  no-unused-vars
+  187:29   warning  'errCode' is defined but never used. Allowed unused args must match /^_/u  no-unused-vars
+  193:104  warning  'e' is defined but never used                                              no-unused-vars
+  194:95   warning  'e' is defined but never used                                              no-unused-vars
+  195:76   warning  'e' is defined but never used                                              no-unused-vars
+  203:26   warning  'e' is defined but never used                                              no-unused-vars
+  216:26   warning  'e' is defined but never used                                              no-unused-vars
+  219:69   warning  'e' is defined but never used                                              no-unused-vars
+  220:63   warning  'e' is defined but never used                                              no-unused-vars
+  221:69   warning  'e' is defined but never used                                              no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\settings\DeveloperSettings.jsx
+  38:18  warning  'error' is defined but never used  no-unused-vars
+  51:18  warning  'error' is defined but never used  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\social\components\CommentSection.jsx
+   91:13  warning  't' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u      no-unused-vars
+  149:15  warning  'wsUrl' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\support\AdminTicketManager.jsx
+  36:18  warning  'e' is defined but never used  no-unused-vars
+  51:18  warning  'e' is defined but never used  no-unused-vars
+  67:18  warning  'e' is defined but never used  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\support\SupportPage.jsx
+  160:18  warning  'e' is defined but never used  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\system\LicenseLock.jsx
+  31:18  warning  'e' is defined but never used  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\system\RealTimeLogViewer.jsx
+  4:10  warning  'api' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\features\system\SystemSettings.jsx
+   69:12  warning  'showAddDbModal' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+  304:18  warning  'err' is defined but never used                                                                 no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\hooks\useAppData.js
+  17:12  warning  'upcomingAssignments' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u     no-unused-vars
+  17:33  warning  'setUpcomingAssignments' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+  18:12  warning  'ungradedSubmissions' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u     no-unused-vars
+  18:33  warning  'setUngradedSubmissions' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\i18n.js
+  29:37  warning  'modules' is defined but never used. Allowed unused args must match /^_/u  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\modules\assignments\AssignmentsModule.jsx
+    7:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+   19:24  warning  'xpMultiplierMax' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u                                 no-unused-vars
+   61:30  warning  'e' is defined but never used                                                                                                   no-unused-vars
+  148:18  warning  'e' is defined but never used                                                                                                   no-unused-vars
+  407:18  warning  'e' is defined but never used                                                                                                   no-unused-vars
+  419:18  warning  'e' is defined but never used                                                                                                   no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\modules\chat\ChatModule.jsx
+  5:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+E:\Projekt\EduFlex\frontend\src\modules\chat\ChatOverlay.jsx
+   78:78  warning  'e' is defined but never used    no-unused-vars
+  228:18  warning  'err' is defined but never used  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\modules\course-content\CourseContentModule.jsx
+   12:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  111:34  warning  'e' is defined but never used                                                                                                   no-unused-vars
+  273:18  warning  'e' is defined but never used                                                                                                   no-unused-vars
+  427:41  warning  'idx' is defined but never used. Allowed unused args must match /^_/u                                                           no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\modules\evaluation\EvaluationAnalytics.jsx
+  32:18  warning  'err' is defined but never used  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\modules\evaluation\EvaluationForm.jsx
+  2:10  warning  'useParams' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\modules\forum\CourseForum.jsx
+   21:12  warning  'loading' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+  125:18  warning  'e' is defined but never used                                                            no-unused-vars
+  148:18  warning  'e' is defined but never used                                                            no-unused-vars
+  173:18  warning  'e' is defined but never used                                                            no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\modules\forum\ForumModule.jsx
+  5:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+E:\Projekt\EduFlex\frontend\src\modules\forum\components\ForumThreadView.jsx
+  1:27  warning  'useEffect' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+  6:36  warning  'currentUser' is defined but never used. Allowed unused args must match /^_/u     no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\modules\gamification\GamificationModule.jsx
+   4:10  warning  'api' is defined but never used. Allowed unused vars must match /^[A-Z_]/u                                                      no-unused-vars
+   7:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  19:7   warning  'useGamification' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u                                 no-unused-vars
+  20:19  warning  'setStats' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u                                        no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\modules\live-lessons\LiveLessonButton.jsx
+  6:51  warning  'currentUser' is defined but never used. Allowed unused args must match /^_/u  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\modules\live-lessons\LiveMeeting.jsx
+    1:27  warning  'useEffect' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+    9:5   warning  'useTracks' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+  207:31  warning  'lessonId' is defined but never used. Allowed unused args must match /^_/u        no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\modules\participants\ParticipantsModule.jsx
+   6:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  45:30  warning  'e' is defined but never used                                                                                                   no-unused-vars
+  61:18  warning  'e' is defined but never used                                                                                                   no-unused-vars
+  74:18  warning  'e' is defined but never used                                                                                                   no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\modules\quiz-runner\QuestionBankManager.jsx
+   78:18  warning  'e' is defined but never used                                                               no-unused-vars
+  147:43  warning  'difficulty' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\modules\quiz-runner\QuizLibrary.jsx
+   9:12  warning  'isLoading' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+  69:18  warning  'e' is defined but never used                                                              no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\modules\quiz-runner\QuizModule.jsx
+   13:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+   23:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+   51:11  warning  'navigate' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u                                        no-unused-vars
+  124:18  warning  'e' is defined but never used                                                                                                   no-unused-vars
+  132:18  warning  'e' is defined but never used                                                                                                   no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\modules\quiz\QuestionBankManager.jsx
+  68:18  warning  'error' is defined but never used  no-unused-vars
+  78:18  warning  'e' is defined but never used      no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\modules\skolverket\SkolverketModule.jsx
+  3:10  warning  'useAppContext' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+E:\Projekt\EduFlex\frontend\src\services\api.js
+   97:22  warning  'e' is defined but never used  no-unused-vars
+  352:34  warning  'e' is defined but never used  no-unused-vars
+
+Ô£û 413 problems (8 errors, 405 warnings)
+
