@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { CreditCard, ShoppingBag, Store, Loader2, DollarSign, Calendar, Tag, CheckCircle2, XCircle, BookOpen, Percent, Plus, Save, Trash2 } from 'lucide-react';
+import { CreditCard, ShoppingBag, Store, Loader2, DollarSign, Calendar, Tag, CheckCircle2, XCircle, BookOpen, Percent, Plus, Save, Trash2, Lock } from 'lucide-react';
 import { api } from '../../services/api';
+import { useModules } from '../../context/ModuleContext';
 
 const SalesOverview = () => {
     const [orders, setOrders] = useState([]);
@@ -348,6 +349,23 @@ const SalesPromoCodes = () => {
 
 const SalesDashboard = () => {
     const [activeTab, setActiveTab] = useState('overview');
+    const { isModuleActive, loading: modulesLoading } = useModules();
+
+    if (modulesLoading) {
+        return <div className="p-8 flex items-center justify-center text-gray-400 min-h-screen"><Loader2 className="animate-spin" size={32} /></div>;
+    }
+
+    if (!isModuleActive?.('RESELLER_SYSTEM')) {
+        return (
+            <div className="p-8 flex flex-col items-center justify-center min-h-[60vh]">
+                <div className="size-20 bg-gray-100 dark:bg-white/5 rounded-3xl flex items-center justify-center mb-6 text-gray-400">
+                    <Lock size={40} />
+                </div>
+                <h1 className="text-2xl font-black mb-2 dark:text-white text-center">Modul inaktiv</h1>
+                <p className="text-gray-500 text-center max-w-md">Reseller System-modulen är inaktiv eller kräver ENTERPRISE-licens. Vänligen kontakta administratören.</p>
+            </div>
+        );
+    }
 
     return (
         <div className="p-8">

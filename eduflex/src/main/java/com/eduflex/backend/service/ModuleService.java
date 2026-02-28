@@ -103,6 +103,10 @@ public class ModuleService {
                                 "Avancerad tentavakt med fokus-detektering och LiveKit-proctoring. Kräver PRO eller ENTERPRISE.",
                                 "1.0.0", false, true);
 
+                createIfNotExists("RESELLER_SYSTEM", "Reseller System 1.2",
+                                "Avancerad B2B grossisthantering för kurser, prissättning och rabattkoder. Kräver ENTERPRISE.",
+                                "1.2.0", false, true);
+
                 logger.info("=== ModuleService: Module initialization complete. Total modules: {} ===",
                                 moduleRepository.count());
         }

@@ -39,6 +39,7 @@ public enum LicenseType {
             case "ANALYTICS":
             case "ENTERPRISE_WHITELABEL":
             case "REVENUE":
+            case "RESELLER_SYSTEM":
                 // Only Enterprise has these
                 return false;
 

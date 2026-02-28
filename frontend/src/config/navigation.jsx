@@ -91,7 +91,7 @@ export const getNavigationConfig = (currentUser, t, isModuleActive, licenseTier,
     if (isAdmin) {
         sections.admin.push({ path: '/admin', label: t('sidebar.admin'), icon: <Settings size={20} /> });
     }
-    if (isAdmin || isReseller) {
+    if ((isAdmin || isReseller) && isModuleActive?.('RESELLER_SYSTEM')) {
         sections.admin.push({ path: '/admin/sales', label: 'Försäljning', icon: <TrendingUp size={20} /> });
     }
     if (roleName === 'HALSOTEAM' || roleName === 'ROLE_HALSOTEAM') {
