@@ -89,6 +89,7 @@ export const getNavigationConfig = (currentUser, t, isModuleActive, licenseTier,
     // Admin Section
     if (isAdmin) {
         sections.admin.push({ path: '/admin', label: t('sidebar.admin'), icon: <Settings size={20} /> });
+        sections.admin.push({ path: '/admin/sales', label: 'Försäljning', icon: <TrendingUp size={20} /> });
     }
     if (roleName === 'HALSOTEAM' || roleName === 'ROLE_HALSOTEAM') {
         sections.admin.push({ path: '/health-dashboard', label: 'E-hälsa (Hälsoteam)', icon: <Heart size={20} className="text-rose-500" /> });

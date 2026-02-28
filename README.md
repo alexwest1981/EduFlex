@@ -52,11 +52,9 @@
 *   **🚀 Branding Transition (LLP)**: Omdöpt plattformen från LMS till **Learning Lifecycle Platform (LLP)** för att bättre spegla systemets helhetsansvar. Uppdaterat ikoner, titlar och meta-data i hela systemet.
 *   **🛒 Gap 3: Advanced E-commerce**: 
     - **Public Storefront**: Ny vacker butikssida (`/store`) för externa besökare.
-    - **Shopping Cart**: Fullt integrerad kundvagn med stöd för flera kurser.
-    - **Discount Codes**: Backend-stöd för rabattkoder och kampanjer.
-*   **📚 Gap 2: Built-in Content Library**:
-    - **Global Library**: Ny flik i Resource Bank för färdigt kurshaterial.
-    - **LTI & xAPI Mocks**: Förberedda integrationer för att hämta kurser från externa bibliotek.
+    - **Shopping Cart & Checkout**: Komplett utcheckningsprocess via Stripe med `/checkout`, Success och Cancel-sidor. Provisionerar automatiskt kursen vid lyckad betalning.
+    - **Sales Dashboard**: Ny "Försäljning"-flik för Rektorer/Admins (`/admin/sales`) där man kan följa försäljning, KPI:er, ordrar och belopp i en snygg översikt.
+    - **Discount Codes**: Backend & Frontend stöd för rabattkoder (Promo codes).
 *   **📱 Gap 1: Native Mobile Foundation**:
     - **Mobile Project**: Uppstart av React Native-strukturen i `/mobile`.
     - **Sync Architecture**: Dokumenterad strategi för offline-synk och data-persistens.

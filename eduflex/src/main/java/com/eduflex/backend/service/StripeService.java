@@ -113,4 +113,47 @@ public class StripeService {
                 com.stripe.model.billingportal.Session session = com.stripe.model.billingportal.Session.create(params);
                 return session.getUrl();
         }
+
+        public Session createCourseCheckoutSession(java.util.List<com.eduflex.backend.model.Course> courses,
+                        com.eduflex.backend.model.User user, Long orderId, String successUrl, String cancelUrl)
+                        throws StripeException {
+                ensureConfigured();
+
+                java.util.List<SessionCreateParams.LineItem> lineItems = new java.util.ArrayList<>();
+                for (com.eduflex.backend.model.Course course : courses) {
+                        long unitAmount = (long) (course.getPrice() != null ? course.getPrice() * 100 : 0);
+                        lineItems.add(
+                                        SessionCreateParams.LineItem.builder()
+                                                        .setQuantity(1L)
+                                                        .setPriceData(
+                                                                        SessionCreateParams.LineItem.PriceData.builder()
+                                                                                        .setCurrency("sek")
+                                                                                        .setUnitAmount(unitAmount)
+                                                                                        .setProductData(
+                                                                                                        SessionCreateParams.LineItem.PriceData.ProductData
+                                                                                                                        .builder()
+                                                                                                                        .setName(course.getName())
+                                                                                                                        .build())
+                                                                                        .build())
+                                                        .build());
+                }
+
+                Map<String, String> metadata = new HashMap<>();
+                metadata.put("type", "COURSE_PURCHASE");
+                metadata.put("order_id", String.valueOf(orderId));
+                metadata.put("user_id", String.valueOf(user.getId()));
+
+                SessionCreateParams params = SessionCreateParams.builder()
+                                .setMode(SessionCreateParams.Mode.PAYMENT)
+                                .setSuccessUrl(successUrl)
+                                .setCancelUrl(cancelUrl)
+                                .setCustomerEmail(user.getEmail())
+                                .addAllLineItem(lineItems)
+                                .putAllMetadata(metadata)
+                                .build();
+
+                Session session = Session.create(params);
+                logger.info("Created Stripe Course Checkout Session: {}", session.getId());
+                return session;
+        }
 }

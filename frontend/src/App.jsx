@@ -79,6 +79,10 @@ import DeveloperSettings from './features/settings/DeveloperSettings';
 import RoiCenter from './features/analytics/RoiCenter';
 import EduCareerPortal from './features/career/EduCareerPortal';
 import PublicStorefront from './features/ecommerce/PublicStorefront';
+import Checkout from './features/ecommerce/Checkout';
+import CheckoutSuccess from './features/ecommerce/CheckoutSuccess';
+import CheckoutCancel from './features/ecommerce/CheckoutCancel';
+import SalesDashboard from './features/ecommerce/SalesDashboard';
 
 // --- ISP (Individuell Studieplan) ---
 import IspDashboard from './features/isp/IspDashboard';
@@ -190,6 +194,9 @@ const AppRoutes = () => {
                 <Route path="/features" element={<FeaturesPage />} />
                 <Route path="/pricing" element={<PricingPage />} />
                 <Route path="/store" element={<PublicStorefront />} />
+                <Route path="/checkout" element={<Checkout />} />
+                <Route path="/checkout/success" element={<CheckoutSuccess />} />
+                <Route path="/checkout/cancel" element={<CheckoutCancel />} />
 
                 {/* ROOT ROUTE: Landing for Guests / Dashboard for Users */}
                 <Route path="/" element={
@@ -216,6 +223,14 @@ const AppRoutes = () => {
                     <ProtectedRoute roles={['ADMIN']}>
                         <Layout currentUser={currentUser} handleLogout={logout}>
                             <AdminAdministrationPage />
+                        </Layout>
+                    </ProtectedRoute>
+                } />
+
+                <Route path="/admin/sales" element={
+                    <ProtectedRoute roles={['ADMIN', 'REKTOR', 'ROLE_REKTOR']}>
+                        <Layout currentUser={currentUser} handleLogout={logout}>
+                            <SalesDashboard />
                         </Layout>
                     </ProtectedRoute>
                 } />
