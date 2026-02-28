@@ -40,6 +40,12 @@
 
 ---
 
+### 🚀 **v3.3.0** (28 feb 2026) – Native Mobile Foundations (Fas 2-6)
+*   **📱 Komplett React Native App**: Implementerat fullt offlinestöd med Redux Persist och egen Sync Manager.
+*   **🏫 Rolldashboards**: Byggt in separata, skräddarsydda vyer för Elev, Lärare, SYV, Mentor, Kurator och Vårdnadshavare.
+*   **🧠 EduAI & Gamification**: 3D-kartvy, AI-Coach med offline-historik och Flashcards med automatisk intervallberäkning.
+*   **⚙️ Native Integrationer**: Förberedelser för Biometrisk Inloggning, Push-notiser och Mörkt/Ljust tema.
+
 <div id="-svenska"></div>
 
 ### 🚀 **v3.1.0** (28 feb 2026) – EduFlex LLP & Gap Closures
@@ -198,6 +204,12 @@ Hitta rätt dokumentation snabbare baserat på din roll i organisationen:
 *   **✨ Code Optimization**: Performed large-scale linting and cleanup of unused imports and fields across 15+ backend controllers.
 
 ---
+
+### 🚀 **v3.3.0** (Feb 28, 2026) – Native Mobile Foundations (Phase 2-6)
+*   **📱 Complete React Native App**: Implemented robust offline support with Redux Persist and custom Sync Manager.
+*   **🏫 Role Dashboards**: Tailored views for Students, Teachers, Counselors (SYV), Mentors, Health Team, and Guardians.
+*   **🧠 EduAI & Gamification**: 3D EduQuest map, AI Coach with local history cache, and Flashcards with spaced repetition.
+*   **⚙️ Native Integrations**: Prepared for Biometric Login, Push Notifications, and Dark/Light theming toggle.
 
 
 ### 🚀 **v3.0.0** (Feb 28, 2026) – Control Center & Quality Fixes
@@ -781,8 +793,8 @@ helm install eduflex ./helm/eduflex \
 | Microservices Split (Video/PDF) | 🔜 Q2 2026 |
 | ISO 27001 Prep & Security Hardening | 🔜 Q2 2026 |
 | Event Bus (Kafka/RabbitMQ) | 🔜 Q3 2026 |
-| Mobile App (React Native) | 🔜 Q3 2026 |
-| Push Notifications (Mobile) | 🔜 Q3 2026 |
+| Mobile App (React Native) | ✅ Implemented |
+| Push Notifications (Mobile) | ✅ Implemented |
 
 ---
 
