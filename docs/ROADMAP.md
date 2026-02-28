@@ -25,7 +25,7 @@
 | :--- | :--- | :--- | :--- | :--- |
 | **Hög** | **Role-Specific AI Coaches** | Principal (KPI), Teacher (risk-warning), Student (study-plan). | ✅ **Klar** | Killer-feature: Unik selling point. |
 | **Hög** | **CSN/Upphandlings-rapporter** | Närvaro-export (enskild + bulk), Excel (.xlsx), GDPR Art. 15 registerutdrag, läraråtkomst. | ✅ **Klar** (v3.0.0) | Svenskt krav. |
-| **Medel** | **Partner Program** | Resellers (Edtech Studios), affiliate. | 5 dagar | Scale via partners. |
+| **Medel** | **Partner & B2B Extended Enterprise** | Resellers (Edtech Studios), B2B Seat Licenses, Pointers i Global Library | ✅ **Klar** (v3.1.0) | Scale via partners & B2B sales. |
 | **Låg** | **Microservices Scale** | Load-test PDF/video (verifiera befintlig implementation). | 2 dagar | Verify. |
 
 **Milstolpe:** Första betalande kund + Kubernetes-deploy (Helm).

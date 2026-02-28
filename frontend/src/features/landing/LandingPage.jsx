@@ -6,7 +6,7 @@ import {
     Globe, Database, Server, Zap, BarChart,
     Check, ArrowRight, Menu, X, Play, Sparkles,
     Award, TrendingUp, Layers, Gamepad2, Brain, Map, Flame, MessageSquare, Bell,
-    FileText, ClipboardList, Thermometer, Target, Smartphone, Video as VideoIcon, Link2, Lock
+    FileText, ClipboardList, Thermometer, Target, Smartphone, Video as VideoIcon, Link2, Lock, Building2
 } from 'lucide-react';
 
 // Assets
@@ -87,6 +87,14 @@ const LandingPage = () => {
             color: 'text-brand-teal',
             bgColor: 'bg-brand-teal/10',
             hoverBorder: 'hover:border-brand-teal/50'
+        },
+        {
+            icon: <Building2 className="w-7 h-7" />,
+            title: "B2B Extended Enterprise",
+            description: "Sälj Seat Licenses direkt till företagskunder med Pointer-baserad distribution. Behåll Single Source of Truth för kurser samtidigt som kunders data isoleras.",
+            color: 'text-brand-gold',
+            bgColor: 'bg-brand-gold/10',
+            hoverBorder: 'hover:border-brand-gold/50'
         },
         {
             icon: <Gamepad2 className="w-7 h-7" />,

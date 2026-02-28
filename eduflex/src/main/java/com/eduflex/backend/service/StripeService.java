@@ -156,4 +156,59 @@ public class StripeService {
                 logger.info("Created Stripe Course Checkout Session: {}", session.getId());
                 return session;
         }
+
+        public Session createCourseCheckoutSessionWithQuantities(
+                        java.util.List<com.eduflex.backend.model.Course> courses,
+                        Map<String, Integer> courseQuantities,
+                        com.eduflex.backend.model.User user, Long orderId, String successUrl, String cancelUrl)
+                        throws StripeException {
+                ensureConfigured();
+
+                java.util.List<SessionCreateParams.LineItem> lineItems = new java.util.ArrayList<>();
+                Map<String, String> metadata = new HashMap<>();
+                metadata.put("type", "COURSE_PURCHASE");
+                metadata.put("order_id", String.valueOf(orderId));
+                metadata.put("user_id", String.valueOf(user.getId()));
+
+                for (com.eduflex.backend.model.Course course : courses) {
+                        int quantity = 1;
+                        if (courseQuantities != null && courseQuantities.containsKey(course.getId().toString())) {
+                                quantity = courseQuantities.get(course.getId().toString());
+                                if (quantity < 1)
+                                        quantity = 1;
+                        }
+
+                        // Pass quantity to webhook
+                        metadata.put("q_" + course.getId(), String.valueOf(quantity));
+
+                        long unitAmount = (long) (course.getPrice() != null ? course.getPrice() * 100 : 0);
+                        lineItems.add(
+                                        SessionCreateParams.LineItem.builder()
+                                                        .setQuantity((long) quantity)
+                                                        .setPriceData(
+                                                                        SessionCreateParams.LineItem.PriceData.builder()
+                                                                                        .setCurrency("sek")
+                                                                                        .setUnitAmount(unitAmount)
+                                                                                        .setProductData(
+                                                                                                        SessionCreateParams.LineItem.PriceData.ProductData
+                                                                                                                        .builder()
+                                                                                                                        .setName(course.getName())
+                                                                                                                        .build())
+                                                                                        .build())
+                                                        .build());
+                }
+
+                SessionCreateParams params = SessionCreateParams.builder()
+                                .setMode(SessionCreateParams.Mode.PAYMENT)
+                                .setSuccessUrl(successUrl)
+                                .setCancelUrl(cancelUrl)
+                                .setCustomerEmail(user.getEmail())
+                                .addAllLineItem(lineItems)
+                                .putAllMetadata(metadata)
+                                .build();
+
+                Session session = Session.create(params);
+                logger.info("Created Stripe Course Checkout Session with Quantities: {}", session.getId());
+                return session;
+        }
 }

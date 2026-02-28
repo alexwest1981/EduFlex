@@ -213,9 +213,13 @@ public class CourseController {
     }
 
     @PostMapping("/{courseId}/enroll/{studentId}")
-    public ResponseEntity<Void> enrollStudent(@PathVariable Long courseId, @PathVariable Long studentId) {
-        courseService.addStudentToCourse(courseId, studentId);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<?> enrollStudent(@PathVariable Long courseId, @PathVariable Long studentId) {
+        try {
+            courseService.addStudentToCourseWithLicense(courseId, studentId);
+            return ResponseEntity.ok().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
     }
 
     @GetMapping("/available/{studentId}")

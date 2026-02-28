@@ -57,7 +57,8 @@
     - **Reseller Role**: Introduktion av `ROLE_RESELLER` som hanterar kursförsäljning med least-privilege.
     - **Store Administration**: Flikar under Sales Dashboard för att dynamiskt ändra kurspriser, aktivera/inaktivera Store-synlighet samt skapa kampanjkoder (Discount codes).
     - **Discount Code Implementation**: Möjlighet att lägga in koder i kassan (`/checkout`) som live-valideras mot `/api/promocodes` innan Stripeskick.
-    - **B2B Extended Enterprise**: Struktur för att sälja licenser ut i systemets Global Library istället för statiska filkopior.
+    - **B2B Extended Enterprise**: Implementerat "Seat Licenses" ("Pointer"-baserad distribution) där företag kan köpa ett visst antal platser till en kurs i Global Library, vilket möjliggör "Single Source of Truth" för master-kurser, samtidigt som datasekretess och Data Isolation garanteras i kundens eget schemas (Tenants).
+    - **Reseller System Module**: E-handelsmotorn och B2B Dashboard är nu en dedikerad modul (`RESELLER_SYSTEM`), exklusiv för kunder med `ENTERPRISE`-licens, konfigurerbar via Admin System Settings.
 *   **📱 Gap 1: Native Mobile Foundation**:
     - **Mobile Project**: Uppstart av React Native-strukturen i `/mobile`.
     - **Sync Architecture**: Dokumenterad strategi för offline-synk och data-persistens.

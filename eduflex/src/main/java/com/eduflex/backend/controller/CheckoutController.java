@@ -10,6 +10,8 @@ import com.eduflex.backend.repository.CourseRepository;
 import com.eduflex.backend.repository.PaymentSettingsRepository;
 import com.eduflex.backend.repository.PromoCodeRepository;
 import com.eduflex.backend.repository.UserRepository;
+import com.eduflex.backend.model.CourseLicense;
+import com.eduflex.backend.repository.CourseLicenseRepository;
 import com.eduflex.backend.service.StripeService;
 import com.stripe.exception.SignatureVerificationException;
 import com.stripe.model.Event;
@@ -45,16 +47,19 @@ public class CheckoutController {
     private final CourseOrderRepository courseOrderRepository;
     private final PaymentSettingsRepository paymentSettingsRepository;
     private final PromoCodeRepository promoCodeRepository;
+    private final CourseLicenseRepository courseLicenseRepository;
 
     public CheckoutController(StripeService stripeService, CourseRepository courseRepository,
             UserRepository userRepository, CourseOrderRepository courseOrderRepository,
-            PaymentSettingsRepository paymentSettingsRepository, PromoCodeRepository promoCodeRepository) {
+            PaymentSettingsRepository paymentSettingsRepository, PromoCodeRepository promoCodeRepository,
+            CourseLicenseRepository courseLicenseRepository) {
         this.stripeService = stripeService;
         this.courseRepository = courseRepository;
         this.userRepository = userRepository;
         this.courseOrderRepository = courseOrderRepository;
         this.paymentSettingsRepository = paymentSettingsRepository;
         this.promoCodeRepository = promoCodeRepository;
+        this.courseLicenseRepository = courseLicenseRepository;
     }
 
     @PostMapping("/courses")
@@ -71,6 +76,7 @@ public class CheckoutController {
                     .orElseThrow(() -> new RuntimeException("User not found"));
 
             List<Long> courseIds = (List<Long>) request.get("courseIds");
+            Map<String, Integer> courseQuantities = (Map<String, Integer>) request.get("courseQuantities");
             String promoCodeStr = (String) request.get("promoCode");
             String successUrl = (String) request.get("successUrl");
             String cancelUrl = (String) request.get("cancelUrl");
@@ -86,8 +92,16 @@ public class CheckoutController {
                 Course course = courseRepository.findById(courseId).orElse(null);
                 if (course != null && course.isOpen()) {
                     coursesToBuy.add(course);
+                    int quantity = 1;
+                    if (courseQuantities != null && courseQuantities.containsKey(courseId.toString())) {
+                        quantity = courseQuantities.get(courseId.toString());
+                        // Sanity check
+                        if (quantity < 1)
+                            quantity = 1;
+                    }
                     if (course.getPrice() != null) {
-                        totalAmount = totalAmount.add(BigDecimal.valueOf(course.getPrice()));
+                        totalAmount = totalAmount
+                                .add(BigDecimal.valueOf(course.getPrice()).multiply(BigDecimal.valueOf(quantity)));
                     }
                 }
             }
@@ -126,8 +140,9 @@ public class CheckoutController {
             order.setPromoCode(promoCode);
             order = courseOrderRepository.save(order);
 
-            // Create Stripe Session
-            Session session = stripeService.createCourseCheckoutSession(coursesToBuy, user, order.getId(), successUrl,
+            // Create Stripe Session (we pass quantities to Stripe Service)
+            Session session = stripeService.createCourseCheckoutSessionWithQuantities(coursesToBuy, courseQuantities,
+                    user, order.getId(), successUrl,
                     cancelUrl);
 
             // Update order with session ID
@@ -199,12 +214,38 @@ public class CheckoutController {
                                 order.setStripePaymentIntentId(session.getPaymentIntent());
                                 courseOrderRepository.save(order);
 
-                                // Add user to courses
+                                // Provision courses or seat licenses
                                 for (Course course : order.getCourses()) {
-                                    course.getStudents().add(user);
-                                    courseRepository.save(course);
+                                    int quantity = 1;
+                                    String qStr = metadata.get("q_" + course.getId());
+                                    if (qStr != null) {
+                                        try {
+                                            quantity = Integer.parseInt(qStr);
+                                        } catch (NumberFormatException ignored) {
+                                        }
+                                    }
+
+                                    if (quantity > 1) {
+                                        // B2B Enterprise Purchase -> Issue CourseLicense
+                                        CourseLicense license = new CourseLicense();
+                                        license.setCourseId(course.getId());
+                                        license.setTotalSeats(quantity);
+                                        license.setUsedSeats(0);
+                                        license.setOrderId(order.getId());
+                                        // Expires in 1 year by default for B2B seats
+                                        license.setExpiresAt(java.time.LocalDateTime.now().plusYears(1));
+                                        courseLicenseRepository.save(license);
+                                        logger.info("Issued CourseLicense for B2B order {} with {} seats", orderId,
+                                                quantity);
+                                    } else {
+                                        // Individual B2C Purchase -> Enroll directly
+                                        course.getStudents().add(user);
+                                        courseRepository.save(course);
+                                        logger.info("Enrolled user {} into single course {}", user.getId(),
+                                                course.getId());
+                                    }
                                 }
-                                logger.info("Successfully provisioned courses for order ID: {}", orderId);
+                                logger.info("Successfully processed provisioning for order ID: {}", orderId);
                             }
                         }
                     }

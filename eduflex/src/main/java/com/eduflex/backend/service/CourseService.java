@@ -12,6 +12,7 @@ import com.eduflex.backend.model.CourseApplication;
 import com.eduflex.backend.repository.CourseApplicationRepository;
 import com.eduflex.backend.repository.CourseMaterialRepository;
 import com.eduflex.backend.repository.CourseRepository;
+import com.eduflex.backend.repository.CourseLicenseRepository;
 import com.eduflex.backend.repository.SkolverketCourseRepository;
 
 import com.eduflex.backend.repository.UserRepository;
@@ -41,6 +42,7 @@ public class CourseService {
     private final SkolverketCourseRepository skolverketCourseRepository;
     private final SkolverketGradingCriteriaRepository gradingCriteriaRepository;
     private final SkolverketApiClientService skolverketApiClient;
+    private final CourseLicenseRepository courseLicenseRepository;
 
     private final com.eduflex.backend.repository.CourseResultRepository resultRepository;
     private final AssignmentRepository assignmentRepository;
@@ -70,7 +72,8 @@ public class CourseService {
             LicenseService licenseService,
             com.eduflex.backend.repository.UserLessonProgressRepository userLessonProgressRepository,
             com.eduflex.backend.repository.StudentActivityLogRepository studentActivityLogRepository,
-            ApplicationEventPublisher eventPublisher) {
+            ApplicationEventPublisher eventPublisher,
+            CourseLicenseRepository courseLicenseRepository) {
         this.courseRepository = courseRepository;
         this.userRepository = userRepository;
         this.materialRepository = materialRepository;
@@ -87,6 +90,7 @@ public class CourseService {
         this.userLessonProgressRepository = userLessonProgressRepository;
         this.studentActivityLogRepository = studentActivityLogRepository;
         this.eventPublisher = eventPublisher;
+        this.courseLicenseRepository = courseLicenseRepository;
     }
 
     @EventListener(ApplicationReadyEvent.class)
@@ -496,6 +500,33 @@ public class CourseService {
         }
     }
 
+    @Transactional
+    public void addStudentToCourseWithLicense(Long courseId, Long studentId) {
+        Course course = getCourseById(courseId);
+        User student = userRepository.findById(studentId).orElseThrow();
+        if (!course.getStudents().contains(student)) {
+            // Open courses don't require license consumption
+            if (!course.isOpen()) {
+                List<CourseLicense> licenses = courseLicenseRepository.findByCourseId(courseId).stream()
+                        .filter(CourseLicense::isValid)
+                        .filter(CourseLicense::hasAvailableSeats)
+                        .toList();
+
+                if (licenses.isEmpty()) {
+                    throw new RuntimeException("Inga lediga licensplatser för denna kurs.");
+                }
+
+                // Consume 1 seat
+                CourseLicense license = licenses.get(0);
+                license.setUsedSeats(license.getUsedSeats() + 1);
+                courseLicenseRepository.save(license);
+            }
+
+            course.getStudents().add(student);
+            courseRepository.save(course);
+        }
+    }
+
     public CourseMaterial addMaterial(Long courseId, String title, String content, String link, String type,
             String availableFrom,
             MultipartFile file,
@@ -621,9 +652,14 @@ public class CourseService {
 
     public List<CourseDTO> getAvailableCoursesForStudent(Long studentId) {
         User student = userRepository.findById(studentId).orElseThrow();
+
+        List<CourseLicense> activeLicenses = courseLicenseRepository.findByStatus(CourseLicense.LicenseStatus.ACTIVE)
+                .stream().filter(CourseLicense::isValid).filter(CourseLicense::hasAvailableSeats).toList();
+        List<Long> licensedCourseIds = activeLicenses.stream().map(CourseLicense::getCourseId).toList();
+
         return courseRepository.findAll().stream()
                 .filter(c -> !c.getStudents().contains(student))
-                .filter(Course::isOpen)
+                .filter(c -> c.isOpen() || licensedCourseIds.contains(c.getId()))
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }

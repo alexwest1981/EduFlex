@@ -16,6 +16,20 @@ const Checkout = () => {
     const [promoError, setPromoError] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+    const [quantities, setQuantities] = useState({}); // Example: { courseId: quantity }
+
+    const computedTotal = cart.reduce((acc, item) => acc + (item.price * (quantities[item.id] || 1)), 0);
+
+    const handleQuantityChange = (id, newQuantity) => {
+        if (newQuantity < 1) newQuantity = 1;
+        setQuantities(prev => ({ ...prev, [id]: newQuantity }));
+
+        // If promo is applied, we might need to recalculate or clear it
+        if (appliedPromo) {
+            setAppliedPromo(null);
+            setPromoError('Rabattkoden togs bort pga ändrat antal. Använd den igen.');
+        }
+    };
 
     const handleApplyPromo = async () => {
         if (!promoCode.trim()) return;
@@ -25,7 +39,7 @@ const Checkout = () => {
             const response = await fetch('/api/promocodes/validate', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ code: promoCode, originalPrice: total.toString() })
+                body: JSON.stringify({ code: promoCode, originalPrice: computedTotal.toString() })
             });
             const data = await response.json();
             if (response.ok && data.valid) {
@@ -95,6 +109,7 @@ const Checkout = () => {
                 },
                 body: JSON.stringify({
                     courseIds,
+                    courseQuantities: quantities,
                     promoCode: appliedPromo ? appliedPromo.code : null,
                     successUrl,
                     cancelUrl
@@ -146,8 +161,27 @@ const Checkout = () => {
                                         <div className="flex-1">
                                             <h4 className="font-bold text-sm dark:text-white">{item.name}</h4>
                                             <div className="text-xs text-brand-teal uppercase font-bold tracking-widest">{item.category}</div>
+
+                                            <div className="mt-3 flex flex-wrap items-center gap-3">
+                                                <span className="text-xs text-gray-500 font-bold uppercase">Licenser (Platser):</span>
+                                                <div className="flex items-center bg-gray-100 dark:bg-white/5 rounded-lg border border-gray-200 dark:border-white/10 overflow-hidden">
+                                                    <button
+                                                        onClick={() => handleQuantityChange(item.id, (quantities[item.id] || 1) - 1)}
+                                                        className="px-3 py-1 text-gray-500 hover:bg-gray-200 dark:hover:bg-white/10"
+                                                    >-</button>
+                                                    <div className="px-4 py-1 text-sm font-bold dark:text-white bg-white dark:bg-[#0f1012]">{quantities[item.id] || 1}</div>
+                                                    <button
+                                                        onClick={() => handleQuantityChange(item.id, (quantities[item.id] || 1) + 1)}
+                                                        className="px-3 py-1 text-gray-500 hover:bg-gray-200 dark:hover:bg-white/10"
+                                                    >+</button>
+                                                </div>
+                                                {(quantities[item.id] || 1) > 1 && <span className="text-xs px-2 py-1 bg-brand-teal/10 text-brand-teal rounded font-bold">Företagsköp (B2B)</span>}
+                                            </div>
                                         </div>
-                                        <div className="font-black dark:text-white whitespace-nowrap">{item.price} kr</div>
+                                        <div className="font-black dark:text-white text-right shrink-0">
+                                            <div className="text-lg">{item.price * (quantities[item.id] || 1)} kr</div>
+                                            {(quantities[item.id] || 1) > 1 && <div className="text-xs text-gray-400 font-normal">{item.price} kr / st</div>}
+                                        </div>
                                     </div>
                                 ))}
                             </div>
@@ -170,8 +204,8 @@ const Checkout = () => {
                             <h3 className="font-bold mb-4 dark:text-white uppercase tracking-widest text-xs">Sammanställning</h3>
 
                             <div className="flex items-center justify-between mb-2">
-                                <span className="text-gray-500">Delsumma ({cart.length} st)</span>
-                                <span className="dark:text-white">{total} kr</span>
+                                <span className="text-gray-500">Delsumma ({cart.length} kurser)</span>
+                                <span className="dark:text-white font-bold">{computedTotal} kr</span>
                             </div>
 
                             {/* Promo code */}
@@ -215,8 +249,8 @@ const Checkout = () => {
                             <div className="pt-4 border-t border-gray-200 dark:border-white/5 flex items-center justify-between mb-6">
                                 <span className="font-bold text-lg dark:text-white">Totalt</span>
                                 <div className="text-right">
-                                    {appliedPromo && <div className="text-sm line-through text-gray-400">{total} kr</div>}
-                                    <span className="text-2xl font-black text-brand-teal">{appliedPromo ? appliedPromo.finalPrice : total} kr</span>
+                                    {appliedPromo && <div className="text-sm line-through text-gray-400">{computedTotal} kr</div>}
+                                    <span className="text-2xl font-black text-brand-teal">{appliedPromo ? appliedPromo.finalPrice : computedTotal} kr</span>
                                 </div>
                             </div>
 
