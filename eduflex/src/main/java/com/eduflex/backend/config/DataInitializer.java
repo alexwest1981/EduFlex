@@ -50,6 +50,11 @@ public class DataInitializer implements CommandLineRunner {
 
                 createRoleIfNotFound("SYV", "Studie- och yrkesvägledare", "SYV", false, java.util.Set.of());
 
+                createRoleIfNotFound("RESELLER", "Säljare / Butiksansvarig", "/admin/sales", false, java.util.Set.of(
+                                com.eduflex.backend.model.Permission.VIEW_COURSES,
+                                com.eduflex.backend.model.Permission.COURSE_EDIT,
+                                com.eduflex.backend.model.Permission.ACCESS_SHOP));
+
                 // 2. Check/Create Admin User
                 if (userRepository.findByUsername("admin").isEmpty()) {
                         System.out.println("⚠️ Ingen admin hittades. Skapar standardanvändare: admin / admin");

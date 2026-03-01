@@ -83,6 +83,7 @@ import Checkout from './features/ecommerce/Checkout';
 import CheckoutSuccess from './features/ecommerce/CheckoutSuccess';
 import CheckoutCancel from './features/ecommerce/CheckoutCancel';
 import SalesDashboard from './features/ecommerce/SalesDashboard';
+import ComplianceDashboard from './features/compliance/ComplianceDashboard';
 
 // --- ISP (Individuell Studieplan) ---
 import IspDashboard from './features/isp/IspDashboard';
@@ -228,9 +229,17 @@ const AppRoutes = () => {
                 } />
 
                 <Route path="/admin/sales" element={
-                    <ProtectedRoute roles={['ADMIN', 'REKTOR', 'ROLE_REKTOR']}>
+                    <ProtectedRoute roles={['ADMIN', 'REKTOR', 'ROLE_REKTOR', 'RESELLER', 'ROLE_RESELLER']}>
                         <Layout currentUser={currentUser} handleLogout={logout}>
                             <SalesDashboard />
+                        </Layout>
+                    </ProtectedRoute>
+                } />
+
+                <Route path="/admin/compliance" element={
+                    <ProtectedRoute roles={['ADMIN', 'REKTOR', 'RESELLER']}>
+                        <Layout currentUser={currentUser} handleLogout={logout}>
+                            <ComplianceDashboard />
                         </Layout>
                     </ProtectedRoute>
                 } />

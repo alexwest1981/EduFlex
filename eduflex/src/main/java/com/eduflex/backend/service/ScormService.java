@@ -253,7 +253,18 @@ public class ScormService {
     }
 
     public List<ScormPackage> getPackagesByCourse(Long courseId) {
-        return scormPackageRepository.findByCourseId(courseId);
+        List<ScormPackage> packages = scormPackageRepository.findByCourseId(courseId);
+        if (!packages.isEmpty())
+            return packages;
+
+        // Try public schema
+        String currentTenant = com.eduflex.backend.config.tenant.TenantContext.getCurrentTenant();
+        try {
+            com.eduflex.backend.config.tenant.TenantContext.setCurrentTenant("public");
+            return scormPackageRepository.findByCourseId(courseId);
+        } finally {
+            com.eduflex.backend.config.tenant.TenantContext.setCurrentTenant(currentTenant);
+        }
     }
 
     @Transactional
@@ -267,7 +278,18 @@ public class ScormService {
     }
 
     public ScormPackage getPackage(Long id) {
-        return scormPackageRepository.findById(id).orElse(null);
+        ScormPackage pkg = scormPackageRepository.findById(id).orElse(null);
+        if (pkg != null)
+            return pkg;
+
+        // Try public
+        String currentTenant = com.eduflex.backend.config.tenant.TenantContext.getCurrentTenant();
+        try {
+            com.eduflex.backend.config.tenant.TenantContext.setCurrentTenant("public");
+            return scormPackageRepository.findById(id).orElse(null);
+        } finally {
+            com.eduflex.backend.config.tenant.TenantContext.setCurrentTenant(currentTenant);
+        }
     }
 
     @Transactional

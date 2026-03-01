@@ -97,7 +97,8 @@ public class TenantFilter extends OncePerRequestFilter {
     private String extractSubdomain(String host) {
         if (host != null && host.endsWith(".eduflexlms.se")) {
             String sub = host.substring(0, host.indexOf(".eduflexlms.se"));
-            if (!sub.isEmpty() && !"www".equalsIgnoreCase(sub) && !"api".equalsIgnoreCase(sub)) {
+            if (!sub.isEmpty() && !"www".equalsIgnoreCase(sub) && !"api".equalsIgnoreCase(sub)
+                    && !"eduflexlms".equalsIgnoreCase(sub)) {
                 return sub;
             }
         }

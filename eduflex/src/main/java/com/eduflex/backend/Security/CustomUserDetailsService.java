@@ -63,7 +63,13 @@ public class CustomUserDetailsService implements UserDetailsService {
         } else {
             // Normal users get their assigned permissions + Role Name
             authorities = new java.util.ArrayList<>();
-            authorities.add(new SimpleGrantedAuthority("ROLE_" + user.getRole().getName())); // e.g. ROLE_TEACHER
+            
+            // FIX: Add BOTH the raw role name AND the ROLE_ prefixed version to be safe
+            String roleName = user.getRole().getName();
+            authorities.add(new SimpleGrantedAuthority(roleName)); // e.g. PRINCIPAL
+            if (!roleName.startsWith("ROLE_")) {
+                authorities.add(new SimpleGrantedAuthority("ROLE_" + roleName)); // e.g. ROLE_PRINCIPAL
+            }
 
             if (user.getRole().getPermissions() != null) {
                 user.getRole().getPermissions().forEach(permission -> {

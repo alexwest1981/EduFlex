@@ -102,13 +102,54 @@ public class CourseService {
 
     @org.springframework.cache.annotation.Cacheable("courses")
     public List<CourseDTO> getAllCourseDTOs() {
-        return courseRepository.findAll().stream().map(this::convertToDTO).collect(Collectors.toList());
+        List<Course> localCourses = courseRepository.findAll();
+        List<CourseDTO> dtos = new java.util.ArrayList<>(
+                localCourses.stream().map(this::convertToDTO).collect(Collectors.toList()));
+
+        // Check for Global Library pointers (Licenses)
+        List<CourseLicense> licenses = courseLicenseRepository.findAll();
+        for (CourseLicense license : licenses) {
+            if (license.isValid()) {
+                String currentTenant = com.eduflex.backend.config.tenant.TenantContext.getCurrentTenant();
+                try {
+                    com.eduflex.backend.config.tenant.TenantContext.setCurrentTenant("public");
+                    courseRepository.findById(license.getCourseId()).ifPresent(globalCourse -> {
+                        // Avoid duplicates if a tenant somehow has both a local and global version
+                        if (dtos.stream().noneMatch(d -> d.id().equals(globalCourse.getId()))) {
+                            dtos.add(convertToDTO(globalCourse));
+                        }
+                    });
+                } finally {
+                    com.eduflex.backend.config.tenant.TenantContext.setCurrentTenant(currentTenant);
+                }
+            }
+        }
+        return dtos;
     }
 
     @org.springframework.cache.annotation.Cacheable(value = "course_details", key = "#id")
     public CourseDTO getCourseDTOById(Long id) {
-        Course course = courseRepository.findById(id).orElseThrow(() -> new RuntimeException("Kurs ej funnen"));
-        return convertToDTO(course);
+        Course course = courseRepository.findById(id).orElse(null);
+        if (course != null)
+            return convertToDTO(course);
+
+        // Not found locally? Check if it's a Global Library pointer via license
+        List<CourseLicense> licenses = courseLicenseRepository.findAll();
+        for (CourseLicense license : licenses) {
+            if (license.getCourseId().equals(id) && license.isValid()) {
+                String currentTenant = com.eduflex.backend.config.tenant.TenantContext.getCurrentTenant();
+                try {
+                    com.eduflex.backend.config.tenant.TenantContext.setCurrentTenant("public");
+                    Course globalCourse = courseRepository.findById(id).orElse(null);
+                    if (globalCourse != null)
+                        return convertToDTO(globalCourse);
+                } finally {
+                    com.eduflex.backend.config.tenant.TenantContext.setCurrentTenant(currentTenant);
+                }
+            }
+        }
+
+        throw new RuntimeException("Kurs ej funnen: " + id);
     }
 
     public Course getCourseById(Long id) {
@@ -443,10 +484,15 @@ public class CourseService {
                 course.setOpen(Boolean.parseBoolean((String) openVal));
         }
 
-        // Rename slug if name changed? Usually better to keep it, but if explicitly
-        // requested:
-        if (updates.containsKey("slug")) {
-            course.setSlug((String) updates.get("slug"));
+        if (updates.containsKey("price")) {
+            Object priceVal = updates.get("price");
+            if (priceVal != null) {
+                try {
+                    course.setPrice(Double.parseDouble(priceVal.toString()));
+                } catch (NumberFormatException e) {
+                    System.err.println("Invalid price format: " + priceVal);
+                }
+            }
         }
 
         return convertToDTO(courseRepository.save(course));
@@ -459,6 +505,40 @@ public class CourseService {
 
     public Course saveCourse(Course course) {
         return courseRepository.save(course);
+    }
+
+    @Transactional
+    public Long publishCourseToGlobalLibrary(Long courseId) {
+        Course localCourse = courseRepository.findById(courseId)
+                .orElseThrow(() -> new RuntimeException("Kurs ej funnen"));
+
+        String originalTenant = com.eduflex.backend.config.tenant.TenantContext.getCurrentTenant();
+        try {
+            com.eduflex.backend.config.tenant.TenantContext.setCurrentTenant("public");
+
+            // Check if already exists in public
+            if (courseRepository.findByCourseCode(localCourse.getCourseCode()).isPresent()) {
+                throw new RuntimeException("En kurs med denna kod finns redan i Global Library");
+            }
+
+            Course globalCopy = new Course();
+            globalCopy.setName(localCourse.getName());
+            globalCopy.setCourseCode(localCourse.getCourseCode());
+            globalCopy.setSlug(localCourse.getSlug());
+            globalCopy.setCategory(localCourse.getCategory());
+            globalCopy.setDescription(localCourse.getDescription());
+            globalCopy.setStartDate(localCourse.getStartDate());
+            globalCopy.setEndDate(localCourse.getEndDate());
+            globalCopy.setPrice(localCourse.getPrice());
+            globalCopy.setMaxStudents(localCourse.getMaxStudents());
+            globalCopy.setVisibility(Course.CourseVisibility.GLOBAL_LIBRARY);
+            globalCopy.setOpen(true);
+
+            Course saved = courseRepository.save(globalCopy);
+            return saved.getId();
+        } finally {
+            com.eduflex.backend.config.tenant.TenantContext.setCurrentTenant(originalTenant);
+        }
     }
 
     public void applyToCourse(Long courseId, Long studentId) {
@@ -635,11 +715,34 @@ public class CourseService {
     }
 
     public List<CourseMaterial> getMaterialsForCourse(Long courseId) {
-        return materialRepository.findByCourseIdOrderBySortOrderAsc(courseId);
+        List<CourseMaterial> materials = materialRepository.findByCourseIdOrderBySortOrderAsc(courseId);
+        if (!materials.isEmpty())
+            return materials;
+
+        // Try public schema if local is empty (might be a global course)
+        String currentTenant = com.eduflex.backend.config.tenant.TenantContext.getCurrentTenant();
+        try {
+            com.eduflex.backend.config.tenant.TenantContext.setCurrentTenant("public");
+            return materialRepository.findByCourseIdOrderBySortOrderAsc(courseId);
+        } finally {
+            com.eduflex.backend.config.tenant.TenantContext.setCurrentTenant(currentTenant);
+        }
     }
 
     public CourseMaterial getMaterialById(Long id) {
-        return materialRepository.findById(id).orElseThrow(() -> new RuntimeException("Material hittades inte: " + id));
+        CourseMaterial material = materialRepository.findById(id).orElse(null);
+        if (material != null)
+            return material;
+
+        // Try public
+        String currentTenant = com.eduflex.backend.config.tenant.TenantContext.getCurrentTenant();
+        try {
+            com.eduflex.backend.config.tenant.TenantContext.setCurrentTenant("public");
+            return materialRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Material hittades inte: " + id));
+        } finally {
+            com.eduflex.backend.config.tenant.TenantContext.setCurrentTenant(currentTenant);
+        }
     }
 
     @Transactional
@@ -796,9 +899,10 @@ public class CourseService {
         return new CourseDTO(
                 c.getId(), c.getName(), c.getCourseCode(), c.getCategory(), c.getDescription(),
                 c.getStartDate(), c.getEndDate(), c.getColor(), teacherDTO, studentDTOs,
-                c.isOpen(), c.getEvaluation(), c.getMaxStudents(), c.getStudents().size(),
+                c.isOpen(), c.getVisibility(), c.getEvaluation(), c.getMaxStudents(), c.getStudents().size(),
                 c.getClassroomLink(), c.getClassroomType(), c.getExamLink(), // Nya fält
                 c.getSlug(), // New slug field
+                c.getPrice(), // New price field
                 c.getSkolverketCourse(), // Include Skolverket course data
                 c.getGroupRooms() // Include Group Rooms
         );

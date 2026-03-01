@@ -12,6 +12,8 @@ import MissionControl from '../principal/PrincipalDashboard';
 import MentorDashboard from './MentorDashboard';
 import HealthTeamDashboard from '../health/HealthTeamDashboard';
 import IspDashboard from '../isp/IspDashboard';
+import SalesDashboard from '../ecommerce/SalesDashboard';
+
 
 // Import Mobile Gateway
 import MobileThemeResolver from '../../components/MobileThemes/MobileThemeResolver';
@@ -61,6 +63,11 @@ const Dashboard = ({ currentUser, myCourses }) => {
 
         case 'MENTOR':
             return <MentorDashboard />;
+
+        case 'RESELLER':
+        case 'ROLE_RESELLER':
+        case '/admin/sales':
+            return <SalesDashboard />;
 
         case 'TEACHER':
             // Lärare behöver sina kurser som props

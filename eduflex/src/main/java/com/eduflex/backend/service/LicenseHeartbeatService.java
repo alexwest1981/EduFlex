@@ -5,8 +5,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.http.ResponseEntity;
-import java.net.InetAddress;
 import java.util.Map;
 import java.util.HashMap;
 
@@ -17,7 +15,6 @@ public class LicenseHeartbeatService {
 
     private final LicenseService licenseService;
     private final RestTemplate restTemplate;
-    private static final String HEARTBEAT_URL = "https://api.eduflexlms.se/v1/license/heartbeat";
     private static final String REPORT_URL = "https://api.eduflexlms.se/v1/license/report-invalid";
 
     public LicenseHeartbeatService(LicenseService licenseService) {
@@ -26,7 +23,7 @@ public class LicenseHeartbeatService {
     }
 
     // Check status every 12 hours (more frequent for enforcement)
-    @Scheduled(fixedRate = 12 * 60 * 60 * 1000)
+    @Scheduled(fixedRate = 5 * 60 * 1000) // Kontrollera var 5:e minut
     public void checkLicenseStatus() {
         if (licenseService.isOfflineMode()) {
             logger.debug("📴 License Heartbeat: Omhoppad (Offline Mode aktiv)");
@@ -34,28 +31,28 @@ public class LicenseHeartbeatService {
         }
 
         try {
-            Map<String, String> request = new HashMap<>();
-            request.put("licenseKey", getLicenseKeyFromFile());
-            request.put("customer", licenseService.getCustomerName());
-            request.put("ip", getPublicIp());
-            request.put("hostname", InetAddress.getLocalHost().getHostName());
+            // 1. Verifiera lokalt först
+            licenseService.validateCurrentLicense();
 
-            ResponseEntity<Map> response = restTemplate.postForEntity(HEARTBEAT_URL, request, Map.class);
-            Map<String, Object> body = (Map<String, Object>) response.getBody();
-
-            if (body != null) {
-                String status = (String) body.get("status");
-                if ("UNPAID".equalsIgnoreCase(status) || "INVALID".equalsIgnoreCase(status)) {
-                    licenseService.setSystemLocked(true);
-                    reportInvalidUsage("Status: " + status);
-                } else if ("VALID".equalsIgnoreCase(status) || "UP".equalsIgnoreCase(status)) {
-                    licenseService.setSystemLocked(false);
-                    logger.info("💓 License Heartbeat: Status OK för {}", licenseService.getCustomerName());
-                }
+            if (!licenseService.isValid()) {
+                String msg = "🚨 HJÄRTAT SLÅR INTE: Licensen är ogiltig eller har gått ut! Systemet är låst.";
+                logger.error(msg);
+                licenseService.alertControlCenter(msg);
+                return;
             }
 
+            // 2. Skicka status-ping till Control Center även om den är giltig
+            licenseService.alertControlCenter(
+                    "💚 Licens OK: " + licenseService.getCustomerName() + " (" + licenseService.getTier() + ")");
+
+            // 3. Valfritt: Fortsätt skicka till central server om man vill behålla extern
+            // loggning
+            /*
+             * Map<String, String> request = new HashMap<>();
+             * request.put("licenseKey", getLicenseKeyFromFile());
+             * // ...
+             */
         } catch (Exception e) {
-            // Heartbeat misslyckades – externt API kan vara nere, låter det passera tyst
             logger.debug("⚠️ License Heartbeat misslyckades: {}", e.getMessage());
         }
     }
@@ -83,7 +80,8 @@ public class LicenseHeartbeatService {
 
     private String getLicenseKeyFromFile() {
         try {
-            return java.nio.file.Files.readString(java.nio.file.Path.of("eduflex.license")).trim();
+            return java.nio.file.Files.readString(java.nio.file.Path.of("E:\\Projekt\\EduFlex\\eduflex.license"))
+                    .trim();
         } catch (Exception e) {
             return "NO_FILE";
         }

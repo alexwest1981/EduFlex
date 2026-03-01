@@ -28,7 +28,7 @@ export const getNavigationConfig = (currentUser, t, isModuleActive, licenseTier,
 
     const sections = {
         main: [
-            { path: dashboardPath, label: t('sidebar.dashboard'), icon: <LayoutDashboard size={20} /> },
+            { path: dashboardPath, label: isPrincipal ? 'Rektorspaket' : t('sidebar.dashboard'), icon: isPrincipal ? <ShieldCheck size={20} /> : <LayoutDashboard size={20} /> },
             { path: '/catalog', label: t('sidebar.catalog'), icon: <Layers size={20} /> },
             { path: '/documents', label: t('sidebar.documents'), icon: <FileText size={20} /> },
         ],
@@ -106,11 +106,11 @@ export const getNavigationConfig = (currentUser, t, isModuleActive, licenseTier,
 
     // Rektor/Principal Section
     if (isPrincipal) {
-        sections.rektor.push({ path: '/principal/dashboard', label: 'Rektorspaket', icon: <ShieldCheck size={20} /> });
+        // Removed duplicate 'Rektorspaket' since it's now the main dashboard link
         sections.rektor.push({ path: '/principal/quality', label: 'Kvalitetsarbete', icon: <Award size={20} /> });
         sections.rektor.push({ path: '/principal/management-reports', label: 'Ledningsrapport', icon: <TrendingUp size={20} /> });
         sections.rektor.push({ path: '/principal/reports', label: 'Rapportarkiv (CSN)', icon: <FolderOpen size={20} /> });
-        sections.rektor.push({ path: '/principal/study-plans', label: 'Studieplaner (ISP)', icon: <GraduationCap size={20} /> });
+        // Removed 'Studieplaner (ISP)' as requested
         sections.rektor.push({ path: '/principal/tools', label: 'Verktyg & Admin', icon: <Settings size={20} /> });
     }
 

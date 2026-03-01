@@ -33,6 +33,22 @@
 
 ---
 
+### 🚀 **v3.5.0** (1 mar 2026) – B2B Sales Enablement & Compliance
+*   **🛡️ Compliance Center**: Nytt gränssnitt för HR/Admins för att övervaka regelefterlevnad och certifieringar i realtid med automatisk expiry-tracking.
+*   **🔌 HR Sync API (API-First)**: Kraftfullt API för automatiserad user provisioning från externa HR-system som Workday.
+*   **📊 Interactive TCO Calculator**: Säljverktyg för live ROI-beräkningar direkt i plattformen för att stänga Enterprise-affärer.
+*   **📄 Compliance Battle Kit**: Komplett dokumentation (`ComplianceDocumentation.md`) som täcker GDPR, kryptering och WCAG för IT-due diligence.
+
+---
+
+### 🕒 Senaste uppdateringarna (Session sammanfattning)
+*   **Global Library Engine**: Implementerat pointer-baserad distribution för kurser, vilket möjliggör Single Source of Truth över alla tenants.
+*   **Reseller Module**: Fullt stöd för återförsäljare att paketera och sälja kurslicenser (Seat Licenses) till företag.
+*   **Automation**: Ny HrSyncController för Zero-Touch onboarding av personal.
+*   **Sales Kit**: Integrerat TCO-kalkylator och Compliance Dashboard för att underlätta B2B-försäljning.
+
+---
+
 ### 🚀 **v3.4.0** (28 feb 2026) – Enterprise B2B & Global i18n
 *   **🌍 AI-Driven i18n Localization**: Automatiskt översättningssystem lanserat som stödjer 8 språk (Engelska, Franska, Tyska, Spanska, Arabiska, Norska, Danska, Finska) utöver Svenska via Gemini AI-driven pipeline.
 *   **💼 B2B Extended Enterprise Engine**: "Pointer"-baserad distribution för företag, som gör att de kan köpa paket med Seat Licenses och manuellt tilldela platser inom sin egen organisation (Tenant Isolation).

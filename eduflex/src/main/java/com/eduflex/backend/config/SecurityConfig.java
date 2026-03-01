@@ -18,6 +18,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -41,7 +42,6 @@ public class SecurityConfig {
         private final com.eduflex.backend.security.RateLimitingFilter rateLimitingFilter;
         private final PasswordEncoder passwordEncoder;
         private final com.eduflex.backend.security.ApiKeyAuthFilter apiKeyAuthFilter;
-        private final org.springframework.security.oauth2.client.registration.ClientRegistrationRepository clientRegistrationRepository;
 
         @Value("${eduflex.auth.mode:hybrid}")
         private String authMode;
@@ -65,8 +65,7 @@ public class SecurityConfig {
                         com.eduflex.backend.security.LoggingAuthenticationEntryPoint loggingAuthenticationEntryPoint,
                         com.eduflex.backend.security.RateLimitingFilter rateLimitingFilter,
                         PasswordEncoder passwordEncoder,
-                        com.eduflex.backend.security.ApiKeyAuthFilter apiKeyAuthFilter,
-                        @org.springframework.beans.factory.annotation.Autowired(required = false) org.springframework.security.oauth2.client.registration.ClientRegistrationRepository clientRegistrationRepository) {
+                        com.eduflex.backend.security.ApiKeyAuthFilter apiKeyAuthFilter) {
                 this.userDetailsService = userDetailsService;
                 this.customOAuth2UserService = customOAuth2UserService;
                 this.authTokenFilter = authTokenFilter;
@@ -80,7 +79,6 @@ public class SecurityConfig {
                 this.rateLimitingFilter = rateLimitingFilter;
                 this.passwordEncoder = passwordEncoder;
                 this.apiKeyAuthFilter = apiKeyAuthFilter;
-                this.clientRegistrationRepository = clientRegistrationRepository;
         }
 
         @Bean
@@ -109,28 +107,21 @@ public class SecurityConfig {
                                 .sessionManagement(session -> session.sessionCreationPolicy(
                                                 SessionCreationPolicy.STATELESS))
                                 .authorizeHttpRequests(auth -> auth
-                                                // 1. VIKTIGT: TillÃ¥t alltid OPTIONS (CORS pre-flight)
+                                                // 1. VIKTIGT: Tillåt alltid OPTIONS (CORS pre-flight)
                                                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
-                                                // 2. Publika endpoints (inklusive LRS fÃ¶r CMI5)
+                                                // 2. Publika endpoints (inklusive LRS för CMI5)
                                                 .requestMatchers("/", "/index.html", "/favicon.ico", "/api/auth/**",
                                                                 "/api/users/register",
                                                                 "/api/users/generate-usernames",
                                                                 "/api/settings/**", "/login/**", "/api/tenants/**",
                                                                 "/api/public/**",
                                                                 "/api/branding/**", "/api/debug/**",
-                                                                "/api/integrations/public/**",
                                                                 "/api/onlyoffice/**",
                                                                 "/api/gamification/config/system", "/api/payment/**",
                                                                 "/api/community/subjects",
-                                                                "/api/webhooks/**",
-                                                                "/api/lrs/**", // LRS endpoints must be accessible
+                                                                "/api/lrs/**") // LRS endpoints must be accessible
                                                                                // without auth for Content/AUs
-                                                                "/api/calendar/ical/feed/**", // iCal feed - public so
-                                                                                              // Google Calendar, Apple
-                                                                                              // Calendar etc. can poll
-                                                                "/api/ai-tutor/video-callback") // Callback for video
-                                                                                                // gen
                                                 .permitAll()
                                                 .requestMatchers(HttpMethod.POST, "/api/tenants").permitAll() // Explicitly
                                                                                                               // allow
@@ -143,12 +134,9 @@ public class SecurityConfig {
                                                                 "/ws-log/**",
                                                                 "/ws-forum/**",
                                                                 "/ws-social/**",
-                                                                "/api/adaptive/**", "/actuator/**", "/lti/**",
-                                                                "/api/lti/**", "/error",
+                                                                "/actuator/**", "/lti/**", "/api/lti/**", "/error",
                                                                 "/web-apps/**", "/sdkjs/**", "/sdkjs-plugins/**",
                                                                 "/fonts/**", "/cache/**", "/coauthoring/**",
-                                                                "/spellcheck/**", "/proxy-ping", "/api/proxy-ping",
-                                                                "/api/onlyoffice-proxy/**",
                                                                 "/spellcheck/**",
                                                                 "/ConvertService.ashx", "/CommandService.ashx", // Static
                                                                                                                 // and
@@ -174,8 +162,8 @@ public class SecurityConfig {
 
                                                 // 3. KURS-REGLER
 
-                                                // --- FIX: TILLÃ…T ANSÃ–KAN FÃ–R ALLA INLOGGADE ---
-                                                // Detta mÃ¥ste ligga INNAN regeln som blockerar POST fÃ¶r studenter
+                                                // --- FIX: TILLÅT ANSÖKAN FÖR ALLA INLOGGADE ---
+                                                // Detta måste ligga INNAN regeln som blockerar POST för studenter
                                                 .requestMatchers(HttpMethod.POST, "/api/courses/*/apply/*")
                                                 .authenticated()
                                                 // ----------------------------------------------
@@ -184,10 +172,10 @@ public class SecurityConfig {
                                                                 "/api/courses/*/enroll")
                                                 .authenticated()
 
-                                                // TillÃ¥t studenter att se sina egna kurser
+                                                // Tillåt studenter att se sina egna kurser
                                                 .requestMatchers("/api/courses/student/**").authenticated()
 
-                                                // ENDAST LÃ¤rare och Admins fÃ¥r Ã¤ndra/skapa kurser generellt
+                                                // ENDAST Lärare och Admins får ändra/skapa kurser generellt
                                                 .requestMatchers(HttpMethod.POST, "/api/courses/**")
                                                 .hasAnyAuthority("ADMIN", "ROLE_ADMIN", "TEACHER", "ROLE_TEACHER",
                                                                 "RESELLER", "ROLE_RESELLER")
@@ -200,10 +188,10 @@ public class SecurityConfig {
                                                 .hasAnyAuthority("ADMIN", "ROLE_ADMIN", "TEACHER", "ROLE_TEACHER",
                                                                 "RESELLER", "ROLE_RESELLER")
 
-                                                // Alla inloggade fÃ¥r lÃ¤sa kurser (GET)
+                                                // Alla inloggade får läsa kurser (GET)
                                                 .requestMatchers(HttpMethod.GET, "/api/courses/**").authenticated()
 
-                                                // 4. Ã–vrigt
+                                                // 4. Övrigt
                                                 .requestMatchers("/api/live-lessons/**").authenticated()
                                                 .requestMatchers("/api/notifications/**").authenticated()
                                                 .requestMatchers("/api/quizzes/**").authenticated()
@@ -263,7 +251,8 @@ public class SecurityConfig {
                                                 .authenticated()
                                                 .requestMatchers("/api/analytics/**")
                                                 .hasAnyAuthority("ADMIN", "ROLE_ADMIN", "TEACHER", "ROLE_TEACHER",
-                                                                "PRINCIPAL", "ROLE_PRINCIPAL")
+                                                                "PRINCIPAL", "ROLE_PRINCIPAL", "REKTOR", "ROLE_REKTOR",
+                                                                "RESELLER", "ROLE_RESELLER")
 
                                                 // 10. Module management endpoints
                                                 .requestMatchers(HttpMethod.GET, "/api/modules").authenticated()
@@ -277,7 +266,8 @@ public class SecurityConfig {
 
                                                 // 12. Quality Work endpoints
                                                 .requestMatchers("/api/quality/**")
-                                                .hasAnyAuthority("ADMIN", "ROLE_ADMIN", "PRINCIPAL", "ROLE_PRINCIPAL")
+                                                .hasAnyAuthority("ADMIN", "ROLE_ADMIN", "PRINCIPAL", "ROLE_PRINCIPAL",
+                                                                "REKTOR", "ROLE_REKTOR")
 
                                                 // 13. Principal Dashboard endpoints
                                                 .requestMatchers("/api/principal/**")
@@ -289,6 +279,12 @@ public class SecurityConfig {
                                                 .hasAnyAuthority("ADMIN", "ROLE_ADMIN")
                                                 .requestMatchers(HttpMethod.PUT, "/api/branding/**")
                                                 .hasAnyAuthority("ADMIN", "ROLE_ADMIN")
+
+                                                // 15. AI Coach endpoints
+                                                .requestMatchers("/api/ai-coach/**")
+                                                .hasAnyAuthority("ADMIN", "ROLE_ADMIN", "TEACHER", "ROLE_TEACHER",
+                                                                "PRINCIPAL", "ROLE_PRINCIPAL", "REKTOR", "ROLE_REKTOR",
+                                                                "STUDENT", "ROLE_STUDENT")
 
                                                 // All other requests require authentication
                                                 .anyRequest().authenticated())
@@ -317,50 +313,28 @@ public class SecurityConfig {
                 http.addFilterBefore(apiKeyAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
                 // OAuth2 Login (for social login and Keycloak browser-based SSO)
-                http.oauth2Login(oauth2 -> {
-                        oauth2.authorizationEndpoint(authorization -> {
-                                authorization.baseUri("/api/oauth2/authorization");
-                                if (clientRegistrationRepository != null) {
-                                        authorization.authorizationRequestResolver(
-                                                        new EduFlexAuthorizationRequestResolver(
-                                                                        clientRegistrationRepository,
-                                                                        "/api/oauth2/authorization"));
-                                }
-                        })
-                                        .userInfoEndpoint(userInfo -> userInfo
-                                                        .userService(customOAuth2UserService)
-                                                        .oidcUserService(customOidcUserService))
-                                        .successHandler(oAuth2LoginSuccessHandler)
-                                        .failureHandler(oAuth2LoginFailureHandler);
-                });
+                http.oauth2Login(oauth2 -> oauth2
+                                .userInfoEndpoint(userInfo -> userInfo
+                                                .userService(customOAuth2UserService)
+                                                .oidcUserService(customOidcUserService))
+                                .successHandler(oAuth2LoginSuccessHandler)
+                                .failureHandler(oAuth2LoginFailureHandler));
 
-                http.headers(headers -> {
-                        headers.frameOptions(frame -> frame.sameOrigin());
-                        headers.httpStrictTransportSecurity(hsts -> hsts
-                                        .includeSubDomains(true)
-                                        .maxAgeInSeconds(31536000));
-                        headers.referrerPolicy(referrer -> referrer.policy(
-                                        org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter.ReferrerPolicy.STRICT_ORIGIN_WHEN_CROSS_ORIGIN));
-                        headers.permissionsPolicy(permissions -> permissions.policy(
-                                        "geolocation=(), microphone=(), camera=(), magnetometer=(), gyroscope=(), payment=(), usb=()"));
-                        headers.contentSecurityPolicy(csp -> csp
-                                        .policyDirectives(
-                                                        "default-src 'self' https://www.eduflexlms.se https://*.eduflexlms.se https://fonts.googleapis.com https://fonts.gstatic.com; "
-                                                                        +
-                                                                        "script-src 'self' 'unsafe-inline' https://www.eduflexlms.se https://*.eduflexlms.se; "
-                                                                        +
-                                                                        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
-                                                                        +
-                                                                        "font-src 'self' https://fonts.gstatic.com data:; "
-                                                                        +
-                                                                        "frame-src 'self' https://www.youtube.com https://*.eduflexlms.se; "
-                                                                        +
-                                                                        "frame-ancestors 'self' https://*.eduflexlms.se; "
-                                                                        +
-                                                                        "connect-src 'self' https://www.eduflexlms.se https://*.eduflexlms.se wss://www.eduflexlms.se wss://*.eduflexlms.se; "
-                                                                        +
-                                                                        "img-src 'self' data: blob: https://www.eduflexlms.se https://*.eduflexlms.se https://storage.eduflexlms.se;"));
-                });
+                // Tillåt iFrames för H2-konsolen och OnlyOffice
+                http.headers(headers -> headers
+                                .frameOptions(frame -> frame.disable())
+                                .contentSecurityPolicy(csp -> csp
+                                                .policyDirectives("default-src 'self'; " +
+                                                                "script-src 'self' 'unsafe-inline' 'unsafe-eval' http://localhost:8081 https://www.eduflexlms.se; "
+                                                                +
+                                                                "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
+                                                                +
+                                                                "font-src 'self' https://fonts.gstatic.com data:; " +
+                                                                "frame-src 'self' http://localhost:8081 https://www.eduflexlms.se; "
+                                                                +
+                                                                "connect-src 'self' http://localhost:8081 https://www.eduflexlms.se ws://localhost:8080 wss://www.eduflexlms.se; "
+                                                                +
+                                                                "img-src 'self' data: http://localhost:9000 http://localhost:8081 https://www.eduflexlms.se;")));
 
                 return http.build();
         }
@@ -382,7 +356,6 @@ public class SecurityConfig {
                                 "https://*.loca.lt",
                                 "https://*.trycloudflare.com",
                                 "https://eduflexlms.se",
-                                "https://*.eduflexlms.se",
                                 "https://www.eduflexlms.se"));
                 configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
                 configuration.setAllowedHeaders(

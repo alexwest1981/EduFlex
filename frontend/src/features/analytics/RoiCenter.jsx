@@ -2,12 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { api } from '../../services/api';
 import RoiDashboard from './components/RoiDashboard';
 import BusinessOutcomeImport from './components/BusinessOutcomeImport';
-import { TrendingUp, Plus, Database, ChevronLeft } from 'lucide-react';
+import TcoCalculator from './components/TcoCalculator';
+import { TrendingUp, Plus, Database, ChevronLeft, Calculator } from 'lucide-react';
 
 const RoiCenter = () => {
     const [courses, setCourses] = useState([]);
     const [selectedCourseId, setSelectedCourseId] = useState(null);
-    const [view, setView] = useState('dashboard'); // 'dashboard' or 'import'
+    const [view, setView] = useState('dashboard'); // 'dashboard', 'import', or 'tco'
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -76,6 +77,12 @@ const RoiCenter = () => {
                         >
                             Importera KPI
                         </button>
+                        <button
+                            onClick={() => setView('tco')}
+                            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${view === 'tco' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20' : 'text-gray-500 hover:bg-gray-50 dark:hover:bg-[#282a2c]'}`}
+                        >
+                            ROI-Kalkylator
+                        </button>
                     </div>
                 </div>
             </div>
@@ -84,6 +91,8 @@ const RoiCenter = () => {
             <div className="min-h-[500px]">
                 {view === 'dashboard' ? (
                     <RoiDashboard courseId={selectedCourseId} />
+                ) : view === 'tco' ? (
+                    <TcoCalculator />
                 ) : (
                     <div className="space-y-6">
                         <button

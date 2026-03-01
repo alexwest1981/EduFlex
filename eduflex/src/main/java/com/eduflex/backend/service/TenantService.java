@@ -5,9 +5,12 @@ import com.eduflex.backend.repository.TenantRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
 
 import javax.sql.DataSource;
 import org.flywaydb.core.Flyway;
@@ -26,6 +29,24 @@ public class TenantService {
         this.tenantRepository = tenantRepository;
         this.dataSource = dataSource;
         this.passwordEncoder = passwordEncoder;
+    }
+
+    @EventListener(ApplicationReadyEvent.class)
+    public void migrateAllOnStartup() {
+        logger.info("🛠️ [AUTO-MIGRATION] Starting automatic migration for all tenant schemas...");
+        try {
+            java.util.List<Tenant> tenants = tenantRepository.findAll();
+            int count = 0;
+            for (Tenant tenant : tenants) {
+                if (tenant.getDbSchema() != null && !"public".equalsIgnoreCase(tenant.getDbSchema())) {
+                    initTenantSchema(tenant.getDbSchema(), tenant.getName());
+                    count++;
+                }
+            }
+            logger.info("✅ [AUTO-MIGRATION] Completed. {} schemas updated.", count);
+        } catch (Exception e) {
+            logger.error("❌ [AUTO-MIGRATION] Critical failure: {}", e.getMessage(), e);
+        }
     }
 
     public Tenant createTenant(String name, String domain, String dbSchema, String organizationKey, String adminEmail,

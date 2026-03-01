@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { CreditCard, ShoppingBag, Store, Loader2, DollarSign, Calendar, Tag, CheckCircle2, XCircle, BookOpen, Percent, Plus, Save, Trash2, Lock } from 'lucide-react';
+import { CreditCard, ShoppingBag, Store, Loader2, DollarSign, Calendar, Tag, CheckCircle2, XCircle, BookOpen, Percent, Plus, Save, Trash2, Lock, Edit2, Users, Globe } from 'lucide-react';
 import { api } from '../../services/api';
 import { useModules } from '../../context/ModuleContext';
 
@@ -135,6 +135,9 @@ const SalesOverview = () => {
 const SalesCourses = () => {
     const [courses, setCourses] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [isCreating, setIsCreating] = useState(false);
+    const [editingCourse, setEditingCourse] = useState(null);
+    const [formData, setFormData] = useState({ name: '', courseCode: '', category: '', description: '', price: 0, maxStudents: 100, startDate: '', endDate: '' });
 
     const fetchCourses = async () => {
         try {
@@ -151,6 +154,18 @@ const SalesCourses = () => {
         fetchCourses();
     }, []);
 
+    const handlePublishToGlobal = async (id) => {
+        if (window.confirm("Vill du publicera denna kurs till det Globala Biblioteket? Detta gör den tillgänglig för försäljning till andra organisationer.")) {
+            try {
+                await api.globalLibrary.publishCourse(id);
+                alert("Kursen har publicerats till Global Library!");
+                fetchCourses();
+            } catch (err) {
+                alert("Kunde inte publicera kursen: " + (err.message || err.statusText));
+            }
+        }
+    };
+
     const toggleOpen = async (id) => {
         try {
             await api.put(`/courses/${id}/toggle-status`, {});
@@ -160,64 +175,187 @@ const SalesCourses = () => {
         }
     };
 
-    const updatePrice = async (course, newPrice) => {
+    const updateCourse = async (courseId, updates) => {
         try {
-            await api.put(`/courses/${course.id}`, { price: newPrice });
+            await api.courses.update(courseId, updates);
             fetchCourses();
         } catch (err) {
-            alert("Kunde inte uppdatera pris");
+            alert("Kunde inte uppdatera kurs");
+        }
+    };
+
+    const handleCreate = async (e) => {
+        e.preventDefault();
+        try {
+            await api.courses.create(formData);
+            setIsCreating(false);
+            setFormData({ name: '', courseCode: '', category: '', description: '', price: 0, maxStudents: 100 });
+            fetchCourses();
+        } catch (err) {
+            alert("Kunde inte skapa kurs");
+        }
+    };
+
+    const handleDelete = async (id) => {
+        if (window.confirm("Är du säker på att du vill radera denna kurs?")) {
+            try {
+                await api.courses.delete(id);
+                fetchCourses();
+            } catch (err) {
+                alert("Kunde inte radera kurs");
+            }
         }
     };
 
     if (loading) return <div className="p-8 flex items-center gap-2 text-gray-400"><Loader2 className="animate-spin" /> Laddar kurser...</div>;
 
     return (
-        <div className="bg-white dark:bg-[#1a1b1d] rounded-2xl border border-gray-200 dark:border-white/5 overflow-hidden">
-            <div className="p-6 border-b border-gray-200 dark:border-white/5 flex justify-between items-center">
+        <div className="space-y-6">
+            <div className="flex justify-between items-center bg-white dark:bg-[#1a1b1d] p-6 rounded-2xl border border-gray-200 dark:border-white/5">
                 <div>
                     <h3 className="font-bold text-lg dark:text-white">Butikens Kursutbud</h3>
                     <p className="text-gray-500 text-sm">Prissätt och aktivera kurser för försäljning i Storefront.</p>
                 </div>
+                <button
+                    onClick={() => { setIsCreating(!isCreating); setEditingCourse(null); }}
+                    className="flex items-center gap-2 bg-brand-teal text-white px-4 py-2 rounded-xl font-bold hover:bg-brand-teal/90 transition-colors"
+                ><Plus size={18} /> Ny Kurs</button>
             </div>
-            <div className="overflow-x-auto">
-                <table className="w-full text-left">
-                    <thead className="bg-gray-50 dark:bg-white/5 text-gray-500 text-xs uppercase tracking-widest font-bold">
-                        <tr>
-                            <th className="px-6 py-4">Kursnamn</th>
-                            <th className="px-6 py-4">Kategori</th>
-                            <th className="px-6 py-4">Nuvarande Pris</th>
-                            <th className="px-6 py-4">Synlig i Butik</th>
-                            <th className="px-6 py-4 text-right">Åtgärder</th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-100 dark:divide-white/5">
-                        {courses.map(course => (
-                            <tr key={course.id} className="hover:bg-gray-50 dark:hover:bg-white/5">
-                                <td className="px-6 py-4 font-bold dark:text-white">{course.name}</td>
-                                <td className="px-6 py-4 text-sm dark:text-gray-400">{course.theme || 'Okategoriserad'}</td>
-                                <td className="px-6 py-4">
-                                    <input
-                                        type="number"
-                                        defaultValue={course.price || 0}
-                                        onBlur={(e) => updatePrice(course, parseFloat(e.target.value))}
-                                        className="w-24 px-3 py-1 bg-gray-100 dark:bg-white/5 border border-transparent focus:border-brand-teal rounded-md dark:text-white outline-none"
-                                    /> kr
-                                </td>
-                                <td className="px-6 py-4">
-                                    <button
-                                        onClick={() => toggleOpen(course.id)}
-                                        className={`px-3 py-1 rounded-full text-xs font-bold ${course.open ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}
-                                    >
-                                        {course.open ? 'Publicerad' : 'Privat'}
-                                    </button>
-                                </td>
-                                <td className="px-6 py-4 text-right">
-                                    {/* Action buttons could go here */}
-                                </td>
+
+            {(isCreating || editingCourse) && (
+                <form onSubmit={editingCourse ? (e) => { e.preventDefault(); updateCourse(editingCourse.id, formData); setEditingCourse(null); } : handleCreate}
+                    className="bg-brand-teal/5 p-6 rounded-2xl border border-brand-teal/20 space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className="md:col-span-2">
+                            <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Kursnamn</label>
+                            <input required type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="w-full px-4 py-2 rounded-xl border border-gray-200 dark:border-white/10 dark:bg-[#1a1b1d] dark:text-white outline-none focus:border-brand-teal" />
+                        </div>
+                        <div>
+                            <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Kurskod</label>
+                            <input required type="text" value={formData.courseCode} onChange={(e) => setFormData({ ...formData, courseCode: e.target.value.toUpperCase() })} className="w-full px-4 py-2 rounded-xl border border-gray-200 dark:border-white/10 dark:bg-[#1a1b1d] dark:text-white outline-none focus:border-brand-teal" />
+                        </div>
+                        <div>
+                            <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Kategori</label>
+                            <input type="text" value={formData.category} onChange={(e) => setFormData({ ...formData, category: e.target.value })} className="w-full px-4 py-2 rounded-xl border border-gray-200 dark:border-white/10 dark:bg-[#1a1b1d] dark:text-white outline-none focus:border-brand-teal" placeholder="T.ex. Programmering" />
+                        </div>
+                        <div>
+                            <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Pris (kr)</label>
+                            <input required type="number" value={formData.price} onChange={(e) => setFormData({ ...formData, price: parseFloat(e.target.value) })} className="w-full px-4 py-2 rounded-xl border border-gray-200 dark:border-white/10 dark:bg-[#1a1b1d] dark:text-white outline-none focus:border-brand-teal" />
+                        </div>
+                        <div>
+                            <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Seats / Platser</label>
+                            <input required type="number" value={formData.maxStudents} onChange={(e) => setFormData({ ...formData, maxStudents: parseInt(e.target.value) })} className="w-full px-4 py-2 rounded-xl border border-gray-200 dark:border-white/10 dark:bg-[#1a1b1d] dark:text-white outline-none focus:border-brand-teal" />
+                        </div>
+                        <div>
+                            <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Startdatum</label>
+                            <input type="date" value={formData.startDate} onChange={(e) => setFormData({ ...formData, startDate: e.target.value })} className="w-full px-4 py-2 rounded-xl border border-gray-200 dark:border-white/10 dark:bg-[#1a1b1d] dark:text-white outline-none focus:border-brand-teal" />
+                        </div>
+                        <div>
+                            <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Slutdatum</label>
+                            <input type="date" value={formData.endDate} onChange={(e) => setFormData({ ...formData, endDate: e.target.value })} className="w-full px-4 py-2 rounded-xl border border-gray-200 dark:border-white/10 dark:bg-[#1a1b1d] dark:text-white outline-none focus:border-brand-teal" />
+                        </div>
+                    </div>
+                    <div>
+                        <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Beskrivning</label>
+                        <textarea value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} className="w-full px-4 py-2 rounded-xl border border-gray-200 dark:border-white/10 dark:bg-[#1a1b1d] dark:text-white outline-none focus:border-brand-teal h-24" />
+                    </div>
+                    <div className="flex justify-end gap-3">
+                        <button type="button" onClick={() => { setIsCreating(false); setEditingCourse(null); }} className="px-6 py-2 rounded-xl font-bold bg-gray-100 dark:bg-white/5 text-gray-500 hover:bg-gray-200 transition-colors">Avbryt</button>
+                        <button type="submit" className="flex items-center gap-2 bg-brand-teal text-white px-6 py-2 rounded-xl font-bold hover:bg-brand-teal/90 shadow-lg shadow-brand-teal/20">
+                            <Save size={18} /> {editingCourse ? 'Spara ändringar' : 'Skapa Kurs'}
+                        </button>
+                    </div>
+                </form>
+            )}
+
+            <div className="bg-white dark:bg-[#1a1b1d] rounded-2xl border border-gray-200 dark:border-white/5 overflow-hidden">
+                <div className="overflow-x-auto">
+                    <table className="w-full text-left">
+                        <thead className="bg-gray-50 dark:bg-white/5 text-gray-500 text-xs uppercase tracking-widest font-bold">
+                            <tr>
+                                <th className="px-6 py-4">Kursnamn</th>
+                                <th className="px-6 py-4">Pris (kr)</th>
+                                <th className="px-6 py-4 text-center"><Users size={14} className="inline mr-1" /> Platser</th>
+                                <th className="px-6 py-4">Status</th>
+                                <th className="px-6 py-4">Bibliotek</th>
+                                <th className="px-6 py-4 text-right">Åtgärder</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody className="divide-y divide-gray-100 dark:divide-white/5">
+                            {courses.map(course => (
+                                <tr key={course.id} className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors group">
+                                    <td className="px-6 py-4">
+                                        <div className="font-bold dark:text-white">{course.name}</div>
+                                        <div className="text-xs text-gray-500">{course.courseCode} • {course.category || 'Övrigt'}</div>
+                                    </td>
+                                    <td className="px-6 py-4">
+                                        <input
+                                            type="number"
+                                            defaultValue={course.price || 0}
+                                            onBlur={(e) => updateCourse(course.id, { price: parseFloat(e.target.value) })}
+                                            className="w-24 px-3 py-1 bg-gray-100 dark:bg-white/5 border border-transparent focus:border-brand-teal rounded-md dark:text-white outline-none font-bold"
+                                        />
+                                    </td>
+                                    <td className="px-6 py-4 text-center">
+                                        <input
+                                            type="number"
+                                            defaultValue={course.maxStudents || 100}
+                                            onBlur={(e) => updateCourse(course.id, { maxStudents: parseInt(e.target.value) })}
+                                            className="w-20 px-3 py-1 bg-gray-100 dark:bg-white/5 border border-transparent focus:border-brand-teal rounded-md dark:text-white outline-none text-center"
+                                        />
+                                    </td>
+                                    <td className="px-6 py-4 text-sm">
+                                        <button
+                                            onClick={() => toggleOpen(course.id)}
+                                            className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${course.open ? 'bg-green-100 text-green-700' : 'bg-gray-100 dark:bg-white/5 text-gray-500'}`}
+                                        >
+                                            {course.open ? 'Publicerad' : 'Privat'}
+                                        </button>
+                                    </td>
+                                    <td className="px-6 py-4">
+                                        {course.visibility === 'GLOBAL_LIBRARY' ? (
+                                            <span className="flex items-center gap-1 text-brand-blue font-bold text-xs"><Globe size={14} /> Global</span>
+                                        ) : (
+                                            <span className="text-gray-400 text-xs italic">Lokal</span>
+                                        )}
+                                    </td>
+                                    <td className="px-6 py-4 text-right">
+                                        <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <button
+                                                onClick={() => {
+                                                    setEditingCourse(course);
+                                                    setFormData({
+                                                        name: course.name,
+                                                        courseCode: course.courseCode,
+                                                        category: course.category || '',
+                                                        description: course.description || '',
+                                                        price: course.price || 0,
+                                                        maxStudents: course.maxStudents || 100,
+                                                        startDate: course.startDate || '',
+                                                        endDate: course.endDate || ''
+                                                    });
+                                                    setIsCreating(false);
+                                                }}
+                                                className="p-2 text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded-lg transition-colors"
+                                                title="Redigera"
+                                            ><Edit2 size={16} /></button>
+                                            {course.visibility !== 'GLOBAL_LIBRARY' && (
+                                                <button
+                                                    onClick={() => handlePublishToGlobal(course.id)}
+                                                    className="p-2 text-brand-teal hover:bg-brand-teal/10 rounded-lg transition-colors"
+                                                    title="Publicera till Global Library"
+                                                >
+                                                    <Globe size={16} />
+                                                </button>
+                                            )}
+                                            <button onClick={() => handleDelete(course.id)} className="p-2 text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-lg transition-colors" title="Radera"><Trash2 size={16} /></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     );

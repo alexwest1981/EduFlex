@@ -2,6 +2,7 @@ package com.eduflex.backend.dto;
 
 import com.eduflex.backend.model.CourseEvaluation;
 import com.eduflex.backend.model.SkolverketCourse;
+import com.eduflex.backend.model.Course.CourseVisibility;
 import java.util.List;
 
 public record CourseDTO(
@@ -16,14 +17,15 @@ public record CourseDTO(
                 UserSummaryDTO teacher,
                 List<UserSummaryDTO> students,
                 boolean isOpen,
+                CourseVisibility visibility,
                 CourseEvaluation evaluation,
                 Integer maxStudents,
                 Integer enrolledCount,
                 String classroomLink,
                 String classroomType,
                 String examLink,
-                String slug, // Added slug field
-                SkolverketCourse skolverketCourse, // Added Skolverket course link
-                List<com.eduflex.backend.model.GroupRoom> groupRooms // New field
-) {
+                String slug,
+                Double price,
+                SkolverketCourse skolverketCourse,
+                List<com.eduflex.backend.model.GroupRoom> groupRooms) {
 }

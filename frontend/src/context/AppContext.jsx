@@ -27,13 +27,11 @@ const AppContext = createContext({
 });
 
 export const AppProvider = ({ children }) => {
-    // ... existing code ...
-    // (Ensure this part matches existing file content during apply)
     const [currentUser, setCurrentUser] = useState(null);
     const [systemSettings, setSystemSettings] = useState({});
     const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
     const [licenseStatus, setLicenseStatus] = useState('checking');
-    const [licenseTier, setLicenseTier] = useState(null); // Added licenseTier state
+    const [licenseTier, setLicenseTier] = useState(null);
     const [licenseLocked, setLicenseLocked] = useState(false);
     const [token, setToken] = useState(localStorage.getItem('token'));
     const [activeAudiobook, setActiveAudiobook] = useState(null);
@@ -137,24 +135,35 @@ export const AppProvider = ({ children }) => {
     const checkLicense = async () => {
         try {
             const res = await api.system.checkLicense();
-            if (res && res.status === 'valid') {
+            // The backend returns { valid: boolean, tier: string }
+            // It does NOT return 'status' field directly in the map based on LicenseController.java
+            // Let's adapt to what LicenseController actually returns.
+
+            if (res && res.valid === true) {
                 setLicenseStatus('valid');
                 setLicenseTier(res.tier);
                 setLicenseLocked(false);
-            } else if (res && res.status === 'locked') {
-                setLicenseStatus('locked');
-                setLicenseTier(null);
-                setLicenseLocked(true);
             } else {
-                // Default to locked if status is not explicitly 'valid' or 'locked'
                 setLicenseStatus('locked');
                 setLicenseTier(null);
                 setLicenseLocked(true);
             }
         } catch (e) {
+            console.error("License check failed", e);
+            // If the check fails (e.g. 500 error), we might want to be lenient or strict.
+            // Given the logs show 500 error for heartbeat, let's assume valid if we can't check,
+            // OR better, fix the backend error.
+            // But to unblock the user now:
+            // setLicenseStatus('error');
+            // setLicenseLocked(true);
+
+            // Temporary fallback to allow access if check fails due to server error (e.g. during dev)
+            // setLicenseStatus('valid');
+            // setLicenseLocked(false);
+
+            // Strict mode:
             setLicenseStatus('error');
-            setLicenseTier(null);
-            setLicenseLocked(true); // Assume locked on error
+            setLicenseLocked(true);
         }
     };
 

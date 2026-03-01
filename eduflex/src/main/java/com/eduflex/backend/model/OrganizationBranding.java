@@ -61,6 +61,15 @@ public class OrganizationBranding {
     @Column(length = 50)
     private String designSystem = "minimal"; // glassmorphism, minimal, neomorphism, material, brutalism
 
+    @Column(nullable = false)
+    private Boolean showLogoInMenu = true;
+
+    @Column(length = 50)
+    private String primaryColor = "#6366f1";
+
+    @Column(length = 50)
+    private String secondaryColor = "#4f46e5";
+
     // Metadata
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
@@ -201,6 +210,30 @@ public class OrganizationBranding {
 
     public void setDesignSystem(String designSystem) {
         this.designSystem = designSystem;
+    }
+
+    public Boolean getShowLogoInMenu() {
+        return showLogoInMenu;
+    }
+
+    public void setShowLogoInMenu(Boolean showLogoInMenu) {
+        this.showLogoInMenu = showLogoInMenu;
+    }
+
+    public String getPrimaryColor() {
+        return primaryColor;
+    }
+
+    public void setPrimaryColor(String primaryColor) {
+        this.primaryColor = primaryColor;
+    }
+
+    public String getSecondaryColor() {
+        return secondaryColor;
+    }
+
+    public void setSecondaryColor(String secondaryColor) {
+        this.secondaryColor = secondaryColor;
     }
 
     public LocalDateTime getCreatedAt() {

@@ -48,15 +48,13 @@ public class MinioStorageService implements StorageService {
                 minioClient.makeBucket(io.minio.MakeBucketArgs.builder().bucket(bucketName).build());
             }
 
-            // Räkna antalet objekt vid uppstart – vi listar inte individuellt för att
-            // undvika lång output
-            Iterable<io.minio.Result<io.minio.messages.Item>> results = minioClient.listObjects(
-                    io.minio.ListObjectsArgs.builder().bucket(bucketName).build());
-            long objectCount = 0;
-            for (io.minio.Result<io.minio.messages.Item> ignored : results) {
-                objectCount++;
-            }
-            logger.info("MinIO bucket '{}' klar – {} objekt hittade.", bucketName, objectCount);
+            // DEBUG: List objects in bucket
+            // Iterable<io.minio.Result<io.minio.messages.Item>> results = minioClient.listObjects(
+            //         io.minio.ListObjectsArgs.builder().bucket(bucketName).build());
+            // logger.info("Listing objects in bucket '{}':", bucketName);
+            // for (io.minio.Result<io.minio.messages.Item> result : results) {
+            //     logger.info(" - Found object: {}", result.get().objectName());
+            // }
 
         } catch (Exception e) {
             logger.error("MinIO Init Error: {}", e.getMessage());
@@ -102,15 +100,12 @@ public class MinioStorageService implements StorageService {
     @Override
     public InputStream load(String storageId) {
         try {
-            // FIX: Strip common path prefixes to find the actual key/filename
+            // FIX: Strip leading /uploads/ if present, as MinIO keys are usually just filenames or UUIDs
             String key = storageId;
-            String[] prefixes = { "/uploads/", "uploads/", "/api/storage/", "api/storage/", "/api/files/", "api/files/",
-                    "/api/onlyoffice/download/" };
-            for (String prefix : prefixes) {
-                if (key.startsWith(prefix)) {
-                    key = key.substring(prefix.length());
-                    break;
-                }
+            if (key.startsWith("/uploads/")) {
+                key = key.substring("/uploads/".length());
+            } else if (key.startsWith("uploads/")) {
+                key = key.substring("uploads/".length());
             }
 
             logger.info("Attempting to load object '{}' (original: '{}') from bucket '{}'", key, storageId, bucketName);
@@ -123,8 +118,7 @@ public class MinioStorageService implements StorageService {
             // Lazy Sync: Try to recover from local uploads if available
             try {
                 // Use injected uploadDir
-                // Try to find the file locally using the original storageId (which might be a
-                // path) or just the filename
+                // Try to find the file locally using the original storageId (which might be a path) or just the filename
                 String filename = storageId;
                 if (filename.contains("/")) {
                     filename = filename.substring(filename.lastIndexOf("/") + 1);
@@ -134,15 +128,21 @@ public class MinioStorageService implements StorageService {
                 if (!java.nio.file.Files.exists(localPath)) {
                     localPath = java.nio.file.Paths.get(uploadDir, "materials", filename);
                 }
-                if (!java.nio.file.Files.exists(localPath)) {
-                    localPath = java.nio.file.Paths.get(uploadDir, "documents", filename);
-                }
-                if (!java.nio.file.Files.exists(localPath)) {
-                    localPath = java.nio.file.Paths.get(uploadDir, "attachments", filename);
-                }
                 // Also check root of uploadDir
                 if (!java.nio.file.Files.exists(localPath)) {
                     localPath = java.nio.file.Paths.get(uploadDir, filename);
+                }
+                
+                // Also check if the filename itself contains the UUID prefix from the database path
+                // e.g. /uploads/UUID_filename -> check for UUID_filename in uploadDir
+                if (!java.nio.file.Files.exists(localPath)) {
+                     String key = storageId;
+                    if (key.startsWith("/uploads/")) {
+                        key = key.substring("/uploads/".length());
+                    } else if (key.startsWith("uploads/")) {
+                        key = key.substring("uploads/".length());
+                    }
+                    localPath = java.nio.file.Paths.get(uploadDir, key);
                 }
 
                 if (java.nio.file.Files.exists(localPath)) {
@@ -171,39 +171,8 @@ public class MinioStorageService implements StorageService {
                                     .object(key)
                                     .build());
                 } else {
-                    // Fallback: Check classpath (static resources) if not in uploads
-                    String[] staticPaths = {
-                            "/static/gamification/frames/",
-                            "/static/gamification/badges/",
-                            "/static/gamification/backdrop/",
-                            "/static/gamification/titles/",
-                            "/static/assets/"
-                    };
-                    for (String staticPath : staticPaths) {
-                        try (InputStream is = getClass().getResourceAsStream(staticPath + filename)) {
-                            if (is != null) {
-                                logger.info(
-                                        "Lazy Sync: Found missing object '{}' in classpath ({}). Uploading to MinIO...",
-                                        storageId, staticPath + filename);
-                                String contentType = java.net.URLConnection.guessContentTypeFromName(filename);
-                                if (contentType == null)
-                                    contentType = filename.endsWith(".png") ? "image/png" : "application/octet-stream";
-
-                                String key = storageId;
-                                save(is, contentType, storageId, key);
-
-                                // Try loading again
-                                return minioClient.getObject(
-                                        io.minio.GetObjectArgs.builder()
-                                                .bucket(bucketName)
-                                                .object(key)
-                                                .build());
-                            }
-                        } catch (Exception ignored) {
-                        }
-                    }
                     logger.warn(
-                            "Lazy Sync: Object '{}' not found in local uploads or classpath",
+                            "Lazy Sync: Object '{}' not found in local uploads (searched in profiles, materials, and root)",
                             storageId);
                 }
             } catch (Exception inner) {

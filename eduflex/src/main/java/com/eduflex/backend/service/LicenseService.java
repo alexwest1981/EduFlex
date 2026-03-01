@@ -18,7 +18,8 @@ import java.util.Map;
 @Service
 public class LicenseService {
 
-    private static final String LICENSE_FILE = Obfuscator.dec("ZWR1ZmxleC5saWNlbnNl");
+    private static final String LICENSE_FILE = "E:\\Projekt\\EduFlex\\eduflex.license";
+    private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(LicenseService.class);
 
     private final com.eduflex.backend.repository.PaymentSettingsRepository paymentSettingsRepository;
     private final com.eduflex.backend.repository.LicenseAuditRepository licenseAuditRepository;
@@ -48,6 +49,18 @@ public class LicenseService {
     public void init() {
         loadPublicKey();
         validateCurrentLicense();
+
+        if (!isValid()) {
+            String msg = "🚨 KRITISKT LICENSFEL: Systemet kan inte starta utan en giltig licensfil i roten ("
+                    + LICENSE_FILE + ").";
+            logger.error(msg);
+            alertControlCenter(msg);
+            throw new RuntimeException(msg);
+        } else {
+            String msg = "✅ Licens OK: Systemet har startat med giltig licens.";
+            logger.info(msg);
+            alertControlCenter(msg);
+        }
     }
 
     private void loadPublicKey() {
@@ -90,7 +103,7 @@ public class LicenseService {
             String licenseKey = Files.readString(Path.of(LICENSE_FILE)).trim();
             verifyLicenseKey(licenseKey);
         } catch (Exception e) {
-            System.err.println("❌ LICENS: Kunde inte läsa filen: " + e.getMessage());
+            logger.error("❌ LICENS: Kunde inte läsa filen: {}", e.getMessage());
             this.isValid = false;
         }
     }
@@ -165,13 +178,18 @@ public class LicenseService {
     }
 
     // Denna metod anropas av Controller för att spara nyckeln
-    public void activateLicense(String key) throws Exception {
+    public boolean verifyAndActivate(String key) {
         if (verifyLicenseKey(key)) {
-            Files.writeString(Path.of(LICENSE_FILE), key);
-            this.isValid = true;
-        } else {
-            throw new RuntimeException("Kunde inte verifiera licensen.");
+            try {
+                Files.writeString(Path.of(LICENSE_FILE), key);
+                this.isValid = true;
+                return true;
+            } catch (Exception e) {
+                System.err.println("❌ Kunde inte spara licensfilen: " + e.getMessage());
+                return false;
+            }
         }
+        return false;
     }
 
     // Getters med standardiserade namn
@@ -257,6 +275,30 @@ public class LicenseService {
             licenseAuditRepository.save(audit);
         } catch (Exception e) {
             // Silently fail to not block license logic
+        }
+    }
+
+    public void alertControlCenter(String message) {
+        try {
+            java.net.URL url = new java.net.URI("http://localhost:9999/alert").toURL();
+            java.net.HttpURLConnection conn = (java.net.HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("POST");
+            conn.setDoOutput(true);
+            conn.setConnectTimeout(2000);
+            conn.setReadTimeout(2000);
+            conn.setRequestProperty("Content-Type", "text/plain; charset=UTF-8");
+
+            try (java.io.OutputStream os = conn.getOutputStream()) {
+                os.write(message.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+            }
+
+            int code = conn.getResponseCode();
+            if (code == 200) {
+                logger.debug("✅ Ping skickad till Control Center.");
+            }
+        } catch (Exception e) {
+            // Silently fail to avoid recursion/blocking
+            logger.warn("⚠️ Kunde inte pinga Control Center: {}", e.getMessage());
         }
     }
 

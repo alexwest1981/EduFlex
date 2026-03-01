@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS course_orders (
     id BIGSERIAL PRIMARY KEY,
-    user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    user_id BIGINT NOT NULL REFERENCES app_users(id) ON DELETE CASCADE,
     total_amount DECIMAL(10, 2) NOT NULL,
     currency VARCHAR(10) NOT NULL DEFAULT 'SEK',
     stripe_session_id VARCHAR(255) UNIQUE,

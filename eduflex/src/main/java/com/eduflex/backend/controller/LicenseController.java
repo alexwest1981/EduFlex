@@ -1,16 +1,18 @@
 package com.eduflex.backend.controller;
 
+import com.eduflex.backend.model.LicenseType;
 import com.eduflex.backend.service.LicenseService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
 import java.util.Map;
 
 @RestController
 @RequestMapping("/api/system/license")
-@CrossOrigin(origins = "*")
 public class LicenseController {
+    private static final Logger logger = LoggerFactory.getLogger(LicenseController.class);
 
     private final LicenseService licenseService;
 
@@ -21,45 +23,30 @@ public class LicenseController {
     @GetMapping("/status")
     public ResponseEntity<?> getStatus() {
         try {
-            Map<String, Object> response = new HashMap<>();
-
-            System.out.println("DEBUG: Checking license status...");
             boolean valid = licenseService.isValid();
-            System.out.println("DEBUG: License valid? " + valid);
-
-            if (valid) {
-                response.put("status", "valid");
-                response.put("tier", licenseService.getTier());
-                response.put("customer", licenseService.getCustomerName());
-                response.put("expiry", licenseService.getExpiryDate());
-                response.put("daysRemaining", licenseService.getDaysRemaining());
-                response.put("isExpiringSoon", licenseService.isExpiringSoon());
-            } else {
-                response.put("status", "locked");
-            }
-            return ResponseEntity.ok(response);
+            String tier = licenseService.getTier().name();
+            return ResponseEntity.ok(Map.of("valid", valid, "tier", tier));
         } catch (Exception e) {
-            System.err.println("❌ CRITICAL ERROR in LicenseController:");
-            e.printStackTrace();
-            return ResponseEntity.status(500).body(
-                    Map.of("error", e.getMessage() != null ? e.getMessage() : "Unknown Error", "trace", e.toString()));
+            logger.error("❌ License Status Error: {}", e.getMessage(), e);
+            return ResponseEntity.status(500).body(Map.of("error", e.getMessage(), "trace", e.toString()));
         }
     }
 
     @PostMapping("/activate")
-    public ResponseEntity<?> activate(@RequestBody Map<String, String> body) {
-        String key = body.get("key");
+    public ResponseEntity<?> activateLicense(@RequestBody Map<String, String> payload) {
         try {
-            licenseService.activateLicense(key);
-            return ResponseEntity.ok(Map.of("message", "Licens aktiverad!"));
+            String licenseKey = payload.get("licenseKey");
+            boolean success = licenseService.verifyLicenseKey(licenseKey);
+            return ResponseEntity.ok(Map.of("success", success));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(Map.of("error", "Ogiltig licensnyckel"));
+            logger.error("❌ License Activation Error: {}", e.getMessage());
+            return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
         }
     }
 
-    @GetMapping("/audit")
-    public ResponseEntity<?> getAuditLogs() {
-        return ResponseEntity.ok(licenseService.getAuditLogs());
+    @PostMapping("/heartbeat")
+    public ResponseEntity<?> heartbeat() {
+        // Simple heartbeat endpoint to keep connection alive or validation active
+        return ResponseEntity.ok(Map.of("status", "alive", "timestamp", System.currentTimeMillis()));
     }
-
 }

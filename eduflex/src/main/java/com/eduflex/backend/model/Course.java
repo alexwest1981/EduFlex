@@ -36,6 +36,14 @@ public class Course {
 
     private boolean isOpen = true;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private CourseVisibility visibility = CourseVisibility.PRIVATE;
+
+    public enum CourseVisibility {
+        PRIVATE, PUBLIC, GLOBAL_LIBRARY
+    }
+
     // --- NYA FÄLT: DIGITALA RUM ---
     private String classroomLink; // URL till mötet
     private String classroomType; // T.ex. "ZOOM", "TEAMS", "MEET"
@@ -224,6 +232,14 @@ public class Course {
 
     public void setOpen(boolean open) {
         isOpen = open;
+    }
+
+    public CourseVisibility getVisibility() {
+        return visibility;
+    }
+
+    public void setVisibility(CourseVisibility visibility) {
+        this.visibility = visibility;
     }
 
     public String getClassroomLink() {

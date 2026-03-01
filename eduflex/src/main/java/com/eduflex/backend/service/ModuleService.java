@@ -105,7 +105,15 @@ public class ModuleService {
 
                 createIfNotExists("RESELLER_SYSTEM", "Reseller System 1.2",
                                 "Avancerad B2B grossisthantering för kurser, prissättning och rabattkoder. Kräver ENTERPRISE.",
-                                "1.2.0", false, true);
+                                "1.2.0", true, true);
+
+                // Ensure it's active even if it existed as inactive
+                moduleRepository.findByModuleKey("RESELLER_SYSTEM").ifPresent(m -> {
+                        if (!m.isActive()) {
+                                m.setActive(true);
+                                moduleRepository.save(m);
+                        }
+                });
 
                 logger.info("=== ModuleService: Module initialization complete. Total modules: {} ===",
                                 moduleRepository.count());

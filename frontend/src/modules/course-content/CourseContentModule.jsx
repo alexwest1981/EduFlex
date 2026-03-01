@@ -414,6 +414,28 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
                                                     <Share2 size={10} /> Dela
                                                 </button>
                                             )}
+
+                                            {/* Publish to Global Library (Admins only) */}
+                                            {currentUser?.role?.name === 'ADMIN' && lesson.visibility !== 'GLOBAL_LIBRARY' && (
+                                                <button
+                                                    onClick={async (e) => {
+                                                        e.stopPropagation();
+                                                        if (window.confirm('Varning: Detta kommer göra materialet tillgängligt för alla tenants i systemets Global Library. Är du säker?')) {
+                                                            try {
+                                                                await api.globalLibrary.publish(lesson.id);
+                                                                alert('Materialet har publicerats till Global Library!');
+                                                                setLessons(lessons.map(l => l.id === lesson.id ? { ...l, visibility: 'GLOBAL_LIBRARY' } : l));
+                                                            } catch (err) {
+                                                                alert('Kunde inte publicera till Global Library: ' + (err.message || 'Okänt fel'));
+                                                            }
+                                                        }
+                                                    }}
+                                                    className="px-2 py-1 rounded text-[9px] font-bold bg-blue-100 text-blue-700 hover:bg-blue-200 transition-colors flex items-center gap-1"
+                                                    title="Publicera till Global Library"
+                                                >
+                                                    🌍 Publicera Globalt
+                                                </button>
+                                            )}
                                         </div>
                                     )}
                                 </div>

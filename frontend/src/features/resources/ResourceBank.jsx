@@ -65,7 +65,7 @@ const ResourceBank = () => {
 
     const handleInstallGlobal = async (resourceId) => {
         try {
-            await api.community.install(resourceId);
+            await api.globalLibrary.install(resourceId);
             alert('Innehållet har lagts till i din personliga resursbank!');
             setRefreshKey(prev => prev + 1);
         } catch (err) {

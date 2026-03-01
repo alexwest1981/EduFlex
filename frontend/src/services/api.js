@@ -769,6 +769,16 @@ export const api = {
 
     globalLibrary: {
         getAll: () => api.get('/global-library'),
+        install: (id) => api.post(`/global-library/${id}/install`),
+        publish: (id) => api.post(`/global-library/${id}/publish`),
+        publishCourse: (id) => api.post(`/global-library/courses/${id}/publish`),
+    },
+    certifications: {
+        getMy: () => api.get('/certifications/my'),
+        getAll: () => api.get('/certifications/admin/all'),
+        issue: (userId, courseId, validityMonths) =>
+            api.post(`/certifications/admin/issue?userId=${userId}&courseId=${courseId}${validityMonths ? `&validityMonths=${validityMonths}` : ''}`),
+        refreshStatuses: () => api.post('/certifications/admin/refresh-status')
     },
     community: {
         browse: (params = {}) => {

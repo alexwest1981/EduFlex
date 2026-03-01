@@ -6,6 +6,7 @@ import com.eduflex.backend.repository.ResourceRepository;
 import com.eduflex.backend.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.eduflex.backend.config.tenant.TenantContext;
 
 import java.util.List;
 
@@ -40,7 +41,13 @@ public class ResourceService {
     }
 
     public List<Resource> getGlobalResources() {
-        return resourceRepository.findByVisibility(Resource.ResourceVisibility.GLOBAL_LIBRARY);
+        String originalTenant = TenantContext.getCurrentTenant();
+        try {
+            TenantContext.setCurrentTenant("public");
+            return resourceRepository.findByVisibility(Resource.ResourceVisibility.GLOBAL_LIBRARY);
+        } finally {
+            TenantContext.setCurrentTenant(originalTenant);
+        }
     }
 
     @Transactional
@@ -76,5 +83,66 @@ public class ResourceService {
         Resource resource = resourceRepository.findById(id).orElseThrow();
         resource.setVisibility(visibility);
         return resourceRepository.save(resource);
+    }
+
+    @Transactional
+    public Long publishToGlobalLibrary(Long resourceId) {
+        Resource localResource = resourceRepository.findById(resourceId)
+                .orElseThrow(() -> new RuntimeException("Resource not found"));
+
+        String originalTenant = TenantContext.getCurrentTenant();
+        try {
+            TenantContext.setCurrentTenant("public");
+
+            Resource globalCopy = new Resource();
+            globalCopy.setName(localResource.getName());
+            globalCopy.setDescription(localResource.getDescription());
+            globalCopy.setContent(localResource.getContent());
+            globalCopy.setType(localResource.getType());
+            globalCopy.setVisibility(Resource.ResourceVisibility.GLOBAL_LIBRARY);
+
+            String tags = localResource.getTags();
+            globalCopy.setTags("System Verified" + (tags != null && !tags.isBlank() ? ", " + tags : ""));
+            globalCopy.setOwner(localResource.getOwner());
+
+            Resource saved = resourceRepository.save(globalCopy);
+            return saved.getId();
+        } finally {
+            TenantContext.setCurrentTenant(originalTenant);
+        }
+    }
+
+    @Transactional
+    public Long installGlobalResource(Long resourceId, Long currentUserId) {
+        String originalTenant = TenantContext.getCurrentTenant();
+        Resource globalResource;
+        try {
+            TenantContext.setCurrentTenant("public");
+            globalResource = resourceRepository.findById(resourceId)
+                    .orElseThrow(() -> new RuntimeException("Global resource not found: " + resourceId));
+
+            if (globalResource.getVisibility() != Resource.ResourceVisibility.GLOBAL_LIBRARY) {
+                throw new RuntimeException("Can only install resources with GLOBAL_LIBRARY visibility");
+            }
+        } finally {
+            TenantContext.setCurrentTenant(originalTenant);
+        }
+
+        User currentUser = userRepository.findById(currentUserId).orElseThrow();
+
+        // Create a copy in the current schema
+        Resource localCopy = new Resource();
+        localCopy.setName(globalResource.getName());
+        localCopy.setDescription(globalResource.getDescription());
+        localCopy.setContent(globalResource.getContent());
+        localCopy.setType(globalResource.getType());
+        localCopy.setVisibility(Resource.ResourceVisibility.PRIVATE);
+
+        String tags = globalResource.getTags();
+        localCopy.setTags("Imported" + (tags != null && !tags.isBlank() ? ", " + tags : ""));
+        localCopy.setOwner(currentUser);
+
+        Resource saved = resourceRepository.save(localCopy);
+        return saved.getId();
     }
 }

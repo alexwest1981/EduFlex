@@ -29,14 +29,16 @@ public class BrandingController {
      * branding)
      */
     @GetMapping
-    public ResponseEntity<OrganizationBranding> getBranding(
+    public ResponseEntity<?> getBranding(
             @RequestParam(defaultValue = "default") String organizationKey) {
         try {
             OrganizationBranding branding = brandingService.getBranding(organizationKey);
             return ResponseEntity.ok(branding);
         } catch (Exception e) {
-            logger.error("Error fetching branding for {}: {}", organizationKey, e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            logger.error("❌ Branding Error for {}: {}", organizationKey, e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", e.getMessage() != null ? e.getMessage() : "Unknown Error", "trace",
+                            e.toString()));
         }
     }
 
@@ -44,14 +46,16 @@ public class BrandingController {
      * Get dynamic PWA manifest for an organization
      */
     @GetMapping("/manifest.json")
-    public ResponseEntity<Map<String, Object>> getManifest(
+    public ResponseEntity<?> getManifest(
             @RequestParam(defaultValue = "default") String organizationKey) {
         try {
             Map<String, Object> manifest = brandingService.generateManifest(organizationKey);
             return ResponseEntity.ok(manifest);
         } catch (Exception e) {
-            logger.error("Error generating manifest for {}: {}", organizationKey, e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            logger.error("❌ Manifest Error for {}: {}", organizationKey, e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", e.getMessage() != null ? e.getMessage() : "Unknown Error", "trace",
+                            e.toString()));
         }
     }
 

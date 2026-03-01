@@ -47,7 +47,18 @@ public class QuizService {
     }
 
     public List<Quiz> getQuizzesByCourse(Long courseId) {
-        return quizRepository.findByCourseId(courseId);
+        List<Quiz> quizzes = quizRepository.findByCourseId(courseId);
+        if (!quizzes.isEmpty())
+            return quizzes;
+
+        // Check public schema
+        String currentTenant = com.eduflex.backend.config.tenant.TenantContext.getCurrentTenant();
+        try {
+            com.eduflex.backend.config.tenant.TenantContext.setCurrentTenant("public");
+            return quizRepository.findByCourseId(courseId);
+        } finally {
+            com.eduflex.backend.config.tenant.TenantContext.setCurrentTenant(currentTenant);
+        }
     }
 
     public Quiz createQuiz(Long courseId, Quiz quizData) {
@@ -91,7 +102,17 @@ public class QuizService {
     }
 
     public QuizResult submitQuiz(Long quizId, Long studentId, Map<Long, Long> answers) {
-        Quiz quiz = quizRepository.findById(quizId).orElseThrow();
+        Quiz quiz = quizRepository.findById(quizId).orElse(null);
+        if (quiz == null) {
+            String currentTenant = com.eduflex.backend.config.tenant.TenantContext.getCurrentTenant();
+            try {
+                com.eduflex.backend.config.tenant.TenantContext.setCurrentTenant("public");
+                quiz = quizRepository.findById(quizId)
+                        .orElseThrow(() -> new RuntimeException("Quiz not found: " + quizId));
+            } finally {
+                com.eduflex.backend.config.tenant.TenantContext.setCurrentTenant(currentTenant);
+            }
+        }
         User student = userRepository.findById(studentId).orElseThrow();
 
         int score = 0;
