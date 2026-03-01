@@ -93,6 +93,7 @@ export const getNavigationConfig = (currentUser, t, isModuleActive, licenseTier,
     }
     if ((isAdmin || isReseller) && isModuleActive?.('RESELLER_SYSTEM')) {
         sections.admin.push({ path: '/admin/sales', label: 'Försäljning', icon: <TrendingUp size={20} /> });
+        sections.admin.push({ path: '/admin/compliance', label: 'Compliance & ROI', icon: <ShieldCheck size={20} /> });
     }
     if (roleName === 'HALSOTEAM' || roleName === 'ROLE_HALSOTEAM') {
         sections.admin.push({ path: '/health-dashboard', label: 'E-hälsa (Hälsoteam)', icon: <Heart size={20} className="text-rose-500" /> });
