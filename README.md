@@ -41,7 +41,13 @@
 
 ---
 
-### 🕒 Senaste uppdateringarna (Session sammanfattning)
+### 🕒 Senaste uppdateringarna (2026-03-02)
+*   **AI Video Auto-refresh**: Implementerat WebSocket-stöd (`AI_VIDEO_READY`) så att kursmaterial-listan laddas om automatiskt när en AI-video är klar.
+*   **Konsoliderad Export-UI**: Samlat alla exportval (Video, PPT, PDF, Word etc.) under en enda premium "Exportera"-knapp i `CourseContentModule`.
+*   **Tenant Schema Fix**: Åtgärdat schema-drift via Flyway (V112) som säkerställer att alla tenants har stöd för AI-video metadata.
+*   **Backend Export Fix**: Korrigerat `LessonExportService` för att använda rätt lagringsväg (`/api/storage/`), vilket löser 404-fel vid nedladdning.
+
+### 🕒 Senaste uppdateringarna (2026-03-01)
 *   **AI Video & Exporter**: Åtgärdat video-rendering (FFMPEG escaping) och nätverksbryggan (MinIO/WSL) så att rendering och uppspelning nu är 100% stabil.
 *   **Database Resilience**: Säkrat Flyway-migrationer (V110, V111) som idempotenta (`IF NOT EXISTS`) för att förhindra krascher vid backend-omstart.
 *   **Säkerhet & Git**: Rensat bort känslig logg-data från repot och stramat åt `.gitignore` permanent.

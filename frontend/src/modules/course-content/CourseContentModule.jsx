@@ -8,6 +8,8 @@ import EpubViewer from '../../components/common/EpubViewer';
 import PublishModal from '../../features/community/components/PublishModal';
 import CommentSection from '../../features/social/components/CommentSection';
 import RichTextEditor from '../../components/RichTextEditor';
+import SockJS from 'sockjs-client';
+import { Stomp } from '@stomp/stompjs';
 
 export const CourseContentModuleMetadata = {
     key: 'material',
@@ -57,8 +59,6 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
     // --- TRACKING: VIEW_LESSON ---
     useEffect(() => {
         if (selectedLesson && !isTeacher && currentUser) {
-            // Debounce or just log immediately? Let's log immediately but prevent dupes if strict mode double-renders
-            // Better: Just fire and forget
             api.activity.log({
                 userId: currentUser.id,
                 courseId: courseId,
@@ -68,6 +68,61 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
             }).catch(console.error);
         }
     }, [selectedLesson?.id]); // Only re-run if ID changes
+
+    // --- WEBSOCKET: AI VIDEO READY ---
+    useEffect(() => {
+        if (!currentUser || !courseId) return;
+
+        let client;
+        try {
+            const baseUrl = API_BASE.replace(/\/api\/?$/, '');
+            const socketUrl = `${baseUrl}/ws-social`;
+            client = Stomp.over(() => new SockJS(socketUrl));
+            client.debug = () => { };
+            client.reconnectDelay = 5000;
+            client.connectHeaders = { 'Authorization': `Bearer ${localStorage.getItem('token')}` };
+
+            client.onConnect = () => {
+                const topic = `/topic/course/${courseId}/materials`;
+                client.subscribe(topic, (message) => {
+                    const event = JSON.parse(message.body);
+                    if (event.type === 'AI_VIDEO_READY') {
+                        console.log("AI Video is ready, reloading lessons...");
+                        loadLessons();
+                        // Optionally show a toast or alert
+                        if (event.materialId) {
+                            // If we want to auto-select it, we could do something here
+                        }
+                    }
+                });
+            };
+            client.activate();
+        } catch (e) {
+            console.error("WS for materials failed", e);
+        }
+
+        return () => { if (client) client.deactivate(); };
+    }, [courseId, currentUser]);
+
+    const triggerVideoGen = async (lessonId) => {
+        if (isVideoGenerating) return;
+        if (!confirm("Vill du skapa en AI-videoförklaring för denna lektion? Det tar ca 1-2 minuter.")) return;
+
+        setIsVideoGenerating(true);
+        try {
+            const res = await api.ai.tutor.generateVideo(courseId, lessonId);
+            alert(res.message || "Videogenerering har startats!");
+        } catch (e) {
+            console.error(e);
+            if (e.message && e.message.includes("403")) {
+                alert("🔒 Denna funktion kräver en PRO eller ENTERPRISE licens.");
+            } else {
+                alert("Kunde inte starta videogenerering.");
+            }
+        } finally {
+            setIsVideoGenerating(false);
+        }
+    };
 
     const loadLessons = async () => {
         try {
@@ -770,36 +825,6 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
                             </div>
                             {isTeacher && (
                                 <div className="flex gap-2 items-center">
-                                    <button
-                                        onClick={async () => {
-                                            if (isVideoGenerating) return;
-                                            if (!confirm("Vill du skapa en AI-videoförklaring för denna lektion? Det tar ca 1-2 minuter.")) return;
-                                            setIsVideoGenerating(true);
-                                            try {
-                                                const res = await api.ai.tutor.generateVideo(courseId, selectedLesson.id);
-                                                alert(res.message || "Videogenerering har startats!");
-                                            } catch (e) {
-                                                console.error(e);
-                                                if (e.message && e.message.includes("403")) {
-                                                    alert("🔒 Denna funktion kräver en PRO eller ENTERPRISE licens.");
-                                                } else {
-                                                    alert("Kunde inte starta videogenerering.");
-                                                }
-                                            } finally {
-                                                setIsVideoGenerating(false);
-                                            }
-                                        }}
-                                        disabled={isVideoGenerating}
-                                        className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg shadow-sm border border-transparent transition-all ${isVideoGenerating
-                                            ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                                            : 'bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white shadow-md shadow-purple-200 dark:shadow-none'
-                                            }`}
-                                        title="Skapa AI-videoförklaring"
-                                    >
-                                        {isVideoGenerating ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
-                                        {isVideoGenerating ? 'Genererar...' : 'AI-Video'}
-                                    </button>
-
                                     {/* GENERATE / EXPORT DROP-DOWN */}
                                     <div className="relative group">
                                         <button
@@ -814,7 +839,25 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
                                             <ChevronDown size={12} />
                                         </button>
 
-                                        <div className="absolute right-0 mt-1 w-56 bg-white dark:bg-[#202124] rounded-xl shadow-xl border border-gray-100 dark:border-gray-800 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 py-2 overflow-hidden">
+                                        <div className="absolute right-0 mt-1 w-64 bg-white dark:bg-[#202124] rounded-xl shadow-xl border border-gray-100 dark:border-gray-800 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 py-2 overflow-hidden">
+                                            {/* AI Video Generation - Now inside dropdown */}
+                                            <button
+                                                onClick={async () => {
+                                                    if (isVideoGenerating) return;
+                                                    triggerVideoGen(selectedLesson.id);
+                                                }}
+                                                disabled={isVideoGenerating}
+                                                className="w-full text-left px-4 py-2.5 text-xs hover:bg-indigo-50 dark:hover:bg-indigo-900/20 flex items-center justify-between group/video border-b border-gray-100 dark:border-gray-800"
+                                            >
+                                                <div className="flex items-center gap-3">
+                                                    {isVideoGenerating ? <Loader2 size={14} className="animate-spin text-indigo-600" /> : <Sparkles size={14} className="text-indigo-600 transition-transform group-hover/video:scale-110" />}
+                                                    <div className="flex flex-col">
+                                                        <span className="font-bold text-gray-900 dark:text-white">Generera AI-Video</span>
+                                                        <span className="text-[10px] text-gray-400">Skapa en förklarande video</span>
+                                                    </div>
+                                                </div>
+                                                {isVideoGenerating && <span className="text-[10px] font-bold text-indigo-600 animate-pulse">AKTIV...</span>}
+                                            </button>
                                             <button
                                                 onClick={async () => {
                                                     if (isPPTGenerating) return;
@@ -827,7 +870,7 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
                                                     } catch (e) { alert("Kunde inte generera PowerPoint."); }
                                                     finally { setIsPPTGenerating(false); }
                                                 }}
-                                                className="w-full text-left px-4 py-2 text-xs hover:bg-gray-50 dark:hover:bg-[#3c4043] flex items-center gap-2 group/item"
+                                                className="w-full text-left px-4 py-2.5 text-xs hover:bg-gray-50 dark:hover:bg-[#3c4043] flex items-center gap-3 group/item border-b border-gray-50 dark:border-gray-800"
                                             >
                                                 <ImageIcon size={14} className="text-orange-500 transition-transform group-hover/item:scale-110" /> PowerPoint (.pptx)
                                             </button>
@@ -843,7 +886,7 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
                                                     } catch (e) { alert("PDF-export misslyckades."); }
                                                     finally { setIsExporting(false); }
                                                 }}
-                                                className="w-full text-left px-4 py-2 text-xs hover:bg-gray-50 dark:hover:bg-[#3c4043] flex items-center gap-2"
+                                                className="w-full text-left px-4 py-2.5 text-xs hover:bg-gray-50 dark:hover:bg-[#3c4043] flex items-center gap-3 transition-colors"
                                             >
                                                 <FileText size={14} className="text-red-500" /> PDF Dokument
                                             </button>
@@ -857,7 +900,7 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
                                                     } catch (e) { alert("Word-export misslyckades."); }
                                                     finally { setIsExporting(false); }
                                                 }}
-                                                className="w-full text-left px-4 py-2 text-xs hover:bg-gray-50 dark:hover:bg-[#3c4043] flex items-center gap-2"
+                                                className="w-full text-left px-4 py-2.5 text-xs hover:bg-gray-50 dark:hover:bg-[#3c4043] flex items-center gap-3 transition-colors"
                                             >
                                                 <FileText size={14} className="text-blue-500" /> Word (.docx)
                                             </button>
@@ -871,7 +914,7 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
                                                     } catch (e) { alert("Excel-export misslyckades."); }
                                                     finally { setIsExporting(false); }
                                                 }}
-                                                className="w-full text-left px-4 py-2 text-xs hover:bg-gray-50 dark:hover:bg-[#3c4043] flex items-center gap-2"
+                                                className="w-full text-left px-4 py-2.5 text-xs hover:bg-gray-50 dark:hover:bg-[#3c4043] flex items-center gap-3 transition-colors"
                                             >
                                                 <FileText size={14} className="text-green-500" /> Excel (.xlsx)
                                             </button>
@@ -885,7 +928,7 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
                                                     } catch (e) { alert("EPUB-export misslyckades."); }
                                                     finally { setIsExporting(false); }
                                                 }}
-                                                className="w-full text-left px-4 py-2 text-xs hover:bg-gray-50 dark:hover:bg-[#3c4043] flex items-center gap-2"
+                                                className="w-full text-left px-4 py-2.5 text-xs hover:bg-gray-50 dark:hover:bg-[#3c4043] flex items-center gap-3 transition-colors"
                                             >
                                                 <Book size={14} className="text-purple-500" /> E-bok (.epub)
                                             </button>

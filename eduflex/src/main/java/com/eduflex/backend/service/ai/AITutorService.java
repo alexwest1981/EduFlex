@@ -29,6 +29,7 @@ public class AITutorService {
     private final com.eduflex.backend.service.GamificationService gamificationService;
     private final org.springframework.data.redis.core.StringRedisTemplate redisTemplate;
     private final com.fasterxml.jackson.databind.ObjectMapper objectMapper;
+    private final org.springframework.messaging.simp.SimpMessagingTemplate messagingTemplate;
     private final Tika tika = new Tika();
 
     private final com.eduflex.backend.repository.EbookRepository ebookRepository;
@@ -40,7 +41,8 @@ public class AITutorService {
             com.eduflex.backend.repository.EbookRepository ebookRepository,
             com.eduflex.backend.service.GamificationService gamificationService,
             org.springframework.data.redis.core.StringRedisTemplate redisTemplate,
-            com.fasterxml.jackson.databind.ObjectMapper objectMapper) {
+            com.fasterxml.jackson.databind.ObjectMapper objectMapper,
+            org.springframework.messaging.simp.SimpMessagingTemplate messagingTemplate) {
         this.geminiService = geminiService;
         this.embeddingRepository = embeddingRepository;
         this.materialRepository = materialRepository;
@@ -49,6 +51,7 @@ public class AITutorService {
         this.gamificationService = gamificationService;
         this.redisTemplate = redisTemplate;
         this.objectMapper = objectMapper;
+        this.messagingTemplate = messagingTemplate;
     }
 
     private static final int CHUNK_SIZE = 1000;
@@ -409,8 +412,17 @@ public class AITutorService {
 
             materialRepository.save(videoLesson);
 
-            logger.info("Successfully created separate AI video lesson for material {} with title: {}", materialId,
-                    videoLesson.getTitle());
+            // Notify frontend via WebSocket
+            String topic = "/topic/course/" + videoLesson.getCourse().getId() + "/materials";
+            Map<String, Object> event = new HashMap<>();
+            event.put("type", "AI_VIDEO_READY");
+            event.put("materialId", videoLesson.getId());
+            event.put("courseId", videoLesson.getCourse().getId());
+            messagingTemplate.convertAndSend(topic, event);
+
+            logger.info(
+                    "Successfully created separate AI video lesson for material {} with title: {} and notified frontend via {}",
+                    materialId, videoLesson.getTitle(), topic);
         } catch (Exception e) {
             logger.error("Failed to handle video callback", e);
         }

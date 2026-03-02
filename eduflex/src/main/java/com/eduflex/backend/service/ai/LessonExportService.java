@@ -190,7 +190,7 @@ public class LessonExportService {
         CourseMaterial material = new CourseMaterial();
         material.setCourse(course);
         material.setTitle(lesson.getTitle() + " (" + extension.toUpperCase() + ")");
-        material.setFileUrl(storageId);
+        material.setFileUrl("/api/storage/" + storageId);
         material.setType(type);
         material.setAvailableFrom(LocalDateTime.now());
 
