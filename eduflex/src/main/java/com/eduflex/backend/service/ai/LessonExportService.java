@@ -4,7 +4,7 @@ import com.eduflex.backend.model.Course;
 import com.eduflex.backend.model.CourseMaterial;
 import com.eduflex.backend.repository.CourseMaterialRepository;
 import com.eduflex.backend.repository.CourseRepository;
-import com.eduflex.backend.service.MinioStorageService;
+import com.eduflex.backend.service.StorageService;
 import com.lowagie.text.Document;
 import com.lowagie.text.Paragraph;
 import com.lowagie.text.pdf.PdfWriter;
@@ -39,7 +39,7 @@ public class LessonExportService {
     private CourseMaterialRepository materialRepository;
 
     @Autowired
-    private MinioStorageService storageService;
+    private StorageService storageService;
 
     @Autowired
     private GeminiService geminiService;

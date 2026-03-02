@@ -4,7 +4,7 @@ import com.eduflex.backend.model.Course;
 import com.eduflex.backend.model.CourseMaterial;
 import com.eduflex.backend.repository.CourseMaterialRepository;
 import com.eduflex.backend.repository.CourseRepository;
-import com.eduflex.backend.service.MinioStorageService;
+import com.eduflex.backend.service.StorageService;
 import com.eduflex.backend.service.AiAuditService;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.apache.poi.xslf.usermodel.*;
@@ -30,7 +30,7 @@ public class PowerPointService {
     private GeminiService geminiService;
 
     @Autowired
-    private MinioStorageService storageService;
+    private StorageService storageService;
 
     @Autowired
     private CourseMaterialRepository materialRepository;
