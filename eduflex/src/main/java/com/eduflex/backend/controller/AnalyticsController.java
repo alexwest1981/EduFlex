@@ -23,33 +23,33 @@ public class AnalyticsController {
     }
 
     @GetMapping("/overview")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN', 'TEACHER', 'ROLE_TEACHER')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN', 'TEACHER', 'ROLE_TEACHER', 'PRINCIPAL', 'ROLE_PRINCIPAL', 'REKTOR', 'ROLE_REKTOR')")
     public ResponseEntity<Map<String, Object>> getOverview(
             @RequestParam(required = false, defaultValue = "month") String range) {
         return ResponseEntity.ok(analyticsService.getSystemOverview(range));
     }
 
     @GetMapping("/growth")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN', 'TEACHER', 'ROLE_TEACHER')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN', 'TEACHER', 'ROLE_TEACHER', 'PRINCIPAL', 'ROLE_PRINCIPAL', 'REKTOR', 'ROLE_REKTOR')")
     public ResponseEntity<List<Map<String, Object>>> getGrowth(
             @RequestParam(required = false, defaultValue = "month") String range) {
         return ResponseEntity.ok(analyticsService.getUserGrowth(range));
     }
 
     @GetMapping("/engagement")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN', 'TEACHER', 'ROLE_TEACHER')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN', 'TEACHER', 'ROLE_TEACHER', 'PRINCIPAL', 'ROLE_PRINCIPAL', 'REKTOR', 'ROLE_REKTOR')")
     public ResponseEntity<Map<String, Object>> getEngagement() {
         return ResponseEntity.ok(analyticsService.getEngagementStats());
     }
 
     @GetMapping("/students")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN', 'TEACHER', 'ROLE_TEACHER')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN', 'TEACHER', 'ROLE_TEACHER', 'PRINCIPAL', 'ROLE_PRINCIPAL', 'REKTOR', 'ROLE_REKTOR')")
     public ResponseEntity<List<Map<String, Object>>> getStudentInsights() {
         return ResponseEntity.ok(analyticsService.getStudentInsights());
     }
 
     @GetMapping("/csn-report")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN', 'TEACHER', 'ROLE_TEACHER')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN', 'TEACHER', 'ROLE_TEACHER', 'PRINCIPAL', 'ROLE_PRINCIPAL', 'REKTOR', 'ROLE_REKTOR')")
     public ResponseEntity<List<Map<String, Object>>> getCSNReport() {
         // Enbart PRINCIPAL/ADMIN borde nå denna
         return ResponseEntity.ok(analyticsService.getCSNReport());
@@ -71,26 +71,26 @@ public class AnalyticsController {
     // --- NEW ENDPOINTS FOR DASHBOARD ---
 
     @GetMapping("/activity-trend")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN', 'TEACHER', 'ROLE_TEACHER')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN', 'TEACHER', 'ROLE_TEACHER', 'PRINCIPAL', 'ROLE_PRINCIPAL', 'REKTOR', 'ROLE_REKTOR')")
     public ResponseEntity<List<Map<String, Object>>> getActivityTrend(
             @RequestParam(required = false, defaultValue = "30d") String range) {
         return ResponseEntity.ok(analyticsService.getActivityTrend(range));
     }
 
     @GetMapping("/course-performance")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN', 'TEACHER', 'ROLE_TEACHER')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN', 'TEACHER', 'ROLE_TEACHER', 'PRINCIPAL', 'ROLE_PRINCIPAL', 'REKTOR', 'ROLE_REKTOR')")
     public ResponseEntity<List<Map<String, Object>>> getCoursePerformance() {
         return ResponseEntity.ok(analyticsService.getCoursePerformance());
     }
 
     @GetMapping("/at-risk-students")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN', 'TEACHER', 'ROLE_TEACHER')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN', 'TEACHER', 'ROLE_TEACHER', 'PRINCIPAL', 'ROLE_PRINCIPAL', 'REKTOR', 'ROLE_REKTOR')")
     public ResponseEntity<List<Map<String, Object>>> getAtRiskStudents() {
         return ResponseEntity.ok(analyticsService.getAtRiskStudents());
     }
 
     @GetMapping("/at-risk/{userId}/ai-summary")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN', 'TEACHER', 'ROLE_TEACHER')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN', 'TEACHER', 'ROLE_TEACHER', 'PRINCIPAL', 'ROLE_PRINCIPAL', 'REKTOR', 'ROLE_REKTOR')")
     public ResponseEntity<Map<String, String>> getAtRiskAiSummary(@PathVariable Long userId) {
         return ResponseEntity.ok(Map.of("summary", analyticsService.getAtRiskAiSummary(userId)));
     }
@@ -103,19 +103,19 @@ public class AnalyticsController {
     }
 
     @GetMapping("/drop-off/{courseId}")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN', 'TEACHER', 'ROLE_TEACHER')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN', 'TEACHER', 'ROLE_TEACHER', 'PRINCIPAL', 'ROLE_PRINCIPAL', 'REKTOR', 'ROLE_REKTOR')")
     public ResponseEntity<List<Map<String, Object>>> getCourseDropOff(@PathVariable Long courseId) {
         return ResponseEntity.ok(analyticsService.getCourseDropOff(courseId));
     }
 
     @GetMapping("/course/{courseId}/completion-summary")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN', 'TEACHER', 'ROLE_TEACHER')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN', 'TEACHER', 'ROLE_TEACHER', 'PRINCIPAL', 'ROLE_PRINCIPAL', 'REKTOR', 'ROLE_REKTOR')")
     public ResponseEntity<List<Map<String, Object>>> getCourseCompletionSummary(@PathVariable Long courseId) {
         return ResponseEntity.ok(analyticsService.getCourseCompletionSummary(courseId));
     }
 
     @GetMapping("/course/{courseId}/item-details")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN', 'TEACHER', 'ROLE_TEACHER')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN', 'TEACHER', 'ROLE_TEACHER', 'PRINCIPAL', 'ROLE_PRINCIPAL', 'REKTOR', 'ROLE_REKTOR')")
     public ResponseEntity<List<Map<String, Object>>> getCourseItemDetails(
             @PathVariable Long courseId,
             @RequestParam Long itemId,

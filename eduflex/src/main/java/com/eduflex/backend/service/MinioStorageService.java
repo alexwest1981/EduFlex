@@ -49,11 +49,12 @@ public class MinioStorageService implements StorageService {
             }
 
             // DEBUG: List objects in bucket
-            // Iterable<io.minio.Result<io.minio.messages.Item>> results = minioClient.listObjects(
-            //         io.minio.ListObjectsArgs.builder().bucket(bucketName).build());
+            // Iterable<io.minio.Result<io.minio.messages.Item>> results =
+            // minioClient.listObjects(
+            // io.minio.ListObjectsArgs.builder().bucket(bucketName).build());
             // logger.info("Listing objects in bucket '{}':", bucketName);
             // for (io.minio.Result<io.minio.messages.Item> result : results) {
-            //     logger.info(" - Found object: {}", result.get().objectName());
+            // logger.info(" - Found object: {}", result.get().objectName());
             // }
 
         } catch (Exception e) {
@@ -99,15 +100,16 @@ public class MinioStorageService implements StorageService {
 
     @Override
     public InputStream load(String storageId) {
-        try {
-            // FIX: Strip leading /uploads/ if present, as MinIO keys are usually just filenames or UUIDs
-            String key = storageId;
-            if (key.startsWith("/uploads/")) {
-                key = key.substring("/uploads/".length());
-            } else if (key.startsWith("uploads/")) {
-                key = key.substring("uploads/".length());
-            }
+        // FIX: Strip leading /uploads/ if present, as MinIO keys are usually just
+        // filenames or UUIDs
+        String key = storageId;
+        if (key.startsWith("/uploads/")) {
+            key = key.substring("/uploads/".length());
+        } else if (key.startsWith("uploads/")) {
+            key = key.substring("uploads/".length());
+        }
 
+        try {
             logger.info("Attempting to load object '{}' (original: '{}') from bucket '{}'", key, storageId, bucketName);
             return minioClient.getObject(
                     io.minio.GetObjectArgs.builder()
@@ -118,7 +120,8 @@ public class MinioStorageService implements StorageService {
             // Lazy Sync: Try to recover from local uploads if available
             try {
                 // Use injected uploadDir
-                // Try to find the file locally using the original storageId (which might be a path) or just the filename
+                // Try to find the file locally using the original storageId (which might be a
+                // path) or just the filename
                 String filename = storageId;
                 if (filename.contains("/")) {
                     filename = filename.substring(filename.lastIndexOf("/") + 1);
@@ -132,16 +135,11 @@ public class MinioStorageService implements StorageService {
                 if (!java.nio.file.Files.exists(localPath)) {
                     localPath = java.nio.file.Paths.get(uploadDir, filename);
                 }
-                
-                // Also check if the filename itself contains the UUID prefix from the database path
+
+                // Also check if the filename itself contains the UUID prefix from the database
+                // path
                 // e.g. /uploads/UUID_filename -> check for UUID_filename in uploadDir
                 if (!java.nio.file.Files.exists(localPath)) {
-                     String key = storageId;
-                    if (key.startsWith("/uploads/")) {
-                        key = key.substring("/uploads/".length());
-                    } else if (key.startsWith("uploads/")) {
-                        key = key.substring("uploads/".length());
-                    }
                     localPath = java.nio.file.Paths.get(uploadDir, key);
                 }
 
@@ -151,14 +149,6 @@ public class MinioStorageService implements StorageService {
                     String contentType = java.net.URLConnection.guessContentTypeFromName(storageId);
                     if (contentType == null)
                         contentType = "application/octet-stream";
-
-                    // Use the cleaned key for MinIO
-                    String key = storageId;
-                    if (key.startsWith("/uploads/")) {
-                        key = key.substring("/uploads/".length());
-                    } else if (key.startsWith("uploads/")) {
-                        key = key.substring("uploads/".length());
-                    }
 
                     try (InputStream is = java.nio.file.Files.newInputStream(localPath)) {
                         save(is, contentType, storageId, key);

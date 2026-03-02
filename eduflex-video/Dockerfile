@@ -14,8 +14,8 @@ RUN mvn clean package -Dmaven.test.skip=true -B
 FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
 
-# Install FFMPEG
-RUN apk add --no-cache ffmpeg
+# Install FFMPEG and Fonts for text rendering
+RUN apk add --no-cache ffmpeg ttf-dejavu fontconfig
 
 # Create non-root user
 RUN addgroup -S spring && adduser -S spring -G spring

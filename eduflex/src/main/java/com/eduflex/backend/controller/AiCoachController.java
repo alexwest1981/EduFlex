@@ -35,7 +35,7 @@ public class AiCoachController {
     }
 
     @GetMapping("/principal")
-    @PreAuthorize("hasAnyRole('RECTOR', 'ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN', 'PRINCIPAL', 'ROLE_PRINCIPAL', 'REKTOR', 'ROLE_REKTOR', 'RECTOR', 'ROLE_RECTOR')")
     public ResponseEntity<PrincipalAiCoachService.PrincipalAiCoachInsight> getPrincipalInsight() {
         return ResponseEntity.ok(principalAiCoachService.getPrincipalInsight());
     }

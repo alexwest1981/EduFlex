@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { QuizRunnerModal } from '../quiz-runner/QuizModals';
-import { BookOpen, Plus, Edit2, Trash2, Save, ChevronRight, Video, Download, Paperclip, Loader2, Image as ImageIcon, Film, HelpCircle, Trophy, PlayCircle, Sparkles, Share2 } from 'lucide-react';
+import { BookOpen, Plus, Edit2, Trash2, Save, ChevronRight, Video, Download, Paperclip, Loader2, Image as ImageIcon, Film, HelpCircle, Trophy, PlayCircle, Sparkles, Share2, FileText, ChevronDown, Book, ExternalLink } from 'lucide-react';
 import { api, getSafeUrl } from '../../services/api';
 import OnlyOfficeEditor from '../../features/documents/OnlyOfficeEditor';
 import VideoPlayer from './components/VideoPlayer';
@@ -25,6 +25,9 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
     const [isEditing, setIsEditing] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
     const [isVideoGenerating, setIsVideoGenerating] = useState(false);
+    const [isPPTGenerating, setIsPPTGenerating] = useState(false);
+    const [isExporting, setIsExporting] = useState(false);
+    const [isSavingFile, setIsSavingFile] = useState(false);
     const [onlyOfficeDoc, setOnlyOfficeDoc] = useState(null);
 
     // Calendar Integration
@@ -294,6 +297,38 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
         return editableExts.includes(ext);
     };
 
+    const handleSaveToMyFiles = async (lesson) => {
+        if (!lesson || !lesson.fileUrl) return;
+        setIsSavingFile(true);
+        try {
+            const token = localStorage.getItem('token');
+            const tenantId = localStorage.getItem('tenant_id') || '';
+            const fetchUrl = getSafeUrl(lesson.fileUrl);
+
+            const reqHeaders = { 'Authorization': `Bearer ${token}` };
+            if (tenantId) reqHeaders['X-Tenant-ID'] = tenantId;
+
+            const response = await fetch(fetchUrl, { headers: reqHeaders });
+            if (!response.ok) throw new Error("Kunde inte hämta filen");
+
+            const blob = await response.blob();
+            // Get original filename or set a fallback
+            const filename = lesson.fileUrl.split('/').pop() || 'dokument';
+
+            const fileObj = new File([blob], filename, { type: blob.type });
+            const formData = new FormData();
+            formData.append('file', fileObj);
+
+            await api.documents.upload(currentUser.id, formData);
+            alert("Filen har sparats i 'Filer & Dokument'!");
+        } catch (error) {
+            console.error(error);
+            alert("Kunde inte spara filen: " + error.message);
+        } finally {
+            setIsSavingFile(false);
+        }
+    };
+
     const startEditing = (lesson) => {
         setFormData({
             title: lesson.title,
@@ -335,150 +370,159 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
                 <div className="flex-1 overflow-y-auto p-2 space-y-1 custom-scrollbar">
                     {lessons.length === 0 && quizzes.length === 0 && <p className="text-sm text-gray-400 text-center py-10">Inget innehåll än.</p>}
 
-                    {/* LESSONS LIST */}
-                    {lessons.map((lesson, idx) => {
-                        const isLocked = !isTeacher && lesson.availableFrom && new Date(lesson.availableFrom) > new Date();
-                        const isScheduled = isTeacher && lesson.availableFrom && new Date(lesson.availableFrom) > new Date();
+                    {/* DYNAMIC LISTS: Lektioner, Quiz, Filer, Videos */}
+                    {[
+                        { title: null, items: lessons.filter(l => !['FILE', 'EPUB', 'VIDEO', 'STUDY_MATERIAL'].includes(l.type)), isQuiz: false },
+                        { title: 'Quiz & Förhör', items: quizzes, isQuiz: true },
+                        { title: 'Filer', items: lessons.filter(l => ['FILE', 'EPUB', 'STUDY_MATERIAL'].includes(l.type)), isQuiz: false, icon: <Paperclip size={12} /> },
+                        { title: 'Videos', items: lessons.filter(l => l.type === 'VIDEO'), isQuiz: false, icon: <Film size={12} /> }
+                    ].map((group, groupIdx) => (
+                        <React.Fragment key={`group-${groupIdx}`}>
+                            {group.title && group.items.length > 0 && <div className="px-3 pt-4 pb-1 text-xs font-bold text-gray-400 uppercase tracking-wider">{group.title}</div>}
+                            {group.items.map((item, idx) => {
+                                const isLocked = !isTeacher && item.availableFrom && new Date(item.availableFrom) > new Date();
+                                const isScheduled = isTeacher && item.availableFrom && new Date(item.availableFrom) > new Date();
 
-                        return (
-                            <div
-                                key={`lesson-${lesson.id}`}
-                                id={`lesson-item-${lesson.id}`}
-                                onClick={() => {
-                                    if (!isLocked) {
-                                        setSelectedLesson(lesson);
-                                        setSelectedQuiz(null);
-                                        setIsEditing(false);
-                                    }
-                                }}
-                                className={`p-3 rounded-lg cursor-pointer text-sm flex items-center justify-between group transition-colors ${selectedLesson?.id === lesson.id ? 'bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 font-bold' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-[#282a2c]'} ${isLocked ? 'opacity-60 cursor-not-allowed bg-gray-50 dark:bg-black/20' : ''}`}
-                            >
-                                <div className="flex items-center gap-3 truncate">
-                                    <span className="flex-shrink-0 flex items-center justify-center w-5 h-5 rounded-full bg-gray-100 dark:bg-[#3c4043] text-xs font-mono">
-                                        {isLocked ? <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg> : (idx + 1)}
-                                    </span>
-                                    <div className="truncate flex-1">
-                                        <span className="truncate block font-medium flex items-center gap-2">
-                                            {lesson.title}
-                                            {isScheduled && <span className="text-[9px] px-1.5 py-0.5 rounded bg-yellow-100 text-yellow-800 border border-yellow-200">Kommande</span>}
-                                        </span>
-                                        <span className="text-[10px] uppercase font-bold text-gray-400 flex gap-2">
-                                            <span>
-                                                {lesson.type === 'STUDY_MATERIAL' && 'Studiematerial'}
-                                                {lesson.type === 'QUESTIONS' && 'Instuderingsfrågor'}
-                                                {lesson.type === 'LINK' && 'Länk'}
-                                                {(!lesson.type || lesson.type === 'LESSON' || lesson.type === 'VIDEO') && 'Lektion'}
-                                            </span>
-                                            {isLocked && <span>• Tillgänglig {new Date(lesson.availableFrom).toLocaleDateString()}</span>}
-                                        </span>
-                                    </div>
-                                    {/* Visibility Toggle & Share for GLOBAL mode */}
-                                    {isTeacher && mode === 'GLOBAL' && lesson.isResource && (
-                                        <div className="flex gap-1 flex-shrink-0">
-                                            {/* Visibility Toggle */}
-                                            <button
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    const newVisibility = lesson.visibility === 'PUBLIC' ? 'PRIVATE' : 'PUBLIC';
-                                                    api.resources.updateVisibility(lesson.id, newVisibility)
-                                                        .then(() => {
-                                                            setLessons(lessons.map(l =>
-                                                                l.id === lesson.id ? { ...l, visibility: newVisibility } : l
-                                                            ));
-                                                        })
-                                                        .catch(err => {
-                                                            console.error('Failed to update visibility:', err);
-                                                            alert('Kunde inte uppdatera synlighet');
-                                                        });
-                                                }}
-                                                className={`px-2 py-1 rounded text-[9px] font-bold transition-colors ${lesson.visibility === 'PUBLIC'
-                                                    ? 'bg-green-100 text-green-700 hover:bg-green-200'
-                                                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                                                    }`}
-                                                title={lesson.visibility === 'PUBLIC' ? 'Klicka för att göra privat' : 'Klicka för att göra publik'}
-                                            >
-                                                {lesson.visibility === 'PUBLIC' ? '🌐 Public' : '🔒 Private'}
-                                            </button>
-
-                                            {/* Share to Community Button (only if PUBLIC) */}
-                                            {lesson.visibility === 'PUBLIC' && (
-                                                <button
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        setPublishingLesson(lesson);
-                                                        setShowPublishModal(true);
-                                                    }}
-                                                    className="px-2 py-1 rounded text-[9px] font-bold bg-purple-100 text-purple-700 hover:bg-purple-200 transition-colors flex items-center gap-1"
-                                                    title="Dela i Community"
-                                                >
-                                                    <Share2 size={10} /> Dela
-                                                </button>
-                                            )}
-
-                                            {/* Publish to Global Library (Admins only) */}
-                                            {currentUser?.role?.name === 'ADMIN' && lesson.visibility !== 'GLOBAL_LIBRARY' && (
-                                                <button
-                                                    onClick={async (e) => {
-                                                        e.stopPropagation();
-                                                        if (window.confirm('Varning: Detta kommer göra materialet tillgängligt för alla tenants i systemets Global Library. Är du säker?')) {
-                                                            try {
-                                                                await api.globalLibrary.publish(lesson.id);
-                                                                alert('Materialet har publicerats till Global Library!');
-                                                                setLessons(lessons.map(l => l.id === lesson.id ? { ...l, visibility: 'GLOBAL_LIBRARY' } : l));
-                                                            } catch (err) {
-                                                                alert('Kunde inte publicera till Global Library: ' + (err.message || 'Okänt fel'));
-                                                            }
-                                                        }
-                                                    }}
-                                                    className="px-2 py-1 rounded text-[9px] font-bold bg-blue-100 text-blue-700 hover:bg-blue-200 transition-colors flex items-center gap-1"
-                                                    title="Publicera till Global Library"
-                                                >
-                                                    🌍 Publicera Globalt
-                                                </button>
-                                            )}
+                                if (group.isQuiz) {
+                                    return (
+                                        <div
+                                            key={`quiz-${item.id}`}
+                                            id={`quiz-item-${item.id}`}
+                                            onClick={() => {
+                                                if (!isLocked) {
+                                                    setSelectedQuiz(item);
+                                                    setSelectedLesson(null);
+                                                    setIsEditing(false);
+                                                }
+                                            }}
+                                            className={`p-3 rounded-lg cursor-pointer text-sm flex items-center justify-between group transition-colors ${selectedQuiz?.id === item.id ? 'bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 font-bold' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-[#282a2c]'} ${isLocked ? 'opacity-60 cursor-not-allowed' : ''}`}
+                                        >
+                                            <div className="flex items-center gap-3 truncate">
+                                                <span className="flex-shrink-0 flex items-center justify-center w-5 h-5 rounded-full bg-purple-100 dark:bg-purple-900/50 text-purple-600 dark:text-purple-300 text-xs">
+                                                    <HelpCircle size={12} />
+                                                </span>
+                                                <div className="truncate">
+                                                    <span className="truncate block font-medium">
+                                                        {item.title}
+                                                    </span>
+                                                    <span className="text-[10px] uppercase font-bold text-gray-400">
+                                                        {item.questions?.length || 0} Frågor
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            {selectedQuiz?.id === item.id && <ChevronRight size={14} />}
                                         </div>
-                                    )}
-                                </div>
-                                {selectedLesson?.id === lesson.id && <ChevronRight size={14} />}
-                            </div>
-                        );
-                    })}
+                                    );
+                                } else {
+                                    return (
+                                        <div
+                                            key={`lesson-${item.id}`}
+                                            id={`lesson-item-${item.id}`}
+                                            onClick={() => {
+                                                if (!isLocked) {
+                                                    setSelectedLesson(item);
+                                                    setSelectedQuiz(null);
+                                                    setIsEditing(false);
+                                                }
+                                            }}
+                                            className={`p-3 rounded-lg cursor-pointer text-sm flex items-center justify-between group transition-colors ${selectedLesson?.id === item.id ? 'bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 font-bold' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-[#282a2c]'} ${isLocked ? 'opacity-60 cursor-not-allowed bg-gray-50 dark:bg-black/20' : ''}`}
+                                        >
+                                            <div className="flex items-center gap-3 truncate">
+                                                <span className="flex-shrink-0 flex items-center justify-center w-5 h-5 rounded-full bg-gray-100 dark:bg-[#3c4043] text-xs font-mono text-gray-500">
+                                                    {isLocked ? <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg> : (group.icon || (idx + 1))}
+                                                </span>
+                                                <div className="truncate flex-1">
+                                                    <span className="truncate block font-medium flex items-center gap-2">
+                                                        {item.title}
+                                                        {isScheduled && <span className="text-[9px] px-1.5 py-0.5 rounded bg-yellow-100 text-yellow-800 border border-yellow-200">Kommande</span>}
+                                                    </span>
+                                                    <span className="text-[10px] uppercase font-bold text-gray-400 flex gap-2">
+                                                        <span>
+                                                            {item.type === 'STUDY_MATERIAL' && 'Studiematerial'}
+                                                            {item.type === 'QUESTIONS' && 'Instuderingsfrågor'}
+                                                            {item.type === 'LINK' && 'Länk'}
+                                                            {item.type === 'FILE' && 'Fil'}
+                                                            {item.type === 'EPUB' && 'E-bok'}
+                                                            {item.type === 'VIDEO' && 'Video'}
+                                                            {(!item.type || item.type === 'LESSON') && 'Lektion'}
+                                                        </span>
+                                                        {isLocked && <span>• Tillgänglig {new Date(item.availableFrom).toLocaleDateString()}</span>}
+                                                    </span>
+                                                </div>
+                                                {/* Visibility Toggle & Share for GLOBAL mode */}
+                                                {isTeacher && mode === 'GLOBAL' && item.isResource && (
+                                                    <div className="flex gap-1 flex-shrink-0">
+                                                        {/* Visibility Toggle */}
+                                                        <button
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                const newVisibility = item.visibility === 'PUBLIC' ? 'PRIVATE' : 'PUBLIC';
+                                                                api.resources.updateVisibility(item.id, newVisibility)
+                                                                    .then(() => {
+                                                                        setLessons(lessons.map(l =>
+                                                                            l.id === item.id ? { ...l, visibility: newVisibility } : l
+                                                                        ));
+                                                                    })
+                                                                    .catch(err => {
+                                                                        console.error('Failed to update visibility:', err);
+                                                                        alert('Kunde inte uppdatera synlighet');
+                                                                    });
+                                                            }}
+                                                            className={`px-2 py-1 rounded text-[9px] font-bold transition-colors ${item.visibility === 'PUBLIC'
+                                                                ? 'bg-green-100 text-green-700 hover:bg-green-200'
+                                                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                                                }`}
+                                                            title={item.visibility === 'PUBLIC' ? 'Klicka för att göra privat' : 'Klicka för att göra publik'}
+                                                        >
+                                                            {item.visibility === 'PUBLIC' ? '🌐 Public' : '🔒 Private'}
+                                                        </button>
 
-                    {/* QUIZZES LIST */}
-                    {quizzes.length > 0 && <div className="px-3 pt-4 pb-1 text-xs font-bold text-gray-400 uppercase tracking-wider">Quiz & Förhör</div>}
-                    {quizzes.map((quiz, idx) => {
-                        const isLocked = !isTeacher && quiz.availableFrom && new Date(quiz.availableFrom) > new Date();
+                                                        {/* Share to Community Button (only if PUBLIC) */}
+                                                        {item.visibility === 'PUBLIC' && (
+                                                            <button
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    setPublishingLesson(item);
+                                                                    setShowPublishModal(true);
+                                                                }}
+                                                                className="px-2 py-1 rounded text-[9px] font-bold bg-purple-100 text-purple-700 hover:bg-purple-200 transition-colors flex items-center gap-1"
+                                                                title="Dela i Community"
+                                                            >
+                                                                <Share2 size={10} /> Dela
+                                                            </button>
+                                                        )}
 
-                        return (
-                            <div
-                                key={`quiz-${quiz.id}`}
-                                id={`quiz-item-${quiz.id}`}
-                                onClick={() => {
-                                    if (!isLocked) {
-                                        setSelectedQuiz(quiz);
-                                        setSelectedLesson(null);
-                                        setIsEditing(false);
-                                    }
-                                }}
-                                className={`p-3 rounded-lg cursor-pointer text-sm flex items-center justify-between group transition-colors ${selectedQuiz?.id === quiz.id ? 'bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 font-bold' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-[#282a2c]'} ${isLocked ? 'opacity-60 cursor-not-allowed' : ''}`}
-                            >
-                                <div className="flex items-center gap-3 truncate">
-                                    <span className="flex-shrink-0 flex items-center justify-center w-5 h-5 rounded-full bg-purple-100 dark:bg-purple-900/50 text-purple-600 dark:text-purple-300 text-xs">
-                                        <HelpCircle size={12} />
-                                    </span>
-                                    <div className="truncate">
-                                        <span className="truncate block font-medium">
-                                            {quiz.title}
-                                        </span>
-                                        <span className="text-[10px] uppercase font-bold text-gray-400">
-                                            {quiz.questions?.length || 0} Frågor
-                                        </span>
-                                    </div>
-                                </div>
-                                {selectedQuiz?.id === quiz.id && <ChevronRight size={14} />}
-                            </div>
-                        );
-                    })}
+                                                        {/* Publish to Global Library (Admins only) */}
+                                                        {currentUser?.role?.name === 'ADMIN' && item.visibility !== 'GLOBAL_LIBRARY' && (
+                                                            <button
+                                                                onClick={async (e) => {
+                                                                    e.stopPropagation();
+                                                                    if (window.confirm('Varning: Detta kommer göra materialet tillgängligt för alla tenants i systemets Global Library. Är du säker?')) {
+                                                                        try {
+                                                                            await api.globalLibrary.publish(item.id);
+                                                                            alert('Materialet har publicerats till Global Library!');
+                                                                            setLessons(lessons.map(l => l.id === item.id ? { ...l, visibility: 'GLOBAL_LIBRARY' } : l));
+                                                                        } catch (err) {
+                                                                            alert('Kunde inte publicera till Global Library: ' + (err.message || 'Okänt fel'));
+                                                                        }
+                                                                    }
+                                                                }}
+                                                                className="px-2 py-1 rounded text-[9px] font-bold bg-blue-100 text-blue-700 hover:bg-blue-200 transition-colors flex items-center gap-1"
+                                                                title="Publicera till Global Library"
+                                                            >
+                                                                🌍 Publicera Globalt
+                                                            </button>
+                                                        )}
+                                                    </div>
+                                                )}
+                                            </div>
+                                            {selectedLesson?.id === item.id && <ChevronRight size={14} />}
+                                        </div>
+                                    );
+                                }
+                            })}
+                        </React.Fragment>
+                    ))}
                 </div>
             </div>
 
@@ -725,7 +769,7 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
                                 <div className="h-1 w-20 bg-indigo-500 rounded-full"></div>
                             </div>
                             {isTeacher && (
-                                <div className="flex gap-2">
+                                <div className="flex gap-2 items-center">
                                     <button
                                         onClick={async () => {
                                             if (isVideoGenerating) return;
@@ -746,17 +790,112 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
                                             }
                                         }}
                                         disabled={isVideoGenerating}
-                                        className={`flex items-center gap-2 px-4 py-2 text-sm font-bold rounded-lg shadow-sm border border-transparent transition-all ${isVideoGenerating
+                                        className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg shadow-sm border border-transparent transition-all ${isVideoGenerating
                                             ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
                                             : 'bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white shadow-md shadow-purple-200 dark:shadow-none'
                                             }`}
                                         title="Skapa AI-videoförklaring"
                                     >
-                                        {isVideoGenerating ? <Loader2 size={16} className="animate-spin" /> : <Sparkles size={16} />}
-                                        {isVideoGenerating ? 'Genererar...' : 'Skapa AI-Video'}
+                                        {isVideoGenerating ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
+                                        {isVideoGenerating ? 'Genererar...' : 'AI-Video'}
                                     </button>
-                                    <button onClick={() => startEditing(selectedLesson)} className="p-2 text-gray-500 hover:text-indigo-600 hover:bg-gray-100 dark:hover:bg-[#3c4043] rounded-lg transition-colors" title="Redigera"><Edit2 size={18} /></button>
-                                    <button onClick={() => handleDelete(selectedLesson.id)} className="p-2 text-gray-500 hover:text-red-600 hover:bg-gray-100 dark:hover:bg-[#3c4043] rounded-lg transition-colors" title="Ta bort"><Trash2 size={18} /></button>
+
+                                    {/* GENERATE / EXPORT DROP-DOWN */}
+                                    <div className="relative group">
+                                        <button
+                                            disabled={isExporting || isPPTGenerating}
+                                            className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg shadow-sm border border-transparent transition-all ${isExporting || isPPTGenerating
+                                                ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                                                : 'bg-indigo-100 text-indigo-700 hover:bg-indigo-200'
+                                                }`}
+                                        >
+                                            {isExporting || isPPTGenerating ? <Loader2 size={14} className="animate-spin" /> : <Download size={14} />}
+                                            {isExporting ? 'Exporterar...' : isPPTGenerating ? 'Genererar...' : 'Exportera'}
+                                            <ChevronDown size={12} />
+                                        </button>
+
+                                        <div className="absolute right-0 mt-1 w-56 bg-white dark:bg-[#202124] rounded-xl shadow-xl border border-gray-100 dark:border-gray-800 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 py-2 overflow-hidden">
+                                            <button
+                                                onClick={async () => {
+                                                    if (isPPTGenerating) return;
+                                                    if (!confirm("Vill du skapa ett PowerPoint-presentation baserat på denna lektion?")) return;
+                                                    setIsPPTGenerating(true);
+                                                    try {
+                                                        const res = await api.ai.powerpoint.generate(courseId, selectedLesson.id);
+                                                        alert(res.message || "PowerPoint har genererats!");
+                                                        loadLessons();
+                                                    } catch (e) { alert("Kunde inte generera PowerPoint."); }
+                                                    finally { setIsPPTGenerating(false); }
+                                                }}
+                                                className="w-full text-left px-4 py-2 text-xs hover:bg-gray-50 dark:hover:bg-[#3c4043] flex items-center gap-2 group/item"
+                                            >
+                                                <ImageIcon size={14} className="text-orange-500 transition-transform group-hover/item:scale-110" /> PowerPoint (.pptx)
+                                            </button>
+
+
+                                            <button
+                                                onClick={async () => {
+                                                    setIsExporting(true);
+                                                    try {
+                                                        const res = await api.ai.export.pdf(courseId, selectedLesson.id);
+                                                        alert(res.message);
+                                                        loadLessons();
+                                                    } catch (e) { alert("PDF-export misslyckades."); }
+                                                    finally { setIsExporting(false); }
+                                                }}
+                                                className="w-full text-left px-4 py-2 text-xs hover:bg-gray-50 dark:hover:bg-[#3c4043] flex items-center gap-2"
+                                            >
+                                                <FileText size={14} className="text-red-500" /> PDF Dokument
+                                            </button>
+                                            <button
+                                                onClick={async () => {
+                                                    setIsExporting(true);
+                                                    try {
+                                                        const res = await api.ai.export.word(courseId, selectedLesson.id);
+                                                        alert(res.message);
+                                                        loadLessons();
+                                                    } catch (e) { alert("Word-export misslyckades."); }
+                                                    finally { setIsExporting(false); }
+                                                }}
+                                                className="w-full text-left px-4 py-2 text-xs hover:bg-gray-50 dark:hover:bg-[#3c4043] flex items-center gap-2"
+                                            >
+                                                <FileText size={14} className="text-blue-500" /> Word (.docx)
+                                            </button>
+                                            <button
+                                                onClick={async () => {
+                                                    setIsExporting(true);
+                                                    try {
+                                                        const res = await api.ai.export.excel(courseId, selectedLesson.id);
+                                                        alert(res.message);
+                                                        loadLessons();
+                                                    } catch (e) { alert("Excel-export misslyckades."); }
+                                                    finally { setIsExporting(false); }
+                                                }}
+                                                className="w-full text-left px-4 py-2 text-xs hover:bg-gray-50 dark:hover:bg-[#3c4043] flex items-center gap-2"
+                                            >
+                                                <FileText size={14} className="text-green-500" /> Excel (.xlsx)
+                                            </button>
+                                            <button
+                                                onClick={async () => {
+                                                    setIsExporting(true);
+                                                    try {
+                                                        const res = await api.ai.export.epub(courseId, selectedLesson.id);
+                                                        alert(res.message);
+                                                        loadLessons();
+                                                    } catch (e) { alert("EPUB-export misslyckades."); }
+                                                    finally { setIsExporting(false); }
+                                                }}
+                                                className="w-full text-left px-4 py-2 text-xs hover:bg-gray-50 dark:hover:bg-[#3c4043] flex items-center gap-2"
+                                            >
+                                                <Book size={14} className="text-purple-500" /> E-bok (.epub)
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div className="h-4 w-px bg-gray-200 dark:bg-gray-700 mx-1"></div>
+
+                                    <button onClick={() => startEditing(selectedLesson)} className="p-1.5 text-gray-500 hover:text-indigo-600 hover:bg-gray-100 dark:hover:bg-[#3c4043] rounded-lg transition-colors" title="Redigera"><Edit2 size={16} /></button>
+                                    <button onClick={() => handleDelete(selectedLesson.id)} className="p-1.5 text-gray-500 hover:text-red-600 hover:bg-gray-100 dark:hover:bg-[#3c4043] rounded-lg transition-colors" title="Ta bort"><Trash2 size={16} /></button>
                                 </div>
                             )}
                         </div>
@@ -848,56 +987,99 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
                                     </div>
                                 </div>
                                 <div className="flex gap-2">
-                                    <a
-                                        href={getSafeUrl(selectedLesson.fileUrl)}
-                                        download
-                                        target="_blank"
-                                        rel="noreferrer"
-                                        className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-[#1E1F20] hover:bg-gray-50 dark:hover:bg-[#282a2c] text-sm font-bold text-gray-700 dark:text-gray-200 rounded-lg shadow-sm border border-gray-200 dark:border-[#3c4043] transition-colors"
-                                        onClick={() => {
-                                            if (!isTeacher) {
-                                                api.activity.log({
-                                                    userId: currentUser.id,
-                                                    courseId: courseId,
-                                                    materialId: selectedLesson.id,
-                                                    type: 'DOWNLOAD_FILE',
-                                                    details: selectedLesson.fileUrl.split('/').pop()
-                                                }).catch(console.error);
-                                            }
-                                        }}
-                                    >
-                                        <Download size={16} /> Ladda ner
-                                    </a>
-                                    {isTeacher && isEditable(selectedLesson.fileUrl) && (
-                                        <button
-                                            onClick={() => setOnlyOfficeDoc(selectedLesson)}
-                                            className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-sm font-bold text-white rounded-lg shadow-sm border border-transparent transition-colors"
-                                        >
-                                            <Edit2 size={16} /> Redigera Inline
+                                    <div className="relative group">
+                                        <button className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-[#1E1F20] hover:bg-gray-50 dark:hover:bg-[#282a2c] text-sm font-bold text-gray-700 dark:text-gray-200 rounded-lg shadow-sm border border-gray-200 dark:border-[#3c4043] transition-colors focus:ring-2 focus:ring-indigo-500/20">
+                                            Filalternativ <ChevronDown size={16} className="text-gray-400 group-hover:text-indigo-500 transition-colors" />
                                         </button>
-                                    )}
-                                    {isTeacher && (
-                                        <button
-                                            onClick={async () => {
-                                                if (!confirm("Vill du indexera detta dokument för AI-tutorn?")) return;
-                                                try {
-                                                    await api.ai.tutor.ingest(courseId, selectedLesson.id);
-                                                    alert("Dokumentet har indexerats!");
-                                                } catch (e) {
-                                                    console.error(e);
-                                                    if (e.message && e.message.includes("403")) {
-                                                        alert("🔒 Denna funktion kräver en PRO eller ENTERPRISE licens.");
-                                                    } else {
-                                                        alert("Kunde inte indexera dokumentet.");
-                                                    }
-                                                }
-                                            }}
-                                            className="flex items-center gap-2 px-4 py-2 bg-purple-100 hover:bg-purple-200 text-sm font-bold text-purple-700 rounded-lg shadow-sm border border-transparent transition-colors"
-                                            title="Indexera för AI-tutor"
-                                        >
-                                            <Sparkles size={16} /> Indexera
-                                        </button>
-                                    )}
+                                        <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-[var(--dark-surface)] rounded-xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.1)] dark:shadow-none border border-gray-100 dark:border-[var(--dark-border)] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 overflow-hidden transform origin-top-right group-hover:scale-100 scale-95">
+                                            <div className="py-2">
+                                                {/* Öppna */}
+                                                {isEditable(selectedLesson.fileUrl) ? (
+                                                    <button
+                                                        onClick={() => setOnlyOfficeDoc(selectedLesson)}
+                                                        className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-bold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-[var(--dark-bg)] hover:text-indigo-600 dark:hover:text-indigo-400 text-left transition-colors"
+                                                    >
+                                                        <ExternalLink size={16} /> Öppna
+                                                    </button>
+                                                ) : (
+                                                    <a
+                                                        href={getSafeUrl(selectedLesson.fileUrl)}
+                                                        target="_blank"
+                                                        rel="noreferrer"
+                                                        className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-bold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-[var(--dark-bg)] hover:text-indigo-600 dark:hover:text-indigo-400 text-left transition-colors"
+                                                    >
+                                                        <ExternalLink size={16} /> Öppna
+                                                    </a>
+                                                )}
+
+                                                {/* Spara till mina filer */}
+                                                <button
+                                                    onClick={() => handleSaveToMyFiles(selectedLesson)}
+                                                    disabled={isSavingFile}
+                                                    className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-bold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-[var(--dark-bg)] hover:text-indigo-600 dark:hover:text-indigo-400 text-left transition-colors disabled:opacity-50"
+                                                >
+                                                    {isSavingFile ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
+                                                    {isSavingFile ? 'Sparar...' : 'Spara till mina filer'}
+                                                </button>
+
+                                                {/* Ladda ner */}
+                                                <a
+                                                    href={getSafeUrl(selectedLesson.fileUrl)}
+                                                    download
+                                                    target="_blank"
+                                                    rel="noreferrer"
+                                                    onClick={() => {
+                                                        if (!isTeacher) {
+                                                            api.activity.log({
+                                                                userId: currentUser.id,
+                                                                courseId: courseId,
+                                                                materialId: selectedLesson.id,
+                                                                type: 'DOWNLOAD_FILE',
+                                                                details: selectedLesson.fileUrl.split('/').pop()
+                                                            }).catch(console.error);
+                                                        }
+                                                    }}
+                                                    className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-bold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-[var(--dark-bg)] hover:text-indigo-600 dark:hover:text-indigo-400 text-left transition-colors"
+                                                >
+                                                    <Download size={16} /> Ladda ner
+                                                </a>
+
+                                                {/* Separator if teacher tools are shown */}
+                                                {isTeacher && (
+                                                    <div className="mx-3 my-1 border-b border-gray-100 dark:border-[var(--dark-border)]"></div>
+                                                )}
+
+                                                {/* Redigera Inline */}
+                                                {isTeacher && isEditable(selectedLesson.fileUrl) && (
+                                                    <button
+                                                        onClick={() => setOnlyOfficeDoc(selectedLesson)}
+                                                        className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-bold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-[var(--dark-bg)] hover:text-indigo-600 dark:hover:text-indigo-400 text-left transition-colors"
+                                                    >
+                                                        <Edit2 size={16} /> Redigera Inline
+                                                    </button>
+                                                )}
+
+                                                {/* Indexera */}
+                                                {isTeacher && (
+                                                    <button
+                                                        onClick={async () => {
+                                                            if (!confirm("Vill du indexera detta dokument för AI-tutorn?")) return;
+                                                            try {
+                                                                await api.ai.tutor.ingest(courseId, selectedLesson.id);
+                                                                alert("Dokumentet har indexerats!");
+                                                            } catch (e) {
+                                                                console.error(e);
+                                                                alert("Kunde inte indexera.");
+                                                            }
+                                                        }}
+                                                        className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-bold text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20 text-left transition-colors"
+                                                    >
+                                                        <Sparkles size={16} /> Lägg till i AI-Tutor
+                                                    </button>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         )}

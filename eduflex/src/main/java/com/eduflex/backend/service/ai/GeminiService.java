@@ -161,6 +161,34 @@ public class GeminiService {
             4. Svara på SAMMA SPRÅK som källtexten.
             """;
 
+    private static final String PPT_SYSTEM_PROMPT = """
+            Du är en expert på att skapa engagerande presentationer.
+            Din uppgift är att strukturera en lektionstext till individuella PowerPoint-slides.
+
+            REGLER:
+            1. Skapa mellan 5 och 10 slides beroende på textens längd.
+            2. Varje slide ska ha en 'title' och en lista med 'bulletPoints'.
+            3. Håll texten på varje slide kort och koncis (pedagogiskt fokus).
+            4. Den första sliden ska vara en titelsida.
+            5. Den sista sliden ska vara en sammanfattning.
+            6. Svara ALLTID på samma språk som källtexten.
+
+            VIKTIGT: Returnera ENDAST giltig JSON utan markdown-formatering.
+            Svara med följande JSON-struktur:
+            {
+              "slides": [
+                {
+                  "title": "Slide Rubrik",
+                  "bulletPoints": [
+                    "Punkt 1",
+                    "Punkt 2",
+                    "Punkt 3"
+                  ]
+                }
+              ]
+            }
+            """;
+
     /**
      * Generates a video script for an AI tutor lesson using Gemini.
      */
@@ -611,6 +639,26 @@ public class GeminiService {
      */
     public String generateLessonPlan(String prompt) {
         return generateResponse(prompt);
+    }
+
+    /**
+     * Structurizes lesson text into slides for PowerPoint generation.
+     */
+    public JsonNode generateSlideContent(String lessonText) {
+        String prompt = "Här är lektionstexten:\n\n" + lessonText
+                + "\n\nStrukturera detta till PowerPoint-slides enligt instruktionerna.";
+        String response = callGemini(PPT_SYSTEM_PROMPT, prompt, false);
+        try {
+            return objectMapper.readTree(response);
+        } catch (JsonProcessingException e) {
+            logger.error("Failed to parse slide JSON: {}", response, e);
+            return null;
+        }
+    }
+
+    private String callGemini(String systemPrompt, String userPrompt, boolean jsonMode) {
+        String fullPrompt = systemPrompt + "\n\n" + userPrompt;
+        return callGemini(fullPrompt, jsonMode);
     }
 
     /**

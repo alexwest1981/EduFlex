@@ -294,8 +294,13 @@ public class OnlyOfficeController {
                 return ResponseEntity.notFound().build();
             }
 
-            logger.info("[ONLYOFFICE] Loading file from storage: storageId={}, fileName={}", fileUrl, fileName);
-            InputStream is = storageService.load(fileUrl);
+            String storageId = fileUrl.replace("/api/storage/", "");
+            if (storageId.startsWith("/uploads/")) {
+                storageId = storageId.replace("/uploads/", "");
+            }
+
+            logger.info("[ONLYOFFICE] Loading file from storage: storageId={}, fileName={}", storageId, fileName);
+            InputStream is = storageService.load(storageId);
             Resource resource = new InputStreamResource(is);
             return ResponseEntity.ok()
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")

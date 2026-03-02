@@ -41,6 +41,10 @@ public class ManagementReportService {
             Du är en expert på skolförbättring och strategiskt ledarskap inom utbildning.
             Din uppgift är att skriva en professionell ledningsrapport (Ledningsrapport) baserat på insamlad data från ett LMS.
 
+            REGLER FÖR DATUM:
+            - Använd det tillhandahållna mätvärdet 'current_date' som rapportens dateringsdatum.
+            - Rapporten ska dateras med dagens datum: %s.
+
             RAPPORTENS STRUKTUR:
             1. Sammanfattning (Executive Summary)
             2. Analys av Kvalitetsmål (SKA)
@@ -68,7 +72,9 @@ public class ManagementReportService {
         try {
             // 2. Prepare AI Prompt
             String snapshotJson = objectMapper.writeValueAsString(snapshot);
-            String prompt = REPORT_SYSTEM_PROMPT + "\n\nDATA FÖR DENNA PERIOD (" + period + "):\n" + snapshotJson;
+            String today = java.time.LocalDate.now().toString();
+            String systemPrompt = String.format(REPORT_SYSTEM_PROMPT, today);
+            String prompt = systemPrompt + "\n\nDATA FÖR DENNA PERIOD (" + period + "):\n" + snapshotJson;
 
             // 3. Generate Content with Gemini
             String aiContent = geminiService.generateResponse(prompt);
@@ -114,6 +120,7 @@ public class ManagementReportService {
         data.put("avg_attendance", calculateAverageAttendance());
         data.put("passing_rate", calculatePassingRate());
         data.put("incident_count", incidentReportRepository.count());
+        data.put("current_date", java.time.LocalDate.now().toString());
 
         // Risk Statistics
         Map<String, Long> riskStats = new HashMap<>();

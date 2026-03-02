@@ -70,6 +70,12 @@ compile_log*.txt
 restore-output.log
 mvn_output*.txt
 build_log*.txt
+*log*.txt
+*_diff.txt
+maven_error*.txt
+maven_start*.txt
+backend-logs*.txt
+video-logs*.txt
 
 # Documentation & Public Config
 !README.md

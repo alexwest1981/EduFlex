@@ -27,6 +27,7 @@
 | **Hög** | **CSN/Upphandlings-rapporter** | Närvaro-export (enskild + bulk), Excel (.xlsx), GDPR Art. 15 registerutdrag, läraråtkomst. | ✅ **Klar** (v3.0.0) | Svenskt krav. |
 | **Medel** | **Partner & B2B Extended Enterprise** | Resellers (Edtech Studios), B2B Seat Licenses, Pointers i Global Library | ✅ **Klar** (v3.1.0) | Scale via partners & B2B sales. |
 | **Låg** | **Microservices Scale** | Load-test PDF/video (verifiera befintlig implementation). | 2 dagar | Verify. |
+| **Hög** | **AI Microservice Extraction** | Bryta ut AI-logik (Gemini) till en dedikerad Python FastAPI microservice för asykron prestanda, GDPR data-filtrering och oberoende HPA skalbarhet. | 5 dagar | Framtidssäkrad AI-arkitektur för Enterprise. |
 
 **Milstolpe:** Första betalande kund + Kubernetes-deploy (Helm).
 

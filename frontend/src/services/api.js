@@ -750,7 +750,16 @@ export const api = {
         processReviewResult: (itemId, quality) => api.post(`/ai/hub/review/${itemId}?quality=${quality}`),
         generateSession: (data) => api.post('/ai/hub/session/generate', data),
         completeSession: (data, xp) => api.post(`/ai/hub/session/complete?xp=${xp}`, data),
-        getRecommendations: () => api.get('/ai/hub/recommendations')
+        getRecommendations: () => api.get('/ai/hub/recommendations'),
+        powerpoint: {
+            generate: (courseId, lessonId) => api.post(`/ai/powerpoint/generate?courseId=${courseId}&lessonId=${lessonId}`)
+        },
+        export: {
+            pdf: (courseId, lessonId) => api.post(`/ai/export/pdf?courseId=${courseId}&lessonId=${lessonId}`),
+            word: (courseId, lessonId) => api.post(`/ai/export/word?courseId=${courseId}&lessonId=${lessonId}`),
+            excel: (courseId, lessonId) => api.post(`/ai/export/excel?courseId=${courseId}&lessonId=${lessonId}`),
+            epub: (courseId, lessonId) => api.post(`/ai/export/epub?courseId=${courseId}&lessonId=${lessonId}`)
+        }
     },
 
     resources: {

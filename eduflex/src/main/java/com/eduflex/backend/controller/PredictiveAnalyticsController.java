@@ -23,31 +23,31 @@ public class PredictiveAnalyticsController {
     }
 
     @GetMapping("/coach/principal")
-    @PreAuthorize("hasAnyRole('ADMIN', 'PRINCIPAL')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN', 'PRINCIPAL', 'ROLE_PRINCIPAL', 'REKTOR', 'ROLE_REKTOR')")
     public ResponseEntity<Map<String, Object>> getPrincipalCoach() {
         return ResponseEntity.ok(aiCoachingService.getPrincipalWeeklyFocus());
     }
 
     @GetMapping("/coach/mentor/{mentorId}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER', 'PRINCIPAL')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN', 'TEACHER', 'ROLE_TEACHER', 'PRINCIPAL', 'ROLE_PRINCIPAL', 'REKTOR', 'ROLE_REKTOR')")
     public ResponseEntity<Map<String, Object>> getMentorCoach(@PathVariable Long mentorId) {
         return ResponseEntity.ok(aiCoachingService.getMentorStudentOverview(mentorId));
     }
 
     @GetMapping("/high-risk")
-    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER', 'PRINCIPAL')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN', 'TEACHER', 'ROLE_TEACHER', 'PRINCIPAL', 'ROLE_PRINCIPAL', 'REKTOR', 'ROLE_REKTOR')")
     public ResponseEntity<List<StudentRiskFlag>> getHighRiskFlags() {
         return ResponseEntity.ok(predictiveAnalysisService.getHighRiskStudents());
     }
 
     @GetMapping("/mentor/{mentorId}/high-risk")
-    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER', 'PRINCIPAL')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN', 'TEACHER', 'ROLE_TEACHER', 'PRINCIPAL', 'ROLE_PRINCIPAL', 'REKTOR', 'ROLE_REKTOR')")
     public ResponseEntity<List<StudentRiskFlag>> getHighRiskFlagsForMentor(@PathVariable Long mentorId) {
         return ResponseEntity.ok(predictiveAnalysisService.getHighRiskStudentsForMentor(mentorId));
     }
 
     @PostMapping("/analyze/{studentId}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER', 'PRINCIPAL')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN', 'TEACHER', 'ROLE_TEACHER', 'PRINCIPAL', 'ROLE_PRINCIPAL', 'REKTOR', 'ROLE_REKTOR')")
     public ResponseEntity<StudentRiskFlag> analyzeStudent(@PathVariable Long studentId) {
         return ResponseEntity.ok(predictiveAnalysisService.analyzeStudentRisk(studentId));
     }

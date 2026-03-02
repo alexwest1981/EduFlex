@@ -57,7 +57,7 @@ public class VideoInternalService {
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
                 String line;
                 while ((line = reader.readLine()) != null) {
-                    log.debug(line);
+                    log.info("FFMPEG: {}", line);
                 }
             }
 
@@ -90,25 +90,36 @@ public class VideoInternalService {
 
             String outputPath = "/tmp/ai_video_" + fileId + ".mp4";
 
+            // Write title to temp file to avoid escaping issues
+            String titleFilePath = "/tmp/title_" + fileId + ".txt";
+            java.nio.file.Files.writeString(java.nio.file.Paths.get(titleFilePath), title,
+                    java.nio.charset.StandardCharsets.UTF_8);
+
             // Build FFMPEG filter for multiple scenes
             StringBuilder filter = new StringBuilder();
             // Start with title screen for 3 seconds
-            filter.append("drawtext=text='").append(title)
-                    .append("':fontcolor=white:fontsize=64:x=(w-text_w)/2:y=(h-text_h)/2:enable='between(t,0,3)'");
+            filter.append("drawtext=fontfile='/usr/share/fonts/ttf-dejavu/DejaVuSans.ttf':textfile='")
+                    .append(titleFilePath).append("'")
+                    .append(":fontcolor=white:fontsize=64:x=(w-text_w)/2:y=(h-text_h)/2:enable='between(t,0,3)'");
 
             double currentTime = 3.0;
+            int sceneIndex = 0;
             for (com.fasterxml.jackson.databind.JsonNode scene : scenes) {
                 String text = scene.path("text").asText("");
                 double duration = scene.path("duration").asDouble(5.0);
 
-                // Escape single quotes in text for FFMPEG
-                String escapedText = text.replace("'", "\\'");
+                // Write text to temp file
+                String sceneFilePath = "/tmp/scene_" + fileId + "_" + sceneIndex + ".txt";
+                java.nio.file.Files.writeString(java.nio.file.Paths.get(sceneFilePath), text,
+                        java.nio.charset.StandardCharsets.UTF_8);
 
-                filter.append(",drawtext=text='").append(escapedText)
-                        .append("':fontcolor=white:fontsize=36:x=50:y=h-100:w=w-100:enable='between(t,")
+                filter.append(",drawtext=fontfile='/usr/share/fonts/ttf-dejavu/DejaVuSans.ttf':textfile='")
+                        .append(sceneFilePath).append("'")
+                        .append(":fontcolor=white:fontsize=36:x=50:y=h-150:enable='between(t,")
                         .append(currentTime).append(",").append(currentTime + duration).append("')");
 
                 currentTime += duration;
+                sceneIndex++;
             }
 
             // Total duration
@@ -128,7 +139,7 @@ public class VideoInternalService {
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
                 String line;
                 while ((line = reader.readLine()) != null) {
-                    log.debug(line);
+                    log.info("FFMPEG: {}", line);
                 }
             }
 

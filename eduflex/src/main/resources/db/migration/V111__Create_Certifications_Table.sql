@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS certifications (
     id SERIAL PRIMARY KEY,
-    user_id BIGINT NOT NULL REFERENCES users(id),
+    user_id BIGINT NOT NULL REFERENCES app_users(id),
     course_id BIGINT NOT NULL REFERENCES courses(id),
     title VARCHAR(255) NOT NULL,
     certificate_url TEXT,
