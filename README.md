@@ -42,22 +42,9 @@
 ---
 
 ### 🕒 Senaste uppdateringarna (Session sammanfattning)
-*   **Global Library Engine**: Implementerat pointer-baserad distribution för kurser, vilket möjliggör Single Source of Truth över alla tenants.
-*   **Reseller Module**: Fullt stöd för återförsäljare att paketera och sälja kurslicenser (Seat Licenses) till företag.
-*   **Automation**: Ny HrSyncController för Zero-Touch onboarding av personal.
-*   **Sales Kit**: Integrerat TCO-kalkylator och Compliance Dashboard för att underlätta B2B-försäljning.
-
----
-
-### 🚀 **v3.5.0** (1 mar 2026) – B2B Sales Enablement & Compliance
-*   **🛡️ Compliance Center**: Nytt gränssnitt för HR/Admins för att övervaka regelefterlevnad och certifieringar i realtid med automatisk expiry-tracking.
-*   **🔌 HR Sync API (API-First)**: Kraftfullt API för automatiserad user provisioning från externa HR-system som Workday.
-*   **📊 Interactive TCO Calculator**: Säljverktyg för live ROI-beräkningar direkt i plattformen för att stänga Enterprise-affärer.
-*   **📄 Compliance Battle Kit**: Komplett dokumentation (`ComplianceDocumentation.md`) som täcker GDPR, kryptering och WCAG för IT-due diligence.
-
----
-
-### 🕒 Senaste uppdateringarna (Session sammanfattning)
+*   **AI Video & Exporter**: Åtgärdat video-rendering (FFMPEG escaping) och nätverksbryggan (MinIO/WSL) så att rendering och uppspelning nu är 100% stabil.
+*   **Database Resilience**: Säkrat Flyway-migrationer (V110, V111) som idempotenta (`IF NOT EXISTS`) för att förhindra krascher vid backend-omstart.
+*   **Säkerhet & Git**: Rensat bort känslig logg-data från repot och stramat åt `.gitignore` permanent.
 *   **Global Library Engine**: Implementerat pointer-baserad distribution för kurser, vilket möjliggör Single Source of Truth över alla tenants.
 *   **Reseller Module**: Fullt stöd för återförsäljare att paketera och sälja kurslicenser (Seat Licenses) till företag.
 *   **Automation**: Ny HrSyncController för Zero-Touch onboarding av personal.

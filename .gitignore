@@ -64,18 +64,23 @@ config/nul
 logs/
 *.log
 *.log.*
-compile_log*.txt
+compile_*.txt
 *debug*.txt
 *debug*.log
 restore-output.log
 mvn_output*.txt
-build_log*.txt
+build_*.txt
 *log*.txt
 *_diff.txt
-maven_error*.txt
-maven_start*.txt
-backend-logs*.txt
+maven_*.txt
+backend_*.txt
 video-logs*.txt
+startup_*.txt
+test_*.txt
+git_status*.txt
+*error*.txt
+*output*.txt
+*snippet*.txt
 
 # Documentation & Public Config
 !README.md

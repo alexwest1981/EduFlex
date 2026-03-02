@@ -12,6 +12,6 @@ CREATE TABLE IF NOT EXISTS certifications (
     updated_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX idx_cert_user ON certifications(user_id);
-CREATE INDEX idx_cert_status ON certifications(status);
-CREATE INDEX idx_cert_expires ON certifications(expires_at);
+CREATE INDEX IF NOT EXISTS idx_cert_user ON certifications(user_id);
+CREATE INDEX IF NOT EXISTS idx_cert_status ON certifications(status);
+CREATE INDEX IF NOT EXISTS idx_cert_expires ON certifications(expires_at);
