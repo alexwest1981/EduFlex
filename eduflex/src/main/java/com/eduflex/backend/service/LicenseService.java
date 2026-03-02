@@ -18,7 +18,7 @@ import java.util.Map;
 @Service
 public class LicenseService {
 
-    private static final String LICENSE_FILE = "E:\\Projekt\\EduFlex\\eduflex.license";
+    private final String LICENSE_FILE;
     private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(LicenseService.class);
 
     private final com.eduflex.backend.repository.PaymentSettingsRepository paymentSettingsRepository;
@@ -43,6 +43,7 @@ public class LicenseService {
         this.tenantRepository = tenantRepository;
         this.env = env;
         this.isOfflineMode = "true".equalsIgnoreCase(env.getProperty("EDUFLEX_OFFLINE_MODE"));
+        this.LICENSE_FILE = env.getProperty("EDUFLEX_LICENSE_PATH", "eduflex.license");
     }
 
     @PostConstruct

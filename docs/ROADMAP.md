@@ -146,6 +146,12 @@
 - **Code Quality**: Removed unused imports and fields from 15+ backend controllers.
 - **Refactoring**: Corrected `LtiController` and `OnlyOfficeController` cleanups.
 
+### [v3.6.2] - 2026-03-02
+- **Bug Fix**: **AI Video Generation Flow**.
+  - **Security**: Added permit for `/api/ai-tutor/video-callback` in `SecurityConfig` to fix blocked callbacks.
+  - **Multi-Tenancy**: Implemented `X-Tenant-ID` header in `eduflex-video` callback for correct schema isolation.
+  - **Reliability**: Configurable `EDUFLEX_LICENSE_PATH` and full Docker Compose synchronization for WSL/Windows consistency.
+
 ### [v3.6.1] - 2026-02-27
 - **New Feature**: **Docker-Integrated FFmpeg**.
   - **Zero-Config**: Integrated `ffmpeg` directly into `backend` and `video-service` Docker images for seamless server migration.

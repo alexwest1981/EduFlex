@@ -382,8 +382,9 @@ public class AITutorService {
             String jsonMessage = objectMapper.writeValueAsString(message);
             redisTemplate.convertAndSend("video.upload", jsonMessage);
 
-            logger.info("Successfully sent video generation message for material {} with tenant {}", materialId,
-                    tenantId);
+            logger.info(
+                    "Successfully sent video generation message to Redis (topic: video.upload) for material {} with tenant {}. Payload: {}",
+                    materialId, tenantId, jsonMessage);
         } catch (Exception e) {
             logger.error("Failed to trigger video generation", e);
             throw new RuntimeException("Kunde inte starta videogenerering: " + e.getMessage());
@@ -393,7 +394,7 @@ public class AITutorService {
     @Transactional
     public void handleVideoCallback(Long materialId, String videoUrl) {
         try {
-            logger.info("Received video callback for material {}. URL: {}", materialId, videoUrl);
+            logger.info("Received AI video callback for material {}. Video storage URL: {}", materialId, videoUrl);
             CourseMaterial original = materialRepository.findById(materialId)
                     .orElseThrow(() -> new RuntimeException("Original material not found"));
 

@@ -148,9 +148,9 @@ services:
       - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET:-}
       - EDUFLEX_DOMAIN_URL=${EDUFLEX_DOMAIN_URL:-}
       - ONLYOFFICE_JWT_SECRET=${ONLYOFFICE_JWT_SECRET:-S0raknJQXb1gcrvpgkNlpRQW3OyfiR9Q}
-      # - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9094
       # Disable Kafka Auto-Configuration to prevent startup failure
       - SPRING_AUTOCONFIGURE_EXCLUDE=org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration
+      - EDUFLEX_LICENSE_PATH=/app/eduflex.license
     extra_hosts:
       - "localhost:host-gateway"
     volumes:
@@ -174,7 +174,7 @@ services:
       - backend
     environment:
       - REDIS_HOST=redis
-      - CORE_URL=${CORE_URL:-http://host.docker.internal:8080}
+      - CORE_URL=http://backend:8080
       - MINIO_URL=http://minio:9000
     extra_hosts:
       - "host.docker.internal:host-gateway"
@@ -195,7 +195,7 @@ services:
       - backend
     environment:
       - REDIS_HOST=redis
-      - CORE_URL=${CORE_URL:-http://host.docker.internal:8080}
+      - CORE_URL=http://backend:8080
       - MINIO_URL=http://minio:9000
     extra_hosts:
       - "host.docker.internal:host-gateway"

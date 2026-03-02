@@ -120,6 +120,7 @@ public class SecurityConfig {
                                                                 "/api/onlyoffice/**",
                                                                 "/api/gamification/config/system", "/api/payment/**",
                                                                 "/api/community/subjects",
+                                                                "/api/ai-tutor/video-callback",
                                                                 "/api/lrs/**") // LRS endpoints must be accessible
                                                                                // without auth for Content/AUs
                                                 .permitAll()

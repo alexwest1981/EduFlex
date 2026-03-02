@@ -42,10 +42,10 @@
 ---
 
 ### 🕒 Senaste uppdateringarna (2026-03-02)
-*   **AI Video Auto-refresh**: Implementerat WebSocket-stöd (`AI_VIDEO_READY`) så att kursmaterial-listan laddas om automatiskt när en AI-video är klar.
-*   **Konsoliderad Export-UI**: Samlat alla exportval (Video, PPT, PDF, Word etc.) under en enda premium "Exportera"-knapp i `CourseContentModule`.
-*   **Tenant Schema Fix**: Åtgärdat schema-drift via Flyway (V112) som säkerställer att alla tenants har stöd för AI-video metadata.
-*   **Backend Export Fix**: Korrigerat `LessonExportService` för att använda rätt lagringsväg (`/api/storage/`), vilket löser 404-fel vid nedladdning.
+*   **AI Video Auto-refresh**: WebSocket-stöd (`AI_VIDEO_READY`) för automatisk omladdning av material-listan.
+*   **AI Video Callback Security**: Tillåtit `/api/ai-tutor/video-callback` i `SecurityConfig` för oautentiserade callbacks.
+*   **Video Multi-Tenancy Fix**: Implementerat `X-Tenant-ID` header i videomikrotjänsten för korrekt schema-lagring.
+*   **Full Containerization**: Harmoniserat hela stacken för 100% Docker-drift, vilket eliminerar WSL-sökvägsproblem.
 
 ### 🕒 Senaste uppdateringarna (2026-03-01)
 *   **AI Video & Exporter**: Åtgärdat video-rendering (FFMPEG escaping) och nätverksbryggan (MinIO/WSL) så att rendering och uppspelning nu är 100% stabil.

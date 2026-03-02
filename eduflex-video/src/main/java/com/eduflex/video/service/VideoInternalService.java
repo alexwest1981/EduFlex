@@ -161,7 +161,16 @@ public class VideoInternalService {
 
                 String callbackUrl = coreUrl + "/api/ai-tutor/video-callback";
                 log.info("Sending callback to Core (Tenant: {}): {}", tenantId, callbackUrl);
-                restTemplate.postForEntity(callbackUrl, callbackPayload, Void.class);
+
+                org.springframework.http.HttpHeaders headers = new org.springframework.http.HttpHeaders();
+                headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
+                if (tenantId != null) {
+                    headers.set("X-Tenant-ID", tenantId);
+                }
+                org.springframework.http.HttpEntity<java.util.Map<String, Object>> requestEntity = new org.springframework.http.HttpEntity<>(
+                        callbackPayload, headers);
+
+                restTemplate.postForEntity(callbackUrl, requestEntity, Void.class);
 
                 // Clean up local temp file
                 if (videoFile.delete()) {
@@ -174,7 +183,14 @@ public class VideoInternalService {
                 callbackPayload.put("fileId", fileId);
                 callbackPayload.put("status", "FAILED");
                 callbackPayload.put("tenantId", tenantId);
-                restTemplate.postForEntity(coreUrl + "/api/ai-tutor/video-callback", callbackPayload, Void.class);
+                org.springframework.http.HttpHeaders headers = new org.springframework.http.HttpHeaders();
+                headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
+                if (tenantId != null) {
+                    headers.set("X-Tenant-ID", tenantId);
+                }
+                org.springframework.http.HttpEntity<java.util.Map<String, Object>> requestEntity = new org.springframework.http.HttpEntity<>(
+                        callbackPayload, headers);
+                restTemplate.postForEntity(coreUrl + "/api/ai-tutor/video-callback", requestEntity, Void.class);
             }
 
         } catch (Exception e) {
