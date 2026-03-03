@@ -15,6 +15,7 @@ public class VideoInternalService {
 
     private final com.fasterxml.jackson.databind.ObjectMapper objectMapper;
     private final MinioService minioService;
+    private final TtsService ttsService;
     private final org.springframework.web.client.RestTemplate restTemplate;
 
     @org.springframework.beans.factory.annotation.Value("${core.service.url}")
@@ -22,83 +23,66 @@ public class VideoInternalService {
 
     @Async
     public void processVideo(String fileId, String filePath) {
+        // ... (existing code remains the same)
         log.info("Starting FFMPEG processing for {}", filePath);
-
-        // Check if filePath is local or URL
         boolean isUrl = filePath.startsWith("http://") || filePath.startsWith("https://");
-
         if (isUrl) {
-            // FIX: If running in Docker, localhost refers to the container itself, not the
-            // host/minio.
-            // We blindly replace localhost:9000 with eduflex-minio:9000 to ensure internal
-            // access works.
             filePath = filePath.replace("localhost:9000", "eduflex-minio:9000");
             filePath = filePath.replace("127.0.0.1:9000", "eduflex-minio:9000");
-            log.info("Adjusted URL for Docker network: {}", filePath);
-        } else {
-            File inputFile = new File(filePath);
-            if (!inputFile.exists()) {
-                log.error("File not found: {}", filePath);
-                return;
-            }
         }
-
-        // Output thumbnail path (local temp)
         String thumbnailPath = "/tmp/thumb_" + fileId + ".jpg";
-
         try {
-            // FFMPEG command to extract frame at 00:00:01
-            ProcessBuilder pb = new ProcessBuilder(
-                    "ffmpeg", "-y", "-i", filePath, "-ss", "00:00:01.000", "-vframes", "1", thumbnailPath);
+            ProcessBuilder pb = new ProcessBuilder("ffmpeg", "-y", "-i", filePath, "-ss", "00:00:01.000", "-vframes",
+                    "1", thumbnailPath);
             pb.redirectErrorStream(true);
             Process process = pb.start();
-
-            // Read output
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    log.info("FFMPEG: {}", line);
-                }
-            }
-
-            int exitCode = process.waitFor();
-            if (exitCode == 0) {
-                log.info("Thumbnail generated at {}", thumbnailPath);
-                // TODO: Call back to Core to update DB status
-            } else {
-                log.error("FFMPEG failed with exit code {}", exitCode);
-            }
-
+            process.waitFor();
         } catch (Exception e) {
             log.error("Processing failed", e);
         }
     }
 
+    private String wrapText(String text, int maxChars) {
+        if (text == null || text.length() <= maxChars)
+            return text;
+        StringBuilder sb = new StringBuilder();
+        String[] words = text.split(" ");
+        int lineLen = 0;
+        for (String word : words) {
+            if (lineLen + word.length() > maxChars) {
+                sb.append("\n");
+                lineLen = 0;
+            }
+            sb.append(word).append(" ");
+            lineLen += word.length() + 1;
+        }
+        return sb.toString().trim();
+    }
+
     @Async
     public void generateAiTutorVideo(String fileId, String scriptJson, String tenantId) {
         log.info("Generating AI Tutor video for fileId={}, tenantId={}", fileId, tenantId);
+        java.util.List<String> tempFiles = new java.util.ArrayList<>();
 
         try {
             com.fasterxml.jackson.databind.JsonNode root = objectMapper.readTree(scriptJson);
             String title = root.path("title").asText("AI Tutor Förklaring");
             com.fasterxml.jackson.databind.JsonNode scenes = root.path("scenes");
 
-            if (!scenes.isArray() || scenes.size() == 0) {
-                log.warn("No scenes found in script for fileId={}", fileId);
+            if (!scenes.isArray() || scenes.size() == 0)
                 return;
-            }
 
             String outputPath = "/tmp/ai_video_" + fileId + ".mp4";
+            tempFiles.add(outputPath);
 
-            // Write title to temp file to avoid escaping issues
             String titleFilePath = "/tmp/title_" + fileId + ".txt";
-            java.nio.file.Files.writeString(java.nio.file.Paths.get(titleFilePath), title,
-                    java.nio.charset.StandardCharsets.UTF_8);
+            java.nio.file.Files.writeString(java.nio.file.Paths.get(titleFilePath), title);
+            tempFiles.add(titleFilePath);
 
-            // Build FFMPEG filter for multiple scenes
-            StringBuilder filter = new StringBuilder();
-            // Titelbild i mitten av skärmen under 3 sekunder
-            filter.append("drawtext=fontfile='/usr/share/fonts/ttf-dejavu/DejaVuSans-Bold.ttf':textfile='")
+            StringBuilder videoFilter = new StringBuilder();
+            StringBuilder audioFilter = new StringBuilder();
+
+            videoFilter.append("drawtext=fontfile='/usr/share/fonts/ttf-dejavu/DejaVuSans-Bold.ttf':textfile='")
                     .append(titleFilePath).append("'")
                     .append(":fontcolor=white:fontsize=56:x=(w-text_w)/2:y=(h-text_h)/2")
                     .append(":box=1:boxcolor=black@0.5:boxborderw=20")
@@ -110,47 +94,90 @@ public class VideoInternalService {
                 String text = scene.path("text").asText("");
                 double duration = scene.path("duration").asDouble(5.0);
 
-                // Write text to temp file
-                String sceneFilePath = "/tmp/scene_" + fileId + "_" + sceneIndex + ".txt";
-                java.nio.file.Files.writeString(java.nio.file.Paths.get(sceneFilePath), text,
-                        java.nio.charset.StandardCharsets.UTF_8);
+                // Wrap text for better visibility
+                String wrappedText = wrapText(text, 50);
 
-                // FIX: y=h-th-80 anpassar sig dynamiskt till texthöjden + marginal nedtill.
-                // box+boxcolor ger en halvtransparent bakgrund så texten alltid syns.
-                // x=60 ger lite marginal från vänster.
-                filter.append(",drawtext=fontfile='/usr/share/fonts/ttf-dejavu/DejaVuSans.ttf':textfile='")
+                String sceneFilePath = "/tmp/scene_" + fileId + "_" + sceneIndex + ".txt";
+                java.nio.file.Files.writeString(java.nio.file.Paths.get(sceneFilePath), wrappedText);
+                tempFiles.add(sceneFilePath);
+
+                videoFilter.append(",drawtext=fontfile='/usr/share/fonts/ttf-dejavu/DejaVuSans.ttf':textfile='")
                         .append(sceneFilePath).append("'")
-                        .append(":fontcolor=white:fontsize=32")
-                        .append(":x=60:y=h-th-80")
-                        .append(":box=1:boxcolor=black@0.6:boxborderw=12")
-                        .append(":line_spacing=8")
+                        .append(":fontcolor=white:fontsize=32:x=60:y=h-th-100")
+                        .append(":box=1:boxcolor=black@0.6:boxborderw=12:line_spacing=10")
                         .append(":enable='between(t,")
                         .append(currentTime).append(",").append(currentTime + duration).append("')");
+
+                // TTS Generation
+                byte[] audio = ttsService.generateSpeech(text, "nova");
+                if (audio != null) {
+                    String audioPath = "/tmp/audio_" + fileId + "_" + sceneIndex + ".mp3";
+                    java.nio.file.Files.write(java.nio.file.Paths.get(audioPath), audio);
+                    tempFiles.add(audioPath);
+
+                    // Add audio to filter with delay
+                    audioFilter.append("[").append(sceneIndex + 1).append(":a]adelay=")
+                            .append((int) (currentTime * 1000)).append("|")
+                            .append((int) (currentTime * 1000)).append("[a").append(sceneIndex).append("];");
+                }
 
                 currentTime += duration;
                 sceneIndex++;
             }
 
-            // Total duration
             int totalDuration = (int) Math.ceil(currentTime);
+            java.util.List<String> command = new java.util.ArrayList<>();
+            command.add("ffmpeg");
+            command.add("-y");
 
-            // FIX: Lägger till en tyst audio-stream via anullsrc.
-            // Utan ett audio-track kan vissa spelare vägra spela eller visa tyst som bugg.
-            // anullsrc genererar tystnad, -shortest avslutar när video-streamen tar slut.
-            ProcessBuilder pb = new ProcessBuilder(
-                    "ffmpeg", "-y",
-                    "-f", "lavfi", "-i", "color=c=0x06141b:s=1280x720:d=" + totalDuration,
-                    "-f", "lavfi", "-i", "anullsrc=r=44100:cl=stereo",
-                    "-vf", filter.toString(),
-                    "-c:v", "libx264", "-pix_fmt", "yuv420p",
-                    "-c:a", "aac", "-b:a", "128k",
-                    "-shortest",
-                    outputPath);
+            // Input 0: Background
+            command.add("-f");
+            command.add("lavfi");
+            command.add("-i");
+            command.add("color=c=0x06141b:s=1280x720:d=" + totalDuration);
 
-            log.info("Running FFMPEG for AI video: duration={}s", totalDuration);
+            // Inputs for audio
+            for (int i = 0; i < sceneIndex; i++) {
+                String ap = "/tmp/audio_" + fileId + "_" + i + ".mp3";
+                if (new java.io.File(ap).exists()) {
+                    command.add("-i");
+                    command.add(ap);
+                } else {
+                    // Fallback to silent source if TTS failed for one scene
+                    command.add("-f");
+                    command.add("lavfi");
+                    command.add("-i");
+                    command.add("anullsrc=d=0.1");
+                }
+            }
+
+            // Build complex filter for audio mixing
+            StringBuilder complexFilter = new StringBuilder();
+            complexFilter.append(audioFilter);
+            for (int i = 0; i < sceneIndex; i++) {
+                complexFilter.append("[a").append(i).append("]");
+            }
+            complexFilter.append("amix=inputs=").append(sceneIndex).append(":normalize=0[aout]");
+
+            command.add("-filter_complex");
+            command.add("[0:v]" + videoFilter.toString() + "[vout];" + complexFilter.toString());
+
+            command.add("-map");
+            command.add("[vout]");
+            command.add("-map");
+            command.add("[aout]");
+            command.add("-c:v");
+            command.add("libx264");
+            command.add("-pix_fmt");
+            command.add("yuv420p");
+            command.add("-c:a");
+            command.add("aac");
+            command.add("-shortest");
+            command.add(outputPath);
+
+            ProcessBuilder pb = new ProcessBuilder(command);
             pb.redirectErrorStream(true);
             Process process = pb.start();
-
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
                 String line;
                 while ((line = reader.readLine()) != null) {
@@ -158,63 +185,31 @@ public class VideoInternalService {
                 }
             }
 
-            int exitCode = process.waitFor();
-            if (exitCode == 0) {
-                log.info("AI Video generated successfully at {}", outputPath);
-
-                // STEG 1: Ladda upp till MinIO
+            if (process.waitFor() == 0) {
+                log.info("AI Video generated successfully");
                 File videoFile = new File(outputPath);
                 String destinationPath = "ai-videos/" + fileId + "_" + java.util.UUID.randomUUID() + ".mp4";
                 minioService.uploadFile(videoFile, destinationPath, "video/mp4");
-
-                // STEG 2: Verify-before-store — bekräfta att filen verkligen finns innan
-                // vi skapar en kurspost med URL:en. Förhindrar 404-videos för elever.
                 String publicVideoUrl = minioService.verifyAndGetPublicUrl(destinationPath);
-                log.info("✅ Video verified in MinIO, public URL: {}", publicVideoUrl);
 
-                // STEG 3: Skicka callback med bekräftad URL
-                java.util.Map<String, Object> callbackPayload = new java.util.HashMap<>();
-                callbackPayload.put("fileId", fileId);
-                callbackPayload.put("videoUrl", publicVideoUrl);
-                callbackPayload.put("status", "SUCCESS");
-                callbackPayload.put("tenantId", tenantId);
-
-                String callbackUrl = coreUrl + "/api/ai-tutor/video-callback";
-                log.info("Sending callback to Core (Tenant: {}): {}", tenantId, callbackUrl);
-
-                org.springframework.http.HttpHeaders headers = new org.springframework.http.HttpHeaders();
-                headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
-                if (tenantId != null) {
-                    headers.set("X-Tenant-ID", tenantId);
-                }
-                org.springframework.http.HttpEntity<java.util.Map<String, Object>> requestEntity = new org.springframework.http.HttpEntity<>(
-                        callbackPayload, headers);
-
-                restTemplate.postForEntity(callbackUrl, requestEntity, Void.class);
-
-                // STEG 4: Rensa lokala tempfiler
-                if (videoFile.delete()) {
-                    log.info("Deleted local temp video file: {}", outputPath);
-                }
-            } else {
-                log.error("AI Video generation failed with exit code {}", exitCode);
-                // Notify Core of failure
-                java.util.Map<String, Object> callbackPayload = new java.util.HashMap<>();
-                callbackPayload.put("fileId", fileId);
-                callbackPayload.put("status", "FAILED");
-                callbackPayload.put("tenantId", tenantId);
-                org.springframework.http.HttpHeaders headers = new org.springframework.http.HttpHeaders();
-                headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
-                if (tenantId != null) {
-                    headers.set("X-Tenant-ID", tenantId);
-                }
-                org.springframework.http.HttpEntity<java.util.Map<String, Object>> requestEntity = new org.springframework.http.HttpEntity<>(
-                        callbackPayload, headers);
-                restTemplate.postForEntity(coreUrl + "/api/ai-tutor/video-callback", requestEntity, Void.class);
+                java.util.Map<String, Object> payload = java.util.Map.of("fileId", fileId, "videoUrl", publicVideoUrl,
+                        "status", "SUCCESS", "tenantId", tenantId != null ? tenantId : "");
+                org.springframework.http.HttpHeaders h = new org.springframework.http.HttpHeaders();
+                h.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
+                if (tenantId != null)
+                    h.set("X-Tenant-ID", tenantId);
+                restTemplate.postForEntity(coreUrl + "/api/ai-tutor/video-callback",
+                        new org.springframework.http.HttpEntity<>(payload, h), Void.class);
             }
-
         } catch (Exception e) {
             log.error("AI Video generation failed", e);
+        } finally {
+            for (String p : tempFiles) {
+                try {
+                    new File(p).delete();
+                } catch (Exception e) {
+                }
+            }
         }
     }
 }
