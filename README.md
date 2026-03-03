@@ -26,26 +26,16 @@ EduFlex LLP är ett Enterprise-redo, molnbaserat ekosystem som ersätter den tra
 
 ## 🚀 Senaste Uppdateringarna 
 
-### **Current Release: v3.6.4 (4 mar 2026)**
-
-#### 🧠 AI Microservice Extraction (Python/FastAPI)
-*   **Decoupled AI Logic**: All Gemini-based logic (quiz generation, course structure, performance analysis) has been moved to a high-performance Python FastAPI service (`eduflex-ai`).
-*   **Asynchronous Efficiency**: Improved scalability and future-readiness for local LLM integration.
-*   **Strict JSON Enforcement**: Centralized prompt engineering in Python ensures robust AI responses.
-
-#### 🛠️ Control Center Microservice Management
-*   **Restructured Control Center**: Ny dedikerad flik "Mikrotjänster" för isolerad hantering av `eduflex-video`, `eduflex-pdf`, `eduflex-scorm`, `eduflex-notifications` och nu `eduflex-ai`.
-*   **Enhanced Monitoring**: Realtidsövervakning av mikrotjänst-portar (8000, 8082-8085) och Docker-containerstatus.
-
-### 🚀 **v3.6.3.3** (4 mar 2026) – Microservice Migration Phase 3 & 4 (Real-time & Notifications)
-*   **🔔 eduflex-notifications Microservice**: En dedikerad tjänst för all realtidskommunikation via WebSockets (STOMP). Frikopplar chatt, forum-reaktioner och systemnotiser från huvudapplikationen.
-*   **📡 Redis Event Bus Architecture**: Implementerat en robust händelsebuss baserad på Redis Pub/Sub som binder samman alla mikrotjänster och möjliggör distribuerade realtidsuppdateringar.
+### v3.6.4 (4 mar 2026) – AI Microservice Extraction & Ops Enhancements
+* **🧠 AI Microservice Extraction (Python/FastAPI):** All Gemini-based logic (quiz generation, course structure, performance analysis) has been moved to a high-performance Python FastAPI service (`eduflex-ai`).
+* **🛠️ Control Center Dashboard:** Added "Starta Allt" and "Stoppa Allt" buttons to the Dashboard for immediate system control. Improved monitoring of microservice ports (8000, 8082-8085).
+* **🔔 eduflex-notifications Microservice:** A dedicated service for all real-time communication via WebSockets (STOMP). Decoupled chat, forum reactions, and system notifications from the core backend.
+* **🏗️ SCORM & xAPI Engine:** `eduflex-scorm` handle heavy I/O for SCORM/cmi5 packages and xAPI (LRS) in an isolated database schema.
 
 ### v3.5.0 (Mars 2026) – B2B Sales Enablement & Compliance
-* **🔌 HR Sync API (Zero-Touch):** API-First design med `HrSyncController` för automatisk user provisioning från externa HR-system som Workday.
+* **🔌 HR Sync API (Zero-Touch):** API-First design with `HrSyncController` for automatisk user provisioning från externa HR-system som Workday.
 * **📊 Interactive TCO Calculator:** Inbyggt live-säljverktyg för att räkna ut Enterprise-kunders Return on Investment (ROI).
 * **🛡️ Compliance Center:** Gränssnitt för HR/Admins för att övervaka regelefterlevnad med automatisk expiry-tracking av certifikat.
-
 ### v3.4.0 (Feb 2026) – Enterprise B2B & Global i18n
 * **💼 Extended Enterprise Engine:** "Pointer"-baserad kursdistribution. Återförsäljare (Resellers) kan sälja "Seat Licenses" till andra företag med strikt Tenant-isolering (Single Source of Truth).
 * **🌍 AI-Driven i18n Localization:** Automatisk flerspråkighet för 8 språk (bl.a. FR, DE, ES, AR) driven av Googles Gemini-pipeline.
@@ -81,6 +71,8 @@ EduFlex LLP drivs av en händelsedriven (Event-Driven) mikrotjänstarkitektur, s
 * **Orchestrator / Core Backend:** Spring Boot 3.4 (Java 21), Hibernate 6. Hanterar Multi-Tenancy (Schema-per-Tenant), RBAC och agerar API Gateway.
 * **Microservices:**
   * `eduflex-scorm` (Spring Boot 3): Dedikerad till tunga I/O-operationer för SCORM, cmi5 och xAPI (LRS).
+  * `eduflex-notifications` (WebFlux/Node): Asynkrona WebSockets för chatt och larm.
+  * `eduflex-pdf` & `eduflex-video`: Isolerad mediebearbetning.
   * `eduflex-notifications` (WebFlux/Node): Asynkrona WebSockets för chatt och larm.
   * `eduflex-pdf` & `eduflex-video`: Isolerad mediebearbetning.
   * `eduflex-ai` (Python FastAPI): Dedikerad AI-motor för generativt innehåll och analys.
@@ -148,4 +140,4 @@ Lokala URL:er efter uppstart:
 EduFlex LLP™ © 2026 Alex Weström / Fenrir Studio
 Proprietary Software. Unauthorized copying or distribution is strictly prohibited.
 För kommersiella förfrågningar och licensiering: 📧 alexwestrom81@gmail.com
-Last updated: 2026-03-04 (AI Microservice Extraction - v3.6.4)
+Last updated: 2026-03-04 (v3.6.4 - AI Microservice & Dashboard Actions)
