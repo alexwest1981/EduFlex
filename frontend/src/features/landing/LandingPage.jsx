@@ -517,7 +517,7 @@ const LandingPage = () => {
                         {/* Badge */}
                         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-gold/10 border border-brand-gold/20 text-brand-gold text-xs font-bold uppercase tracking-widest shadow-[0_0_15px_rgba(255,183,3,0.2)]">
                             <Sparkles className="w-3.5 h-3.5" />
-                            v3.6.3.3: Notifications Microservice & Event Bus
+                            v3.6.3.4: Control Center Microservice Management
                         </div>
 
                         {/* Heading */}
