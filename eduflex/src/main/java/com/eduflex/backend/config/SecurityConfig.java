@@ -151,6 +151,7 @@ public class SecurityConfig {
                                                                                                                        // Mode
                                                                                                                        // assets
                                                                 "/client-assets/**", "/static/**",
+                                                                "/api/internal/**",
                                                                 // Swagger UI and OpenAPI Documentation
                                                                 "/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html",
                                                                 "/api-docs/**")

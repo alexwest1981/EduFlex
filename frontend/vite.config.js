@@ -131,6 +131,19 @@ export default defineConfig(({ mode }) => {
                     changeOrigin: true,
                     secure: false
                 },
+                // eduflex-scorm microservice proxy (SCORM, CMI5, LRS)
+                '/api/scorm': {
+                    target: 'http://localhost:8084',
+                    changeOrigin: true
+                },
+                '/api/cmi5': {
+                    target: 'http://localhost:8084',
+                    changeOrigin: true
+                },
+                '/api/lrs': {
+                    target: 'http://localhost:8084',
+                    changeOrigin: true
+                },
                 // OnlyOffice Direct Proxy - Route ASSETS and SOCKETS directly to ONLYOFFICE server (8081)
                 // This bypasses the backend proxy for better performance and WebSocket support
                 // Refined: Use doc/ (slash inclusive) to avoid matching /documents SPA route

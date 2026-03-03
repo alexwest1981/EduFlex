@@ -97,6 +97,14 @@ const LandingPage = () => {
             hoverBorder: 'hover:border-brand-gold/50'
         },
         {
+            icon: <Zap className="w-7 h-7" />,
+            title: "Microservice Scale",
+            description: "SCORM, xAPI och CMI5 drivs nu av en dedikerad mikrotjänst. Detta isolerar resurskrävande processer och garanterar en blixtsnabb upplevelse även under hög belastning.",
+            color: 'text-indigo-500',
+            bgColor: 'bg-indigo-500/10',
+            hoverBorder: 'hover:border-indigo-500/50'
+        },
+        {
             icon: <Gamepad2 className="w-7 h-7" />,
             title: t('landing.features.gamification.title'),
             description: t('landing.features.gamification.desc'),

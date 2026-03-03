@@ -26,7 +26,7 @@
 | **Hög** | **Role-Specific AI Coaches** | Principal (KPI), Teacher (risk-warning), Student (study-plan). | ✅ **Klar** | Killer-feature: Unik selling point. |
 | **Hög** | **CSN/Upphandlings-rapporter** | Närvaro-export (enskild + bulk), Excel (.xlsx), GDPR Art. 15 registerutdrag, läraråtkomst. | ✅ **Klar** (v3.0.0) | Svenskt krav. |
 | **Medel** | **Partner & B2B Extended Enterprise** | Resellers (Edtech Studios), B2B Seat Licenses, Pointers i Global Library | ✅ **Klar** (v3.1.0) | Scale via partners & B2B sales. |
-| **Medel** | **Microservices Scale (v3.6.3.1)** | Bryta ut resurskrävande moduler. Fas 1: SCORM & xAPI Engine migrerad till `eduflex-scorm`. Fas 2: Video/Notiser nästa. | ✅ **Fas 1 Klar** | Avlasta monolitens DB-pool & I/O. |
+| **Medel** | **Microservices Scale (v3.6.3.2)** | Bryta ut resurskrävande moduler. Fas 1: SCORM & xAPI Engine migrerad. Fas 2: Full integration & callback system. Fas 3: Video/Notiser nästa. | ✅ **Fas 2 Klar** | Avlasta monolitens DB-pool & I/O. |
 | **Hög** | **AI Microservice Extraction** | Bryta ut AI-logik (Gemini) till en dedikerad Python FastAPI microservice för asykron prestanda, GDPR data-filtrering och oberoende HPA skalbarhet. | 5 dagar | Framtidssäkrad AI-arkitektur för Enterprise. |
 
 **Milstolpe:** Första betalande kund + Kubernetes-deploy (Helm).

@@ -2,7 +2,7 @@
   <img src="docs/Logo_top.png" width="600" alt="EduFlex Logo" />
 </p>
 
-<h1 align="center">🎓 EduFlex LMS v3.6.3.1</h1>
+<h1 align="center">🎓 EduFlex LMS v3.6.3.2</h1>
 
 <p align="center">
   <em>The Complete Enterprise Learning Platform for Modern Education</em><br/>
@@ -41,6 +41,14 @@
 
 ---
 
+### 🚀 **v3.6.3.2** (4 mar 2026) – Microservice Migration Phase 2 (Integration & Callbacks)
+*   **🔌 Frontend Proxy Integration**: Sömlös anslutning av frontenden till den nya SCORM-mikroservicen via Vite-proxy, vilket möjliggör transparent migration av SCORM, CMI5 och LRS-trafik (port 8084).
+*   **📡 Internal Callback System**: Implementerat `InternalProgressController` i monoliten för att ta emot säkra framstegsuppdateringar i realtid från mikroservicen.
+*   **🛡️ Multi-Service Security**: Konfigurerat `SecurityConfig` för att tillåta interna tjänsteanrop, vilket säkrar kommunikationen mellan mikrotjänsterna och monolit-backenden.
+*   **🔀 Unified Storage Access**: Verifierat och synkroniserat filåtkomst via MinIO så att monoliten sömlöst kan servera material uppladdat av mikroservicen.
+
+---
+
 ### 🚀 **v3.6.3.1** (4 mar 2026) – Microservice Migration Phase 1 (SCORM & xAPI)
 *   **🏗️ eduflex-scorm Microservice**: Initierat en ny, högpresterande Spring Boot 3-mikrotjänst för hantering av SCORM och xAPI.
 *   **🔌 Decoupled Architecture**: Frikopplat SCORM- och xAPI-data från monolitens huvuddatabas till ett eget isolerat schema för att radikalt minska trycket på centrala PostgreSQL-anslutningar.
@@ -51,6 +59,9 @@
 ---
 
 ### 🕒 Senaste uppdateringarna (2026-03-04)
+*   **Phase 2 Completion**: Full integration av `eduflex-scorm` med monoliten och frontend.
+*   **Internal Callbacks**: Realtidsöverföring av xAPI-statements från mikroservice till monolit för poäng- och certifikatuppdateringar.
+*   **Security Patch**: Öppnat `/api/internal/**` för säkra interna anrop i monolit-backenden.
 *   **Microservice Evolution**: Migrerat `ScormService`, `Cmi5Service` och LRS-kontrollern till `eduflex-scorm`.
 *   **Lombok-free for Stability**: Implementerat manuella getters/setters och loggare för att säkra bygget i den nya isolerade mikromiljön.
 *   **MinIO Refactoring**: Flyttat I/O-tunga uppladdningar för stora SCORM-paket till den nya tjänsten.
