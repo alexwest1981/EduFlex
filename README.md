@@ -26,14 +26,9 @@ EduFlex LLP är ett Enterprise-redo, molnbaserat ekosystem som ersätter den tra
 
 ## 🚀 Senaste Uppdateringarna 
 
-### v3.6.6 (3 mar 2026) – GDPR & Privacy Shield
-*   **GDPR**: Implementerat granulära datafilter och PII-maskering för alla AI-interaktioner.
-*   **GDPR**: Nytt pseudonymiserings-lager för studentdata i AI Coach-sessioner.
-*   **GDPR**: Valbart "GDPR Safe" läge för finansiella och administrativa excel-exporter.
-
-### v3.6.6 (3 mar 2026) – GDPR & Privacy Shield
-*   **GDPR**: Implementerat granulära datafilter och PII-maskering för alla AI-interaktioner.
-*   **GDPR**: Nytt pseudonymiserings-lager för studentdata i AI Coach-sessioner.
+### v3.6.6 (3 mar 2026) – Zero-Trust AI Pipeline & GDPR Shield
+*   **GDPR**: Implementerat **Zero-Trust AI Pipeline** med granulär PII-maskering och literal namn-ersättning.
+*   **GDPR**: Automatisk lokalt baserad "Zero-Trust Restore" av studentdata i AI-svar.
 *   **GDPR**: Valbart "GDPR Safe" läge för finansiella och administrativa excel-exporter.
 
 ### v3.6.5 (3 mar 2026) – Docker & Database Hotfixes
