@@ -15,6 +15,14 @@ public interface EventBusService {
     void publish(String channel, String message);
 
     /**
+     * Broadcasts an object to a WebSocket topic via Redis.
+     * 
+     * @param topic   The target WebSocket topic (e.g., "/topic/messages/1")
+     * @param payload The object to broadcast (will be serialized to JSON)
+     */
+    void broadcast(String topic, Object payload);
+
+    /**
      * Subscribes to a specific channel.
      * Note: Subscription logic might vary depending on the implementation (Redis
      * Pub/Sub vs Kafka).

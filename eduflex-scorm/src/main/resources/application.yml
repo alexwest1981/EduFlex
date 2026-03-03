@@ -22,3 +22,7 @@ minio:
   access-key: ${MINIO_ACCESS_KEY:minioadmin}
   secret-key: ${MINIO_SECRET_KEY:minioadmin}
   bucket: ${MINIO_BUCKET:eduflex-storage}
+
+eduflex:
+  core:
+    url: ${CORE_URL:http://localhost:8080}

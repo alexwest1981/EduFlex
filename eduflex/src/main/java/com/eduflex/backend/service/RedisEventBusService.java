@@ -1,5 +1,7 @@
 package com.eduflex.backend.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -11,9 +13,11 @@ import org.springframework.stereotype.Service;
 public class RedisEventBusService implements EventBusService {
 
     private final StringRedisTemplate redisTemplate;
+    private final ObjectMapper objectMapper;
 
-    public RedisEventBusService(StringRedisTemplate redisTemplate) {
+    public RedisEventBusService(StringRedisTemplate redisTemplate, ObjectMapper objectMapper) {
         this.redisTemplate = redisTemplate;
+        this.objectMapper = objectMapper;
     }
 
     @Override
@@ -23,6 +27,16 @@ public class RedisEventBusService implements EventBusService {
         } catch (Exception e) {
             // Log error but avoid breaking the main application flow
             System.err.println("EventBus [Redis] Publish Error: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public void broadcast(String topic, Object payload) {
+        try {
+            String json = objectMapper.writeValueAsString(payload);
+            publish(topic, json);
+        } catch (JsonProcessingException e) {
+            System.err.println("EventBus [Redis] Serialization Error: " + e.getMessage());
         }
     }
 

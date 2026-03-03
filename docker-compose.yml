@@ -240,6 +240,22 @@ services:
       - eduflex-net
     restart: always
 
+  # --- NOTIFICATIONS MICROSERVICE ---
+  eduflex-notifications:
+    build: ./eduflex-notifications
+    container_name: eduflex-notifications
+    depends_on:
+      - redis
+    ports:
+      - "8085:8085"
+    environment:
+      - SERVER_PORT=8085
+      - REDIS_HOST=redis
+      - EDUFLEX_JWT_SECRET=${EDUFLEX_JWT_SECRET:-eduflex_secure_secret_key_32_chars_}
+    networks:
+      - eduflex-net
+    restart: always
+
   frontend:
     build:
       context: ./frontend

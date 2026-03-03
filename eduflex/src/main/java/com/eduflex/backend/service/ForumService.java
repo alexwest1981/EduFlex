@@ -2,7 +2,6 @@ package com.eduflex.backend.service;
 
 import com.eduflex.backend.model.*;
 import com.eduflex.backend.repository.*;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,7 +18,7 @@ public class ForumService {
     private final CourseRepository courseRepository;
     private final UserRepository userRepository;
     private final GamificationService gamificationService;
-    private final SimpMessagingTemplate messagingTemplate;
+    private final EventBusService eventBusService;
 
     private final ForumReactionRepository reactionRepository;
     private final com.eduflex.backend.service.ai.GeminiService geminiService;
@@ -28,7 +27,7 @@ public class ForumService {
     public ForumService(ForumThreadRepository threadRepository, ForumPostRepository postRepository,
             ForumCategoryRepository categoryRepository, CourseRepository courseRepository,
             UserRepository userRepository, GamificationService gamificationService,
-            SimpMessagingTemplate messagingTemplate, ForumReactionRepository reactionRepository,
+            EventBusService eventBusService, ForumReactionRepository reactionRepository,
             com.eduflex.backend.service.ai.GeminiService geminiService,
             com.eduflex.backend.edugame.repository.EduGameProfileRepository eduGameProfileRepository) {
         this.threadRepository = threadRepository;
@@ -37,7 +36,7 @@ public class ForumService {
         this.courseRepository = courseRepository;
         this.userRepository = userRepository;
         this.gamificationService = gamificationService;
-        this.messagingTemplate = messagingTemplate;
+        this.eventBusService = eventBusService;
         this.reactionRepository = reactionRepository;
         this.geminiService = geminiService;
         this.eduGameProfileRepository = eduGameProfileRepository;
@@ -66,9 +65,8 @@ public class ForumService {
         gamificationService.addPoints(userId, 20);
         updateForumRank(userId, 20);
 
-        // Real-time broadcast: New Thread in Course
-        // Payload can be the full thread or a summary
-        messagingTemplate.convertAndSend("/topic/course/" + category.getCourse().getId() + "/forum", savedThread);
+        // Real-time broadcast via Redis
+        eventBusService.broadcast("/topic/course/" + category.getCourse().getId() + "/forum", savedThread);
 
         return savedThread;
     }
@@ -94,8 +92,8 @@ public class ForumService {
         gamificationService.addPoints(userId, 10);
         updateForumRank(userId, 10);
 
-        // Real-time broadcast: New Reply to Thread
-        messagingTemplate.convertAndSend("/topic/thread/" + threadId, savedPost);
+        // Real-time broadcast via Redis
+        eventBusService.broadcast("/topic/thread/" + threadId, savedPost);
 
         return savedPost;
     }
@@ -135,7 +133,7 @@ public class ForumService {
         reactionEvent.put("type", reactionType);
 
         Long threadId = post.getThread().getId();
-        messagingTemplate.convertAndSend("/topic/thread/" + threadId + "/reactions", reactionEvent);
+        eventBusService.broadcast("/topic/thread/" + threadId + "/reactions", reactionEvent);
     }
 
     // AI FEATURES

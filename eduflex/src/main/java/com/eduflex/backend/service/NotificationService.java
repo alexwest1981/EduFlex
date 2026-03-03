@@ -17,18 +17,21 @@ public class NotificationService {
     private final EmailService emailService;
     private final SmsService smsService;
     private final WebPushService webPushService;
+    private final EventBusService eventBusService;
 
     public NotificationService(
             NotificationRepository notificationRepository,
             UserRepository userRepository,
             EmailService emailService,
             SmsService smsService,
-            WebPushService webPushService) {
+            WebPushService webPushService,
+            EventBusService eventBusService) {
         this.notificationRepository = notificationRepository;
         this.userRepository = userRepository;
         this.emailService = emailService;
         this.smsService = smsService;
         this.webPushService = webPushService;
+        this.eventBusService = eventBusService;
     }
 
     /**
@@ -75,6 +78,9 @@ public class NotificationService {
                 }
             });
         }
+
+        // 3. Real-time broadcast via Redis
+        eventBusService.broadcast("/topic/notifications/" + userId, saved);
 
         return saved;
     }

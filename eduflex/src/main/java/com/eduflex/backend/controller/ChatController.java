@@ -8,8 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
+import com.eduflex.backend.service.EventBusService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.data.domain.Page;
@@ -22,17 +22,14 @@ import java.time.LocalDateTime;
 @Controller
 public class ChatController {
 
-    private final SimpMessagingTemplate messagingTemplate;
+    private final EventBusService eventBusService;
     private final ChatMessageRepository chatMessageRepository;
     private final NotificationRepository notificationRepository;
 
-    @org.springframework.beans.factory.annotation.Autowired(required = false)
-    private org.springframework.data.redis.core.RedisTemplate<String, Object> redisTemplate;
-
     @Autowired
-    public ChatController(SimpMessagingTemplate messagingTemplate, ChatMessageRepository chatMessageRepository,
+    public ChatController(EventBusService eventBusService, ChatMessageRepository chatMessageRepository,
             NotificationRepository notificationRepository) {
-        this.messagingTemplate = messagingTemplate;
+        this.eventBusService = eventBusService;
         this.chatMessageRepository = chatMessageRepository;
         this.notificationRepository = notificationRepository;
     }
@@ -49,15 +46,10 @@ public class ChatController {
         // Spara i databasen
         ChatMessage saved = chatMessageRepository.save(chatMessage);
 
-        // VIKTIGT: Publicera till Redis Topic istället för direkt till klient
-        // Alla instanser som lyssnar på denna topic kommer att ta emot meddelandet via
-        // RedisMessageSubscriber
-        if (redisTemplate != null) {
-            redisTemplate.convertAndSend("chat.topic", saved);
-        } else {
-            // Fallback if Redis is disabled (e.g. single instance mode)
-            messagingTemplate.convertAndSend("/topic/public", saved);
-        }
+        // Publicera till Redis för att nå ut till eduflex-notifications mikrotjänsten
+        // Mottagaren lyssnar på /topic/messages/{recipientId}
+        String topic = "/topic/messages/" + saved.getRecipientId();
+        eventBusService.broadcast(topic, saved);
 
         // Skapa notis (så klockan i menyn också lyser upp)
         try {

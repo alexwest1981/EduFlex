@@ -1,0 +1,14 @@
+server:
+  port: 8085
+
+spring:
+  application:
+    name: eduflex-notifications
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: 6379
+
+eduflex:
+  jwt:
+    secret: ${EDUFLEX_JWT_SECRET:eduflex_secure_secret_key_32_chars_}

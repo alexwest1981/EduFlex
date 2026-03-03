@@ -17,18 +17,18 @@ public class ExamIntegrityService {
     private final NotificationService notificationService;
     private final QuizRepository quizRepository;
     private final UserRepository userRepository;
-    private final org.springframework.messaging.simp.SimpMessagingTemplate messagingTemplate;
+    private final EventBusService eventBusService;
 
     public ExamIntegrityService(ExamIntegrityRepository integrityRepository,
             NotificationService notificationService,
             QuizRepository quizRepository,
             UserRepository userRepository,
-            org.springframework.messaging.simp.SimpMessagingTemplate messagingTemplate) {
+            EventBusService eventBusService) {
         this.integrityRepository = integrityRepository;
         this.notificationService = notificationService;
         this.quizRepository = quizRepository;
         this.userRepository = userRepository;
-        this.messagingTemplate = messagingTemplate;
+        this.eventBusService = eventBusService;
     }
 
     public ExamIntegrityEvent logEvent(ExamIntegrityEvent event) {
@@ -37,9 +37,9 @@ public class ExamIntegrityService {
 
         ExamIntegrityEvent savedEvent = integrityRepository.save(event);
 
-        // Broadcast to proctoring dashboard in real-time
-        messagingTemplate.convertAndSend(TOPIC_PROCTORING, savedEvent);
-        messagingTemplate.convertAndSend(TOPIC_PROCTORING + "/" + event.getQuizId(), savedEvent);
+        // Broadcast to proctoring dashboard in real-time via Redis
+        eventBusService.broadcast(TOPIC_PROCTORING, savedEvent);
+        eventBusService.broadcast(TOPIC_PROCTORING + "/" + event.getQuizId(), savedEvent);
 
         // Notify Teacher if it's a critical integrity issue
         if (event.getEventType() == ExamIntegrityEvent.IntegrityEventType.FOCUS_LOST ||

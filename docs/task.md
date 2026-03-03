@@ -9,12 +9,12 @@
     - [ ] Docker Integration & Networking
 
 ### CSN & GDPR Reports
-- [x] Research Attendance & Audit models
-- [x] Create `CsnReportService`
-- [x] Create `GdprAuditService`
-- [x] Update `ReportController` and `ReportLibrary`
-- [x] Update Sidebar & Dashboard navigation (Added explicit CSN links)
-- [x] Verify exports and logs
+- [x] Skapa eduflex-notifications projektstruktur och pom.xml
+- [x] Implementera WebSocket-konfiguration i den nya mikroservicen
+- [x] Implementera Redis Pub/Sub integration (Event Bus)
+- [x] Refaktorera monoliten (Social, Chat, Logs, Forum, Notiser) till att använda Redis Event Bus
+- [x] Uppdatera Vite Proxy och Docker-konfiguration
+- [x] Verifiera realtidskommunikation genom den nya mikroservicen (Loggar, Chatt, Notiser)
 
 ### Hotfixes
 - [x] Fix `api.js` default export issue

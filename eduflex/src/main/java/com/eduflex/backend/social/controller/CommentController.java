@@ -3,6 +3,7 @@ package com.eduflex.backend.social.controller;
 import com.eduflex.backend.social.model.Comment;
 import com.eduflex.backend.social.model.TargetType;
 import com.eduflex.backend.social.service.CommentService;
+import com.eduflex.backend.service.EventBusService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,12 +14,11 @@ import java.util.List;
 public class CommentController {
 
     private final CommentService commentService;
-    private final org.springframework.messaging.simp.SimpMessagingTemplate messagingTemplate;
+    private final EventBusService eventBusService;
 
-    public CommentController(CommentService commentService,
-            org.springframework.messaging.simp.SimpMessagingTemplate messagingTemplate) {
+    public CommentController(CommentService commentService, EventBusService eventBusService) {
         this.commentService = commentService;
-        this.messagingTemplate = messagingTemplate;
+        this.eventBusService = eventBusService;
     }
 
     @GetMapping("/{targetType}/{targetId}")
@@ -36,9 +36,9 @@ public class CommentController {
                 request.getTargetId(),
                 request.getParentId());
 
-        // Broadcast to specific target topic
+        // Broadcast to specific target topic via Redis Event Bus
         String topic = "/topic/social/comments/" + request.getTargetType() + "/" + request.getTargetId();
-        messagingTemplate.convertAndSend(topic, new SocialEvent("COMMENT_ADDED", comment));
+        eventBusService.broadcast(topic, new SocialEvent("COMMENT_ADDED", comment));
 
         return ResponseEntity.ok(comment);
     }
@@ -66,7 +66,7 @@ public class CommentController {
         Comment updatedComment = commentService.toggleLike(id);
 
         String topic = "/topic/social/comments/" + updatedComment.getTargetType() + "/" + updatedComment.getTargetId();
-        messagingTemplate.convertAndSend(topic, new SocialEvent("COMMENT_UPDATED", updatedComment));
+        eventBusService.broadcast(topic, new SocialEvent("COMMENT_UPDATED", updatedComment));
 
         return ResponseEntity.ok(updatedComment);
     }

@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.eduflex.backend.service.EventBusService;
 
 import java.io.InputStream;
 import java.util.*;
@@ -29,7 +30,7 @@ public class AITutorService {
     private final com.eduflex.backend.service.GamificationService gamificationService;
     private final org.springframework.data.redis.core.StringRedisTemplate redisTemplate;
     private final com.fasterxml.jackson.databind.ObjectMapper objectMapper;
-    private final org.springframework.messaging.simp.SimpMessagingTemplate messagingTemplate;
+    private final EventBusService eventBusService;
     private final Tika tika = new Tika();
 
     private final com.eduflex.backend.repository.EbookRepository ebookRepository;
@@ -42,7 +43,7 @@ public class AITutorService {
             com.eduflex.backend.service.GamificationService gamificationService,
             org.springframework.data.redis.core.StringRedisTemplate redisTemplate,
             com.fasterxml.jackson.databind.ObjectMapper objectMapper,
-            org.springframework.messaging.simp.SimpMessagingTemplate messagingTemplate) {
+            EventBusService eventBusService) {
         this.geminiService = geminiService;
         this.embeddingRepository = embeddingRepository;
         this.materialRepository = materialRepository;
@@ -51,7 +52,7 @@ public class AITutorService {
         this.gamificationService = gamificationService;
         this.redisTemplate = redisTemplate;
         this.objectMapper = objectMapper;
-        this.messagingTemplate = messagingTemplate;
+        this.eventBusService = eventBusService;
     }
 
     private static final int CHUNK_SIZE = 1000;
@@ -419,7 +420,7 @@ public class AITutorService {
             event.put("type", "AI_VIDEO_READY");
             event.put("materialId", videoLesson.getId());
             event.put("courseId", videoLesson.getCourse().getId());
-            messagingTemplate.convertAndSend(topic, event);
+            eventBusService.broadcast(topic, event);
 
             logger.info(
                     "Successfully created separate AI video lesson for material {} with title: {} and notified frontend via {}",

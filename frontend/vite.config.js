@@ -106,22 +106,22 @@ export default defineConfig(({ mode }) => {
                     changeOrigin: true
                 },
                 '/ws': {
-                    target: backendUrl,
+                    target: 'http://localhost:8085',
                     ws: true,
                     changeOrigin: true
                 },
                 '/ws-log': {
-                    target: backendUrl,
+                    target: 'http://localhost:8085',
                     ws: true,
                     changeOrigin: true
                 },
                 '/ws-forum': {
-                    target: backendUrl,
+                    target: 'http://localhost:8085',
                     ws: true,
                     changeOrigin: true
                 },
                 '/ws-social': {
-                    target: backendUrl,
+                    target: 'http://localhost:8085',
                     ws: true,
                     changeOrigin: true
                 },
