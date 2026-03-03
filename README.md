@@ -1,6 +1,10 @@
-# EduFlex LMS v3.6.3.3 (Microservice Architecture - Real-time)
+---
 
-The Complete Enterprise Learning Management System, evolved for scale.
+> [!IMPORTANT]
+> **MILJÖKRAV:** Detta projekt körs uteslutande i **WSL (Windows Subsystem for Linux)**. 
+> - **INGA** Docker Desktop-kopplingar får användas.
+> - All utveckling, kompilering och körning av backend/mikrotjänster sker via infödda WSL-skript (`.ps1` via PowerShell i WSL eller `.sh`).
+> - Se [docs/ENVIRONMENT_GUIDELINES.md](file:///e:/Projekt/EduFlex/docs/ENVIRONMENT_GUIDELINES.md) för fullständiga detaljer.
 
 ---
 
