@@ -49,4 +49,14 @@ public class LicenseController {
         // Simple heartbeat endpoint to keep connection alive or validation active
         return ResponseEntity.ok(Map.of("status", "alive", "timestamp", System.currentTimeMillis()));
     }
+
+    @GetMapping("/audit")
+    public ResponseEntity<?> getAuditLogs() {
+        try {
+            return ResponseEntity.ok(licenseService.getAuditLogs());
+        } catch (Exception e) {
+            logger.error("❌ License Audit Error: {}", e.getMessage());
+            return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
+        }
+    }
 }

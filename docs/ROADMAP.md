@@ -29,7 +29,10 @@
 | **Medel** | **Microservices Scale (v3.6.3.2)** | Bryta ut resurskrävande moduler. Fas 1: SCORM & xAPI Engine migrerad. Fas 2: Full integration & callback system. Fas 3: Video/Notiser nästa. | ✅ **Fas 2 Klar** | Avlasta monolitens DB-pool & I/O. |
 | **Hög** | **Microservices Scale - Notifications** | Extrahera WebSocket & Notiser till egen tjänst | ✅ **Klar** (v3.6.3.3) | Dedikerad "Notification Service" klarar tiotusentals parallella anslutningar. |
 | **Medel** | **Control Center - Microservice Management** | Omstrukturera Control Center med en dedikerad flik för att hantera, övervaka och konfigurera alla mikrotjänster. | ✅ **Klar** | Centraliserad administration för en växande distribuerad arkitektur. |
-| **Hög** | **AI Microservice Extraction** | Bryta ut AI-logik (Gemini) till en dedikerad Python FastAPI microservice för asykron prestanda, GDPR data-filtrering och oberoende HPA skalbarhet. | ✅ **Klar** (v3.6.4) | Framtidssäkrad AI-arkitektur för Enterprise. |
+| **Hög** | **Release v3.6.5 Hotfixes** | Docker fix för notifications, skapade `eduflex_scorm` databas, och implementerade `/audit` license endpoint. | ✅ **Klar** (v3.6.5) | Kritiskt för driftstabilitet. |
+| **Hög** | **AI Microservice Extraction** | Bryta ut AI-logik (Gemini) till en dedikerad Python FastAPI microservice för asykron prestanda, GDPR data-filtrering och oberoende HPA skalbarhet. | ✅ **Klar** (v3.6.4) | Framtidssäkrad AI-arkitektur for Enterprise. |
+| **Hög** | **Backend Stability & WebSocket Fix** | Re-aktiverad WebSocket-konfigurering och fixat `EnableWebSocketMessageBroker` import för Spring Boot 3-kompatibilitet. | ✅ **Klar** (v3.6.4) | Kritiskt för systemstart och realtidskommunikation. |
+
 
 **Milstolpe:** Första betalande kund + Kubernetes-deploy (Helm).
 

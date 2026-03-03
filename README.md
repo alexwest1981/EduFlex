@@ -1,4 +1,4 @@
-# 🎓 EduFlex LLP v3.6.3
+# 🎓 EduFlex LLP v3.6.5
 *The Complete Enterprise Learning Lifecycle Platform for Modern Education & B2B*
 
 *Developed & maintained by **Alex Weström / Fenrir Studio***  
@@ -26,11 +26,13 @@ EduFlex LLP är ett Enterprise-redo, molnbaserat ekosystem som ersätter den tra
 
 ## 🚀 Senaste Uppdateringarna 
 
-### v3.6.4 (4 mar 2026) – AI Microservice Extraction & Ops Enhancements
-* **🧠 AI Microservice Extraction (Python/FastAPI):** All Gemini-based logic (quiz generation, course structure, performance analysis) has been moved to a high-performance Python FastAPI service (`eduflex-ai`).
-* **🛠️ Control Center Dashboard:** Added "Starta Allt" and "Stoppa Allt" buttons to the Dashboard for immediate system control. Improved monitoring of microservice ports (8000, 8082-8085).
-* **🔔 eduflex-notifications Microservice:** A dedicated service for all real-time communication via WebSockets (STOMP). Decoupled chat, forum reactions, and system notifications from the core backend.
-* **🏗️ SCORM & xAPI Engine:** `eduflex-scorm` handle heavy I/O for SCORM/cmi5 packages and xAPI (LRS) in an isolated database schema.
+### v3.6.5 (3 mar 2026) – Docker & Database Hotfixes
+* **🐳 Docker Build Fix (Notifications):** Corrected the JAR filename in the `eduflex-notifications` Dockerfile using a wildcard to ensure compatibility with v3.6.4+ artifacts.
+* **🗄️ SCORM Database Recovery:** Resolved a critical startup crash in `eduflex-scorm` by initializing the missing `eduflex_scorm` database in the PostgreSQL container.
+* **🔑 License Audit Endpoint:** Resolved a 404 error by implementing the `GET /api/system/license/audit` endpoint in the core backend, enabling audit logs in the Control Center.
+
+### v3.6.4 (3 mar 2026) – AI Microservice Extraction & Ops Enhancements
+
 
 ### v3.5.0 (Mars 2026) – B2B Sales Enablement & Compliance
 * **🔌 HR Sync API (Zero-Touch):** API-First design with `HrSyncController` for automatisk user provisioning från externa HR-system som Workday.
@@ -71,8 +73,6 @@ EduFlex LLP drivs av en händelsedriven (Event-Driven) mikrotjänstarkitektur, s
 * **Orchestrator / Core Backend:** Spring Boot 3.4 (Java 21), Hibernate 6. Hanterar Multi-Tenancy (Schema-per-Tenant), RBAC och agerar API Gateway.
 * **Microservices:**
   * `eduflex-scorm` (Spring Boot 3): Dedikerad till tunga I/O-operationer för SCORM, cmi5 och xAPI (LRS).
-  * `eduflex-notifications` (WebFlux/Node): Asynkrona WebSockets för chatt och larm.
-  * `eduflex-pdf` & `eduflex-video`: Isolerad mediebearbetning.
   * `eduflex-notifications` (WebFlux/Node): Asynkrona WebSockets för chatt och larm.
   * `eduflex-pdf` & `eduflex-video`: Isolerad mediebearbetning.
   * `eduflex-ai` (Python FastAPI): Dedikerad AI-motor för generativt innehåll och analys.
@@ -140,4 +140,5 @@ Lokala URL:er efter uppstart:
 EduFlex LLP™ © 2026 Alex Weström / Fenrir Studio
 Proprietary Software. Unauthorized copying or distribution is strictly prohibited.
 För kommersiella förfrågningar och licensiering: 📧 alexwestrom81@gmail.com
-Last updated: 2026-03-04 (v3.6.4 - AI Microservice & Dashboard Actions)
+Last updated: 2026-03-04 (v3.6.5 - Docker, Database & License Fixes)
+
