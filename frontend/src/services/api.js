@@ -936,39 +936,70 @@ export const getSafeUrl = (url) => {
     let finalUrl = url;
     const origin = window.location.origin;
 
-    // 1. Handle MinIO internal host reference (9000 or 9009)
+    // 1. Direktlänkar till MinIO storage (storage.eduflexlms.se) — returnera direkt
+    if (finalUrl.includes('storage.eduflexlms.se')) {
+        return finalUrl;
+    }
+
+    // 2. Handle MinIO internal host reference (minio:9000 or minio:9009)
     if (finalUrl.includes('minio:9000') || finalUrl.includes('minio:9009')) {
-        // Replace minio references with current origin + /api/files
-        finalUrl = finalUrl.replace(/http:\/\/minio:(9000|9009)/g, origin + '/api/files');
+        // Strip extension for video files to bypass Cloudflare WAF
+        const withoutMinio = finalUrl.replace(/http:\/\/minio:(9000|9009)\//g, '');
+        return buildMediaUrl(origin, withoutMinio);
     }
 
-    // 2. Handle legacy /api/storage paths
-    if (finalUrl.includes('/api/storage/')) {
-        finalUrl = finalUrl.replace('/api/storage/', '/api/files/');
+    // 3. Handle legacy /api/storage/ and /api/files/ paths
+    if (finalUrl.includes('/api/storage/') || finalUrl.includes('/api/files/')) {
+        const prefix = finalUrl.includes('/api/storage/') ? '/api/storage/' : '/api/files/';
+        const filePath = finalUrl.substring(finalUrl.indexOf(prefix) + prefix.length);
+        return buildMediaUrl(origin, filePath);
     }
 
-    // 3. Ensure uploads/ are also mapped to api/files
+    // 4. Handle /uploads/ paths
     if (finalUrl.includes('/uploads/')) {
-        finalUrl = finalUrl.replace('/uploads/', '/api/files/');
+        const filePath = finalUrl.substring(finalUrl.indexOf('/uploads/') + '/uploads/'.length);
+        return buildMediaUrl(origin, filePath);
     }
 
-    // 4. Handle root-relative paths by prepending origin and using safe fetch
+    // 5. Handle root-relative paths
     if (finalUrl.startsWith('/')) {
-        // If it's already an api path, use the safe fetch endpoint to avoid dot/Workbox issues
-        if (finalUrl.includes('/api/files/') || finalUrl.includes('/api/storage/')) {
-            const prefix = finalUrl.includes('/api/files/') ? '/api/files/' : '/api/storage/';
-            const fileName = finalUrl.substring(finalUrl.indexOf(prefix) + prefix.length);
-            return `${origin}/api/files/fetch?filename=${fileName}`;
-        }
         return `${origin}${finalUrl}`;
     }
 
-    // 4. Handle any MinIO localhost/IP/Internal references (9000 or 9009)
+    // 6. Handle any MinIO localhost/IP/Internal references (9000 or 9009)
     if (finalUrl.includes(':9000') || finalUrl.includes(':9009')) {
-        return finalUrl.replace(/^http:\/\/[^/]+:(9000|9009)/g, origin + '/api/files');
+        const withoutPort = finalUrl.replace(/^http:\/\/[^/]+:(9000|9009)\//g, '');
+        return buildMediaUrl(origin, withoutPort);
     }
 
     return finalUrl;
 };
+
+/**
+ * Bygger rätt URL för en fil-path.
+ * Videofiler serveras DIREKT från MinIO via storage.eduflexlms.se/eduflex-storage/
+ * för att kringgå Cloudflare WAF:s blockering av media-URLs på www-domänen.
+ * Övriga filer (bilder, PDF, etc.) serveras via backend-proxyn /api/files/.
+ */
+const MINIO_PUBLIC_BASE = 'https://storage.eduflexlms.se/eduflex-storage';
+const MINIO_BUCKET = 'eduflex-storage';
+
+const buildMediaUrl = (origin, filePath) => {
+    // Normalisera bucket-prefix om det finns
+    if (filePath.startsWith(MINIO_BUCKET + '/')) {
+        filePath = filePath.substring(MINIO_BUCKET.length + 1);
+    }
+    const lower = filePath.toLowerCase();
+    const isVideo = lower.endsWith('.mp4') || lower.endsWith('.webm') ||
+        lower.endsWith('.mov') || lower.endsWith('.ogg');
+    if (isVideo) {
+        // Direktlänk till MinIO via publik storage-domän (inga Cloudflare WAF-problem)
+        return `${MINIO_PUBLIC_BASE}/${filePath}`;
+    }
+    // Bilder, PDF, etc. via backend-proxy
+    return `${origin}/api/files/${filePath}`;
+};
+
+
 
 export default api;

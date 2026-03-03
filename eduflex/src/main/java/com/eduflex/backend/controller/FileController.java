@@ -75,6 +75,44 @@ public class FileController {
         return processFileRequest(fileName, rangeHeader);
     }
 
+    /**
+     * Media endpoint utan filändelse i URL:en — kringgår Cloudflare WAF:s
+     * blockering
+     * av .mp4, .webm osv. i URL-paths. Provar automatiskt avec vanliga videoformat.
+     * Anropas via /api/media/ai-videos/54_uuid (utan .mp4)
+     */
+    @GetMapping("/api/media/{*path}")
+    public ResponseEntity<Object> getMedia(@PathVariable String path,
+            @RequestHeader(value = org.springframework.http.HttpHeaders.RANGE, required = false) String rangeHeader) {
+        // Rensa ledande slash
+        String cleanPath = path;
+        if (cleanPath.startsWith("/")) {
+            cleanPath = cleanPath.substring(1);
+        }
+
+        // Om filen redan har en känd extension — servera direkt
+        String lower = cleanPath.toLowerCase();
+        if (lower.endsWith(".mp4") || lower.endsWith(".webm") || lower.endsWith(".mov")
+                || lower.endsWith(".ogg") || lower.endsWith(".mp3") || lower.endsWith(".pdf")
+                || lower.endsWith(".epub") || lower.endsWith(".jpg") || lower.endsWith(".png")) {
+            return processFileRequest(cleanPath, rangeHeader);
+        }
+
+        // Utan extension — prova vanliga videoformat i ordning
+        for (String ext : new String[] { ".mp4", ".webm", ".mov", ".ogg" }) {
+            try {
+                ResponseEntity<Object> result = processFileRequest(cleanPath + ext, rangeHeader);
+                if (result.getStatusCode().is2xxSuccessful()) {
+                    return result;
+                }
+            } catch (Exception ignored) {
+                // Prova nästa extension
+            }
+        }
+
+        return ResponseEntity.notFound().build();
+    }
+
     private ResponseEntity<Object> processFileRequest(String fileName, String rangeHeader) {
         if (fileName == null || fileName.isEmpty() || fileName.equals("/")) {
             return ResponseEntity.badRequest().build();

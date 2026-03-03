@@ -129,7 +129,7 @@ public class SecurityConfig {
                                                                                                               // POST
                                                 .requestMatchers("/api/system/license/**", "/uploads/**",
                                                                 "/api/files/**", "/api/ebooks/**",
-                                                                "/api/storage/**",
+                                                                "/api/storage/**", "/api/media/**",
                                                                 "/h2-console/**",
                                                                 "/ws/**",
                                                                 "/ws-log/**",

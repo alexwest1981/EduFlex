@@ -97,10 +97,12 @@ public class VideoInternalService {
 
             // Build FFMPEG filter for multiple scenes
             StringBuilder filter = new StringBuilder();
-            // Start with title screen for 3 seconds
-            filter.append("drawtext=fontfile='/usr/share/fonts/ttf-dejavu/DejaVuSans.ttf':textfile='")
+            // Titelbild i mitten av skärmen under 3 sekunder
+            filter.append("drawtext=fontfile='/usr/share/fonts/ttf-dejavu/DejaVuSans-Bold.ttf':textfile='")
                     .append(titleFilePath).append("'")
-                    .append(":fontcolor=white:fontsize=64:x=(w-text_w)/2:y=(h-text_h)/2:enable='between(t,0,3)'");
+                    .append(":fontcolor=white:fontsize=56:x=(w-text_w)/2:y=(h-text_h)/2")
+                    .append(":box=1:boxcolor=black@0.5:boxborderw=20")
+                    .append(":enable='between(t,0,3)'");
 
             double currentTime = 3.0;
             int sceneIndex = 0;
@@ -113,9 +115,16 @@ public class VideoInternalService {
                 java.nio.file.Files.writeString(java.nio.file.Paths.get(sceneFilePath), text,
                         java.nio.charset.StandardCharsets.UTF_8);
 
+                // FIX: y=h-th-80 anpassar sig dynamiskt till texthöjden + marginal nedtill.
+                // box+boxcolor ger en halvtransparent bakgrund så texten alltid syns.
+                // x=60 ger lite marginal från vänster.
                 filter.append(",drawtext=fontfile='/usr/share/fonts/ttf-dejavu/DejaVuSans.ttf':textfile='")
                         .append(sceneFilePath).append("'")
-                        .append(":fontcolor=white:fontsize=36:x=50:y=h-150:enable='between(t,")
+                        .append(":fontcolor=white:fontsize=32")
+                        .append(":x=60:y=h-th-80")
+                        .append(":box=1:boxcolor=black@0.6:boxborderw=12")
+                        .append(":line_spacing=8")
+                        .append(":enable='between(t,")
                         .append(currentTime).append(",").append(currentTime + duration).append("')");
 
                 currentTime += duration;
@@ -125,11 +134,17 @@ public class VideoInternalService {
             // Total duration
             int totalDuration = (int) Math.ceil(currentTime);
 
+            // FIX: Lägger till en tyst audio-stream via anullsrc.
+            // Utan ett audio-track kan vissa spelare vägra spela eller visa tyst som bugg.
+            // anullsrc genererar tystnad, -shortest avslutar när video-streamen tar slut.
             ProcessBuilder pb = new ProcessBuilder(
                     "ffmpeg", "-y",
                     "-f", "lavfi", "-i", "color=c=0x06141b:s=1280x720:d=" + totalDuration,
+                    "-f", "lavfi", "-i", "anullsrc=r=44100:cl=stereo",
                     "-vf", filter.toString(),
                     "-c:v", "libx264", "-pix_fmt", "yuv420p",
+                    "-c:a", "aac", "-b:a", "128k",
+                    "-shortest",
                     outputPath);
 
             log.info("Running FFMPEG for AI video: duration={}s", totalDuration);
@@ -147,15 +162,20 @@ public class VideoInternalService {
             if (exitCode == 0) {
                 log.info("AI Video generated successfully at {}", outputPath);
 
-                // 1. Upload to MinIO
+                // STEG 1: Ladda upp till MinIO
                 File videoFile = new File(outputPath);
                 String destinationPath = "ai-videos/" + fileId + "_" + java.util.UUID.randomUUID() + ".mp4";
-                String videoUrl = minioService.uploadFile(videoFile, destinationPath, "video/mp4");
+                minioService.uploadFile(videoFile, destinationPath, "video/mp4");
 
-                // 2. Notify Core
+                // STEG 2: Verify-before-store — bekräfta att filen verkligen finns innan
+                // vi skapar en kurspost med URL:en. Förhindrar 404-videos för elever.
+                String publicVideoUrl = minioService.verifyAndGetPublicUrl(destinationPath);
+                log.info("✅ Video verified in MinIO, public URL: {}", publicVideoUrl);
+
+                // STEG 3: Skicka callback med bekräftad URL
                 java.util.Map<String, Object> callbackPayload = new java.util.HashMap<>();
                 callbackPayload.put("fileId", fileId);
-                callbackPayload.put("videoUrl", videoUrl);
+                callbackPayload.put("videoUrl", publicVideoUrl);
                 callbackPayload.put("status", "SUCCESS");
                 callbackPayload.put("tenantId", tenantId);
 
@@ -172,7 +192,7 @@ public class VideoInternalService {
 
                 restTemplate.postForEntity(callbackUrl, requestEntity, Void.class);
 
-                // Clean up local temp file
+                // STEG 4: Rensa lokala tempfiler
                 if (videoFile.delete()) {
                     log.info("Deleted local temp video file: {}", outputPath);
                 }

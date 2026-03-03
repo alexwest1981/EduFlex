@@ -41,6 +41,12 @@
 
 ---
 
+### 🕒 Senaste uppdateringarna (2026-03-03)
+*   **AI Video Quality Fix**: Åtgärdat ljudproblem genom att lägga till en tyst audio-stream (AAC) i FFMPEG-genereringen.
+*   **AI Video Subtitles**: Förbättrat textpositionering (`y=h-th-80`) och läsbarhet med halvtransparenta bakgrundslådor så att texten aldrig skärs av.
+*   **Scalability Vision (10k+ Unvändare)**: Fastställt roadmap för mikroservice-arkitektur (SCORM/xAPI, WebSockets, Sync Worker, Gamification Engine) för att avlasta monolit-backenden.
+*   **Documentation & Release**: Uppdaterat ROADMAP.md och Landing Page inför push till v3.6.2.
+
 ### 🕒 Senaste uppdateringarna (2026-03-02)
 *   **AI Video Auto-refresh**: WebSocket-stöd (`AI_VIDEO_READY`) för automatisk omladdning av material-listan.
 *   **AI Video Callback Security**: Tillåtit `/api/ai-tutor/video-callback` i `SecurityConfig` för oautentiserade callbacks.

@@ -26,7 +26,7 @@
 | **Hög** | **Role-Specific AI Coaches** | Principal (KPI), Teacher (risk-warning), Student (study-plan). | ✅ **Klar** | Killer-feature: Unik selling point. |
 | **Hög** | **CSN/Upphandlings-rapporter** | Närvaro-export (enskild + bulk), Excel (.xlsx), GDPR Art. 15 registerutdrag, läraråtkomst. | ✅ **Klar** (v3.0.0) | Svenskt krav. |
 | **Medel** | **Partner & B2B Extended Enterprise** | Resellers (Edtech Studios), B2B Seat Licenses, Pointers i Global Library | ✅ **Klar** (v3.1.0) | Scale via partners & B2B sales. |
-| **Låg** | **Microservices Scale** | Load-test PDF/video (verifiera befintlig implementation). | 2 dagar | Verify. |
+| **Medel** | **Microservices Scale** | Load-test PDF/video + identifiera nästa utbrytningskandidater: SCORM/xAPI, WebSocket/Notiser, Sync Worker, Gamification Engine. Se *Kategori 6* nedan. | 2 dagar | Verify & Plan. |
 | **Hög** | **AI Microservice Extraction** | Bryta ut AI-logik (Gemini) till en dedikerad Python FastAPI microservice för asykron prestanda, GDPR data-filtrering och oberoende HPA skalbarhet. | 5 dagar | Framtidssäkrad AI-arkitektur för Enterprise. |
 
 **Milstolpe:** Första betalande kund + Kubernetes-deploy (Helm).
@@ -130,6 +130,29 @@
 | **Rektorspaket (Mission Control)** | Komplett skolledningslager: Organisationshierarki, Dashboard för nyckeltal (8 realtids-KPIer), Incidenthantering, Elevhälsa och Masskommunikation. | ✅ **Klar** | **Mission Control** för hela verksamheten. |
 | **PDF Whitelabeling** | Visuell editor för certifikat- och betygsmallar. Ladda upp logotyp, bakgrundsbild, konfigurera färger, texter, QR-position och layout. Live-förhandsvisning. | ✅ **Klar** | Professionell visuell identitet. |
 | **Sjukanmälan** | Komplett sjukanmälningssystem med statusuppdateringar, mentorsnotifieringar och historikspårning. | ✅ **Klar** | **-30%** adm-mail från vårdnadshavare. |
+
+---
+
+## ⚙️ Kategori 6: Mikroservice-Arkitektur (Skalbarhet mot 10 000+ användare)
+*Baserat på stresstester (smärtgräns vid 500 samtida användare pga. connection pool) och arkitektonisk analys (NotebookLM, Mars 2026).*
+*Målet är att omvandla kärn-backenden från en tung monolit till en snabb "Orchestrator" — precis som Netflix, Spotify och Canvas är designade.*
+
+### Befintliga mikrotjänster
+| Tjänst | Teknologi | Status |
+| :--- | :--- | :--- |
+| **eduflex-video** | Spring Boot + FFMPEG | ✅ Aktiv |
+| **PDF Service** | Spring Boot + iText | ✅ Aktiv |
+| **AI Gateway** | Spring Boot → Gemini API | ✅ Aktiv |
+
+### Nästa utbrytningskandidater (Q2–Q3 2026)
+| Prioritet | Kandidat | Varför det behövs | Fördel | Kö-mekanism | Status |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Hög** | **SCORM & xAPI Engine** | Uppladdning och extrahering av SCORM-zipfiler + tusentals `LMSSetValue`-anrop per elev är extremt I/O- och databastungt. Riskerar att låsa connection pool för alla övriga användare. | Isolerar e-learningspelaren helt — en stor filuppackning påverkar aldrig den vanliga UI-trafiken. | Redis/Kafka Event Bus | 📅 **Planerad Q2** |
+| **Hög** | **Real-time Communications & Notifications (WebSocket)** | Att hålla tusentals SockJS/STOMP-anslutningar öppna (chatt, sociala likes, Exam Integrity-larm) dränerar RAM och trådar i Spring Boot-monoliten. | Dedikerad "Notification Service" (Spring WebFlux eller Node.js) klarar tiotusentals parallella anslutningar. Tar även hand om e-post, SMS och PWA Push. | WebSocket/SSE-baserad | 📅 **Planerad Q2** |
+| **Medel** | **Integration & Sync Worker** | Batch-jobb mot tredje part (Skolverket, CSN-Excel, SIS CSV-import, JobTech, HR/Workday) blockerar trådar medan systemet väntar på externa API:er. | Asynkron kö: rapportjobb läggs i kön → tjänsten genererar filen → rektor får notis när klart. Noll påverkan på kärnplattformen. | Kafka/RabbitMQ | 📅 **Planerad Q3** |
+| **Medel** | **Gamification & Analytics Engine** | Varje elevinteraktion (video, quiz, chatt) triggar XP-beräkningar och ligatabellupdateringar — en massiv ström av DB-skrivningar som stresstestet varnade för. | Kärn-backend skickar ett snabbt event ("Elev X klarade Quiz Y") till Event Bus. Gamification-tjänsten hanterar XP/ligor i sin egen takt och returnerar belöningssignal. | Kafka Event Bus (Q3) | 📅 **Planerad Q3** |
+
+> **Arkitektonisk målbild:** När Video, PDF, AI, SCORM/xAPI, WebSockets, Integrationer och Gamification är utbrutna hanterar kärn-backenden *enbart* inloggningar, RBAC-behörigheter och orkestrering — vilket öppnar för miljontals användare utan prestandatak.
 
 ---
 
