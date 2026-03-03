@@ -1,166 +1,140 @@
-# EduFlex LMS 3.6.3 - Enterprise Learning Platform
+# 🎓 EduFlex LLP v3.6.3
+*The Complete Enterprise Learning Lifecycle Platform for Modern Education & B2B*
 
-**EduFlex LMS/LLP** är en nästa generations lärplattform, byggd för att möta de specifika behoven i den svenska skolan och företagsutbildning. Med en AI-first arkitektur, strikt dataseparation (multi-tenancy) och djup integration med svenska standarder (Skolverket, SS 12000), erbjuder EduFlex en komplett infrastruktur för modern utbildning.
+*Developed & maintained by **Alex Weström / Fenrir Studio***  
+🇸🇪 Svenska | 🇬🇧 English
 
----
+![EduFlex Architecture](https://img.shields.io/badge/Architecture-Event--Driven%20Microservices-blue)
+![React Version](https://img.shields.io/badge/React-19-61dafb)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.4-6db33f)
+![Compliance](https://img.shields.io/badge/Compliance-GDPR%20%7C%20ISO%2027001%20Ready-success)
 
-## 🌟 Vision & Kärnvärden
-
-Vår vision är att eliminera den administrativa bördan för lärare och skolledare genom intelligent automation, samtidigt som vi ger eleverna en personlig och adaptiv lärandeupplevelse.
-
-*   **AI-First:** Inte bara en "chatbot på sidan", utan AI integrerat i kärnan för rättning, planering och analys.
-*   **Svensk Compliance:** Byggt från grunden för Skollagen, GDPR och svensk läroplan (Lgr22/Gy11).
-*   **Säkerhet & Integritet:** Schema-per-Tenant arkitektur garanterar att ingen data någonsin läcker mellan skolor.
-*   **Helhetslösning:** Ersätter behovet av separata system för LMS, video, lagring och incidenthantering.
+EduFlex LLP är ett Enterprise-redo, molnbaserat ekosystem som ersätter den traditionella, fragmenterade skol-it-miljön (Canvas + Zoom + Moodle + Alvis). Genom en distribuerad mikrotjänstarkitektur, asynkron händelsebuss, svensk myndighetsintegration och marknadens första 100 % spårbara AI-motor, sänker EduFlex kundernas Total Cost of Ownership (TCO) drastiskt.
 
 ---
 
-## 🚀 Systemstatus & Versionshistorik
-
-### **Current Release: v3.6.3.3 (4 mar 2026)**
-
-#### 🏗️ Microservice Architecture Migration
-Vi genomgår en strategisk transformation från monolit till en distribuerad mikrotjänstarkitektur för att öka skalbarhet och prestanda.
-
-### 🚀 **v3.6.3.3** (4 mar 2026) – Microservice Migration Phase 3 & 4 (Real-time & Notifications)
-*   **🔔 eduflex-notifications Microservice**: En dedikerad tjänst för all realtidskommunikation via WebSockets (STOMP). Frikopplar chatt, forum-reaktioner och systemnotiser från huvudapplikationen.
-*   **📡 Redis Event Bus Architecture**: Implementerat en robust händelsebuss baserad på Redis Pub/Sub som binder samman alla mikrotjänster och möjliggör distribuerade realtidsuppdateringar.
-*   **🛡️ JWT-secured WebSockets**: Säkerställt WebSocket-anslutningar med JWT-validering direkt i den nya mikroservicen.
-*   **📂 Monolith Decoupling**: Refaktorerat samtliga realtidstjänster i monoliten (`Chat`, `Forum`, `LogTailer`, `Notification`, `ExamIntegrity`, `AITutor`) till att publicera händelser på den gemensamma händelsebussen istället för direktleverans till klienter.
-
-### 🚀 **v3.6.3.2** (4 mar 2026) – Microservice Migration Phase 2 (Integration & Callbacks)
-*   **🔌 Frontend Proxy Integration**: Sömlös anslutning av frontenden till den nya SCORM-mikroservicen via Vite-proxy, vilket möjliggör transparent migration av SCORM, CMI5 och LRS-trafik (port 8084).
-*   **📡 Internal Callback System**: Implementerat `InternalProgressController` i monoliten för att ta emot säkra framstegsuppdateringar i realtid från mikroservicen.
-*   **🛡️ Multi-Service Security**: Konfigurerat `SecurityConfig` för att tillåta interna tjänsteanrop, vilket säkrar kommunikationen mellan mikrotjänsterna och monolit-backenden.
-
-### 🚀 **v3.6.3.1** (4 mar 2026) – Microservice Migration Phase 1 (SCORM & xAPI)
-*   **🏗️ eduflex-scorm Microservice**: Initierat en ny, högpresterande Spring Boot 3-mikrotjänst för hantering av SCORM och xAPI.
-*   **🔌 Decoupled Architecture**: Frikopplat SCORM- och xAPI-data från monolitens huvuddatabas till ett eget isolerat schema för att radikalt minska trycket på centrala PostgreSQL-anslutningar.
-*   **📡 xAPI LRS API**: Fullständigt stöd för statements, state och agent profiles via den nya tjänsten.
-
-### 🕒 Senaste uppdateringarna (2026-03-04)
-- **Phase 4 Completion**: `eduflex-notifications` mikrotjänst driftsatt. Hela monoliten refaktorerad för Redis Pub/Sub (Event Bus).
-- **Phase 2 Completion**: Full integration av `eduflex-scorm` med monoliten och frontend (WSL Native support).
-- **Internal Callbacks**: Realtidsöverföring av xAPI-statements från mikroservice till monolit för poäng- och certifikatuppdateringar.
-- **Security Patch**: Öppnat `/api/internal/**` för säkra interna anrop i monolit-backenden.
+## 📖 Innehållsförteckning
+- [🚀 Senaste Uppdateringarna (Changelog)](#-senaste-uppdateringarna)
+- [✨ Huvudfunktioner & "Moats"](#-huvudfunktioner--unika-vallgravar)
+- [🏛 Systemarkitektur](#-systemarkitektur)
+- [🚀 Kom igång (Quick Start)](#-kom-igång)
+- [⚙️ Åtkomst & Konfiguration](#️-åtkomst--konfiguration)
+- [👤 Vem är du? (Rollspecifika guider)](#-vem-är-du-snabbguider)
+- [🗺 Roadmap](#-roadmap)
 
 ---
 
-## 🛠️ Teknisk Arkitektur
+## 🚀 Senaste Uppdateringarna 
 
-EduFlex är byggt på en modern, robust stack designad för hög prestanda och säkerhet.
+### v3.6.3 (Mars 2026) – Event-Driven Microservices & Real-Time Scale
+* **🔔 Phase 3 & 4 (Real-time & Notifications):** Lansering av mikrotjänsten `eduflex-notifications`. All realtidskommunikation (Chatt, Forum-reaktioner, Systemnotiser, Exam Integrity) är nu helt frikopplad från monoliten.
+* **📡 Redis Event Bus:** Implementerat en asynkron händelsebuss via Redis Pub/Sub som binder samman mikrotjänsterna för distribuerade realtidsuppdateringar. JWT-säkrade WebSockets.
+* **🏗️ Phase 1 & 2 (SCORM & xAPI Engine):** Lansering av mikrotjänsten `eduflex-scorm`. SCORM/cmi5-paket och xAPI (LRS) körs nu i ett eget isolerat databasschema (Port 8084) via Vite-proxy, med säkra interna callbacks (`InternalProgressController`) till monoliten för poänguppdateringar.
 
-### Backend (Core Monolith + Microservices)
-*   **Språk:** Java 21 (LTS)
-*   **Ramverk:** Spring Boot 3.2.3
-*   **Databas:** PostgreSQL 15 (med PGVector för AI), H2 (Dev)
-*   **Säkerhet:** Spring Security 6, OAuth2/OIDC, Stateless JWT
-*   **Caching:** Redis (Sessioner, API-cache, Pub/Sub)
-*   **Messaging:** Apache Kafka (Audit logs, tunga jobb) & Redis Pub/Sub (Realtid)
-*   **Storage:** MinIO (S3-kompatibel objektlagring)
+### v3.5.0 (Mars 2026) – B2B Sales Enablement & Compliance
+* **🔌 HR Sync API (Zero-Touch):** API-First design med `HrSyncController` för automatisk user provisioning från externa HR-system som Workday.
+* **📊 Interactive TCO Calculator:** Inbyggt live-säljverktyg för att räkna ut Enterprise-kunders Return on Investment (ROI).
+* **🛡️ Compliance Center:** Gränssnitt för HR/Admins för att övervaka regelefterlevnad med automatisk expiry-tracking av certifikat.
 
-### Frontend (Client)
-*   **Ramverk:** React 18.2
-*   **Byggverktyg:** Vite
-*   **Styling:** Tailwind CSS
-*   **State:** React Context API + Custom Hooks
-*   **PWA:** Fullt stöd för offline-läge och installation.
-
-### AI & Machine Learning
-*   **LLM:** Google Gemini Pro 1.5 (via REST)
-*   **RAG:** Retrieval-Augmented Generation med PGVector för kontextmedveten AI.
-*   **Funktioner:**
-    *   *Magic Quiz:* Generera prov från PDF/Text.
-    *   *AI Tutor:* Personlig studiehjälp 24/7.
-    *   *Auto-Correct:* AI-stöd vid rättning av inlämningar.
-
-### Multi-Tenancy
-EduFlex använder en **Schema-per-Tenant**-arkitektur för maximal dataseparation och säkerhet. Varje skola/organisation får ett eget databasschema, vilket garanterar att data aldrig blandas.
+### v3.4.0 (Feb 2026) – Enterprise B2B & Global i18n
+* **💼 Extended Enterprise Engine:** "Pointer"-baserad kursdistribution. Återförsäljare (Resellers) kan sälja "Seat Licenses" till andra företag med strikt Tenant-isolering (Single Source of Truth).
+* **🌍 AI-Driven i18n Localization:** Automatisk flerspråkighet för 8 språk (bl.a. FR, DE, ES, AR) driven av Googles Gemini-pipeline.
 
 ---
 
-## 🗺️ Roadmap 2026+
+## ✨ Huvudfunktioner & Unika Vallgravar
 
-Vi siktar mot att bli marknadsledande genom djupare personalisering och automatisering.
+### 1. Svensk Hyperlokalisering (The Category Killer)
+Där globala system slutar, börjar EduFlex.
+* **EduCareer Portal:** Inbyggd sökportal direktkopplad mot **Arbetsförmedlingens JobTech API:er**. AI analyserar studentens kognitiva radar och matchar live mot LIA/praktikplatser.
+* **CSN Rapportering Pro:** Automatiserad XML/Excel-export enligt CSN:s exakta krav, med stöd för bulkhantering och "Dagar sedan senaste inloggning".
+* **Skolverket Sync 2.0:** Hämtar automatiskt kursplaner, centralt innehåll och betygskriterier via API.
+* **SS 12000 Kryptografi:** Betyg låses och signeras kryptografiskt med en hash-summa i databasen för att förhindra manipulation.
 
-### 1. Äkta Adaptivitet (AI-driven differentiering)
-*   **Personliga lärvägar:** Systemet justerar automatiskt innehåll och svårighetsgrad.
-*   **Prediktiv riskmodell:** AI-analys för att identifiera elever i riskzonen innan de misslyckas.
-*   **Adaptiva prov:** Frågor anpassas i realtid efter elevens nivå.
+### 2. Etisk & Spårbar AI (EduAI Hub)
+* **AI Audit Log (Compliance Portal):** Varje enskilt AI-beslut och prompt loggas i en isolerad databastabell. Ger 100 % transparens för GDPR och AI Act, vilket är ett krav för offentlig sektor.
+* **AI Resource Generator:** Skapar quiz, studiepass och inlämningar direkt från uppladdade PDF:er och videor.
 
-### 2. Specialiserade AI-Coacher
-*   **Rektor-assistent:** Analyserar dashboards och föreslår prioriteringar.
-*   **Mentor-coach:** Genererar underlag för utvecklingssamtal och föräldrakontakt.
-*   **Elevhälsa-coach:** Identifierar mönster i välmående (stress, frånvaro).
-*   **Elev-coach:** Personlig studiecoach och chatbot.
-
-### 3. Systematiskt Kvalitetsarbete (SKA)
-*   **Inbyggd SKA-motor:** Koppla mål till faktiska data (betyg, närvaro).
-*   **Årscykel-vy:** Visuell tidslinje för läsåret med checkpoints.
-*   **Automatgenererade rapporter:** PDF/Word-rapporter med ett klick.
-
-### 4. Integrerad Elevhälsa (EHT)
-*   **Fullskalig EHT-motor:** Bokning, journaler och ärendehantering (SS 12000).
-*   **Elevens Välmående-yta:** Anonyma pulsmätningar och check-ins.
-*   **Sekretess:** Granulär behörighetsstyrning och "need-to-know" access.
-
-### 5. Engagement Layer & Gamification
-*   **Systemnivå-Gamification:** Missions på skolnivå (t.ex. "Nå 95% närvaro").
-*   **Socialt Lärande:** Säkra forum och peer-review.
-*   **Engagement Insights:** Koppla engagemang till studieresultat.
-
-### 6. Vårdnadshavarupplevelse 2.0
-*   **Guidade Lägesrapporter:** Veckovisa sammanfattningar till hemmet.
-*   **Smart Filter:** "Action Center" för det som kräver åtgärd (signering, frånvaro).
-*   **Interaktiv Onboarding:** Guidad tur för nya användare.
-
-### 7. Integrationer & API-strategi
-*   **Öppna API:er:** För integration med externa system (t.ex. Prorenata, Skola24).
-*   **Data Export & BI:** Standardiserad dataexport till PowerBI/Tableau.
-
-### 8. AI Transparens & Fairness
-*   **Förklaringslager (XAI):** "Varför?"-förklaringar för alla AI-rekommendationer.
-*   **Bias-kontroll:** Dashboard för att övervaka och motverka AI-bias.
+### 3. Inbyggt Ekosystem & "Zero-TCO"
+Inga dyra tredjepartslicenser krävs.
+* **LiveKit Premium Video:** Inbyggda videomöten med bakgrundsoskärpa och chatt.
+* **OnlyOffice Integration:** Kollaborativ dokumentredigering direkt i webbläsaren.
+* **Exam Integrity Pro:** Kameraövervakning under tentamen som via Event Bus direkt larmar läraren om studenten byter flik eller misstänkt beteende uppstår.
 
 ---
 
-## 📂 Dokumentation & Due Diligence
+## 🏛 Systemarkitektur
 
-För investerare och teknisk granskning finns ett komplett dokumentationspaket i mappen `Komplett Dokumentationspaket` (kräver behörighet).
+EduFlex LLP drivs av en händelsedriven (Event-Driven) mikrotjänstarkitektur, skräddarsydd för massiv skalbarhet via Kubernetes.
 
-*   **Affärsdokument:** Executive Summary, Replacement Cost Analysis, Revenue Forecast.
-*   **Teknisk Arkitektur:** Technical Appendix, Security Architecture, SLA & Disaster Recovery.
-*   **Compliance & Juridik:** Compliance Statement (GDPR, Skollagen), Data Isolation Overview, Svensk Skolanpassning.
+* **Frontend:** React 19, Vite, Tailwind CSS, PWA (Progressive Web App).
+* **Orchestrator / Core Backend:** Spring Boot 3.4 (Java 21), Hibernate 6. Hanterar Multi-Tenancy (Schema-per-Tenant), RBAC och agerar API Gateway.
+* **Microservices:**
+  * `eduflex-scorm` (Spring Boot 3): Dedikerad till tunga I/O-operationer för SCORM, cmi5 och xAPI (LRS).
+  * `eduflex-notifications` (WebFlux/Node): Asynkrona WebSockets för chatt och larm.
+  * `eduflex-pdf` & `eduflex-video`: Isolerad mediebearbetning.
+* **Infrastruktur:**
+  * **PostgreSQL:** Huvuddatabas med isolerade scheman.
+  * **Redis (Event Bus):** Hanterar Pub/Sub-händelser mellan mikrotjänster och cache.
+  * **MinIO (S3):** Objektlagring för filer och media.
 
 ---
 
-## 📦 Installation & Utveckling
+## 🚀 Kom igång
 
 ### Förutsättningar
-*   **OS:** Windows med WSL 2 (Ubuntu 22.04+)
-*   **Container:** Docker (installerat i WSL)
-*   **Java:** JDK 21
-*   **Node:** Node.js 20+
+* **Docker Desktop** (senaste versionen)
+* **Git**
 
-### Starta Backend (Lokalt)
-Använd våra PowerShell-wrappers för att köra i WSL-kontext:
+### Snabbstart (Lokal Miljö)
 ```bash
-./scripts/powershell/run_backend_local.ps1
+# 1. Klona projektet
+git clone https://github.com/alexwest1981/EduFlex.git
+cd EduFlex
 ```
 
-### Starta Frontend
+# 2. Starta systemet (Startar Core, Redis Event Bus, MinIO, DB och Microservices)
 ```bash
-cd frontend
-npm install
-npm run dev
+docker compose up --build -d
 ```
 
-### Databas & Migreringar
-Systemet använder Flyway för databasmigreringar. Vid uppstart körs `GlobalMigrationRunner` som automatiskt uppdaterar både det publika schemat och alla tenants scheman.
+--------------------------------------------------------------------------------
+# ⚙️ Åtkomst & Konfiguration
 
----
+Lokala URL:er efter uppstart:
 
-## 📄 Licens & Copyright
-EduFlex är en proprietär programvara utvecklad av EduFlex AB.
-Copyright © 2024-2026 EduFlex AB. Alla rättigheter förbehållna.
-Otillåten kopiering, distribution eller modifiering är förbjuden.
+* LMS (Frontend): http://localhost:5173
+* API / Backend: http://localhost:8080/api
+* Swagger API Docs: http://localhost:8080/swagger-ui.html
+* MinIO Console: http://localhost:9001 (Inloggning: minioadmin / minioadmin)
+* EduFlex Ops (Control Center): Nås direkt via Master Admin-inloggning i LMS.
+* Kritiska Miljövariabler (.env / system properties):
+* SPRING_DATASOURCE_URL – Databasanslutning (Standard: jdbc:postgresql://db:5432/eduflex)
+* SPRING_REDIS_HOST – Redis Event Bus / Cache (Standard: redis)
+* MINIO_URL – Intern S3 Endpoint (Standard: http://minio:9000)
+* EDUFLEX_AUTH_MODE – Autentiseringsläge (Standard: internal / Alternativ: keycloak)
+* GEMINI_API_KEY – Krävs för AI-funktioner & Audit Log (Din egen nyckel krävs)
+
+
+--------------------------------------------------------------------------------
+# 👤 Vem är du? (Snabbguider)
+* 🎓 För Rektorer & Skolledare: Kolla in Principal Mission Control för realtids-KPI:er, SKA-motorn och interaktiva ROI-rapporter.
+* 🍎 För Lärare & Mentorer: Se dokumentationen för EduAI Hub, CSN-rapporteringsverktyget och Exam Integrity Pro.
+* 💻 För IT-drift & Investerare: Se vår Architecture Guide och Compliance Documentation för detaljer om vår Event Bus, schema-isolering och Zero-Touch HR Sync.
+
+--------------------------------------------------------------------------------
+🗺 Roadmap (Q2 - Q4 2026)
+- [x] Schema-baserad Multi-Tenancy & Keycloak SSO
+- [x] AI Compliance Portal & Audit Log
+- [x] JobTech & CSN Integrationer
+- [x] B2B E-commerce & Reseller Engine
+- [x] Event-Driven Microservices & Redis Event Bus
+- [ ] Q2 2026: AI Microservice Extraction (Python/FastAPI) för framtida lokala LLM-modeller.
+- [ ] Q3 2026: React Native Mobile App med Offline-sync.
+
+--------------------------------------------------------------------------------
+⚖ License & Contact
+EduFlex LLP™ © 2026 Alex Weström / Fenrir Studio
+Proprietary Software. Unauthorized copying or distribution is strictly prohibited.
+För kommersiella förfrågningar och licensiering: 📧 alexwestrom81@gmail.com
+Last updated: 2026-03-04 (Event Bus, Microservices Refactor - v3.6.3.3)
