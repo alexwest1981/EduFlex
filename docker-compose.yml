@@ -142,8 +142,9 @@ services:
       - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI=http://keycloak:8080/realms/eduflex/protocol/openid-connect/certs
       - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI=http://localhost:8180/realms/eduflex
       - EDUFLEX_REGISTRATION_KEY=master_key_2026
-      # AI Quiz Generation (Google Gemini)
+      # AI Quiz Generation (Google Gemini via Microservice)
       - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+      - AI_SERVICE_URL=http://eduflex-ai:8000
       # Stripe Payments
       - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY:-}
       - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET:-}
@@ -252,6 +253,20 @@ services:
       - SERVER_PORT=8085
       - REDIS_HOST=redis
       - EDUFLEX_JWT_SECRET=${EDUFLEX_JWT_SECRET:-eduflex_secure_secret_key_32_chars_}
+    networks:
+      - eduflex-net
+    restart: always
+
+  # --- AI MICROSERVICE ---
+  eduflex-ai:
+    build: ./eduflex-ai
+    container_name: eduflex-ai
+    environment:
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+      - GEMINI_MODEL=gemini-2.0-flash
+      - PORT=8000
+    ports:
+      - "8008:8000"
     networks:
       - eduflex-net
     restart: always

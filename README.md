@@ -26,11 +26,16 @@ EduFlex LLP är ett Enterprise-redo, molnbaserat ekosystem som ersätter den tra
 
 ## 🚀 Senaste Uppdateringarna 
 
-### **Current Release: v3.6.3.4 (4 mar 2026)**
+### **Current Release: v3.6.4 (4 mar 2026)**
+
+#### 🧠 AI Microservice Extraction (Python/FastAPI)
+*   **Decoupled AI Logic**: All Gemini-based logic (quiz generation, course structure, performance analysis) has been moved to a high-performance Python FastAPI service (`eduflex-ai`).
+*   **Asynchronous Efficiency**: Improved scalability and future-readiness for local LLM integration.
+*   **Strict JSON Enforcement**: Centralized prompt engineering in Python ensures robust AI responses.
 
 #### 🛠️ Control Center Microservice Management
-*   **Restructured Control Center**: Ny dedikerad flik "Mikrotjänster" för isolerad hantering av `eduflex-video`, `eduflex-pdf`, `eduflex-scorm` och `eduflex-notifications`.
-*   **Enhanced Monitoring**: Realtidsövervakning av mikrotjänst-portar (8082-8085) och Docker-containerstatus.
+*   **Restructured Control Center**: Ny dedikerad flik "Mikrotjänster" för isolerad hantering av `eduflex-video`, `eduflex-pdf`, `eduflex-scorm`, `eduflex-notifications` och nu `eduflex-ai`.
+*   **Enhanced Monitoring**: Realtidsövervakning av mikrotjänst-portar (8000, 8082-8085) och Docker-containerstatus.
 
 ### 🚀 **v3.6.3.3** (4 mar 2026) – Microservice Migration Phase 3 & 4 (Real-time & Notifications)
 *   **🔔 eduflex-notifications Microservice**: En dedikerad tjänst för all realtidskommunikation via WebSockets (STOMP). Frikopplar chatt, forum-reaktioner och systemnotiser från huvudapplikationen.
@@ -78,6 +83,7 @@ EduFlex LLP drivs av en händelsedriven (Event-Driven) mikrotjänstarkitektur, s
   * `eduflex-scorm` (Spring Boot 3): Dedikerad till tunga I/O-operationer för SCORM, cmi5 och xAPI (LRS).
   * `eduflex-notifications` (WebFlux/Node): Asynkrona WebSockets för chatt och larm.
   * `eduflex-pdf` & `eduflex-video`: Isolerad mediebearbetning.
+  * `eduflex-ai` (Python FastAPI): Dedikerad AI-motor för generativt innehåll och analys.
 * **Infrastruktur:**
   * **PostgreSQL:** Huvuddatabas med isolerade scheman.
   * **Redis (Event Bus):** Hanterar Pub/Sub-händelser mellan mikrotjänster och cache.
@@ -142,4 +148,4 @@ Lokala URL:er efter uppstart:
 EduFlex LLP™ © 2026 Alex Weström / Fenrir Studio
 Proprietary Software. Unauthorized copying or distribution is strictly prohibited.
 För kommersiella förfrågningar och licensiering: 📧 alexwestrom81@gmail.com
-Last updated: 2026-03-04 (Control Center Restructuring - v3.6.3.4)
+Last updated: 2026-03-04 (AI Microservice Extraction - v3.6.4)
