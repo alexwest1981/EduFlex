@@ -28,6 +28,7 @@
 | **Medel** | **Partner & B2B Extended Enterprise** | Resellers (Edtech Studios), B2B Seat Licenses, Pointers i Global Library | ✅ **Klar** (v3.1.0) | Scale via partners & B2B sales. |
 | **Medel** | **Microservices Scale (v3.6.3.2)** | Bryta ut resurskrävande moduler. Fas 1: SCORM & xAPI Engine migrerad. Fas 2: Full integration & callback system. Fas 3: Video/Notiser nästa. | ✅ **Fas 2 Klar** | Avlasta monolitens DB-pool & I/O. |
 | **Hög** | **Microservices Scale - Notifications** | Extrahera WebSocket & Notiser till egen tjänst | ✅ **Klar** (v3.6.3.3) | Dedikerad "Notification Service" klarar tiotusentals parallella anslutningar. |
+| **Medel** | **Control Center - Microservice Management** | Omstrukturera Control Center med en dedikerad flik för att hantera, övervaka och konfigurera alla mikrotjänster. | Planerad | Centraliserad administration för en växande distribuerad arkitektur. |
 | **Hög** | **AI Microservice Extraction** | Bryta ut AI-logik (Gemini) till en dedikerad Python FastAPI microservice för asykron prestanda, GDPR data-filtrering och oberoende HPA skalbarhet. | 5 dagar | Framtidssäkrad AI-arkitektur för Enterprise. |
 
 **Milstolpe:** Första betalande kund + Kubernetes-deploy (Helm).
