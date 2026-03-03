@@ -1,6 +1,5 @@
 package com.eduflex.backend.service.ai;
 
-import com.eduflex.backend.service.GdprDataMaskerService;
 import lombok.Builder;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +15,6 @@ public class TeacherAiCoachService {
 
         private final GeminiService geminiService;
         private final TeacherAnalyticsService teacherAnalyticsService;
-        private final GdprDataMaskerService gdprDataMaskerService;
 
         @Data
         @Builder
@@ -41,15 +39,18 @@ public class TeacherAiCoachService {
                 prompt.append("- Studenter i riskzonen (Hög/Medium risk): ")
                                 .append(analytics.getLowPerformingStudents().size())
                                 .append("\n");
+                List<String> sensitiveNames = new java.util.ArrayList<>();
                 if (!analytics.getLowPerformingStudents().isEmpty()) {
                         prompt.append("- Exempel på studentproblem: ");
                         analytics.getLowPerformingStudents().stream().limit(3)
-                                        .forEach(s -> prompt
-                                                        .append(gdprDataMaskerService.pseudonymize(s.getName(),
-                                                                        "STUDENT"))
-                                                        .append(" (Risk: ")
-                                                        .append(s.getRiskLevel())
-                                                        .append(", Orsak: ").append(s.getRiskReason()).append("); "));
+                                        .forEach(s -> {
+                                                prompt.append(s.getName()) // Literal name here, GeminiService will mask
+                                                                .append(" (Risk: ")
+                                                                .append(s.getRiskLevel())
+                                                                .append(", Orsak: ").append(s.getRiskReason())
+                                                                .append("); ");
+                                                sensitiveNames.add(s.getName());
+                                        });
                         prompt.append("\n");
                 }
 
@@ -66,7 +67,7 @@ public class TeacherAiCoachService {
                 prompt.append("Svara på svenska.");
 
                 try {
-                        String jsonResponse = geminiService.generateJsonContent(prompt.toString());
+                        String jsonResponse = geminiService.generateJsonContent(prompt.toString(), sensitiveNames);
                         com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
                         com.fasterxml.jackson.databind.JsonNode root = mapper.readTree(jsonResponse);
 

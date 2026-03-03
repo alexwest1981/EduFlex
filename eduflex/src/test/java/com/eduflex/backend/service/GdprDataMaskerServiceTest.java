@@ -33,4 +33,19 @@ public class GdprDataMaskerServiceTest {
         assertEquals("[STUDENT_NAME]", masker.pseudonymize("Alex Weström", "STUDENT"));
         assertEquals("[USER_NAME]", masker.pseudonymize("Admin User", "USER"));
     }
+
+    @Test
+    void testMaskNamesLiterally() {
+        String input = "Hej Alex Weström, hur är läget med Anna?";
+        java.util.List<String> names = java.util.List.of("Alex Weström", "Anna");
+
+        GdprDataMaskerService.MaskingResult result = masker.maskPii(input, names);
+
+        assertTrue(result.getMaskedText().contains("[PERSON_1]"));
+        assertTrue(result.getMaskedText().contains("[PERSON_2]"));
+        assertFalse(result.getMaskedText().contains("Alex Weström"));
+        assertFalse(result.getMaskedText().contains("Anna"));
+        assertEquals("Alex Weström", result.getNameMap().get("[PERSON_1]"));
+        assertEquals("Anna", result.getNameMap().get("[PERSON_2]"));
+    }
 }

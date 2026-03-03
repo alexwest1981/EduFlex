@@ -102,14 +102,15 @@ public class StudentAiCoachService {
                 prompt.append("Svara på svenska.");
 
                 try {
-                        String jsonResponse = geminiService.generateJsonContent(prompt.toString());
+                        List<String> sensitiveNames = List.of(user.getFirstName(), user.getLastName(),
+                                        user.getFullName());
+                        String jsonResponse = geminiService.generateJsonContent(prompt.toString(), sensitiveNames);
+
                         com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
                         com.fasterxml.jackson.databind.JsonNode root = mapper.readTree(jsonResponse);
 
                         return StudentAiCoachInsight.builder()
-                                        .welcomeMessage(
-                                                        root.path("welcomeMessage").asText("Hej! Ready to learn?")
-                                                                        .replace(pseudonym, user.getFirstName()))
+                                        .welcomeMessage(root.path("welcomeMessage").asText("Hej! Ready to learn?"))
                                         .motivationTip(root.path("motivationTip")
                                                         .asText("Fortsätt samla poäng för att klättra i ligorna!"))
                                         .studyRecommendation(root.path("studyRecommendation")

@@ -3,7 +3,14 @@ package com.eduflex.backend.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * Service for masking and pseudonymizing PII (Personally Identifiable
@@ -25,6 +32,14 @@ public class GdprDataMaskerService {
     private static final Pattern PHONE_PATTERN = Pattern
             .compile("(\\b\\+?\\d{1,3}[- ]?)?\\d{2,3}[- ]?\\d{2,3}[- ]?\\d{2,4}\\b");
 
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class MaskingResult {
+        private String maskedText;
+        private Map<String, String> nameMap; // Placeholder -> Original Name
+    }
+
     /**
      * Masks PII in a string using standard patterns.
      * 
@@ -32,23 +47,50 @@ public class GdprDataMaskerService {
      * @return Masked text
      */
     public String maskPii(String input) {
+        return maskPii(input, new ArrayList<>()).getMaskedText();
+    }
+
+    /**
+     * Advanced masking that also takes a list of names to mask literally.
+     * 
+     * @param input       The text to mask
+     * @param namesToMask A list of names (e.g., ["Alex", "Weström"])
+     * @return MaskingResult containing the masked text and the mapping
+     */
+    public MaskingResult maskPii(String input, List<String> namesToMask) {
         if (input == null || input.isEmpty()) {
-            return input;
+            return new MaskingResult(input, new HashMap<>());
         }
 
         String result = input;
+        Map<String, String> nameMap = new HashMap<>();
 
-        // Mask Emails
+        // 1. Mask Names literally (before regex)
+        if (namesToMask != null) {
+            int count = 1;
+            for (String name : namesToMask) {
+                if (name == null || name.length() < 2)
+                    continue;
+                String placeholder = "[PERSON_" + count + "]";
+                if (result.contains(name)) {
+                    result = result.replace(name, placeholder);
+                    nameMap.put(placeholder, name);
+                    count++;
+                }
+            }
+        }
+
+        // 2. Mask Emails
         result = EMAIL_PATTERN.matcher(result).replaceAll("[EMAIL_MASKERAD]");
 
-        // Mask SSN
+        // 3. Mask SSN
         result = SSN_PATTERN.matcher(result).replaceAll("[PERSONNUMMER_MASKERAT]");
 
-        // Mask Phone (only if it looks like more than just a simple number in context)
-        // This is a bit aggressive but safer for GDPR
+        // 4. Mask Phone (only if it looks like more than just a simple number in
+        // context)
         result = PHONE_PATTERN.matcher(result).replaceAll("[TELEFON_MASKERAT]");
 
-        return result;
+        return new MaskingResult(result, nameMap);
     }
 
     /**

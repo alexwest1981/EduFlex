@@ -33,7 +33,6 @@ public class AITutorService {
     private final com.fasterxml.jackson.databind.ObjectMapper objectMapper;
     private final EventBusService eventBusService;
     private final Tika tika = new Tika();
-    private final GdprDataMaskerService gdprDataMaskerService;
 
     private final com.eduflex.backend.repository.EbookRepository ebookRepository;
 
@@ -56,7 +55,6 @@ public class AITutorService {
         this.redisTemplate = redisTemplate;
         this.objectMapper = objectMapper;
         this.eventBusService = eventBusService;
-        this.gdprDataMaskerService = gdprDataMaskerService;
     }
 
     private static final int CHUNK_SIZE = 1000;
@@ -285,7 +283,6 @@ public class AITutorService {
 
     public String generateStudyTip(Lesson lesson, User student) {
         try {
-            String pseudonym = gdprDataMaskerService.pseudonymize(student.getFirstName(), "STUDENT");
             String prompt = String.format(
                     "Du är en vänlig och peppande studiecoach på EduFlex. Din elev, %s, verkar ha fastnat på lektionen '%s' i kursen.\n\n"
                             +
@@ -295,15 +292,14 @@ public class AITutorService {
                             "Använd en uppmuntrande ton, och föreslå kanske att de ska ta en kort paus om det känns svårt.\n"
                             +
                             "Lektionens innehåll (utdrag): %s",
-                    pseudonym,
+                    student.getFirstName(),
                     lesson.getTitle(),
                     lesson.getContent() != null
                             ? (lesson.getContent().length() > 300 ? lesson.getContent().substring(0, 300) + "..."
                                     : lesson.getContent())
                             : "Ingen text.");
 
-            String response = geminiService.generateResponse(prompt);
-            return response.replace(pseudonym, student.getFirstName());
+            return geminiService.generateResponse(prompt, List.of(student.getFirstName(), student.getLastName()));
         } catch (Exception e) {
             logger.error("Error generating study tip for user {} on lesson {}", student.getId(), lesson.getId(), e);
             return "Kom igen! Du fixar det här. Ta en liten paus och försök igen med fräscha ögon!";

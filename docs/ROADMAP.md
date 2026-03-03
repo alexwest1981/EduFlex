@@ -58,7 +58,7 @@
 | **Hög** | **Kubernetes Production** | Helm-charts, HPA och autoscaling för enterprise-noder. | ✅ **Klar** (v3.3.1) | Skalbarhet för 500+ användare. |
 | **Medel** | **Pilot Kit & Pricing** | Whitepaper, prissida och pitch-material för Borås Ink. | ✅ **Klar** (v3.3.1) | Kommersialisering. |
 | **Hög** | **EduAI Hub Refinement** | Refinement av kategori-mappning, Spaced Repetition-integration och Live Radar precision. | ✅ **Klar** | Förbättrad kognitiv profilering. |
-| **Hög** | **GDPR & Privacy Shield** | Implementera granulära GDPR-datafilter (PII-maskering), pseudonymisering av studentdata i AI-sessioner och GDPR-läge för rapporter. | ✅ **Klar** (v3.6.6) | Compliance & Data Protection. |
+| **Hög** | **Zero-Trust AI Pipeline** | Implementera PII-maskering med literal namn-ersättning och lokal response-restoration (Schrems II-ready). | ✅ **Klar** (v3.6.6) | Compliance & Data Protection. |
 | **Hög** | **EduCareer Portal** | Integration med JobTech APIs för lokaliserad LIA-sökning och AI-matchning. | ✅ **Klar** (v3.4.0) | Studenternas karriärstöd. |
 | **Hög** | **BankID-integration (v3.5.1)** | Keycloak som Identity Broker, Dynamic Client Registration, Integration Hub Support, SSN-mappning. | ✅ **Klar** | Kritiskt för svensk offentlig sektor. |
 | **Hög** | **AI Tutor 2.0 (Video)** | Automatisk generering av förklaringsvideor via Gemini-script & FFMPEG. | ✅ **Klar** (v3.6.0) | Nästa generations lärande. |

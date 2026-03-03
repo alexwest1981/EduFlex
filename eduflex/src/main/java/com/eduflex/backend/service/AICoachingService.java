@@ -64,9 +64,13 @@ public class AICoachingService {
     public Map<String, Object> getMentorStudentOverview(Long mentorId) {
         List<StudentRiskFlag> mentorRisks = riskFlagRepository.findHighRiskFlagsForMentor(mentorId);
 
+        List<String> sensitiveNames = mentorRisks.stream()
+                .map(r -> r.getStudent().getFullName())
+                .collect(Collectors.toList());
+
         Map<String, Object> promptData = new HashMap<>();
         promptData.put("studentRisks", mentorRisks.stream().map(r -> Map.of(
-                "name", gdprDataMaskerService.pseudonymize(r.getStudent().getFullName(), "STUDENT"),
+                "name", r.getStudent().getFullName(),
                 "level", r.getRiskLevel(),
                 "reason", r.getAiReasoning())).collect(Collectors.toList()));
 
@@ -77,7 +81,7 @@ public class AICoachingService {
                 "Svara på svenska. Svara i JSON format: {\"briefing\": \"...\", \"topConcern\": \"...\", \"suggestedAgenda\": [...] }";
 
         try {
-            String jsonResponse = geminiService.generateJsonContent(prompt);
+            String jsonResponse = geminiService.generateJsonContent(prompt, sensitiveNames);
             return objectMapper.readValue(jsonResponse, new TypeReference<>() {
             });
         } catch (Exception e) {

@@ -206,8 +206,15 @@ public class GeminiService {
     /**
      * Generates a generic text response from Gemini (Chat mode).
      */
-    @SuppressWarnings("unchecked")
     public String generateResponse(String prompt) {
+        return generateResponse(prompt, null);
+    }
+
+    /**
+     * Generates a generic text response with explicit PII masking for names.
+     */
+    @SuppressWarnings("unchecked")
+    public String generateResponse(String prompt, List<String> sensitiveNames) {
         validateAndSpendCredits(1, "AI Chat/Generic Response");
         String actorId = SecurityContextHolder.getContext().getAuthentication().getName();
 
@@ -216,12 +223,24 @@ public class GeminiService {
         String errorMsg = null;
         try {
             String url = aiServiceUrl + "/api/ai/chat";
-            String maskedPrompt = gdprDataMaskerService.maskPii(prompt);
+
+            // Mask PII using new Zero-Trust logic
+            GdprDataMaskerService.MaskingResult maskingResult = gdprDataMaskerService.maskPii(prompt, sensitiveNames);
+            String maskedPrompt = maskingResult.getMaskedText();
+
             Map<String, String> request = Map.of("prompt", maskedPrompt);
             ResponseEntity<Map<String, Object>> response = restTemplate.postForEntity(url, request,
                     (Class<Map<String, Object>>) (Class<?>) Map.class);
             Map<String, Object> body = response.getBody();
             result = (String) body.get("text");
+
+            // Restore names locally (Zero-Trust Restore)
+            if (result != null && maskingResult.getNameMap() != null) {
+                for (Map.Entry<String, String> entry : maskingResult.getNameMap().entrySet()) {
+                    result = result.replace(entry.getKey(), entry.getValue());
+                }
+            }
+
             success = true;
             return result;
         } catch (Exception e) {
@@ -239,8 +258,15 @@ public class GeminiService {
     /**
      * Generates content ensuring JSON output format.
      */
-    @SuppressWarnings("unchecked")
     public String generateJsonContent(String prompt) {
+        return generateJsonContent(prompt, null);
+    }
+
+    /**
+     * Generates JSON content with explicit PII masking for names.
+     */
+    @SuppressWarnings("unchecked")
+    public String generateJsonContent(String prompt, List<String> sensitiveNames) {
         validateAndSpendCredits(1, "AI JSON Content Generation");
         String actorId = SecurityContextHolder.getContext().getAuthentication().getName();
         String result = null;
@@ -248,12 +274,24 @@ public class GeminiService {
         String errorMsg = null;
         try {
             String url = aiServiceUrl + "/api/ai/chat";
-            String maskedPrompt = gdprDataMaskerService.maskPii(prompt);
+
+            // Mask PII
+            GdprDataMaskerService.MaskingResult maskingResult = gdprDataMaskerService.maskPii(prompt, sensitiveNames);
+            String maskedPrompt = maskingResult.getMaskedText();
+
             Map<String, String> request = Map.of("prompt", maskedPrompt);
             ResponseEntity<Map<String, Object>> response = restTemplate.postForEntity(url, request,
                     (Class<Map<String, Object>>) (Class<?>) Map.class);
             Map<String, Object> body = response.getBody();
             result = (String) body.get("text");
+
+            // Restore names
+            if (result != null && maskingResult.getNameMap() != null) {
+                for (Map.Entry<String, String> entry : maskingResult.getNameMap().entrySet()) {
+                    result = result.replace(entry.getKey(), entry.getValue());
+                }
+            }
+
             success = true;
             return result;
         } catch (Exception e) {
