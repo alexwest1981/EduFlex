@@ -213,6 +213,33 @@ services:
       - eduflex-net
     restart: always
 
+  # --- SCORM & xAPI MICROSERVICE ---
+  eduflex-scorm:
+    build: ./eduflex-scorm
+    container_name: eduflex-scorm
+    depends_on:
+      - redis
+      - backend
+    environment:
+      - SERVER_PORT=8082
+      - REDIS_HOST=redis
+      - CORE_URL=http://backend:8080
+      - DATABASE_URL=jdbc:postgresql://db:5432/eduflex_scorm
+      - DATABASE_USERNAME=postgres
+      - DATABASE_PASSWORD=gotland81
+      - MINIO_URL=http://minio:9000
+      - MINIO_ACCESS_KEY=minioadmin
+      - MINIO_SECRET_KEY=minioadmin
+      - MINIO_BUCKET=eduflex-storage
+      - MINIO_PUBLIC_URL=https://storage.eduflexlms.se
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "8084:8082"
+    networks:
+      - eduflex-net
+    restart: always
+
   frontend:
     build:
       context: ./frontend

@@ -1,13 +1,12 @@
-# Task History & Progress
+## In Progress
 
-## Completed Tasks
-
-### AI Coach Improvements
-- [x] UI Readability & Accessibility
-    - [x] Improve contrast in `AiCoachWidget.jsx`
-    - [x] Verify colors on light theme
-    - [x] Fix "Se full analys" navigation
-    - [x] Refine teacher-specific navigation (targeted skill analysis tab)
+- [/] Phase 1: Establish SCORM & xAPI Microservice (`eduflex-scorm`)
+    - [x] Initial service project structure (v3.6.3.1)
+    - [x] Database model & Repository migration (Decoupled)
+    - [x] MinIO Storage integration (ScormService, Cmi5Service)
+    - [/] LRS Controller & xAPI implementation
+    - [ ] Real-time Progress Callback to Monolith
+    - [ ] Docker Integration & Networking
 
 ### CSN & GDPR Reports
 - [x] Research Attendance & Audit models

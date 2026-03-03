@@ -2,7 +2,7 @@
   <img src="docs/Logo_top.png" width="600" alt="EduFlex Logo" />
 </p>
 
-<h1 align="center">🎓 EduFlex LLP v3.0.0</h1>
+<h1 align="center">🎓 EduFlex LMS v3.6.3.1</h1>
 
 <p align="center">
   <em>The Complete Enterprise Learning Platform for Modern Education</em><br/>
@@ -40,6 +40,20 @@
 *   **📄 Compliance Battle Kit**: Komplett dokumentation (`ComplianceDocumentation.md`) som täcker GDPR, kryptering och WCAG för IT-due diligence.
 
 ---
+
+### 🚀 **v3.6.3.1** (4 mar 2026) – Microservice Migration Phase 1 (SCORM & xAPI)
+*   **🏗️ eduflex-scorm Microservice**: Initierat en ny, högpresterande Spring Boot 3-mikrotjänst för hantering av SCORM och xAPI.
+*   **🔌 Decoupled Architecture**: Frikopplat SCORM- och xAPI-data från monolitens huvuddatabas till ett eget isolerat schema för att radikalt minska trycket på centrala PostgreSQL-anslutningar.
+*   **📡 xAPI LRS API**: Fullständigt stöd för statements, state och agent profiles via den nya tjänsten.
+*   **🔄 Status Callback System**: Real-tids asynkron callback till huvudsystemet vid kursgenomförande för att bibehålla en sömlös användarupplevelse.
+*   **📦 Dockerized Scale**: Ny Docker-stack med automatiserat bygge för hybrid-drift parallellt med monoliten.
+
+---
+
+### 🕒 Senaste uppdateringarna (2026-03-04)
+*   **Microservice Evolution**: Migrerat `ScormService`, `Cmi5Service` och LRS-kontrollern till `eduflex-scorm`.
+*   **Lombok-free for Stability**: Implementerat manuella getters/setters och loggare för att säkra bygget i den nya isolerade mikromiljön.
+*   **MinIO Refactoring**: Flyttat I/O-tunga uppladdningar för stora SCORM-paket till den nya tjänsten.
 
 ### 🕒 Senaste uppdateringarna (2026-03-03)
 *   **AI Video Quality Fix**: Åtgärdat ljudproblem genom att lägga till en tyst audio-stream (AAC) i FFMPEG-genereringen.
