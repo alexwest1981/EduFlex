@@ -1,7 +1,5 @@
 # EduFlex LMS 3.6.3 - Enterprise Learning Platform
 
-![EduFlex Banner](assets/banner.png)
-
 **EduFlex LMS/LLP** är en nästa generations lärplattform, byggd för att möta de specifika behoven i den svenska skolan och företagsutbildning. Med en AI-first arkitektur, strikt dataseparation (multi-tenancy) och djup integration med svenska standarder (Skolverket, SS 12000), erbjuder EduFlex en komplett infrastruktur för modern utbildning.
 
 ---
