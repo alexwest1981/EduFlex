@@ -2,6 +2,7 @@ package com.eduflex.backend.service;
 
 import com.eduflex.backend.model.Invoice;
 import com.eduflex.backend.repository.InvoiceRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
@@ -13,15 +14,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class RevenueExportService {
 
     private final InvoiceRepository invoiceRepository;
+    private final GdprDataMaskerService gdprDataMaskerService;
 
-    public RevenueExportService(InvoiceRepository invoiceRepository) {
-        this.invoiceRepository = invoiceRepository;
-    }
-
-    public ByteArrayInputStream generateInvoiceCsv(LocalDate startDate, LocalDate endDate) {
+    public ByteArrayInputStream generateInvoiceCsv(LocalDate startDate, LocalDate endDate, boolean gdprSafe) {
         // Fetch all invoices (in a real scenario, we would filter by date in the DB
         // query)
         // For now, let's just fetch all and filter in memory or just dump all if dates
@@ -47,10 +46,14 @@ public class RevenueExportService {
 
             // CSV Data
             for (Invoice invoice : invoices) {
+                String userName = invoice.getUser().getFullName();
+                if (gdprSafe) {
+                    userName = gdprDataMaskerService.pseudonymize(userName, "USER");
+                }
                 writer.printf("%d,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s%n",
                         invoice.getId(),
                         escapeSpecialCharacters(invoice.getInvoiceNumber()),
-                        escapeSpecialCharacters(invoice.getUser().getFullName()),
+                        escapeSpecialCharacters(userName),
                         invoice.getAmount(),
                         invoice.getCurrency(),
                         invoice.getStatus(),

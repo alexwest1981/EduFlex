@@ -4,7 +4,7 @@ import { Link, useLocation } from 'react-router-dom';
 import SockJS from 'sockjs-client';
 import Stomp from 'stompjs';
 import { useTranslation } from 'react-i18next';
-import { api, API_BASE } from '../../services/api';
+import { api, API_BASE, WS_BASE } from '../../services/api';
 import { useAppContext } from '../../context/AppContext';
 
 const notifySound = new Audio('https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3');
@@ -50,7 +50,7 @@ const ChatOverlay = () => {
 
     useEffect(() => {
         if (!currentUser) return;
-        const socket = new SockJS(`${window.location.origin}/ws`);
+        const socket = new SockJS(`${WS_BASE}/ws`);
         const client = Stomp.over(socket);
         client.debug = null;
         client.connect({}, () => {

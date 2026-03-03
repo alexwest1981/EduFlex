@@ -20,6 +20,9 @@
 - [x] Fix `api.js` default export issue
 - [x] Fix `Bell` ReferenceError in `LandingPage.jsx`
 - [x] Fix metadata error in `ClassSkillsHeatmap.jsx`
+- [x] Fix AI PPT 500 errors (dedicated endpoint & prompt logic)
+- [x] Fix WebSocket 500 errors (frontend WS_BASE routing to port 8085)
+- [x] Fix local AI service port (8008) in application.properties
 
 ## Next Steps
 - [ ] Implement Automated CSN Export Scheduler

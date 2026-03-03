@@ -3,7 +3,7 @@ import { LiveKitRoom, VideoTrack, useParticipants, useTracks } from '@livekit/co
 import { Track } from 'livekit-client';
 import SockJS from 'sockjs-client';
 import { Stomp } from '@stomp/stompjs';
-import { api } from '../../services/api';
+import { api, WS_BASE } from '../../services/api';
 import { useAppContext } from '../../context/AppContext';
 import { Shield, Eye, AlertCircle, Users, Layout, Activity, Video } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -78,8 +78,7 @@ const ProctoringDashboard = ({ quizId, quizTitle }) => {
     }, [quizId]);
 
     const connectWebSocket = () => {
-        const baseUrl = API_BASE.replace(/\/api\/?$/, '');
-        const wsUrl = `${baseUrl}/ws-forum`; // Reusing established WS endpoint
+        const wsUrl = `${WS_BASE}/ws-forum`; // Reusing established WS endpoint
         const client = Stomp.over(() => new SockJS(wsUrl));
 
         client.connectHeaders = { 'Authorization': `Bearer ${token}` };

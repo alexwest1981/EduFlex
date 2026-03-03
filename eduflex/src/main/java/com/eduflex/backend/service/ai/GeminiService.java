@@ -1,5 +1,6 @@
 package com.eduflex.backend.service.ai;
 
+import com.eduflex.backend.service.GdprDataMaskerService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -48,6 +49,9 @@ public class GeminiService {
     @Autowired
     private AiAuditService aiAuditService;
 
+    @Autowired
+    private GdprDataMaskerService gdprDataMaskerService;
+
     @Value("${ai.service.url:http://localhost:8000}")
     private String aiServiceUrl;
 
@@ -62,10 +66,6 @@ public class GeminiService {
     }
 
     // Prompts moved to eduflex-ai microservice
-    private static final String QUIZ_SYSTEM_PROMPT = "";
-    private static final String COURSE_SYSTEM_PROMPT = "";
-    private static final String VIDEO_SCRIPT_SYSTEM_PROMPT = "";
-    private static final String PPT_SYSTEM_PROMPT = "";
 
     /**
      * Generates a video script for an AI tutor lesson using Gemini.
@@ -80,7 +80,8 @@ public class GeminiService {
         String errorMsg = null;
         try {
             String url = aiServiceUrl + "/api/ai/script";
-            Map<String, String> request = Map.of("text", documentText);
+            String maskedText = gdprDataMaskerService.maskPii(documentText);
+            Map<String, String> request = Map.of("text", maskedText);
             ResponseEntity<String> response = restTemplate.postForEntity(url, request, String.class);
             result = response.getBody();
             success = true;
@@ -108,7 +109,8 @@ public class GeminiService {
         String errorMsg = null;
         try {
             String url = aiServiceUrl + "/api/ai/course";
-            Map<String, String> request = Map.of("text", documentText);
+            String maskedText = gdprDataMaskerService.maskPii(documentText);
+            Map<String, String> request = Map.of("text", maskedText);
             ResponseEntity<String> response = restTemplate.postForEntity(url, request, String.class);
             result = response.getBody();
             success = true;
@@ -141,8 +143,9 @@ public class GeminiService {
         String errorMsg = null;
         try {
             String url = aiServiceUrl + "/api/ai/quiz";
+            String maskedTopic = gdprDataMaskerService.maskPii(topic);
             Map<String, Object> request = Map.of(
-                    "text", topic,
+                    "text", maskedTopic,
                     "count", questionCount,
                     "difficulty", difficulty,
                     "language", language);
@@ -180,8 +183,9 @@ public class GeminiService {
         String errorMsg = null;
         try {
             String url = aiServiceUrl + "/api/ai/quiz";
+            String maskedText = gdprDataMaskerService.maskPii(documentText);
             Map<String, Object> request = Map.of(
-                    "text", documentText,
+                    "text", maskedText,
                     "count", questionCount,
                     "difficulty", difficulty.toUpperCase(),
                     "language", language);
@@ -212,7 +216,8 @@ public class GeminiService {
         String errorMsg = null;
         try {
             String url = aiServiceUrl + "/api/ai/chat";
-            Map<String, String> request = Map.of("prompt", prompt);
+            String maskedPrompt = gdprDataMaskerService.maskPii(prompt);
+            Map<String, String> request = Map.of("prompt", maskedPrompt);
             ResponseEntity<Map<String, Object>> response = restTemplate.postForEntity(url, request,
                     (Class<Map<String, Object>>) (Class<?>) Map.class);
             Map<String, Object> body = response.getBody();
@@ -243,7 +248,8 @@ public class GeminiService {
         String errorMsg = null;
         try {
             String url = aiServiceUrl + "/api/ai/chat";
-            Map<String, String> request = Map.of("prompt", prompt);
+            String maskedPrompt = gdprDataMaskerService.maskPii(prompt);
+            Map<String, String> request = Map.of("prompt", maskedPrompt);
             ResponseEntity<Map<String, Object>> response = restTemplate.postForEntity(url, request,
                     (Class<Map<String, Object>>) (Class<?>) Map.class);
             Map<String, Object> body = response.getBody();
@@ -294,7 +300,8 @@ public class GeminiService {
         String errorMsg = null;
         try {
             String url = aiServiceUrl + "/api/ai/analyze";
-            Map<String, String> request = Map.of("text", performanceData);
+            String maskedData = gdprDataMaskerService.maskPii(performanceData);
+            Map<String, String> request = Map.of("text", maskedData);
             ResponseEntity<String> response = restTemplate.postForEntity(url, request, String.class);
             result = response.getBody();
             success = true;
@@ -329,14 +336,35 @@ public class GeminiService {
      * Structurizes lesson text into slides for PowerPoint generation.
      */
     public JsonNode generateSlideContent(String lessonText) {
-        String prompt = "Här är lektionstexten:\n\n" + lessonText
-                + "\n\nStrukturera detta till PowerPoint-slides enligt instruktionerna.";
-        String response = callGemini(null, prompt, false); // Updated call to new callGemini
+        validateAndSpendCredits(3, "AI PowerPoint Generation");
+        logger.info("Generating slide content from material length: {}", lessonText.length());
+        String actorId = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        String result = null;
+        boolean success = false;
+        String errorMsg = null;
         try {
-            return objectMapper.readTree(response);
-        } catch (JsonProcessingException e) {
-            logger.error("Failed to parse slide JSON: {}", response, e);
-            return null;
+            String url = aiServiceUrl + "/api/ai/ppt";
+            String maskedText = gdprDataMaskerService.maskPii(lessonText);
+            Map<String, String> request = Map.of("text", maskedText);
+            ResponseEntity<String> response = restTemplate.postForEntity(url, request, String.class);
+            result = response.getBody();
+
+            if (result == null) {
+                throw new RuntimeException("AI service returned empty response for PPT generation");
+            }
+
+            JsonNode node = objectMapper.readTree(result);
+            success = true;
+            return node;
+        } catch (Exception e) {
+            logger.error("Failed to generate slide content via microservice", e);
+            errorMsg = e.getMessage();
+            return null; // Let the caller (PowerPointService) handle the null check
+        } finally {
+            aiAuditService.logDecision("PPT_GENERATION", model, actorId,
+                    "Slide structure from material (" + lessonText.length() + " chars)", result,
+                    null, success, errorMsg);
         }
     }
 

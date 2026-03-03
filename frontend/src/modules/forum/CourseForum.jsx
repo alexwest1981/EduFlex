@@ -9,6 +9,7 @@ import NewCategoryModal from './components/NewCategoryModal';
 import SockJS from 'sockjs-client';
 import { Stomp } from '@stomp/stompjs';
 import toast from 'react-hot-toast';
+import { WS_BASE } from '../../services/api';
 
 const CourseForum = ({ courseId, currentUser, course, ...props }) => {
     const { API_BASE, token } = useAppContext();
@@ -48,9 +49,7 @@ const CourseForum = ({ courseId, currentUser, course, ...props }) => {
 
     const connectWebSocket = () => {
         if (!token || token === 'undefined' || token === 'null') return;
-        // Derive WS URL from API_BASE to support HTTPS/Prod
-        const baseUrl = API_BASE.replace(/\/api\/?$/, '');
-        const wsUrl = `${baseUrl}/ws-forum`;
+        const wsUrl = `${WS_BASE}/ws-forum`;
 
         // Use SockJS fallback with a factory function for auto-reconnect
         const client = Stomp.over(() => new SockJS(wsUrl));

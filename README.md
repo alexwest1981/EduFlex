@@ -26,16 +26,28 @@ EduFlex LLP är ett Enterprise-redo, molnbaserat ekosystem som ersätter den tra
 
 ## 🚀 Senaste Uppdateringarna 
 
+### v3.6.6 (3 mar 2026) – GDPR & Privacy Shield
+*   **GDPR**: Implementerat granulära datafilter och PII-maskering för alla AI-interaktioner.
+*   **GDPR**: Nytt pseudonymiserings-lager för studentdata i AI Coach-sessioner.
+*   **GDPR**: Valbart "GDPR Safe" läge för finansiella och administrativa excel-exporter.
+
+### v3.6.6 (3 mar 2026) – GDPR & Privacy Shield
+*   **GDPR**: Implementerat granulära datafilter och PII-maskering för alla AI-interaktioner.
+*   **GDPR**: Nytt pseudonymiserings-lager för studentdata i AI Coach-sessioner.
+*   **GDPR**: Valbart "GDPR Safe" läge för finansiella och administrativa excel-exporter.
+
 ### v3.6.5 (3 mar 2026) – Docker & Database Hotfixes
 * **🐳 Docker Build Fix (Notifications):** Corrected the JAR filename in the `eduflex-notifications` Dockerfile using a wildcard to ensure compatibility with v3.6.4+ artifacts.
 * **🗄️ SCORM Database Recovery:** Resolved a critical startup crash in `eduflex-scorm` by initializing the missing `eduflex_scorm` database in the PostgreSQL container.
 * **🔑 License Audit Endpoint:** Resolved a 404 error by implementing the `GET /api/system/license/audit` endpoint in the core backend, enabling audit logs in the Control Center.
+* **🤖 AI PPT Generation Fix:** Implemented a dedicated `/api/ai/ppt` endpoint in `eduflex-ai` and refactored `GeminiService.java` to handle structured slide content, resolving 500 errors.
+* **📡 WebSocket Routing Alignment:** Centralized WebSocket URLs via `WS_BASE` in the frontend, routing all real-time traffic (Chat, Forum, Social) through the `eduflex-notifications` microservice on port 8085.
 
 ### v3.6.4 (3 mar 2026) – AI Microservice Extraction & Ops Enhancements
 
 
 ### v3.5.0 (Mars 2026) – B2B Sales Enablement & Compliance
-* **🔌 HR Sync API (Zero-Touch):** API-First design with `HrSyncController` for automatisk user provisioning från externa HR-system som Workday.
+* **🔌 HR Sync API (Zero-Touch):** API-First design with `HrSyncController` för automatisk user provisioning från externa HR-system som Workday.
 * **📊 Interactive TCO Calculator:** Inbyggt live-säljverktyg för att räkna ut Enterprise-kunders Return on Investment (ROI).
 * **🛡️ Compliance Center:** Gränssnitt för HR/Admins för att övervaka regelefterlevnad med automatisk expiry-tracking av certifikat.
 ### v3.4.0 (Feb 2026) – Enterprise B2B & Global i18n
@@ -130,6 +142,10 @@ Lokala URL:er efter uppstart:
 - [x] Schema-baserad Multi-Tenancy & Keycloak SSO
 - [x] AI Compliance Portal & Audit Log
 - [x] JobTech & CSN Integrationer
+- [x] **v3.6.6: GDPR & Privacy Shield**
+    - [x] Implementera granulära GDPR-datafilter (PII-maskering).
+    - [x] Pseudonymisering av studentdata i AI-sessioner.
+    - [x] GDPR-läge för rapportexporter.
 - [x] B2B E-commerce & Reseller Engine
 - [x] Event-Driven Microservices & Redis Event Bus
 - [ ] Q2 2026: AI Microservice Extraction (Python/FastAPI) för framtida lokala LLM-modeller.

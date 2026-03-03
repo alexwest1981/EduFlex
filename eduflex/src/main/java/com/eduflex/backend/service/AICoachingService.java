@@ -22,13 +22,16 @@ public class AICoachingService {
     private final StudentRiskFlagRepository riskFlagRepository;
     private final GeminiService geminiService;
     private final ObjectMapper objectMapper;
+    private final GdprDataMaskerService gdprDataMaskerService;
 
     public AICoachingService(StudentRiskFlagRepository riskFlagRepository,
             GeminiService geminiService,
-            ObjectMapper objectMapper) {
+            ObjectMapper objectMapper,
+            GdprDataMaskerService gdprDataMaskerService) {
         this.riskFlagRepository = riskFlagRepository;
         this.geminiService = geminiService;
         this.objectMapper = objectMapper;
+        this.gdprDataMaskerService = gdprDataMaskerService;
     }
 
     public Map<String, Object> getPrincipalWeeklyFocus() {
@@ -63,7 +66,7 @@ public class AICoachingService {
 
         Map<String, Object> promptData = new HashMap<>();
         promptData.put("studentRisks", mentorRisks.stream().map(r -> Map.of(
-                "name", r.getStudent().getFullName(),
+                "name", gdprDataMaskerService.pseudonymize(r.getStudent().getFullName(), "STUDENT"),
                 "level", r.getRiskLevel(),
                 "reason", r.getAiReasoning())).collect(Collectors.toList()));
 

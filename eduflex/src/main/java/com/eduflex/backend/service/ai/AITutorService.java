@@ -2,6 +2,7 @@ package com.eduflex.backend.service.ai;
 
 import com.eduflex.backend.model.CourseMaterial;
 import com.eduflex.backend.model.Lesson;
+import com.eduflex.backend.service.GdprDataMaskerService;
 import com.eduflex.backend.model.User;
 import com.eduflex.backend.model.VectorStoreEntry;
 import com.eduflex.backend.repository.CourseMaterialRepository;
@@ -32,6 +33,7 @@ public class AITutorService {
     private final com.fasterxml.jackson.databind.ObjectMapper objectMapper;
     private final EventBusService eventBusService;
     private final Tika tika = new Tika();
+    private final GdprDataMaskerService gdprDataMaskerService;
 
     private final com.eduflex.backend.repository.EbookRepository ebookRepository;
 
@@ -43,7 +45,8 @@ public class AITutorService {
             com.eduflex.backend.service.GamificationService gamificationService,
             org.springframework.data.redis.core.StringRedisTemplate redisTemplate,
             com.fasterxml.jackson.databind.ObjectMapper objectMapper,
-            EventBusService eventBusService) {
+            EventBusService eventBusService,
+            GdprDataMaskerService gdprDataMaskerService) {
         this.geminiService = geminiService;
         this.embeddingRepository = embeddingRepository;
         this.materialRepository = materialRepository;
@@ -53,6 +56,7 @@ public class AITutorService {
         this.redisTemplate = redisTemplate;
         this.objectMapper = objectMapper;
         this.eventBusService = eventBusService;
+        this.gdprDataMaskerService = gdprDataMaskerService;
     }
 
     private static final int CHUNK_SIZE = 1000;
@@ -281,6 +285,7 @@ public class AITutorService {
 
     public String generateStudyTip(Lesson lesson, User student) {
         try {
+            String pseudonym = gdprDataMaskerService.pseudonymize(student.getFirstName(), "STUDENT");
             String prompt = String.format(
                     "Du är en vänlig och peppande studiecoach på EduFlex. Din elev, %s, verkar ha fastnat på lektionen '%s' i kursen.\n\n"
                             +
@@ -290,14 +295,15 @@ public class AITutorService {
                             "Använd en uppmuntrande ton, och föreslå kanske att de ska ta en kort paus om det känns svårt.\n"
                             +
                             "Lektionens innehåll (utdrag): %s",
-                    student.getFirstName(),
+                    pseudonym,
                     lesson.getTitle(),
                     lesson.getContent() != null
                             ? (lesson.getContent().length() > 300 ? lesson.getContent().substring(0, 300) + "..."
                                     : lesson.getContent())
                             : "Ingen text.");
 
-            return geminiService.generateResponse(prompt);
+            String response = geminiService.generateResponse(prompt);
+            return response.replace(pseudonym, student.getFirstName());
         } catch (Exception e) {
             logger.error("Error generating study tip for user {} on lesson {}", student.getId(), lesson.getId(), e);
             return "Kom igen! Du fixar det här. Ta en liten paus och försök igen med fräscha ögon!";

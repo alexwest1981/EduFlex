@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { MessageSquare, Send, CornerDownRight, Trash2, User, Heart } from 'lucide-react';
 import { socialService } from '../services/socialService';
-import { API_BASE } from '../../../services/api';
+import { API_BASE, WS_BASE } from '../../../services/api';
 import { useTranslation } from 'react-i18next';
 import { useAppContext } from '../../../context/AppContext';
 import { formatDistanceToNow } from 'date-fns';
@@ -143,23 +143,9 @@ const CommentSection = ({ targetType, targetId, title = "Comments" }) => {
     useEffect(() => {
         if (!user) return; // Wait for user to be loaded
 
-        // Connect WS
-        const protocol = window.location.protocol === 'https:' ? 'https:' : 'http:';
-        const host = window.location.host;
-        const wsUrl = `${protocol}//${host}/ws-social`; // Use /ws-social endpoint
-
-        // Use SockJS
-        // Note: In development with Vite proxy, we might need to point to /api/ws-social if proxied, 
-        // but SockJS usually handles relative paths well.
-        // However, our proxy setup in vite.config.js might not cover /ws-social.
-        // Let's assume /ws-social is proxied or accessible.
-        // If not, we might need to use API_BASE logic.
-
         let client;
         try {
-            // Using API_BASE replacement to be safe with proxy
-            const baseUrl = API_BASE.replace(/\/api\/?$/, '');
-            const socketUrl = `${baseUrl}/ws-social`;
+            const socketUrl = `${WS_BASE}/ws-social`;
 
             client = Stomp.over(() => new SockJS(socketUrl));
             client.debug = () => { }; // Disable debug logs

@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Client } from '@stomp/stompjs';
 import { Terminal, Pause, Play, Trash2, Maximize, Minimize } from 'lucide-react';
-import { api } from '../../services/api';
+import { api, WS_BASE } from '../../services/api';
 
 const RealTimeLogViewer = () => {
     const [logs, setLogs] = useState([]);
@@ -17,8 +17,10 @@ const RealTimeLogViewer = () => {
 
     useEffect(() => {
         // Init Stomp Client
+        const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+        const wsHost = WS_BASE.replace(/^https?:\/\//, '');
         const client = new Client({
-            brokerURL: `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}/ws-log`, // Direct WS connection
+            brokerURL: `${wsProtocol}//${wsHost}/ws-log`, // Direct WS connection
             reconnectDelay: 5000,
             heartbeatIncoming: 4000,
             heartbeatOutgoing: 4000,
@@ -128,7 +130,7 @@ const RealTimeLogViewer = () => {
             {/* Status Bar */}
             <div className="bg-gray-900 px-4 py-1 text-[10px] text-gray-500 flex justify-between font-mono">
                 <span>BUFFER: {logs.length} RADER</span>
-                <span>WS: {isConnected ? 'CONNECTED' : 'DISCONNECTED'} // PORT: 8080</span>
+                <span>WS: {isConnected ? 'CONNECTED' : 'DISCONNECTED'} // PORT: 8085</span>
             </div>
         </div>
     );

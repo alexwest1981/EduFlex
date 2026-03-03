@@ -115,6 +115,11 @@ async def analyze_performance(request: CourseRequest):
     user_prompt = f"STUDENTDATA:\n---\n{request.text}\n---\n"
     return await call_gemini(prompts.ANALYSIS_SYSTEM_PROMPT, user_prompt)
 
+@app.post("/api/ai/ppt")
+async def generate_ppt(request: CourseRequest):
+    user_prompt = f"LEKTIONSTEXT:\n---\n{request.text}\n---\n"
+    return await call_gemini(prompts.PPT_SYSTEM_PROMPT, user_prompt)
+
 @app.post("/api/ai/chat")
 async def chat(request: AIRequest):
     try:

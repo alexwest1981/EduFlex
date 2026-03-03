@@ -29,10 +29,12 @@ public class RevenueExportController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Resource> exportInvoices(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+            @RequestParam(defaultValue = "false") boolean gdprSafe) {
 
-        String filename = "invoices_" + LocalDate.now() + ".csv";
-        InputStreamResource file = new InputStreamResource(revenueExportService.generateInvoiceCsv(startDate, endDate));
+        String filename = "invoices_" + (gdprSafe ? "safe_" : "") + LocalDate.now() + ".csv";
+        InputStreamResource file = new InputStreamResource(
+                revenueExportService.generateInvoiceCsv(startDate, endDate, gdprSafe));
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename)

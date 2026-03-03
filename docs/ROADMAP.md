@@ -29,7 +29,7 @@
 | **Medel** | **Microservices Scale (v3.6.3.2)** | Bryta ut resurskrävande moduler. Fas 1: SCORM & xAPI Engine migrerad. Fas 2: Full integration & callback system. Fas 3: Video/Notiser nästa. | ✅ **Fas 2 Klar** | Avlasta monolitens DB-pool & I/O. |
 | **Hög** | **Microservices Scale - Notifications** | Extrahera WebSocket & Notiser till egen tjänst | ✅ **Klar** (v3.6.3.3) | Dedikerad "Notification Service" klarar tiotusentals parallella anslutningar. |
 | **Medel** | **Control Center - Microservice Management** | Omstrukturera Control Center med en dedikerad flik för att hantera, övervaka och konfigurera alla mikrotjänster. | ✅ **Klar** | Centraliserad administration för en växande distribuerad arkitektur. |
-| **Hög** | **Release v3.6.5 Hotfixes** | Docker fix för notifications, skapade `eduflex_scorm` databas, och implementerade `/audit` license endpoint. | ✅ **Klar** (v3.6.5) | Kritiskt för driftstabilitet. |
+| **Hög** | **Release v3.6.5 Hotfixes** | Docker fix for notifications, SCORM database initialization, AI PPT generation fix, and frontend WebSocket routing alignment for real-time services. | ✅ **Klar** (v3.6.5) | Kritiskt för driftstabilitet och AI-funktionalitet. |
 | **Hög** | **AI Microservice Extraction** | Bryta ut AI-logik (Gemini) till en dedikerad Python FastAPI microservice för asykron prestanda, GDPR data-filtrering och oberoende HPA skalbarhet. | ✅ **Klar** (v3.6.4) | Framtidssäkrad AI-arkitektur for Enterprise. |
 | **Hög** | **Backend Stability & WebSocket Fix** | Re-aktiverad WebSocket-konfigurering och fixat `EnableWebSocketMessageBroker` import för Spring Boot 3-kompatibilitet. | ✅ **Klar** (v3.6.4) | Kritiskt för systemstart och realtidskommunikation. |
 
@@ -58,6 +58,7 @@
 | **Hög** | **Kubernetes Production** | Helm-charts, HPA och autoscaling för enterprise-noder. | ✅ **Klar** (v3.3.1) | Skalbarhet för 500+ användare. |
 | **Medel** | **Pilot Kit & Pricing** | Whitepaper, prissida och pitch-material för Borås Ink. | ✅ **Klar** (v3.3.1) | Kommersialisering. |
 | **Hög** | **EduAI Hub Refinement** | Refinement av kategori-mappning, Spaced Repetition-integration och Live Radar precision. | ✅ **Klar** | Förbättrad kognitiv profilering. |
+| **Hög** | **GDPR & Privacy Shield** | Implementera granulära GDPR-datafilter (PII-maskering), pseudonymisering av studentdata i AI-sessioner och GDPR-läge för rapporter. | ✅ **Klar** (v3.6.6) | Compliance & Data Protection. |
 | **Hög** | **EduCareer Portal** | Integration med JobTech APIs för lokaliserad LIA-sökning och AI-matchning. | ✅ **Klar** (v3.4.0) | Studenternas karriärstöd. |
 | **Hög** | **BankID-integration (v3.5.1)** | Keycloak som Identity Broker, Dynamic Client Registration, Integration Hub Support, SSN-mappning. | ✅ **Klar** | Kritiskt för svensk offentlig sektor. |
 | **Hög** | **AI Tutor 2.0 (Video)** | Automatisk generering av förklaringsvideor via Gemini-script & FFMPEG. | ✅ **Klar** (v3.6.0) | Nästa generations lärande. |

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { QuizRunnerModal } from '../quiz-runner/QuizModals';
 import { BookOpen, Plus, Edit2, Trash2, Save, ChevronRight, Video, Download, Paperclip, Loader2, Image as ImageIcon, Film, HelpCircle, Trophy, PlayCircle, Sparkles, Share2, FileText, ChevronDown, Book, ExternalLink } from 'lucide-react';
-import { api, getSafeUrl, API_BASE } from '../../services/api';
+import { api, getSafeUrl, API_BASE, WS_BASE } from '../../services/api';
 import OnlyOfficeEditor from '../../features/documents/OnlyOfficeEditor';
 import VideoPlayer from './components/VideoPlayer';
 import EpubViewer from '../../components/common/EpubViewer';
@@ -75,8 +75,7 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
 
         let client;
         try {
-            const baseUrl = API_BASE.replace(/\/api\/?$/, '');
-            const socketUrl = `${baseUrl}/ws-social`;
+            const socketUrl = `${WS_BASE}/ws-social`;
             client = Stomp.over(() => new SockJS(socketUrl));
             client.debug = () => { };
             client.reconnectDelay = 5000;

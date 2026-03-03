@@ -1,5 +1,6 @@
 package com.eduflex.backend.service.ai;
 
+import com.eduflex.backend.service.GdprDataMaskerService;
 import lombok.Builder;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,7 @@ public class TeacherAiCoachService {
 
         private final GeminiService geminiService;
         private final TeacherAnalyticsService teacherAnalyticsService;
+        private final GdprDataMaskerService gdprDataMaskerService;
 
         @Data
         @Builder
@@ -42,7 +44,10 @@ public class TeacherAiCoachService {
                 if (!analytics.getLowPerformingStudents().isEmpty()) {
                         prompt.append("- Exempel på studentproblem: ");
                         analytics.getLowPerformingStudents().stream().limit(3)
-                                        .forEach(s -> prompt.append(s.getName()).append(" (Risk: ")
+                                        .forEach(s -> prompt
+                                                        .append(gdprDataMaskerService.pseudonymize(s.getName(),
+                                                                        "STUDENT"))
+                                                        .append(" (Risk: ")
                                                         .append(s.getRiskLevel())
                                                         .append(", Orsak: ").append(s.getRiskReason()).append("); "));
                         prompt.append("\n");
