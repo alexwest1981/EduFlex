@@ -26,11 +26,11 @@ EduFlex LLP är ett Enterprise-redo, molnbaserat ekosystem som ersätter den tra
 
 ## 🚀 Senaste Uppdateringarna 
 
-### v3.6.8 (5 mar 2026) – Mobile Branding & Logo Sync
+### v3.6.8.1 (5 mar 2026) – Mobile Branding & Logo Sync
 * **🎨 Visual Identity Sync:** Mobilappen har nu bytt namn från "mobile" till **EduFlex**. Alla ikoner (App Icon, Adaptive Icons, Splash Screen) har synkroniserats med landing page (`Logo_top.png`). Bakgrundsfärgen för adaptiva ikoner har satts till `#06141b` för ett sömlöst mörkt tema.
 * **📦 Updated Release APK:** En ny verifierad release-APK (v1.1) har genererats efter branding-ändringarna.
 
-### v3.6.7 (5 mar 2026) – Android Mobile App: Dashboard Fix & Release APK
+### v3.6.8.0 (5 mar 2026) – Android Mobile App: Dashboard Fix & Release APK
 * **📱 Auth Race Condition Fix:** Fixade ett kritiskt problem i `AuthContext.js` där `isLoggedIn()` inte skickade JWT-token explicit i `Authorization`-headern vid app-start. Interceptorn hann inte sätta headern i tid → `/user/me`-anropet fick 401 → `RoleRouter` fastnade i en oändlig spinner-loop → dashboarden laddade aldrig. Nu skickas token explicit, vilket garanterar att dashboarden alltid laddas korrekt.
 * **📦 Android Release APK:** Byggt och verifierat en fristående Release APK (`app-release.apk`, 76.8 MB) via `scripts/build_android_release.ps1` med tvingad JDK 21 och korrekt `ANDROID_HOME`. APK:n inkluderar all JavaScript-kod inbundlad och kräver inte Metro Bundler för att köras.
 
@@ -163,5 +163,5 @@ Lokala URL:er efter uppstart:
 EduFlex LLP™ © 2026 Alex Weström / Fenrir Studio
 Proprietary Software. Unauthorized copying or distribution is strictly prohibited.
 För kommersiella förfrågningar och licensiering: 📧 alexwestrom81@gmail.com
-Last updated: 2026-03-05 (v3.6.8 - Mobile Branding & Logo Sync)
+Last updated: 2026-03-05 (v3.6.8.1 - Mobile Branding & Logo Sync)
 
