@@ -1,4 +1,4 @@
-# 🎓 EduFlex LLP v3.6.7
+# 🎓 EduFlex LLP v3.6.8
 *The Complete Enterprise Learning Lifecycle Platform for Modern Education & B2B*
 
 *Developed & maintained by **Alex Weström / Fenrir Studio***  
@@ -25,6 +25,10 @@ EduFlex LLP är ett Enterprise-redo, molnbaserat ekosystem som ersätter den tra
 ---
 
 ## 🚀 Senaste Uppdateringarna 
+
+### v3.6.8 (5 mar 2026) – Mobile Branding & Logo Sync
+* **🎨 Visual Identity Sync:** Mobilappen har nu bytt namn från "mobile" till **EduFlex**. Alla ikoner (App Icon, Adaptive Icons, Splash Screen) har synkroniserats med landing page (`Logo_top.png`). Bakgrundsfärgen för adaptiva ikoner har satts till `#06141b` för ett sömlöst mörkt tema.
+* **📦 Updated Release APK:** En ny verifierad release-APK (v1.1) har genererats efter branding-ändringarna.
 
 ### v3.6.7 (5 mar 2026) – Android Mobile App: Dashboard Fix & Release APK
 * **📱 Auth Race Condition Fix:** Fixade ett kritiskt problem i `AuthContext.js` där `isLoggedIn()` inte skickade JWT-token explicit i `Authorization`-headern vid app-start. Interceptorn hann inte sätta headern i tid → `/user/me`-anropet fick 401 → `RoleRouter` fastnade i en oändlig spinner-loop → dashboarden laddade aldrig. Nu skickas token explicit, vilket garanterar att dashboarden alltid laddas korrekt.
@@ -159,5 +163,5 @@ Lokala URL:er efter uppstart:
 EduFlex LLP™ © 2026 Alex Weström / Fenrir Studio
 Proprietary Software. Unauthorized copying or distribution is strictly prohibited.
 För kommersiella förfrågningar och licensiering: 📧 alexwestrom81@gmail.com
-Last updated: 2026-03-05 (v3.6.7 - Android Mobile Dashboard Fix & Release APK)
+Last updated: 2026-03-05 (v3.6.8 - Mobile Branding & Logo Sync)
 
