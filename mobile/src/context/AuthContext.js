@@ -11,11 +11,14 @@ export const AuthProvider = ({ children }) => {
 
     const login = async (username, password) => {
         setIsLoading(true);
+        console.log('[AuthContext] Attempting login for:', username);
         try {
             const response = await api.post('/auth/login', { username, password });
+            console.log('[AuthContext] Login response status:', response.status);
 
             // Hämta token från svaret
             const token = response.data.token || response.data;
+            console.log('[AuthContext] Token received:', !!token);
 
             if (!token || typeof token !== 'string') {
                 throw new Error('Inget giltigt token mottogs från servern.');
@@ -24,22 +27,26 @@ export const AuthProvider = ({ children }) => {
             // Spara token direkt – navigeringen sker när userToken sätts
             setUserToken(token);
             await AsyncStorage.setItem('userToken', token);
+            console.log('[AuthContext] Token saved to storage');
 
-            // Hämta användarinfo separat – om det misslyckas klarar vi oss ändå
+            // Hämta användarinfo separat
             try {
+                console.log('[AuthContext] Fetching user profile...');
                 const userResp = await api.get('/user/me', {
                     headers: { Authorization: `Bearer ${token}` }
                 });
+                console.log('[AuthContext] User profile received:', userResp.data?.role);
                 setUserInfo(userResp.data);
             } catch (userErr) {
-                console.warn('Kunde inte hämta användarinfo, försöker igen efter navigering:', userErr);
+                console.warn('[AuthContext] Could not fetch user during login:', userErr.message);
             }
 
         } catch (e) {
-            console.error(`Login error: ${e}`);
+            console.error(`[AuthContext] Login error: ${e.message}`);
             alert('Inloggning misslyckades. Kontrollera dina uppgifter.');
         }
         setIsLoading(false);
+        console.log('[AuthContext] Login flow complete');
     };
 
     const logout = async () => {

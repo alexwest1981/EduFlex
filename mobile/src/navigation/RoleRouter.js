@@ -12,15 +12,18 @@ const RoleRouter = () => {
 
     // Om userInfo saknas men vi har token, försök hämta det
     useEffect(() => {
+        console.log('[RoleRouter] Checking userInfo/userToken:', { hasInfo: !!userInfo, hasToken: !!userToken });
         if (!userInfo && userToken) {
+            console.log('[RoleRouter] Fetching /user/me...');
             api.get('/user/me', {
                 headers: { Authorization: `Bearer ${userToken}` }
             }).then(resp => {
+                console.log('[RoleRouter] Fetch success:', resp.data?.role);
                 if (resp.data && setUserInfo) {
                     setUserInfo(resp.data);
                 }
             }).catch(e => {
-                console.warn('[RoleRouter] Kunde inte hämta userInfo:', e);
+                console.error('[RoleRouter] Fetch failed:', e.message);
             });
         }
     }, [userInfo, userToken]);
