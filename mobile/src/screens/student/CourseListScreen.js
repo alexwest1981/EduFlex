@@ -26,7 +26,7 @@ const CourseListScreen = () => {
             </View>
             <View style={styles.courseInfo}>
                 <Text style={styles.courseTitle}>{item.name}</Text>
-                <Text style={styles.courseSubtitle}>{item.modules?.length || 0} moduler</Text>
+                <Text style={styles.courseSubtitle}>{item.modulesCount || 0} moduler</Text>
             </View>
         </TouchableOpacity>
     );
@@ -35,11 +35,11 @@ const CourseListScreen = () => {
         <View style={styles.container}>
             <Text style={styles.title}>Dina Kurser</Text>
             {(!courses || courses.length === 0) ? (
-                <Text style={{ color: '#888' }}>Inga kurser hittades.</Text>
+                <Text style={{ color: '#888', textAlign: 'center', marginTop: 20 }}>Inga kurser hittades.</Text>
             ) : (
                 <FlatList
                     data={courses}
-                    keyExtractor={(item, index) => item.id?.toString() || index.toString()}
+                    keyExtractor={(item) => item.id.toString()}
                     renderItem={renderCourseItem}
                     contentContainerStyle={{ paddingBottom: 100 }}
                 />

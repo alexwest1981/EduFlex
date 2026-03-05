@@ -1,17 +1,37 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
+import { View, ActivityIndicator } from 'react-native';
 import { AuthContext } from '../context/AuthContext';
 import StudentTabs from './StudentTabs';
 import TeacherTabs from './TeacherTabs';
 import AdminTabs from './AdminTabs';
 import { SyvTabs, HealthTeamTabs, GuardianTabs, MentorTabs } from './SpecializedTabs';
-import PlaceholderScreen from '../screens/PlaceholderScreen';
+import api from '../api/apiClient';
 
 const RoleRouter = () => {
-    const { userInfo } = useContext(AuthContext);
+    const { userInfo, userToken, setUserInfo } = useContext(AuthContext);
+
+    // Om userInfo saknas men vi har token, försök hämta det
+    useEffect(() => {
+        if (!userInfo && userToken) {
+            api.get('/user/me', {
+                headers: { Authorization: `Bearer ${userToken}` }
+            }).then(resp => {
+                if (resp.data && setUserInfo) {
+                    setUserInfo(resp.data);
+                }
+            }).catch(e => {
+                console.warn('[RoleRouter] Kunde inte hämta userInfo:', e);
+            });
+        }
+    }, [userInfo, userToken]);
 
     if (!userInfo || !userInfo.role) {
-        // Fallback or loading state
-        return <PlaceholderScreen />;
+        // Visa spinner tills userInfo har laddats
+        return (
+            <View style={{ flex: 1, backgroundColor: '#0f1012', justifyContent: 'center', alignItems: 'center' }}>
+                <ActivityIndicator size="large" color="#00F5FF" />
+            </View>
+        );
     }
 
     const roleName = userInfo.role.name || userInfo.role;
@@ -39,7 +59,7 @@ const RoleRouter = () => {
         case 'ROLE_HEALTH':
             return <HealthTeamTabs />;
         default:
-            return <StudentTabs />; // Fallback 
+            return <StudentTabs />; // Fallback
     }
 };
 

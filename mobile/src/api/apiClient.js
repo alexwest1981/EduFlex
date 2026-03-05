@@ -2,9 +2,8 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from 'react-native';
 
-// Use 10.0.2.2 for Android emulator to access host localhost.
-// Replace with actual IP if testing on a physical device on the same network.
-const API_URL = Platform.OS === 'android' ? 'http://10.0.2.2:8080/api' : 'http://localhost:8080/api';
+// Pekar mot produktionsbackenden; ändra till http://10.0.2.2:8080/api vid lokal emulatorutveckling
+export const API_URL = 'https://www.eduflexlms.se/api';
 
 const api = axios.create({
     baseURL: API_URL,

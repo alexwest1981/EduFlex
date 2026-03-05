@@ -5,7 +5,7 @@ import { dequeueAction, setSyncing } from '../store/slices/offlineQueueSlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from 'react-native';
 
-const API_URL = Platform.OS === 'android' ? 'http://10.0.2.2:8080/api' : 'http://localhost:8080/api';
+import { API_URL } from '../api/apiClient';
 
 const SyncManager = () => {
     const dispatch = useDispatch();

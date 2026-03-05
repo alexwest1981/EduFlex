@@ -14,19 +14,27 @@ export const AuthProvider = ({ children }) => {
         try {
             const response = await api.post('/auth/login', { username, password });
 
-            // Assuming response contains token directly or in a specific field
+            // Hämta token från svaret
             const token = response.data.token || response.data;
 
-            if (token) {
-                setUserToken(token);
-                await AsyncStorage.setItem('userToken', token);
+            if (!token || typeof token !== 'string') {
+                throw new Error('Inget giltigt token mottogs från servern.');
+            }
 
-                // Fetch user info using the token
+            // Spara token direkt – navigeringen sker när userToken sätts
+            setUserToken(token);
+            await AsyncStorage.setItem('userToken', token);
+
+            // Hämta användarinfo separat – om det misslyckas klarar vi oss ändå
+            try {
                 const userResp = await api.get('/user/me', {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 setUserInfo(userResp.data);
+            } catch (userErr) {
+                console.warn('Kunde inte hämta användarinfo, försöker igen efter navigering:', userErr);
             }
+
         } catch (e) {
             console.error(`Login error: ${e}`);
             alert('Inloggning misslyckades. Kontrollera dina uppgifter.');
@@ -48,12 +56,15 @@ export const AuthProvider = ({ children }) => {
             let token = await AsyncStorage.getItem('userToken');
             setUserToken(token);
             if (token) {
-                const userResp = await api.get('/user/me');
+                // Skicka token explicit – interceptorn hinner inte sätta headern i tid vid app-start
+                const userResp = await api.get('/user/me', {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
                 setUserInfo(userResp.data);
             }
             setIsLoading(false);
         } catch (e) {
-            console.error(`isLogged in error ${e}`);
+            console.error(`isLoggedIn error: ${e}`);
             setUserToken(null);
             setUserInfo(null);
             setIsLoading(false);
@@ -65,7 +76,7 @@ export const AuthProvider = ({ children }) => {
     }, []);
 
     return (
-        <AuthContext.Provider value={{ login, logout, isLoading, userToken, userInfo }}>
+        <AuthContext.Provider value={{ login, logout, isLoading, userToken, userInfo, setUserInfo }}>
             {children}
         </AuthContext.Provider>
     );

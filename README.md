@@ -1,4 +1,4 @@
-# 🎓 EduFlex LLP v3.6.5
+# 🎓 EduFlex LLP v3.6.7
 *The Complete Enterprise Learning Lifecycle Platform for Modern Education & B2B*
 
 *Developed & maintained by **Alex Weström / Fenrir Studio***  
@@ -25,6 +25,10 @@ EduFlex LLP är ett Enterprise-redo, molnbaserat ekosystem som ersätter den tra
 ---
 
 ## 🚀 Senaste Uppdateringarna 
+
+### v3.6.7 (5 mar 2026) – Android Mobile App: Dashboard Fix & Release APK
+* **📱 Auth Race Condition Fix:** Fixade ett kritiskt problem i `AuthContext.js` där `isLoggedIn()` inte skickade JWT-token explicit i `Authorization`-headern vid app-start. Interceptorn hann inte sätta headern i tid → `/user/me`-anropet fick 401 → `RoleRouter` fastnade i en oändlig spinner-loop → dashboarden laddade aldrig. Nu skickas token explicit, vilket garanterar att dashboarden alltid laddas korrekt.
+* **📦 Android Release APK:** Byggt och verifierat en fristående Release APK (`app-release.apk`, 76.8 MB) via `scripts/build_android_release.ps1` med tvingad JDK 21 och korrekt `ANDROID_HOME`. APK:n inkluderar all JavaScript-kod inbundlad och kräver inte Metro Bundler för att köras.
 
 ### v3.6.6 (3 mar 2026) – Zero-Trust AI Pipeline & GDPR Shield
 *   **GDPR**: Implementerat **Zero-Trust AI Pipeline** med granulär PII-maskering och literal namn-ersättning.
@@ -144,12 +148,16 @@ Lokala URL:er efter uppstart:
 - [x] B2B E-commerce & Reseller Engine
 - [x] Event-Driven Microservices & Redis Event Bus
 - [ ] Q2 2026: AI Microservice Extraction (Python/FastAPI) för framtida lokala LLM-modeller.
-- [ ] Q3 2026: React Native Mobile App med Offline-sync.
+- [/] Q3 2026: React Native Mobile App med Offline-sync.
+    - [x] Android Release APK byggd och verifierad (v1.0).
+    - [x] Dashboard auth race condition fixad.
+    - [ ] Offline Redux Persist verifiering.
+    - [ ] Push Notifications integration.
 
 --------------------------------------------------------------------------------
 ⚖ License & Contact
 EduFlex LLP™ © 2026 Alex Weström / Fenrir Studio
 Proprietary Software. Unauthorized copying or distribution is strictly prohibited.
 För kommersiella förfrågningar och licensiering: 📧 alexwestrom81@gmail.com
-Last updated: 2026-03-04 (v3.6.5 - Docker, Database & License Fixes)
+Last updated: 2026-03-05 (v3.6.7 - Android Mobile Dashboard Fix & Release APK)
 
