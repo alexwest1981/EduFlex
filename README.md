@@ -31,12 +31,12 @@ EduFlex LLP är ett Enterprise-redo, molnbaserat ekosystem som ersätter den tra
 *   **GDPR**: Automatisk lokalt baserad "Zero-Trust Restore" av studentdata i AI-svar.
 *   **GDPR**: Valbart "GDPR Safe" läge för finansiella och administrativa excel-exporter.
 
-### v3.6.5 (3 mar 2026) – Docker & Database Hotfixes
-* **🐳 Docker Build Fix (Notifications):** Corrected the JAR filename in the `eduflex-notifications` Dockerfile using a wildcard to ensure compatibility with v3.6.4+ artifacts.
-* **🗄️ SCORM Database Recovery:** Resolved a critical startup crash in `eduflex-scorm` by initializing the missing `eduflex_scorm` database in the PostgreSQL container.
-* **🔑 License Audit Endpoint:** Resolved a 404 error by implementing the `GET /api/system/license/audit` endpoint in the core backend, enabling audit logs in the Control Center.
-* **🤖 AI PPT Generation Fix:** Implemented a dedicated `/api/ai/ppt` endpoint in `eduflex-ai` and refactored `GeminiService.java` to handle structured slide content, resolving 500 errors.
-* **📡 WebSocket Routing Alignment:** Centralized WebSocket URLs via `WS_BASE` in the frontend, routing all real-time traffic (Chat, Forum, Social) through the `eduflex-notifications` microservice on port 8085.
+### v3.6.5 (5 mar 2026) – Stability & Microservice Hotfixes
+* **🐳 Docker Networking Fix (WS):** Centralized WebSocket routing via `WS_BASE` using `window.location.origin`, allowing Vite's proxy to handle dynamic routing in Docker environments. Added `VITE_NOTIFICATIONS_URL` to support internal service discovery.
+* **🗄️ Database Auto-Initialization:** Implemented `init-db.sql` triggered on Postgres startup to automatically create `eduflex_backend` and `eduflex_scorm` databases, preventing SCORM microservice crashes.
+* **🤖 AI PPT Stability:** Hardened `PowerPointService.java` with robust JSON parsing, handling both array and object response formats from Gemini, ensuring reliable slide generation.
+* **🔑 BankID 401 Fix:** Whitelisted the public BankID status endpoint in `SecurityConfig.java` to allow unauthenticated access to login status checks.
+* **📦 License Audit:** Implemented missing audit endpoints to enable system intelligence in the Control Center.
 
 ### v3.6.4 (3 mar 2026) – AI Microservice Extraction & Ops Enhancements
 

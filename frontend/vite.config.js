@@ -12,7 +12,8 @@ export default defineConfig(({ mode }) => {
     // Set the third parameter to '' to load all env (including process.env)
     const env = loadEnv(mode, process.cwd(), '')
     const backendUrl = env.VITE_BACKEND_URL || 'http://localhost:8080'
-    console.log(`[ViteConfig] Mode: ${mode}, Backend URL: ${backendUrl}`);
+    const notificationsUrl = env.VITE_NOTIFICATIONS_URL || 'http://localhost:8085'
+    console.log(`[ViteConfig] Mode: ${mode}, Backend URL: ${backendUrl}, Notifications: ${notificationsUrl}`);
 
     return {
         plugins: [
@@ -106,22 +107,22 @@ export default defineConfig(({ mode }) => {
                     changeOrigin: true
                 },
                 '/ws': {
-                    target: 'http://localhost:8085',
+                    target: notificationsUrl,
                     ws: true,
                     changeOrigin: true
                 },
                 '/ws-log': {
-                    target: 'http://localhost:8085',
+                    target: notificationsUrl,
                     ws: true,
                     changeOrigin: true
                 },
                 '/ws-forum': {
-                    target: 'http://localhost:8085',
+                    target: notificationsUrl,
                     ws: true,
                     changeOrigin: true
                 },
                 '/ws-social': {
-                    target: 'http://localhost:8085',
+                    target: notificationsUrl,
                     ws: true,
                     changeOrigin: true
                 },

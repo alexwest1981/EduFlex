@@ -53,13 +53,22 @@ public class PowerPointService {
 
         // 2. Structurize using AI
         JsonNode slideData = geminiService.generateSlideContent(lesson.getContent());
-        if (slideData == null || !slideData.has("slides")) {
-            throw new RuntimeException("AI failed to structure content for PPT");
+        if (slideData == null) {
+            throw new RuntimeException("AI failed to generate any content for PPT");
+        }
+
+        JsonNode slides;
+        if (slideData.has("slides") && slideData.get("slides").isArray()) {
+            slides = slideData.get("slides");
+        } else if (slideData.isArray()) {
+            slides = slideData;
+        } else {
+            logger.error("Unexpected AI response format for PPT: {}", slideData.toString());
+            throw new RuntimeException("AI failed to structure content in a recognizable format for PPT");
         }
 
         // 3. Create PPT using Apache POI
         try (XMLSlideShow ppt = new XMLSlideShow()) {
-            JsonNode slides = slideData.get("slides");
             for (JsonNode slideNode : slides) {
                 XSLFSlide slide = ppt.createSlide();
 
@@ -116,7 +125,9 @@ public class PowerPointService {
 
             return saved;
 
-        } catch (IOException e) {
+        } catch (
+
+        IOException e) {
             logger.error("Failed to generate PowerPoint", e);
             throw new RuntimeException("Failed to generate PowerPoint: " + e.getMessage());
         }

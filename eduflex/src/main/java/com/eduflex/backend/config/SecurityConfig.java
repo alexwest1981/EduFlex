@@ -115,7 +115,7 @@ public class SecurityConfig {
                                                                 "/api/users/register",
                                                                 "/api/users/generate-usernames",
                                                                 "/api/settings/**", "/login/**", "/api/tenants/**",
-                                                                "/api/public/**",
+                                                                "/api/public/**", "/api/integrations/public/**",
                                                                 "/api/branding/**", "/api/debug/**",
                                                                 "/api/onlyoffice/**",
                                                                 "/api/gamification/config/system", "/api/payment/**",

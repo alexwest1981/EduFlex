@@ -12,6 +12,7 @@ services:
       - "5439:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./scripts/sql/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
     networks:
       - eduflex-net
 
@@ -281,6 +282,7 @@ services:
     environment:
       - VITE_API_BASE_URL=/api
       - VITE_BACKEND_URL=http://backend:8080
+      - VITE_NOTIFICATIONS_URL=http://eduflex-notifications:8085
       - VITE_JITSI_URL=${JITSI_URL:-http://localhost:8085}
     command: npm run dev -- --host
     volumes:
