@@ -26,10 +26,9 @@ EduFlex LLP är ett Enterprise-redo, molnbaserat ekosystem som ersätter den tra
 
 ## 🚀 Senaste Uppdateringarna 
 
-### v3.6.8.2 (5 mar 2026) – Final Mobile Fixes (Logo, Splash, Login)
-* **🔧 Critical Login Fix:** Åtgärdat ett import- och context-fel i `RoleRouter.js` som orsakade att inloggningen fastnade i en oändlig spinner. Nu finns även en timeout (15s) som föreslår omstart/logga ut vid nätverksproblem.
-* **🎨 Full Visual Sync:** Uppdaterat app-namnet i nativa Android-filer (`strings.xml`, `settings.gradle`) samt ersatt logotyper i alla `mipmap`- och `splashscreen`-mappar. Appen heter nu stolt **EduFlex** överallt.
-* **📦 Release APK (v1.3):** Genererat en ny, fullständigt märkt och fungerande APK.
+### v3.6.8.3 (5 mar 2026) – Final Build Success (Resource & Splash Fix)
+* **🔧 Native Splash & Resource Fix:** Rensat bort krockande WEBP-resurser i `mipmap`-mapparna som stoppade bygget. Skapat en ny `splash_background.xml` och uppdaterat `styles.xml` för att korrekt visa EduFlex-logotypen vid start.
+* **📦 Verified Release APK (v1.4):** En ny APK (94 MB) har genererats och verifierats med korrekt tidsstämpel (15:55). Denna innehåller alla branding- och inloggningsfixar.
 
 ### v3.6.8.0 (5 mar 2026) – Android Mobile App: Dashboard Fix & Release APK
 * **📱 Auth Race Condition Fix:** Fixade ett kritiskt problem i `AuthContext.js` där `isLoggedIn()` inte skickade JWT-token explicit i `Authorization`-headern vid app-start. Interceptorn hann inte sätta headern i tid → `/user/me`-anropet fick 401 → `RoleRouter` fastnade i en oändlig spinner-loop → dashboarden laddade aldrig. Nu skickas token explicit, vilket garanterar att dashboarden alltid laddas korrekt.
@@ -164,5 +163,5 @@ Lokala URL:er efter uppstart:
 EduFlex LLP™ © 2026 Alex Weström / Fenrir Studio
 Proprietary Software. Unauthorized copying or distribution is strictly prohibited.
 För kommersiella förfrågningar och licensiering: 📧 alexwestrom81@gmail.com
-Last updated: 2026-03-05 (v3.6.8.2 - Final Mobile Fixes)
+Last updated: 2026-03-05 (v3.6.8.3 - Final Build Success)
 
