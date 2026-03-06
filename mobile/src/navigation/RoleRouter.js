@@ -26,16 +26,16 @@ const RoleRouter = () => {
     useEffect(() => {
         console.log('[RoleRouter] Checking userInfo/userToken:', { hasInfo: !!userInfo, hasToken: !!userToken });
         if (!userInfo && userToken) {
-            console.log('[RoleRouter] Fetching /user/me...');
-            api.get('/user/me', {
+            console.log('[RoleRouter] Fetching /users/me...');
+            api.get('/users/me', {
                 headers: { Authorization: `Bearer ${userToken}` }
             }).then(resp => {
-                console.log('[RoleRouter] Fetch success:', resp.data?.role);
+                console.log('[RoleRouter] Fetch success! Full data:', JSON.stringify(resp.data));
                 if (resp.data && setUserInfo) {
                     setUserInfo(resp.data);
                 }
             }).catch(e => {
-                console.error('[RoleRouter] Fetch failed:', e.message);
+                console.error('[RoleRouter] Fetch failed:', e.message, e.response?.status, e.response?.data);
                 // Om anropet misslyckas direkt kan vi visa timeout direkt eller låta timern gå
             });
         }

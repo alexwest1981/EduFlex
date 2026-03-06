@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';
-import { PlayCircle, Download, CheckCircle, FileText, Video as VideoIcon, HelpCircle } from 'lucide-react-native';
+import { PlayCircle, Download, CheckCircle, FileText, Video as VideoIcon, HelpCircle, ChevronLeft } from 'lucide-react-native';
 import { useGetCourseByIdQuery, useGetCourseMaterialsQuery } from '../../store/slices/apiSlice';
 
 const CourseDetailScreen = () => {
@@ -15,12 +15,14 @@ const CourseDetailScreen = () => {
 
     const handleDownload = async () => {
         setIsDownloading(true);
-        // Pre-fetch all materials to ensure they are in the cache
-        await refetchMaterials();
-        setTimeout(() => {
+        try {
+            await refetchMaterials();
             setIsDownloading(false);
-            alert('Kursen är nu tillgänglig offline!');
-        }, 1500);
+            Alert.alert('Nedladdning klar', 'Materialet har sparats i appens cache för snabbare åtkomst.');
+        } catch (error) {
+            setIsDownloading(false);
+            Alert.alert('Fel', 'Kunde inte ladda ner materialet.');
+        }
     };
 
     if (isLoadingCourse) {
@@ -30,6 +32,8 @@ const CourseDetailScreen = () => {
             </View>
         );
     }
+
+    const videoMaterial = materials?.find(m => m.type === 'VIDEO');
 
     const renderMaterialIcon = (type) => {
         switch (type) {
@@ -42,14 +46,27 @@ const CourseDetailScreen = () => {
     return (
         <ScrollView style={styles.container}>
             <View style={styles.header}>
+                <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+                    <ChevronLeft color="#fff" size={24} />
+                </TouchableOpacity>
                 <Text style={styles.title}>{course?.name || courseName}</Text>
-                <Text style={styles.subtitle}>{course?.description || 'Video och material för offline-bruk.'}</Text>
+                <Text style={styles.subtitle}>{course?.description || 'Ingen beskrivning tillgänglig.'}</Text>
             </View>
 
-            <View style={styles.videoPlaceholder}>
-                <PlayCircle color="#fff" size={48} />
-                <Text style={styles.videoText}>Spela Upp AI-Lektion</Text>
-            </View>
+            {videoMaterial ? (
+                <TouchableOpacity
+                    style={styles.videoPlaceholder}
+                    onPress={() => console.log('Playing video:', videoMaterial.title)}
+                >
+                    <PlayCircle color="#fff" size={48} />
+                    <Text style={styles.videoText}>Spela: {videoMaterial.title}</Text>
+                </TouchableOpacity>
+            ) : (
+                <View style={[styles.videoPlaceholder, { backgroundColor: '#111' }]}>
+                    <VideoIcon color="#333" size={48} />
+                    <Text style={[styles.videoText, { color: '#444' }]}>Ingen videolektion tillgänglig</Text>
+                </View>
+            )}
 
             <View style={styles.actionRow}>
                 <TouchableOpacity
@@ -63,7 +80,7 @@ const CourseDetailScreen = () => {
                         <Download color="#00F5FF" size={20} />
                     )}
                     <Text style={styles.actionButtonText}>
-                        {isDownloading ? 'Laddar ner...' : 'Ladda ner för fristående läge'}
+                        {isDownloading ? 'Laddar ner...' : 'Gör tillgänglig offline'}
                     </Text>
                 </TouchableOpacity>
             </View>
@@ -72,8 +89,10 @@ const CourseDetailScreen = () => {
                 <Text style={styles.sectionTitle}>Kursinnehåll</Text>
                 {isLoadingMaterials ? (
                     <ActivityIndicator color="#00F5FF" />
+                ) : !materials || materials.length === 0 ? (
+                    <Text style={{ color: '#888' }}>Inga moduler inlagda än.</Text>
                 ) : (
-                    materials?.map((material, index) => (
+                    materials.map((material, index) => (
                         <TouchableOpacity
                             key={material.id}
                             style={styles.moduleCard}
@@ -81,15 +100,14 @@ const CourseDetailScreen = () => {
                                 if (material.type === 'QUIZ') {
                                     navigation.navigate('Quiz', { quizId: material.id, quizTitle: material.title });
                                 } else {
-                                    // Handle general lesson/media
                                     console.log('Opening material:', material.title);
                                 }
                             }}
                         >
                             <View style={styles.moduleInfo}>
                                 {renderMaterialIcon(material.type)}
-                                <View>
-                                    <Text style={styles.moduleTitle}>{index + 1}. {material.title}</Text>
+                                <View style={{ flex: 1 }}>
+                                    <Text style={styles.moduleTitle} numberOfLines={1}>{index + 1}. {material.title}</Text>
                                     <Text style={styles.moduleSubtitle}>{material.type}</Text>
                                 </View>
                             </View>
@@ -106,14 +124,15 @@ const styles = StyleSheet.create({
     centerContainer: { flex: 1, backgroundColor: '#0f1012', justifyContent: 'center', alignItems: 'center' },
     container: { flex: 1, backgroundColor: '#0f1012' },
     header: { padding: 20, paddingTop: 60, paddingBottom: 10 },
+    backButton: { marginBottom: 16 },
     title: { fontSize: 24, fontWeight: 'bold', color: '#fff', marginBottom: 8 },
     subtitle: { fontSize: 14, color: '#888' },
     videoPlaceholder: { height: 220, backgroundColor: '#1a1b1d', justifyContent: 'center', alignItems: 'center', gap: 12 },
-    videoText: { color: '#fff', fontSize: 16, fontWeight: 'bold' },
+    videoText: { color: '#fff', fontSize: 16, fontWeight: 'bold', paddingHorizontal: 20, textAlign: 'center' },
     actionRow: { padding: 20 },
     actionButton: { flexDirection: 'row', backgroundColor: 'rgba(0, 245, 255, 0.1)', padding: 16, borderRadius: 12, justifyContent: 'center', alignItems: 'center', gap: 10, borderWidth: 1, borderColor: '#00F5FF' },
     actionButtonText: { color: '#00F5FF', fontWeight: 'bold', fontSize: 16 },
-    modulesSection: { padding: 20 },
+    modulesSection: { padding: 20, paddingBottom: 40 },
     sectionTitle: { fontSize: 20, fontWeight: 'bold', color: '#fff', marginBottom: 16 },
     moduleCard: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: '#1a1b1d', padding: 16, borderRadius: 12, borderWidth: 1, borderColor: '#333', marginBottom: 12 },
     moduleInfo: { flexDirection: 'row', alignItems: 'center', gap: 12, flex: 1 },

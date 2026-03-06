@@ -1,18 +1,23 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { useDispatch } from 'react-redux';
-import { enqueueAction } from '../../store/slices/offlineQueueSlice';
-import { CheckCircle, AlertCircle } from 'lucide-react-native';
+import { useGetQuizByIdQuery } from '../../store/slices/apiSlice';
 
 const QuizScreen = ({ route, navigation }) => {
     const { quizId, quizTitle } = route.params || { quizId: 1, quizTitle: "Test Quiz" };
+    const { data: quizData, isLoading } = useGetQuizByIdQuery(quizId);
     const dispatch = useDispatch();
 
-    // Mock Questions
-    const questions = [
-        { id: 1, text: "Vad är React Native?", options: ["Ett språk", "Ett ramverk", "Ett databassystem"], correct: 1 },
-        { id: 2, text: "Vad hanterar state?", options: ["CSS", "Redux", "HTML"], correct: 1 }
-    ];
+    if (isLoading) {
+        return (
+            <View style={styles.centerContainer}>
+                <Text style={{ color: '#888' }}>Hämtar frågor...</Text>
+            </View>
+        );
+    }
+
+    // Use live questions if available, otherwise fallback to empty to avoid crash
+    const questions = quizData?.questions || [];
 
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [selectedAnswers, setSelectedAnswers] = useState({});

@@ -904,7 +904,9 @@ public class CourseService {
                 c.getSlug(), // New slug field
                 c.getPrice(), // New price field
                 c.getSkolverketCourse(), // Include Skolverket course data
-                c.getGroupRooms() // Include Group Rooms
-        );
+                c.getGroupRooms(), // Include Group Rooms
+                (c.getMaterials() != null ? c.getMaterials().size() : 0) +
+                        (c.getQuizzes() != null ? c.getQuizzes().size() : 0) +
+                        (c.getAssignments() != null ? c.getAssignments().size() : 0));
     }
 }

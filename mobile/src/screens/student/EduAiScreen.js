@@ -15,9 +15,9 @@ const EduAiScreen = () => {
 
             {/* EduQuest 3D Map Placeholder */}
             <View style={styles.mapContainer}>
-                <MapIcon color="#00F5FF" size={48} style={{ marginBottom: 10 }} />
-                <Text style={styles.mapTitle}>EduQuest Karta</Text>
-                <Text style={styles.mapSubtitle}>(SVG / Skia integration laddas här när online)</Text>
+                <BrainCircuit color="#00F5FF" size={48} style={{ marginBottom: 10 }} />
+                <Text style={styles.mapTitle}>EduAI Hub</Text>
+                <Text style={styles.mapSubtitle}>Utforska dina personliga AI-verktyg för lärande.</Text>
             </View>
 
             <View style={styles.grid}>

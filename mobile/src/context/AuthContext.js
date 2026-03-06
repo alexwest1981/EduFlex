@@ -32,10 +32,10 @@ export const AuthProvider = ({ children }) => {
             // Hämta användarinfo separat
             try {
                 console.log('[AuthContext] Fetching user profile...');
-                const userResp = await api.get('/user/me', {
+                const userResp = await api.get('/users/me', {
                     headers: { Authorization: `Bearer ${token}` }
                 });
-                console.log('[AuthContext] User profile received:', userResp.data?.role);
+                console.log('[AuthContext] User profile received! Full data:', JSON.stringify(userResp.data));
                 setUserInfo(userResp.data);
             } catch (userErr) {
                 console.warn('[AuthContext] Could not fetch user during login:', userErr.message);
@@ -64,7 +64,7 @@ export const AuthProvider = ({ children }) => {
             setUserToken(token);
             if (token) {
                 // Skicka token explicit – interceptorn hinner inte sätta headern i tid vid app-start
-                const userResp = await api.get('/user/me', {
+                const userResp = await api.get('/users/me', {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 setUserInfo(userResp.data);

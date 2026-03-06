@@ -1,35 +1,45 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput, ActivityIndicator } from 'react-native';
 import { Search, Globe, Library, Plus } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
+import { useGetGlobalLibraryQuery } from '../../store/slices/apiSlice';
 
 const GlobalLibraryScreen = () => {
     const navigation = useNavigation();
     const [searchQuery, setSearchQuery] = useState('');
+    const { data: globalItems, isLoading } = useGetGlobalLibraryQuery();
 
-    const libraryItems = [
-        { id: 1, title: 'AI Grundkurs', category: 'Course', author: 'EduFlex' },
-        { id: 2, title: 'Avancerad Matematik', category: 'Module', author: 'Anna Larsson' },
-        { id: 3, title: 'Programmering 1 PDF', category: 'Resource', author: 'EduFlex' }
-    ];
+    const filteredItems = globalItems ? globalItems.filter(item =>
+        item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (item.description && item.description.toLowerCase().includes(searchQuery.toLowerCase()))
+    ) : [];
 
     const renderItem = ({ item }) => (
         <View style={styles.card}>
             <View style={styles.iconContainer}>
-                {item.category === 'Course' ? <Globe color="#00F5FF" size={24} /> : <Library color="#00F5FF" size={24} />}
+                {item.type === 'COURSE' ? <Globe color="#00F5FF" size={24} /> : <Library color="#00F5FF" size={24} />}
             </View>
             <View style={styles.cardInfo}>
-                <Text style={styles.cardTitle}>{item.title}</Text>
-                <Text style={styles.cardAuthor}>Av: {item.author}</Text>
+                <Text style={styles.cardTitle}>{item.name}</Text>
+                <Text style={styles.cardAuthor}>{item.type} • {item.owner?.username || 'EduFlex'}</Text>
             </View>
             <TouchableOpacity
                 style={styles.addBtn}
-                onPress={() => navigation.navigate('StripeCheckout', { itemName: item.title, price: "149 kr" })}
+                onPress={() => navigation.navigate('StripeCheckout', { itemName: item.name, price: "149 kr" })}
             >
                 <Plus color="#00F5FF" size={20} />
             </TouchableOpacity>
         </View>
     );
+
+    if (isLoading) {
+        return (
+            <View style={styles.centerContainer}>
+                <ActivityIndicator size="large" color="#00F5FF" />
+                <Text style={{ color: '#888', marginTop: 10 }}>Laddar biblioteket...</Text>
+            </View>
+        );
+    }
 
     return (
         <View style={styles.container}>
@@ -48,17 +58,24 @@ const GlobalLibraryScreen = () => {
                 />
             </View>
 
-            <FlatList
-                data={libraryItems}
-                keyExtractor={item => item.id.toString()}
-                renderItem={renderItem}
-                contentContainerStyle={{ paddingBottom: 40 }}
-            />
+            {filteredItems.length === 0 ? (
+                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                    <Text style={{ color: '#888' }}>Inga resurser hittades.</Text>
+                </View>
+            ) : (
+                <FlatList
+                    data={filteredItems}
+                    keyExtractor={item => item.id.toString()}
+                    renderItem={renderItem}
+                    contentContainerStyle={{ paddingBottom: 40 }}
+                />
+            )}
         </View>
     );
 };
 
 const styles = StyleSheet.create({
+    centerContainer: { flex: 1, backgroundColor: '#0f1012', justifyContent: 'center', alignItems: 'center' },
     container: { flex: 1, backgroundColor: '#0f1012', padding: 20, paddingTop: 60 },
     header: { marginBottom: 24 },
     title: { fontSize: 32, fontWeight: 'bold', color: '#fff' },

@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, RefreshControl } from 'react-native';
-import { useGetUserQuery, useGetCoursesQuery } from '../../store/slices/apiSlice';
+import { useGetUserQuery, useGetCoursesQuery, useGetPointsQuery, useGetAiInsightQuery } from '../../store/slices/apiSlice';
 import { BrainCircuit, BookOpen, Star, PlayCircle } from 'lucide-react-native';
 
 const StudentDashboardScreen = () => {
@@ -38,10 +38,13 @@ const StudentDashboardScreen = () => {
                     <Text style={styles.cardTitle}>AI Coach</Text>
                 </View>
                 <Text style={styles.cardText}>
-                    Bra jobbat denna vecka! Jag ser att du ligger över snittet i dina quiz. Fortsätt fokusera på modulen "Kommunikation" för att öka dina chanser på slutprovet.
+                    {aiInsight?.motivationTip || aiInsight?.welcomeMessage || 'Laddar dina personliga insikter...'}
+                </Text>
+                <Text style={[styles.cardText, { marginTop: -10, fontStyle: 'italic', fontSize: 13 }]}>
+                    {aiInsight?.studyRecommendation || ''}
                 </Text>
                 <TouchableOpacity style={styles.lightButton}>
-                    <Text style={styles.lightButtonText}>Chatta med Coachen</Text>
+                    <Text style={styles.lightButtonText}>{aiInsight?.quickAction || 'Chatta med Coachen'}</Text>
                 </TouchableOpacity>
             </View>
 
@@ -54,7 +57,7 @@ const StudentDashboardScreen = () => {
                 </View>
                 <View style={styles.statBox}>
                     <Star color="#FBBF24" size={20} />
-                    <Text style={styles.statValue}>1250</Text>
+                    <Text style={styles.statValue}>{points !== undefined ? points : user?.points || 0}</Text>
                     <Text style={styles.statLabel}>XP Poäng</Text>
                 </View>
             </View>

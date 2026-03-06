@@ -25,6 +25,9 @@ public class TenantFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
+        String path = request.getRequestURI();
+        logger.info("📥 Incoming request: {} (Host: {}, Remote: {})", path, request.getServerName(),
+                request.getRemoteAddr());
 
         String tenantId = request.getHeader("X-Tenant-ID");
 
@@ -60,6 +63,20 @@ public class TenantFilter extends OncePerRequestFilter {
         // Log query string for debug if needed, but remove force-set logic
         if (tenantId != null) {
             logger.debug("👉 TenantFilter: Resolved tenantId: {}", tenantId);
+            if ("www".equalsIgnoreCase(tenantId)) {
+                tenantId = null; // Let it fall through to public
+            }
+        }
+
+        // Special handling for WebSocket handshake/info requests that don't need a
+        // specific tenant context
+        path = request.getRequestURI();
+        if (path.contains("/ws/info") || path.contains("/ws-log/info") || path.contains("/ws-forum/info")
+                || path.contains("/ws-social/info")) {
+            logger.debug("🔓 TenantFilter: Skipping tenant resolution for WebSocket info path: {}", path);
+            TenantContext.setCurrentTenant("public");
+            filterChain.doFilter(request, response);
+            return;
         }
 
         try {
@@ -79,7 +96,7 @@ public class TenantFilter extends OncePerRequestFilter {
                             tenantId, e.getMessage());
                     TenantContext.setCurrentTenant("public");
                 } catch (Exception e) {
-                    logger.error("💥 TenantFilter JDBC Error: {}", e.getMessage(), e);
+                    logger.error("💥 TenantFilter JDBC Error for path {}: {}", path, e.getMessage(), e);
                     response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                     return;
                 }
@@ -97,7 +114,7 @@ public class TenantFilter extends OncePerRequestFilter {
     private String extractSubdomain(String host) {
         if (host != null && host.endsWith(".eduflexlms.se")) {
             String sub = host.substring(0, host.indexOf(".eduflexlms.se"));
-            if (!sub.isEmpty() && !"www".equalsIgnoreCase(sub) && !"api".equalsIgnoreCase(sub)
+            if (!sub.isEmpty() && !"api".equalsIgnoreCase(sub)
                     && !"eduflexlms".equalsIgnoreCase(sub)) {
                 return sub;
             }

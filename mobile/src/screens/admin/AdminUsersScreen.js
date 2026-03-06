@@ -1,30 +1,38 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput, ActivityIndicator } from 'react-native';
 import { Search, UserPlus, Settings2 } from 'lucide-react-native';
+import { useGetAllUsersQuery } from '../../store/slices/apiSlice';
 
 const AdminUsersScreen = () => {
     const [searchQuery, setSearchQuery] = useState('');
+    const { data: users, isLoading, refetch } = useGetAllUsersQuery();
 
-    const users = [
-        { id: 1, name: 'Alice Andersson', role: 'Student', email: 'alice@eduflex.se' },
-        { id: 2, name: 'Bob Bergström', role: 'Teacher', email: 'bob@eduflex.se' },
-        { id: 3, name: 'Charlie Carlsson', role: 'Admin', email: 'charlie@eduflex.se' }
-    ];
-
-    const filteredUsers = users.filter(u => u.name.toLowerCase().includes(searchQuery.toLowerCase()) || u.role.toLowerCase().includes(searchQuery.toLowerCase()));
+    const filteredUsers = users ? users.filter(u =>
+        (u.firstName + ' ' + u.lastName).toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (u.role?.name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+        u.email?.toLowerCase().includes(searchQuery.toLowerCase())
+    ) : [];
 
     const renderUser = ({ item }) => (
         <View style={styles.userCard}>
             <View style={styles.userInfo}>
-                <Text style={styles.userName}>{item.name}</Text>
-                <Text style={styles.userRole}>{item.role}</Text>
-                <Text style={styles.userEmail}>{item.email}</Text>
+                <Text style={styles.userName}>{item.firstName} {item.lastName}</Text>
+                <Text style={styles.userRole}>{item.role?.name || 'USER'}</Text>
+                <Text style={styles.userEmail}>{item.email || item.username}</Text>
             </View>
             <TouchableOpacity style={styles.editBtn}>
                 <Settings2 color="#00F5FF" size={20} />
             </TouchableOpacity>
         </View>
     );
+
+    if (isLoading) {
+        return (
+            <View style={styles.centerContainer}>
+                <ActivityIndicator size="large" color="#00F5FF" />
+            </View>
+        );
+    }
 
     return (
         <View style={styles.container}>
@@ -40,24 +48,33 @@ const AdminUsersScreen = () => {
                 <Search color="#888" size={20} style={{ marginHorizontal: 10 }} />
                 <TextInput
                     style={styles.searchInput}
-                    placeholder="Sök namn eller roll..."
+                    placeholder="Sök namn, roll eller e-post..."
                     placeholderTextColor="#888"
                     value={searchQuery}
                     onChangeText={setSearchQuery}
                 />
             </View>
 
-            <FlatList
-                data={filteredUsers}
-                keyExtractor={item => item.id.toString()}
-                renderItem={renderUser}
-                contentContainerStyle={{ paddingBottom: 40 }}
-            />
+            {filteredUsers.length === 0 ? (
+                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                    <Text style={{ color: '#888' }}>Inga användare hittades.</Text>
+                </View>
+            ) : (
+                <FlatList
+                    data={filteredUsers}
+                    keyExtractor={item => item.id.toString()}
+                    renderItem={renderUser}
+                    contentContainerStyle={{ paddingBottom: 40 }}
+                    onRefresh={refetch}
+                    refreshing={isLoading}
+                />
+            )}
         </View>
     );
 };
 
 const styles = StyleSheet.create({
+    centerContainer: { flex: 1, backgroundColor: '#0f1012', justifyContent: 'center', alignItems: 'center' },
     container: { flex: 1, backgroundColor: '#0f1012', padding: 20, paddingTop: 60 },
     header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 },
     title: { fontSize: 32, fontWeight: 'bold', color: '#fff' },

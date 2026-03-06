@@ -223,6 +223,7 @@ public class GeminiService {
         String errorMsg = null;
         try {
             String url = aiServiceUrl + "/api/ai/chat";
+            logger.debug("Calling AI Microservice at URL: {} with prompt length: {}", url, prompt.length());
 
             // Mask PII using new Zero-Trust logic
             GdprDataMaskerService.MaskingResult maskingResult = gdprDataMaskerService.maskPii(prompt, sensitiveNames);
@@ -244,7 +245,8 @@ public class GeminiService {
             success = true;
             return result;
         } catch (Exception e) {
-            logger.error("Failed to generate generic response via microservice", e);
+            logger.error("💥 GeminiService Error calling AI microservice (URL: {}): {}", aiServiceUrl + "/api/ai/chat",
+                    e.getMessage(), e);
             errorMsg = e.getMessage();
             result = "Tyvärr, jag kunde inte generera ett svar just nu.";
             return result;
@@ -274,6 +276,7 @@ public class GeminiService {
         String errorMsg = null;
         try {
             String url = aiServiceUrl + "/api/ai/chat";
+            logger.debug("Calling AI Microservice (JSON) at URL: {}", url);
 
             // Mask PII
             GdprDataMaskerService.MaskingResult maskingResult = gdprDataMaskerService.maskPii(prompt, sensitiveNames);
@@ -295,6 +298,7 @@ public class GeminiService {
             success = true;
             return result;
         } catch (Exception e) {
+            logger.error("💥 GeminiService JSON Error calling AI microservice: {}", e.getMessage(), e);
             errorMsg = e.getMessage();
             throw e;
         } finally {

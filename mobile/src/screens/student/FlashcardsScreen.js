@@ -1,40 +1,58 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { useDispatch } from 'react-redux';
-import { enqueueAction } from '../../store/slices/offlineQueueSlice';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
 import { Layers, ChevronLeft } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
+import { useGetDueFlashcardsQuery, useSubmitFlashcardReviewMutation } from '../../store/slices/apiSlice';
 
 const FlashcardsScreen = () => {
     const navigation = useNavigation();
-    const dispatch = useDispatch();
+    const { data: dueCards, isLoading, refetch } = useGetDueFlashcardsQuery();
+    const [submitReview] = useSubmitFlashcardReviewMutation();
+
     const [isFlipped, setIsFlipped] = useState(false);
     const [currentIndex, setCurrentIndex] = useState(0);
 
-    const deck = [
-        { id: 1, front: "Vad står CPU för?", back: "Central Processing Unit" },
-        { id: 2, front: "Vilken port används oftast för HTTP?", back: "Port 80" }
-    ];
+    const currentCard = dueCards && dueCards.length > currentIndex ? dueCards[currentIndex] : null;
 
-    const currentCard = deck[currentIndex];
+    const handleRating = async (quality) => {
+        if (!currentCard) return;
 
-    const handleRating = (rating) => {
-        // Queue the rating calculation/sync for offline
-        dispatch(enqueueAction({
-            url: `/flashcards/${currentCard.id}/rate`,
-            method: 'POST',
-            body: { rating, timestamp: new Date().toISOString() }
-        }));
+        try {
+            await submitReview({ cardId: currentCard.id, quality }).unwrap();
 
-        if (currentIndex < deck.length - 1) {
-            setCurrentIndex(c => c + 1);
-            setIsFlipped(false);
-        } else {
-            navigation.goBack();
+            if (currentIndex < dueCards.length - 1) {
+                setCurrentIndex(c => c + 1);
+                setIsFlipped(false);
+            } else {
+                Alert.alert('Bra jobbat!', 'Du har repeterat alla kort för idag.', [
+                    { text: 'OK', onPress: () => navigation.goBack() }
+                ]);
+            }
+        } catch (error) {
+            Alert.alert('Fel', 'Kunde inte spara ditt resultat.');
         }
     };
 
-    if (!currentCard) return null;
+    if (isLoading) {
+        return (
+            <View style={styles.centerContainer}>
+                <ActivityIndicator size="large" color="#00F5FF" />
+            </View>
+        );
+    }
+
+    if (!dueCards || dueCards.length === 0) {
+        return (
+            <View style={styles.centerContainer}>
+                <Layers color="#444" size={64} style={{ marginBottom: 20 }} />
+                <Text style={{ color: '#fff', fontSize: 20, fontWeight: 'bold' }}>Inga kort att repetera!</Text>
+                <Text style={{ color: '#888', marginTop: 10 }}>Kom tillbaka senare.</Text>
+                <TouchableOpacity onPress={() => navigation.goBack()} style={{ marginTop: 30, padding: 15, backgroundColor: '#1a1b1d', borderRadius: 12 }}>
+                    <Text style={{ color: '#00F5FF' }}>Gå tillbaka</Text>
+                </TouchableOpacity>
+            </View>
+        );
+    }
 
     return (
         <View style={styles.container}>
@@ -42,7 +60,7 @@ const FlashcardsScreen = () => {
                 <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
                     <ChevronLeft color="#fff" size={24} />
                 </TouchableOpacity>
-                <Text style={styles.title}>Spaced Repetition</Text>
+                <Text style={styles.title}>Spaced Repetition ({currentIndex + 1}/{dueCards.length})</Text>
                 <View style={{ width: 24 }} />
             </View>
 
@@ -76,6 +94,7 @@ const FlashcardsScreen = () => {
 };
 
 const styles = StyleSheet.create({
+    centerContainer: { flex: 1, backgroundColor: '#0f1012', justifyContent: 'center', alignItems: 'center', padding: 40 },
     container: { flex: 1, backgroundColor: '#0f1012' },
     header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 20, paddingTop: 60, backgroundColor: '#1a1b1d', borderBottomWidth: 1, borderBottomColor: '#333' },
     title: { fontSize: 18, fontWeight: 'bold', color: '#fff' },

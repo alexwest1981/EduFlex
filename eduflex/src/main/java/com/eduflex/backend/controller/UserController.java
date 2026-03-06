@@ -18,7 +18,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping({ "/api/users", "/api/user" })
 public class UserController {
 
     private final UserService userService;
@@ -264,6 +264,7 @@ public class UserController {
                 response.put("role", roleMap);
             }
 
+            System.out.println("DEBUG: Profile fetch (getCurrentUser) for " + username + " -> " + response);
             return ResponseEntity.ok(response);
 
         } catch (Throwable e) {

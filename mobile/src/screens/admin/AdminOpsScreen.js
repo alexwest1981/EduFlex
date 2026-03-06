@@ -1,21 +1,23 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, RefreshControl } from 'react-native';
-import { Server, Activity, Database, Cloud } from 'lucide-react-native';
+import { useGetSystemHealthQuery, useGetDataIntegrityQuery } from '../../store/slices/apiSlice';
+import { Server, Activity, Database, Cloud, Users, BookOpen, HardDrive } from 'lucide-react-native';
 
 const AdminOpsScreen = () => {
+    const { data: health, isLoading: isHealthLoading, refetch: refetchHealth } = useGetSystemHealthQuery();
+    const { data: integrity, isLoading: isIntegrityLoading, refetch: refetchIntegrity } = useGetDataIntegrityQuery();
     const [refreshing, setRefreshing] = useState(false);
 
-    // Mock data for system status
+    // Map actuator health to services list
     const services = [
-        { id: 1, name: 'Core API (WSL)', status: 'online', icon: <Server color="#00F5FF" size={24} /> },
-        { id: 2, name: 'PostgreSQL DB', status: 'online', icon: <Database color="#00F5FF" size={24} /> },
-        { id: 3, name: 'Redis Cache', status: 'online', icon: <Activity color="#00F5FF" size={24} /> },
-        { id: 4, name: 'MinIO Storage', status: 'online', icon: <Cloud color="#00F5FF" size={24} /> }
+        { id: 1, name: 'Core API (WSL)', status: health?.status?.toLowerCase() || 'unknown', icon: <Server color="#00F5FF" size={24} /> },
+        { id: 2, name: 'PostgreSQL DB', status: health?.components?.db?.status?.toLowerCase() || 'unknown', icon: <Database color="#00F5FF" size={24} /> },
+        { id: 3, name: 'Redis Cache', status: health?.components?.redis?.status?.toLowerCase() || 'unknown', icon: <Activity color="#00F5FF" size={24} /> },
+        { id: 4, name: 'MinIO Storage', status: health?.components?.minio?.status?.toLowerCase() || 'unknown', icon: <Cloud color="#00F5FF" size={24} /> }
     ];
 
-    const onRefresh = () => {
+    const onRefresh = async () => {
         setRefreshing(true);
-        setTimeout(() => setRefreshing(false), 1000);
+        await Promise.all([refetchHealth(), refetchIntegrity()]);
+        setRefreshing(false);
     };
 
     return (
@@ -30,16 +32,19 @@ const AdminOpsScreen = () => {
 
             <View style={styles.grid}>
                 <View style={styles.statBox}>
-                    <Text style={styles.statLabel}>CPU Lasta</Text>
-                    <Text style={styles.statValue}>12%</Text>
+                    <Users color="#888" size={16} />
+                    <Text style={styles.statLabel}>Användare</Text>
+                    <Text style={styles.statValue}>{integrity?.totalUsers || 0}</Text>
                 </View>
                 <View style={styles.statBox}>
-                    <Text style={styles.statLabel}>Minne</Text>
-                    <Text style={styles.statValue}>4.2 GB</Text>
+                    <BookOpen color="#888" size={16} />
+                    <Text style={styles.statLabel}>Kurser</Text>
+                    <Text style={styles.statValue}>{integrity?.totalCourses || 0}</Text>
                 </View>
                 <View style={[styles.statBox, { borderColor: '#00F5FF' }]}>
-                    <Text style={styles.statLabel}>Sync Kö</Text>
-                    <Text style={[styles.statValue, { color: '#00F5FF' }]}>0 Ligger</Text>
+                    <HardDrive color="#00F5FF" size={16} />
+                    <Text style={styles.statLabel}>Lagring</Text>
+                    <Text style={[styles.statValue, { color: '#00F5FF', fontSize: 14 }]}>{integrity?.storageUsageFormatted || '0 B'}</Text>
                 </View>
             </View>
 
@@ -50,18 +55,18 @@ const AdminOpsScreen = () => {
                     <View style={styles.serviceIcon}>{s.icon}</View>
                     <View style={styles.serviceInfo}>
                         <Text style={styles.serviceName}>{s.name}</Text>
-                        <Text style={[styles.serviceStatus, s.status === 'online' ? { color: '#10b981' } : { color: '#ff4444' }]}>
-                            {s.status.toUpperCase()}
+                        <Text style={[styles.serviceStatus, s.status === 'up' ? { color: '#10b981' } : { color: '#ff4444' }]}>
+                            {(s.status || 'UNKNOWN').toUpperCase()}
                         </Text>
                     </View>
                     <TouchableOpacity style={styles.actionBtn}>
-                        <Text style={styles.actionText}>Starta om</Text>
+                        <Text style={styles.actionText}>Detaljer</Text>
                     </TouchableOpacity>
                 </View>
             ))}
 
             <TouchableOpacity style={styles.dangerBtn}>
-                <Text style={styles.dangerText}>Force Sync Background Queue</Text>
+                <Text style={styles.dangerText}>Data Integrity Report ({integrity?.orphanedStudentCount || 0} issues)</Text>
             </TouchableOpacity>
         </ScrollView>
     );

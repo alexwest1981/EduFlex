@@ -1,27 +1,36 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
-import { useDispatch } from 'react-redux';
-import { enqueueAction } from '../../store/slices/offlineQueueSlice';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
 import { Book, Bookmark, ChevronLeft, ChevronRight } from 'lucide-react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import { useGetEbookByIdQuery, useGetEbookProgressQuery, useSaveEbookProgressMutation } from '../../store/slices/apiSlice';
 
-const EbookScreen = ({ route }) => {
-    // In reality, route.params would pass bookId and title
-    const { bookId = 1, bookTitle = "Systemarkitektur" } = route.params || {};
+const EbookScreen = () => {
+    const route = useRoute();
     const navigation = useNavigation();
-    const dispatch = useDispatch();
+    const { ebookId, bookTitle: initialTitle } = route.params || {};
+
+    const { data: ebook, isLoading: isLoadingEbook } = useGetEbookByIdQuery(ebookId);
+    const { data: progress, isLoading: isLoadingProgress } = useGetEbookProgressQuery(ebookId);
+    const [saveProgress] = useSaveEbookProgressMutation();
 
     const [currentPage, setCurrentPage] = useState(1);
-    const totalPages = 15;
+    const totalPages = ebook?.pagesCount || 10; // Fallback to 10 if not specified
 
-    // Simulate saving reading progress on every page turn
     useEffect(() => {
-        dispatch(enqueueAction({
-            url: `/ebook-progress`,
-            method: 'POST',
-            body: { ebookId: bookId, pageNumber: currentPage, savedAt: new Date().toISOString() }
-        }));
-    }, [currentPage, bookId, dispatch]);
+        if (progress?.lastPage) {
+            setCurrentPage(progress.lastPage);
+        }
+    }, [progress]);
+
+    // Save progress when page changes (debounced or on unmount is better, but here we do it on change for simplicity/real-time)
+    useEffect(() => {
+        if (ebookId && currentPage) {
+            saveProgress({
+                id: ebookId,
+                data: { lastPage: currentPage, savedAt: new Date().toISOString() }
+            });
+        }
+    }, [currentPage, ebookId]);
 
     const handleNext = () => {
         if (currentPage < totalPages) setCurrentPage(p => p + 1);
@@ -31,27 +40,33 @@ const EbookScreen = ({ route }) => {
         if (currentPage > 1) setCurrentPage(p => p - 1);
     };
 
+    if (isLoadingEbook || isLoadingProgress) {
+        return (
+            <View style={styles.centerContainer}>
+                <ActivityIndicator size="large" color="#00F5FF" />
+            </View>
+        );
+    }
+
     return (
         <View style={styles.container}>
             <View style={styles.header}>
                 <TouchableOpacity onPress={() => navigation.goBack()} style={styles.iconButton}>
                     <ChevronLeft color="#fff" size={24} />
                 </TouchableOpacity>
-                <Text style={styles.title} numberOfLines={1}>{bookTitle}</Text>
+                <Text style={styles.title} numberOfLines={1}>{ebook?.title || initialTitle || "E-bok"}</Text>
                 <TouchableOpacity style={styles.iconButton}>
                     <Bookmark color="#00F5FF" size={24} />
                 </TouchableOpacity>
             </View>
 
             <ScrollView contentContainerStyle={styles.readerContent}>
-                <Text style={styles.chapterTitle}>Kapitel {currentPage}</Text>
+                <Text style={styles.chapterTitle}>{ebook?.title || "Kapitel " + currentPage}</Text>
                 <Text style={styles.readerText}>
-                    Detta är platshållartext för e-boken. I en verklig offline-implementation
-                    skulle vi ladda ner EPUB-filen eller PDF:en till lokal lagring (t.ex. med expo-file-system)
-                    och rendera innehållet via en webvy eller PDF-läsare.
+                    {ebook?.description || "Innehållet i denna e-bok laddas från servern."}
                     {"\n\n"}
-                    När du byter sida registreras dina framsteg (Save progress locally).
-                    SyncManager plockar sedan upp denna kö av ändringar när telefonen återfår anslutning, och skickar det till `/api/ebook-progress`.
+                    Detta är en live-vy av e-boken baserad på data från backend.
+                    Dina framsteg sparas automatiskt på sida {currentPage}.
                 </Text>
             </ScrollView>
 
@@ -69,6 +84,7 @@ const EbookScreen = ({ route }) => {
 };
 
 const styles = StyleSheet.create({
+    centerContainer: { flex: 1, backgroundColor: '#0f1012', justifyContent: 'center', alignItems: 'center' },
     container: { flex: 1, backgroundColor: '#0f1012' },
     header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 20, paddingTop: 60, backgroundColor: '#1a1b1d', borderBottomWidth: 1, borderBottomColor: '#333' },
     iconButton: { padding: 8 },

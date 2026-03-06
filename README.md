@@ -1,4 +1,4 @@
-# 🎓 EduFlex LLP v3.6.8
+# 🎓 EduFlex LLP v3.6.8.3
 *The Complete Enterprise Learning Lifecycle Platform for Modern Education & B2B*
 
 *Developed & maintained by **Alex Weström / Fenrir Studio***  
@@ -25,6 +25,12 @@ EduFlex LLP är ett Enterprise-redo, molnbaserat ekosystem som ersätter den tra
 ---
 
 ## 🚀 Senaste Uppdateringarna 
+
+### v3.6.9.0 (6 mar 2026) – Rule 1 Compliance: Total Mockup Removal & Live Data
+* **📱 Total Mockup Removal (Rule 1)**: All hardcoded mockups in the mobile app have been replaced with live backend data. This includes Student Dashboard (XP/Insights), Quizzes, Global Library, Course Detail (Materials/Video), AI Coach (Real AITutor Chat), Flashcards (Spaced Repetition), Elevhälsan Metrics, and Ebook Sync.
+* **🔧 Backend Real-Time Progress**: Updated `CourseService` and `CourseDTO` to dynamically calculate `modulesCount`, providing accurate progress tracking for mobile users.
+* **🤖 AI Tutor Integration**: Fully integrated `AiCoachScreen` with the enterprise AITutor engine for real-time pedagogical support.
+* **📋 Spaced Repetition Logic**: Refactored `FlashcardsScreen` to use a data-driven SRS model, eliminating all placeholder decks.
 
 ### v3.6.8.3 (5 mar 2026) – Final Build Success (Resource & Splash Fix)
 * **🔧 Native Splash & Resource Fix:** Rensat bort krockande WEBP-resurser i `mipmap`-mapparna som stoppade bygget. Skapat en ny `splash_background.xml` och uppdaterat `styles.xml` för att korrekt visa EduFlex-logotypen vid start.
@@ -163,5 +169,5 @@ Lokala URL:er efter uppstart:
 EduFlex LLP™ © 2026 Alex Weström / Fenrir Studio
 Proprietary Software. Unauthorized copying or distribution is strictly prohibited.
 För kommersiella förfrågningar och licensiering: 📧 alexwestrom81@gmail.com
-Last updated: 2026-03-05 (v3.6.8.3 - Final Build Success)
+Last updated: 2026-03-06 (v3.6.9.0 - Rule 1 Compliance: Live Data Integration)
 

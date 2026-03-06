@@ -1,10 +1,15 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
-import { useGetUserQuery } from '../../store/slices/apiSlice';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { useGetUserQuery, useGetHealthMetricsQuery, useGetHealthBookingsQuery } from '../../store/slices/apiSlice';
 import { ShieldCheck, Calendar, Activity, FileText } from 'lucide-react-native';
 
 const HealthTeamDashboardScreen = () => {
     const { data: user } = useGetUserQuery();
+    const { data: metrics, isLoading: isLoadingMetrics } = useGetHealthMetricsQuery();
+    const { data: bookings, isLoading: isLoadingBookings } = useGetHealthBookingsQuery();
+
+    const activeCasesCount = metrics?.activeCases || 0;
+    const meetingsCount = bookings?.length || 0;
 
     return (
         <ScrollView style={styles.container}>
@@ -25,25 +30,34 @@ const HealthTeamDashboardScreen = () => {
 
             <View style={styles.statsRow}>
                 <View style={styles.statBox}>
-                    <Activity color="#aaa" size={20} />
-                    <Text style={styles.statValue}>4</Text>
+                    <Activity color="#10b981" size={20} />
+                    {isLoadingMetrics ? (
+                        <ActivityIndicator color="#fff" size="small" style={{ marginTop: 8 }} />
+                    ) : (
+                        <Text style={styles.statValue}>{activeCasesCount}</Text>
+                    )}
                     <Text style={styles.statLabel}>Aktiva Ärenden</Text>
                 </View>
                 <View style={styles.statBox}>
-                    <Calendar color="#aaa" size={20} />
-                    <Text style={styles.statValue}>2</Text>
+                    <Calendar color="#10b981" size={20} />
+                    {isLoadingBookings ? (
+                        <ActivityIndicator color="#fff" size="small" style={{ marginTop: 8 }} />
+                    ) : (
+                        <Text style={styles.statValue}>{meetingsCount}</Text>
+                    )}
                     <Text style={styles.statLabel}>Dagens Möten</Text>
                 </View>
             </View>
 
-            <Text style={styles.sectionTitle}>Sekretess</Text>
+            <Text style={styles.sectionTitle}>Sekretess & Åtgärder</Text>
             <View style={styles.actionGrid}>
                 <TouchableOpacity style={styles.actionItem}>
                     <View style={styles.actionIconContainer}><FileText color="#10b981" size={20} /></View>
-                    <Text style={styles.actionText}>Skapa Journal</Text>
+                    <Text style={styles.actionText}>Ny Journalanteckning</Text>
                 </TouchableOpacity>
             </View>
 
+            <View style={{ height: 40 }} />
         </ScrollView>
     );
 };
@@ -65,7 +79,7 @@ const styles = StyleSheet.create({
     actionGrid: { flexDirection: 'row', gap: 12 },
     actionItem: { flex: 1, backgroundColor: '#1a1b1d', padding: 16, borderRadius: 16, alignItems: 'center', borderWidth: 1, borderColor: '#333', gap: 12 },
     actionIconContainer: { width: 40, height: 40, borderRadius: 8, backgroundColor: 'rgba(16, 185, 129, 0.1)', justifyContent: 'center', alignItems: 'center' },
-    actionText: { fontSize: 14, fontWeight: 'bold', color: '#fff' },
+    actionText: { fontSize: 13, fontWeight: 'bold', color: '#fff', textAlign: 'center' },
 });
 
 export default HealthTeamDashboardScreen;

@@ -280,9 +280,10 @@ public class LicenseService {
     }
 
     public void alertControlCenter(String message) {
+        java.net.HttpURLConnection conn = null;
         try {
             java.net.URL url = new java.net.URI("http://localhost:9999/alert").toURL();
-            java.net.HttpURLConnection conn = (java.net.HttpURLConnection) url.openConnection();
+            conn = (java.net.HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
             conn.setDoOutput(true);
             conn.setConnectTimeout(2000);
@@ -291,15 +292,28 @@ public class LicenseService {
 
             try (java.io.OutputStream os = conn.getOutputStream()) {
                 os.write(message.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+                os.flush();
             }
 
             int code = conn.getResponseCode();
+            // Always read/close input/error streams to release connection
+            try (java.io.InputStream is = (code >= 200 && code < 300) ? conn.getInputStream() : conn.getErrorStream()) {
+                if (is != null) {
+                    while (is.read() != -1) {
+                    } // Consume
+                }
+            }
+
             if (code == 200) {
                 logger.debug("✅ Ping skickad till Control Center.");
             }
         } catch (Exception e) {
             // Silently fail to avoid recursion/blocking
-            logger.warn("⚠️ Kunde inte pinga Control Center: {}", e.getMessage());
+            logger.warn("⚠️ Kunde inte pinga Control Center (Sannolikt offline): {}", e.getMessage());
+        } finally {
+            if (conn != null) {
+                conn.disconnect();
+            }
         }
     }
 

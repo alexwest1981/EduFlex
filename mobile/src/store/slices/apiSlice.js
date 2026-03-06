@@ -20,6 +20,21 @@ export const apiSlice = createApi({
     baseQuery: baseQuery,
     tagTypes: ['User', 'Course', 'Progress', 'GlobalLibrary', 'Material'],
     endpoints: (builder) => ({
+        getUser: builder.query({
+            query: () => '/users/me',
+            providesTags: ['User'],
+        }),
+        getPoints: builder.query({
+            query: () => '/gamification/points/my',
+            providesTags: ['User'],
+        }),
+        getAiInsight: builder.query({
+            query: () => '/ai-coach/student',
+        }),
+        getGlobalLibrary: builder.query({
+            query: () => '/global-library',
+            providesTags: ['GlobalLibrary'],
+        }),
         getCourses: builder.query({
             query: () => '/courses/my',
             providesTags: ['Course'],
@@ -35,6 +50,18 @@ export const apiSlice = createApi({
                     ? [...result.map(({ id }) => ({ type: 'Material', id })), { type: 'Material', id: 'LIST' }]
                     : [{ type: 'Material', id: 'LIST' }],
         }),
+        getQuizById: builder.query({
+            query: (id) => `/quizzes/${id}`,
+        }),
+        getQuizzesByCourse: builder.query({
+            query: (courseId) => `/quizzes/course/${courseId}`,
+        }),
+        getSystemHealth: builder.query({
+            query: () => '/actuator/health',
+        }),
+        getDataIntegrity: builder.query({
+            query: () => '/admin/health/data-integrity',
+        }),
         updateLessonProgress: builder.mutation({
             query: ({ materialId, status }) => ({
                 url: `/progress/material/${materialId}`,
@@ -43,15 +70,71 @@ export const apiSlice = createApi({
             }),
             invalidatesTags: ['Progress'],
         }),
-        // Mutations will be added here
+        getDueFlashcards: builder.query({
+            query: () => '/eduai/review/due',
+            providesTags: ['Flashcard'],
+        }),
+        submitFlashcardReview: builder.mutation({
+            query: (data) => ({
+                url: '/eduai/review/submit',
+                method: 'POST',
+                body: data,
+            }),
+            invalidatesTags: ['Flashcard'],
+        }),
+        askAiTutor: builder.mutation({
+            query: (data) => ({
+                url: '/ai-tutor/chat',
+                method: 'POST',
+                body: data,
+            }),
+        }),
+        getHealthMetrics: builder.query({
+            query: () => '/elevhalsa/metrics',
+        }),
+        getHealthBookings: builder.query({
+            query: () => '/elevhalsa/bookings/my',
+        }),
+        getEbookById: builder.query({
+            query: (id) => `/ebooks/${id}`,
+        }),
+        getEbookProgress: builder.query({
+            query: (id) => `/ebooks/${id}/progress`,
+        }),
+        saveEbookProgress: builder.mutation({
+            query: ({ id, data }) => ({
+                url: `/ebooks/${id}/progress`,
+                method: 'POST',
+                body: data,
+            }),
+        }),
+        getAllUsers: builder.query({
+            query: () => '/admin/users',
+            providesTags: ['User'],
+        }),
     }),
 });
 
 export const {
     useGetUserQuery,
+    useGetPointsQuery,
+    useGetAiInsightQuery,
     useGetCoursesQuery,
     useGetGlobalLibraryQuery,
     useGetCourseByIdQuery,
     useGetCourseMaterialsQuery,
-    useUpdateLessonProgressMutation
+    useGetQuizByIdQuery,
+    useGetQuizzesByCourseQuery,
+    useUpdateLessonProgressMutation,
+    useGetSystemHealthQuery,
+    useGetDataIntegrityQuery,
+    useGetDueFlashcardsQuery,
+    useSubmitFlashcardReviewMutation,
+    useAskAiTutorMutation,
+    useGetHealthMetricsQuery,
+    useGetHealthBookingsQuery,
+    useGetEbookByIdQuery,
+    useGetEbookProgressQuery,
+    useSaveEbookProgressMutation,
+    useGetAllUsersQuery,
 } = apiSlice;
