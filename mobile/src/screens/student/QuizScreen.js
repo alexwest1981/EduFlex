@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { useGetQuizByIdQuery } from '../../store/slices/apiSlice';
+import { CheckCircle } from 'lucide-react-native';
+import { enqueueAction } from '../../store/slices/offlineQueueSlice';
 
 const QuizScreen = ({ route, navigation }) => {
     const { quizId, quizTitle } = route.params || { quizId: 1, quizTitle: "Test Quiz" };

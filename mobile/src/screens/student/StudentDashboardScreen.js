@@ -6,6 +6,10 @@ import { BrainCircuit, BookOpen, Star, PlayCircle } from 'lucide-react-native';
 const StudentDashboardScreen = () => {
     const { data: user, isLoading: isUserLoading, refetch: refetchUser } = useGetUserQuery();
     const { data: courses, isLoading: isCoursesLoading, refetch: refetchCourses } = useGetCoursesQuery();
+    const { data: pointsData } = useGetPointsQuery();
+    const { data: aiInsight } = useGetAiInsightQuery();
+
+    const points = pointsData?.points || pointsData || 0;
 
     const handleRefresh = () => {
         refetchUser();
