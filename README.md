@@ -81,9 +81,12 @@ EduFlex LLP är ett Enterprise-redo, molnbaserat ekosystem som ersätter den tra
 
 ### 1. Svensk Hyperlokalisering (The Category Killer)
 Där globala system slutar, börjar EduFlex.
-* **EduCareer Portal:** Inbyggd sökportal direktkopplad mot **Arbetsförmedlingens JobTech API:er**. AI analyserar studentens kognitiva radar och matchar live mot LIA/praktikplatser.
+* **EduCareer Portal & JobEd Connect:** Inbyggd sökportal direktkopplad mot **Arbetsförmedlingens JobTech API:er**. AI analyserar studentens kognitiva radar och matchar live mot LIA/praktikplatser. Snart integrerat med Skolverkets SUSA-nav/JobEd Connect för att automatiskt knyta samman kursmål med faktiska branschkrav och yrkesroller.
 * **CSN Rapportering Pro:** Automatiserad XML/Excel-export enligt CSN:s exakta krav, med stöd för bulkhantering och "Dagar sedan senaste inloggning".
-* **Skolverket Sync 2.0:** Hämtar automatiskt kursplaner, centralt innehåll och betygskriterier via API.
+* **Utökad Skolverket Sync 2.0 (SUSA-navet):** 
+  * Hämtar automatiskt kursplaner, centralt innehåll och betygskriterier via API.
+  * **Pakar via SUN-koder:** Importerar och bygger branschspecifika mallar/programstrukturer (t.ex. YH-utbildningar) dynamiskt baserat på Svensk utbildningsnomenklatur.
+  * **Nationell Export (Planerad):** Möjliggör publicering av det egna kursutbudet direkt ut till Skolverkets utbildningsnav ("Utbildningsnavet") för maximal nationell spridning med ett knapptryck.
 * **SS 12000 Kryptografi:** Betyg låses och signeras kryptografiskt med en hash-summa i databasen för att förhindra manipulation.
 
 ### 2. Etisk & Spårbar AI (EduAI Hub)
@@ -175,6 +178,10 @@ Lokala URL:er efter uppstart:
     - [x] Dashboard auth race condition fixad.
     - [ ] Offline Redux Persist verifiering.
     - [ ] Push Notifications integration.
+- [ ] Q4 2026: Nationell Utbildningsintegration (SUSA-navet & JobEd Connect).
+    - [ ] Auto-strukturering av YH/Komvux-paket via SUN-koder.
+    - [ ] Tvåvägskommunikation: Publicera kurser till Skolverkets Utbildningsnav.
+    - [ ] Synergi JobTech/JobEd: Mappa kursmål mot skarpa yrkesroller/praktik.
 
 --------------------------------------------------------------------------------
 ⚖ License & Contact
