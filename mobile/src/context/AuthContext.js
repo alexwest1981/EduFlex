@@ -1,6 +1,7 @@
 import React, { createContext, useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import api from '../api/apiClient';
+import { registerForPushNotificationsAsync } from '../utils/notificationService';
 
 export const AuthContext = createContext();
 
@@ -8,6 +9,18 @@ export const AuthProvider = ({ children }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [userToken, setUserToken] = useState(null);
     const [userInfo, setUserInfo] = useState(null);
+
+    const updateDevicePushToken = async () => {
+        try {
+            const token = await registerForPushNotificationsAsync();
+            if (token) {
+                console.log('[AuthContext] Registering push token with backend:', token);
+                await api.post('/users/update-push-token', { token });
+            }
+        } catch (e) {
+            console.warn('[AuthContext] Could not update push token:', e.message);
+        }
+    };
 
     const login = async (username, password) => {
         setIsLoading(true);
@@ -28,6 +41,9 @@ export const AuthProvider = ({ children }) => {
             setUserToken(token);
             await AsyncStorage.setItem('userToken', token);
             console.log('[AuthContext] Token saved to storage');
+
+            // Uppdatera push token direkt efter inloggning
+            updateDevicePushToken();
 
             // Hämta användarinfo separat
             try {
@@ -68,6 +84,9 @@ export const AuthProvider = ({ children }) => {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 setUserInfo(userResp.data);
+
+                // Uppdatera även push token vid session-återställning
+                updateDevicePushToken();
             }
             setIsLoading(false);
         } catch (e) {

@@ -1,10 +1,7 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Platform } from 'react-native';
+import NetInfo from '@react-native-community/netinfo';
+import { enqueueAction } from './offlineQueueSlice';
 
-import { API_URL } from '../../api/apiClient';
-
-const baseQuery = fetchBaseQuery({
+const rawBaseQuery = fetchBaseQuery({
     baseUrl: API_URL,
     prepareHeaders: async (headers) => {
         const token = await AsyncStorage.getItem('userToken');
@@ -15,9 +12,31 @@ const baseQuery = fetchBaseQuery({
     },
 });
 
+const baseQueryWithOffline = async (args, api, extraOptions) => {
+    const currentState = await NetInfo.fetch();
+    const isOffline = !currentState.isConnected || !currentState.isInternetReachable;
+
+    // For mutations (POST/PUT/DELETE), if offline, enqueue and return a mock success
+    if (isOffline && typeof args !== 'string' && args.method && args.method !== 'GET') {
+        console.log(`[Offline] Enqueueing mutation: ${args.method} ${args.url}`);
+        api.dispatch(enqueueAction({
+            url: args.url,
+            method: args.method,
+            body: args.body,
+            headers: args.headers
+        }));
+
+        // Return a mock success so the UI doesn't break
+        return { data: { offline: true, message: 'Action queued for sync' } };
+    }
+
+    const result = await rawBaseQuery(args, api, extraOptions);
+    return result;
+};
+
 export const apiSlice = createApi({
     reducerPath: 'api',
-    baseQuery: baseQuery,
+    baseQuery: baseQueryWithOffline,
     tagTypes: ['User', 'Course', 'Progress', 'GlobalLibrary', 'Material'],
     endpoints: (builder) => ({
         getUser: builder.query({
@@ -120,6 +139,13 @@ export const apiSlice = createApi({
             }),
             invalidatesTags: ['User'],
         }),
+        updatePushToken: builder.mutation({
+            query: (token) => ({
+                url: '/users/update-push-token',
+                method: 'POST',
+                body: { token },
+            }),
+        }),
     }),
 });
 
@@ -146,4 +172,5 @@ export const {
     useSaveEbookProgressMutation,
     useGetAllUsersQuery,
     useDeleteUserMutation,
+    useUpdatePushTokenMutation,
 } = apiSlice;

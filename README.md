@@ -1,4 +1,4 @@
-# 🎓 EduFlex LLP v3.7.0.0
+# 🎓 EduFlex LLP v3.7.1.0
 *The Complete Enterprise Learning Lifecycle Platform for Modern Education & B2B*
 
 *Developed & maintained by **Alex Weström / Fenrir Studio***  
@@ -23,6 +23,12 @@ EduFlex LLP är ett Enterprise-redo, molnbaserat ekosystem som ersätter den tra
 - [🗺 Roadmap](#-roadmap)
 
 ---
+
+### v3.7.1.0 (6 mar 2026) – Roadmap: Mobile Offline Sync & Push Notifications
+* **📶 Mobile Offline Sync**: Implemented a global offline mutation queue. The app now intercepts `POST/PUT/DELETE` requests while offline and store them in Redux. Once internet is restored, the `SyncManager` automatically synchronizes all pending actions in the background.
+* **⚠️ Offline UI Indicator**: Added an animated `OfflineNotice` banner that alerts users when their connection is lost, providing transparency on data persistence.
+* **🔔 Push Notification Infrastructure**: Integrated Expo Push Notifications. The backend now stores `expoPushToken` for each user, and the mobile app automatically registers/updates this token upon login or session recovery in `AuthContext.js`.
+* **🛠️ Store & API Hardening**: Wrapped the `apiSlice` `baseQuery` to handle network detection and mutation interception seamlessly.
 
 ### v3.7.0.0 (6 mar 2026) – Admin Command Center & User Management Overhaul
 * **📊 Admin Dashboard (Command Center)**: Introduced a new "Home" tab for administrators in the mobile app. Provides real-time stats on system health, user counts, data integrity, and total courses, along with quick-action shortcuts.

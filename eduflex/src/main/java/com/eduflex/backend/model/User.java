@@ -65,6 +65,7 @@ public class User implements Serializable {
 
     // --- KEYCLOAK & MFA ---
     private String keycloakUserId;
+    private String expoPushToken;
 
     @Convert(converter = com.eduflex.backend.util.EncryptedStringConverter.class)
     private String mfaSecret;
@@ -230,6 +231,14 @@ public class User implements Serializable {
 
     public void setKeycloakUserId(String keycloakUserId) {
         this.keycloakUserId = keycloakUserId;
+    }
+
+    public String getExpoPushToken() {
+        return expoPushToken;
+    }
+
+    public void setExpoPushToken(String expoPushToken) {
+        this.expoPushToken = expoPushToken;
     }
 
     public String getMfaSecret() {

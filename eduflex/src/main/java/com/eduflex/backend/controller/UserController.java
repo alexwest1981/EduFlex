@@ -316,6 +316,31 @@ public class UserController {
         }
     }
 
+    @PostMapping("/update-push-token")
+    public ResponseEntity<Void> updatePushToken(@RequestBody Map<String, String> payload) {
+        try {
+            String token = payload.get("token");
+            if (token == null || token.isEmpty()) {
+                return ResponseEntity.badRequest().build();
+            }
+
+            String username = org.springframework.security.core.context.SecurityContextHolder.getContext()
+                    .getAuthentication().getName();
+
+            User user = userRepository.findByUsername(username)
+                    .orElseGet(() -> userRepository.findByEmail(username).orElse(null));
+
+            if (user != null) {
+                user.setExpoPushToken(token);
+                userRepository.save(user);
+                return ResponseEntity.ok().build();
+            }
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(500).build();
+        }
+    }
+
     // --- ACTIVITY ---
     @PostMapping("/ping")
     public ResponseEntity<Void> ping() {

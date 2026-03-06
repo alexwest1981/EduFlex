@@ -7,6 +7,7 @@ import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { store, persistor } from './src/store';
 import SyncManager from './src/components/SyncManager';
+import OfflineNotice from './src/components/OfflineNotice';
 import LoginScreen from './src/screens/LoginScreen';
 import RoleRouter from './src/navigation/RoleRouter';
 
