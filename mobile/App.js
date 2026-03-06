@@ -1,5 +1,7 @@
 import React, { useContext } from 'react';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer } from '@react-native-async-storage/async-storage'; // Wait, NavigationContainer is not from async-storage
+import { NavigationContainer } from '@react-navigation/native'; // let's be careful
+
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { AuthProvider, AuthContext } from './src/context/AuthContext';
 import { View, ActivityIndicator } from 'react-native';
