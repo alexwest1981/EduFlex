@@ -71,4 +71,35 @@ public class JobTechApiClientService {
             return Collections.emptyList();
         }
     }
+
+    /**
+     * JobEd Connect matchning (Ny integration!):
+     * Mappar SUSA-navets teoretiska kursmål mot faktiska "Competency Concepts"
+     * (JobTech färdigheter).
+     */
+    public List<String> matchCourseToJobTechSkills(String courseDescription) {
+        // Framtida: Anropa JobTechs JobEd Connect beriknings-API
+        // För nu, gör vi en mockup som plockar ut nyckelord och slår mot vanliga
+        // taxonomin
+        log.info("🧠 Mappar kursbeskrivning mot JobEd Connect kompetenser...");
+
+        List<String> matchedSkills = new ArrayList<>();
+        // Enkel POC Regex matching (I produktion = Riktigt NLP API från
+        // Arbetsförmedlingen)
+        if (courseDescription != null) {
+            String lowerDesc = courseDescription.toLowerCase();
+            if (lowerDesc.contains("programmering") || lowerDesc.contains("utveckling"))
+                matchedSkills.add("Mjukvaruutveckling");
+            if (lowerDesc.contains("java"))
+                matchedSkills.add("Java");
+            if (lowerDesc.contains("javascript") || lowerDesc.contains("react"))
+                matchedSkills.add("JavaScript");
+            if (lowerDesc.contains("databas") || lowerDesc.contains("sql"))
+                matchedSkills.add("Databasdesign");
+            if (lowerDesc.contains("ai") || lowerDesc.contains("artificiell intelligens"))
+                matchedSkills.add("Artificiell Intelligens");
+        }
+
+        return matchedSkills.isEmpty() ? List.of("Generell IT-kompetens") : matchedSkills;
+    }
 }

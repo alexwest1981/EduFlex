@@ -239,6 +239,7 @@ const AdministrationPanel = ({ users, courses, teachers, fetchStats }) => {
                     onEdit={(c) => { setCourseToEdit(c); setShowEditCourseModal(true); }}
                     onManage={(id) => navigate(`/course/${id}`)}
                     onDelete={handleDeleteCourse}
+                    reloadCourses={fetchStats}
                 />
             );
             case 'merits': return <AdminMeritManager users={users} />;

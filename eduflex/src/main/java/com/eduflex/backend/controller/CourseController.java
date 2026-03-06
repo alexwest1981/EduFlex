@@ -24,6 +24,7 @@ public class CourseController {
     private final CourseService courseService;
     private final CourseRepository courseRepository;
     private final com.eduflex.backend.integration.service.SlackIntegrationService slackIntegrationService;
+    private final com.eduflex.backend.service.EducationStructureBuilderService structureBuilderService;
 
     @Autowired
     private com.eduflex.backend.repository.UserRepository userRepository;
@@ -31,10 +32,12 @@ public class CourseController {
     @Autowired
     public CourseController(CourseService courseService,
             CourseRepository courseRepository,
-            com.eduflex.backend.integration.service.SlackIntegrationService slackIntegrationService) {
+            com.eduflex.backend.integration.service.SlackIntegrationService slackIntegrationService,
+            com.eduflex.backend.service.EducationStructureBuilderService structureBuilderService) {
         this.courseService = courseService;
         this.courseRepository = courseRepository;
         this.slackIntegrationService = slackIntegrationService;
+        this.structureBuilderService = structureBuilderService;
     }
 
     /**
@@ -210,6 +213,23 @@ public class CourseController {
     public ResponseEntity<String> backfillSlugs() {
         courseService.backfillSlugs();
         return ResponseEntity.ok("Slugs backfilled");
+    }
+
+    // --- SUSA-navet Integration ---
+    @PostMapping("/susanav/build/{sunCode}")
+    public ResponseEntity<?> buildCourseFromSunCode(@PathVariable String sunCode) {
+        try {
+            com.eduflex.backend.model.User currentUser = getCurrentUser();
+            // Bara Admin bör få bygga upp hela strukturer (eller lärare med behörighet)
+            if (!"ADMIN".equals(currentUser.getRole().getName())) {
+                return ResponseEntity.status(403)
+                        .body("Bara administratörer kan skapa utbildningar från SUSA-navet via SUN-kod.");
+            }
+            List<Course> createdCourses = structureBuilderService.buildStructureFromSunCode(sunCode, currentUser);
+            return ResponseEntity.ok(createdCourses.stream().map(courseService::convertToDTO).toList());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Fel vid skapande av utbildning från SUN-kod: " + e.getMessage());
+        }
     }
 
     @PostMapping("/{courseId}/enroll/{studentId}")

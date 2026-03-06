@@ -240,6 +240,14 @@ const LandingPage = () => {
             bgColor: 'bg-green-500/10',
             hoverBorder: 'hover:border-green-500/50'
         },
+        {
+            icon: <Globe className="w-7 h-7" />,
+            title: "Utbildningsnavet (SUSA-navet)",
+            description: "Importera nationellt godkända YH-program direkt från Skolverkets SusaNav via SUN-kod. Kurser skapas automatiskt med LIA-flagga och kursplan. Studenter bläddrar via den nya Utbildningskatalogen.",
+            color: 'text-emerald-400',
+            bgColor: 'bg-emerald-500/10',
+            hoverBorder: 'hover:border-emerald-500/50'
+        },
     ];
 
 
@@ -517,7 +525,7 @@ const LandingPage = () => {
                         {/* Badge */}
                         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-gold/10 border border-brand-gold/20 text-brand-gold text-xs font-bold uppercase tracking-widest shadow-[0_0_15px_rgba(255,183,3,0.2)]">
                             <Sparkles className="w-3.5 h-3.5" />
-                            v3.6.3.4: Control Center Microservice Management
+                            v3.7.0: SUSA-navet · Utbildningsnavet är här!
                         </div>
 
                         {/* Heading */}

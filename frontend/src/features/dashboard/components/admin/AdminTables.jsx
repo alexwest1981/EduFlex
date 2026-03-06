@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { User, FileText, File as FileIcon, Search, Plus, Edit2, Trash2, FileCode, Image, BookOpen, ChevronUp, ChevronDown, ArrowUpDown } from 'lucide-react';
+import { User, FileText, File as FileIcon, Search, Plus, Edit2, Trash2, FileCode, Image, BookOpen, ChevronUp, ChevronDown, ArrowUpDown, Globe } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { api } from '../../../../services/api';
 // ... (skip down to AdminCourseRegistry signature)
 import Pagination from '../../../../components/common/Pagination';
+import SusaNavImportModal from './SusaNavImportModal';
 
-export const AdminCourseRegistry = ({ courses, onEdit, onManage, onNewCourse, onAiCourseClick, onDelete }) => {
+export const AdminCourseRegistry = ({ courses, onEdit, onManage, onNewCourse, onAiCourseClick, onDelete, reloadCourses }) => {
     const { t } = useTranslation();
     const [searchTerm, setSearchTerm] = useState('');
     const [filterStatus, setFilterStatus] = useState('ALL');
     const [currentPage, setCurrentPage] = useState(1);
+    const [isSusaNavModalOpen, setIsSusaNavModalOpen] = useState(false);
     const itemsPerPage = 10;
 
     const formatDate = (dateStr) => {
@@ -34,6 +36,13 @@ export const AdminCourseRegistry = ({ courses, onEdit, onManage, onNewCourse, on
                 <div className="flex items-center gap-4">
                     <h3 className="font-bold text-gray-800 dark:text-white">{t('dashboard.course_registry')}</h3>
                     <div className="flex gap-2">
+                        <button
+                            onClick={() => setIsSusaNavModalOpen(true)}
+                            className="text-xs bg-gradient-to-r from-emerald-500 to-teal-500 text-white px-3 py-1.5 rounded-lg font-bold shadow-sm hover:opacity-90 transition-opacity flex items-center gap-1"
+                        >
+                            <Globe size={14} />
+                            Hämta via SUN-kod
+                        </button>
                         <button
                             onClick={onAiCourseClick}
                             className="text-xs bg-gradient-to-r from-indigo-600 to-violet-600 text-white px-3 py-1.5 rounded-lg font-bold shadow-sm hover:opacity-90 transition-opacity flex items-center gap-1"
@@ -85,6 +94,14 @@ export const AdminCourseRegistry = ({ courses, onEdit, onManage, onNewCourse, on
                 </table>
             </div>
             <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
+
+            <SusaNavImportModal
+                isOpen={isSusaNavModalOpen}
+                onClose={() => setIsSusaNavModalOpen(false)}
+                onSuccess={() => {
+                    if (reloadCourses) reloadCourses();
+                }}
+            />
         </div>
     );
 };

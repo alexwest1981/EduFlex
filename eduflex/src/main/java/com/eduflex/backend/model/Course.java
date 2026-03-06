@@ -153,6 +153,16 @@ public class Course {
     @JsonIgnoreProperties("createdAt")
     private SkolverketCourse skolverketCourse;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "national_syllabus_id")
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
+    private NationalSyllabus nationalSyllabus;
+
+    private String sunCode; // e.g. 481a
+
+    @Column(nullable = false, columnDefinition = "boolean default false")
+    private boolean requiresLia = false;
+
     // --- GETTERS & SETTERS ---
     public Long getId() {
         return id;
@@ -328,6 +338,30 @@ public class Course {
 
     public void setSkolverketCourse(SkolverketCourse skolverketCourse) {
         this.skolverketCourse = skolverketCourse;
+    }
+
+    public String getSunCode() {
+        return sunCode;
+    }
+
+    public void setSunCode(String sunCode) {
+        this.sunCode = sunCode;
+    }
+
+    public boolean isRequiresLia() {
+        return requiresLia;
+    }
+
+    public void setRequiresLia(boolean requiresLia) {
+        this.requiresLia = requiresLia;
+    }
+
+    public NationalSyllabus getNationalSyllabus() {
+        return nationalSyllabus;
+    }
+
+    public void setNationalSyllabus(NationalSyllabus nationalSyllabus) {
+        this.nationalSyllabus = nationalSyllabus;
     }
 
     public java.util.List<CourseMaterial> getMaterials() {

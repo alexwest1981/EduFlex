@@ -21,12 +21,32 @@ public class EduCareerService {
     private final SavedInternshipRepository savedRepo;
     private final UserRepository userRepo;
     private final com.eduflex.backend.service.ai.GeminiService geminiService;
+    private final com.eduflex.backend.repository.CourseRepository courseRepo;
 
     public Map<String, Object> getRecommendedInternships(Long userId, String q, String city, Integer radius) {
         User user = userRepo.findById(userId).orElseThrow();
 
+        // JobEd Connect Integration: Automatically append skills from SUSA-navet
+        // courses
+        java.util.List<com.eduflex.backend.model.Course> userCourses = courseRepo.findByStudentsId(userId);
+        java.util.List<String> jobEdSkills = new java.util.ArrayList<>();
+        userCourses.stream()
+                .filter(c -> c.getNationalSyllabus() != null)
+                .forEach(c -> jobEdSkills.addAll(
+                        jobTechClient.matchCourseToJobTechSkills(c.getNationalSyllabus().getPurpose())));
+
+        String enhancedQuery = (q != null && !q.isEmpty()) ? q : "";
+        if (!jobEdSkills.isEmpty()) {
+            enhancedQuery += " " + String.join(" ", new java.util.HashSet<>(jobEdSkills));
+            enhancedQuery = enhancedQuery.trim();
+            log.info("🧠 JobEd Connect berikad sökning (SUSA-navet): {}", enhancedQuery);
+        }
+
+        // Ensure query isn't completely empty before sending to JobTech
+        String finalQ = enhancedQuery.isEmpty() ? null : enhancedQuery;
+
         // If city is null but radius is provided, try to use user's city
-        if (city == null && q == null) {
+        if (city == null && finalQ == null) {
             city = extractCityFromAddress(user.getAddress());
         }
 

@@ -39,6 +39,7 @@ import { Helmet, HelmetProvider } from 'react-helmet-async';
 import UserProfile from './features/profile/UserProfile';
 import PublicProfile from './features/profile/PublicProfile';
 import CourseCatalog from './features/catalog/CourseCatalog';
+import ProgramCatalog from './features/programs/ProgramCatalog';
 import DocumentManager from './features/documents/DocumentManager';
 import AdminAdministrationPage from './features/dashboard/AdminAdministrationPage';
 import ResourceBank from './features/resources/ResourceBank';
@@ -463,6 +464,14 @@ const AppRoutes = () => {
                     <ProtectedRoute>
                         <Layout currentUser={currentUser} handleLogout={logout}>
                             <CourseCatalog />
+                        </Layout>
+                    </ProtectedRoute>
+                } />
+
+                <Route path="/programs" element={
+                    <ProtectedRoute>
+                        <Layout currentUser={currentUser} handleLogout={logout}>
+                            <ProgramCatalog />
                         </Layout>
                     </ProtectedRoute>
                 } />

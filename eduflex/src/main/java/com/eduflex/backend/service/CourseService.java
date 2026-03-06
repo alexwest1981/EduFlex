@@ -907,6 +907,8 @@ public class CourseService {
                 c.getGroupRooms(), // Include Group Rooms
                 (c.getMaterials() != null ? c.getMaterials().size() : 0) +
                         (c.getQuizzes() != null ? c.getQuizzes().size() : 0) +
-                        (c.getAssignments() != null ? c.getAssignments().size() : 0));
+                        (c.getAssignments() != null ? c.getAssignments().size() : 0),
+                c.getSunCode(), // SUN-kod för SUSA-navet program
+                c.isRequiresLia()); // LIA/praktik-flagga
     }
 }

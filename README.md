@@ -1,4 +1,4 @@
-# 🎓 EduFlex LLP v3.6.11.0
+# 🎓 EduFlex LLP v3.7.0
 *The Complete Enterprise Learning Lifecycle Platform for Modern Education & B2B*
 
 *Developed & maintained by **Alex Weström / Fenrir Studio***  
@@ -23,6 +23,12 @@ EduFlex LLP är ett Enterprise-redo, molnbaserat ekosystem som ersätter den tra
 - [🗺 Roadmap](#-roadmap)
 
 ---
+
+### v3.7.0 (6 mar 2026) – SUSA-navet Integration & Utbildningsnavet (LLP v1)
+* **🏫 SUSA-navet Live-integration**: Admin kan nu hämta nationellt godkända YH-program direkt från Skolverkets SusaNav REST-API via en SUN-kod (t.ex. `481a`). Systemet skapar automatiskt kursstruktur med moduler, LIA-flagga och kursplaner baserade på officiell data.
+* **📚 Utbildningskatalog (`/programs`)**: Ny sida i sidomenyn – "Utbildningar" – med globövergång från LMS till LLP (Learning Lifecycle Platform). Studenter, sökande och SYV kan bläddra bland nationellt importerade program, filtrera på LIA-innehåll och ansöka direkt.
+* **🔧 CourseDTO-fix**: Lade till `sunCode` och `requiresLia` i `CourseDTO` och `CourseService`-mappningen så att API-svaret korrekt exponerar SUSA-navet-fälten till fronten.
+* **🧭 Navigation**: Lade till `Globe`-ikon och "Utbildningar"-länk i central `navigation.jsx` som gäller alla layouts.
 
 ### v3.6.11.0 (6 mar 2026) – Roadmap: Mobile Offline Sync & Push Notifications
 * **📶 Mobile Offline Sync**: Implemented a global offline mutation queue. The app now intercepts `POST/PUT/DELETE` requests while offline and store them in Redux. Once internet is restored, the `SyncManager` automatically synchronizes all pending actions in the background.

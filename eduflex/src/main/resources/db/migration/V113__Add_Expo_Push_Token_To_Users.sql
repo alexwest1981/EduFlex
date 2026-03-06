@@ -1,0 +1,1 @@
+ALTER TABLE app_users ADD COLUMN IF NOT EXISTS expo_push_token VARCHAR(255);

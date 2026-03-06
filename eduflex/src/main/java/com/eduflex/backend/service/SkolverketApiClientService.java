@@ -21,6 +21,8 @@ public class SkolverketApiClientService {
     private final RestTemplate restTemplate;
     private final IntegrationConfigRepository configRepository;
     private static final String API_BASE_URL = "https://api.skolverket.se/syllabus/v1";
+    // Skolverkets SusaNav (Utbildningsnavet) REST API
+    private static final String SUSANAV_API_URL = "https://susanavet2.skolverket.se/api/v1";
 
     public SkolverketApiClientService(IntegrationConfigRepository configRepository) {
         this.restTemplate = new RestTemplate();
@@ -41,6 +43,50 @@ public class SkolverketApiClientService {
         } catch (Exception e) {
             return Map.of("error", "Subject not found or API error: " + e.getMessage());
         }
+    }
+
+    // --- SUSA-navet (Nationell Utbildningsintegration) ---
+
+    /**
+     * Hämtar en specifik kursplan eller utbildningsinfo från SUSA-navet.
+     */
+    public Object fetchCoursePlanFromSusaNav(String courseCode) {
+        // Placeholder för SUSA-navets specifika endpoint för kursinfo
+        String url = SUSANAV_API_URL + "/courses/" + courseCode;
+        try {
+            log.info("🔍 Hämta kursplan från SUSA-navet: {}", courseCode);
+            ResponseEntity<Object> response = restTemplate.getForEntity(url, Object.class);
+            return response.getBody();
+        } catch (Exception e) {
+            log.warn("⚠️ Kunde inte hämta från SUSA-navet (kod: {}): {}", courseCode, e.getMessage());
+            return Map.of("error", "SusaNav fetch error: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Söker fram utbildningspaket baserat på SUN-kod (Svensk
+     * utbildningsnomenklatur).
+     */
+    public List<Map<String, Object>> fetchProgramBySunCode(String sunCode) {
+        // Placeholder för SUSA-navets search endpoint by SUN-code
+        String url = SUSANAV_API_URL + "/search?sunCode=" + sunCode;
+        try {
+            log.info("🔍 Söker utbildningspaket på SUSA-navet via SUN-kod: {}", sunCode);
+            ResponseEntity<List> response = restTemplate.getForEntity(url, List.class);
+            return (List<Map<String, Object>>) response.getBody();
+        } catch (Exception e) {
+            log.warn("⚠️ SUSA-navet sökning via SUN-kod misslyckades (kod: {}): {}", sunCode, e.getMessage());
+            return Collections.emptyList();
+        }
+    }
+
+    /**
+     * Framtida: Exportera kursutbudet till Skolverkets Utbildningsnav
+     */
+    public boolean publishCourseToSusaNav(Map<String, Object> courseData) {
+        log.info("🚀 Förbereder publicering till SUSA-navet...");
+        // Implementera riktig POST/PUT mot SUSA-navet här när certifikat/nycklar finns
+        return true;
     }
 
     /**

@@ -5,7 +5,7 @@ import {
     Palette, Store, Sparkles, TrendingUp, Award, GraduationCap,
     Heart, Download, Brain, Briefcase, FileText, Settings,
     Layers, Library, ClipboardList, HelpCircle, Thermometer, BarChart2,
-    Link2
+    Link2, Globe
 } from 'lucide-react';
 
 /**
@@ -30,6 +30,7 @@ export const getNavigationConfig = (currentUser, t, isModuleActive, licenseTier,
         main: [
             { path: dashboardPath, label: isPrincipal ? 'Rektorspaket' : t('sidebar.dashboard'), icon: isPrincipal ? <ShieldCheck size={20} /> : <LayoutDashboard size={20} /> },
             { path: '/catalog', label: t('sidebar.catalog'), icon: <Layers size={20} /> },
+            { path: '/programs', label: 'Utbildningar', icon: <Globe size={20} /> },
             { path: '/documents', label: t('sidebar.documents'), icon: <FileText size={20} /> },
         ],
         education: [],
