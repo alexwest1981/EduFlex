@@ -1,10 +1,10 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Server, Users, Settings, Globe } from 'lucide-react-native';
-import PlaceholderScreen from '../screens/PlaceholderScreen';
+import { Server, Users, Settings, Globe, Home } from 'lucide-react-native';
+import AdminDashboardScreen from '../screens/admin/AdminDashboardScreen';
 import AdminOpsScreen from '../screens/admin/AdminOpsScreen';
-import SettingsScreen from '../screens/SettingsScreen';
 import AdminUsersScreen from '../screens/admin/AdminUsersScreen';
+import SettingsScreen from '../screens/SettingsScreen';
 import LibraryStack from './LibraryStack';
 
 const Tab = createBottomTabNavigator();
@@ -19,7 +19,8 @@ const AdminTabs = () => {
                 tabBarInactiveTintColor: '#888',
                 tabBarIcon: ({ color, size }) => {
                     let IconComponent;
-                    if (route.name === 'OpsCenter') IconComponent = Server;
+                    if (route.name === 'Home') IconComponent = Home;
+                    else if (route.name === 'OpsCenter') IconComponent = Server;
                     else if (route.name === 'Users') IconComponent = Users;
                     else if (route.name === 'GlobalLibrary') IconComponent = Globe;
                     else IconComponent = Settings;
@@ -27,6 +28,7 @@ const AdminTabs = () => {
                 },
             })}
         >
+            <Tab.Screen name="Home" component={AdminDashboardScreen} />
             <Tab.Screen name="OpsCenter" component={AdminOpsScreen} />
             <Tab.Screen name="Users" component={AdminUsersScreen} />
             <Tab.Screen name="GlobalLibrary" component={LibraryStack} />

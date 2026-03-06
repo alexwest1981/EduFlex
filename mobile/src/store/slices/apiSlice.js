@@ -109,8 +109,16 @@ export const apiSlice = createApi({
             }),
         }),
         getAllUsers: builder.query({
-            query: () => '/admin/users',
+            query: () => '/users',
+            transformResponse: (response) => response.content || response,
             providesTags: ['User'],
+        }),
+        deleteUser: builder.mutation({
+            query: (id) => ({
+                url: `/users/${id}`,
+                method: 'DELETE',
+            }),
+            invalidatesTags: ['User'],
         }),
     }),
 });
@@ -137,4 +145,5 @@ export const {
     useGetEbookProgressQuery,
     useSaveEbookProgressMutation,
     useGetAllUsersQuery,
+    useDeleteUserMutation,
 } = apiSlice;

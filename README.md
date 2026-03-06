@@ -1,4 +1,4 @@
-# 🎓 EduFlex LLP v3.6.8.3
+# 🎓 EduFlex LLP v3.7.0.0
 *The Complete Enterprise Learning Lifecycle Platform for Modern Education & B2B*
 
 *Developed & maintained by **Alex Weström / Fenrir Studio***  
@@ -24,7 +24,12 @@ EduFlex LLP är ett Enterprise-redo, molnbaserat ekosystem som ersätter den tra
 
 ---
 
-## 🚀 Senaste Uppdateringarna 
+### v3.7.0.0 (6 mar 2026) – Admin Command Center & User Management Overhaul
+* **📊 Admin Dashboard (Command Center)**: Introduced a new "Home" tab for administrators in the mobile app. Provides real-time stats on system health, user counts, data integrity, and total courses, along with quick-action shortcuts.
+* **👥 User Management 2.0**: Enhanced the `AdminUsersScreen` with global search, role badges, and a new detail modal. Admins can now perform secure user deletions with multi-step confirmation alerts.
+* **🧭 Navigation & UX Overhaul**: Refactored `AdminTabs.js` to include the new Command Center. Fixed missing screen imports and improved icon logic for a premium mobile experience.
+* **🛠️ Backend Integrity Sync**: Fully integrated mobile admin stats with the backend `HealthCheckService` and `/actuator/health` for live monitoring.
+* **📦 Release APK (v1.5.2)**: Generated a new high-performance release build featuring all admin and live-data enhancements.
 
 ### v3.6.9.0 (6 mar 2026) – Rule 1 Compliance: Total Mockup Removal & Live Data
 * **📱 Total Mockup Removal (Rule 1)**: All hardcoded mockups in the mobile app have been replaced with live backend data. This includes Student Dashboard (XP/Insights), Quizzes, Global Library, Course Detail (Materials/Video), AI Coach (Real AITutor Chat), Flashcards (Spaced Repetition), Elevhälsan Metrics, and Ebook Sync.
