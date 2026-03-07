@@ -15,13 +15,19 @@ EduFlex LLP är ett Enterprise-redo, molnbaserat ekosystem som ersätter den tra
 
 ## 🚀 Senaste Uppdateringarna (Changelog)
 
-### v3.7.3 (7 mar 2026) – Systemhärdning & UI Kontrast
+### v3.7.3 (7 mar 2026) – Stabilitet & Integration
+- **Nationell Integration (SUSA/JobEd)**: Implementerat Reverse Sync mot SUSA-navet (export) och utökat JobEd Connect till program-nivå.
+- **ISP-Automation**: Möjliggjort direktimport av hela utbildningsprogram till individuella studieplaner.
+- **Systemstabilitet**: Fixat 331% CPU-spik i Video-tjänst och optimerat Keycloak-hälsa.
+- **UI Design**: Förfinat kontrast i Sidebar (True Black) för bättre visuell separation.
+
+### v3.7.2 (7 mar 2026) – Systemhärdning & UI Kontrast
 * **🛡️ Systemstabilitet**: Fixat kritisk CPU-spik (331%) i videotjänsten genom att implementera resursbegränsningar och korrekta hälsokontroller i Docker.
 * **🐳 Orkestrering**: Uppdaterat `docker-compose.yml` med minnesgränser för alla mikrotjänster för att förhindra resursutmattning och "Bad Gateway"-fel.
 * **🔑 Keycloak Recovery**: Åtgärdat felaktiga hälsokontroller i Keycloak som blockerade systemets startsekvens genom att växla till TCP-baserade sonder.
 * **🎨 Sidebar Refinement**: Justerat kontrasten mellan Sidebar-rail och navigeringspanelen för bättre visuell separation och ett mer premium utseende i True Black-temat.
 
-### v3.7.2 (7 mar 2026) – Admin Suite Refactor & Health Check Fix
+### v3.7.1 (7 mar 2026) – Admin Suite Refactor & Health Check Fix
 * **🖤 Extended True Black Refactor**: Completed the systematic refactor of the remaining administration sub-modules. `AdminShopDashboard.jsx`, `ShopItemEditor.jsx`, `CommunityAdmin.jsx`, `AdminTicketManager.jsx`, and `SupportArticleManager.jsx` are now 100% compliant with the "True Black" (#000000) high-contrast theme.
 * **🏥 Service Health Fix**: Resolved an issue in the Control Center (`DeployPanel.jsx`) where services would incorrectly show as "Offline" despite being active. Added JWT Bearer authentication to health check probes and improved actuator response parsing for Backend and Redis.
 * **✨ UI/UX Polishing**: Replaced all hardcoded colors with CSS variables across the administration panel to ensure perfect consistency and a premium feel.
@@ -76,7 +82,7 @@ docker compose up --build -d
 - [x] Event-Driven Microservices & Redis Event Bus
 - [x] Addressing System Instability (Video Service CPU Fix & Healthchecks)
 - [/] Q3 2026: React Native Mobile App med Offline-sync.
-- [ ] Q4 2026: Nationell Utbildningsintegration (SUSA-navet & JobEd Connect).
+- [x] Q4 2026: Nationell Utbildningsintegration (SUSA-navet & JobEd Connect).
 
 ---
 

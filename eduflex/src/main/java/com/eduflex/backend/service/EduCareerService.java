@@ -179,4 +179,24 @@ public class EduCareerService {
                         + extractCityFromAddress(user.getAddress())
                         + " som söker frontend-utvecklare. Vi rekommenderar att du fördjupar dig i TypeScript för att bli ännu mer attraktiv på marknaden.");
     }
+
+    /**
+     * Aggregerar kompetenser för ett helt program baserat på dess kurser.
+     */
+    @Transactional
+    public List<String> updateProgramSkills(com.eduflex.backend.model.EducationProgram program) {
+        log.info("🧠 Uppdaterar JobEd kompetenser för program: {}", program.getName());
+
+        List<String> courseDescriptions = program.getCourses().stream()
+                .filter(c -> c.getNationalSyllabus() != null)
+                .map(c -> c.getNationalSyllabus().getPurpose())
+                .collect(Collectors.toList());
+
+        List<String> matchedSkills = jobTechClient.matchProgramToJobTechSkills(program.getDescription(),
+                courseDescriptions);
+        program.setJobTechSkills(String.join(", ", matchedSkills));
+
+        log.info("✅ Programmatisk matchning klar: {}", program.getJobTechSkills());
+        return matchedSkills;
+    }
 }

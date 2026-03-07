@@ -157,16 +157,28 @@ public class IspController {
         return ResponseEntity.ok(ispService.completePlan(id, getCurrentUser()));
     }
 
-    /**
-     * POST /api/isp/suggest-courses
-     * SYV/Admin hämtar AI-förslag på kurser baserat på examensmål.
-     */
     @PostMapping("/suggest-courses")
     @PreAuthorize("hasAnyAuthority('ADMIN','ROLE_ADMIN','SYV','ROLE_SYV')")
     public ResponseEntity<List<IspService.IspCourseDto>> suggestCourses(@RequestBody Map<String, String> body) {
         String examObjective = body.get("examObjective");
         Long studentId = body.containsKey("studentId") ? Long.parseLong(body.get("studentId")) : null;
         return ResponseEntity.ok(ispService.suggestCourses(examObjective, studentId));
+    }
+
+    /**
+     * POST /api/isp/{id}/import-program
+     * Importerar alla kurser från ett program till en ISP.
+     */
+    @PostMapping("/{id}/import-program")
+    @PreAuthorize("hasAnyAuthority('ADMIN','ROLE_ADMIN','SYV','ROLE_SYV')")
+    public ResponseEntity<IndividualStudyPlan> importProgram(
+            @PathVariable Long id,
+            @RequestBody Map<String, Long> body) {
+        Long programId = body.get("programId");
+        if (programId == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "programId saknas");
+        }
+        return ResponseEntity.ok(ispService.importProgramToIsp(id, programId, getCurrentUser()));
     }
 
     /**

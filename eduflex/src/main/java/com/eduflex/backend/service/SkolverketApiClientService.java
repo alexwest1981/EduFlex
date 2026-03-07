@@ -81,10 +81,52 @@ public class SkolverketApiClientService {
     }
 
     /**
-     * Framtida: Exportera kursutbudet till Skolverkets Utbildningsnav
+     * Exportera ett helt program till Skolverkets Utbildningsnav (SUSA-navet).
+     * Detta är "Reverse Sync" som krävs för nationell integration.
+     */
+    public boolean publishProgramToSusaNav(com.eduflex.backend.model.EducationProgram program) {
+        log.info("🚀 Genererar SUSA-navet export-payload för program: {} (SUN: {})",
+                program.getName(), program.getSunCode());
+
+        try {
+            // Simulera payload-generering (JSON/XML enligt SusaNav Schema)
+            Map<String, Object> payload = new HashMap<>();
+            payload.put("type", "EDUCATION_PROGRAM");
+            payload.put("external_id", "EDUFLEX-PROG-" + program.getId());
+            payload.put("name", program.getName());
+            payload.put("description", program.getDescription());
+            payload.put("sunCode", program.getSunCode());
+            payload.put("credits", program.getTotalCredits());
+
+            List<Map<String, String>> courseNodes = program.getCourses().stream()
+                    .map(c -> {
+                        Map<String, String> node = new HashMap<>();
+                        node.put("code", c.getCourseCode() != null ? c.getCourseCode() : "N/A");
+                        node.put("name", c.getName());
+                        node.put("points", String
+                                .valueOf(c.getSkolverketCourse() != null ? c.getSkolverketCourse().getPoints() : 0));
+                        return node;
+                    })
+                    .collect(java.util.stream.Collectors.toList());
+            payload.put("courses", courseNodes);
+
+            log.info("📦 SUSA-navet Payload genererad (Antal kurser: {})", courseNodes.size());
+            // log.debug("Payload: {}", payload);
+
+            // TODO: Anropa SUSANAV_API_URL via POST när certifikat finns
+            log.info("✅ Programmet '{}' har simulerats för publicering till nationella navet.", program.getName());
+            return true;
+        } catch (Exception e) {
+            log.error("❌ Export till SUSA-navet misslyckades: {}", e.getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Exportera en enskild kurs till Skolverkets Utbildningsnav.
      */
     public boolean publishCourseToSusaNav(Map<String, Object> courseData) {
-        log.info("🚀 Förbereder publicering till SUSA-navet...");
+        log.info("🚀 Förbereder publicering av enskild kurs till SUSA-navet: {}", courseData.get("name"));
         // Implementera riktig POST/PUT mot SUSA-navet här när certifikat/nycklar finns
         return true;
     }

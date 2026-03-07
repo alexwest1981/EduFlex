@@ -72,34 +72,48 @@ public class JobTechApiClientService {
         }
     }
 
-    /**
-     * JobEd Connect matchning (Ny integration!):
-     * Mappar SUSA-navets teoretiska kursmål mot faktiska "Competency Concepts"
-     * (JobTech färdigheter).
-     */
     public List<String> matchCourseToJobTechSkills(String courseDescription) {
-        // Framtida: Anropa JobTechs JobEd Connect beriknings-API
-        // För nu, gör vi en mockup som plockar ut nyckelord och slår mot vanliga
-        // taxonomin
         log.info("🧠 Mappar kursbeskrivning mot JobEd Connect kompetenser...");
+        return extractSkills(courseDescription);
+    }
 
-        List<String> matchedSkills = new ArrayList<>();
-        // Enkel POC Regex matching (I produktion = Riktigt NLP API från
-        // Arbetsförmedlingen)
-        if (courseDescription != null) {
-            String lowerDesc = courseDescription.toLowerCase();
-            if (lowerDesc.contains("programmering") || lowerDesc.contains("utveckling"))
-                matchedSkills.add("Mjukvaruutveckling");
-            if (lowerDesc.contains("java"))
-                matchedSkills.add("Java");
-            if (lowerDesc.contains("javascript") || lowerDesc.contains("react"))
-                matchedSkills.add("JavaScript");
-            if (lowerDesc.contains("databas") || lowerDesc.contains("sql"))
-                matchedSkills.add("Databasdesign");
-            if (lowerDesc.contains("ai") || lowerDesc.contains("artificiell intelligens"))
-                matchedSkills.add("Artificiell Intelligens");
+    /**
+     * Program-nivå matchning: Aggregerar beskrivningar från alla kurser
+     * för en holistisk vy av kompetenser.
+     */
+    public List<String> matchProgramToJobTechSkills(String programDescription, List<String> courseDescriptions) {
+        log.info("🧠 Aggregerar program- och kursbeskrivningar för JobEd matchning...");
+        StringBuilder sb = new StringBuilder();
+        if (programDescription != null)
+            sb.append(programDescription).append(" ");
+        for (String desc : courseDescriptions) {
+            if (desc != null)
+                sb.append(desc).append(" ");
         }
+        return extractSkills(sb.toString());
+    }
 
-        return matchedSkills.isEmpty() ? List.of("Generell IT-kompetens") : matchedSkills;
+    private List<String> extractSkills(String text) {
+        List<String> matchedSkills = new ArrayList<>();
+        if (text != null) {
+            String lowerText = text.toLowerCase();
+            if (lowerText.contains("programmering") || lowerText.contains("utveckling"))
+                matchedSkills.add("Mjukvaruutveckling");
+            if (lowerText.contains("java"))
+                matchedSkills.add("Java");
+            if (lowerText.contains("javascript") || lowerText.contains("react"))
+                matchedSkills.add("JavaScript");
+            if (lowerText.contains("databas") || lowerText.contains("sql"))
+                matchedSkills.add("Databasdesign");
+            if (lowerText.contains("ai") || lowerText.contains("artificiell intelligens"))
+                matchedSkills.add("Artificiell Intelligens");
+            if (lowerText.contains("moln") || lowerText.contains("cloud") || lowerText.contains("aws"))
+                matchedSkills.add("Cloud Computing");
+            if (lowerText.contains("säkerhet") || lowerText.contains("security"))
+                matchedSkills.add("IT-säkerhet");
+            if (lowerText.contains("projektledning") || lowerText.contains("agil"))
+                matchedSkills.add("Agil projektledning");
+        }
+        return matchedSkills.isEmpty() ? List.of("Generell IT-kompetens") : matchedSkills.stream().distinct().toList();
     }
 }

@@ -33,6 +33,7 @@ public class IspService {
 
     private final IndividualStudyPlanRepository ispRepository;
     private final UserRepository userRepository;
+    private final com.eduflex.backend.repository.EducationProgramRepository programRepository;
     private final GeminiService geminiService;
     private final GdprAuditService gdprAuditService;
 
@@ -238,6 +239,42 @@ public class IspService {
         plan.setStatus(IndividualStudyPlan.Status.COMPLETED);
         plan.setUpdatedAt(LocalDateTime.now());
         log.info("ISP avslutad: id={}", id);
+        return ispRepository.save(plan);
+    }
+
+    /**
+     * Importerar alla kurser från ett EducationProgram till en ISP.
+     */
+    @Transactional
+    public IndividualStudyPlan importProgramToIsp(Long ispId, Long programId, User counselor) {
+        IndividualStudyPlan plan = getPlanForEdit(ispId, counselor);
+        com.eduflex.backend.model.EducationProgram program = programRepository.findById(programId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Program hittades inte"));
+
+        log.info("📥 Importerar program '{}' till ISP id={}", program.getName(), ispId);
+
+        // Lägg till kurser som inte redan finns (baserat på kurskod/namn)
+        for (com.eduflex.backend.model.Course course : program.getCourses()) {
+            boolean exists = plan.getPlannedCourses().stream()
+                    .anyMatch(pc -> (pc.getCourse() != null && pc.getCourse().getId().equals(course.getId())) ||
+                            (pc.getCourseCode() != null && pc.getCourseCode().equals(course.getCourseCode())));
+
+            if (!exists) {
+                IspPlannedCourse pc = IspPlannedCourse.builder()
+                        .isp(plan)
+                        .course(course)
+                        .courseName(course.getName())
+                        .courseCode(course.getCourseCode())
+                        .points(course.getSkolverketCourse() != null ? course.getSkolverketCourse().getPoints() : 0)
+                        .level(course.getCategory() != null ? course.getCategory() : "Gymnasial")
+                        .studyPacePct(100)
+                        .status(IspPlannedCourse.CourseStatus.PLANNED)
+                        .build();
+                plan.getPlannedCourses().add(pc);
+            }
+        }
+
+        plan.setUpdatedAt(LocalDateTime.now());
         return ispRepository.save(plan);
     }
 
