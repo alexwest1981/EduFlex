@@ -8,15 +8,15 @@ import {
 
 // ─── Question type metadata ──────────────────────────────────────────────────
 const Q_TYPES = {
-    LIKERT: { label: 'Skala',  icon: Star,       desc: '1–5 betyg' },
-    TEXT:   { label: 'Text',   icon: AlignLeft,  desc: 'Fritextsvar' },
-    NPS:    { label: 'NPS',    icon: BarChart2,  desc: '0–10 poäng' },
-    EMOJI:  { label: 'Emoji',  icon: Smile,      desc: 'Känsloreaktion' },
+    LIKERT: { label: 'Skala', icon: Star, desc: '1–5 betyg' },
+    TEXT: { label: 'Text', icon: AlignLeft, desc: 'Fritextsvar' },
+    NPS: { label: 'NPS', icon: BarChart2, desc: '0–10 poäng' },
+    EMOJI: { label: 'Emoji', icon: Smile, desc: 'Känsloreaktion' },
 };
 
 // ─── Shared input classes ────────────────────────────────────────────────────
-const inputCls = "w-full bg-gray-50 dark:bg-[#0f1012] border border-gray-200 dark:border-[#2a2b2d] rounded-xl px-3.5 py-2.5 text-sm text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-indigo-500/40 transition-shadow";
-const labelCls = "block text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-1.5";
+const inputCls = "w-full bg-[var(--bg-input)] border border-[var(--border-main)] rounded-xl px-3.5 py-2.5 text-sm text-[var(--text-primary)] outline-none focus:ring-2 focus:ring-indigo-500/40 transition-shadow";
+const labelCls = "block text-[11px] font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-1.5";
 
 // ─── Component ───────────────────────────────────────────────────────────────
 const EvaluationManager = () => {
@@ -129,15 +129,15 @@ const EvaluationManager = () => {
     );
 
     return (
-        <div className="min-h-full bg-gray-50 dark:bg-[#0f1012] -mx-4 lg:-mx-8 -mt-4 lg:-mt-8">
+        <div className="min-h-full bg-[var(--bg-main)] -mx-4 lg:-mx-8 -mt-4 lg:-mt-8">
 
             {/* ── HERO ── */}
-            <div className="relative overflow-hidden bg-white dark:bg-[#1a1b1d] border-b border-gray-200 dark:border-[#2a2b2d]">
+            <div className="relative overflow-hidden bg-[var(--bg-card)] border-b border-[var(--border-main)]">
                 {/* Dot-grid texture */}
                 <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.06]"
                     style={{ backgroundImage: 'radial-gradient(circle, #6366f1 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
                 {/* Glow */}
-                <div className="absolute -top-24 -right-24 w-72 h-72 bg-indigo-400/10 dark:bg-indigo-500/10 rounded-full blur-3xl" />
+                <div className="absolute -top-24 -right-24 w-72 h-72 bg-indigo-500/10 rounded-full blur-3xl" />
 
                 <div className="relative px-6 py-8 max-w-7xl mx-auto">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -145,15 +145,15 @@ const EvaluationManager = () => {
                             <div className="flex items-center gap-2 mb-1">
                                 <span className="text-[11px] font-bold uppercase tracking-widest text-indigo-500">Hantering</span>
                             </div>
-                            <h1 className="text-2xl font-black text-gray-900 dark:text-white tracking-tight">Kursutvärderingar</h1>
-                            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                            <h1 className="text-2xl font-black text-[var(--text-primary)] tracking-tight">Kursutvärderingar</h1>
+                            <p className="text-sm text-[var(--text-secondary)] mt-1">
                                 Skapa mallar och aktivera anonyma utvärderingar för dina kurser.
                             </p>
                         </div>
 
                         <button
                             onClick={openCreate}
-                            className="flex items-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold rounded-xl transition-colors shadow-md shadow-indigo-200 dark:shadow-indigo-900/30 shrink-0"
+                            className="flex items-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold rounded-xl transition-colors shadow-md shadow-indigo-500/20 shrink-0"
                         >
                             <Plus size={15} />
                             Ny mall
@@ -161,22 +161,22 @@ const EvaluationManager = () => {
                     </div>
 
                     {/* Stats row */}
-                    <div className="flex items-center gap-6 mt-6 pt-6 border-t border-gray-100 dark:border-[#252628]">
+                    <div className="flex items-center gap-6 mt-6 pt-6 border-t border-[var(--border-main)]">
                         <div>
-                            <p className="text-xl font-black text-gray-900 dark:text-white">{templates.length}</p>
-                            <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider mt-0.5">Mallar</p>
+                            <p className="text-xl font-black text-[var(--text-primary)]">{templates.length}</p>
+                            <p className="text-[11px] font-semibold text-[var(--text-secondary)] uppercase tracking-wider mt-0.5">Mallar</p>
                         </div>
-                        <div className="w-px h-8 bg-gray-200 dark:bg-[#2a2b2d]" />
+                        <div className="w-px h-8 bg-[var(--border-main)]" />
                         <div>
-                            <p className="text-xl font-black text-gray-900 dark:text-white">{courses.length}</p>
-                            <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider mt-0.5">Kurser</p>
+                            <p className="text-xl font-black text-[var(--text-primary)]">{courses.length}</p>
+                            <p className="text-[11px] font-semibold text-[var(--text-secondary)] uppercase tracking-wider mt-0.5">Kurser</p>
                         </div>
-                        <div className="w-px h-8 bg-gray-200 dark:bg-[#2a2b2d]" />
+                        <div className="w-px h-8 bg-[var(--border-main)]" />
                         <div>
-                            <p className="text-xl font-black text-gray-900 dark:text-white">
+                            <p className="text-xl font-black text-[var(--text-primary)]">
                                 {templates.reduce((sum, t) => sum + (t.questions?.length || 0), 0)}
                             </p>
-                            <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider mt-0.5">Frågor totalt</p>
+                            <p className="text-[11px] font-semibold text-[var(--text-secondary)] uppercase tracking-wider mt-0.5">Frågor totalt</p>
                         </div>
                     </div>
                 </div>
@@ -187,14 +187,14 @@ const EvaluationManager = () => {
 
                 {/* ── LEFT: ACTIVATE ── */}
                 <div className="lg:col-span-4">
-                    <div className="bg-white dark:bg-[#1a1b1d] border border-gray-200 dark:border-[#2a2b2d] rounded-2xl overflow-hidden sticky top-4">
+                    <div className="bg-[var(--bg-card)] border border-[var(--border-main)] rounded-2xl overflow-hidden sticky top-4">
                         <div className="h-0.5 bg-gradient-to-r from-emerald-500 to-teal-400" />
                         <div className="p-5">
                             <div className="flex items-center gap-2 mb-4">
-                                <div className="w-7 h-7 rounded-lg bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center">
-                                    <Play size={13} className="text-emerald-600 dark:text-emerald-400" />
+                                <div className="w-7 h-7 rounded-lg bg-emerald-500/10 flex items-center justify-center">
+                                    <Play size={13} className="text-emerald-400" />
                                 </div>
-                                <h2 className="text-sm font-bold text-gray-900 dark:text-white">Aktivera utvärdering</h2>
+                                <h2 className="text-sm font-bold text-[var(--text-primary)]">Aktivera utvärdering</h2>
                             </div>
 
                             <div className="space-y-3">
@@ -225,11 +225,10 @@ const EvaluationManager = () => {
                                 <button
                                     onClick={handleActivate}
                                     disabled={!selectedCourse || !selectedTemplate || activating || activateSuccess}
-                                    className={`w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-bold transition-all mt-1 ${
-                                        activateSuccess
-                                            ? 'bg-emerald-500 text-white'
-                                            : 'bg-emerald-600 hover:bg-emerald-700 disabled:opacity-40 disabled:cursor-not-allowed text-white shadow-md shadow-emerald-200 dark:shadow-emerald-900/30'
-                                    }`}
+                                    className={`w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-bold transition-all mt-1 ${activateSuccess
+                                        ? 'bg-emerald-500 text-white'
+                                        : 'bg-emerald-600 hover:bg-emerald-700 disabled:opacity-40 disabled:cursor-not-allowed text-white shadow-md shadow-emerald-500/20'
+                                        }`}
                                 >
                                     {activating
                                         ? <><Loader2 size={14} className="animate-spin" /> Aktiverar...</>
@@ -240,9 +239,9 @@ const EvaluationManager = () => {
                                 </button>
                             </div>
 
-                            <div className="mt-4 p-3.5 bg-indigo-50 dark:bg-indigo-500/[0.07] border border-indigo-100 dark:border-indigo-500/[0.12] rounded-xl flex gap-2.5">
+                            <div className="mt-4 p-3.5 bg-indigo-500/10 border border-indigo-500/20 rounded-xl flex gap-2.5">
                                 <AlertCircle size={14} className="text-indigo-500 shrink-0 mt-0.5" />
-                                <p className="text-xs text-indigo-700 dark:text-indigo-300/80 leading-relaxed font-medium">
+                                <p className="text-xs text-indigo-400 leading-relaxed font-medium">
                                     Aktiverade utvärderingar är anonyma och synliga för alla elever i kursen.
                                 </p>
                             </div>
@@ -254,19 +253,19 @@ const EvaluationManager = () => {
                 <div className="lg:col-span-8">
                     <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center gap-2">
-                            <List size={15} className="text-gray-400" />
-                            <h2 className="text-sm font-bold text-gray-900 dark:text-white">Mina mallar</h2>
+                            <List size={15} className="text-[var(--text-secondary)]" />
+                            <h2 className="text-sm font-bold text-[var(--text-primary)]">Mina mallar</h2>
                         </div>
-                        <span className="text-[11px] font-bold uppercase tracking-wider text-gray-400">{templates.length} st</span>
+                        <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--text-secondary)]">{templates.length} st</span>
                     </div>
 
                     {templates.length === 0 ? (
-                        <div className="flex flex-col items-center justify-center py-20 border-2 border-dashed border-gray-200 dark:border-[#2a2b2d] rounded-2xl text-center">
-                            <div className="w-12 h-12 bg-gray-100 dark:bg-[#252628] rounded-2xl flex items-center justify-center mb-3">
-                                <ClipboardList size={20} className="text-gray-300 dark:text-gray-600" />
+                        <div className="flex flex-col items-center justify-center py-20 border-2 border-dashed border-[var(--border-main)] rounded-2xl text-center">
+                            <div className="w-12 h-12 bg-[var(--bg-input)] rounded-2xl flex items-center justify-center mb-3">
+                                <ClipboardList size={20} className="text-[var(--text-secondary)]" />
                             </div>
-                            <p className="text-sm font-semibold text-gray-400">Inga mallar skapade</p>
-                            <p className="text-xs text-gray-400 mt-1">Skapa din första utvärderingsmall för att komma igång.</p>
+                            <p className="text-sm font-semibold text-[var(--text-secondary)]">Inga mallar skapade</p>
+                            <p className="text-xs text-[var(--text-secondary)] mt-1">Skapa din första utvärderingsmall för att komma igång.</p>
                             <button
                                 onClick={openCreate}
                                 className="mt-4 flex items-center gap-1.5 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl transition-colors"
@@ -312,21 +311,21 @@ const TemplateCard = ({ template, onEdit, onDelete }) => {
     const types = [...new Set((template.questions || []).map(q => q.questionType))];
 
     return (
-        <div className="group bg-white dark:bg-[#1a1b1d] border border-gray-200 dark:border-[#2a2b2d] rounded-2xl p-5 hover:border-indigo-300 dark:hover:border-indigo-500/30 transition-all hover:shadow-md">
+        <div className="group bg-[var(--bg-card)] border border-[var(--border-main)] rounded-2xl p-5 hover:border-indigo-500/30 transition-all hover:shadow-md">
             <div className="flex items-start justify-between mb-3">
-                <div className="w-9 h-9 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 flex items-center justify-center group-hover:bg-indigo-100 dark:group-hover:bg-indigo-500/20 transition-colors">
-                    <FileText size={16} className="text-indigo-600 dark:text-indigo-400" />
+                <div className="w-9 h-9 rounded-xl bg-indigo-500/10 flex items-center justify-center group-hover:bg-indigo-500/20 transition-colors">
+                    <FileText size={16} className="text-indigo-400" />
                 </div>
                 {template.systemTemplate && (
-                    <span className="text-[10px] font-bold uppercase tracking-wider bg-indigo-100 dark:bg-indigo-500/15 text-indigo-600 dark:text-indigo-300 px-2 py-0.5 rounded-full">
+                    <span className="text-[10px] font-bold uppercase tracking-wider bg-indigo-500/15 text-indigo-300 px-2 py-0.5 rounded-full">
                         Standard
                     </span>
                 )}
             </div>
 
-            <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-1 truncate">{template.name}</h3>
+            <h3 className="text-sm font-bold text-[var(--text-primary)] mb-1 truncate">{template.name}</h3>
             {template.description && (
-                <p className="text-xs text-gray-400 line-clamp-2 mb-3">{template.description}</p>
+                <p className="text-xs text-[var(--text-secondary)] line-clamp-2 mb-3">{template.description}</p>
             )}
 
             {/* Question type badges */}
@@ -335,7 +334,7 @@ const TemplateCard = ({ template, onEdit, onDelete }) => {
                     {types.map(type => {
                         const meta = Q_TYPES[type];
                         return (
-                            <span key={type} className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-md bg-gray-100 dark:bg-[#252628] text-gray-500 dark:text-gray-400">
+                            <span key={type} className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-md bg-[var(--bg-input)] text-[var(--text-secondary)]">
                                 {meta?.label || type}
                             </span>
                         );
@@ -343,15 +342,15 @@ const TemplateCard = ({ template, onEdit, onDelete }) => {
                 </div>
             )}
 
-            <div className="flex items-center justify-between pt-3 border-t border-gray-100 dark:border-[#252628]">
-                <div className="flex items-center gap-1.5 text-xs font-semibold text-gray-400">
+            <div className="flex items-center justify-between pt-3 border-t border-[var(--border-main)]">
+                <div className="flex items-center gap-1.5 text-xs font-semibold text-[var(--text-secondary)]">
                     <Layers size={12} />
                     {qCount} {qCount === 1 ? 'fråga' : 'frågor'}
                 </div>
                 <div className="flex gap-1">
                     <button
                         onClick={onEdit}
-                        className="p-1.5 rounded-lg text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 transition-colors"
+                        className="p-1.5 rounded-lg text-[var(--text-secondary)] hover:text-indigo-500 hover:bg-indigo-500/10 transition-colors"
                         title="Redigera"
                     >
                         <Settings size={14} />
@@ -359,7 +358,7 @@ const TemplateCard = ({ template, onEdit, onDelete }) => {
                     {!template.systemTemplate && (
                         <button
                             onClick={onDelete}
-                            className="p-1.5 rounded-lg text-gray-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10 transition-colors"
+                            className="p-1.5 rounded-lg text-[var(--text-secondary)] hover:text-rose-500 hover:bg-rose-500/10 transition-colors"
                             title="Ta bort"
                         >
                             <Trash2 size={14} />
@@ -377,19 +376,19 @@ const TemplateModal = ({ editingId, newTemplate, setNewTemplate, onClose, onSave
 
     return (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-            <div className="bg-white dark:bg-[#1a1b1d] w-full max-w-xl rounded-2xl shadow-2xl border border-gray-100 dark:border-[#2a2b2d] flex flex-col max-h-[88vh] overflow-hidden">
+            <div className="bg-[var(--bg-main)] w-full max-w-xl rounded-2xl shadow-2xl border border-[var(--border-main)] flex flex-col max-h-[88vh] overflow-hidden">
 
                 {/* Gradient bar */}
                 <div className="h-0.5 bg-gradient-to-r from-indigo-500 to-violet-500 shrink-0" />
 
                 {/* Header */}
-                <div className="px-5 py-4 border-b border-gray-100 dark:border-[#2a2b2d] flex items-center justify-between shrink-0">
-                    <h2 className="text-sm font-bold text-gray-900 dark:text-white">
+                <div className="px-5 py-4 border-b border-[var(--border-main)] flex items-center justify-between shrink-0">
+                    <h2 className="text-sm font-bold text-[var(--text-primary)]">
                         {editingId ? 'Redigera mall' : 'Ny utvärderingsmall'}
                     </h2>
                     <button
                         onClick={onClose}
-                        className="p-1.5 text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-[#252628] rounded-lg transition-colors"
+                        className="p-1.5 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-input)] rounded-lg transition-colors"
                     >
                         <X size={15} />
                     </button>
@@ -438,7 +437,7 @@ const TemplateModal = ({ editingId, newTemplate, setNewTemplate, onClose, onSave
                             {newTemplate.questions.length === 0 ? (
                                 <button
                                     onClick={onAddQuestion}
-                                    className="w-full py-8 border-2 border-dashed border-gray-200 dark:border-[#2a2b2d] rounded-xl text-gray-400 hover:border-indigo-300 dark:hover:border-indigo-500/30 hover:text-indigo-500 transition-all flex flex-col items-center gap-2"
+                                    className="w-full py-8 border-2 border-dashed border-[var(--border-main)] rounded-xl text-[var(--text-secondary)] hover:border-indigo-500/30 hover:text-indigo-500 transition-all flex flex-col items-center gap-2"
                                 >
                                     <Plus size={18} />
                                     <span className="text-xs font-bold uppercase tracking-wider">Lägg till första frågan</span>
@@ -460,17 +459,17 @@ const TemplateModal = ({ editingId, newTemplate, setNewTemplate, onClose, onSave
                 </div>
 
                 {/* Footer */}
-                <div className="px-5 py-4 border-t border-gray-100 dark:border-[#2a2b2d] flex gap-3 shrink-0">
+                <div className="px-5 py-4 border-t border-[var(--border-main)] flex gap-3 shrink-0">
                     <button
                         onClick={onClose}
-                        className="flex-1 py-2.5 bg-gray-100 dark:bg-[#252628] hover:bg-gray-200 dark:hover:bg-[#2e2f31] text-gray-700 dark:text-gray-300 text-sm font-bold rounded-xl transition-colors"
+                        className="flex-1 py-2.5 bg-[var(--bg-input)] hover:bg-[var(--bg-input)] text-[var(--text-secondary)] text-sm font-bold rounded-xl transition-colors"
                     >
                         Avbryt
                     </button>
                     <button
                         onClick={onSave}
                         disabled={!canSave}
-                        className="flex-1 py-2.5 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-bold rounded-xl transition-colors shadow-md shadow-indigo-200 dark:shadow-indigo-900/30"
+                        className="flex-1 py-2.5 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-bold rounded-xl transition-colors shadow-md shadow-indigo-500/20"
                     >
                         {editingId ? 'Spara ändringar' : 'Skapa mall'}
                     </button>
@@ -483,9 +482,9 @@ const TemplateModal = ({ editingId, newTemplate, setNewTemplate, onClose, onSave
 // ─── Question Row ─────────────────────────────────────────────────────────────
 const QuestionRow = ({ index, question, onUpdateText, onUpdateType, onRemove }) => {
     return (
-        <div className="flex gap-3 items-start bg-gray-50 dark:bg-[#0f1012] border border-gray-100 dark:border-[#2a2b2d] rounded-xl p-3 group">
+        <div className="flex gap-3 items-start bg-[var(--bg-input)] border border-[var(--border-main)] rounded-xl p-3 group">
             {/* Index badge */}
-            <div className="w-5 h-5 shrink-0 rounded-md bg-indigo-100 dark:bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 text-[10px] font-black flex items-center justify-center mt-1">
+            <div className="w-5 h-5 shrink-0 rounded-md bg-indigo-500/15 text-indigo-400 text-[10px] font-black flex items-center justify-center mt-1">
                 {index + 1}
             </div>
 
@@ -495,7 +494,7 @@ const QuestionRow = ({ index, question, onUpdateText, onUpdateType, onRemove }) 
                     value={question.questionText}
                     onChange={e => onUpdateText(e.target.value)}
                     placeholder="Skriv din fråga..."
-                    className="w-full bg-transparent border-none p-0 text-sm font-medium text-gray-900 dark:text-white placeholder:text-gray-400 outline-none focus:ring-0"
+                    className="w-full bg-transparent border-none p-0 text-sm font-medium text-[var(--text-primary)] placeholder:text-[var(--text-secondary)] outline-none focus:ring-0"
                 />
                 {/* Type selector */}
                 <div className="flex gap-1.5 flex-wrap">
@@ -504,11 +503,10 @@ const QuestionRow = ({ index, question, onUpdateText, onUpdateType, onRemove }) 
                             key={type}
                             type="button"
                             onClick={() => onUpdateType(type)}
-                            className={`text-[10px] font-bold px-2 py-0.5 rounded-md border transition-all ${
-                                question.questionType === type
+                            className={`text-[10px] font-bold px-2 py-0.5 rounded-md border transition-all ${question.questionType === type
                                     ? 'bg-indigo-600 border-indigo-600 text-white'
-                                    : 'border-gray-200 dark:border-[#2a2b2d] text-gray-500 dark:text-gray-400 hover:border-indigo-300 hover:text-indigo-600'
-                            }`}
+                                    : 'border-[var(--border-main)] text-[var(--text-secondary)] hover:border-indigo-300 hover:text-indigo-500'
+                                }`}
                         >
                             {meta.label}
                         </button>
@@ -518,7 +516,7 @@ const QuestionRow = ({ index, question, onUpdateText, onUpdateType, onRemove }) 
 
             <button
                 onClick={onRemove}
-                className="p-1 text-gray-300 dark:text-gray-600 hover:text-rose-500 rounded-lg transition-colors mt-0.5 shrink-0"
+                className="p-1 text-[var(--text-secondary)] hover:text-rose-500 rounded-lg transition-colors mt-0.5 shrink-0"
             >
                 <X size={13} />
             </button>

@@ -28,8 +28,8 @@ const EMPTY_FORM = {
     isPublished: true,
 };
 
-const inputClass = "w-full px-3 py-2 border border-gray-200 dark:border-[#3c4043] rounded-lg outline-none focus:ring-2 focus:ring-indigo-500 transition-colors bg-white dark:bg-[#131314] text-gray-900 dark:text-white text-sm";
-const labelClass = "text-xs font-bold text-gray-500 dark:text-gray-400 mb-1 block uppercase tracking-wide";
+const inputClass = "w-full px-4 py-2.5 border border-[var(--border-main)] rounded-xl outline-none focus:ring-1 focus:ring-brand-blue transition-all bg-white/5 text-[var(--text-primary)] text-sm placeholder:text-[var(--text-secondary)]/50";
+const labelClass = "text-[10px] font-black text-[var(--text-secondary)] mb-2 block uppercase tracking-[0.2em]";
 
 export default function SupportArticleManager() {
     const [articles, setArticles] = useState([]);
@@ -132,18 +132,18 @@ export default function SupportArticleManager() {
     return (
         <div className="space-y-6 animate-in fade-in">
             {/* Header */}
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                 <div>
-                    <h3 className="text-xl font-bold text-gray-900 dark:text-white">Support Innehåll</h3>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                    <h3 className="text-2xl font-black text-[var(--text-primary)]">Support Innehåll</h3>
+                    <p className="font-bold text-[var(--text-secondary)] mt-1">
                         Skapa och hantera FAQ-svar och videoguider som visas i Help Center.
                     </p>
                 </div>
                 <button
                     onClick={openNew}
-                    className="flex items-center gap-2 px-5 py-2.5 bg-indigo-600 text-white rounded-xl font-bold text-sm hover:bg-indigo-700 active:scale-95 transition-all shadow-md"
+                    className="flex items-center gap-3 px-6 py-3 bg-brand-blue text-white rounded-2xl font-black text-sm hover:scale-[1.05] active:scale-[0.95] transition-all shadow-xl shadow-brand-blue/20"
                 >
-                    <Plus size={16} /> Ny Artikel
+                    <Plus size={18} /> Ny Artikel
                 </button>
             </div>
 
@@ -153,9 +153,9 @@ export default function SupportArticleManager() {
                     <button
                         key={val}
                         onClick={() => setFilterType(val)}
-                        className={`px-4 py-1.5 rounded-full text-sm font-bold transition-colors ${filterType === val
-                            ? 'bg-indigo-600 text-white'
-                            : 'bg-gray-100 dark:bg-[#282a2c] text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-[#3c4043]'}`}
+                        className={`px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${filterType === val
+                            ? 'bg-brand-blue text-white shadow-lg shadow-brand-blue/20'
+                            : 'bg-white/5 text-[var(--text-secondary)] hover:bg-white/10 hover:text-[var(--text-primary)] border border-white/5'}`}
                     >
                         {label}
                     </button>
@@ -164,13 +164,14 @@ export default function SupportArticleManager() {
 
             {/* Formulär (skapa/redigera) */}
             {showForm && (
-                <div className="bg-indigo-50 dark:bg-indigo-900/10 border border-indigo-200 dark:border-indigo-900/30 rounded-2xl p-6 animate-in slide-in-from-top-4 duration-300">
-                    <div className="flex justify-between items-center mb-6">
-                        <h4 className="font-bold text-indigo-900 dark:text-indigo-200 text-lg">
+                <div className="bg-[var(--bg-card)] border border-[var(--border-main)] rounded-3xl p-8 shadow-2xl animate-in slide-in-from-top-4 duration-500 relative overflow-hidden group">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-brand-blue/5 blur-3xl rounded-full -mr-16 -mt-16"></div>
+                    <div className="flex justify-between items-center mb-8 relative z-10">
+                        <h4 className="text-xl font-black text-[var(--text-primary)]">
                             {editingId ? '✏️ Redigera artikel' : '✨ Ny artikel'}
                         </h4>
-                        <button onClick={closeForm} className="p-2 hover:bg-indigo-100 dark:hover:bg-indigo-900/30 rounded-lg transition-colors">
-                            <X size={18} className="text-indigo-700 dark:text-indigo-300" />
+                        <button onClick={closeForm} className="p-2.5 bg-white/5 hover:bg-white/10 rounded-xl border border-white/5 transition-all">
+                            <X size={18} className="text-[var(--text-secondary)]" />
                         </button>
                     </div>
 
@@ -184,9 +185,9 @@ export default function SupportArticleManager() {
                                         key={val}
                                         type="button"
                                         onClick={() => setForm(f => ({ ...f, type: val }))}
-                                        className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-sm border-2 transition-all ${form.type === val
-                                            ? 'border-indigo-500 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300'
-                                            : 'border-gray-200 dark:border-[#3c4043] bg-white dark:bg-[#1E1F20] text-gray-600 dark:text-gray-400 hover:border-indigo-300'}`}
+                                        className={`flex items-center gap-3 px-6 py-3 rounded-2xl font-black text-xs border-2 transition-all ${form.type === val
+                                            ? 'border-brand-blue bg-brand-blue/10 text-brand-blue shadow-lg shadow-brand-blue/10'
+                                            : 'border-[var(--border-main)] bg-[var(--bg-main)] text-[var(--text-secondary)] hover:border-brand-blue/30'}`}
                                     >
                                         <Icon size={16} /> {label}
                                     </button>
@@ -279,7 +280,7 @@ export default function SupportArticleManager() {
                         )}
 
                         {/* Publicera toggle */}
-                        <div className="flex items-center gap-3 pt-2">
+                        <div className="flex items-center gap-4 pt-4 relative z-10">
                             <label className="relative inline-flex items-center cursor-pointer">
                                 <input
                                     type="checkbox"
@@ -287,23 +288,23 @@ export default function SupportArticleManager() {
                                     checked={form.isPublished}
                                     onChange={e => setForm(f => ({ ...f, isPublished: e.target.checked }))}
                                 />
-                                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600 dark:bg-gray-700"></div>
+                                <div className="w-12 h-7 bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:absolute after:top-[4px] after:left-[4px] after:bg-white after:rounded-full after:h-[21px] after:w-[21px] after:transition-all peer-checked:bg-brand-blue border border-white/5"></div>
                             </label>
-                            <span className="text-sm font-bold text-gray-700 dark:text-gray-300">
+                            <span className="text-xs font-black text-[var(--text-secondary)] uppercase tracking-widest">
                                 {form.isPublished ? '✅ Publicerad (syns i Help Center)' : '👁️ Dold (utkast)'}
                             </span>
                         </div>
 
-                        <div className="flex justify-end gap-3 pt-2 border-t border-indigo-100 dark:border-indigo-900/30 mt-2">
-                            <button type="button" onClick={closeForm} className="px-4 py-2 bg-gray-100 dark:bg-[#3c4043] text-gray-700 dark:text-white rounded-xl text-sm font-bold hover:bg-gray-200 dark:hover:bg-[#505357] transition-colors">
+                        <div className="flex justify-end gap-3 pt-6 border-t border-[var(--border-main)] mt-6 relative z-10">
+                            <button type="button" onClick={closeForm} className="px-6 py-3 bg-white/5 text-[var(--text-secondary)] rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-white/10 transition-all border border-white/5">
                                 Avbryt
                             </button>
                             <button
                                 type="submit"
                                 disabled={saving}
-                                className="flex items-center gap-2 px-5 py-2 bg-indigo-600 text-white rounded-xl text-sm font-bold hover:bg-indigo-700 disabled:opacity-50 transition-colors"
+                                className="flex items-center gap-3 px-8 py-3 bg-brand-blue text-white rounded-2xl text-xs font-black uppercase tracking-widest hover:scale-[1.05] disabled:opacity-50 transition-all shadow-xl shadow-brand-blue/20"
                             >
-                                <Save size={16} /> {saving ? 'Sparar...' : (editingId ? 'Spara ändringar' : 'Publicera artikel')}
+                                <Save size={18} /> {saving ? 'Sparar...' : (editingId ? 'Spara ändringar' : 'Publicera artikel')}
                             </button>
                         </div>
                     </form>
@@ -312,81 +313,81 @@ export default function SupportArticleManager() {
 
             {/* Artikellista */}
             {loading ? (
-                <div className="space-y-3">
+                <div className="space-y-4">
                     {[1, 2, 3].map(i => (
-                        <div key={i} className="h-16 bg-gray-100 dark:bg-[#282a2c] rounded-xl animate-pulse" />
+                        <div key={i} className="h-24 bg-white/5 border border-white/5 rounded-2xl animate-pulse" />
                     ))}
                 </div>
             ) : filteredArticles.length === 0 ? (
-                <div className="text-center py-16 bg-gray-50 dark:bg-[#1E1F20] rounded-2xl border border-dashed border-gray-200 dark:border-[#3c4043]">
-                    <Info size={40} className="mx-auto text-gray-300 dark:text-gray-600 mb-3" />
-                    <p className="text-gray-500 dark:text-gray-400 font-bold">Inga artiklar ännu</p>
-                    <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">Klicka "Ny Artikel" för att komma igång.</p>
+                <div className="text-center py-20 bg-[var(--bg-card)] rounded-3xl border border-dashed border-[var(--border-main)] shadow-inner">
+                    <Info size={48} className="mx-auto text-[var(--text-secondary)]/20 mb-4" />
+                    <p className="text-[var(--text-secondary)] font-black uppercase tracking-widest text-xs">Inga artiklar ännu</p>
+                    <p className="text-xs font-bold text-[var(--text-secondary)]/50 mt-2">Klicka "Ny Artikel" för att komma igång.</p>
                 </div>
             ) : (
                 <div className="space-y-2">
                     {filteredArticles.map((article) => (
                         <div
                             key={article.id}
-                            className={`flex items-center gap-4 p-4 rounded-xl border transition-all group ${article.isPublished
-                                ? 'bg-white dark:bg-[#1E1F20] border-gray-200 dark:border-[#3c4043]'
-                                : 'bg-gray-50 dark:bg-[#131314] border-gray-200 dark:border-[#3c4043] opacity-60'
+                            className={`flex items-center gap-6 p-6 rounded-2xl border transition-all duration-300 group shadow-sm hover:shadow-xl hover:border-brand-blue/20 ${article.isPublished
+                                ? 'bg-[var(--bg-card)] border-[var(--border-main)]'
+                                : 'bg-[var(--bg-main)] border-[var(--border-main)] opacity-50 grayscale shadow-inner'
                                 }`}
                         >
                             {/* Ikon */}
-                            <div className="flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center bg-indigo-50 dark:bg-indigo-900/20">
+                            <div className="flex-shrink-0 w-12 h-12 rounded-2xl flex items-center justify-center bg-brand-blue/10 border border-brand-blue/20 text-brand-blue shadow-lg shadow-brand-blue/5">
                                 {article.type === 'VIDEO'
-                                    ? <Video size={18} className="text-indigo-500" />
-                                    : <BookOpen size={18} className="text-indigo-500" />
+                                    ? <Video size={20} />
+                                    : <BookOpen size={20} />
                                 }
                             </div>
 
                             {/* Info */}
                             <div className="flex-1 min-w-0">
-                                <div className="flex items-center gap-2 flex-wrap">
-                                    <span className="font-bold text-gray-900 dark:text-white text-sm truncate max-w-xs">
+                                <div className="flex items-center gap-3 flex-wrap">
+                                    <span className="font-black text-[var(--text-primary)] text-sm tracking-tight truncate max-w-xs">
                                         {article.title}
                                     </span>
-                                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase ${article.type === 'VIDEO'
-                                        ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300'
-                                        : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300'
+                                    <span className={`text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest shadow-sm ${article.type === 'VIDEO'
+                                        ? 'bg-purple-500/10 text-purple-500 border border-purple-500/20'
+                                        : 'bg-brand-blue/10 text-brand-blue border border-brand-blue/20'
                                         }`}>{article.type}</span>
                                     {article.category && (
-                                        <span className="text-[10px] text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-[#282a2c] px-2 py-0.5 rounded-full">
+                                        <span className="text-[10px] font-black text-[var(--text-secondary)] bg-white/5 border border-white/5 px-3 py-1 rounded-full uppercase tracking-tighter">
                                             {CATEGORIES.find(c => c.id === article.category)?.label || article.category}
                                         </span>
                                     )}
                                 </div>
-                                <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 truncate max-w-md">
+                                <p className="text-xs font-bold text-[var(--text-secondary)] mt-1 truncate max-w-md">
                                     {article.content || article.videoUrl || '—'}
                                 </p>
                             </div>
 
                             {/* Åtgärder */}
-                            <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all scale-95 group-hover:scale-100">
                                 <button
                                     onClick={() => handleTogglePublish(article)}
                                     title={article.isPublished ? 'Avpublicera' : 'Publicera'}
-                                    className={`p-2 rounded-lg transition-colors ${article.isPublished
-                                        ? 'text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20'
-                                        : 'text-gray-400 hover:bg-gray-100 dark:hover:bg-[#3c4043]'
+                                    className={`p-2.5 rounded-xl transition-all border ${article.isPublished
+                                        ? 'text-green-500 bg-green-500/5 border-green-500/20 hover:bg-green-500/10'
+                                        : 'text-[var(--text-secondary)] bg-white/5 border-white/5 hover:bg-white/10'
                                         }`}
                                 >
-                                    {article.isPublished ? <Eye size={16} /> : <EyeOff size={16} />}
+                                    {article.isPublished ? <Eye size={18} /> : <EyeOff size={18} />}
                                 </button>
                                 <button
                                     onClick={() => openEdit(article)}
                                     title="Redigera"
-                                    className="p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
+                                    className="p-2.5 text-brand-blue bg-brand-blue/5 border border-brand-blue/20 rounded-xl transition-all hover:bg-brand-blue/10"
                                 >
-                                    <Pencil size={16} />
+                                    <Pencil size={18} />
                                 </button>
                                 <button
                                     onClick={() => handleDelete(article.id)}
                                     title="Ta bort"
-                                    className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                                    className="p-2.5 text-red-500 bg-red-500/5 border border-red-500/20 rounded-xl transition-all hover:bg-red-500/10 shadow-lg shadow-red-500/5"
                                 >
-                                    <Trash2 size={16} />
+                                    <Trash2 size={18} />
                                 </button>
                             </div>
                         </div>
@@ -395,7 +396,7 @@ export default function SupportArticleManager() {
             )}
 
             {articles.length > 0 && (
-                <p className="text-xs text-gray-400 dark:text-gray-600 text-center">
+                <p className="text-[10px] font-black text-[var(--text-secondary)]/30 text-center uppercase tracking-[0.3em] pt-8">
                     {articles.length} artikel{articles.length !== 1 ? 'ar' : ''} totalt · {articles.filter(a => a.isPublished).length} publicerade
                 </p>
             )}

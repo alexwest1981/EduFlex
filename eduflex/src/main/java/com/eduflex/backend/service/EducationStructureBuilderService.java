@@ -1,9 +1,11 @@
 package com.eduflex.backend.service;
 
 import com.eduflex.backend.model.Course;
+import com.eduflex.backend.model.EducationProgram;
 import com.eduflex.backend.model.NationalSyllabus;
 import com.eduflex.backend.model.User;
 import com.eduflex.backend.repository.CourseRepository;
+import com.eduflex.backend.repository.EducationProgramRepository;
 import com.eduflex.backend.repository.NationalSyllabusRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -22,14 +24,17 @@ public class EducationStructureBuilderService {
     private final SkolverketApiClientService skolverketClient;
     private final CourseRepository courseRepository;
     private final NationalSyllabusRepository syllabusRepository;
+    private final EducationProgramRepository programRepository;
 
     public EducationStructureBuilderService(
             SkolverketApiClientService skolverketClient,
             CourseRepository courseRepository,
-            NationalSyllabusRepository syllabusRepository) {
+            NationalSyllabusRepository syllabusRepository,
+            EducationProgramRepository programRepository) {
         this.skolverketClient = skolverketClient;
         this.courseRepository = courseRepository;
         this.syllabusRepository = syllabusRepository;
+        this.programRepository = programRepository;
     }
 
     /**
@@ -58,13 +63,25 @@ public class EducationStructureBuilderService {
             String desc = (String) progMap.getOrDefault("description", "Skapad via SUSA-navet");
             boolean requiresLia = (Boolean) progMap.getOrDefault("requiresLia", false);
 
-            // Kolla om kursen redan existerar för att undvika dubbletter
+            // Kolla om ett program redan finns för denna SUN-kod (Paraply)
+            EducationProgram program = programRepository.findBySunCode(sunCode).orElseGet(() -> {
+                log.info("📁 Skapar nytt EducationProgram (Paraply) för SUN: {}", sunCode);
+                EducationProgram newProg = new EducationProgram();
+                newProg.setSunCode(sunCode);
+                newProg.setName(name.contains(" - ") ? name.split(" - ")[0] : name); // Försök extrahera programnamn
+                newProg.setDescription("Utbildningspaket hämtat från SUSA-navet.");
+                newProg.setSlug("program-" + sunCode + "-" + System.currentTimeMillis());
+                newProg.setOpen(true);
+                return programRepository.save(newProg);
+            });
+
+            // Kolla om kursen redan existerar
             if (courseRepository.findByCourseCode(code).isPresent()) {
                 log.info("ℹ️ Kursen/Programmet {} finns redan. Hoppar över skapande.", code);
                 continue;
             }
 
-            // 1. Skapa eller hämta NationalSyllabus (Kursplan Caching)
+            // 1. Skapa eller hämta NationalSyllabus
             NationalSyllabus syllabus = syllabusRepository.findByCode(code).orElseGet(() -> {
                 NationalSyllabus newSyllabus = NationalSyllabus.builder()
                         .code(code)
@@ -88,12 +105,16 @@ public class EducationStructureBuilderService {
             course.setStartDate(LocalDateTime.now().toLocalDate().toString());
             course.setSlug(code.toLowerCase() + "-" + System.currentTimeMillis());
 
-            // TODO: Skapa automatisk "LIA-Modul" (Lesson) om requiresLia är true.
-
             course = courseRepository.save(course);
+
+            // 3. Koppla kursen till programmet
+            program.addCourse(course);
+            programRepository.save(program);
+
             createdCourses.add(course);
 
-            log.info("✅ Skapade EduFlex-kurs {} (SUN: {}) baserad på SUSA-navet.", course.getName(), sunCode);
+            log.info("✅ Skapade EduFlex-kurs {} (SUN: {}) och kopplade till program {}.",
+                    course.getName(), sunCode, program.getName());
         }
 
         return createdCourses;

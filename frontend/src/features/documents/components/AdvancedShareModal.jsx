@@ -76,39 +76,39 @@ const AdvancedShareModal = ({ item, onClose, currentUser }) => {
     };
 
     return (
-        <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
-            <div className="bg-white dark:bg-slate-900 w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden animate-in slide-in-from-bottom-8 duration-300">
-                <div className="p-8 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-slate-800 dark:to-slate-800">
+        <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
+            <div className="bg-[var(--bg-main)] w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden animate-in slide-in-from-bottom-8 duration-300 border border-[var(--border-main)]">
+                <div className="p-8 border-b border-[var(--border-main)] flex justify-between items-center bg-[var(--bg-card)]">
                     <div>
-                        <h2 className="text-2xl font-black text-slate-900 dark:text-white flex items-center gap-2">
-                            <Plus className="text-blue-600" size={24} />
+                        <h2 className="text-2xl font-black text-[var(--text-primary)] flex items-center gap-2">
+                            <Plus className="text-indigo-600" size={24} />
                             Dela
                         </h2>
-                        <p className="text-slate-500 font-medium truncate max-w-[300px]">{item.name || item.fileName}</p>
+                        <p className="text-[var(--text-secondary)] font-medium truncate max-w-[300px]">{item.name || item.fileName}</p>
                     </div>
-                    <button onClick={onClose} className="p-2 hover:bg-white dark:hover:bg-slate-700 rounded-full transition-all shadow-sm">
+                    <button onClick={onClose} className="p-2 hover:bg-[var(--bg-input)] rounded-full transition-all shadow-sm text-[var(--text-secondary)]">
                         <X size={20} />
                     </button>
                 </div>
 
                 <div className="p-8">
                     {/* Tabs */}
-                    <div className="flex bg-slate-100 dark:bg-slate-800 p-1.5 rounded-2xl mb-8">
+                    <div className="flex bg-[var(--bg-input)] p-1.5 rounded-2xl mb-8">
                         <button
                             onClick={() => { setSharingType('user'); setSelectedTarget(null); setResults([]); }}
-                            className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-bold rounded-xl transition-all ${sharingType === 'user' ? 'bg-white dark:bg-slate-700 shadow-lg text-blue-600' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
+                            className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-bold rounded-xl transition-all ${sharingType === 'user' ? 'bg-[var(--bg-card)] shadow-lg text-indigo-600' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'}`}
                         >
                             <User size={18} /> Användare
                         </button>
                         <button
                             onClick={() => { setSharingType('course'); setSelectedTarget(null); setResults([]); }}
-                            className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-bold rounded-xl transition-all ${sharingType === 'course' ? 'bg-white dark:bg-slate-700 shadow-lg text-blue-600' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
+                            className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-bold rounded-xl transition-all ${sharingType === 'course' ? 'bg-[var(--bg-card)] shadow-lg text-indigo-600' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'}`}
                         >
                             <BookOpen size={18} /> Kurs
                         </button>
                         <button
                             onClick={() => { setSharingType('link'); }}
-                            className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-bold rounded-xl transition-all ${sharingType === 'link' ? 'bg-white dark:bg-slate-700 shadow-lg text-blue-600' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
+                            className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-bold rounded-xl transition-all ${sharingType === 'link' ? 'bg-[var(--bg-card)] shadow-lg text-indigo-600' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'}`}
                         >
                             <Link2 size={18} /> Länk
                         </button>
@@ -117,32 +117,32 @@ const AdvancedShareModal = ({ item, onClose, currentUser }) => {
                     {sharingType !== 'link' ? (
                         <div className="space-y-6">
                             <div className="relative group">
-                                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors" size={20} />
+                                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-secondary)] group-focus-within:text-indigo-500 transition-colors" size={20} />
                                 <input
                                     type="text"
                                     placeholder={`Sök ${sharingType === 'user' ? 'användare' : 'kurs'} efter namn...`}
                                     value={searchQuery}
                                     onChange={(e) => handleSearch(e.target.value)}
-                                    className="w-full pl-12 pr-4 py-4 bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-blue-500/20 focus:bg-white dark:focus:bg-slate-900 rounded-2xl outline-none transition-all font-medium text-slate-900 dark:text-white"
+                                    className="w-full pl-12 pr-4 py-4 bg-[var(--bg-input)] border border-[var(--border-main)] focus:border-indigo-500/20 rounded-2xl outline-none transition-all font-medium text-[var(--text-primary)]"
                                 />
                             </div>
 
                             {results.length > 0 && !selectedTarget && (
-                                <div className="max-h-56 overflow-y-auto border-2 border-slate-100 dark:border-slate-800 rounded-2xl divide-y dark:divide-slate-800 shadow-inner">
+                                <div className="max-h-56 overflow-y-auto border border-[var(--border-main)] rounded-2xl divide-y divide-[var(--border-main)] shadow-inner">
                                     {results.map(res => (
                                         <button
                                             key={res.id}
                                             onClick={() => setSelectedTarget(res)}
-                                            className="w-full flex items-center gap-4 p-4 hover:bg-blue-50 dark:hover:bg-blue-900/10 transition-colors text-left"
+                                            className="w-full flex items-center gap-4 p-4 hover:bg-[var(--bg-input)] transition-colors text-left"
                                         >
-                                            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center text-white font-black text-sm shadow-md">
+                                            <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center text-white font-black text-sm shadow-md">
                                                 {(res.firstName?.[0] || res.title?.[0] || '?').toUpperCase()}
                                             </div>
                                             <div className="flex-1 min-w-0">
-                                                <p className="font-bold truncate text-slate-900 dark:text-white">
+                                                <p className="font-bold truncate text-[var(--text-primary)]">
                                                     {res.title || `${res.firstName} ${res.lastName}`}
                                                 </p>
-                                                <p className="text-xs text-slate-500 font-medium truncate">
+                                                <p className="text-xs text-[var(--text-secondary)] font-medium truncate">
                                                     {res.email || (res.subject ? `Kurs: ${res.subject}` : 'Resurs')}
                                                 </p>
                                             </div>
@@ -152,14 +152,14 @@ const AdvancedShareModal = ({ item, onClose, currentUser }) => {
                             )}
 
                             {selectedTarget && (
-                                <div className="bg-blue-600 text-white rounded-2xl p-5 flex items-center justify-between shadow-xl shadow-blue-500/30 animate-in zoom-in-95">
+                                <div className="bg-indigo-600 text-white rounded-2xl p-5 flex items-center justify-between shadow-xl shadow-indigo-500/30 animate-in zoom-in-95">
                                     <div className="flex items-center gap-4">
                                         <div className="bg-white/20 p-2 rounded-lg">
                                             <Check size={20} className="text-white" />
                                         </div>
                                         <div>
                                             <p className="font-black">Vald: {selectedTarget.title || `${selectedTarget.firstName} ${selectedTarget.lastName}`}</p>
-                                            <p className="text-xs text-blue-100 font-medium">Klicka för att ändra mottagare</p>
+                                            <p className="text-xs text-indigo-100 font-medium">Klicka för att ändra mottagare</p>
                                         </div>
                                     </div>
                                     <button onClick={() => setSelectedTarget(null)} className="p-2 hover:bg-white/10 rounded-full transition-all">
@@ -168,15 +168,15 @@ const AdvancedShareModal = ({ item, onClose, currentUser }) => {
                                 </div>
                             )}
 
-                            <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-800">
+                            <div className="flex items-center justify-between p-4 bg-[var(--bg-input)] rounded-2xl border border-[var(--border-main)]">
                                 <div className="flex items-center gap-2">
-                                    <ShieldAlert size={18} className="text-slate-400" />
-                                    <span className="text-sm text-slate-600 dark:text-slate-400 font-bold">Inställningar</span>
+                                    <ShieldAlert size={18} className="text-[var(--text-secondary)]" />
+                                    <span className="text-sm text-[var(--text-secondary)] font-bold">Inställningar</span>
                                 </div>
                                 <select
                                     value={permission}
                                     onChange={(e) => setPermission(e.target.value)}
-                                    className="bg-transparent text-sm font-black text-blue-600 border-none outline-none cursor-pointer focus:ring-0"
+                                    className="bg-transparent text-sm font-black text-indigo-600 border-none outline-none cursor-pointer focus:ring-0"
                                 >
                                     <option value="VIEW">👀 Kan visa</option>
                                     <option value="EDIT">✏️ Kan redigera</option>
@@ -187,24 +187,24 @@ const AdvancedShareModal = ({ item, onClose, currentUser }) => {
                     ) : (
                         <div className="space-y-6">
                             {!publicLink ? (
-                                <div className="text-center py-10 bg-slate-50 dark:bg-slate-800/50 rounded-3xl border-2 border-dashed border-slate-200 dark:border-slate-700">
-                                    <div className="w-20 h-20 bg-blue-600 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-xl shadow-blue-500/20 rotate-3">
+                                <div className="text-center py-10 bg-[var(--bg-input)] rounded-3xl border border-dashed border-[var(--border-main)]">
+                                    <div className="w-20 h-20 bg-indigo-600 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-xl shadow-indigo-500/20 rotate-3">
                                         <Link2 className="text-white" size={32} />
                                     </div>
-                                    <h3 className="text-xl font-black mb-2 text-slate-900 dark:text-white">Dela via länk</h3>
-                                    <p className="text-sm text-slate-500 font-medium mb-8 max-w-[250px] mx-auto">Alla med den unika länken kan se detta innehåll.</p>
+                                    <h3 className="text-xl font-black mb-2 text-[var(--text-primary)]">Dela via länk</h3>
+                                    <p className="text-sm text-[var(--text-secondary)] font-medium mb-8 max-w-[250px] mx-auto">Alla med den unika länken kan se detta innehåll.</p>
                                     <button
                                         onClick={createLink}
                                         disabled={loading}
-                                        className="px-8 py-4 bg-blue-600 text-white rounded-2xl font-black hover:bg-blue-700 transition-all shadow-xl shadow-blue-500/30 hover:-translate-y-1 active:scale-95 disabled:opacity-50"
+                                        className="px-8 py-4 bg-indigo-600 text-white rounded-2xl font-black hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-500/30 hover:-translate-y-1 active:scale-95 disabled:opacity-50"
                                     >
                                         {loading ? 'Genererar...' : 'Skapa länk nu'}
                                     </button>
                                 </div>
                             ) : (
-                                <div className="bg-slate-900 rounded-3xl p-6 space-y-4 shadow-2xl">
+                                <div className="bg-[var(--bg-card)] rounded-3xl p-6 space-y-4 shadow-2xl border border-[var(--border-main)]">
                                     <div className="flex items-center justify-between">
-                                        <span className="text-xs font-black uppercase text-slate-500 tracking-widest">Offentlig Länk</span>
+                                        <span className="text-xs font-black uppercase text-[var(--text-secondary)] tracking-widest">Offentlig Länk</span>
                                         <span className="px-2 py-1 bg-green-500/10 text-green-500 text-[10px] font-black rounded-full flex items-center gap-1">
                                             <Clock size={10} /> AKTIV
                                         </span>
@@ -213,19 +213,19 @@ const AdvancedShareModal = ({ item, onClose, currentUser }) => {
                                         <input
                                             readOnly
                                             value={`${window.location.origin}/share/${publicLink.linkToken}`}
-                                            className="flex-1 bg-slate-800 border-none rounded-xl px-4 py-3 text-sm text-blue-400 font-mono outline-none shadow-inner"
+                                            className="flex-1 bg-[var(--bg-input)] border border-[var(--border-main)] rounded-xl px-4 py-3 text-sm text-indigo-400 font-mono outline-none shadow-inner"
                                         />
                                         <button
                                             onClick={() => {
                                                 navigator.clipboard.writeText(`${window.location.origin}/share/${publicLink.linkToken}`);
                                                 alert("Kopierad!");
                                             }}
-                                            className="p-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/20"
+                                            className="p-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-500/20"
                                         >
                                             <Copy size={20} />
                                         </button>
                                     </div>
-                                    <p className="text-[10px] text-slate-500 font-bold text-center">
+                                    <p className="text-[10px] text-[var(--text-secondary)] font-bold text-center">
                                         Försiktigt: Vem som helst med denna länk kan komma åt filen.
                                     </p>
                                 </div>
@@ -234,15 +234,15 @@ const AdvancedShareModal = ({ item, onClose, currentUser }) => {
                     )}
                 </div>
 
-                <div className="p-8 bg-slate-50 dark:bg-slate-800/80 flex gap-4">
-                    <button onClick={onClose} className="flex-1 px-4 py-4 text-slate-600 dark:text-slate-400 font-black hover:bg-slate-200 dark:hover:bg-slate-700 rounded-2xl transition-all">
+                <div className="p-8 bg-[var(--bg-card)] border-t border-[var(--border-main)] flex gap-4">
+                    <button onClick={onClose} className="flex-1 px-4 py-4 text-[var(--text-secondary)] font-black hover:bg-[var(--bg-input)] rounded-2xl transition-all">
                         Avbryt
                     </button>
                     {sharingType !== 'link' && (
                         <button
                             disabled={!selectedTarget || loading}
                             onClick={handleShare}
-                            className={`flex-1 px-4 py-4 text-white font-black rounded-2xl transition-all shadow-xl ${selectedTarget && !loading ? 'bg-blue-600 hover:bg-blue-700 shadow-blue-500/20 hover:-translate-y-1' : 'bg-slate-300 dark:bg-slate-700 cursor-not-allowed text-slate-100'}`}
+                            className={`flex-1 px-4 py-4 text-white font-black rounded-2xl transition-all shadow-xl ${selectedTarget && !loading ? 'bg-indigo-600 hover:bg-indigo-700 shadow-indigo-500/20 hover:-translate-y-1' : 'bg-[var(--bg-input)] cursor-not-allowed text-[var(--text-secondary)]'}`}
                         >
                             {loading ? 'Dela...' : 'Slutför delning'}
                         </button>

@@ -157,7 +157,7 @@ const CourseCatalog = () => {
     }, [courses, searchTerm, selectedCategory, sortBy]);
 
     return (
-        <div className="min-h-screen bg-gray-50 dark:bg-[#0f1012] pb-24 -mx-4 lg:-mx-8 -mt-4 lg:-mt-8">
+        <div className="min-h-screen bg-[var(--bg-main)] pb-24 -mx-4 lg:-mx-8 -mt-4 lg:-mt-8">
 
             {/* ─── HERO ─── */}
             <div className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900">
@@ -230,12 +230,12 @@ const CourseCatalog = () => {
 
                     <div className="flex items-center gap-2">
                         {/* Sort */}
-                        <label className="flex items-center gap-2 bg-white dark:bg-[#1a1b1d] border border-gray-200 dark:border-[#2a2b2d] rounded-xl px-3 py-2 cursor-pointer">
+                        <label className="flex items-center gap-2 bg-[var(--bg-card)] border border-[var(--border-main)] rounded-xl px-3 py-2 cursor-pointer">
                             <SortAsc size={14} className="text-gray-400 shrink-0" />
                             <select
                                 value={sortBy}
                                 onChange={e => setSortBy(e.target.value)}
-                                className="text-xs text-gray-600 dark:text-gray-300 bg-transparent outline-none cursor-pointer"
+                                className="text-xs text-[var(--text-secondary)] bg-transparent outline-none cursor-pointer"
                             >
                                 <option value="name">Namn A–Ö</option>
                                 <option value="spots">Flest platser</option>
@@ -244,10 +244,10 @@ const CourseCatalog = () => {
                         </label>
 
                         {/* View toggle */}
-                        <div className="flex bg-white dark:bg-[#1a1b1d] border border-gray-200 dark:border-[#2a2b2d] rounded-xl overflow-hidden">
+                        <div className="flex bg-[var(--bg-card)] border border-[var(--border-main)] rounded-xl overflow-hidden">
                             <button
                                 onClick={() => setViewMode('grid')}
-                                className={`p-2.5 transition-colors ${viewMode === 'grid' ? 'bg-indigo-600 text-white' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'}`}
+                                className={`p-2.5 transition-colors ${viewMode === 'grid' ? 'bg-indigo-600 text-white' : 'text-gray-400 hover:text-[var(--text-primary)]'}`}
                             >
                                 <LayoutGrid size={15} />
                             </button>
@@ -265,30 +265,28 @@ const CourseCatalog = () => {
 
                     {/* ─── SIDEBAR ─── */}
                     <aside className="lg:col-span-1">
-                        <div className="bg-white dark:bg-[#1a1b1d] rounded-2xl border border-gray-100 dark:border-[#2a2b2d] overflow-hidden sticky top-6 shadow-sm">
-                            <div className="px-5 py-4 border-b border-gray-100 dark:border-[#2a2b2d] flex items-center gap-2">
+                        <div className="bg-[var(--bg-card)] rounded-2xl border border-[var(--border-main)] overflow-hidden sticky top-6 shadow-sm">
+                            <div className="px-5 py-4 border-b border-[var(--border-main)] flex items-center gap-2">
                                 <Filter size={14} className="text-indigo-500" />
-                                <h3 className="text-xs font-bold text-gray-500 dark:text-gray-400 tracking-widest uppercase">Kategorier</h3>
+                                <h3 className="text-xs font-bold text-[var(--text-secondary)] tracking-widest uppercase">Kategorier</h3>
                             </div>
                             <div className="p-3 max-h-[72vh] overflow-y-auto custom-scrollbar">
                                 {/* All courses */}
                                 <button
                                     onClick={() => setSelectedCategory('Alla Kurser')}
-                                    className={`w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all flex items-center justify-between gap-2 mb-0.5 ${
-                                        selectedCategory === 'Alla Kurser'
+                                    className={`w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all flex items-center justify-between gap-2 mb-0.5 ${selectedCategory === 'Alla Kurser'
                                             ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200 dark:shadow-indigo-900/30'
                                             : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-[#232426]'
-                                    }`}
+                                        }`}
                                 >
                                     <div className="flex items-center gap-2.5">
                                         <Layers size={14} className="shrink-0" />
                                         <span>Alla Kurser</span>
                                     </div>
-                                    <span className={`text-[11px] px-2 py-0.5 rounded-full font-bold ${
-                                        selectedCategory === 'Alla Kurser'
+                                    <span className={`text-[11px] px-2 py-0.5 rounded-full font-bold ${selectedCategory === 'Alla Kurser'
                                             ? 'bg-white/25 text-white'
                                             : 'bg-gray-100 dark:bg-[#2a2b2d] text-gray-500 dark:text-gray-400'
-                                    }`}>
+                                        }`}>
                                         {openCourses.length}
                                     </span>
                                 </button>
@@ -301,21 +299,19 @@ const CourseCatalog = () => {
                                         <button
                                             key={cat}
                                             onClick={() => setSelectedCategory(cat)}
-                                            className={`w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all flex items-center justify-between gap-2 mb-0.5 ${
-                                                selectedCategory === cat
+                                            className={`w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all flex items-center justify-between gap-2 mb-0.5 ${selectedCategory === cat
                                                     ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200 dark:shadow-indigo-900/30'
-                                                    : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-[#232426]'
-                                            }`}
+                                                    : 'text-[var(--text-secondary)] hover:bg-white/5'
+                                                }`}
                                         >
                                             <div className="flex items-center gap-2.5 min-w-0">
                                                 <Icon size={14} className="shrink-0" />
                                                 <span className="truncate">{cat}</span>
                                             </div>
-                                            <span className={`text-[11px] px-2 py-0.5 rounded-full font-bold shrink-0 ${
-                                                selectedCategory === cat
+                                            <span className={`text-[11px] px-2 py-0.5 rounded-full font-bold shrink-0 ${selectedCategory === cat
                                                     ? 'bg-white/25 text-white'
-                                                    : 'bg-gray-100 dark:bg-[#2a2b2d] text-gray-500 dark:text-gray-400'
-                                            }`}>
+                                                    : 'bg-[var(--bg-input)] text-[var(--text-secondary)]'
+                                                }`}>
                                                 {count}
                                             </span>
                                         </button>
@@ -329,13 +325,13 @@ const CourseCatalog = () => {
                     <div className={`lg:col-span-3 ${viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 gap-5' : 'flex flex-col gap-3'}`}>
                         {loading ? (
                             [...Array(6)].map((_, i) => (
-                                <div key={i} className="bg-white dark:bg-[#1a1b1d] rounded-2xl overflow-hidden border border-gray-100 dark:border-[#2a2b2d] animate-pulse">
-                                    <div className="h-20 bg-gradient-to-r from-gray-200 to-gray-100 dark:from-[#252628] dark:to-[#2a2b2d]" />
+                                <div key={i} className="bg-[var(--bg-card)] rounded-2xl overflow-hidden border border-[var(--border-main)] animate-pulse">
+                                    <div className="h-20 bg-gradient-to-r from-[var(--bg-input)] to-transparent" />
                                     <div className="p-5 space-y-3">
-                                        <div className="h-4 bg-gray-200 dark:bg-[#252628] rounded-lg w-3/4" />
-                                        <div className="h-3 bg-gray-100 dark:bg-[#222] rounded-lg" />
-                                        <div className="h-3 bg-gray-100 dark:bg-[#222] rounded-lg w-2/3" />
-                                        <div className="h-1.5 bg-gray-100 dark:bg-[#222] rounded-full mt-4" />
+                                        <div className="h-4 bg-[var(--bg-input)] rounded-lg w-3/4" />
+                                        <div className="h-3 bg-[var(--bg-input)]/50 rounded-lg" />
+                                        <div className="h-3 bg-[var(--bg-input)]/50 rounded-lg w-2/3" />
+                                        <div className="h-1.5 bg-[var(--bg-input)] rounded-full mt-4" />
                                     </div>
                                 </div>
                             ))
@@ -352,15 +348,15 @@ const CourseCatalog = () => {
                                 /* ── LIST VIEW ── */
                                 if (viewMode === 'list') {
                                     return (
-                                        <div key={course.id} className="group bg-white dark:bg-[#1a1b1d] rounded-2xl border border-gray-100 dark:border-[#2a2b2d] overflow-hidden hover:shadow-md hover:border-indigo-200 dark:hover:border-indigo-900/50 transition-all duration-200 flex">
+                                        <div key={course.id} className="group bg-[var(--bg-card)] rounded-2xl border border-[var(--border-main)] overflow-hidden hover:shadow-md hover:border-indigo-200 dark:hover:border-indigo-900/50 transition-all duration-200 flex">
                                             <div className={`w-1.5 shrink-0 bg-gradient-to-b ${gradient}`} />
                                             <div className="flex items-center gap-5 px-5 py-4 flex-1 min-w-0 flex-wrap md:flex-nowrap">
                                                 <div className="flex-1 min-w-0">
                                                     <div className="flex items-center gap-2 mb-1 flex-wrap">
-                                                        <span className="text-xs font-mono font-bold text-gray-400 dark:text-gray-500">{course.courseCode}</span>
-                                                        <span className="text-[11px] text-gray-400 dark:text-gray-500 px-1.5 py-0.5 bg-gray-100 dark:bg-[#252628] rounded-md">{course.category || 'Allmänt'}</span>
+                                                        <span className="text-xs font-mono font-bold text-[var(--text-secondary)]">{course.courseCode}</span>
+                                                        <span className="text-[11px] text-[var(--text-secondary)] px-1.5 py-0.5 bg-[var(--bg-input)] rounded-md">{course.category || 'Allmänt'}</span>
                                                     </div>
-                                                    <h3 className="font-bold text-gray-900 dark:text-white truncate text-sm group-hover:text-indigo-600 transition-colors">{course.name}</h3>
+                                                    <h3 className="font-bold text-[var(--text-primary)] truncate text-sm group-hover:text-indigo-600 transition-colors">{course.name}</h3>
                                                 </div>
 
                                                 {/* Capacity bar (list) */}
@@ -386,11 +382,10 @@ const CourseCatalog = () => {
                                                     <button
                                                         onClick={() => handleApply(course.id)}
                                                         disabled={isFull || applying === course.id}
-                                                        className={`flex items-center gap-1.5 px-4 py-1.5 rounded-xl text-xs font-bold transition-all ${
-                                                            isApplied ? 'bg-emerald-500 text-white'
-                                                            : isFull ? 'bg-gray-100 dark:bg-[#252628] text-gray-400 cursor-not-allowed'
-                                                            : 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-md shadow-indigo-200 dark:shadow-indigo-900/30'
-                                                        }`}
+                                                        className={`flex items-center gap-1.5 px-4 py-1.5 rounded-xl text-xs font-bold transition-all ${isApplied ? 'bg-emerald-500 text-white'
+                                                                : isFull ? 'bg-gray-100 dark:bg-[#252628] text-gray-400 cursor-not-allowed'
+                                                                    : 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-md shadow-indigo-200 dark:shadow-indigo-900/30'
+                                                            }`}
                                                     >
                                                         {isApplied ? '✓ Skickat' : applying === course.id ? <span className="w-3 h-3 border-2 border-white/40 border-t-white rounded-full animate-spin" /> : 'Ansök'}
                                                     </button>
@@ -404,7 +399,7 @@ const CourseCatalog = () => {
                                 return (
                                     <div
                                         key={course.id}
-                                        className="group bg-white dark:bg-[#1a1b1d] rounded-2xl border border-gray-100 dark:border-[#2a2b2d] overflow-hidden hover:shadow-xl hover:shadow-gray-200/60 dark:hover:shadow-black/40 hover:-translate-y-0.5 hover:border-indigo-200 dark:hover:border-indigo-800/40 transition-all duration-300 flex flex-col"
+                                        className="group bg-[var(--bg-card)] rounded-2xl border border-[var(--border-main)] overflow-hidden hover:shadow-xl hover:shadow-gray-200/60 dark:hover:shadow-black/40 hover:-translate-y-0.5 hover:border-indigo-200 dark:hover:border-indigo-800/40 transition-all duration-300 flex flex-col"
                                     >
                                         {/* Card header gradient */}
                                         <div className={`h-20 bg-gradient-to-br ${gradient} relative overflow-hidden`}>
@@ -426,10 +421,10 @@ const CourseCatalog = () => {
 
                                         {/* Card body */}
                                         <div className="p-5 flex-1 flex flex-col">
-                                            <h3 className="text-base font-bold text-gray-900 dark:text-white mb-2 group-hover:text-indigo-600 transition-colors leading-snug">
+                                            <h3 className="text-base font-bold text-[var(--text-primary)] mb-2 group-hover:text-indigo-600 transition-colors leading-snug">
                                                 {course.name}
                                             </h3>
-                                            <p className="text-gray-400 dark:text-gray-500 text-xs leading-relaxed mb-4 line-clamp-2">
+                                            <p className="text-[var(--text-secondary)] text-xs leading-relaxed mb-4 line-clamp-2">
                                                 {course.description
                                                     ? course.description.replace(/<[^>]*>/g, '')
                                                     : 'Ingen beskrivning tillgänglig.'}
@@ -459,11 +454,10 @@ const CourseCatalog = () => {
 
                                             {/* Footer */}
                                             <div className="mt-auto flex items-center justify-between gap-2">
-                                                <span className={`text-[11px] font-bold px-2.5 py-1 rounded-lg ${
-                                                    isFull
+                                                <span className={`text-[11px] font-bold px-2.5 py-1 rounded-lg ${isFull
                                                         ? 'bg-red-50 text-red-600 dark:bg-red-900/20 dark:text-red-400'
                                                         : 'bg-emerald-50 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400'
-                                                }`}>
+                                                    }`}>
                                                     {isFull ? 'Fullbokad' : `${spotsLeft} platser kvar`}
                                                 </span>
 
@@ -477,13 +471,12 @@ const CourseCatalog = () => {
                                                     <button
                                                         onClick={(e) => { e.stopPropagation(); handleApply(course.id); }}
                                                         disabled={isFull || applying === course.id}
-                                                        className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-                                                            isApplied
+                                                        className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold transition-all ${isApplied
                                                                 ? 'bg-emerald-500 text-white'
                                                                 : isFull
                                                                     ? 'bg-gray-100 dark:bg-[#252628] text-gray-400 cursor-not-allowed'
                                                                     : 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-md shadow-indigo-200 dark:shadow-indigo-900/30 hover:shadow-lg hover:shadow-indigo-200 dark:hover:shadow-indigo-900/40'
-                                                        }`}
+                                                            }`}
                                                     >
                                                         {isApplied ? (
                                                             '✓ Skickat'
@@ -501,11 +494,11 @@ const CourseCatalog = () => {
                             })
                         ) : (
                             <div className="col-span-2 flex flex-col items-center justify-center py-24 text-center">
-                                <div className="w-16 h-16 bg-gray-100 dark:bg-[#1a1b1d] border border-gray-200 dark:border-[#2a2b2d] rounded-2xl flex items-center justify-center mb-4">
-                                    <Search size={22} className="text-gray-300 dark:text-gray-600" />
+                                <div className="w-16 h-16 bg-[var(--bg-card)] border border-[var(--border-main)] rounded-2xl flex items-center justify-center mb-4">
+                                    <Search size={22} className="text-[var(--text-secondary)]/50" />
                                 </div>
-                                <p className="text-gray-700 dark:text-gray-300 font-semibold mb-1">Inga kurser hittades</p>
-                                <p className="text-gray-400 text-sm mb-4">Prova en annan sökterm eller kategori</p>
+                                <p className="text-[var(--text-primary)] font-semibold mb-1">Inga kurser hittades</p>
+                                <p className="text-[var(--text-secondary)] text-sm mb-4">Prova en annan sökterm eller kategori</p>
                                 {selectedCategory !== 'Alla Kurser' && (
                                     <button
                                         onClick={() => setSelectedCategory('Alla Kurser')}
@@ -527,7 +520,7 @@ const CourseCatalog = () => {
                     onClick={() => setSelectedCourseInfo(null)}
                 >
                     <div
-                        className="bg-white dark:bg-[#1a1b1d] w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-3xl shadow-2xl relative border border-gray-100 dark:border-[#2a2b2d] custom-scrollbar"
+                        className="bg-[var(--bg-card)] w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-3xl shadow-2xl relative border border-[var(--border-main)] custom-scrollbar"
                         onClick={e => e.stopPropagation()}
                     >
                         {/* Gradient top bar */}
@@ -535,9 +528,9 @@ const CourseCatalog = () => {
 
                         <button
                             onClick={() => setSelectedCourseInfo(null)}
-                            className="absolute top-5 right-5 p-2 bg-gray-100 dark:bg-[#252628] hover:bg-gray-200 dark:hover:bg-[#333] rounded-xl transition-colors z-10"
+                            className="absolute top-5 right-5 p-2 bg-[var(--bg-input)] hover:bg-[var(--bg-input)]/80 rounded-xl transition-colors z-10"
                         >
-                            <X size={16} className="text-gray-500" />
+                            <X size={16} className="text-[var(--text-secondary)]" />
                         </button>
 
                         <div className="p-1">
@@ -545,14 +538,14 @@ const CourseCatalog = () => {
                                 <SkolverketCourseInfo skolverketCourse={selectedCourseInfo.skolverketCourse} />
                             ) : (
                                 <div className="p-8">
-                                    <h2 className="text-2xl font-black mb-1 text-gray-900 dark:text-white pr-10">
+                                    <h2 className="text-2xl font-black mb-1 text-[var(--text-primary)] pr-10">
                                         {selectedCourseInfo.name}
                                     </h2>
-                                    <p className="text-sm text-gray-400 mb-6">
+                                    <p className="text-sm text-[var(--text-secondary)] mb-6">
                                         {selectedCourseInfo.courseCode} · {selectedCourseInfo.category}
                                     </p>
                                     <div
-                                        className="text-gray-600 dark:text-gray-300 mb-6 prose dark:prose-invert max-w-none"
+                                        className="text-[var(--text-secondary)] mb-6 prose dark:prose-invert max-w-none"
                                         dangerouslySetInnerHTML={{ __html: selectedCourseInfo.description }}
                                     />
                                     {selectedCourseInfo.category !== 'Skolverket Import' && (

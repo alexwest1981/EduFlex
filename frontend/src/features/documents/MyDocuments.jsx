@@ -69,33 +69,33 @@ const MyDocuments = () => {
     };
 
     const renderGrades = () => (
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+        <div className="bg-[var(--bg-card)] rounded-2xl border border-[var(--border-main)] shadow-sm overflow-hidden">
             <div className="overflow-x-auto">
                 <table className="w-full">
-                    <thead className="bg-gray-50 border-b border-gray-100">
+                    <thead className="bg-[var(--bg-input)] border-b border-[var(--border-main)]">
                         <tr>
-                            <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Kurs</th>
-                            <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Kod</th>
-                            <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Betyg</th>
-                            <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Datum</th>
-                            <th className="px-6 py-4 text-right text-xs font-bold text-gray-500 uppercase tracking-wider">Status</th>
+                            <th className="px-6 py-4 text-left text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider">Kurs</th>
+                            <th className="px-6 py-4 text-left text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider">Kod</th>
+                            <th className="px-6 py-4 text-left text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider">Betyg</th>
+                            <th className="px-6 py-4 text-left text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider">Datum</th>
+                            <th className="px-6 py-4 text-right text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider">Status</th>
                         </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-100">
+                    <tbody className="divide-y divide-[var(--border-main)]">
                         {filteredData(grades).length === 0 ? (
                             <tr>
-                                <td colSpan="5" className="px-6 py-12 text-center text-gray-400">
+                                <td colSpan="5" className="px-6 py-12 text-center text-[var(--text-secondary)]">
                                     Inga betyg registrerade ännu.
                                 </td>
                             </tr>
                         ) : (
                             filteredData(grades).map((grade, idx) => (
-                                <tr key={idx} className="hover:bg-gray-50/50 transition-colors">
+                                <tr key={idx} className="hover:bg-[var(--bg-input)] transition-colors">
                                     <td className="px-6 py-4">
-                                        <div className="font-bold text-gray-900">{grade.courseName}</div>
+                                        <div className="font-bold text-[var(--text-primary)]">{grade.courseName}</div>
                                     </td>
                                     <td className="px-6 py-4">
-                                        <code className="bg-gray-100 px-2 py-1 rounded text-xs font-mono text-gray-600">
+                                        <code className="bg-[var(--bg-main)] px-2 py-1 rounded text-xs font-mono text-[var(--text-secondary)]">
                                             {grade.courseCode}
                                         </code>
                                     </td>
@@ -110,11 +110,11 @@ const MyDocuments = () => {
                                             {grade.grade}
                                         </div>
                                     </td>
-                                    <td className="px-6 py-4 text-sm text-gray-500 font-medium">
+                                    <td className="px-6 py-4 text-sm text-[var(--text-secondary)] font-medium">
                                         {formatDate(grade.date)}
                                     </td>
                                     <td className="px-6 py-4 text-right">
-                                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-green-50 text-green-700 border border-green-100">
+                                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-green-500/10 text-green-500 border border-green-500/20">
                                             <Shield size={12} />
                                             Verifierat
                                         </span>
@@ -131,33 +131,33 @@ const MyDocuments = () => {
     const renderDocumentGrid = (docs, emptyMessage) => (
         <>
             {filteredData(docs).length === 0 ? (
-                <div className="bg-white border-2 border-dashed border-gray-200 rounded-3xl p-16 text-center">
-                    <div className="bg-gray-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 text-gray-300">
+                <div className="bg-[var(--bg-input)] border border-dashed border-[var(--border-main)] rounded-3xl p-16 text-center">
+                    <div className="bg-[var(--bg-card)] w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 text-[var(--text-secondary)]">
                         <FolderOpen size={40} />
                     </div>
-                    <h3 className="text-xl font-bold text-gray-900 mb-2">Inga dokument hittades</h3>
-                    <p className="text-gray-500 max-w-md mx-auto">{emptyMessage}</p>
+                    <h3 className="text-xl font-bold text-[var(--text-primary)] mb-2">Inga dokument hittades</h3>
+                    <p className="text-[var(--text-secondary)] max-w-md mx-auto">{emptyMessage}</p>
                 </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {filteredData(docs).map((doc) => (
-                        <div key={doc.id} className="group bg-white rounded-2xl border border-gray-100 hover:border-indigo-200 p-6 transition-all duration-300 hover:shadow-xl hover:shadow-indigo-500/5 relative overflow-hidden">
-                            <div className="absolute top-0 right-0 w-24 h-24 bg-indigo-50/50 rounded-bl-full -mr-12 -mt-12 group-hover:bg-indigo-100/50 transition-colors" />
+                        <div key={doc.id} className="group bg-[var(--bg-card)] rounded-2xl border border-[var(--border-main)] hover:border-indigo-500/50 p-6 transition-all duration-300 hover:shadow-2xl relative overflow-hidden">
+                            <div className="absolute top-0 right-0 w-24 h-24 bg-indigo-500/10 rounded-bl-full -mr-12 -mt-12 group-hover:bg-indigo-500/20 transition-colors" />
 
                             <div className="flex items-start gap-4 relative">
-                                <div className="p-3 bg-gray-50 rounded-xl group-hover:bg-white group-hover:shadow-md transition-all">
+                                <div className="p-3 bg-[var(--bg-input)] rounded-xl group-hover:bg-[var(--bg-card)] group-hover:shadow-md transition-all text-indigo-500">
                                     {getIcon(activeTab === 'manuals' ? 'MANUAL' : doc.category || 'CERTIFICATE')}
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                    <h3 className="font-bold text-gray-900 leading-tight mb-1 truncate group-hover:text-indigo-600 transition-colors" title={doc.fileName}>
+                                    <h3 className="font-bold text-[var(--text-primary)] leading-tight mb-1 truncate group-hover:text-indigo-400 transition-colors" title={doc.fileName}>
                                         {doc.fileName}
                                     </h3>
-                                    <div className="flex items-center gap-1.5 text-xs text-gray-400 font-medium">
+                                    <div className="flex items-center gap-1.5 text-xs text-[var(--text-secondary)] font-medium">
                                         <Calendar size={12} />
                                         <span>{doc.uploadedAt ? formatDate(doc.uploadedAt) : 'N/A'}</span>
                                     </div>
                                     {doc.description && (
-                                        <p className="text-xs text-gray-500 mt-2 line-clamp-2">{doc.description}</p>
+                                        <p className="text-xs text-[var(--text-secondary)] mt-2 line-clamp-2">{doc.description}</p>
                                     )}
                                 </div>
                             </div>
@@ -171,7 +171,7 @@ const MyDocuments = () => {
                                 </button>
                                 <button
                                     onClick={() => window.open(doc.fileUrl, '_blank')}
-                                    className="p-2.5 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition-all"
+                                    className="p-2.5 text-[var(--text-secondary)] hover:text-indigo-400 hover:bg-[var(--bg-input)] rounded-xl transition-all"
                                     title="Öppna"
                                 >
                                     <ExternalLink size={18} />
@@ -179,11 +179,11 @@ const MyDocuments = () => {
                             </div>
 
                             {activeTab === 'merits' && (
-                                <div className="mt-4 pt-4 border-t border-gray-50 flex items-center justify-between">
-                                    <span className="flex items-center gap-1 text-[10px] uppercase tracking-wider font-black text-emerald-600">
+                                <div className="mt-4 pt-4 border-t border-[var(--border-main)] flex items-center justify-between">
+                                    <span className="flex items-center gap-1 text-[10px] uppercase tracking-wider font-black text-emerald-500">
                                         <Shield size={10} /> Verifierat
                                     </span>
-                                    <span className="text-[10px] text-gray-400 font-mono">ID: {doc.id.toString().padStart(6, '0')}</span>
+                                    <span className="text-[10px] text-[var(--text-secondary)] font-mono">ID: {doc.id.toString().padStart(6, '0')}</span>
                                 </div>
                             )}
                         </div>
@@ -194,27 +194,27 @@ const MyDocuments = () => {
     );
 
     return (
-        <div className="p-8 max-w-7xl mx-auto">
+        <div className="p-8 max-w-7xl mx-auto bg-[var(--bg-main)] min-h-screen">
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
                 <div>
-                    <h1 className="text-3xl font-black text-gray-900 tracking-tight flex items-center gap-3">
-                        <div className="bg-indigo-600 p-2 rounded-xl text-white shadow-lg shadow-indigo-200">
+                    <h1 className="text-3xl font-black text-[var(--text-primary)] tracking-tight flex items-center gap-3">
+                        <div className="bg-indigo-600 p-2 rounded-xl text-white shadow-lg shadow-indigo-500/20">
                             <FolderOpen size={28} />
                         </div>
                         Mina Dokument
                     </h1>
-                    <p className="text-gray-500 mt-1 font-medium italic">
+                    <p className="text-[var(--text-secondary)] mt-1 font-medium italic">
                         Dina betyg, intyg och viktig dokumentation samlat på ett ställe.
                     </p>
                 </div>
 
                 <div className="relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-secondary)]" size={18} />
                     <input
                         type="text"
                         placeholder="Sök dokument..."
-                        className="pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none w-full md:w-64 transition-all shadow-sm"
+                        className="pl-10 pr-4 py-2.5 bg-[var(--bg-card)] border border-[var(--border-main)] rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none w-full md:w-64 transition-all shadow-sm text-[var(--text-primary)]"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
@@ -222,13 +222,13 @@ const MyDocuments = () => {
             </div>
 
             {/* Tabs */}
-            <div className="flex flex-wrap gap-2 mb-8 border-b border-gray-200 pb-1">
+            <div className="flex flex-wrap gap-2 mb-8 border-b border-[var(--border-main)] pb-1">
                 <button
                     onClick={() => setActiveTab('grades')}
                     className={`flex items-center gap-2 px-6 py-3 rounded-t-xl font-bold text-sm transition-all relative top-0.5
                         ${activeTab === 'grades'
-                            ? 'bg-white text-indigo-600 border border-gray-200 border-b-white z-10'
-                            : 'bg-gray-50 text-gray-500 hover:bg-gray-100 border border-transparent'}`}
+                            ? 'bg-[var(--bg-card)] text-indigo-500 border border-[var(--border-main)] border-b-[var(--bg-card)] z-10'
+                            : 'bg-[var(--bg-input)] text-[var(--text-secondary)] hover:bg-[var(--bg-input)] border border-transparent'}`}
                 >
                     <GraduationCap size={18} />
                     Mina Betyg
@@ -237,8 +237,8 @@ const MyDocuments = () => {
                     onClick={() => setActiveTab('merits')}
                     className={`flex items-center gap-2 px-6 py-3 rounded-t-xl font-bold text-sm transition-all relative top-0.5
                         ${activeTab === 'merits'
-                            ? 'bg-white text-indigo-600 border border-gray-200 border-b-white z-10'
-                            : 'bg-gray-50 text-gray-500 hover:bg-gray-100 border border-transparent'}`}
+                            ? 'bg-[var(--bg-card)] text-indigo-500 border border-[var(--border-main)] border-b-[var(--bg-card)] z-10'
+                            : 'bg-[var(--bg-input)] text-[var(--text-secondary)] hover:bg-[var(--bg-input)] border border-transparent'}`}
                 >
                     <Award size={18} />
                     Mina Intyg
@@ -247,8 +247,8 @@ const MyDocuments = () => {
                     onClick={() => setActiveTab('manuals')}
                     className={`flex items-center gap-2 px-6 py-3 rounded-t-xl font-bold text-sm transition-all relative top-0.5
                         ${activeTab === 'manuals'
-                            ? 'bg-white text-indigo-600 border border-gray-200 border-b-white z-10'
-                            : 'bg-gray-50 text-gray-500 hover:bg-gray-100 border border-transparent'}`}
+                            ? 'bg-[var(--bg-card)] text-indigo-500 border border-[var(--border-main)] border-b-[var(--bg-card)] z-10'
+                            : 'bg-[var(--bg-input)] text-[var(--text-secondary)] hover:bg-[var(--bg-input)] border border-transparent'}`}
                 >
                     <BookOpen size={18} />
                     Dokumentbank
@@ -260,7 +260,7 @@ const MyDocuments = () => {
                 {loading ? (
                     <div className="flex flex-col items-center justify-center h-64">
                         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mb-4"></div>
-                        <p className="text-gray-500 animate-pulse">Hämtar information...</p>
+                        <p className="text-[var(--text-secondary)] animate-pulse">Hämtar information...</p>
                     </div>
                 ) : (
                     <>

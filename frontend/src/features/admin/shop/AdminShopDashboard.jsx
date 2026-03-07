@@ -180,27 +180,27 @@ const AdminShopDashboard = () => {
             <div className="space-y-6">
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
-                        <h1 className="text-3xl font-black text-gray-900 dark:text-white tracking-tight">Gamification Engine</h1>
-                        <p className="text-gray-500 dark:text-gray-400">Hantera butik, ligor och belöningssystem.</p>
+                        <h1 className="text-4xl font-black text-[var(--text-primary)] uppercase tracking-tighter leading-tight">Gamification Engine</h1>
+                        <p className="text-[var(--text-secondary)] font-bold opacity-60">Hantera butik, ligor och belöningssystem.</p>
                     </div>
                 </div>
 
                 {/* Main Tabs */}
-                <div className="flex space-x-1 bg-gray-100 dark:bg-[#1E1F20] p-1 rounded-xl w-fit">
+                <div className="flex space-x-1 bg-white/[0.03] p-1.5 rounded-2xl w-fit border border-white/5 shadow-inner">
                     <button
                         onClick={() => setActiveTab('shop')}
-                        className={`px-6 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-all ${activeTab === 'shop'
-                            ? 'bg-white dark:bg-gray-700 text-indigo-600 dark:text-white shadow-sm'
-                            : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'
+                        className={`px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 transition-all ${activeTab === 'shop'
+                            ? 'bg-brand-blue text-white shadow-xl shadow-brand-blue/20'
+                            : 'text-[var(--text-secondary)]/50 hover:text-[var(--text-primary)] hover:bg-white/5'
                             }`}
                     >
                         <ShoppingBag size={18} /> Butik
                     </button>
                     <button
                         onClick={() => setActiveTab('settings')}
-                        className={`px-6 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-all ${activeTab === 'settings'
-                            ? 'bg-white dark:bg-gray-700 text-indigo-600 dark:text-white shadow-sm'
-                            : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'
+                        className={`px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 transition-all ${activeTab === 'settings'
+                            ? 'bg-brand-blue text-white shadow-xl shadow-brand-blue/20'
+                            : 'text-[var(--text-secondary)]/50 hover:text-[var(--text-primary)] hover:bg-white/5'
                             }`}
                     >
                         <Settings size={18} /> Inställningar
@@ -208,17 +208,18 @@ const AdminShopDashboard = () => {
                 </div>
 
                 {activeTab === 'shop' ? (
-                    <div className="space-y-6 animate-in slide-in-from-bottom-2 duration-300">
-                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white dark:bg-[#1E1F20] p-4 rounded-xl border border-gray-200 dark:border-[#282a2c]">
+                    <div className="space-y-6 animate-in slide-in-from-bottom-2 duration-500">
+                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 bg-[var(--bg-card)] p-6 rounded-3xl border border-[var(--border-main)] shadow-xl relative overflow-hidden group">
+                            <div className="absolute inset-0 bg-brand-blue/[0.02] opacity-0 group-hover:opacity-100 transition-opacity"></div>
                             {/* Filters */}
-                            <div className="flex flex-wrap gap-2">
+                            <div className="flex flex-wrap gap-2 relative z-10">
                                 {['ALL', 'FRAME', 'BACKGROUND', 'BADGE', 'TITLE', 'PET'].map(type => (
                                     <button
                                         key={type}
                                         onClick={() => setFilter(type)}
-                                        className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all border ${filter === type
-                                            ? 'bg-indigo-600 border-indigo-600 text-white shadow-md'
-                                            : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-indigo-400'
+                                        className={`px-5 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border ${filter === type
+                                            ? 'bg-brand-blue border-brand-blue text-white shadow-xl shadow-brand-blue/20'
+                                            : 'bg-white/5 border-white/5 text-[var(--text-secondary)] hover:border-brand-blue/30'
                                             }`}
                                     >
                                         {type === 'ALL' ? 'Alla' : type.charAt(0) + type.slice(1).toLowerCase()}
@@ -227,36 +228,35 @@ const AdminShopDashboard = () => {
                             </div>
                             <button
                                 onClick={handleCreate}
-                                className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 flex items-center font-bold text-sm shadow-lg shadow-indigo-500/20 active:scale-95 transition-transform"
+                                className="px-8 py-4 bg-brand-blue text-white rounded-2xl hover:scale-105 active:scale-95 transition-all flex items-center font-black text-[10px] uppercase tracking-[0.2em] shadow-2xl shadow-brand-blue/30 relative z-10"
                             >
-                                <Plus className="w-4 h-4 mr-2" /> Nytt föremål
+                                <Plus className="w-5 h-5 mr-2" /> Nytt föremål
                             </button>
                         </div>
 
                         {loading ? (
-                            <div className="flex justify-center p-20">
-                                <div className="relative w-12 h-12">
-                                    <div className="absolute inset-0 rounded-full border-4 border-indigo-100 dark:border-gray-800"></div>
-                                    <div className="absolute inset-0 rounded-full border-4 border-indigo-600 border-t-transparent animate-spin"></div>
-                                </div>
+                            <div className="flex flex-col items-center justify-center p-40 bg-[var(--bg-card)] rounded-[3rem] border border-[var(--border-main)] relative overflow-hidden gap-4">
+                                <div className="absolute inset-0 bg-brand-blue/[0.01]"></div>
+                                <div className="w-16 h-16 border-4 border-brand-blue/10 border-t-brand-blue rounded-full animate-spin"></div>
+                                <p className="text-[10px] font-black text-brand-blue uppercase tracking-[0.4em] relative z-10">Laddar butiken...</p>
                             </div>
                         ) : (
-                            <div className="bg-white dark:bg-[#1E1F20] rounded-2xl shadow-sm border border-gray-200 dark:border-[#282a2c] overflow-hidden">
-                                <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                                    <thead className="bg-gray-50 dark:bg-gray-900/50">
+                            <div className="bg-[var(--bg-card)] rounded-[2.5rem] shadow-2xl border border-[var(--border-main)] overflow-hidden">
+                                <table className="min-w-full divide-y divide-[var(--border-main)]">
+                                    <thead className="bg-white/[0.02]">
                                         <tr>
-                                            <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-widest">Förhandsvisning</th>
-                                            <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-widest">Detaljer</th>
-                                            <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-widest">Typ</th>
-                                            <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-widest">Pris/Sällsynthet</th>
-                                            <th className="px-6 py-4 text-right text-xs font-bold text-gray-500 uppercase tracking-widest">Åtgärder</th>
+                                            <th className="px-8 py-6 text-left text-[9px] font-black text-[var(--text-secondary)]/40 uppercase tracking-[0.3em]">Förhandsvisning</th>
+                                            <th className="px-8 py-6 text-left text-[9px] font-black text-[var(--text-secondary)]/40 uppercase tracking-[0.3em]">Detaljer</th>
+                                            <th className="px-8 py-6 text-left text-[9px] font-black text-[var(--text-secondary)]/40 uppercase tracking-[0.3em]">Typ</th>
+                                            <th className="px-8 py-6 text-left text-[9px] font-black text-[var(--text-secondary)]/40 uppercase tracking-[0.3em]">Pris/Sällsynthet</th>
+                                            <th className="px-8 py-6 text-right text-[9px] font-black text-[var(--text-secondary)]/40 uppercase tracking-[0.3em]">Åtgärder</th>
                                         </tr>
                                     </thead>
-                                    <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                                    <tbody className="divide-y divide-[var(--border-main)]">
                                         {filteredItems.map(item => (
-                                            <tr key={item.id} className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors group">
-                                                <td className="px-6 py-4 whitespace-nowrap">
-                                                    <div className="h-14 w-14 rounded-2xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center overflow-hidden border border-gray-200 dark:border-gray-700 group-hover:scale-110 transition-transform">
+                                            <tr key={item.id} className="hover:bg-white/[0.02] transition-colors group relative">
+                                                <td className="px-8 py-6 whitespace-nowrap">
+                                                    <div className="h-20 w-20 rounded-3xl bg-white/5 flex items-center justify-center overflow-hidden border border-white/5 group-hover:scale-105 group-hover:border-brand-blue/30 transition-all shadow-inner">
                                                         {item.imageUrl ? (
                                                             <img
                                                                 src={getGamificationAssetPath(item.imageUrl, item.type)}
@@ -264,39 +264,49 @@ const AdminShopDashboard = () => {
                                                                 className="h-full w-full object-cover"
                                                             />
                                                         ) : (
-                                                            <ImageIcon className="w-6 h-6 text-gray-400" />
+                                                            <ImageIcon className="w-8 h-8 text-brand-blue/20" />
                                                         )}
                                                     </div>
                                                 </td>
-                                                <td className="px-6 py-4">
-                                                    <div className="text-sm font-bold text-gray-900 dark:text-white group-hover:text-indigo-600 transition-colors uppercase tracking-tight">{item.name}</div>
-                                                    <div className="text-[11px] text-gray-500 truncate max-w-xs">{item.description}</div>
+                                                <td className="px-8 py-6">
+                                                    <div className="text-sm font-black text-[var(--text-primary)] group-hover:text-brand-blue transition-colors uppercase tracking-tight leading-none mb-2">{item.name}</div>
+                                                    <div className="text-[11px] text-[var(--text-secondary)]/50 font-bold italic line-clamp-1 max-w-xs">{item.description}</div>
                                                 </td>
-                                                <td className="px-6 py-4 whitespace-nowrap">
-                                                    <span className={`px-2 py-1 text-[10px] font-black rounded-md uppercase tracking-tighter shadow-sm
-                                                    ${item.type === 'FRAME' ? 'bg-blue-100 text-blue-700 border border-blue-200' :
-                                                            item.type === 'BACKGROUND' ? 'bg-purple-100 text-purple-700 border border-purple-200' :
-                                                                item.type === 'BADGE' ? 'bg-yellow-100 text-yellow-700 border border-yellow-200' :
-                                                                    'bg-gray-100 text-gray-700 border border-gray-200'}`}>
+                                                <td className="px-8 py-6 whitespace-nowrap">
+                                                    <span className={`px-4 py-1.5 text-[9px] font-black rounded-lg uppercase tracking-widest shadow-xl border
+                                                    ${item.type === 'FRAME' ? 'bg-blue-500/10 text-blue-400 border-blue-500/20' :
+                                                            item.type === 'BACKGROUND' ? 'bg-purple-500/10 text-purple-400 border-purple-500/20' :
+                                                                item.type === 'BADGE' ? 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20' :
+                                                                    'bg-white/5 text-[var(--text-secondary)] border-white/10'}`}>
                                                         {item.type}
                                                     </span>
                                                 </td>
-                                                <td className="px-6 py-4 whitespace-nowrap">
-                                                    <div className="flex items-center gap-1.5 text-sm font-black text-gray-900 dark:text-white">
-                                                        <Zap size={14} className="text-yellow-500 fill-yellow-500" /> {item.cost}
+                                                <td className="px-8 py-6 whitespace-nowrap">
+                                                    <div className="flex items-center gap-2 text-base font-black text-[var(--text-primary)] mb-1 uppercase tracking-tighter">
+                                                        <Zap size={16} className="text-yellow-500" /> {item.cost}
                                                     </div>
-                                                    <div className={`text-[10px] font-bold uppercase tracking-widest 
-                                                    ${item.rarity === 'LEGENDARY' ? 'text-orange-500' :
-                                                            item.rarity === 'EPIC' ? 'text-purple-500' :
+                                                    <div className={`text-[9px] font-black uppercase tracking-[0.2em] 
+                                                    ${item.rarity === 'LEGENDARY' ? 'text-orange-500 drop-shadow-[0_0_10px_rgba(249,115,22,0.3)]' :
+                                                            item.rarity === 'EPIC' ? 'text-purple-500 drop-shadow-[0_0_10px_rgba(168,85,247,0.3)]' :
                                                                 item.rarity === 'RARE' ? 'text-blue-500' :
-                                                                    'text-gray-500'}`}>
+                                                                    'text-[var(--text-secondary)]/40'}`}>
                                                         {item.rarity}
                                                     </div>
                                                 </td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                                    <div className="flex justify-end gap-2">
-                                                        <button onClick={() => handleEdit(item)} className="p-2 text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-xl transition-all"><Edit className="w-4 h-4" /></button>
-                                                        <button onClick={() => handleDelete(item.id)} className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-all"><Trash2 className="w-4 h-4" /></button>
+                                                <td className="px-8 py-6 whitespace-nowrap text-right">
+                                                    <div className="flex justify-end gap-3 translate-x-4 opacity-0 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300">
+                                                        <button
+                                                            onClick={() => handleEdit(item)}
+                                                            className="p-3 bg-white/5 text-brand-blue hover:bg-brand-blue hover:text-white rounded-2xl transition-all shadow-xl hover:shadow-brand-blue/20"
+                                                        >
+                                                            <Edit className="w-5 h-5" />
+                                                        </button>
+                                                        <button
+                                                            onClick={() => handleDelete(item.id)}
+                                                            className="p-3 bg-white/5 text-red-500 hover:bg-red-500 hover:text-white rounded-2xl transition-all shadow-xl hover:shadow-red-500/20"
+                                                        >
+                                                            <Trash2 className="w-5 h-5" />
+                                                        </button>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -308,33 +318,34 @@ const AdminShopDashboard = () => {
                     </div>
                 ) : (
                     /* SETTINGS TAB */
-                    <div className="space-y-8 animate-in slide-in-from-right-2 duration-300">
+                    <div className="space-y-8 animate-in slide-in-from-right-2 duration-500">
                         {/* LIGOR SECTION */}
-                        <div className="bg-white dark:bg-[#1E1F20] rounded-2xl shadow-sm border border-gray-200 dark:border-[#282a2c] p-6">
-                            <div className="flex items-center gap-3 mb-6">
-                                <div className="p-2 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 rounded-lg">
-                                    <Trophy size={20} />
+                        <div className="bg-[var(--bg-card)] rounded-[2.5rem] shadow-2xl border border-[var(--border-main)] p-8 relative overflow-hidden group">
+                            <div className="absolute top-0 right-0 w-64 h-64 bg-brand-blue/5 blur-[100px] rounded-full -translate-y-1/2 translate-x-1/2"></div>
+                            <div className="flex items-center gap-4 mb-10 relative z-10">
+                                <div className="p-4 bg-yellow-500/10 text-yellow-500 rounded-2xl shadow-xl border border-yellow-500/20">
+                                    <Trophy size={24} />
                                 </div>
                                 <div>
-                                    <h2 className="text-xl font-black text-gray-900 dark:text-white tracking-tight uppercase">Ligakonfiguration</h2>
-                                    <p className="text-xs text-gray-500">Ställ in poänggränser och namn för systemets ligor.</p>
+                                    <h2 className="text-2xl font-black text-[var(--text-primary)] tracking-tighter uppercase leading-none mb-1">Ligakonfiguration</h2>
+                                    <p className="text-[10px] text-[var(--text-secondary)]/50 font-black uppercase tracking-[0.2em]">Ställ in poänggränser och namn för systemets ligor.</p>
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 relative z-10">
                                 {leagues.map(league => (
-                                    <div key={league.id} className="p-5 rounded-2xl border border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/20 relative group overflow-hidden">
-                                        <div className="absolute top-0 right-0 p-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <div key={league.id} className="p-6 rounded-[2rem] border border-white/5 bg-white/[0.02] relative group/card overflow-hidden transition-all hover:bg-white/[0.04] hover:border-brand-blue/20">
+                                        <div className="absolute top-4 right-4 opacity-0 group-hover/card:opacity-100 transition-all scale-75 group-hover/card:scale-100">
                                             <button
                                                 onClick={() => handleUpdateLeague(league)}
-                                                className="p-2 bg-indigo-600 text-white rounded-xl shadow-lg hover:scale-110 active:scale-95 transition-all"
+                                                className="p-3 bg-brand-blue text-white rounded-2xl shadow-xl shadow-brand-blue/20 hover:scale-110 active:scale-95 transition-all"
                                             >
-                                                <Save size={16} />
+                                                <Save size={18} />
                                             </button>
                                         </div>
 
-                                        <div className="flex items-center gap-4 mb-4">
-                                            <div className="text-3xl bg-white dark:bg-gray-700 w-12 h-12 rounded-2xl flex items-center justify-center shadow-sm border border-gray-100 dark:border-gray-600">
+                                        <div className="flex items-center gap-4 mb-6">
+                                            <div className="text-3xl bg-white/5 w-16 h-16 rounded-[1.25rem] flex items-center justify-center shadow-inner border border-white/5 group-hover/card:border-brand-blue/30 transition-all">
                                                 {league.icon}
                                             </div>
                                             <div className="flex-1">
@@ -342,33 +353,33 @@ const AdminShopDashboard = () => {
                                                     type="text"
                                                     value={league.displayName}
                                                     onChange={(e) => setLeagues(prev => prev.map(l => l.id === league.id ? { ...l, displayName: e.target.value } : l))}
-                                                    className="w-full bg-transparent font-black text-gray-900 dark:text-white border-0 p-0 focus:ring-0 text-lg tracking-tight uppercase"
+                                                    className="w-full bg-transparent font-black text-[var(--text-primary)] border-0 p-0 focus:ring-0 text-xl tracking-tighter uppercase leading-none"
                                                 />
-                                                <p className="text-[10px] text-gray-400 font-bold tracking-widest">{league.leagueKey}</p>
+                                                <p className="text-[9px] text-[var(--text-secondary)]/40 font-black tracking-[0.3em] uppercase mt-1">{league.leagueKey}</p>
                                             </div>
                                         </div>
 
-                                        <div className="space-y-4">
+                                        <div className="space-y-5">
                                             <div>
-                                                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-1">Minsta poäng (XP)</label>
+                                                <label className="text-[9px] font-black text-[var(--text-secondary)]/40 uppercase tracking-[0.3em] block mb-2">Minsta poäng (XP)</label>
                                                 <div className="relative">
-                                                    <Zap size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-yellow-500" />
+                                                    <Zap size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-yellow-500" />
                                                     <input
                                                         type="number"
                                                         value={league.minPoints}
                                                         onChange={(e) => setLeagues(prev => prev.map(l => l.id === league.id ? { ...l, minPoints: parseInt(e.target.value) } : l))}
-                                                        className="w-full bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl pl-9 pr-4 py-2 text-sm font-bold focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                                                        className="w-full bg-white/[0.03] border border-white/5 rounded-2xl pl-10 pr-4 py-3 text-sm font-black text-[var(--text-primary)] focus:ring-2 focus:ring-brand-blue/50 focus:border-brand-blue transition-all shadow-inner"
                                                     />
                                                 </div>
                                             </div>
 
                                             <div>
-                                                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-1">Beskrivning av belöning</label>
+                                                <label className="text-[9px] font-black text-[var(--text-secondary)]/40 uppercase tracking-[0.3em] block mb-2">Beskrivning av belöning</label>
                                                 <textarea
                                                     value={league.rewardDescription || ''}
                                                     placeholder="t.ex. 'Exklusiva märken'"
                                                     onChange={(e) => setLeagues(prev => prev.map(l => l.id === league.id ? { ...l, rewardDescription: e.target.value } : l))}
-                                                    className="w-full bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-2 text-xs font-medium focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all h-20 resize-none"
+                                                    className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-4 py-3 text-xs font-bold text-[var(--text-primary)] focus:ring-2 focus:ring-brand-blue/50 focus:border-brand-blue transition-all h-24 resize-none shadow-inner"
                                                 />
                                             </div>
                                         </div>
@@ -381,28 +392,34 @@ const AdminShopDashboard = () => {
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                             {/* Gamification Features & XP */}
                             <div className="space-y-6">
-                                <div className="bg-white dark:bg-[#1E1F20] rounded-2xl shadow-sm border border-gray-200 dark:border-[#282a2c] p-6">
-                                    <div className="flex items-center gap-3 mb-6">
-                                        <div className="p-2 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 rounded-lg">
-                                            <Zap size={20} />
+                                <div className="bg-[var(--bg-card)] rounded-[2.5rem] shadow-2xl border border-[var(--border-main)] p-8">
+                                    <div className="flex items-center gap-4 mb-10">
+                                        <div className="p-4 bg-brand-blue/10 text-brand-blue rounded-2xl shadow-xl border border-brand-blue/20">
+                                            <Zap size={24} />
                                         </div>
-                                        <h2 className="text-xl font-black text-gray-900 dark:text-white tracking-tight uppercase">Global Gamification</h2>
+                                        <h2 className="text-2xl font-black text-[var(--text-primary)] tracking-tighter uppercase">Global Gamification</h2>
                                     </div>
 
-                                    <div className="space-y-6">
+                                    <div className="space-y-8">
                                         <div>
-                                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-1">Maximal XP-Multiplikator</label>
-                                            <div className="flex items-center gap-4">
-                                                <input
-                                                    type="range"
-                                                    min="1.0"
-                                                    max="5.0"
-                                                    step="0.1"
-                                                    value={systemConfig?.xpMultiplierMax || 1.0}
-                                                    onChange={(e) => handleUpdateSystemConfig({ xpMultiplierMax: parseFloat(e.target.value) })}
-                                                    className="flex-1 accent-indigo-600"
-                                                />
-                                                <span className="text-lg font-black text-indigo-600 dark:text-indigo-400 w-12">{systemConfig?.xpMultiplierMax?.toFixed(1) || '1.0'}x</span>
+                                            <label className="text-[9px] font-black text-[var(--text-secondary)]/40 uppercase tracking-[0.3em] block mb-4">Maximal XP-Multiplikator</label>
+                                            <div className="flex items-center gap-6">
+                                                <div className="flex-1 h-2 bg-white/5 rounded-full relative overflow-hidden group/range">
+                                                    <input
+                                                        type="range"
+                                                        min="1.0"
+                                                        max="5.0"
+                                                        step="0.1"
+                                                        value={systemConfig?.xpMultiplierMax || 1.0}
+                                                        onChange={(e) => handleUpdateSystemConfig({ xpMultiplierMax: parseFloat(e.target.value) })}
+                                                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                                                    />
+                                                    <div
+                                                        className="absolute inset-y-0 left-0 bg-brand-blue shadow-[0_0_15px_rgba(79,70,229,0.5)] transition-all duration-300"
+                                                        style={{ width: `${((systemConfig?.xpMultiplierMax || 1.0) - 1.0) / 4.0 * 100}%` }}
+                                                    ></div>
+                                                </div>
+                                                <span className="text-2xl font-black text-brand-blue w-20 text-right">{systemConfig?.xpMultiplierMax?.toFixed(1) || '1.0'}x</span>
                                             </div>
                                         </div>
 
@@ -415,13 +432,13 @@ const AdminShopDashboard = () => {
                                                 { label: 'Shop', key: 'shopEnabled' },
                                                 { label: 'Tidsbonus', key: 'timeBonusEnabled' }
                                             ].map(feature => (
-                                                <div key={feature.key} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-gray-100 dark:border-gray-700">
-                                                    <span className="text-xs font-bold text-gray-700 dark:text-gray-300">{feature.label}</span>
+                                                <div key={feature.key} className="flex items-center justify-between p-4 bg-white/[0.02] rounded-2xl border border-white/5 hover:border-brand-blue/20 transition-all group/toggle">
+                                                    <span className="text-[10px] font-black text-[var(--text-secondary)]/60 uppercase tracking-widest group-hover/toggle:text-[var(--text-primary)] transition-colors">{feature.label}</span>
                                                     <button
                                                         onClick={() => handleUpdateSystemConfig({ [feature.key]: !systemConfig?.[feature.key] })}
-                                                        className={`w-10 h-5 rounded-full relative transition-colors ${systemConfig?.[feature.key] ? 'bg-indigo-600' : 'bg-gray-300 dark:bg-gray-600'}`}
+                                                        className={`w-12 h-6 rounded-full relative transition-all duration-500 shadow-inner ${systemConfig?.[feature.key] ? 'bg-brand-blue' : 'bg-white/5'}`}
                                                     >
-                                                        <div className={`absolute top-1 w-3 h-3 bg-white rounded-full transition-all ${systemConfig?.[feature.key] ? 'right-1' : 'left-1'}`}></div>
+                                                        <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all duration-500 shadow-xl ${systemConfig?.[feature.key] ? 'right-1' : 'left-1'}`}></div>
                                                     </button>
                                                 </div>
                                             ))}
@@ -431,46 +448,46 @@ const AdminShopDashboard = () => {
                             </div>
 
                             {/* EduAI Hub Rewards */}
-                            <div className="bg-white dark:bg-[#1E1F20] rounded-2xl shadow-sm border border-gray-200 dark:border-[#282a2c] p-6">
-                                <div className="flex items-center gap-3 mb-6">
-                                    <div className="p-2 bg-purple-100 dark:bg-purple-900/30 text-purple-600 rounded-lg">
-                                        <Star size={20} />
+                            <div className="bg-[var(--bg-card)] rounded-[2.5rem] shadow-2xl border border-[var(--border-main)] p-8">
+                                <div className="flex items-center gap-4 mb-10">
+                                    <div className="p-4 bg-purple-500/10 text-purple-400 rounded-2xl shadow-xl border border-purple-500/20">
+                                        <Star size={24} />
                                     </div>
-                                    <h2 className="text-xl font-black text-gray-900 dark:text-white tracking-tight uppercase">EduAI Hub Belöningar</h2>
+                                    <h2 className="text-2xl font-black text-[var(--text-primary)] tracking-tighter uppercase">EduAI Hub Belöningar</h2>
                                 </div>
 
-                                <div className="space-y-6">
+                                <div className="space-y-8">
                                     <div>
-                                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-1">XP-Ratio per AI-interaktion</label>
-                                        <div className="flex items-center gap-4">
+                                        <label className="text-[9px] font-black text-[var(--text-secondary)]/40 uppercase tracking-[0.3em] block mb-2">XP-Ratio per AI-interaktion</label>
+                                        <div className="flex items-center gap-6">
                                             <input
                                                 type="number"
                                                 step="0.1"
                                                 value={eduAiSettings?.eduai_xp_ratio || '1.0'}
                                                 onChange={(e) => handleUpdateEduAiSettings({ eduai_xp_ratio: e.target.value })}
-                                                className="w-24 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2 text-sm font-bold"
+                                                className="w-24 bg-white/[0.03] border border-white/5 rounded-2xl px-4 py-3 text-sm font-black text-[var(--text-primary)] focus:ring-2 focus:ring-brand-blue/50 focus:border-brand-blue transition-all shadow-inner"
                                             />
-                                            <p className="text-[11px] text-gray-500">Mängden XP som ges i förhållande till poäng i AI-aktiviteter.</p>
+                                            <p className="text-[11px] text-[var(--text-secondary)]/40 font-bold italic">Mängden XP som ges i förhållande till poäng i AI-aktiviteter.</p>
                                         </div>
                                     </div>
 
                                     <div>
-                                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-1">Credits per Review</label>
+                                        <label className="text-[9px] font-black text-[var(--text-secondary)]/40 uppercase tracking-[0.3em] block mb-2">Credits per Review</label>
                                         <input
                                             type="number"
                                             value={eduAiSettings?.eduai_credit_earn_rate || '5'}
                                             onChange={(e) => handleUpdateEduAiSettings({ eduai_credit_earn_rate: e.target.value })}
-                                            className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2 text-sm font-bold mb-1"
+                                            className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-4 py-3 text-sm font-black text-[var(--text-primary)] focus:ring-2 focus:ring-brand-blue/50 focus:border-brand-blue transition-all shadow-inner mb-2"
                                         />
-                                        <p className="text-[10px] text-gray-500 font-medium">Antal AI-tokens som tjänas vid en godkänd granskning.</p>
+                                        <p className="text-[9px] text-[var(--text-secondary)]/40 font-black tracking-widest uppercase">Antal AI-tokens som tjänas vid en godkänd granskning.</p>
                                     </div>
 
                                     <div>
-                                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-1">AI Proaktivitet</label>
+                                        <label className="text-[9px] font-black text-[var(--text-secondary)]/40 uppercase tracking-[0.3em] block mb-2">AI Proaktivitet</label>
                                         <select
                                             value={eduAiSettings?.eduai_proactivity || 'medium'}
                                             onChange={(e) => handleUpdateEduAiSettings({ eduai_proactivity: e.target.value })}
-                                            className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2 text-sm font-bold"
+                                            className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-4 py-3 text-sm font-black text-[var(--text-primary)] focus:ring-2 focus:ring-brand-blue/50 focus:border-brand-blue transition-all shadow-inner appearance-none cursor-pointer"
                                         >
                                             <option value="low">Låg (Endast vid förfrågan)</option>
                                             <option value="medium">Normal (Balanserad)</option>
@@ -482,21 +499,22 @@ const AdminShopDashboard = () => {
                         </div>
 
                         {/* PILOT KIT: DEMO ENGINE */}
-                        <div className="bg-indigo-50 dark:bg-indigo-900/10 rounded-2xl border-2 border-dashed border-indigo-200 dark:border-indigo-800/50 p-6">
-                            <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-                                <div className="flex items-center gap-4">
-                                    <div className="p-3 bg-indigo-600 text-white rounded-2xl shadow-lg shadow-indigo-500/20">
-                                        <Zap size={24} />
+                        <div className="bg-brand-blue/5 rounded-[3rem] border-2 border-dashed border-brand-blue/20 p-10 relative overflow-hidden group">
+                            <div className="absolute inset-0 bg-brand-blue/[0.02] opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                            <div className="flex flex-col lg:flex-row items-center justify-between gap-10 relative z-10">
+                                <div className="flex items-center gap-6">
+                                    <div className="p-6 bg-brand-blue text-white rounded-[2rem] shadow-2xl shadow-brand-blue/30 group-hover:scale-110 transition-transform">
+                                        <Zap size={32} />
                                     </div>
                                     <div>
-                                        <h2 className="text-xl font-black text-gray-900 dark:text-white tracking-tight uppercase">Pilot-läge: Demo Data Engine</h2>
-                                        <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Blixtsnabb setup för möten. Generera realistiska svenska användare, kurser och resultat direkt.</p>
+                                        <h2 className="text-2xl font-black text-[var(--text-primary)] tracking-tighter uppercase leading-none mb-2">Pilot-läge: Demo Data Engine</h2>
+                                        <p className="text-sm text-[var(--text-secondary)]/60 font-medium max-w-xl">Blixtsnabb setup för möten. Generera realistiska svenska användare, kurser och resultat direkt i systemet.</p>
                                     </div>
                                 </div>
                                 <button
                                     onClick={handleGenerateDemoData}
                                     disabled={loading}
-                                    className="w-full md:w-auto px-8 py-4 bg-indigo-600 text-white rounded-2xl font-black text-sm hover:bg-indigo-700 hover:scale-105 active:scale-95 transition-all shadow-xl shadow-indigo-500/20 flex items-center justify-center gap-2 whitespace-nowrap disabled:opacity-50"
+                                    className="w-full lg:w-auto px-12 py-5 bg-brand-blue text-white rounded-[1.5rem] font-black text-[10px] uppercase tracking-[0.3em] hover:scale-105 active:scale-95 transition-all shadow-2xl shadow-brand-blue/40 flex items-center justify-center gap-3 whitespace-nowrap disabled:opacity-50"
                                 >
                                     {loading ? 'Genererar...' : '🚀 Fyll med Demo-data'}
                                 </button>

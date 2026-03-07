@@ -26,8 +26,8 @@ const RecentMessagesWidget = ({ onViewAll }) => {
     };
 
     return (
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm flex flex-col">
-            <div className="p-6 border-b border-card dark:border-card-dark flex justify-between items-center">
+        <div className="bg-[var(--bg-card)] rounded-xl border border-[var(--border-main)] shadow-[var(--card-shadow)] flex flex-col">
+            <div className="p-6 border-b border-[var(--border-main)] flex justify-between items-center">
                 <h3 className="font-bold text-lg text-gray-900 dark:text-white flex items-center gap-2">
                     <Mail className="text-indigo-600" size={20} /> {t('widgets.recent_messages.title')}
                 </h3>
@@ -51,8 +51,8 @@ const RecentMessagesWidget = ({ onViewAll }) => {
                                 key={msg.id}
                                 onClick={onViewAll}
                                 className={`p-3 rounded-xl cursor-pointer transition-colors border border-transparent ${!msg.isRead
-                                    ? 'bg-indigo-50 dark:bg-indigo-900/20 border-indigo-100 dark:border-indigo-800'
-                                    : 'hover:bg-gray-50 dark:hover:bg-[#282a2c]'
+                                    ? 'bg-indigo-50 dark:bg-indigo-600/20 border-indigo-100 dark:border-indigo-800/50'
+                                    : 'hover:bg-gray-50 dark:hover:bg-white/5'
                                     }`}
                             >
                                 <div className="flex justify-between items-start mb-1">

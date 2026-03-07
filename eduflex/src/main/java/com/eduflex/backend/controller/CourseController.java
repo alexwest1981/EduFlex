@@ -284,14 +284,20 @@ public class CourseController {
         }
     }
 
-    @GetMapping("/applications/teacher/{teacherId}")
-    public List<CourseApplication> getTeacherApplications(@PathVariable Long teacherId) {
-        return courseService.getPendingApplications(teacherId);
+    @GetMapping("/applications/all")
+    public List<CourseApplication> getAllApplications() {
+        return courseService.getAllApplications();
     }
 
     @PostMapping("/applications/{appId}/{status}")
     public ResponseEntity<?> handleApplication(@PathVariable Long appId, @PathVariable String status) {
-        courseService.handleApplication(appId, status.equalsIgnoreCase("approve"));
+        courseService.handleApplication(appId, status);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/applications/{appId}/note")
+    public ResponseEntity<?> updateApplicationNote(@PathVariable Long appId, @RequestBody Map<String, String> body) {
+        courseService.updateApplicationNote(appId, body.get("note"));
         return ResponseEntity.ok().build();
     }
 

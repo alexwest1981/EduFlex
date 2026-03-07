@@ -190,8 +190,8 @@ public class SecurityConfig {
                                                 .hasAnyAuthority("ADMIN", "ROLE_ADMIN", "TEACHER", "ROLE_TEACHER",
                                                                 "RESELLER", "ROLE_RESELLER")
 
-                                                // Alla inloggade får läsa kurser (GET)
-                                                .requestMatchers(HttpMethod.GET, "/api/courses/**").authenticated()
+                                                // Alla (även anonyma) får läsa kurser – offentlig katalog (GET)
+                                                .requestMatchers(HttpMethod.GET, "/api/courses/**").permitAll()
 
                                                 // 4. Övrigt
                                                 .requestMatchers("/api/live-lessons/**").authenticated()

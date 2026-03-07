@@ -26,7 +26,7 @@ const StudentAttendanceWidget = ({ currentUser, settings }) => {
     }, [currentUser]);
 
     if (!settings?.enabled) return null;
-    if (loading) return <div className="animate-pulse h-32 bg-gray-100 dark:bg-[#131314] rounded-xl"></div>;
+    if (loading) return <div className="animate-pulse h-32 bg-[var(--bg-input)] rounded-xl"></div>;
     if (!status) return null;
 
     const getStatusColor = (risk) => {
@@ -50,7 +50,7 @@ const StudentAttendanceWidget = ({ currentUser, settings }) => {
     return (
         <div className="h-full w-full p-5">
             <div className="flex justify-between items-start mb-4">
-                <h3 className="font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                <h3 className="font-bold text-[var(--text-primary)] flex items-center gap-2">
                     <Activity size={18} className="text-indigo-500" />
                     {t('widgets.attendance_widget.title')}
                 </h3>
@@ -74,13 +74,13 @@ const StudentAttendanceWidget = ({ currentUser, settings }) => {
                 </div>
 
                 <div className="grid grid-cols-2 gap-2 text-center text-xs">
-                    <div className="p-2 bg-gray-50 dark:bg-[#282a2c] rounded-lg">
-                        <p className="text-gray-500 mb-1">{t('widgets.attendance_widget.registered_time')}</p>
-                        <p className="font-mono font-bold text-sm text-gray-900 dark:text-white">{status.hoursLogged}h</p>
+                    <div className="p-2 bg-[var(--bg-input)] rounded-lg border border-[var(--border-main)]">
+                        <p className="text-[var(--text-secondary)] mb-1">{t('widgets.attendance_widget.registered_time')}</p>
+                        <p className="font-mono font-bold text-sm text-[var(--text-primary)]">{status.hoursLogged}h</p>
                     </div>
-                    <div className="p-2 bg-gray-50 dark:bg-[#282a2c] rounded-lg">
-                        <p className="text-gray-500 mb-1">{t('widgets.attendance_widget.goal_week')}</p>
-                        <p className="font-mono font-bold text-sm text-gray-900 dark:text-white">{status.expectedHours}h</p>
+                    <div className="p-2 bg-[var(--bg-input)] rounded-lg border border-[var(--border-main)]">
+                        <p className="text-[var(--text-secondary)] mb-1">{t('widgets.attendance_widget.goal_week')}</p>
+                        <p className="font-mono font-bold text-sm text-[var(--text-primary)]">{status.expectedHours}h</p>
                     </div>
                 </div>
 

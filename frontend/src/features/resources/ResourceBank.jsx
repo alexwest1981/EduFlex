@@ -113,8 +113,8 @@ const ResourceBank = () => {
         <div className="max-w-7xl mx-auto pb-20 animate-in fade-in">
             <header className="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Resursbank</h1>
-                    <p className="text-gray-500 dark:text-gray-400">
+                    <h1 className="text-3xl font-bold text-[var(--text-primary)]">Resursbank</h1>
+                    <p className="text-[var(--text-secondary)]">
                         {activeTab === 'community'
                             ? 'Hämta quiz, uppgifter och lektioner från andra lärare.'
                             : 'Hantera ditt undervisningsmaterial samlat på ett ställe.'}
@@ -132,12 +132,12 @@ const ResourceBank = () => {
                         </button>
                     )
                 ) : (
-                    <div className="flex items-center gap-2 bg-white dark:bg-[#1E1F20] p-1 rounded-lg border border-gray-200 dark:border-[#3c4043] shadow-sm">
-                        <span className="text-xs font-bold text-gray-500 px-2 uppercase">Visar för:</span>
+                    <div className="flex items-center gap-2 bg-[var(--bg-card)] p-1 rounded-lg border border-[var(--border-main)] shadow-sm">
+                        <span className="text-xs font-bold text-[var(--text-secondary)] px-2 uppercase">Visar för:</span>
                         <select
                             value={selectedCourse}
                             onChange={(e) => setSelectedCourse(e.target.value)}
-                            className="bg-gray-50 dark:bg-[#131314] border-none text-sm font-bold text-gray-900 dark:text-white rounded-md py-1.5 pl-2 pr-8 focus:ring-2 focus:ring-indigo-500"
+                            className="bg-[var(--bg-input)] border-none text-sm font-bold text-[var(--text-primary)] rounded-md py-1.5 pl-2 pr-8 focus:ring-2 focus:ring-indigo-500"
                         >
                             <option value="ALL">Alla Kurser (Globalt)</option>
                             {courses.filter(c => roleName === 'ADMIN' || (c.teacherId === currentUser.id || c.teacher?.id === currentUser.id)).map(course => (
@@ -149,7 +149,7 @@ const ResourceBank = () => {
             </header>
 
             {/* TAB NAVIGATION */}
-            <div className="flex gap-6 border-b border-gray-200 dark:border-[#3c4043] mb-8 overflow-x-auto">
+            <div className="flex gap-6 border-b border-[var(--border-main)] mb-8 overflow-x-auto">
                 {tabs.map(tab => (
                     <button
                         key={tab.key}
@@ -240,18 +240,18 @@ const ResourceBank = () => {
                         {globalLoading ? (
                             <div className="flex flex-col items-center justify-center py-20">
                                 <Loader2 className="animate-spin text-indigo-600 mb-4" size={48} />
-                                <p className="text-gray-500 font-bold">Hämtar bibliotek...</p>
+                                <p className="text-[var(--text-secondary)] font-bold">Hämtar bibliotek...</p>
                             </div>
                         ) : globalResources.length > 0 ? (
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                 {globalResources.map((item) => (
-                                    <div key={item.id} className="group bg-white dark:bg-[#1E1F20] border border-gray-200 dark:border-[#3c4043] rounded-3xl p-6 hover:shadow-2xl transition-all hover:-translate-y-1 relative overflow-hidden">
+                                    <div key={item.id} className="group bg-[var(--bg-card)] border border-[var(--border-main)] rounded-3xl p-6 hover:shadow-2xl transition-all hover:-translate-y-1 relative overflow-hidden">
                                         <div className="flex justify-between items-start mb-6">
                                             <div className="flex flex-col gap-1">
                                                 <span className="px-3 py-1 bg-indigo-50 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 text-[10px] font-black rounded-lg uppercase tracking-widest border border-indigo-100 dark:border-indigo-800">
                                                     {item.type}
                                                 </span>
-                                                <span className="text-[10px] text-gray-400 font-bold px-1 uppercase tracking-tighter">System Verified</span>
+                                                <span className="text-[10px] text-[var(--text-secondary)] font-bold px-1 uppercase tracking-tighter">System Verified</span>
                                             </div>
                                             <button
                                                 onClick={() => handleInstallGlobal(item.id)}
@@ -260,12 +260,12 @@ const ResourceBank = () => {
                                                 Importera
                                             </button>
                                         </div>
-                                        <h4 className="text-lg font-black text-gray-900 dark:text-white mb-2 leading-snug group-hover:text-indigo-600 transition-colors">{item.name}</h4>
-                                        <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-3 mb-4">{item.description}</p>
+                                        <h4 className="text-lg font-black text-[var(--text-primary)] mb-2 leading-snug group-hover:text-indigo-600 transition-colors">{item.name}</h4>
+                                        <p className="text-sm text-[var(--text-secondary)] line-clamp-3 mb-4">{item.description}</p>
 
-                                        <div className="flex flex-wrap gap-2 pt-2 border-t border-gray-100 dark:border-[#3c4043]">
+                                        <div className="flex flex-wrap gap-2 pt-2 border-t border-[var(--border-main)]">
                                             {(item.tags || '').split(',').map((tag, i) => (
-                                                <span key={i} className="text-[10px] font-bold text-gray-400 bg-gray-50 dark:bg-[#282a2c] px-2 py-1 rounded-md">
+                                                <span key={i} className="text-[10px] font-bold text-[var(--text-secondary)] bg-[var(--bg-input)] px-2 py-1 rounded-md">
                                                     #{tag.trim()}
                                                 </span>
                                             ))}
@@ -274,9 +274,9 @@ const ResourceBank = () => {
                                 ))}
                             </div>
                         ) : (
-                            <div className="bg-gray-50 dark:bg-[#1E1F20] rounded-3xl p-20 text-center border-2 border-dashed border-gray-200 dark:border-[#3c4043]">
-                                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Biblioteket är tomt för tillfället</h3>
-                                <p className="text-gray-500">Kontakta systemadministratören för att lägga till globalt material.</p>
+                            <div className="bg-[var(--bg-input)] rounded-3xl p-20 text-center border-2 border-dashed border-[var(--border-main)]">
+                                <h3 className="text-xl font-bold text-[var(--text-primary)] mb-2">Biblioteket är tomt för tillfället</h3>
+                                <p className="text-[var(--text-secondary)]">Kontakta systemadministratören för att lägga till globalt material.</p>
                             </div>
                         )}
                     </div>
@@ -297,14 +297,14 @@ const AIGeneratorTab = ({
     const roleName = currentUser?.role?.name || currentUser?.role;
     return (
         <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4">
-            <div className="bg-white dark:bg-[#1E1F20] rounded-3xl border border-gray-200 dark:border-[#3c4043] p-8 shadow-xl shadow-purple-500/5">
+            <div className="bg-[var(--bg-card)] rounded-3xl border border-[var(--border-main)] p-8 shadow-xl shadow-purple-500/5">
                 <div className="flex items-center gap-3 mb-6">
                     <div className="p-3 bg-purple-100 dark:bg-purple-900/40 rounded-2xl">
                         <BrainCircuit className="text-purple-600 dark:text-purple-400" size={28} />
                     </div>
                     <div>
-                        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">EduAI Generator</h2>
-                        <p className="text-gray-500">Skapa undervisningsmaterial på sekunder med AI.</p>
+                        <h2 className="text-2xl font-bold text-[var(--text-primary)]">EduAI Generator</h2>
+                        <p className="text-[var(--text-secondary)]">Skapa undervisningsmaterial på sekunder med AI.</p>
                     </div>
                 </div>
 
@@ -315,7 +315,7 @@ const AIGeneratorTab = ({
                             onClick={() => setType(t)}
                             className={`p-4 rounded-2xl border-2 transition-all flex flex-col items-center gap-2 group ${type === t
                                 ? 'border-purple-600 bg-purple-50 dark:bg-purple-900/20'
-                                : 'border-gray-100 dark:border-[#3c4043] hover:border-purple-200 dark:hover:border-purple-800'
+                                : 'border-[var(--border-main)] hover:border-purple-200 dark:hover:border-purple-800'
                                 }`}
                         >
                             <div className={`p-2 rounded-xl transition-colors ${type === t ? 'bg-purple-600 text-white' : 'bg-gray-100 dark:bg-[#282a2c] text-gray-500 group-hover:text-purple-500'
@@ -324,7 +324,7 @@ const AIGeneratorTab = ({
                                 {t === 'TASK' && <FileText size={24} />}
                                 {t === 'LESSON' && <BookOpen size={24} />}
                             </div>
-                            <span className={`font-bold capitalize ${type === t ? 'text-purple-700 dark:text-purple-300' : 'text-gray-600 dark:text-gray-400'}`}>
+                            <span className={`font-bold capitalize ${type === t ? 'text-purple-700 dark:text-purple-300' : 'text-[var(--text-secondary)]'}`}>
                                 {t === 'QUIZ' ? 'Quiz' : t === 'TASK' ? 'Uppgift' : 'Lektion'}
                             </span>
                         </button>
@@ -333,7 +333,7 @@ const AIGeneratorTab = ({
 
                 <div className="space-y-6">
                     <div>
-                        <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
+                        <label className="block text-sm font-bold text-[var(--text-primary)] mb-2">
                             Beskriv vad du vill skapa
                         </label>
                         <textarea
@@ -345,12 +345,12 @@ const AIGeneratorTab = ({
                                         'T.ex. "En lektionsplan för källkritik på nätet"'
                             }
                             rows={4}
-                            className="w-full px-4 py-3 bg-gray-50 dark:bg-[#282a2c] border border-gray-200 dark:border-[#3c4043] rounded-2xl focus:ring-2 focus:ring-purple-500 outline-none transition-all resize-none"
+                            className="w-full px-4 py-3 bg-[var(--bg-input)] border border-[var(--border-main)] rounded-2xl focus:ring-2 focus:ring-purple-500 outline-none transition-all resize-none"
                         />
                     </div>
 
                     <div>
-                        <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
+                        <label className="block text-sm font-bold text-[var(--text-primary)] mb-2">
                             Extra kontext / Material (Valfritt)
                         </label>
                         <textarea
@@ -358,7 +358,7 @@ const AIGeneratorTab = ({
                             onChange={(e) => setContext(e.target.value)}
                             placeholder="Klistra in text, mål eller instruktioner som AI:n ska utgå ifrån..."
                             rows={3}
-                            className="w-full px-4 py-3 bg-gray-50 dark:bg-[#282a2c] border border-gray-200 dark:border-[#3c4043] rounded-2xl focus:ring-2 focus:ring-purple-500 outline-none transition-all resize-none"
+                            className="w-full px-4 py-3 bg-[var(--bg-input)] border border-[var(--border-main)] rounded-2xl focus:ring-2 focus:ring-purple-500 outline-none transition-all resize-none"
                         />
                     </div>
 
@@ -366,7 +366,7 @@ const AIGeneratorTab = ({
                         onClick={onGenerate}
                         disabled={generating || !prompt.trim()}
                         className={`w-full py-4 rounded-2xl font-bold flex items-center justify-center gap-2 transition-all shadow-lg ${generating
-                            ? 'bg-gray-100 dark:bg-[#3c4043] text-gray-400 cursor-not-allowed'
+                            ? 'bg-[var(--bg-input)] text-[var(--text-secondary)] cursor-not-allowed'
                             : 'bg-purple-600 text-white hover:bg-purple-700 shadow-purple-500/20'
                             }`}
                     >
@@ -392,8 +392,8 @@ const AIGeneratorTab = ({
                             <CheckCircle2 className="text-green-600 dark:text-green-400" size={28} />
                         </div>
                         <div>
-                            <h3 className="text-xl font-bold text-gray-900 dark:text-white">Klart! Din {type.toLowerCase()} är skapad</h3>
-                            <p className="text-gray-500">Den finns nu i din resursbank under "Mina {type === 'QUIZ' ? 'Quiz' : type === 'TASK' ? 'Uppgifter' : 'Lektioner'}".</p>
+                            <h3 className="text-xl font-bold text-[var(--text-primary)]">Klart! Din {type.toLowerCase()} är skapad</h3>
+                            <p className="text-[var(--text-secondary)]">Den finns nu i din resursbank under "Mina {type === 'QUIZ' ? 'Quiz' : type === 'TASK' ? 'Uppgifter' : 'Lektioner'}".</p>
                         </div>
                     </div>
                     <button

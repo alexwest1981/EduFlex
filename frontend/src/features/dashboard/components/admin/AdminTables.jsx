@@ -56,9 +56,9 @@ export const AdminCourseRegistry = ({ courses, onEdit, onManage, onNewCourse, on
                 <div className="flex gap-2 w-full md:w-auto">
                     <div className="relative flex-1 md:flex-none">
                         <Search className="absolute left-3 top-2.5 text-gray-400" size={16} />
-                        <input className="w-full pl-9 pr-4 py-2 border rounded-lg text-sm dark:bg-[#1E1F20] dark:text-white dark:border-[#3c4043]" placeholder={t('dashboard.search_course')} value={searchTerm} onChange={e => { setSearchTerm(e.target.value); setCurrentPage(1); }} />
+                        <input className="w-full pl-9 pr-4 py-2 border border-[var(--border-main)] rounded-lg text-sm bg-[var(--bg-input)] text-[var(--text-primary)] focus:bg-[var(--bg-main)]" placeholder={t('dashboard.search_course')} value={searchTerm} onChange={e => { setSearchTerm(e.target.value); setCurrentPage(1); }} />
                     </div>
-                    <select className="border dark:border-[#3c4043] rounded-lg px-3 py-2 text-sm bg-white dark:bg-[#1E1F20] text-gray-900 dark:text-white" value={filterStatus} onChange={e => { setFilterStatus(e.target.value); setCurrentPage(1); }}>
+                    <select className="border border-[var(--border-main)] rounded-lg px-3 py-2 text-sm bg-[var(--bg-card)] text-[var(--text-primary)]" value={filterStatus} onChange={e => { setFilterStatus(e.target.value); setCurrentPage(1); }}>
                         <option value="ALL">{t('dashboard.all_statuses')}</option>
                         <option value="OPEN">{t('dashboard.open')}</option>
                         <option value="CLOSED">{t('dashboard.closed')}</option>
@@ -68,12 +68,12 @@ export const AdminCourseRegistry = ({ courses, onEdit, onManage, onNewCourse, on
             {/* Removed max-h-[400px] & overflow-y-auto */}
             <div className="overflow-x-auto">
                 <table className="w-full text-left text-sm">
-                    <thead className="bg-gray-50 dark:bg-[#282a2c] text-gray-500 dark:text-gray-400 border-b dark:border-[#3c4043]">
-                        <tr><th className="p-4">{t('dashboard.table.status')}</th><th className="p-4">{t('dashboard.table.code')}</th><th className="p-4">{t('dashboard.table.name')}</th><th className="p-4">{t('dashboard.table.date')}</th><th className="p-4 text-right">{t('dashboard.table.action')}</th></tr>
+                    <thead className="bg-[var(--bg-input)] text-[var(--text-secondary)] border-b border-[var(--border-main)]">
+                        <tr><th className="p-4 uppercase text-[10px] font-black tracking-widest">{t('dashboard.table.status')}</th><th className="p-4 uppercase text-[10px] font-black tracking-widest">{t('dashboard.table.code')}</th><th className="p-4 uppercase text-[10px] font-black tracking-widest">{t('dashboard.table.name')}</th><th className="p-4 uppercase text-[10px] font-black tracking-widest">{t('dashboard.table.date')}</th><th className="p-4 text-right uppercase text-[10px] font-black tracking-widest">{t('dashboard.table.action')}</th></tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-100 dark:divide-[#3c4043]">
+                    <tbody className="divide-y divide-[var(--border-main)]">
                         {currentItems.map(c => (
-                            <tr key={c.id} className="hover:bg-gray-50 dark:hover:bg-[#282a2c]">
+                            <tr key={c.id} className="hover:bg-[var(--bg-input)] transition-colors">
                                 <td className="p-4">
                                     <div className="flex items-center gap-3">
                                         <div className={`w-3 h-3 rounded-full ${c.color || 'bg-gray-300'}`} title={t('dashboard.course_color')}></div>
@@ -109,7 +109,7 @@ export const AdminCourseRegistry = ({ courses, onEdit, onManage, onNewCourse, on
 export const RecentUsersWidget = ({ latestUsers, onNewUserClick }) => {
     const { t } = useTranslation();
     return (
-        <div className="bg-white dark:bg-[#1c1c1e] rounded-[2rem] border border-gray-100 dark:border-gray-800 shadow-sm p-6 sm:p-8 group relative overflow-hidden h-full">
+        <div className="bg-[var(--bg-card)] rounded-[2rem] border border-[var(--border-main)] shadow-[var(--card-shadow)] p-6 sm:p-8 group relative overflow-hidden h-full">
             <div className="flex justify-between items-center mb-6 relative z-10">
                 <h3 className="text-xl font-black text-gray-900 dark:text-white flex items-center gap-3">
                     <div className="p-2 bg-indigo-50 dark:bg-indigo-900/10 text-indigo-600 rounded-xl">
@@ -129,9 +129,9 @@ export const RecentUsersWidget = ({ latestUsers, onNewUserClick }) => {
                 {latestUsers?.length > 0 ? latestUsers.map((u, index) => (
                     <div
                         key={u.id ?? `user-${index}`}
-                        className="flex items-center gap-4 p-3 sm:p-4 bg-gray-50/50 dark:bg-[#131314]/50 rounded-2xl border border-transparent hover:border-indigo-100 dark:hover:border-indigo-900/30 transition-all group/item"
+                        className="flex items-center gap-4 p-3 sm:p-4 bg-[var(--bg-input)]/50 rounded-2xl border border-transparent hover:border-indigo-100 dark:hover:border-indigo-900/10 transition-all group/item"
                     >
-                        <div className="w-10 sm:w-12 h-10 sm:h-12 bg-white dark:bg-[#1c1c1e] text-indigo-600 rounded-xl flex items-center justify-center font-black text-base sm:text-lg shadow-sm border border-gray-100 dark:border-gray-800 group-hover/item:scale-110 transition-transform">
+                        <div className="w-10 sm:w-12 h-10 sm:h-12 bg-[var(--bg-card)] text-indigo-600 rounded-xl flex items-center justify-center font-black text-base sm:text-lg shadow-sm border border-[var(--border-main)] group-hover/item:scale-110 transition-transform">
                             {u.firstName?.[0] || '?'}
                         </div>
                         <div className="flex-1 overflow-hidden">
@@ -174,7 +174,7 @@ export const RecentUploadsWidget = ({ latestDocs }) => {
 
     return (
         <>
-            <div className="bg-white dark:bg-[#1c1c1e] rounded-[2rem] border border-gray-100 dark:border-gray-800 shadow-sm p-6 sm:p-8 group relative overflow-hidden h-full flex flex-col">
+            <div className="bg-[var(--bg-card)] rounded-[2rem] border border-[var(--border-main)] shadow-[var(--card-shadow)] p-6 sm:p-8 group relative overflow-hidden h-full flex flex-col">
                 <div className="flex justify-between items-center mb-6 relative z-10">
                     <h3 className="text-xl font-black text-gray-900 dark:text-white flex items-center gap-3">
                         <div className="p-2 bg-blue-50 dark:bg-blue-900/10 text-blue-600 rounded-xl">
@@ -189,9 +189,9 @@ export const RecentUploadsWidget = ({ latestDocs }) => {
                         <div
                             key={d.id ?? `doc-${index}`}
                             onClick={() => setSelectedDoc(d)}
-                            className="flex items-center gap-4 p-3 sm:p-4 bg-gray-50/50 dark:bg-[#131314]/50 rounded-2xl border border-transparent hover:border-blue-100 dark:hover:border-blue-900/30 transition-all group/item cursor-pointer"
+                            className="flex items-center gap-4 p-3 sm:p-4 bg-[var(--bg-input)]/50 rounded-2xl border border-transparent hover:border-blue-100 dark:hover:border-blue-900/10 transition-all group/item cursor-pointer"
                         >
-                            <div className="w-10 sm:w-12 h-10 sm:h-12 bg-white dark:bg-[#1c1c1e] text-blue-600 rounded-xl flex items-center justify-center shadow-sm border border-gray-100 dark:border-gray-800 group-hover/item:scale-110 transition-transform">
+                            <div className="w-10 sm:w-12 h-10 sm:h-12 bg-[var(--bg-card)] text-blue-600 rounded-xl flex items-center justify-center shadow-sm border border-[var(--border-main)] group-hover/item:scale-110 transition-transform">
                                 {getFileIcon(d.fileType)}
                             </div>
                             <div className="flex-1 overflow-hidden">
@@ -365,14 +365,14 @@ export const AdminUserTable = ({ users, onNewUser, onEdit, onDelete }) => {
                     <div className="relative flex-1 md:flex-none">
                         <Search className="absolute left-3 top-2.5 text-gray-400" size={16} />
                         <input
-                            className="w-full pl-9 pr-4 py-2 border rounded-lg text-sm dark:bg-[#1E1F20] dark:text-white dark:border-[#3c4043]"
+                            className="w-full pl-9 pr-4 py-2 border border-[var(--border-main)] rounded-lg text-sm bg-[var(--bg-input)] text-[var(--text-primary)] focus:bg-[var(--bg-main)]"
                             placeholder={t('dashboard.search_user')}
                             value={searchTerm}
                             onChange={e => { setSearchTerm(e.target.value); setCurrentPage(1); }}
                         />
                     </div>
                     <select
-                        className="border dark:border-[#3c4043] rounded-lg px-3 py-2 text-sm bg-white dark:bg-[#1E1F20] text-gray-900 dark:text-white"
+                        className="border border-[var(--border-main)] rounded-lg px-3 py-2 text-sm bg-[var(--bg-card)] text-[var(--text-primary)]"
                         value={filterRole}
                         onChange={e => { setFilterRole(e.target.value); setCurrentPage(1); }}
                     >
@@ -394,9 +394,9 @@ export const AdminUserTable = ({ users, onNewUser, onEdit, onDelete }) => {
             {/* Removed max-h-[500px] & overflow-y-auto */}
             <div className="overflow-x-auto">
                 <table className="w-full text-left text-sm">
-                    <thead className="bg-gray-50 dark:bg-[#282a2c] text-gray-500 dark:text-gray-400 border-b dark:border-[#3c4043]">
+                    <thead className="bg-[var(--bg-input)] text-[var(--text-secondary)] border-b border-[var(--border-main)]">
                         <tr>
-                            <th className="p-4 cursor-pointer hover:bg-gray-100 dark:hover:bg-[#323436] transition-colors group" onClick={() => handleSort('user')}>
+                            <th className="p-4 cursor-pointer hover:bg-[var(--bg-card)] transition-colors group" onClick={() => handleSort('user')}>
                                 <div className="flex items-center gap-1">
                                     {t('dashboard.table.user')}
                                     {getSortIcon('user')}
@@ -423,9 +423,9 @@ export const AdminUserTable = ({ users, onNewUser, onEdit, onDelete }) => {
                             <th className="p-4 text-right">{t('dashboard.table.action')}</th>
                         </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-100 dark:divide-[#3c4043]">
+                    <tbody className="divide-y divide-[var(--border-main)]">
                         {currentItems.map(u => (
-                            <tr key={u.id} className="hover:bg-gray-50 dark:hover:bg-[#282a2c]">
+                            <tr key={u.id} className="hover:bg-[var(--bg-input)] transition-colors">
                                 <td className="p-4 flex items-center gap-3">
                                     <div className="w-8 h-8 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center font-bold text-xs uppercase">
                                         {u.firstName?.[0] || '?'}

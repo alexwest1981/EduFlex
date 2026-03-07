@@ -491,11 +491,11 @@ const EnterpriseWhitelabel = () => {
             <AdminNavbar />
 
             {/* Main Content Area with Internal Sidebar */}
-            <div className="flex bg-gray-50 dark:bg-[#151718] min-h-[600px] rounded-lg border border-gray-200 dark:border-[#3c4043] overflow-hidden">
+            <div className="flex bg-[var(--bg-main)] min-h-[600px] rounded-lg border border-[var(--border-main)] overflow-hidden">
                 {/* SIDEBAR */}
-                <aside className={`bg-white dark:bg-[#1e2022] w-64 border-r border-gray-200 dark:border-[#3c4043] flex-shrink-0 flex flex-col ${mobileMenuOpen ? 'block absolute z-50 h-full' : 'hidden md:flex'}`}>
-                    <div className="p-4 border-b border-gray-200 dark:border-[#3c4043] flex items-center justify-between">
-                        <h2 className="font-bold text-lg text-gray-800 dark:text-gray-200">Whitelabel</h2>
+                <aside className={`bg-[var(--bg-card)] w-64 border-r border-[var(--border-main)] flex-shrink-0 flex flex-col ${mobileMenuOpen ? 'block absolute z-50 h-full' : 'hidden md:flex'}`}>
+                    <div className="p-4 border-b border-[var(--border-main)] flex items-center justify-between">
+                        <h2 className="font-bold text-lg text-[var(--text-primary)]">Whitelabel</h2>
                         <button className="md:hidden" onClick={() => setMobileMenuOpen(false)}>X</button>
                     </div>
 
@@ -526,11 +526,11 @@ const EnterpriseWhitelabel = () => {
                 </aside>
 
                 {/* MAIN CONTENT */}
-                <main className="flex-1 flex flex-col min-w-0 bg-white dark:bg-[#151718]">
+                <main className="flex-1 flex flex-col min-w-0 bg-[var(--bg-main)]">
                     {/* Mobile Header */}
-                    <div className="md:hidden p-4 bg-white dark:bg-[#1e2022] border-b border-gray-200 dark:border-[#3c4043] flex justify-between items-center">
-                        <span className="font-bold">Meny</span>
-                        <button onClick={() => setMobileMenuOpen(true)} className="p-2 bg-gray-100 rounded">
+                    <div className="md:hidden p-4 bg-[var(--bg-card)] border-b border-[var(--border-main)] flex justify-between items-center">
+                        <span className="font-bold text-[var(--text-primary)]">Meny</span>
+                        <button onClick={() => setMobileMenuOpen(true)} className="p-2 bg-[var(--bg-input)] rounded">
                             <Settings size={20} />
                         </button>
                     </div>
@@ -577,8 +577,8 @@ const EnterpriseWhitelabel = () => {
                         {/* General Tab */}
                         {activeTab === 'general' && (
                             <div className="space-y-6">
-                                <div className="bg-white dark:bg-[#1e1f20] rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-                                    <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
+                                <div className="bg-[var(--bg-card)] rounded-lg border border-[var(--border-main)] p-6">
+                                    <h2 className="text-xl font-semibold mb-4 text-[var(--text-primary)]">
                                         Varumärkesinformation
                                     </h2>
 

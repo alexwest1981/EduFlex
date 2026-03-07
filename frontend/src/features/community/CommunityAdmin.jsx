@@ -128,115 +128,128 @@ const CommunityAdmin = () => {
     };
 
     return (
-        <div className="max-w-7xl mx-auto animate-in fade-in pb-20">
+        <div className="max-w-7xl mx-auto animate-in fade-in pb-20 px-6">
             <AdminHeader />
             <AdminNavbar />
 
-            <div className="space-y-6 flex-1">
+            <div className="space-y-8 flex-1 mt-10">
                 {/* Header */}
-                <div className="flex items-center justify-between">
-                    <div>
-                        <h1 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
-                            <Clock className="text-amber-500" />
-                            Community Granskning
-                        </h1>
-                        <p className="text-gray-500 dark:text-gray-400 mt-1">
-                            {pendingCount} {pendingCount === 1 ? 'objekt' : 'objekt'} väntar på granskning
-                        </p>
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 bg-[var(--bg-card)] p-8 rounded-[2.5rem] border border-[var(--border-main)] shadow-2xl relative overflow-hidden group">
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/5 blur-[100px] rounded-full -translate-y-1/2 translate-x-1/2"></div>
+                    <div className="relative z-10">
+                        <div className="flex items-center gap-4 mb-2">
+                            <div className="p-3 bg-amber-500/10 text-amber-500 rounded-2xl shadow-xl border border-amber-500/20">
+                                <Clock size={28} />
+                            </div>
+                            <div>
+                                <h1 className="text-3xl font-black text-[var(--text-primary)] tracking-tighter uppercase leading-none">
+                                    Community Granskning
+                                </h1>
+                                <p className="text-[10px] text-[var(--text-secondary)]/50 font-black uppercase tracking-[0.2em] mt-2">
+                                    {pendingCount} {pendingCount === 1 ? 'objekt' : 'objekt'} väntar på din granskning
+                                </p>
+                            </div>
+                        </div>
                     </div>
                     <button
                         onClick={loadPendingItems}
                         disabled={loading}
-                        className="flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-[#282a2c] hover:bg-gray-200 dark:hover:bg-[#3c4043] rounded-xl transition-colors"
+                        className="relative z-10 flex items-center gap-3 px-8 py-4 bg-white/5 hover:bg-white/10 text-[var(--text-primary)] rounded-2xl transition-all border border-white/5 font-black text-[10px] uppercase tracking-[0.2em]"
                     >
                         <RefreshCw size={18} className={loading ? 'animate-spin' : ''} />
-                        Uppdatera
+                        Uppdatera kö
                     </button>
                 </div>
 
                 {/* Content */}
                 {loading ? (
-                    <div className="flex items-center justify-center py-16">
-                        <Loader2 className="animate-spin text-indigo-600" size={40} />
+                    <div className="flex flex-col items-center justify-center py-32 bg-[var(--bg-card)] rounded-[2.5rem] border border-[var(--border-main)] shadow-xl">
+                        <div className="relative">
+                            <div className="absolute inset-0 bg-brand-blue/20 blur-2xl rounded-full animate-pulse"></div>
+                            <Loader2 className="animate-spin text-brand-blue relative z-10" size={48} />
+                        </div>
+                        <p className="text-[10px] font-black text-[var(--text-secondary)]/50 uppercase tracking-[0.3em] mt-8">Hämtar innehåll...</p>
                     </div>
                 ) : pendingItems.length === 0 ? (
-                    <div className="bg-white dark:bg-[#1E1F20] rounded-2xl p-12 text-center border border-gray-200 dark:border-[#3c4043]">
-                        <CheckCircle className="mx-auto text-green-500 mb-4" size={48} />
-                        <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">
+                    <div className="bg-[var(--bg-card)] rounded-[2.5rem] p-20 text-center border border-[var(--border-main)] shadow-2xl relative overflow-hidden group">
+                        <div className="absolute inset-0 bg-green-500/[0.02] opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        <CheckCircle className="mx-auto text-green-500 mb-8 drop-shadow-[0_0_15px_rgba(34,197,94,0.3)]" size={64} />
+                        <h3 className="text-2xl font-black text-[var(--text-primary)] mb-3 tracking-tighter uppercase">
                             Allt är granskat!
                         </h3>
-                        <p className="text-gray-500 dark:text-gray-400">
-                            Det finns inga objekt som väntar på granskning just nu.
+                        <p className="text-sm text-[var(--text-secondary)]/60 font-medium max-w-sm mx-auto">
+                            Det finns inga objekt som väntar på granskning just nu. Bra jobbat!
                         </p>
                     </div>
                 ) : (
-                    <div className="space-y-4">
+                    <div className="grid grid-cols-1 gap-6">
                         {pendingItems.map((item) => (
                             <div
                                 key={item.id}
-                                className="bg-white dark:bg-[#1E1F20] rounded-2xl border border-gray-200 dark:border-[#3c4043] overflow-hidden hover:shadow-lg transition-shadow"
+                                className="bg-[var(--bg-card)] rounded-[2.5rem] border border-[var(--border-main)] overflow-hidden hover:border-brand-blue/30 transition-all duration-500 shadow-xl group/card"
                             >
-                                <div className="p-6">
-                                    <div className="flex items-start justify-between gap-4">
+                                <div className="p-10">
+                                    <div className="flex flex-col lg:flex-row items-start justify-between gap-10">
                                         {/* Left: Content Info */}
                                         <div className="flex-1 min-w-0">
-                                            <div className="flex items-center gap-3 mb-2">
+                                            <div className="flex items-center gap-4 mb-6">
                                                 {item.subject && (
                                                     <div
-                                                        className="px-2 py-1 rounded-lg text-xs font-bold flex items-center gap-1.5"
+                                                        className="px-4 py-2 rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 border shadow-lg"
                                                         style={{
-                                                            backgroundColor: `${item.subjectColor || '#6366F1'}20`,
+                                                            backgroundColor: `${item.subjectColor || '#6366F1'}15`,
+                                                            borderColor: `${item.subjectColor || '#6366F1'}30`,
                                                             color: item.subjectColor || '#6366F1'
                                                         }}
                                                     >
-                                                        <SubjectIcon iconName={item.subjectIcon} size={14} />
+                                                        <SubjectIcon iconName={item.subjectIcon} size={16} />
                                                         {item.subjectDisplayName || item.subject}
                                                     </div>
                                                 )}
-                                                <div className="flex items-center gap-1.5 px-2 py-1 bg-gray-100 dark:bg-[#282a2c] rounded-lg text-xs font-medium text-gray-600 dark:text-gray-300">
+                                                <div className="flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/5 rounded-2xl text-[10px] font-black uppercase tracking-widest text-[var(--text-secondary)] shadow-inner">
                                                     {getTypeIcon(item.contentType)}
                                                     {getTypeLabel(item.contentType)}
                                                 </div>
                                             </div>
 
-                                            <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">
+                                            <h3 className="text-2xl font-black text-[var(--text-primary)] mb-4 tracking-tighter uppercase leading-tight group-hover/card:text-brand-blue transition-colors">
                                                 {item.title}
                                             </h3>
 
-                                            <p className="text-gray-600 dark:text-gray-400 text-sm line-clamp-2 mb-4">
-                                                {item.description || 'Ingen beskrivning'}
+                                            <p className="text-[var(--text-secondary)]/70 text-sm font-medium leading-relaxed max-w-2xl line-clamp-2 mb-8 bg-white/[0.02] p-6 rounded-3xl border border-white/5 shadow-inner">
+                                                {item.description || 'Ingen beskrivning angiven för detta innehåll.'}
                                             </p>
 
                                             {/* Metadata */}
-                                            <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
-                                                <div className="flex items-center gap-1.5">
-                                                    <User size={14} />
+                                            <div className="flex flex-wrap items-center gap-8 text-[10px] font-black uppercase tracking-[0.2em] text-[var(--text-secondary)]/40">
+                                                <div className="flex items-center gap-2 group/meta hover:text-[var(--text-primary)] transition-colors">
+                                                    <div className="p-2 bg-white/5 rounded-xl border border-white/5"><User size={14} className="text-brand-blue" /></div>
                                                     <span>{item.authorName}</span>
                                                 </div>
                                                 {item.authorTenantName && (
-                                                    <div className="flex items-center gap-1.5">
-                                                        <Building2 size={14} />
+                                                    <div className="flex items-center gap-2 group/meta hover:text-[var(--text-primary)] transition-colors">
+                                                        <div className="p-2 bg-white/5 rounded-xl border border-white/5"><Building2 size={14} className="text-brand-blue" /></div>
                                                         <span>{item.authorTenantName}</span>
                                                     </div>
                                                 )}
-                                                <div className="flex items-center gap-1.5">
-                                                    <Calendar size={14} />
+                                                <div className="flex items-center gap-2 group/meta hover:text-[var(--text-primary)] transition-colors">
+                                                    <div className="p-2 bg-white/5 rounded-xl border border-white/5"><Calendar size={14} className="text-brand-blue" /></div>
                                                     <span>{formatDate(item.createdAt)}</span>
                                                 </div>
                                                 {item.metadata?.questionCount && (
-                                                    <span className="text-indigo-600 dark:text-indigo-400 font-medium">
-                                                        {item.metadata.questionCount} frågor
-                                                    </span>
+                                                    <div className="flex items-center gap-2 px-4 py-2 bg-brand-blue/10 text-brand-blue rounded-xl border border-brand-blue/20">
+                                                        <span>{item.metadata.questionCount} frågor</span>
+                                                    </div>
                                                 )}
                                             </div>
                                         </div>
 
                                         {/* Right: Actions */}
-                                        <div className="flex flex-col gap-2 shrink-0">
+                                        <div className="flex flex-col sm:flex-row lg:flex-col gap-3 shrink-0 w-full lg:w-48">
                                             <button
                                                 onClick={() => handleApprove(item.id)}
                                                 disabled={actionLoading === item.id}
-                                                className="flex items-center gap-2 px-4 py-2.5 bg-green-600 text-white rounded-xl hover:bg-green-700 disabled:opacity-50 transition-colors font-medium"
+                                                className="flex-1 flex items-center justify-center gap-3 px-6 py-4 bg-green-600 text-white rounded-2xl hover:scale-105 active:scale-95 disabled:opacity-50 transition-all font-black text-[10px] uppercase tracking-widest shadow-xl shadow-green-600/20"
                                             >
                                                 {actionLoading === item.id ? (
                                                     <Loader2 size={18} className="animate-spin" />
@@ -248,7 +261,7 @@ const CommunityAdmin = () => {
                                             <button
                                                 onClick={() => openRejectModal(item)}
                                                 disabled={actionLoading === item.id}
-                                                className="flex items-center gap-2 px-4 py-2.5 bg-red-100 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-xl hover:bg-red-200 dark:hover:bg-red-900/40 disabled:opacity-50 transition-colors font-medium"
+                                                className="flex-1 flex items-center justify-center gap-3 px-6 py-4 bg-white/5 border border-white/5 text-red-500 rounded-2xl hover:bg-red-500/10 hover:border-red-500/20 disabled:opacity-50 transition-all font-black text-[10px] uppercase tracking-widest shadow-inner"
                                             >
                                                 <XCircle size={18} />
                                                 Avvisa
@@ -256,7 +269,7 @@ const CommunityAdmin = () => {
                                             <button
                                                 onClick={() => openDeleteModal(item)}
                                                 disabled={actionLoading === item.id}
-                                                className="flex items-center gap-2 px-4 py-2.5 bg-gray-100 dark:bg-[#282a2c] text-gray-600 dark:text-gray-400 rounded-xl hover:bg-gray-200 dark:hover:bg-[#3c4043] disabled:opacity-50 transition-colors font-medium"
+                                                className="flex-1 flex items-center justify-center gap-3 px-6 py-4 bg-white/5 border border-white/5 text-[var(--text-secondary)] rounded-2xl hover:bg-white/10 disabled:opacity-50 transition-all font-black text-[10px] uppercase tracking-widest"
                                             >
                                                 <Trash2 size={18} />
                                                 Ta bort
@@ -266,12 +279,12 @@ const CommunityAdmin = () => {
 
                                     {/* Tags */}
                                     {item.tags && item.tags.length > 0 && (
-                                        <div className="mt-4 pt-4 border-t border-gray-100 dark:border-[#282a2c]">
-                                            <div className="flex flex-wrap gap-2">
+                                        <div className="mt-10 pt-8 border-t border-white/5">
+                                            <div className="flex flex-wrap gap-3">
                                                 {item.tags.map((tag, idx) => (
                                                     <span
                                                         key={idx}
-                                                        className="px-2 py-1 bg-gray-100 dark:bg-[#282a2c] rounded-full text-xs text-gray-600 dark:text-gray-400"
+                                                        className="px-4 py-2 bg-white/[0.03] border border-white/5 rounded-2xl text-[9px] font-black uppercase tracking-widest text-[var(--text-secondary)]/60 hover:text-brand-blue hover:border-brand-blue/30 transition-all cursor-default"
                                                     >
                                                         #{tag}
                                                     </span>
@@ -284,117 +297,126 @@ const CommunityAdmin = () => {
                         ))}
                     </div>
                 )}
+            </div>
 
-                {/* Reject Modal */}
-                {showRejectModal && selectedItem && (
+            {/* Reject Modal */}
+            {showRejectModal && selectedItem && (
+                <div
+                    className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/80 backdrop-blur-md animate-in fade-in duration-300"
+                    onClick={() => setShowRejectModal(false)}
+                >
                     <div
-                        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
-                        onClick={() => setShowRejectModal(false)}
+                        className="bg-[var(--bg-card)] w-full max-w-xl rounded-[2.5rem] shadow-2xl border border-[var(--border-main)] overflow-hidden relative"
+                        onClick={(e) => e.stopPropagation()}
                     >
-                        <div
-                            className="bg-white dark:bg-[#1E1F20] w-full max-w-md rounded-2xl shadow-2xl"
-                            onClick={(e) => e.stopPropagation()}
-                        >
-                            <div className="p-6 border-b border-gray-200 dark:border-[#3c4043]">
-                                <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                                    <AlertTriangle className="text-amber-500" size={20} />
-                                    Avvisa innehåll
-                                </h3>
-                                <p className="text-sm text-gray-500 mt-1">
-                                    "{selectedItem.title}"
-                                </p>
-                            </div>
+                        <div className="absolute top-0 left-0 w-full h-1 bg-red-500/30"></div>
+                        <div className="p-10 border-b border-white/5">
+                            <h3 className="text-2xl font-black text-[var(--text-primary)] uppercase tracking-tighter flex items-center gap-3">
+                                <div className="p-3 bg-red-500/10 text-red-500 rounded-xl">
+                                    <AlertTriangle size={24} />
+                                </div>
+                                Avvisa innehåll
+                            </h3>
+                            <p className="text-[10px] font-black text-[var(--text-secondary)]/40 uppercase tracking-[0.2em] mt-4">
+                                "{selectedItem.title}"
+                            </p>
+                        </div>
 
-                            <div className="p-6">
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                    Motivering (visas för användaren) *
-                                </label>
-                                <textarea
-                                    value={rejectReason}
-                                    onChange={(e) => setRejectReason(e.target.value)}
-                                    placeholder="Förklara varför innehållet inte godkänns..."
-                                    rows={4}
-                                    className="w-full px-3 py-2 bg-white dark:bg-[#282a2c] border border-gray-200 dark:border-[#3c4043] rounded-xl resize-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                                />
-                                <p className="text-xs text-gray-400 mt-1">
+                        <div className="p-10 space-y-4">
+                            <label className="block text-[9px] font-black text-[var(--text-secondary)]/40 uppercase tracking-[0.3em]">
+                                Motivering (visas för användaren) *
+                            </label>
+                            <textarea
+                                value={rejectReason}
+                                onChange={(e) => setRejectReason(e.target.value)}
+                                placeholder="Förklara varför innehållet inte godkänns..."
+                                rows={5}
+                                className="w-full bg-white/[0.03] border border-white/5 rounded-3xl p-6 text-sm font-medium text-[var(--text-primary)] focus:ring-2 focus:ring-red-500/50 focus:border-red-500 transition-all shadow-inner resize-none"
+                            />
+                            <div className="flex items-start gap-2 text-red-500/60 mt-2">
+                                <AlertTriangle size={14} className="shrink-0 mt-0.5" />
+                                <p className="text-[10px] font-bold italic">
                                     T.ex. "Innehållet uppfyller inte kvalitetskraven" eller "Felaktiga svarsalternativ"
                                 </p>
                             </div>
+                        </div>
 
-                            <div className="p-6 border-t border-gray-200 dark:border-[#3c4043] flex justify-end gap-3">
-                                <button
-                                    onClick={() => setShowRejectModal(false)}
-                                    className="px-4 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#282a2c] rounded-xl transition-colors"
-                                >
-                                    Avbryt
-                                </button>
-                                <button
-                                    onClick={handleReject}
-                                    disabled={!rejectReason.trim() || actionLoading === selectedItem.id}
-                                    className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-xl hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                                >
-                                    {actionLoading === selectedItem.id ? (
-                                        <Loader2 size={18} className="animate-spin" />
-                                    ) : (
-                                        <XCircle size={18} />
-                                    )}
-                                    Avvisa
-                                </button>
-                            </div>
+                        <div className="p-10 border-t border-white/5 flex justify-end gap-4 bg-white/[0.01]">
+                            <button
+                                onClick={() => setShowRejectModal(false)}
+                                className="px-8 py-4 text-[10px] font-black text-[var(--text-secondary)]/60 uppercase tracking-widest hover:text-[var(--text-primary)] transition-all"
+                            >
+                                Avbryt
+                            </button>
+                            <button
+                                onClick={handleReject}
+                                disabled={!rejectReason.trim() || actionLoading === selectedItem.id}
+                                className="flex items-center gap-3 px-8 py-4 bg-red-600 text-white rounded-2xl hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed transition-all font-black text-[10px] uppercase tracking-widest shadow-xl shadow-red-600/20"
+                            >
+                                {actionLoading === selectedItem.id ? (
+                                    <Loader2 size={18} className="animate-spin" />
+                                ) : (
+                                    <XCircle size={18} />
+                                )}
+                                Skicka beslut
+                            </button>
                         </div>
                     </div>
-                )}
+                </div>
+            )}
 
-                {/* Delete Modal */}
-                {showDeleteModal && selectedItem && (
+            {/* Delete Modal */}
+            {showDeleteModal && selectedItem && (
+                <div
+                    className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/80 backdrop-blur-md animate-in fade-in duration-300"
+                    onClick={() => setShowDeleteModal(false)}
+                >
                     <div
-                        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
-                        onClick={() => setShowDeleteModal(false)}
+                        className="bg-[var(--bg-card)] w-full max-w-lg rounded-[2.5rem] shadow-2xl border border-[var(--border-main)] overflow-hidden relative"
+                        onClick={(e) => e.stopPropagation()}
                     >
-                        <div
-                            className="bg-white dark:bg-[#1E1F20] w-full max-w-md rounded-2xl shadow-2xl"
-                            onClick={(e) => e.stopPropagation()}
-                        >
-                            <div className="p-6 border-b border-gray-200 dark:border-[#3c4043]">
-                                <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                                    <Trash2 className="text-red-500" size={20} />
-                                    Ta bort innehåll
-                                </h3>
-                                <p className="text-sm text-gray-500 mt-1">
-                                    Är du säker på att du vill ta bort "{selectedItem.title}"?
-                                </p>
-                            </div>
+                        <div className="absolute top-0 left-0 w-full h-1 bg-red-600/30"></div>
+                        <div className="p-10 border-b border-white/5">
+                            <h3 className="text-2xl font-black text-[var(--text-primary)] uppercase tracking-tighter flex items-center gap-3 text-red-500">
+                                <Trash2 size={24} />
+                                Permanent radering
+                            </h3>
+                            <p className="text-[10px] font-black text-[var(--text-secondary)]/40 uppercase tracking-[0.2em] mt-4">
+                                Är du säker på att du vill ta bort "{selectedItem.title}"?
+                            </p>
+                        </div>
 
-                            <div className="p-6">
-                                <p className="text-sm text-gray-600 dark:text-gray-300">
-                                    Detta kommer att permanent ta bort innehållet från communityn. Denna åtgärd kan inte ångras.
+                        <div className="p-10">
+                            <div className="bg-red-500/5 p-6 rounded-3xl border border-red-500/10 mb-2">
+                                <p className="text-sm text-[var(--text-secondary)] font-medium leading-relaxed">
+                                    Detta kommer att permanent ta bort innehållet från communityn. Denna åtgärd kan inte ångras och författaren kommer att förlora sina insamlade poäng för detta föremål.
                                 </p>
-                            </div>
-
-                            <div className="p-6 border-t border-gray-200 dark:border-[#3c4043] flex justify-end gap-3">
-                                <button
-                                    onClick={() => setShowDeleteModal(false)}
-                                    className="px-4 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#282a2c] rounded-xl transition-colors"
-                                >
-                                    Avbryt
-                                </button>
-                                <button
-                                    onClick={handleDelete}
-                                    disabled={actionLoading === selectedItem.id}
-                                    className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-xl hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                                >
-                                    {actionLoading === selectedItem.id ? (
-                                        <Loader2 size={18} className="animate-spin" />
-                                    ) : (
-                                        <Trash2 size={18} />
-                                    )}
-                                    Ta bort
-                                </button>
                             </div>
                         </div>
+
+                        <div className="p-10 border-t border-white/5 flex justify-end gap-4 bg-white/[0.01]">
+                            <button
+                                onClick={() => setShowDeleteModal(false)}
+                                className="px-8 py-4 text-[10px] font-black text-[var(--text-secondary)]/60 uppercase tracking-widest hover:text-[var(--text-primary)] transition-all"
+                            >
+                                Avbryt
+                            </button>
+                            <button
+                                onClick={handleDelete}
+                                disabled={actionLoading === selectedItem.id}
+                                className="flex items-center gap-3 px-10 py-4 bg-red-600 text-white rounded-2xl hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed transition-all font-black text-[10px] uppercase tracking-[0.3em] shadow-xl shadow-red-600/30"
+                            >
+                                {actionLoading === selectedItem.id ? (
+                                    <Loader2 size={18} className="animate-spin" />
+                                ) : (
+                                    <Trash2 size={18} />
+                                )}
+                                Bekräfta radering
+                            </button>
+                        </div>
                     </div>
-                )}
-            </div>
+                </div>
+            )}
         </div>
     );
 };

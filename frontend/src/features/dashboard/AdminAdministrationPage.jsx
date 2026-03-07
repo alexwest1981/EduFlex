@@ -66,12 +66,12 @@ const AdminAdministrationPage = () => {
                 {activeTab === 'system' && <SystemSettings asTab={true} />}
                 {activeTab === 'tickets' && <AdminTicketManager />}
                 {activeTab === 'support-content' && (
-                    <div className="bg-white dark:bg-[#1E1F20] rounded-xl border border-gray-200 dark:border-[#282a2c] shadow-sm p-6 min-h-[500px]">
+                    <div className="bg-[var(--bg-card)] rounded-xl border border-[var(--border-main)] shadow-sm p-6 min-h-[500px]">
                         <SupportArticleManager />
                     </div>
                 )}
                 {activeTab === 'pilot' && (
-                    <div className="bg-white dark:bg-[#1E1F20] rounded-xl border border-gray-200 dark:border-[#282a2c] shadow-sm p-6">
+                    <div className="bg-[var(--bg-card)] rounded-xl border border-[var(--border-main)] shadow-sm p-6">
                         <PilotKitWizard />
                     </div>
                 )}

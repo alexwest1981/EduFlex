@@ -12,6 +12,16 @@ import {
  * Unified navigation configuration for EduFlex.
  * Centralizes all menu items, role-based logic, and translations.
  */
+export const sectionIcons = {
+    main: <LayoutDashboard size={20} />,
+    education: <BookOpen size={20} />,
+    tools: <Settings2 size={20} />,
+    syv: <GraduationCap size={20} />,
+    admin: <ShieldCheck size={20} />,
+    rektor: <Award size={20} />,
+    guardian: <Heart size={20} />
+};
+
 export const getNavigationConfig = (currentUser, t, isModuleActive, licenseTier, badges = {}) => {
     const role = currentUser?.role?.name || currentUser?.role || '';
     const roleName = typeof role === 'string' ? role.toUpperCase() : '';
@@ -30,14 +40,14 @@ export const getNavigationConfig = (currentUser, t, isModuleActive, licenseTier,
         main: [
             { path: dashboardPath, label: isPrincipal ? 'Rektorspaket' : t('sidebar.dashboard'), icon: isPrincipal ? <ShieldCheck size={20} /> : <LayoutDashboard size={20} /> },
             { path: '/catalog', label: t('sidebar.catalog'), icon: <Layers size={20} /> },
-            { path: '/programs', label: 'Utbildningar', icon: <Globe size={20} /> },
+            { path: '/programs', label: 'Utbildningskatalog', icon: <Globe size={20} /> },
             { path: '/documents', label: t('sidebar.documents'), icon: <FileText size={20} /> },
         ],
         education: [],
         tools: [],
+        syv: [],
         admin: [],
         rektor: [],
-        syv: [],
         guardian: []
     };
 
@@ -88,9 +98,18 @@ export const getNavigationConfig = (currentUser, t, isModuleActive, licenseTier,
         }
     }
 
+    // SYV Section - Group Admission and Program Management here for SYV
+    if (isSyv) {
+        sections.syv.push({ path: '/syv/admission', label: 'Antagning', icon: <ClipboardList size={20} /> });
+        sections.syv.push({ path: '/admin/programs', label: 'Utbildningsadministration', icon: <GraduationCap size={20} /> });
+        sections.syv.push({ path: '/study-plans', label: 'Studieplaner (ISP)', icon: <FileText size={20} /> });
+    }
+
     // Admin Section
     if (isAdmin) {
         sections.admin.push({ path: '/admin', label: t('sidebar.admin'), icon: <Settings size={20} /> });
+        sections.admin.push({ path: '/admin/health', label: 'Systemhälsa', icon: <Thermometer size={20} /> });
+        sections.admin.push({ path: '/admin/programs', label: 'Utbildningsadministration', icon: <GraduationCap size={20} /> });
     }
     if ((isAdmin || isReseller) && isModuleActive?.('RESELLER_SYSTEM')) {
         sections.admin.push({ path: '/admin/sales', label: 'Försäljning', icon: <TrendingUp size={20} /> });
@@ -108,11 +127,9 @@ export const getNavigationConfig = (currentUser, t, isModuleActive, licenseTier,
 
     // Rektor/Principal Section
     if (isPrincipal) {
-        // Removed duplicate 'Rektorspaket' since it's now the main dashboard link
         sections.rektor.push({ path: '/principal/quality', label: 'Kvalitetsarbete', icon: <Award size={20} /> });
         sections.rektor.push({ path: '/principal/management-reports', label: 'Ledningsrapport', icon: <TrendingUp size={20} /> });
         sections.rektor.push({ path: '/principal/reports', label: 'Rapportarkiv (CSN)', icon: <FolderOpen size={20} /> });
-        // Removed 'Studieplaner (ISP)' as requested
         sections.rektor.push({ path: '/principal/tools', label: 'Verktyg & Admin', icon: <Settings size={20} /> });
     }
 

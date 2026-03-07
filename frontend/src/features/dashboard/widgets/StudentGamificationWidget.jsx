@@ -67,9 +67,9 @@ const StudentGamificationWidget = ({ currentUser, isModuleActive }) => {
                 <div className="flex justify-between items-start mb-4">
                     <div>
                         <p className="text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">{t('gamification.level_title')}</p>
-                        <h2 className="text-4xl font-black text-gray-900 dark:text-white flex items-center gap-2">
+                        <h2 className="text-4xl font-black text-[var(--text-primary)] flex items-center gap-2">
                             {currentLevel}
-                            <span className="text-sm font-medium text-gray-400 bg-white dark:bg-[#3c4043] px-2 py-0.5 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700">{t('gamification.student_rank')}</span>
+                            <span className="text-sm font-medium text-[var(--text-secondary)] bg-[var(--bg-input)] px-2 py-0.5 rounded-lg shadow-sm border border-[var(--border-main)]">{t('gamification.student_rank')}</span>
                         </h2>
                     </div>
 
@@ -107,7 +107,7 @@ const StudentGamificationWidget = ({ currentUser, isModuleActive }) => {
                             displayBadges.map((item) => {
                                 const achievement = item.achievement || {};
                                 return (
-                                    <div key={item.id} className="aspect-square rounded-xl bg-white dark:bg-[#3c4043] shadow-sm border border-gray-100 dark:border-gray-700 flex items-center justify-center text-indigo-500" title={achievement.name}>
+                                    <div key={item.id} className="aspect-square rounded-xl bg-[var(--bg-input)] shadow-sm border border-[var(--border-main)] flex items-center justify-center text-indigo-500" title={achievement.name}>
                                         {achievement.iconUrl ? (
                                             <span className="text-xl">{achievement.iconUrl}</span>
                                         ) : (

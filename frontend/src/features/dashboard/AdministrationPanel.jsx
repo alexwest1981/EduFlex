@@ -267,18 +267,18 @@ const AdministrationPanel = ({ users, courses, teachers, fetchStats }) => {
     };
 
     return (
-        <div className="flex bg-gray-50 dark:bg-[#151718] min-h-[600px] rounded-lg border border-gray-200 dark:border-[#3c4043] overflow-hidden">
+        <div className="flex bg-[var(--bg-main)] min-h-[600px] rounded-lg border border-[var(--border-main)] overflow-hidden">
             {/* SIDEBAR */}
-            <aside className={`bg-white dark:bg-[#1e2022] w-64 border-r border-gray-200 dark:border-[#3c4043] flex-shrink-0 flex flex-col ${mobileMenuOpen ? 'block absolute z-50 h-full' : 'hidden md:flex'}`}>
-                <div className="p-4 border-b border-gray-200 dark:border-[#3c4043] flex items-center justify-between">
-                    <h2 className="font-bold text-lg text-gray-800 dark:text-gray-200">Admin</h2>
-                    <button className="md:hidden" onClick={() => setMobileMenuOpen(false)}>X</button>
+            <aside className={`bg-[var(--bg-card)] w-64 border-r border-[var(--border-main)] flex-shrink-0 flex flex-col ${mobileMenuOpen ? 'block absolute z-50 h-full shadow-2xl' : 'hidden md:flex'}`}>
+                <div className="p-4 border-b border-[var(--border-main)] flex items-center justify-between">
+                    <h2 className="font-bold text-lg text-[var(--text-primary)]">Admin</h2>
+                    <button className="md:hidden text-[var(--text-secondary)]" onClick={() => setMobileMenuOpen(false)}>✕</button>
                 </div>
 
                 <nav className="flex-1 overflow-y-auto p-4 space-y-6">
                     {menuItems.map((group, idx) => !group.hidden && (
                         <div key={idx}>
-                            <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 px-2">
+                            <h3 className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-[0.2em] mb-3 px-3">
                                 {group.category}
                             </h3>
                             <div className="space-y-1">
@@ -286,12 +286,12 @@ const AdministrationPanel = ({ users, courses, teachers, fetchStats }) => {
                                     <button
                                         key={item.id}
                                         onClick={() => { setActiveTab(item.id); setMobileMenuOpen(false); }}
-                                        className={`w-full flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors ${activeTab === item.id
-                                            ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300'
-                                            : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#282a2c]'
+                                        className={`w-full flex items-center gap-3 px-4 py-2.5 text-xs font-black rounded-xl transition-all ${activeTab === item.id
+                                            ? 'bg-brand-blue text-white shadow-lg shadow-brand-blue/20'
+                                            : 'text-[var(--text-secondary)] hover:bg-white/5 hover:text-[var(--text-primary)]'
                                             }`}
                                     >
-                                        <item.icon size={18} />
+                                        <item.icon size={16} />
                                         {item.label}
                                     </button>
                                 ))}
@@ -304,9 +304,9 @@ const AdministrationPanel = ({ users, courses, teachers, fetchStats }) => {
             {/* MAIN CONTENT */}
             <main className="flex-1 flex flex-col min-w-0">
                 {/* Mobile Header */}
-                <div className="md:hidden p-4 bg-white dark:bg-[#1e2022] border-b border-gray-200 dark:border-[#3c4043] flex justify-between items-center">
-                    <span className="font-bold">Meny</span>
-                    <button onClick={() => setMobileMenuOpen(true)} className="p-2 bg-gray-100 rounded">
+                <div className="md:hidden p-4 bg-[var(--bg-card)] border-b border-[var(--border-main)] flex justify-between items-center">
+                    <span className="font-black text-[var(--text-primary)]">Meny</span>
+                    <button onClick={() => setMobileMenuOpen(true)} className="p-2 bg-[var(--bg-card)] border border-[var(--border-main)] rounded-xl text-[var(--text-secondary)]">
                         <Settings size={20} />
                     </button>
                 </div>

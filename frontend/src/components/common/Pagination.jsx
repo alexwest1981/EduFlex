@@ -25,11 +25,11 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
     };
 
     return (
-        <div className="flex items-center justify-between px-4 py-3 border-t border-gray-200 dark:border-[#3c4043] sm:px-6">
+        <div className="flex items-center justify-between px-4 py-3 border-t border-[var(--border-main)] sm:px-6">
             <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
                 <div>
-                    <p className="text-sm text-gray-700 dark:text-gray-400">
-                        Visar sida <span className="font-medium">{currentPage}</span> av <span className="font-medium">{totalPages}</span>
+                    <p className="text-sm text-[var(--text-secondary)]">
+                        Visar sida <span className="font-medium text-[var(--text-primary)]">{currentPage}</span> av <span className="font-medium text-[var(--text-primary)]">{totalPages}</span>
                     </p>
                 </div>
                 <div>
@@ -37,7 +37,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
                         <button
                             onClick={() => onPageChange(currentPage - 1)}
                             disabled={currentPage === 1}
-                            className={`relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-[#1E1F20] text-sm font-medium ${currentPage === 1 ? 'text-gray-300 dark:text-gray-600 cursor-not-allowed' : 'text-gray-500 hover:bg-gray-50 dark:text-gray-400 dark:hover:bg-[#282a2c]'}`}
+                            className={`relative inline-flex items-center px-2 py-2 rounded-l-md border border-[var(--border-main)] bg-[var(--bg-card)] text-sm font-medium ${currentPage === 1 ? 'opacity-30 cursor-not-allowed' : 'text-[var(--text-secondary)] hover:bg-[var(--bg-input)] transition-colors'}`}
                         >
                             <span className="sr-only">Föregående</span>
                             <ChevronLeft size={16} />
@@ -48,9 +48,9 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
                                 key={idx}
                                 onClick={() => typeof page === 'number' ? onPageChange(page) : null}
                                 disabled={typeof page !== 'number'}
-                                className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${page === currentPage
-                                        ? 'z-10 bg-indigo-50 border-indigo-500 text-indigo-600 dark:bg-indigo-900/40 dark:border-indigo-500 dark:text-indigo-400'
-                                        : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50 dark:bg-[#1E1F20] dark:border-gray-600 dark:text-gray-400 dark:hover:bg-[#282a2c]'
+                                className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium transition-all ${page === currentPage
+                                    ? 'z-10 bg-indigo-600 border-indigo-600 text-white shadow-lg shadow-indigo-500/20'
+                                    : 'bg-[var(--bg-card)] border-[var(--border-main)] text-[var(--text-secondary)] hover:bg-[var(--bg-input)]'
                                     } ${typeof page !== 'number' ? 'cursor-default' : 'cursor-pointer'}`}
                             >
                                 {page}
@@ -60,7 +60,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
                         <button
                             onClick={() => onPageChange(currentPage + 1)}
                             disabled={currentPage === totalPages}
-                            className={`relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-[#1E1F20] text-sm font-medium ${currentPage === totalPages ? 'text-gray-300 dark:text-gray-600 cursor-not-allowed' : 'text-gray-500 hover:bg-gray-50 dark:text-gray-400 dark:hover:bg-[#282a2c]'}`}
+                            className={`relative inline-flex items-center px-2 py-2 rounded-r-md border border-[var(--border-main)] bg-[var(--bg-card)] text-sm font-medium ${currentPage === totalPages ? 'opacity-30 cursor-not-allowed' : 'text-[var(--text-secondary)] hover:bg-[var(--bg-input)] transition-colors'}`}
                         >
                             <span className="sr-only">Nästa</span>
                             <ChevronRight size={16} />

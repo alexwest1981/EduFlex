@@ -29,10 +29,10 @@ const SalesOverview = () => {
     const { totalRevenue, completedOrders, totalSeatLicensesSold } = analytics;
 
     const StatusBadge = ({ status }) => {
-        if (status === 'COMPLETED') return <span className="flex items-center gap-1 text-green-600 bg-green-50 px-2 py-1 rounded-md text-xs font-bold w-max"><CheckCircle2 size={14} /> Genomförd</span>;
-        if (status === 'PENDING') return <span className="flex items-center gap-1 text-yellow-600 bg-yellow-50 px-2 py-1 rounded-md text-xs font-bold w-max"><Calendar size={14} /> Väntar</span>;
-        if (status === 'FAILED') return <span className="flex items-center gap-1 text-red-600 bg-red-50 px-2 py-1 rounded-md text-xs font-bold w-max"><XCircle size={14} /> Misslyckad</span>;
-        return <span className="text-gray-500 bg-gray-100 px-2 py-1 rounded-md text-xs font-bold">{status}</span>;
+        if (status === 'COMPLETED') return <span className="flex items-center gap-1 text-green-400 bg-green-500/10 px-2 py-1 rounded-md text-xs font-bold w-max"><CheckCircle2 size={14} /> Genomförd</span>;
+        if (status === 'PENDING') return <span className="flex items-center gap-1 text-yellow-400 bg-yellow-500/10 px-2 py-1 rounded-md text-xs font-bold w-max"><Calendar size={14} /> Väntar</span>;
+        if (status === 'FAILED') return <span className="flex items-center gap-1 text-red-400 bg-red-500/10 px-2 py-1 rounded-md text-xs font-bold w-max"><XCircle size={14} /> Misslyckad</span>;
+        return <span className="text-[var(--text-secondary)] bg-[var(--bg-input)] px-2 py-1 rounded-md text-xs font-bold">{status}</span>;
     };
 
     if (loading) return <div className="p-8 flex items-center gap-2 text-gray-400"><Loader2 className="animate-spin" /> Laddar orderdata...</div>;
@@ -40,42 +40,42 @@ const SalesOverview = () => {
     return (
         <div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <div className="bg-white dark:bg-[#1a1b1d] p-6 rounded-2xl border border-gray-200 dark:border-white/5 flex items-center gap-4">
+                <div className="bg-[var(--bg-card)] p-6 rounded-2xl border border-[var(--border-main)] flex items-center gap-4">
                     <div className="size-12 rounded-xl bg-brand-teal/10 flex items-center justify-center text-brand-teal">
                         <DollarSign size={24} />
                     </div>
                     <div>
-                        <div className="text-sm font-bold text-gray-500 uppercase tracking-widest">Total Försäljning</div>
-                        <div className="text-2xl font-black dark:text-white">{totalRevenue.toLocaleString()} kr</div>
+                        <div className="text-sm font-bold text-[var(--text-secondary)] uppercase tracking-widest">Total Försäljning</div>
+                        <div className="text-2xl font-black text-[var(--text-primary)]">{totalRevenue.toLocaleString()} kr</div>
                     </div>
                 </div>
-                <div className="bg-white dark:bg-[#1a1b1d] p-6 rounded-2xl border border-gray-200 dark:border-white/5 flex items-center gap-4">
+                <div className="bg-[var(--bg-card)] p-6 rounded-2xl border border-[var(--border-main)] flex items-center gap-4">
                     <div className="size-12 rounded-xl bg-brand-blue/10 flex items-center justify-center text-brand-blue">
                         <ShoppingBag size={24} />
                     </div>
                     <div>
-                        <div className="text-sm font-bold text-gray-500 uppercase tracking-widest">Lyckade Ordrar</div>
-                        <div className="text-2xl font-black dark:text-white">{completedOrders} st</div>
+                        <div className="text-sm font-bold text-[var(--text-secondary)] uppercase tracking-widest">Lyckade Ordrar</div>
+                        <div className="text-2xl font-black text-[var(--text-primary)]">{completedOrders} st</div>
                     </div>
                 </div>
-                <div className="bg-white dark:bg-[#1a1b1d] p-6 rounded-2xl border border-gray-200 dark:border-white/5 flex items-center gap-4">
+                <div className="bg-[var(--bg-card)] p-6 rounded-2xl border border-[var(--border-main)] flex items-center gap-4">
                     <div className="size-12 rounded-xl bg-brand-gold/10 flex items-center justify-center text-brand-gold">
                         <Percent size={24} />
                     </div>
                     <div>
-                        <div className="text-sm font-bold text-gray-500 uppercase tracking-widest">Sålda Seat Licenses</div>
-                        <div className="text-2xl font-black dark:text-white">{totalSeatLicensesSold} platser</div>
+                        <div className="text-sm font-bold text-[var(--text-secondary)] uppercase tracking-widest">Sålda Seat Licenses</div>
+                        <div className="text-2xl font-black text-[var(--text-primary)]">{totalSeatLicensesSold} platser</div>
                     </div>
                 </div>
             </div>
 
-            <div className="bg-white dark:bg-[#1a1b1d] rounded-2xl border border-gray-200 dark:border-white/5 overflow-hidden">
-                <div className="p-6 border-b border-gray-200 dark:border-white/5">
-                    <h3 className="font-bold text-lg dark:text-white">Orderhistorik</h3>
+            <div className="bg-[var(--bg-card)] rounded-2xl border border-[var(--border-main)] overflow-hidden">
+                <div className="p-6 border-b border-[var(--border-main)]">
+                    <h3 className="font-bold text-lg text-[var(--text-primary)]">Orderhistorik</h3>
                 </div>
                 <div className="overflow-x-auto">
                     <table className="w-full text-left">
-                        <thead className="bg-gray-50 dark:bg-white/5 text-gray-500 text-xs uppercase tracking-widest font-bold">
+                        <thead className="bg-white/5 text-[var(--text-secondary)] text-xs uppercase tracking-widest font-bold">
                             <tr>
                                 <th className="px-6 py-4">Order ID</th>
                                 <th className="px-6 py-4">Kund</th>
@@ -85,31 +85,31 @@ const SalesOverview = () => {
                                 <th className="px-6 py-4">Datum</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-100 dark:divide-white/5">
+                        <tbody className="divide-y divide-white/5">
                             {orders.map(order => (
-                                <tr key={order.id} className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
-                                    <td className="px-6 py-4 font-mono text-xs dark:text-gray-300">
+                                <tr key={order.id} className="hover:bg-white/5 transition-colors">
+                                    <td className="px-6 py-4 font-mono text-xs text-[var(--text-secondary)]">
                                         #{order.id.toString().padStart(6, '0')}
                                         {order.stripePaymentIntentId && (
-                                            <div className="text-[10px] text-gray-500 mt-1" title={order.stripePaymentIntentId}>Stripe</div>
+                                            <div className="text-[10px] text-[var(--text-secondary)] mt-1" title={order.stripePaymentIntentId}>Stripe</div>
                                         )}
                                     </td>
                                     <td className="px-6 py-4">
-                                        <div className="font-bold text-sm dark:text-white">{order.customer?.firstName} {order.customer?.lastName}</div>
-                                        <div className="text-xs text-gray-500">{order.customer?.email}</div>
+                                        <div className="font-bold text-sm text-[var(--text-primary)]">{order.customer?.firstName} {order.customer?.lastName}</div>
+                                        <div className="text-xs text-[var(--text-secondary)]">{order.customer?.email}</div>
                                     </td>
                                     <td className="px-6 py-4">
                                         {order.courses?.map(course => (
-                                            <div key={course.id} className="text-sm dark:text-gray-300">• {course.name}</div>
+                                            <div key={course.id} className="text-sm text-[var(--text-secondary)]">• {course.name}</div>
                                         ))}
                                     </td>
-                                    <td className="px-6 py-4 font-black dark:text-white text-brand-teal">
+                                    <td className="px-6 py-4 font-black text-[var(--text-primary)]">
                                         {order.totalAmount} kr
                                     </td>
                                     <td className="px-6 py-4">
                                         <StatusBadge status={order.status} />
                                     </td>
-                                    <td className="px-6 py-4 text-sm text-gray-500">
+                                    <td className="px-6 py-4 text-sm text-[var(--text-secondary)]">
                                         {new Date(order.createdAt).toLocaleDateString('sv-SE', {
                                             year: 'numeric', month: 'short', day: 'numeric',
                                             hour: '2-digit', minute: '2-digit'
@@ -211,10 +211,10 @@ const SalesCourses = () => {
 
     return (
         <div className="space-y-6">
-            <div className="flex justify-between items-center bg-white dark:bg-[#1a1b1d] p-6 rounded-2xl border border-gray-200 dark:border-white/5">
+            <div className="flex justify-between items-center bg-[var(--bg-card)] p-6 rounded-2xl border border-[var(--border-main)]">
                 <div>
-                    <h3 className="font-bold text-lg dark:text-white">Butikens Kursutbud</h3>
-                    <p className="text-gray-500 text-sm">Prissätt och aktivera kurser för försäljning i Storefront.</p>
+                    <h3 className="font-bold text-lg text-[var(--text-primary)]">Butikens Kursutbud</h3>
+                    <p className="text-[var(--text-secondary)] text-sm">Prissätt och aktivera kurser för försäljning i Storefront.</p>
                 </div>
                 <button
                     onClick={() => { setIsCreating(!isCreating); setEditingCourse(null); }}
@@ -227,40 +227,40 @@ const SalesCourses = () => {
                     className="bg-brand-teal/5 p-6 rounded-2xl border border-brand-teal/20 space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div className="md:col-span-2">
-                            <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Kursnamn</label>
-                            <input required type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="w-full px-4 py-2 rounded-xl border border-gray-200 dark:border-white/10 dark:bg-[#1a1b1d] dark:text-white outline-none focus:border-brand-teal" />
+                            <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">Kursnamn</label>
+                            <input required type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="w-full px-4 py-2 rounded-xl border border-[var(--border-main)] bg-[var(--bg-input)] text-[var(--text-primary)] outline-none focus:border-brand-teal" />
                         </div>
                         <div>
-                            <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Kurskod</label>
-                            <input required type="text" value={formData.courseCode} onChange={(e) => setFormData({ ...formData, courseCode: e.target.value.toUpperCase() })} className="w-full px-4 py-2 rounded-xl border border-gray-200 dark:border-white/10 dark:bg-[#1a1b1d] dark:text-white outline-none focus:border-brand-teal" />
+                            <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">Kurskod</label>
+                            <input required type="text" value={formData.courseCode} onChange={(e) => setFormData({ ...formData, courseCode: e.target.value.toUpperCase() })} className="w-full px-4 py-2 rounded-xl border border-[var(--border-main)] bg-[var(--bg-input)] text-[var(--text-primary)] outline-none focus:border-brand-teal" />
                         </div>
                         <div>
-                            <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Kategori</label>
-                            <input type="text" value={formData.category} onChange={(e) => setFormData({ ...formData, category: e.target.value })} className="w-full px-4 py-2 rounded-xl border border-gray-200 dark:border-white/10 dark:bg-[#1a1b1d] dark:text-white outline-none focus:border-brand-teal" placeholder="T.ex. Programmering" />
+                            <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">Kategori</label>
+                            <input type="text" value={formData.category} onChange={(e) => setFormData({ ...formData, category: e.target.value })} className="w-full px-4 py-2 rounded-xl border border-[var(--border-main)] bg-[var(--bg-input)] text-[var(--text-primary)] outline-none focus:border-brand-teal" placeholder="T.ex. Programmering" />
                         </div>
                         <div>
-                            <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Pris (kr)</label>
-                            <input required type="number" value={formData.price} onChange={(e) => setFormData({ ...formData, price: parseFloat(e.target.value) })} className="w-full px-4 py-2 rounded-xl border border-gray-200 dark:border-white/10 dark:bg-[#1a1b1d] dark:text-white outline-none focus:border-brand-teal" />
+                            <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">Pris (kr)</label>
+                            <input required type="number" value={formData.price} onChange={(e) => setFormData({ ...formData, price: parseFloat(e.target.value) })} className="w-full px-4 py-2 rounded-xl border border-[var(--border-main)] bg-[var(--bg-input)] text-[var(--text-primary)] outline-none focus:border-brand-teal" />
                         </div>
                         <div>
-                            <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Seats / Platser</label>
-                            <input required type="number" value={formData.maxStudents} onChange={(e) => setFormData({ ...formData, maxStudents: parseInt(e.target.value) })} className="w-full px-4 py-2 rounded-xl border border-gray-200 dark:border-white/10 dark:bg-[#1a1b1d] dark:text-white outline-none focus:border-brand-teal" />
+                            <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">Seats / Platser</label>
+                            <input required type="number" value={formData.maxStudents} onChange={(e) => setFormData({ ...formData, maxStudents: parseInt(e.target.value) })} className="w-full px-4 py-2 rounded-xl border border-[var(--border-main)] bg-[var(--bg-input)] text-[var(--text-primary)] outline-none focus:border-brand-teal" />
                         </div>
                         <div>
-                            <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Startdatum</label>
-                            <input type="date" value={formData.startDate} onChange={(e) => setFormData({ ...formData, startDate: e.target.value })} className="w-full px-4 py-2 rounded-xl border border-gray-200 dark:border-white/10 dark:bg-[#1a1b1d] dark:text-white outline-none focus:border-brand-teal" />
+                            <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">Startdatum</label>
+                            <input type="date" value={formData.startDate} onChange={(e) => setFormData({ ...formData, startDate: e.target.value })} className="w-full px-4 py-2 rounded-xl border border-[var(--border-main)] bg-[var(--bg-input)] text-[var(--text-primary)] outline-none focus:border-brand-teal" />
                         </div>
                         <div>
-                            <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Slutdatum</label>
-                            <input type="date" value={formData.endDate} onChange={(e) => setFormData({ ...formData, endDate: e.target.value })} className="w-full px-4 py-2 rounded-xl border border-gray-200 dark:border-white/10 dark:bg-[#1a1b1d] dark:text-white outline-none focus:border-brand-teal" />
+                            <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">Slutdatum</label>
+                            <input type="date" value={formData.endDate} onChange={(e) => setFormData({ ...formData, endDate: e.target.value })} className="w-full px-4 py-2 rounded-xl border border-[var(--border-main)] bg-[var(--bg-input)] text-[var(--text-primary)] outline-none focus:border-brand-teal" />
                         </div>
                     </div>
                     <div>
-                        <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Beskrivning</label>
-                        <textarea value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} className="w-full px-4 py-2 rounded-xl border border-gray-200 dark:border-white/10 dark:bg-[#1a1b1d] dark:text-white outline-none focus:border-brand-teal h-24" />
+                        <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">Beskrivning</label>
+                        <textarea value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} className="w-full px-4 py-2 rounded-xl border border-[var(--border-main)] bg-[var(--bg-input)] text-[var(--text-primary)] outline-none focus:border-brand-teal h-24" />
                     </div>
                     <div className="flex justify-end gap-3">
-                        <button type="button" onClick={() => { setIsCreating(false); setEditingCourse(null); }} className="px-6 py-2 rounded-xl font-bold bg-gray-100 dark:bg-white/5 text-gray-500 hover:bg-gray-200 transition-colors">Avbryt</button>
+                        <button type="button" onClick={() => { setIsCreating(false); setEditingCourse(null); }} className="px-6 py-2 rounded-xl font-bold bg-white/5 text-[var(--text-secondary)] hover:bg-white/10 transition-colors">Avbryt</button>
                         <button type="submit" className="flex items-center gap-2 bg-brand-teal text-white px-6 py-2 rounded-xl font-bold hover:bg-brand-teal/90 shadow-lg shadow-brand-teal/20">
                             <Save size={18} /> {editingCourse ? 'Spara ändringar' : 'Skapa Kurs'}
                         </button>
@@ -268,10 +268,10 @@ const SalesCourses = () => {
                 </form>
             )}
 
-            <div className="bg-white dark:bg-[#1a1b1d] rounded-2xl border border-gray-200 dark:border-white/5 overflow-hidden">
+            <div className="bg-[var(--bg-card)] rounded-2xl border border-[var(--border-main)] overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="w-full text-left">
-                        <thead className="bg-gray-50 dark:bg-white/5 text-gray-500 text-xs uppercase tracking-widest font-bold">
+                        <thead className="bg-white/5 text-[var(--text-secondary)] text-xs uppercase tracking-widest font-bold">
                             <tr>
                                 <th className="px-6 py-4">Kursnamn</th>
                                 <th className="px-6 py-4">Pris (kr)</th>
@@ -281,19 +281,19 @@ const SalesCourses = () => {
                                 <th className="px-6 py-4 text-right">Åtgärder</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-100 dark:divide-white/5">
+                        <tbody className="divide-y divide-white/5">
                             {courses.map(course => (
-                                <tr key={course.id} className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors group">
+                                <tr key={course.id} className="hover:bg-white/5 transition-colors group">
                                     <td className="px-6 py-4">
-                                        <div className="font-bold dark:text-white">{course.name}</div>
-                                        <div className="text-xs text-gray-500">{course.courseCode} • {course.category || 'Övrigt'}</div>
+                                        <div className="font-bold text-[var(--text-primary)]">{course.name}</div>
+                                        <div className="text-xs text-[var(--text-secondary)]">{course.courseCode} • {course.category || 'Övrigt'}</div>
                                     </td>
                                     <td className="px-6 py-4">
                                         <input
                                             type="number"
                                             defaultValue={course.price || 0}
                                             onBlur={(e) => updateCourse(course.id, { price: parseFloat(e.target.value) })}
-                                            className="w-24 px-3 py-1 bg-gray-100 dark:bg-white/5 border border-transparent focus:border-brand-teal rounded-md dark:text-white outline-none font-bold"
+                                            className="w-24 px-3 py-1 bg-[var(--bg-input)] border border-transparent focus:border-brand-teal rounded-md text-[var(--text-primary)] outline-none font-bold"
                                         />
                                     </td>
                                     <td className="px-6 py-4 text-center">
@@ -301,13 +301,13 @@ const SalesCourses = () => {
                                             type="number"
                                             defaultValue={course.maxStudents || 100}
                                             onBlur={(e) => updateCourse(course.id, { maxStudents: parseInt(e.target.value) })}
-                                            className="w-20 px-3 py-1 bg-gray-100 dark:bg-white/5 border border-transparent focus:border-brand-teal rounded-md dark:text-white outline-none text-center"
+                                            className="w-20 px-3 py-1 bg-[var(--bg-input)] border border-transparent focus:border-brand-teal rounded-md text-[var(--text-primary)] outline-none text-center"
                                         />
                                     </td>
                                     <td className="px-6 py-4 text-sm">
                                         <button
                                             onClick={() => toggleOpen(course.id)}
-                                            className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${course.open ? 'bg-green-100 text-green-700' : 'bg-gray-100 dark:bg-white/5 text-gray-500'}`}
+                                            className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${course.open ? 'bg-green-500/10 text-green-400' : 'bg-white/5 text-[var(--text-secondary)]'}`}
                                         >
                                             {course.open ? 'Publicerad' : 'Privat'}
                                         </button>
@@ -316,7 +316,7 @@ const SalesCourses = () => {
                                         {course.visibility === 'GLOBAL_LIBRARY' ? (
                                             <span className="flex items-center gap-1 text-brand-blue font-bold text-xs"><Globe size={14} /> Global</span>
                                         ) : (
-                                            <span className="text-gray-400 text-xs italic">Lokal</span>
+                                            <span className="text-[var(--text-secondary)] text-xs italic">Lokal</span>
                                         )}
                                     </td>
                                     <td className="px-6 py-4 text-right">
@@ -411,10 +411,10 @@ const SalesPromoCodes = () => {
 
     return (
         <div className="space-y-6">
-            <div className="flex justify-between items-center bg-white dark:bg-[#1a1b1d] p-6 rounded-2xl border border-gray-200 dark:border-white/5">
+            <div className="flex justify-between items-center bg-[var(--bg-card)] p-6 rounded-2xl border border-[var(--border-main)]">
                 <div>
-                    <h3 className="font-bold text-lg dark:text-white">Rabattkoder & Kampanjer</h3>
-                    <p className="text-sm text-gray-500">Skapa och hantera koder som kunderna kan ange i kassan.</p>
+                    <h3 className="font-bold text-lg text-[var(--text-primary)]">Rabattkoder & Kampanjer</h3>
+                    <p className="text-sm text-[var(--text-secondary)]">Skapa och hantera koder som kunderna kan ange i kassan.</p>
                 </div>
                 <button
                     onClick={() => setIsCreating(!isCreating)}
@@ -425,19 +425,19 @@ const SalesPromoCodes = () => {
             {isCreating && (
                 <form onSubmit={handleCreate} className="bg-brand-teal/5 p-6 rounded-2xl border border-brand-teal/20 grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
                     <div>
-                        <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Kod (T.ex. SOMMAR20)</label>
-                        <input required type="text" value={formData.code} onChange={(e) => setFormData({ ...formData, code: e.target.value.toUpperCase() })} className="w-full px-4 py-2 rounded-xl border border-gray-200 dark:border-white/10 dark:bg-[#1a1b1d] dark:text-white outline-none focus:border-brand-teal" />
+                        <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">Kod (T.ex. SOMMAR20)</label>
+                        <input required type="text" value={formData.code} onChange={(e) => setFormData({ ...formData, code: e.target.value.toUpperCase() })} className="w-full px-4 py-2 rounded-xl border border-[var(--border-main)] bg-[var(--bg-input)] text-[var(--text-primary)] outline-none focus:border-brand-teal" />
                     </div>
                     <div>
-                        <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Typ</label>
-                        <select value={formData.discountType} onChange={(e) => setFormData({ ...formData, discountType: e.target.value })} className="w-full px-4 py-2 rounded-xl border border-gray-200 dark:border-white/10 dark:bg-[#1a1b1d] dark:text-white outline-none focus:border-brand-teal">
+                        <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">Typ</label>
+                        <select value={formData.discountType} onChange={(e) => setFormData({ ...formData, discountType: e.target.value })} className="w-full px-4 py-2 rounded-xl border border-[var(--border-main)] bg-[var(--bg-input)] text-[var(--text-primary)] outline-none focus:border-brand-teal">
                             <option value="PERCENTAGE">Procent (%)</option>
                             <option value="FIXED_AMOUNT">Fast summa (kr)</option>
                         </select>
                     </div>
                     <div>
-                        <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Värde</label>
-                        <input required type="number" min="1" value={formData.discountValue} onChange={(e) => setFormData({ ...formData, discountValue: parseFloat(e.target.value) })} className="w-full px-4 py-2 rounded-xl border border-gray-200 dark:border-white/10 dark:bg-[#1a1b1d] dark:text-white outline-none focus:border-brand-teal" />
+                        <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">Värde</label>
+                        <input required type="number" min="1" value={formData.discountValue} onChange={(e) => setFormData({ ...formData, discountValue: parseFloat(e.target.value) })} className="w-full px-4 py-2 rounded-xl border border-[var(--border-main)] bg-[var(--bg-input)] text-[var(--text-primary)] outline-none focus:border-brand-teal" />
                     </div>
                     <button type="submit" className="bg-brand-teal text-white px-4 py-2 rounded-xl font-bold hover:bg-brand-teal/90 h-[42px] flex items-center justify-center gap-2 shadow-lg shadow-brand-teal/20">
                         <Save size={18} /> Spara
@@ -445,9 +445,9 @@ const SalesPromoCodes = () => {
                 </form>
             )}
 
-            <div className="bg-white dark:bg-[#1a1b1d] rounded-2xl border border-gray-200 dark:border-white/5 overflow-hidden">
+            <div className="bg-[var(--bg-card)] rounded-2xl border border-[var(--border-main)] overflow-hidden">
                 <table className="w-full text-left">
-                    <thead className="bg-gray-50 dark:bg-white/5 text-gray-500 text-xs uppercase tracking-widest font-bold">
+                    <thead className="bg-white/5 text-[var(--text-secondary)] text-xs uppercase tracking-widest font-bold">
                         <tr>
                             <th className="px-6 py-4">Kod</th>
                             <th className="px-6 py-4">Rabatt</th>
@@ -456,25 +456,25 @@ const SalesPromoCodes = () => {
                             <th className="px-6 py-4 text-right">Åtgärder</th>
                         </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-100 dark:divide-white/5">
+                    <tbody className="divide-y divide-white/5">
                         {promoCodes.map(promo => (
-                            <tr key={promo.id} className={`hover:bg-gray-50 dark:hover:bg-white/5 ${!promo.isActive && 'opacity-50'}`}>
+                            <tr key={promo.id} className={`hover:bg-white/5 ${!promo.isActive && 'opacity-50'}`}>
                                 <td className="px-6 py-4 font-mono font-bold text-brand-purple text-lg">{promo.code}</td>
-                                <td className="px-6 py-4 font-bold dark:text-white">
+                                <td className="px-6 py-4 font-bold text-[var(--text-primary)]">
                                     {promo.discountValue} {promo.discountType === 'PERCENTAGE' ? '%' : 'kr'}
                                 </td>
-                                <td className="px-6 py-4 text-sm text-gray-500">
+                                <td className="px-6 py-4 text-sm text-[var(--text-secondary)]">
                                     {promo.currentUses} st använda
                                 </td>
-                                <td className="px-6 py-4 text-sm text-gray-500">
+                                <td className="px-6 py-4 text-sm text-[var(--text-secondary)]">
                                     {new Date(promo.createdAt).toLocaleDateString()}
                                 </td>
                                 <td className="px-6 py-4 flex items-center justify-end gap-2">
                                     <button
                                         onClick={() => toggleStatus(promo.id)}
-                                        className={`px-3 py-1 rounded-full text-xs font-bold ${promo.isActive ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}
+                                        className={`px-3 py-1 rounded-full text-xs font-bold ${promo.isActive ? 'bg-green-500/10 text-green-400' : 'bg-white/5 text-[var(--text-secondary)]'}`}
                                     >{promo.isActive ? 'Aktiv' : 'Inaktiv'}</button>
-                                    <button onClick={() => deleteCode(promo.id)} className="p-2 text-rose-500 hover:bg-rose-50 rounded-lg"><Trash2 size={16} /></button>
+                                    <button onClick={() => deleteCode(promo.id)} className="p-2 text-rose-500 hover:bg-rose-500/10 rounded-lg"><Trash2 size={16} /></button>
                                 </td>
                             </tr>
                         ))}
@@ -496,33 +496,33 @@ const SalesDashboard = () => {
     if (!isModuleActive?.('RESELLER_SYSTEM')) {
         return (
             <div className="p-8 flex flex-col items-center justify-center min-h-[60vh]">
-                <div className="size-20 bg-gray-100 dark:bg-white/5 rounded-3xl flex items-center justify-center mb-6 text-gray-400">
+                <div className="size-20 bg-white/5 rounded-3xl flex items-center justify-center mb-6 text-[var(--text-secondary)]">
                     <Lock size={40} />
                 </div>
-                <h1 className="text-2xl font-black mb-2 dark:text-white text-center">Modul inaktiv</h1>
-                <p className="text-gray-500 text-center max-w-md">Reseller System-modulen är inaktiv eller kräver ENTERPRISE-licens. Vänligen kontakta administratören.</p>
+                <h1 className="text-2xl font-black mb-2 text-[var(--text-primary)] text-center">Modul inaktiv</h1>
+                <p className="text-[var(--text-secondary)] text-center max-w-md">Reseller System-modulen är inaktiv eller kräver ENTERPRISE-licens. Vänligen kontakta administratören.</p>
             </div>
         );
     }
 
     return (
         <div className="p-8">
-            <h1 className="text-2xl font-black mb-6 flex items-center gap-3 dark:text-white">
+            <h1 className="text-2xl font-black mb-6 flex items-center gap-3 text-[var(--text-primary)]">
                 <Store className="text-brand-teal" /> Butiksadministration
             </h1>
 
-            <div className="flex border-b border-gray-200 dark:border-white/10 mb-8 bg-white dark:bg-[#1a1b1d] rounded-t-2xl px-4 pt-4">
+            <div className="flex border-b border-[var(--border-main)] mb-8 bg-[var(--bg-card)] rounded-t-2xl px-4 pt-4">
                 <button
                     onClick={() => setActiveTab('overview')}
-                    className={`pb-4 px-4 font-bold text-sm flex items-center gap-2 transition-colors ${activeTab === 'overview' ? 'border-b-2 border-brand-teal text-brand-teal' : 'text-gray-500 hover:text-gray-800 dark:hover:text-white'}`}
+                    className={`pb-4 px-4 font-bold text-sm flex items-center gap-2 transition-colors ${activeTab === 'overview' ? 'border-b-2 border-brand-teal text-brand-teal' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'}`}
                 ><CreditCard size={18} /> Översikt & Ordrar</button>
                 <button
                     onClick={() => setActiveTab('courses')}
-                    className={`pb-4 px-4 font-bold text-sm flex items-center gap-2 transition-colors ${activeTab === 'courses' ? 'border-b-2 border-brand-teal text-brand-teal' : 'text-gray-500 hover:text-gray-800 dark:hover:text-white'}`}
+                    className={`pb-4 px-4 font-bold text-sm flex items-center gap-2 transition-colors ${activeTab === 'courses' ? 'border-b-2 border-brand-teal text-brand-teal' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'}`}
                 ><BookOpen size={18} /> Kurser & Priser</button>
                 <button
                     onClick={() => setActiveTab('promocodes')}
-                    className={`pb-4 px-4 font-bold text-sm flex items-center gap-2 transition-colors ${activeTab === 'promocodes' ? 'border-b-2 border-brand-teal text-brand-teal' : 'text-gray-500 hover:text-gray-800 dark:hover:text-white'}`}
+                    className={`pb-4 px-4 font-bold text-sm flex items-center gap-2 transition-colors ${activeTab === 'promocodes' ? 'border-b-2 border-brand-teal text-brand-teal' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'}`}
                 ><Percent size={18} /> Rabattkoder</button>
             </div>
 

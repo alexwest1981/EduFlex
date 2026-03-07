@@ -99,82 +99,82 @@ const StudentCoursesPage = () => {
         return new Date(dateArr).toLocaleString('sv-SE', { dateStyle: 'short', timeStyle: 'short' });
     };
 
-    if (loading) return <div className="p-10 text-center text-gray-500">Laddar kurser...</div>;
+    if (loading) return <div className="p-10 text-center text-[var(--text-secondary)]">Laddar kurser...</div>;
 
     return (
         <div className="max-w-5xl mx-auto p-4 lg:p-8 animate-in fade-in">
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Mina Kurser</h1>
-            <p className="text-gray-500 dark:text-gray-400 mb-8">Här hittar du alla kurser du är registrerad på samt kommande händelser.</p>
+            <h1 className="text-3xl font-bold text-[var(--text-primary)] mb-2">Mina Kurser</h1>
+            <p className="text-[var(--text-secondary)] mb-8">Här hittar du alla kurser du är registrerad på samt kommande händelser.</p>
 
             <div className="space-y-6">
                 {courses.length === 0 ? (
-                    <div className="text-center py-20 bg-white dark:bg-[#1E1F20] rounded-2xl border-2 border-dashed border-gray-200 dark:border-[#3c4043]">
-                        <BookOpen size={48} className="mx-auto text-gray-300 mb-4" />
-                        <h3 className="text-lg font-bold text-gray-700 dark:text-gray-300">Inga kurser hittades</h3>
-                        <p className="text-gray-500">Du är inte registrerad på några kurser just nu.</p>
+                    <div className="text-center py-20 bg-[var(--bg-card)] rounded-2xl border-2 border-dashed border-[var(--border-main)]">
+                        <BookOpen size={48} className="mx-auto text-[var(--text-secondary)] opacity-20 mb-4" />
+                        <h3 className="text-lg font-bold text-[var(--text-primary)]">Inga kurser hittades</h3>
+                        <p className="text-[var(--text-secondary)]">Du är inte registrerad på några kurser just nu.</p>
                     </div>
                 ) : (
                     courses.map(course => (
-                        <div key={course.id} className="bg-white dark:bg-[#1E1F20] rounded-2xl border border-gray-200 dark:border-[#3c4043] shadow-sm overflow-hidden hover:shadow-md transition-all">
+                        <div key={course.id} className="bg-[var(--bg-card)] rounded-2xl border border-[var(--border-main)] shadow-sm overflow-hidden hover:shadow-md transition-all">
                             <div className="flex flex-col md:flex-row">
                                 {/* Left Color Strip */}
-                                <div className={`h-2 md:h-auto md:w-3 ${course.isOpen ? (course.color || 'bg-indigo-500') : 'bg-gray-400'}`}></div>
+                                <div className={`h-2 md:h-auto md:w-3 ${course.isOpen ? (course.color || 'bg-indigo-500') : 'bg-[#1e1e1e]'}`}></div>
 
                                 <div className="p-6 flex-1">
                                     <div className="flex flex-col md:flex-row justify-between items-start gap-4 mb-4">
                                         <div>
                                             <div className="flex items-center gap-2 mb-1">
-                                                <span className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-[#282a2c] px-2 py-0.5 rounded">
+                                                <span className="text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)] bg-[var(--bg-input)] px-2 py-0.5 rounded">
                                                     {course.courseCode}
                                                 </span>
-                                                {!course.isOpen && <span className="text-xs font-bold text-red-500 border border-red-200 px-2 py-0.5 rounded">AVSLUTAD</span>}
+                                                {!course.isOpen && <span className="text-xs font-bold text-red-500 border border-red-500/20 px-2 py-0.5 rounded">AVSLUTAD</span>}
                                             </div>
-                                            <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">{course.name}</h2>
-                                            <p className="text-sm text-gray-600 dark:text-gray-300 line-clamp-2 max-w-2xl">{course.description || 'Ingen beskrivning tillgänglig.'}</p>
+                                            <h2 className="text-xl font-bold text-[var(--text-primary)] mb-2">{course.name}</h2>
+                                            <p className="text-sm text-[var(--text-secondary)] line-clamp-2 max-w-2xl">{course.description || 'Ingen beskrivning tillgänglig.'}</p>
                                         </div>
                                         <button
                                             onClick={() => navigate(`/course/${course.slug || course.id}`)}
-                                            className="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-bold text-sm shadow-md shadow-indigo-200 dark:shadow-none flex items-center gap-2 whitespace-nowrap"
+                                            className="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-bold text-sm shadow-md shadow-indigo-500/20 hover:shadow-indigo-500/40 transition-all flex items-center gap-2 whitespace-nowrap"
                                         >
                                             Gå till kurs <ArrowRight size={16} />
                                         </button>
                                     </div>
 
                                     {/* Info Grid */}
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6 pt-6 border-t border-gray-100 dark:border-[#3c4043]">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6 pt-6 border-t border-[var(--border-main)]">
 
                                         {/* Next Assignment */}
                                         <div className="flex items-start gap-3">
-                                            <div className="p-2 bg-orange-50 dark:bg-orange-900/20 text-orange-600 rounded-lg">
+                                            <div className="p-2 bg-rose-500/10 text-rose-500 rounded-lg">
                                                 <AlertCircle size={20} />
                                             </div>
                                             <div>
-                                                <p className="text-xs font-bold text-gray-400 uppercase mb-0.5">Nästa inlämning</p>
+                                                <p className="text-xs font-bold text-[var(--text-secondary)] uppercase mb-0.5">Nästa inlämning</p>
                                                 {course.nextAssignment ? (
                                                     <div>
-                                                        <p className="font-bold text-sm text-gray-800 dark:text-gray-200">{course.nextAssignment.title}</p>
-                                                        <p className="text-xs text-orange-600 font-medium">{formatDate(course.nextAssignment.dueDate, { year: 'numeric', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</p>
+                                                        <p className="font-bold text-sm text-[var(--text-primary)]">{course.nextAssignment.title}</p>
+                                                        <p className="text-xs text-rose-500 font-medium">{formatDate(course.nextAssignment.dueDate, { year: 'numeric', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</p>
                                                     </div>
                                                 ) : (
-                                                    <p className="text-sm text-gray-500 italic">Inga kommande inlämningar</p>
+                                                    <p className="text-sm text-[var(--text-secondary)] italic font-normal">Inga kommande inlämningar</p>
                                                 )}
                                             </div>
                                         </div>
 
                                         {/* Next Lesson */}
                                         <div className="flex items-start gap-3">
-                                            <div className="p-2 bg-blue-50 dark:bg-blue-900/20 text-blue-600 rounded-lg">
+                                            <div className="p-2 bg-indigo-500/10 text-indigo-400 rounded-lg">
                                                 <Calendar size={20} />
                                             </div>
                                             <div>
-                                                <p className="text-xs font-bold text-gray-400 uppercase mb-0.5">Nästa lektion</p>
+                                                <p className="text-xs font-bold text-[var(--text-secondary)] uppercase mb-0.5">Nästa lektion</p>
                                                 {course.nextEvent ? (
                                                     <div>
-                                                        <p className="font-bold text-sm text-gray-800 dark:text-gray-200">{course.nextEvent.title}</p>
-                                                        <p className="text-xs text-blue-600 font-medium">{formatTime(course.nextEvent.startTime)}</p>
+                                                        <p className="font-bold text-sm text-[var(--text-primary)]">{course.nextEvent.title}</p>
+                                                        <p className="text-xs text-indigo-400 font-medium">{formatTime(course.nextEvent.startTime)}</p>
                                                     </div>
                                                 ) : (
-                                                    <p className="text-sm text-gray-500 italic">Inget inplanerat schema</p>
+                                                    <p className="text-sm text-[var(--text-secondary)] italic font-normal">Inget inplanerat schema</p>
                                                 )}
                                             </div>
                                         </div>
@@ -182,12 +182,12 @@ const StudentCoursesPage = () => {
                                     </div>
 
                                     {/* Teacher Info */}
-                                    <div className="mt-4 pt-4 border-t border-gray-100 dark:border-[#3c4043] md:border-t-0 md:pt-0 md:mt-0 md:absolute md:bottom-6 md:right-6 md:w-auto">
+                                    <div className="mt-4 pt-4 border-t border-[var(--border-main)] md:border-t-0 md:pt-0 md:mt-0 md:absolute md:bottom-6 md:right-6 md:w-auto">
                                         <div className="flex items-center gap-2 justify-end">
-                                            <div className="w-6 h-6 rounded-full bg-gray-200 dark:bg-[#3c4043] flex items-center justify-center text-[10px] font-bold text-gray-600 dark:text-gray-300">
+                                            <div className="w-6 h-6 rounded-full bg-[var(--bg-input)] flex items-center justify-center text-[10px] font-bold text-[var(--text-primary)]">
                                                 {course.teacher?.firstName?.charAt(0) || 'L'}
                                             </div>
-                                            <span className="text-xs text-gray-500 dark:text-gray-400">Lärare: <span className="font-medium text-gray-700 dark:text-gray-300">{course.teacher?.fullName}</span></span>
+                                            <span className="text-xs text-[var(--text-secondary)]">Lärare: <span className="font-medium text-[var(--text-primary)]">{course.teacher?.fullName}</span></span>
                                         </div>
                                     </div>
 

@@ -426,43 +426,43 @@ const CalendarView = () => {
 
     // ─────────────────────────────────────────────────────────────────────────
     return (
-        <div className="flex flex-col h-full max-h-screen min-h-0 bg-gray-50 dark:bg-[#0f1012] rounded-2xl overflow-hidden shadow-xl shadow-gray-200/70 dark:shadow-black/30 border border-gray-200 dark:border-[#2a2b2d]">
+        <div className="flex flex-col h-full max-h-screen min-h-0 bg-[var(--bg-main)] rounded-2xl overflow-hidden shadow-xl shadow-gray-200/70 dark:shadow-black/30 border border-[var(--border-main)]">
 
             {/* ── TOOLBAR ── */}
-            <div className="flex items-center justify-between px-4 py-2 bg-white dark:bg-[#1a1b1d] border-b border-gray-200 dark:border-[#2a2b2d] shrink-0">
+            <div className="flex items-center justify-between px-4 py-2 bg-[var(--bg-card)] border-b border-[var(--border-main)] shrink-0">
 
                 {/* Left: title + nav */}
                 <div className="flex items-center gap-3">
-                    <h1 className="text-xs font-bold text-gray-900 dark:text-white tracking-tight hidden md:block uppercase tracking-widest text-gray-400">Kalender</h1>
+                    <h1 className="text-xs font-bold text-[var(--text-primary)] tracking-tight hidden md:block uppercase tracking-widest text-[var(--text-secondary)]">Kalender</h1>
 
                     <div className="flex items-center gap-0.5">
                         <button
                             onClick={handlePrev}
-                            className="p-1.5 rounded-lg text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-[#252628] transition-colors"
+                            className="p-1.5 rounded-lg text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-input)] transition-colors"
                         >
                             <ChevronLeft size={16} />
                         </button>
                         <button
                             onClick={handleNext}
-                            className="p-1.5 rounded-lg text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-[#252628] transition-colors"
+                            className="p-1.5 rounded-lg text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-input)] transition-colors"
                         >
                             <ChevronRight size={16} />
                         </button>
                     </div>
 
-                    <span className="text-sm font-semibold text-gray-900 dark:text-white capitalize select-none">
+                    <span className="text-sm font-semibold text-[var(--text-primary)] capitalize select-none">
                         {getNavLabel()}
                     </span>
 
                     {viewMode === 'week' && (
-                        <span className="text-xs text-gray-400 font-medium hidden lg:inline">
+                        <span className="text-xs text-[var(--text-secondary)] font-medium hidden lg:inline">
                             v.{getWeekNumber(weekStart)}
                         </span>
                     )}
 
                     <button
                         onClick={goToday}
-                        className="hidden md:inline-flex text-xs font-semibold text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white px-2.5 py-1 rounded-lg border border-gray-200 dark:border-[#2a2b2d] hover:border-gray-300 dark:hover:border-[#3a3b3d] transition-all"
+                        className="hidden md:inline-flex text-xs font-semibold text-[var(--text-secondary)] hover:text-[var(--text-primary)] px-2.5 py-1 rounded-lg border border-[var(--border-main)] hover:border-indigo-500/50 transition-all"
                     >
                         Idag
                     </button>
@@ -472,7 +472,7 @@ const CalendarView = () => {
                 <div className="flex items-center gap-2">
                     {isTeacherOrAdmin && (
                         <div className="relative hidden lg:block">
-                            <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[var(--text-secondary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                             </svg>
                             <input
@@ -480,7 +480,7 @@ const CalendarView = () => {
                                 placeholder="Sök händelser..."
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                className="bg-gray-50 dark:bg-[#252628] border border-gray-200 dark:border-[#2a2b2d] rounded-xl py-1.5 pl-8 pr-3 text-xs w-48 focus:ring-2 focus:ring-indigo-500/40 outline-none dark:text-white transition-all"
+                                className="bg-[var(--bg-input)] border border-[var(--border-main)] rounded-xl py-1.5 pl-8 pr-3 text-xs w-48 focus:ring-2 focus:ring-indigo-500/40 outline-none text-[var(--text-primary)] transition-all"
                             />
                             {searchQuery && (
                                 <button onClick={() => setSearchQuery('')} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
@@ -498,14 +498,14 @@ const CalendarView = () => {
                     />
 
                     {/* View switcher */}
-                    <div className="flex items-center bg-gray-100 dark:bg-[#252628] rounded-xl p-0.5 text-xs font-semibold">
+                    <div className="flex items-center bg-[var(--bg-input)] rounded-xl p-0.5 text-xs font-semibold">
                         {[['day', 'Dag'], ['week', 'Vecka'], ['month', 'Månad']].map(([mode, label]) => (
                             <button
                                 key={mode}
                                 onClick={() => setViewMode(mode)}
                                 className={`px-3 py-1.5 rounded-lg transition-all ${viewMode === mode
-                                    ? 'bg-white dark:bg-[#1a1b1d] text-gray-900 dark:text-white shadow-sm'
-                                    : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
+                                    ? 'bg-[var(--bg-card)] text-[var(--text-primary)] shadow-sm'
+                                    : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
                                     }`}
                             >
                                 {label}
@@ -518,7 +518,7 @@ const CalendarView = () => {
                         onClick={fetchIcalInfo}
                         disabled={icalLoading}
                         title="Synkronisera med extern kalender"
-                        className="p-1.5 rounded-lg text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 transition-colors"
+                        className="p-1.5 rounded-lg text-[var(--text-secondary)] hover:text-indigo-500 hover:bg-indigo-500/10 transition-colors"
                     >
                         {icalLoading ? <Loader2 size={15} className="animate-spin" /> : <Rss size={15} />}
                     </button>
@@ -529,7 +529,7 @@ const CalendarView = () => {
                             setAvailabilityStatus({ isBusy: false, message: '' });
                             setShowBookingModal(true);
                         }}
-                        className="flex items-center gap-1.5 px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl transition-colors shadow-md shadow-indigo-200 dark:shadow-indigo-900/30"
+                        className="flex items-center gap-1.5 px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl transition-colors shadow-md shadow-indigo-500/20"
                     >
                         <Plus size={14} />
                         <span className="hidden sm:inline">Ny händelse</span>
@@ -555,8 +555,8 @@ const CalendarView = () => {
                                     className={`flex flex-col items-center py-2 rounded-xl transition-all ${isSelected
                                         ? 'bg-indigo-600 text-white'
                                         : isToday
-                                            ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300'
-                                            : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-[#252628]'
+                                            ? 'bg-indigo-500/10 text-indigo-400'
+                                            : 'text-[var(--text-secondary)] hover:bg-[var(--bg-input)]'
                                         }`}
                                 >
                                     <span className="text-[9px] font-bold uppercase tracking-wider mb-1 opacity-70">
@@ -573,7 +573,7 @@ const CalendarView = () => {
 
                     {/* Event list */}
                     <div className="flex-1 overflow-y-auto pb-20">
-                        <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 px-0.5">
+                        <p className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-3 px-0.5">
                             {isSameDay(selectedMobileDate, new Date()) ? 'Idag' : selectedMobileDate.toLocaleDateString('sv-SE', { weekday: 'long', day: 'numeric', month: 'long' })}
                         </p>
                         {getEventsForDay(selectedMobileDate).length > 0 ? (
@@ -584,10 +584,10 @@ const CalendarView = () => {
                             </div>
                         ) : (
                             <div className="flex flex-col items-center justify-center py-16 text-center">
-                                <div className="w-12 h-12 bg-gray-100 dark:bg-[#252628] rounded-2xl flex items-center justify-center mb-3">
-                                    <CalIcon size={20} className="text-gray-300 dark:text-gray-600" />
+                                <div className="w-12 h-12 bg-[var(--bg-input)] rounded-2xl flex items-center justify-center mb-3">
+                                    <CalIcon size={20} className="text-[var(--text-secondary)]" />
                                 </div>
-                                <p className="text-sm text-gray-400 font-medium">Inga händelser</p>
+                                <p className="text-sm text-[var(--text-secondary)] font-medium">Inga händelser</p>
                             </div>
                         )}
                     </div>
@@ -597,20 +597,20 @@ const CalendarView = () => {
                 <div className="hidden lg:flex flex-1 min-h-0 gap-0">
 
                     {/* Grid */}
-                    <div className="flex-1 min-w-0 flex flex-col overflow-hidden bg-white dark:bg-[#1a1b1d] border-r border-gray-200 dark:border-[#2a2b2d]">
+                    <div className="flex-1 min-w-0 flex flex-col overflow-hidden bg-[var(--bg-card)] border-r border-[var(--border-main)]">
 
                         {/* Day headers */}
-                        <div className={`grid ${viewMode === 'day' ? 'grid-cols-[44px_1fr]' : 'grid-cols-[44px_repeat(7,1fr)]'} border-b border-gray-200 dark:border-[#2a2b2d] shrink-0`}>
-                            <div className="border-r border-gray-200 dark:border-[#2a2b2d]" />
+                        <div className={`grid ${viewMode === 'day' ? 'grid-cols-[44px_1fr]' : 'grid-cols-[44px_repeat(7,1fr)]'} border-b border-[var(--border-main)] shrink-0`}>
+                            <div className="border-r border-[var(--border-main)]" />
                             {weekDays.map((d, i) => {
                                 const isToday = isSameDay(d, new Date());
                                 const isSunday = d.getDay() === 0;
                                 return (
-                                    <div key={i} className={`py-2 px-1 text-center border-r border-gray-100 dark:border-[#252628] last:border-r-0 ${isToday ? 'bg-indigo-50/60 dark:bg-indigo-500/5' : ''} ${isSunday && !isToday ? 'bg-gray-50/60 dark:bg-[#1e1f21]' : ''}`}>
-                                        <span className={`text-[10px] font-semibold block mb-0.5 ${isSunday ? 'text-rose-400' : 'text-gray-400 dark:text-gray-500'}`}>
+                                    <div key={i} className={`py-2 px-1 text-center border-r border-[var(--border-main)] last:border-r-0 ${isToday ? 'bg-indigo-500/5' : ''} ${isSunday && !isToday ? 'bg-[var(--bg-input)]/50' : ''}`}>
+                                        <span className={`text-[10px] font-semibold block mb-0.5 ${isSunday ? 'text-rose-400' : 'text-[var(--text-secondary)]'}`}>
                                             {SE_DAYS[i === 0 && viewMode !== 'day' ? 0 : (viewMode === 'day' ? (d.getDay() + 6) % 7 : i)]}
                                         </span>
-                                        <span className={`text-xs font-black inline-flex items-center justify-center w-6 h-6 rounded-full mx-auto ${isToday ? 'bg-indigo-600 text-white' : 'text-gray-800 dark:text-gray-200'
+                                        <span className={`text-xs font-black inline-flex items-center justify-center w-6 h-6 rounded-full mx-auto ${isToday ? 'bg-indigo-600 text-white' : 'text-[var(--text-primary)]'
                                             }`}>
                                             {d.getDate()}
                                         </span>
@@ -630,17 +630,17 @@ const CalendarView = () => {
                                         return (
                                             <div
                                                 key={i}
-                                                className={`border-b border-r border-gray-100 dark:border-[#252628] p-1.5 min-h-[76px] group cursor-pointer transition-colors
-                                                    ${isCurrentMonth ? 'hover:bg-gray-50/60 dark:hover:bg-[#252628]/40' : 'opacity-40'}
-                                                    ${d.getDay() === 0 ? 'bg-gray-50/40 dark:bg-[#1e1f21]/60' : ''}`}
+                                                className={`border-b border-r border-[var(--border-main)] p-1.5 min-h-[76px] group cursor-pointer transition-colors
+                                                    ${isCurrentMonth ? 'hover:bg-[var(--bg-input)]' : 'opacity-40'}
+                                                    ${d.getDay() === 0 ? 'bg-[var(--bg-input)]/50' : ''}`}
                                                 onClick={() => isCurrentMonth ? handleSlotClick(d, 9) : setWeekStart(d)}
                                             >
                                                 <div className="flex items-center justify-between mb-1">
-                                                    <span className={`text-xs font-bold w-6 h-6 flex items-center justify-center rounded-full ${isToday ? 'bg-indigo-600 text-white' : 'text-gray-500 dark:text-gray-400'}`}>
+                                                    <span className={`text-xs font-bold w-6 h-6 flex items-center justify-center rounded-full ${isToday ? 'bg-indigo-600 text-white' : 'text-[var(--text-secondary)]'}`}>
                                                         {d.getDate()}
                                                     </span>
                                                     <button
-                                                        className="opacity-0 group-hover:opacity-100 p-0.5 text-gray-400 hover:text-gray-600 rounded transition-opacity"
+                                                        className="opacity-0 group-hover:opacity-100 p-0.5 text-[var(--text-secondary)] hover:text-[var(--text-primary)] rounded transition-opacity"
                                                         onClick={(e) => { e.stopPropagation(); handleSlotClick(d, 9); }}
                                                     >
                                                         <Plus size={11} />
@@ -657,7 +657,7 @@ const CalendarView = () => {
                                                         </div>
                                                     ))}
                                                     {dayEvents.length > 3 && (
-                                                        <p className="text-[10px] text-gray-400 font-medium px-1">+{dayEvents.length - 3} till</p>
+                                                        <p className="text-[10px] text-[var(--text-secondary)] font-medium px-1">+{dayEvents.length - 3} till</p>
                                                     )}
                                                 </div>
                                             </div>
@@ -676,7 +676,7 @@ const CalendarView = () => {
                                         <React.Fragment key={hour}>
                                             {/* Time label column */}
                                             <div
-                                                className="border-r border-gray-200 dark:border-[#2a2b2d] text-right pr-2 text-[9px] font-medium text-gray-400 dark:text-gray-600 select-none"
+                                                className="border-r border-[var(--border-main)] text-right pr-2 text-[9px] font-medium text-[var(--text-secondary)] select-none"
                                                 style={{ gridColumn: 1, gridRow: 1, position: 'absolute', top: `${(hour - 8) * HOUR_H}px`, width: '44px' }}
                                             >
                                                 <span className="inline-block -translate-y-2">{String(hour).padStart(2, '0')}:00</span>
@@ -688,7 +688,7 @@ const CalendarView = () => {
                                     {HOURS.map(hour => (
                                         <div
                                             key={`line-${hour}`}
-                                            className="absolute left-11 right-0 border-t border-gray-100 dark:border-[#252628]"
+                                            className="absolute left-11 right-0 border-t border-[var(--border-main)]"
                                             style={{ top: `${(hour - 8) * HOUR_H}px` }}
                                         />
                                     ))}
@@ -702,16 +702,16 @@ const CalendarView = () => {
                                         return (
                                             <div
                                                 key={colIdx}
-                                                className={`relative border-r border-gray-100 dark:border-[#252628] last:border-r-0 cursor-pointer group
-                                                    ${isToday ? 'bg-indigo-50/40 dark:bg-indigo-500/[0.04]' : ''}
-                                                    ${isSunday && !isToday ? 'bg-gray-50/50 dark:bg-[#1e1f21]/40' : ''}`}
+                                                className={`relative border-r border-[var(--border-main)] last:border-r-0 cursor-pointer group
+                                                    ${isToday ? 'bg-indigo-500/5' : ''}
+                                                    ${isSunday && !isToday ? 'bg-[var(--bg-input)]/50' : ''}`}
                                                 style={{ gridColumn: colIdx + 2, gridRow: '1 / -1', height: `${HOURS.length * HOUR_H}px`, minWidth: 0 }}
                                             >
                                                 {/* Click zones per hour */}
                                                 {HOURS.map(hour => (
                                                     <div
                                                         key={hour}
-                                                        className="absolute w-full hover:bg-indigo-50/60 dark:hover:bg-indigo-500/[0.06] transition-colors"
+                                                        className="absolute w-full hover:bg-indigo-500/10 transition-colors"
                                                         style={{ top: `${(hour - 8) * HOUR_H}px`, height: `${HOUR_H}px` }}
                                                         onClick={() => handleSlotClick(d, hour)}
                                                     >
@@ -760,7 +760,7 @@ const CalendarView = () => {
                     </div>
 
                     {/* ── RIGHT SIDEBAR ── */}
-                    <div className="w-60 shrink-0 flex flex-col gap-0 border-l border-gray-200 dark:border-[#2a2b2d] bg-white dark:bg-[#1a1b1d] overflow-y-auto">
+                    <div className="w-60 shrink-0 flex flex-col gap-0 border-l border-[var(--border-main)] bg-[var(--bg-card)] overflow-y-auto">
                         <div className="p-3">
                             <MiniCalendar
                                 currentDate={weekStart}
@@ -770,7 +770,7 @@ const CalendarView = () => {
                                 }}
                             />
                         </div>
-                        <div className="border-t border-gray-100 dark:border-[#252628] p-3">
+                        <div className="border-t border-[var(--border-main)] p-3">
                             <ImportantDatesWidget
                                 events={calEvents}
                                 onEventClick={(ev) => { setSelectedEvent(ev); setShowEventDetail(true); }}
@@ -779,7 +779,7 @@ const CalendarView = () => {
 
                         {/* Loading indicator */}
                         {isLoading && (
-                            <div className="flex items-center justify-center py-6 text-gray-400">
+                            <div className="flex items-center justify-center py-6 text-[var(--text-secondary)]">
                                 <Loader2 size={16} className="animate-spin mr-2" />
                                 <span className="text-xs">Laddar...</span>
                             </div>
@@ -791,11 +791,11 @@ const CalendarView = () => {
             {/* ── BOOKING MODAL ── */}
             {showBookingModal && (
                 <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-                    <div className="bg-white dark:bg-[#1a1b1d] w-full max-w-md rounded-2xl shadow-2xl border border-gray-100 dark:border-[#2a2b2d] overflow-hidden">
+                    <div className="bg-[var(--bg-card)] w-full max-w-md rounded-2xl shadow-2xl border border-[var(--border-main)] overflow-hidden">
                         <div className="h-0.5 bg-gradient-to-r from-indigo-500 to-violet-500" />
-                        <div className="px-5 py-3.5 border-b border-gray-100 dark:border-[#2a2b2d] flex items-center justify-between">
-                            <h2 className="text-base font-bold text-gray-900 dark:text-white">Ny händelse</h2>
-                            <button onClick={() => setShowBookingModal(false)} className="p-1.5 text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-[#252628] rounded-lg transition-colors">
+                        <div className="px-5 py-3.5 border-b border-[var(--border-main)] flex items-center justify-between">
+                            <h2 className="text-base font-bold text-[var(--text-primary)]">Ny händelse</h2>
+                            <button onClick={() => setShowBookingModal(false)} className="p-1.5 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-input)] rounded-lg transition-colors">
                                 <X size={16} />
                             </button>
                         </div>
@@ -898,8 +898,8 @@ const CalendarView = () => {
                             {/* Availability */}
                             {(isCheckingAvailability || availabilityStatus.message) && (
                                 <div className={`p-3 rounded-xl text-xs flex items-center gap-2 ${availabilityStatus.isBusy
-                                    ? 'bg-rose-50 dark:bg-rose-900/15 text-rose-700 dark:text-rose-400 border border-rose-100 dark:border-rose-800/30'
-                                    : 'bg-sky-50 dark:bg-sky-900/15 text-sky-700 dark:text-sky-400 border border-sky-100 dark:border-sky-800/30'
+                                    ? 'bg-rose-500/10 text-rose-500 border border-rose-500/20'
+                                    : 'bg-sky-500/10 text-sky-400 border border-sky-500/20'
                                     }`}>
                                     {isCheckingAvailability
                                         ? <><Loader2 size={13} className="animate-spin" /> Kollar tillgänglighet...</>
@@ -911,7 +911,7 @@ const CalendarView = () => {
                             <button
                                 type="submit"
                                 disabled={availabilityStatus.isBusy || isCheckingAvailability}
-                                className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-300 dark:disabled:bg-gray-700 disabled:cursor-not-allowed text-white font-bold text-sm rounded-xl transition-colors shadow-md shadow-indigo-200 dark:shadow-indigo-900/30"
+                                className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-300 dark:disabled:bg-gray-700 disabled:cursor-not-allowed text-white font-bold text-sm rounded-xl transition-colors shadow-md shadow-indigo-500/20"
                             >
                                 {availabilityStatus.isBusy ? 'Tid redan bokad' : 'Bekräfta bokning'}
                             </button>
@@ -934,38 +934,38 @@ const CalendarView = () => {
             {
                 showSyncModal && icalInfo && (
                     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-                        <div className="bg-white dark:bg-[#1a1b1d] w-full max-w-md rounded-2xl shadow-2xl border border-gray-100 dark:border-[#2a2b2d] overflow-hidden">
+                        <div className="bg-[var(--bg-card)] w-full max-w-md rounded-2xl shadow-2xl border border-[var(--border-main)] overflow-hidden">
                             <div className="h-0.5 bg-gradient-to-r from-indigo-500 to-violet-500" />
 
                             {/* Header */}
-                            <div className="px-5 py-3.5 border-b border-gray-100 dark:border-[#2a2b2d] flex items-center justify-between">
+                            <div className="px-5 py-3.5 border-b border-[var(--border-main)] flex items-center justify-between">
                                 <div className="flex items-center gap-2">
                                     <Rss size={15} className="text-indigo-500" />
-                                    <h2 className="text-sm font-bold text-gray-900 dark:text-white">Synka kalender</h2>
+                                    <h2 className="text-sm font-bold text-[var(--text-primary)]">Synka kalender</h2>
                                 </div>
-                                <button onClick={() => setShowSyncModal(false)} className="p-1.5 text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-[#252628] rounded-lg transition-colors">
+                                <button onClick={() => setShowSyncModal(false)} className="p-1.5 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-input)] rounded-lg transition-colors">
                                     <X size={15} />
                                 </button>
                             </div>
 
                             {/* Body */}
                             <div className="p-5 space-y-4">
-                                <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
+                                <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
                                     Prenumerera på din personliga kalenderadress för att få dina lektioner och möten i Google Calendar, Apple Calendar, Outlook eller annan kalenderapp.
                                 </p>
 
                                 {/* Feed URL */}
                                 <div>
-                                    <label className="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Din kalenderadress</label>
+                                    <label className="block text-[11px] font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-1.5">Din kalenderadress</label>
                                     <div className="flex gap-2">
-                                        <div className="flex-1 min-w-0 bg-gray-50 dark:bg-[#0f1012] border border-gray-200 dark:border-[#2a2b2d] rounded-xl px-3 py-2 text-xs text-gray-600 dark:text-gray-300 truncate font-mono">
+                                        <div className="flex-1 min-w-0 bg-[var(--bg-input)] border border-[var(--border-main)] rounded-xl px-3 py-2 text-xs text-[var(--text-secondary)] truncate font-mono">
                                             {icalInfo.fullUrl}
                                         </div>
                                         <button
                                             onClick={copyIcalUrl}
                                             className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition-all shrink-0 ${copied
-                                                ? 'bg-emerald-100 dark:bg-emerald-500/15 text-emerald-600 dark:text-emerald-400'
-                                                : 'bg-gray-100 dark:bg-[#252628] text-gray-600 dark:text-gray-300 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 hover:text-indigo-600'
+                                                ? 'bg-emerald-500/15 text-emerald-400'
+                                                : 'bg-[var(--bg-input)] text-[var(--text-secondary)] hover:bg-indigo-500/10 hover:text-indigo-400'
                                                 }`}
                                         >
                                             {copied ? <><CheckCheck size={13} /> Kopierad</> : <><Copy size={13} /> Kopiera</>}
@@ -975,43 +975,43 @@ const CalendarView = () => {
 
                                 {/* App links */}
                                 <div>
-                                    <label className="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2">Lägg till i din kalenderapp</label>
+                                    <label className="block text-[11px] font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-2">Lägg till i din kalenderapp</label>
                                     <div className="space-y-2">
                                         <a
                                             href={`https://calendar.google.com/calendar/r/settings/addbyurl?url=${encodeURIComponent(icalInfo.fullUrl)}`}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="flex items-center justify-between w-full px-3.5 py-2.5 bg-gray-50 dark:bg-[#0f1012] border border-gray-200 dark:border-[#2a2b2d] rounded-xl hover:border-indigo-300 dark:hover:border-indigo-500/30 hover:bg-indigo-50/50 dark:hover:bg-indigo-500/5 transition-all group"
+                                            className="flex items-center justify-between w-full px-3.5 py-2.5 bg-[var(--bg-input)] border border-[var(--border-main)] rounded-xl hover:border-indigo-500/50 hover:bg-indigo-500/10 transition-all group"
                                         >
                                             <div className="flex items-center gap-2.5">
-                                                <div className="w-6 h-6 rounded-md bg-white dark:bg-[#252628] shadow-sm flex items-center justify-center text-sm">🗓️</div>
-                                                <span className="text-xs font-semibold text-gray-700 dark:text-gray-200">Google Calendar</span>
+                                                <div className="w-6 h-6 rounded-md bg-[var(--bg-card)] shadow-sm flex items-center justify-center text-sm">🗓️</div>
+                                                <span className="text-xs font-semibold text-[var(--text-primary)]">Google Calendar</span>
                                             </div>
-                                            <ExternalLink size={12} className="text-gray-400 group-hover:text-indigo-500 transition-colors" />
+                                            <ExternalLink size={12} className="text-[var(--text-secondary)] group-hover:text-indigo-400 transition-colors" />
                                         </a>
                                         <a
                                             href={`https://outlook.live.com/calendar/0/addcalendar?url=${encodeURIComponent(icalInfo.fullUrl)}&name=EduFlex`}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="flex items-center justify-between w-full px-3.5 py-2.5 bg-gray-50 dark:bg-[#0f1012] border border-gray-200 dark:border-[#2a2b2d] rounded-xl hover:border-indigo-300 dark:hover:border-indigo-500/30 hover:bg-indigo-50/50 dark:hover:bg-indigo-500/5 transition-all group"
+                                            className="flex items-center justify-between w-full px-3.5 py-2.5 bg-[var(--bg-input)] border border-[var(--border-main)] rounded-xl hover:border-indigo-500/50 hover:bg-indigo-500/10 transition-all group"
                                         >
                                             <div className="flex items-center gap-2.5">
-                                                <div className="w-6 h-6 rounded-md bg-white dark:bg-[#252628] shadow-sm flex items-center justify-center text-sm">📅</div>
-                                                <span className="text-xs font-semibold text-gray-700 dark:text-gray-200">Outlook / Microsoft 365</span>
+                                                <div className="w-6 h-6 rounded-md bg-[var(--bg-card)] shadow-sm flex items-center justify-center text-sm">📅</div>
+                                                <span className="text-xs font-semibold text-[var(--text-primary)]">Outlook / Microsoft 365</span>
                                             </div>
-                                            <ExternalLink size={12} className="text-gray-400 group-hover:text-indigo-500 transition-colors" />
+                                            <ExternalLink size={12} className="text-[var(--text-secondary)] group-hover:text-indigo-400 transition-colors" />
                                         </a>
-                                        <div className="flex items-start gap-2.5 px-3.5 py-2.5 bg-gray-50 dark:bg-[#0f1012] border border-gray-200 dark:border-[#2a2b2d] rounded-xl">
-                                            <div className="w-6 h-6 shrink-0 rounded-md bg-white dark:bg-[#252628] shadow-sm flex items-center justify-center text-sm mt-0.5">🍎</div>
+                                        <div className="flex items-start gap-2.5 px-3.5 py-2.5 bg-[var(--bg-input)] border border-[var(--border-main)] rounded-xl">
+                                            <div className="w-6 h-6 shrink-0 rounded-md bg-[var(--bg-card)] shadow-sm flex items-center justify-center text-sm mt-0.5">🍎</div>
                                             <div>
-                                                <span className="text-xs font-semibold text-gray-700 dark:text-gray-200 block">Apple Calendar</span>
-                                                <span className="text-[11px] text-gray-400 leading-relaxed">Öppna Kalender → Arkiv → Ny kalenderprenumeration → klistra in adressen ovan.</span>
+                                                <span className="text-xs font-semibold text-[var(--text-primary)] block">Apple Calendar</span>
+                                                <span className="text-[11px] text-[var(--text-secondary)] leading-relaxed">Öppna Kalender → Arkiv → Ny kalenderprenumeration → klistra in adressen ovan.</span>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
 
-                                <p className="text-[11px] text-gray-400 leading-relaxed border-t border-gray-100 dark:border-[#252628] pt-3">
+                                <p className="text-[11px] text-[var(--text-secondary)] leading-relaxed border-t border-[var(--border-main)] pt-3">
                                     Adressen är personlig och privat — dela den inte med andra. Kalendern uppdateras automatiskt i din app ungefär en gång per timme.
                                 </p>
                             </div>

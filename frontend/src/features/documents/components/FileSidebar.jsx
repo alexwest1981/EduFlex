@@ -46,7 +46,7 @@ const FileSidebar = ({
 
 
     return (
-        <div className="w-64 flex-shrink-0 bg-white dark:bg-slate-900 p-4 h-full flex flex-col">
+        <div className="w-64 flex-shrink-0 bg-[var(--bg-card)] border-r border-[var(--border-main)] p-4 h-full flex flex-col">
             <div className="mb-6 space-y-2">
                 <button
                     onClick={onUpload}
@@ -58,7 +58,7 @@ const FileSidebar = ({
 
                 <button
                     onClick={onNewFolder}
-                    className="w-full flex items-center gap-2 px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors border border-slate-200 dark:border-slate-700"
+                    className="w-full flex items-center gap-2 px-4 py-2 text-[var(--text-secondary)] hover:bg-[var(--bg-input)] rounded-lg transition-colors border border-[var(--border-main)]"
                 >
                     <FolderPlus size={18} />
                     <span>Ny mapp</span>
@@ -72,7 +72,7 @@ const FileSidebar = ({
                         onClick={() => onViewChange(item.id)}
                         className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all ${currentView === item.id
                             ? 'bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400 font-medium'
-                            : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'
+                            : 'text-[var(--text-secondary)] hover:bg-[var(--bg-input)]'
                             }`}
                     >
                         <item.icon size={20} />
@@ -81,19 +81,19 @@ const FileSidebar = ({
                 ))}
             </nav>
 
-            <div className="mt-auto pt-6 border-t border-slate-200 dark:border-slate-800">
-                <div className="bg-slate-50 dark:bg-slate-800/50 rounded-lg p-4">
-                    <div className="flex justify-between text-xs text-slate-500 mb-2">
+            <div className="mt-auto pt-6 border-t border-[var(--border-main)]">
+                <div className="bg-[var(--bg-input)] rounded-lg p-4">
+                    <div className="flex justify-between text-xs text-[var(--text-secondary)] mb-2">
                         <span>Lagring</span>
                         <span>{percent}% använd</span>
                     </div>
-                    <div className="w-full h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+                    <div className="w-full h-1.5 bg-[var(--bg-main)] rounded-full overflow-hidden">
                         <div
                             className={`h-full transition-all duration-500 ${percent > 90 ? 'bg-red-500' : percent > 75 ? 'bg-amber-500' : 'bg-blue-500'}`}
                             style={{ width: `${percent}%` }}
                         />
                     </div>
-                    <p className="text-[10px] text-slate-400 mt-2 font-medium">
+                    <p className="text-[10px] text-[var(--text-secondary)] mt-2 font-medium">
                         {formatBytes(used)} av {formatBytes(quota)} används
                     </p>
                 </div>

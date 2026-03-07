@@ -552,23 +552,39 @@ public class CourseService {
         applicationRepository.save(app);
     }
 
-    public void handleApplication(Long appId, boolean approved) {
+    public void handleApplication(Long appId, String status) {
         CourseApplication app = applicationRepository.findById(appId).orElseThrow();
-        if (approved) {
+        CourseApplication.Status newStatus = CourseApplication.Status.valueOf(status.toUpperCase());
+
+        if (newStatus == CourseApplication.Status.APPROVED) {
             Course c = app.getCourse();
             if (c.getStudents().size() >= c.getMaxStudents())
-                throw new RuntimeException("Fullt!");
-            c.getStudents().add(app.getStudent());
-            courseRepository.save(c);
-            app.setStatus(CourseApplication.Status.APPROVED);
-        } else {
-            app.setStatus(CourseApplication.Status.REJECTED);
+                throw new RuntimeException("Utbildningen är full!");
+
+            // Add student if not already there
+            if (!c.getStudents().contains(app.getStudent())) {
+                c.getStudents().add(app.getStudent());
+                courseRepository.save(c);
+            }
         }
+
+        app.setStatus(newStatus);
         applicationRepository.save(app);
     }
 
     public List<CourseApplication> getPendingApplications(Long teacherId) {
         return applicationRepository.findByCourseTeacherIdAndStatus(teacherId, CourseApplication.Status.PENDING);
+    }
+
+    public List<CourseApplication> getAllApplications() {
+        return applicationRepository.findAll();
+    }
+
+    @Transactional
+    public void updateApplicationNote(Long appId, String note) {
+        CourseApplication app = applicationRepository.findById(appId).orElseThrow();
+        app.setAdminNote(note);
+        applicationRepository.save(app);
     }
 
     public void addStudentToCourse(Long courseId, Long studentId) {

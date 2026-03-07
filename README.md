@@ -24,11 +24,20 @@ EduFlex LLP är ett Enterprise-redo, molnbaserat ekosystem som ersätter den tra
 
 ---
 
+### v3.7.2 (7 mar 2026) – Admin Suite Refactor & Health Check Fix
+* **🖤 Extended True Black Refactor**: Completed the systematic refactor of the remaining administration sub-modules. `AdminShopDashboard.jsx`, `ShopItemEditor.jsx`, `CommunityAdmin.jsx`, `AdminTicketManager.jsx`, and `SupportArticleManager.jsx` are now 100% compliant with the "True Black" (#000000) high-contrast theme.
+* **🏥 Service Health Fix**: Resolved an issue in the Control Center (`DeployPanel.jsx`) where services would incorrectly show as "Offline" despite being active. Added JWT Bearer authentication to health check probes and improved actuator response parsing for Backend and Redis.
+* **✨ UI/UX Polishing**: Replaced all hardcoded colors with CSS variables across the administration panel to ensure perfect consistency and a premium feel.
+
+### v3.7.1 (7 mar 2026) – Infrastructure UI Hardening
+* **🖤 True Black Design System**: Commenced the systematic refactor of the administration suite. `SystemSettings.jsx`, `AdministrationPanel.jsx`, and `DeployPanel.jsx` (EduFlex Ops) are now 100% compliant with the "True Black" (#000000) high-contrast theme.
+
 ### v3.7.0 (6 mar 2026) – SUSA-navet Integration & Utbildningsnavet (LLP v1)
 * **🏫 SUSA-navet Live-integration**: Admin kan nu hämta nationellt godkända YH-program direkt från Skolverkets SusaNav REST-API via en SUN-kod (t.ex. `481a`). Systemet skapar automatiskt kursstruktur med moduler, LIA-flagga och kursplaner baserade på officiell data.
 * **📚 Utbildningskatalog (`/programs`)**: Ny sida i sidomenyn – "Utbildningar" – med globövergång från LMS till LLP (Learning Lifecycle Platform). Studenter, sökande och SYV kan bläddra bland nationellt importerade program, filtrera på LIA-innehåll och ansöka direkt.
 * **🔧 CourseDTO-fix**: Lade till `sunCode` och `requiresLia` i `CourseDTO` och `CourseService`-mappningen så att API-svaret korrekt exponerar SUSA-navet-fälten till fronten.
 * **🧭 Navigation**: Lade till `Globe`-ikon och "Utbildningar"-länk i central `navigation.jsx` som gäller alla layouts.
+* **🛡️ EducationProgram Stability**: Fixat kritiska databasmigreringar (V116) för PostgreSQL-kompatibilitet. Åtgärdat oavsiktliga syntaxfel i `ProgramDetail.jsx` och säkerställt korrekt entitetsmappning för multi-tenant-miljöer.
 
 ### v3.6.11.0 (6 mar 2026) – Roadmap: Mobile Offline Sync & Push Notifications
 * **📶 Mobile Offline Sync**: Implemented a global offline mutation queue. The app now intercepts `POST/PUT/DELETE` requests while offline and store them in Redux. Once internet is restored, the `SyncManager` automatically synchronizes all pending actions in the background.
@@ -194,5 +203,5 @@ Lokala URL:er efter uppstart:
 EduFlex LLP™ © 2026 Alex Weström / Fenrir Studio
 Proprietary Software. Unauthorized copying or distribution is strictly prohibited.
 För kommersiella förfrågningar och licensiering: 📧 alexwestrom81@gmail.com
-Last updated: 2026-03-06 (v3.6.9.0 - Rule 1 Compliance: Live Data Integration)
+Last updated: 2026-03-07 (v3.7.2 - Admin Suite Refactor & Health Check Fix)
 

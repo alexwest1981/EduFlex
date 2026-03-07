@@ -5,10 +5,6 @@ import { useAppContext } from '../../context/AppContext';
 import { useModules } from '../../context/ModuleContext';
 import { useTranslation } from 'react-i18next';
 import { getSafeUrl, api } from '../../services/api';
-import { getNavigationConfig } from '../../config/navigation';
-
-import ChatModule from '../../modules/chat/ChatModule';
-import GlobalSearch from '../GlobalSearch';
 import NotificationBell from '../NotificationBell';
 import OnlineFriendsPanel from '../social/OnlineFriendsPanel';
 import SidebarSection from '../SidebarSection';
@@ -16,6 +12,9 @@ import logoTop from '../../assets/images/Logo_top.png';
 import { Download } from 'lucide-react';
 import { usePwaInstall } from '../../hooks/usePwaInstall';
 import PwaInstallPrompt from '../pwa/PwaInstallPrompt';
+import { getNavigationConfig, sectionIcons } from '../../config/navigation';
+import GlobalSearch from '../GlobalSearch';
+import ChatModule from '../../modules/chat/ChatModule';
 
 const StandardLayout = ({ children }) => {
     const context = useAppContext() || {};
@@ -91,8 +90,17 @@ const StandardLayout = ({ children }) => {
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
-    const navItems = getNavigationConfig(currentUser, t, isModuleActive, licenseTier, { unreadMessages: 0 }); // Placeholder for unreadMessages if needed
+    const navItems = getNavigationConfig(currentUser, t, isModuleActive, licenseTier, { unreadMessages: 0 });
+    const [activeSection, setActiveSection] = useState(() => {
+        // Try to determine active section from current path
+        for (const [section, items] of Object.entries(navItems)) {
+            if (items.some(item => location.pathname === item.path)) return section;
+        }
+        return 'main';
+    });
 
+    // Icons for the Rail component
+    // (Imported at top)
 
     return (
         <div className="flex min-h-screen text-gray-900 dark:text-[#E3E3E3] font-sans transition-colors duration-300" style={{ background: 'var(--app-background)' }}>
@@ -101,132 +109,155 @@ const StandardLayout = ({ children }) => {
                     .dark-mode-bg { background: var(--app-background-dark) !important; }
                 }
                 :root.dark body { background: var(--app-background-dark) !important; }
-                /* Helper for React wrapper */
                 .app-wrapper { background: var(--app-background); }
                 .dark .app-wrapper { background: var(--app-background-dark); }
+                
+                .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+                .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+                .custom-scrollbar::-webkit-scrollbar-thumb { background: #E2E8F0; border-radius: 10px; }
+                .dark .custom-scrollbar::-webkit-scrollbar-thumb { background: #2D2D2D; }
+
+                .no-scrollbar::-webkit-scrollbar { display: none; }
+                .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+                .sidebar-glass {
+                    background: rgba(255, 255, 255, 0.7);
+                    backdrop-filter: blur(20px);
+                    border-right: 1px solid rgba(0, 0, 0, 0.05);
+                }
+                .dark .sidebar-glass {
+                    background: rgba(0, 0, 0, 0.95);
+                    backdrop-filter: blur(25px);
+                    border-right: 1px solid rgba(255, 255, 255, 0.1);
+                }
             `}</style>
             <div className={`fixed inset-0 -z-10 app-wrapper transition-colors duration-300 pointer-events-none`} />
 
-            {/* SIDEBAR - Always desktop-focused now */}
-            <aside className={`
-                sticky top-0 h-screen transition-all duration-300 z-50 flex flex-col
-                ${sidebarOpen ? 'w-72' : 'w-20'}
-                bg-white dark:bg-[#1E1F20] border-r border-gray-100 dark:border-[#282a2c]
-                hidden lg:flex
-            `} style={{ backdropFilter: 'none' }}>
+            {/* NEW DUAL-TIER SIDEBAR */}
+            <aside className="hidden lg:flex sticky top-0 h-screen z-50 overflow-hidden shadow-2xl sidebar-glass" style={{ width: sidebarOpen ? '320px' : '72px', transition: 'width 0.3s cubic-bezier(0.4, 0, 0.2, 1)' }}>
 
-                {/* LOGO AREA */}
-                <div className="h-16 flex items-center justify-between px-6 border-b border-gray-100 dark:border-[#282a2c] shrink-0">
-                    <div className="flex items-center">
-                        <div className="w-9 h-9 flex items-center justify-center mr-3">
-                            <img src={logoTop} alt="EduFlex Logo" className="w-full h-full object-contain" />
-                        </div>
-                        <span className={`font-bold text-xl tracking-tight text-gray-800 dark:text-white truncate block ${!sidebarOpen && 'lg:hidden'}`}>
-                            {systemSettings?.site_name || "EduFlex"}
-                        </span>
+                {/* 1. LEFT RAIL (Icon Bar) */}
+                <div className="w-[72px] bg-white/50 dark:bg-black flex flex-col items-center py-6 shrink-0 z-10 transition-colors duration-300">
+                    <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center mb-10 shadow-lg shadow-indigo-500/20 cursor-pointer hover:scale-105 transition-transform" onClick={() => navigate('/')}>
+                        <img src={logoTop} alt="EduFlex" className="w-7 h-7 object-contain" />
                     </div>
-                </div>
 
-                <nav className="flex-1 py-2 px-3 space-y-1 overflow-y-auto custom-scrollbar">
-                    <SidebarSection
-                        title={t('sidebar.categories.main')}
-                        items={navItems.main}
-                        sidebarOpen={sidebarOpen}
-                    />
-                    {navItems.guardian.length > 0 && (
-                        <SidebarSection
-                            title="Vårdnadshavare"
-                            items={navItems.guardian}
-                            sidebarOpen={sidebarOpen}
-                        />
-                    )}
-                    {navItems.rektor.length > 0 && (
-                        <SidebarSection
-                            title="Rektorspaket"
-                            items={navItems.rektor}
-                            sidebarOpen={sidebarOpen}
-                        />
-                    )}
-                    {navItems.syv.length > 0 && (
-                        <SidebarSection
-                            title="Studie- och yrkesvägledning"
-                            items={navItems.syv}
-                            sidebarOpen={sidebarOpen}
-                        />
-                    )}
-                    <SidebarSection
-                        title={t('sidebar.categories.education')}
-                        items={navItems.education}
-                        sidebarOpen={sidebarOpen}
-                    />
-                    <SidebarSection
-                        title={t('sidebar.categories.tools')}
-                        items={navItems.tools}
-                        sidebarOpen={sidebarOpen}
-                    />
-                    {navItems.admin.length > 0 && (
-                        <SidebarSection
-                            title={t('sidebar.categories.admin')}
-                            items={navItems.admin}
-                            sidebarOpen={sidebarOpen}
-                        />
-                    )}
-                </nav>
+                    <div className="flex-1 flex flex-col gap-4 overflow-y-auto no-scrollbar pb-10">
+                        {Object.keys(navItems).map(sectionKey => {
+                            if (navItems[sectionKey].length === 0) return null;
+                            const isActive = activeSection === sectionKey;
 
-                {/* PROFILE AREA - Moved to bottom for modern feel */}
-                <div className={`p-4 border-t border-gray-100 dark:border-[#282a2c] transition-all ${!sidebarOpen && 'px-2'}`}>
-                    <div
-                        className={`flex items-center gap-3 p-2 rounded-xl cursor-pointer hover:bg-gray-50 dark:hover:bg-[#282a2c] transition-colors relative group`}
-                        onClick={() => navigate('/profile')}
-                    >
-                        <div className="shrink-0 w-10 h-10 rounded-full bg-indigo-100 dark:bg-indigo-900/30 border border-indigo-200 dark:border-indigo-800 flex items-center justify-center overflow-hidden">
-                            {profileImgUrl ? (
-                                <img src={profileImgUrl} alt="Profil" className="w-full h-full object-cover" />
-                            ) : (
-                                <User size={20} className="text-indigo-600 dark:text-indigo-400" />
-                            )}
-                        </div>
-                        {sidebarOpen && (
-                            <div className="min-w-0 flex-1">
-                                <h3 className="font-bold text-sm text-gray-900 dark:text-gray-200 truncate">{currentUser?.fullName}</h3>
-                                <p className="text-[10px] uppercase font-bold text-indigo-600 dark:text-indigo-400 tracking-wider truncate">{roleName}</p>
-                            </div>
-                        )}
-                        {!sidebarOpen && (
-                            <div className="absolute left-16 bg-gray-900 dark:bg-gray-800 text-white text-xs px-3 py-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-50 pointer-events-none shadow-lg">
-                                {t('sidebar.my_profile')}
-                                <div className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1 w-2 h-2 bg-gray-900 dark:bg-gray-800 rotate-45"></div>
-                            </div>
-                        )}
+                            return (
+                                <button
+                                    key={sectionKey}
+                                    onClick={() => {
+                                        setActiveSection(sectionKey);
+                                        if (!sidebarOpen) setSidebarOpen(true);
+                                    }}
+                                    className={`relative group p-3 rounded-2xl transition-all duration-300 flex items-center justify-center ${isActive
+                                        ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/30'
+                                        : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-white/5'
+                                        }`}
+                                >
+                                    {sectionIcons[sectionKey]}
+
+                                    {/* Tooltip for when sidebar is closed */}
+                                    {!sidebarOpen && (
+                                        <div className="absolute left-[70px] bg-gray-900 text-white text-[10px] font-bold px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-50 pointer-events-none shadow-xl border border-white/10 uppercase tracking-widest">
+                                            {t(`sidebar.categories.${sectionKey}`) || sectionKey}
+                                        </div>
+                                    )}
+
+                                    {/* Active Indicator */}
+                                    {isActive && (
+                                        <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-3 bg-white rounded-l-full"></div>
+                                    )}
+                                </button>
+                            );
+                        })}
                     </div>
-                </div>
 
-                <div className="p-4 border-t border-gray-100 dark:border-[#282a2c] space-y-2">
-                    {darkModeActive && (
-                        <button onClick={toggleTheme} className={`flex items-center w-full px-3 py-2 rounded-xl transition-colors bg-gray-50 dark:bg-[#282a2c] hover:bg-gray-100 dark:hover:bg-[#3c4043] text-gray-600 dark:text-gray-300 ${!sidebarOpen && 'justify-center'}`}>
+                    <div className="mt-auto space-y-4 pt-4 border-t border-black/5 dark:border-white/5 items-center flex flex-col w-full">
+                        <button onClick={toggleTheme} className="p-3 text-gray-400 hover:text-indigo-600 transition-colors">
                             {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
-                            {sidebarOpen && <span className="ml-3 font-medium text-sm">{theme === 'dark' ? t('common.light_mode') : t('common.dark_mode')}</span>}
                         </button>
-                    )}
+                        <button onClick={handleLogout} className="p-3 text-gray-400 hover:text-rose-500 transition-colors group">
+                            <LogOut size={20} />
+                        </button>
+                    </div>
+                </div>
 
-                    {!isInstalled && (
-                        <button onClick={handleInstall} className={`flex items-center w-full px-3 py-2 rounded-xl transition-colors bg-indigo-50 dark:bg-indigo-900/10 hover:bg-indigo-100 dark:hover:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 ${!sidebarOpen && 'justify-center'}`}>
-                            <Download size={20} />
-                            {sidebarOpen && <span className="ml-3 font-bold text-sm">Installera App</span>}
-                        </button>
-                    )}
-                    <button onClick={handleLogout} className={`flex items-center w-full px-3 py-3 rounded-xl text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/10 transition-colors ${!sidebarOpen && 'justify-center'}`}>
-                        <LogOut size={20} />
-                        {sidebarOpen && <span className="ml-3 font-bold text-sm">{t('sidebar.logout')}</span>}
-                    </button>
-                    {sidebarOpen && <p className="text-[10px] text-gray-300 dark:text-gray-600 text-center flex justify-center mt-2">EduFlex v3.0.0</p>}
+                {/* 2. DYNAMIC NAVIGATION PANEL */}
+                <div className={`flex-1 flex flex-col bg-transparent transition-all duration-300 ${!sidebarOpen ? 'opacity-0 -translate-x-10 pointer-events-none' : 'opacity-100 translate-x-0'}`}>
+                    <div className="h-16 px-6 flex items-center border-b border-black/5 dark:border-white/5 shrink-0">
+                        <h2 className="font-black text-xs uppercase tracking-[0.2em] text-gray-400 dark:text-gray-500">
+                            {t(`sidebar.categories.${activeSection}`) || activeSection}
+                        </h2>
+                    </div>
+
+                    <div className="flex-1 overflow-y-auto px-4 py-6 custom-scrollbar space-y-2">
+                        {navItems[activeSection]?.map(item => {
+                            const fullCurrentPath = location.pathname + location.search;
+                            const isActive = item.path.includes('?')
+                                ? fullCurrentPath === item.path
+                                : (item.path === '/' || item.path === '/principal/dashboard'
+                                    ? (location.pathname === item.path && (location.search === '' || location.search === '?tab=OVERVIEW'))
+                                    : location.pathname === item.path);
+
+                            return (
+                                <button
+                                    key={item.path}
+                                    onClick={() => navigate(item.path)}
+                                    className={`w-full flex items-center justify-between px-4 py-3 rounded-2xl transition-all duration-300 group ${isActive
+                                        ? 'bg-indigo-600/5 text-indigo-600 dark:text-indigo-400 border border-indigo-600/10'
+                                        : 'text-gray-500 hover:bg-black/5 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white'
+                                        }`}
+                                >
+                                    <div className="flex items-center gap-3">
+                                        <div className={`transition-transform duration-300 ${isActive ? 'scale-110' : 'group-hover:scale-110 opacity-70'}`}>
+                                            {item.icon}
+                                        </div>
+                                        <span className={`text-[13px] font-bold ${isActive ? 'tracking-tight' : 'font-medium'}`}>
+                                            {item.label}
+                                        </span>
+                                    </div>
+                                    {item.badge && (
+                                        <span className="bg-rose-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-md shadow-lg shadow-rose-500/20">
+                                            {item.badge}
+                                        </span>
+                                    )}
+                                </button>
+                            );
+                        })}
+                    </div>
+
+                    {/* PANEL FOOTER (User Info) */}
+                    <div className="p-4 border-t border-black/5 dark:border-white/10 bg-black/5 dark:bg-zinc-950/50 m-4 rounded-3xl">
+                        <div className="flex items-center gap-3" onClick={() => navigate('/profile')}>
+                            <div className="w-10 h-10 rounded-2xl bg-white dark:bg-black shadow-sm border border-black/5 dark:border-white/10 overflow-hidden p-0.5">
+                                <div className="w-full h-full rounded-[14px] overflow-hidden">
+                                    {profileImgUrl ? (
+                                        <img src={profileImgUrl} alt="P" className="w-full h-full object-cover" />
+                                    ) : (
+                                        <div className="w-full h-full bg-indigo-50 dark:bg-indigo-900/30 flex items-center justify-center">
+                                            <User size={18} className="text-indigo-600 dark:text-indigo-400" />
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                            <div className="min-w-0">
+                                <h4 className="text-xs font-black text-gray-900 dark:text-white truncate tracking-tight">{currentUser?.fullName}</h4>
+                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest truncate">{roleName}</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </aside>
 
             {/* Main content - responsive margins */}
-            <main className={`flex-1 min-w-0 transition-all duration-300 ml-0 p-0 bg-gray-50 dark:bg-[#131314]`}>
+            <main className={`flex-1 min-w-0 transition-all duration-300 ml-0 p-0 bg-gray-50 dark:bg-[#000000]`}>
 
-                <header className={`h-16 flex items-center justify-between px-4 sm:px-8 sticky top-0 z-40 transition-all ${scrolled ? 'bg-white/80 dark:bg-[#1E1F20]/80 backdrop-blur-md border-b border-gray-100 dark:border-[#282a2c]' : 'bg-transparent'
+                <header className={`h-16 flex items-center justify-between px-4 sm:px-8 sticky top-0 z-40 transition-all ${scrolled ? 'bg-white/80 dark:bg-black/90 backdrop-blur-md border-b border-gray-100 dark:border-white/10' : 'bg-transparent'
                     }`}>
                     <div className="flex items-center gap-2 sm:gap-4 flex-1 min-w-0 mr-4">
                         <button
@@ -270,7 +301,7 @@ const StandardLayout = ({ children }) => {
                 </div>
 
                 {/* MOBILE BOTTOM NAV */}
-                <div className="lg:hidden fixed bottom-0 left-0 right-0 h-16 bg-white/80 dark:bg-[#1E1F20]/80 backdrop-blur-lg border-t border-gray-100 dark:border-[#282a2c] flex items-center justify-around px-2 z-40">
+                <div className="lg:hidden fixed bottom-0 left-0 right-0 h-16 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-lg border-t border-gray-100 dark:border-white/5 flex items-center justify-around px-2 z-40">
                     <MobileNavItem to="/" icon={<LayoutDashboard size={20} />} label="Hem" active={location.pathname === '/'} />
                     <MobileNavItem to="/resources" icon={<BookOpen size={20} />} label="Resurser" active={location.pathname === '/resources'} />
                     <button
@@ -290,7 +321,7 @@ const StandardLayout = ({ children }) => {
                 {mobileMenuOpen && (
                     <div className="lg:hidden fixed inset-0 z-[100] animate-in fade-in duration-300">
                         <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setMobileMenuOpen(false)} />
-                        <div className="absolute left-0 top-0 bottom-0 w-[280px] bg-white dark:bg-[#1E1F20] shadow-2xl animate-in slide-in-from-left duration-300 flex flex-col">
+                        <div className="absolute left-0 top-0 bottom-0 w-[280px] bg-white dark:bg-zinc-950 shadow-2xl animate-in slide-in-from-left duration-300 flex flex-col">
                             <div className="p-6 border-b border-gray-100 dark:border-[#282a2c] flex items-center justify-between">
                                 <div className="flex items-center gap-2">
                                     <img src={logoTop} alt="" className="w-8 h-8 object-contain" />
@@ -301,13 +332,12 @@ const StandardLayout = ({ children }) => {
                                 </button>
                             </div>
 
-                            <div className="flex-1 overflow-y-auto p-4 space-y-6">
-                                <SidebarSection title="Navigering" items={navItems.main} sidebarOpen={true} />
-                                {navItems.admin.length > 0 && <SidebarSection title="Admin" items={navItems.admin} sidebarOpen={true} />}
-                                {navItems.rektor.length > 0 && <SidebarSection title="Rektor" items={navItems.rektor} sidebarOpen={true} />}
-                                <SidebarSection title="Verktyg" items={navItems.tools} sidebarOpen={true} />
+                            <div className="flex-1 overflow-y-auto p-4 space-y-6 custom-scrollbar">
+                                {Object.entries(navItems).map(([key, items]) => (
+                                    items.length > 0 && <SidebarSection key={key} title={t(`sidebar.categories.${key}`) || key} items={items} sidebarOpen={true} />
+                                ))}
 
-                                <div className="pt-4 space-y-2">
+                                <div className="pt-4 space-y-2 border-t border-black/5 dark:border-white/5">
                                     {!isInstalled && (
                                         <button onClick={() => { handleInstall(); setMobileMenuOpen(false); }} className="w-full flex items-center gap-3 p-3 rounded-xl bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 font-bold">
                                             <Download size={20} />

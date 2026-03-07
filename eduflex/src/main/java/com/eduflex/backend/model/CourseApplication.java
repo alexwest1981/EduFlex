@@ -7,7 +7,9 @@ import java.time.LocalDateTime;
 @Table(name = "course_applications")
 public class CourseApplication {
 
-    public enum Status { PENDING, APPROVED, REJECTED }
+    public enum Status {
+        PENDING, UNDER_REVIEW, APPROVED, REJECTED, MORE_INFO, WAITLISTED
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,21 +26,71 @@ public class CourseApplication {
     @Enumerated(EnumType.STRING)
     private Status status = Status.PENDING;
 
+    @Column(columnDefinition = "TEXT")
+    private String adminNote;
+
     private LocalDateTime appliedAt = LocalDateTime.now();
+    private LocalDateTime updatedAt = LocalDateTime.now();
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
 
     // --- Getters & Setters ---
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public Long getId() {
+        return id;
+    }
 
-    public Course getCourse() { return course; }
-    public void setCourse(Course course) { this.course = course; }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    public User getStudent() { return student; }
-    public void setStudent(User student) { this.student = student; }
+    public Course getCourse() {
+        return course;
+    }
 
-    public Status getStatus() { return status; }
-    public void setStatus(Status status) { this.status = status; }
+    public void setCourse(Course course) {
+        this.course = course;
+    }
 
-    public LocalDateTime getAppliedAt() { return appliedAt; }
-    public void setAppliedAt(LocalDateTime appliedAt) { this.appliedAt = appliedAt; }
+    public User getStudent() {
+        return student;
+    }
+
+    public void setStudent(User student) {
+        this.student = student;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
+    public LocalDateTime getAppliedAt() {
+        return appliedAt;
+    }
+
+    public void setAppliedAt(LocalDateTime appliedAt) {
+        this.appliedAt = appliedAt;
+    }
+
+    public String getAdminNote() {
+        return adminNote;
+    }
+
+    public void setAdminNote(String adminNote) {
+        this.adminNote = adminNote;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
 }

@@ -44,16 +44,17 @@ const Sidebar = ({ currentUser, logout, siteName, version }) => {
         return () => clearInterval(interval);
     }, []);
 
-    const getMenuItems = () => {
-        const navItemsConfig = getNavigationConfig(currentUser, t, isModuleActive, licenseTier, { unreadMessages });
-        // Flatten the sections into a single list as Sidebar.jsx expects
-        const flattened = Object.values(navItemsConfig).flat();
-        console.log('Sidebar flattening:', flattened);
-        return flattened;
+    const navItemsConfig = getNavigationConfig(currentUser, t, isModuleActive, licenseTier, { unreadMessages });
+
+    const sectionLabels = {
+        main: 'Huvudmeny',
+        education: 'Utbildning & Studium',
+        tools: 'Verktyg',
+        syv: 'Studievägledning & Antagning',
+        admin: 'Administration',
+        rektor: 'Rektorspaket',
+        guardian: 'Vårdnadshavare'
     };
-
-
-    // FIX: Använd getSafeUrl för att hantera MinIO och https korrekt
     const profileImg = currentUser?.profilePictureUrl ? getSafeUrl(currentUser.profilePictureUrl) : null;
 
     return (
@@ -69,7 +70,7 @@ const Sidebar = ({ currentUser, logout, siteName, version }) => {
                 </div>
             </div>
 
-            {/* USER PROFILE SNIPPET (Denna saknades kanske innan) */}
+            {/* USER PROFILE SNIPPET */}
             <div className="p-4 mx-4 mt-4 bg-gray-50 rounded-xl border border-gray-100 flex items-center gap-3 cursor-pointer hover:bg-gray-100 transition-colors relative" onClick={() => navigate('/profile')}>
                 <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center overflow-hidden border border-indigo-200">
                     {profileImg ? (
@@ -90,41 +91,50 @@ const Sidebar = ({ currentUser, logout, siteName, version }) => {
             </div>
 
             {/* NAVIGATION */}
-            <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
-                {getMenuItems().map(item => {
-                    // Specific logic for active state:
-                    // 1. If item has query params, match full path (pathname + search)
-                    // 2. If item is base '/', match exactly pathname === '/' AND search is empty
-                    // 3. Otherwise match pathname
-                    const fullCurrentPath = location.pathname + location.search;
-                    const isActive = item.path.includes('?')
-                        ? fullCurrentPath === item.path
-                        : (item.path === '/' || item.path === '/principal/dashboard'
-                            ? (location.pathname === item.path && (location.search === '' || location.search === '?tab=OVERVIEW'))
-                            : location.pathname === item.path);
+            <nav className="flex-1 px-4 py-6 space-y-6 overflow-y-auto">
+                {Object.entries(navItemsConfig).map(([sectionKey, items]) => {
+                    if (!items || items.length === 0) return null;
 
                     return (
-                        <button
-                            key={item.path}
-                            onClick={() => navigate(item.path)}
-                            className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-200 font-medium text-sm
-                                ${isActive
-                                    ? 'bg-indigo-50 text-indigo-700 shadow-sm border border-indigo-100'
-                                    : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'
-                                }`}
-                        >
-                            <div className="flex items-center gap-3">
-                                <div className={`${isActive ? 'text-indigo-600' : 'text-gray-400'}`}>
-                                    {item.icon}
-                                </div>
-                                {item.label}
-                            </div>
-                            {item.badge && (
-                                <span className="bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
-                                    {item.badge}
-                                </span>
+                        <div key={sectionKey} className="space-y-1">
+                            {sectionKey !== 'main' && (
+                                <h3 className="px-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">
+                                    {sectionLabels[sectionKey] || sectionKey}
+                                </h3>
                             )}
-                        </button>
+                            {items.map(item => {
+                                const fullCurrentPath = location.pathname + location.search;
+                                const isActive = item.path.includes('?')
+                                    ? fullCurrentPath === item.path
+                                    : (item.path === '/' || item.path === '/principal/dashboard'
+                                        ? (location.pathname === item.path && (location.search === '' || location.search === '?tab=OVERVIEW'))
+                                        : location.pathname === item.path);
+
+                                return (
+                                    <button
+                                        key={item.path}
+                                        onClick={() => navigate(item.path)}
+                                        className={`w-full flex items-center justify-between px-4 py-2.5 rounded-xl transition-all duration-200 font-medium text-sm
+                                            ${isActive
+                                                ? 'bg-indigo-50 text-indigo-700 shadow-sm border border-indigo-100'
+                                                : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'
+                                            }`}
+                                    >
+                                        <div className="flex items-center gap-3">
+                                            <div className={`${isActive ? 'text-indigo-600' : 'text-gray-400'}`}>
+                                                {item.icon}
+                                            </div>
+                                            {item.label}
+                                        </div>
+                                        {item.badge && (
+                                            <span className="bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                                                {item.badge}
+                                            </span>
+                                        )}
+                                    </button>
+                                );
+                            })}
+                        </div>
                     );
                 })}
             </nav>

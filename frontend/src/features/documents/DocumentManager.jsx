@@ -267,7 +267,7 @@ const DocumentManager = () => {
 
     return (
         <div
-            className="flex h-full bg-white dark:bg-slate-900 relative"
+            className="flex h-full bg-[var(--bg-main)] relative"
             onDragEnter={() => setIsDragging(true)}
             onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
             onDragLeave={(e) => { if (!e.relatedTarget) setIsDragging(false); }}
@@ -285,7 +285,7 @@ const DocumentManager = () => {
                 <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-6">
                     <div className="space-y-1">
                         <FileBreadcrumbs path={folderPath} onNavigate={handleNavigate} />
-                        <h1 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">
+                        <h1 className="text-3xl font-black text-[var(--text-primary)] tracking-tight">
                             {currentView === 'shared' ? 'Delat med mig' :
                                 currentView === 'trash' ? 'Papperskorg' :
                                     currentView === 'grades' ? 'Mina Betyg' :
@@ -306,17 +306,17 @@ const DocumentManager = () => {
 
                     <div className="flex items-center gap-6 w-full md:w-auto">
                         <div className="relative flex-1 md:w-64">
-                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-secondary)]" size={18} />
                             <input
                                 placeholder="Sök i dina filer..."
                                 value={search}
                                 onChange={(e) => setSearch(e.target.value)}
-                                className="w-full pl-11 pr-4 py-3 bg-slate-50 dark:bg-slate-800/50 border-2 border-transparent focus:border-blue-500/20 focus:bg-white dark:focus:bg-slate-800 rounded-xl outline-none text-sm font-bold transition-all"
+                                className="w-full pl-11 pr-4 py-3 bg-[var(--bg-input)] border border-[var(--border-main)] focus:border-indigo-500/50 focus:bg-[var(--bg-card)] rounded-xl outline-none text-sm font-bold transition-all text-[var(--text-primary)] placeholder-[var(--text-secondary)]/50"
                             />
                         </div>
-                        <div className="flex bg-slate-100 dark:bg-slate-800/50 rounded-xl p-1">
-                            <button onClick={() => setViewMode('grid')} className={`p-2 rounded-lg transition-all ${viewMode === 'grid' ? 'bg-white dark:bg-slate-700 text-blue-600 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}><Grid size={18} /></button>
-                            <button onClick={() => setViewMode('list')} className={`p-2 rounded-lg transition-all ${viewMode === 'list' ? 'bg-white dark:bg-slate-700 text-blue-600 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}><List size={18} /></button>
+                        <div className="flex bg-[var(--bg-input)] rounded-xl p-1">
+                            <button onClick={() => setViewMode('grid')} className={`p-2 rounded-lg transition-all ${viewMode === 'grid' ? 'bg-[var(--bg-card)] text-indigo-600 shadow-sm' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'}`}><Grid size={18} /></button>
+                            <button onClick={() => setViewMode('list')} className={`p-2 rounded-lg transition-all ${viewMode === 'list' ? 'bg-[var(--bg-card)] text-indigo-600 shadow-sm' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'}`}><List size={18} /></button>
                         </div>
                     </div>
                 </header>
@@ -324,17 +324,17 @@ const DocumentManager = () => {
                 <div className="flex-1 overflow-y-auto pr-2">
                     {isLoading ? (
                         <div className="flex-1 flex flex-col items-center justify-center py-20">
-                            <div className="w-12 h-12 border-4 border-blue-600/20 border-t-blue-600 rounded-full animate-spin mb-4" />
-                            <p className="text-slate-400 font-bold uppercase tracking-widest text-[10px]">Laddar bibliotek...</p>
+                            <div className="w-12 h-12 border-4 border-indigo-600/20 border-t-indigo-600 rounded-full animate-spin mb-4" />
+                            <p className="text-[var(--text-secondary)] font-bold uppercase tracking-widest text-[10px]">Laddar bibliotek...</p>
                         </div>
                     ) : (
                         filteredDocs.length === 0 && filteredFolders.length === 0 ? (
                             <div className="flex flex-col items-center justify-center py-20 opacity-40">
-                                <div className="p-6 bg-slate-100 dark:bg-slate-800 rounded-3xl mb-4 rotate-12">
-                                    <UploadCloud size={48} className="text-slate-400" />
+                                <div className="p-6 bg-[var(--bg-input)] rounded-3xl mb-4 rotate-12">
+                                    <UploadCloud size={48} className="text-[var(--text-secondary)]" />
                                 </div>
-                                <h3 className="text-lg font-black text-slate-400">Inga filer här än</h3>
-                                <p className="text-xs font-bold text-slate-400">Dra och släpp filer för att börja</p>
+                                <h3 className="text-lg font-black text-[var(--text-secondary)]">Inga filer här än</h3>
+                                <p className="text-xs font-bold text-[var(--text-secondary)]">Dra och släpp filer för att börja</p>
                             </div>
                         ) : (
                             <div className={viewMode === 'grid' ? "grid grid-cols-[repeat(auto-fill,minmax(140px,1fr))] gap-6 pb-12" : "space-y-3 pb-12"}>
@@ -344,15 +344,15 @@ const DocumentManager = () => {
                                         key={folder.id}
                                         onDoubleClick={() => handleNavigate(folder)}
                                         onContextMenu={(e) => handleContextMenu(e, { ...folder, type: 'folder' })}
-                                        className="group relative bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-100 dark:border-slate-700 hover:border-blue-500/30 dark:hover:border-blue-500/50 transition-all cursor-pointer shadow-sm hover:shadow-lg"
+                                        className="group relative bg-[var(--bg-card)] p-4 rounded-2xl border border-[var(--border-main)] hover:border-indigo-500/30 transition-all cursor-pointer shadow-sm hover:shadow-lg"
                                     >
                                         <div className="space-y-3">
-                                            <div className="w-12 h-12 bg-blue-50 dark:bg-blue-900/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                                                <FolderIcon className="text-blue-600" size={28} />
+                                            <div className="w-12 h-12 bg-indigo-50 dark:bg-indigo-900/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                                                <FolderIcon className="text-indigo-600" size={28} />
                                             </div>
                                             <div>
-                                                <h4 className="font-bold text-slate-900 dark:text-white truncate text-xs mb-0.5" title={folder.name}>{folder.name}</h4>
-                                                <p className="text-[9px] text-slate-400 font-black uppercase tracking-tight">Mapp</p>
+                                                <h4 className="font-bold text-[var(--text-primary)] truncate text-xs mb-0.5" title={folder.name}>{folder.name}</h4>
+                                                <p className="text-[9px] text-[var(--text-secondary)] font-black uppercase tracking-tight">Mapp</p>
                                             </div>
                                         </div>
                                     </div>
@@ -364,7 +364,7 @@ const DocumentManager = () => {
                                         key={doc.id}
                                         onDoubleClick={() => handleAction('open', { ...doc, type: 'file' })}
                                         onContextMenu={(e) => handleContextMenu(e, { ...doc, type: 'file' })}
-                                        className="group relative bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-100 dark:border-slate-700 hover:border-blue-500/30 dark:hover:border-blue-500/50 transition-all cursor-pointer shadow-sm hover:shadow-lg text-center"
+                                        className="group relative bg-[var(--bg-card)] p-4 rounded-2xl border border-[var(--border-main)] hover:border-indigo-500/30 transition-all cursor-pointer shadow-sm hover:shadow-lg text-center"
                                     >
                                         <div className="aspect-square bg-slate-50 dark:bg-slate-900/50 rounded-xl mb-4 flex items-center justify-center overflow-hidden">
                                             {doc.fileType?.startsWith('image/') ? (
@@ -381,8 +381,8 @@ const DocumentManager = () => {
                                                 <div className="group-hover:scale-105 transition-transform">{getFileIcon(doc.fileType)}</div>
                                             )}
                                         </div>
-                                        <h4 className="font-bold text-slate-900 dark:text-white text-xs truncate mb-0.5 px-1" title={doc.fileName}>{doc.fileName}</h4>
-                                        <p className="text-[9px] text-slate-400 font-bold uppercase tracking-tight">{getShortType(doc.fileType)}</p>
+                                        <h4 className="font-bold text-[var(--text-primary)] text-xs truncate mb-0.5 px-1" title={doc.fileName}>{doc.fileName}</h4>
+                                        <p className="text-[9px] text-[var(--text-secondary)] font-bold uppercase tracking-tight">{getShortType(doc.fileType)}</p>
                                     </div>
                                 ))}
                             </div>
@@ -419,7 +419,7 @@ const DocumentManager = () => {
             )}
 
             {showEditor && editingDoc && (
-                <div className="fixed inset-0 z-[10001] bg-white dark:bg-slate-900 animate-in slide-in-from-bottom duration-300">
+                <div className="fixed inset-0 z-[10001] bg-[var(--bg-main)] animate-in slide-in-from-bottom duration-300">
                     <ErrorBoundary>
                         <OnlyOfficeEditor
                             entityType="DOCUMENT"

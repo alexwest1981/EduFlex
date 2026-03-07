@@ -36,13 +36,17 @@ const getSunGradient = (sunCode) => {
 };
 
 const ProgramCard = ({ course, viewMode, onApply, applying, applySuccess }) => {
+    const navigate = useNavigate();
     const gradient = getSunGradient(course.sunCode);
     const Icon = getSunIcon(course.sunCode);
     const isApplied = applySuccess === course.id;
 
     if (viewMode === 'list') {
         return (
-            <div className="group bg-white dark:bg-[#1a1b1d] rounded-2xl border border-gray-100 dark:border-[#2a2b2d] overflow-hidden hover:shadow-md hover:border-indigo-200 dark:hover:border-indigo-900/50 transition-all duration-200 flex">
+            <div
+                onClick={() => navigate(`/programs/${course.id}`)}
+                className="group bg-[var(--bg-card)] rounded-2xl border border-[var(--border-main)] overflow-hidden hover:shadow-md hover:border-indigo-200 dark:hover:border-indigo-900/50 transition-all duration-200 flex cursor-pointer"
+            >
                 <div className={`w-1.5 shrink-0 bg-gradient-to-b ${gradient}`} />
                 <div className="flex items-center gap-5 px-5 py-4 flex-1 min-w-0 flex-wrap md:flex-nowrap">
                     <div className={`hidden md:flex w-10 h-10 rounded-xl bg-gradient-to-br ${gradient} text-white items-center justify-center shrink-0`}>
@@ -61,7 +65,7 @@ const ProgramCard = ({ course, viewMode, onApply, applying, applySuccess }) => {
                                 </span>
                             )}
                         </div>
-                        <h3 className="font-bold text-gray-900 dark:text-white truncate text-sm group-hover:text-indigo-600 transition-colors">
+                        <h3 className="font-bold text-[var(--text-primary)] truncate text-sm group-hover:text-indigo-600 transition-colors">
                             {course.name}
                         </h3>
                     </div>
@@ -70,10 +74,10 @@ const ProgramCard = ({ course, viewMode, onApply, applying, applySuccess }) => {
                             {course.isOpen ? 'Öppen för ansökan' : 'Stängd'}
                         </span>
                         <button
-                            onClick={() => onApply(course.id)}
+                            onClick={(e) => { e.stopPropagation(); onApply(course.id); }}
                             disabled={!course.isOpen || applying === course.id}
                             className={`flex items-center gap-1.5 px-4 py-1.5 rounded-xl text-xs font-bold transition-all ${isApplied ? 'bg-emerald-500 text-white'
-                                : !course.isOpen ? 'bg-gray-100 dark:bg-[#252628] text-gray-400 cursor-not-allowed'
+                                : !course.isOpen ? 'bg-[var(--bg-input)] text-[var(--text-secondary)] cursor-not-allowed'
                                     : 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-md shadow-indigo-200 dark:shadow-indigo-900/30'
                                 }`}
                         >
@@ -89,7 +93,10 @@ const ProgramCard = ({ course, viewMode, onApply, applying, applySuccess }) => {
 
     // Grid view
     return (
-        <div className="group bg-white dark:bg-[#1a1b1d] rounded-2xl border border-gray-100 dark:border-[#2a2b2d] overflow-hidden hover:shadow-xl hover:shadow-gray-200/60 dark:hover:shadow-black/40 hover:-translate-y-0.5 hover:border-indigo-200 dark:hover:border-indigo-800/40 transition-all duration-300 flex flex-col">
+        <div
+            onClick={() => navigate(`/programs/${course.id}`)}
+            className="group bg-[var(--bg-card)] rounded-2xl border border-[var(--border-main)] overflow-hidden hover:shadow-xl hover:shadow-gray-200/60 dark:hover:shadow-black/40 hover:-translate-y-0.5 hover:border-indigo-200 dark:hover:border-indigo-800/40 transition-all duration-300 flex flex-col cursor-pointer"
+        >
             {/* Colored header */}
             <div className={`h-24 bg-gradient-to-br ${gradient} relative overflow-hidden flex items-center justify-center`}>
                 <div className="absolute inset-0 opacity-10"
@@ -109,10 +116,10 @@ const ProgramCard = ({ course, viewMode, onApply, applying, applySuccess }) => {
             </div>
 
             <div className="p-5 flex-1 flex flex-col">
-                <h3 className="font-bold text-gray-900 dark:text-white mb-2 group-hover:text-indigo-600 transition-colors leading-snug">
+                <h3 className="font-bold text-[var(--text-primary)] mb-2 group-hover:text-indigo-600 transition-colors leading-snug">
                     {course.name}
                 </h3>
-                <p className="text-gray-400 dark:text-gray-500 text-xs leading-relaxed mb-4 line-clamp-2 flex-1">
+                <p className="text-[var(--text-secondary)] text-xs leading-relaxed mb-4 line-clamp-2 flex-1">
                     {course.description
                         ? course.description.replace(/<[^>]*>/g, '')
                         : 'Nationellt utbildningsprogram från Skolverkets SUSA-nav.'}
@@ -126,10 +133,10 @@ const ProgramCard = ({ course, viewMode, onApply, applying, applySuccess }) => {
                         {course.isOpen ? 'Öppen' : 'Stängd'}
                     </span>
                     <button
-                        onClick={() => onApply(course.id)}
+                        onClick={(e) => { e.stopPropagation(); onApply(course.id); }}
                         disabled={!course.isOpen || applying === course.id}
                         className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold transition-all ${isApplied ? 'bg-emerald-500 text-white'
-                            : !course.isOpen ? 'bg-gray-100 dark:bg-[#252628] text-gray-400 cursor-not-allowed'
+                            : !course.isOpen ? 'bg-[var(--bg-input)] text-[var(--text-secondary)] cursor-not-allowed'
                                 : 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-md shadow-indigo-200 dark:shadow-indigo-900/30'
                             }`}
                     >
@@ -147,7 +154,6 @@ const ProgramCatalog = () => {
     const { currentUser } = useAppContext();
     const navigate = useNavigate();
     const [programs, setPrograms] = useState([]);
-    const [allCourses, setAllCourses] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const [filterLia, setFilterLia] = useState(false);
@@ -159,12 +165,8 @@ const ProgramCatalog = () => {
     useEffect(() => {
         const load = async () => {
             try {
-                // Hämta alla kurser och filtrera dem som har en SUN-kod
-                const data = await api.courses.getAll();
-                setAllCourses(data);
-                // Program = kurser med sunCode satt (importerat via SUSA-navet)
-                const sunPrograms = data.filter(c => c.sunCode);
-                setPrograms(sunPrograms);
+                const data = await api.educationPrograms.getAll();
+                setPrograms(data);
             } catch (e) {
                 console.error('Kunde inte ladda utbildningsprogram:', e);
                 setError('Kunde inte hämta utbildningsprogram från servern.');
@@ -201,7 +203,7 @@ const ProgramCatalog = () => {
     }, [programs, searchTerm, filterLia]);
 
     return (
-        <div className="min-h-screen bg-gray-50 dark:bg-[#0f1012] pb-24 -mx-4 lg:-mx-8 -mt-4 lg:-mt-8">
+        <div className="min-h-screen bg-[var(--bg-main)] pb-24 -mx-4 lg:-mx-8 -mt-4 lg:-mt-8">
 
             {/* HERO */}
             <div className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-emerald-950 to-slate-900">
@@ -265,14 +267,14 @@ const ProgramCatalog = () => {
                 {/* Toolbar */}
                 <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
                     <div className="flex items-center gap-3">
-                        <p className="text-sm text-gray-500 dark:text-gray-400">
-                            <span className="font-semibold text-gray-900 dark:text-white">{filtered.length}</span> program
+                        <p className="text-sm text-[var(--text-secondary)]">
+                            <span className="font-semibold text-[var(--text-primary)]">{filtered.length}</span> program
                         </p>
                         <button
                             onClick={() => setFilterLia(v => !v)}
                             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all border ${filterLia
                                 ? 'bg-amber-500 text-white border-amber-500'
-                                : 'bg-white dark:bg-[#1a1b1d] text-gray-600 dark:text-gray-400 border-gray-200 dark:border-[#2a2b2d] hover:border-amber-400'
+                                : 'bg-[var(--bg-card)] text-[var(--text-secondary)] border-[var(--border-main)] hover:border-amber-400'
                                 }`}
                         >
                             <Filter size={12} />
@@ -281,7 +283,7 @@ const ProgramCatalog = () => {
                         </button>
                     </div>
 
-                    <div className="flex bg-white dark:bg-[#1a1b1d] border border-gray-200 dark:border-[#2a2b2d] rounded-xl overflow-hidden">
+                    <div className="flex bg-[var(--bg-card)] border border-[var(--border-main)] rounded-xl overflow-hidden">
                         <button onClick={() => setViewMode('grid')} className={`p-2.5 transition-colors ${viewMode === 'grid' ? 'bg-indigo-600 text-white' : 'text-gray-400 hover:text-gray-600'}`}>
                             <LayoutGrid size={15} />
                         </button>
@@ -310,10 +312,10 @@ const ProgramCatalog = () => {
                         <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center mb-6 shadow-lg shadow-emerald-200 dark:shadow-emerald-900/30">
                             <Globe size={32} className="text-white" />
                         </div>
-                        <h2 className="text-2xl font-black text-gray-900 dark:text-white mb-3">
+                        <h2 className="text-2xl font-black text-[var(--text-primary)] mb-3">
                             Inga utbildningsprogram ännu
                         </h2>
-                        <p className="text-gray-500 dark:text-gray-400 text-sm max-w-sm mb-6">
+                        <p className="text-[var(--text-secondary)] text-sm max-w-sm mb-6">
                             Inga program från SUSA-navet har importerats ännu. Som admin kan du hämta program via <strong>Admin → Kurser → Hämta via SUN-kod</strong>.
                         </p>
                         <a

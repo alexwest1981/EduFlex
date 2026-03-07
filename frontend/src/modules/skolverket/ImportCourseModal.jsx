@@ -56,8 +56,8 @@ const ImportCourseModal = ({ subject, onClose, onImport }) => {
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-            <div className="bg-white dark:bg-[#1E1F20] w-full max-w-md rounded-2xl shadow-2xl border border-gray-100 dark:border-[#282a2c] overflow-hidden">
-                <div className="p-4 border-b border-gray-100 dark:border-[#282a2c] flex justify-between items-center">
+            <div className="bg-[var(--bg-card)] w-full max-w-md rounded-2xl shadow-2xl border border-[var(--border-main)] overflow-hidden">
+                <div className="p-4 border-b border-[var(--border-main)] flex justify-between items-center">
                     <h3 className="font-bold text-lg dark:text-white">Importera Kurs</h3>
                     <button onClick={onClose} className="p-1 hover:bg-gray-100 dark:hover:bg-white/10 rounded-full transition-colors">
                         <X size={20} className="text-gray-500" />

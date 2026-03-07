@@ -28,12 +28,12 @@ const StudentProgressWidget = ({ currentUser }) => {
         }
     };
 
-    if (isLoading) return <div className="p-6 text-center text-gray-400"><Loader2 className="animate-spin mx-auto" /></div>;
+    if (isLoading) return <div className="p-6 text-center text-[var(--text-secondary)]"><Loader2 className="animate-spin mx-auto" /></div>;
     if (progress.length === 0) return null;
 
     return (
-        <div className="bg-white dark:bg-[#1E1F20] rounded-2xl border border-gray-200 dark:border-[#3c4043] shadow-sm p-6">
-            <h3 className="font-bold text-gray-900 dark:text-white text-sm uppercase tracking-wider mb-4">
+        <div className="bg-[var(--bg-card)] rounded-2xl border border-[var(--border-main)] shadow-sm p-6">
+            <h3 className="font-bold text-[var(--text-primary)] text-sm uppercase tracking-wider mb-4">
                 {t('widgets.student_progress.title')}
             </h3>
             <div className="space-y-3">
@@ -41,26 +41,26 @@ const StudentProgressWidget = ({ currentUser }) => {
                     <div
                         key={p.courseId}
                         onClick={() => setSelectedCourse(p)}
-                        className={`p-3 rounded-xl border cursor-pointer transition-all hover:bg-gray-50 dark:hover:bg-[#282a2c] ${p.isAtRisk ? 'border-red-200 dark:border-red-900/50 bg-red-50 dark:bg-red-900/10' : 'border-gray-100 dark:border-[#3c4043]'}`}
+                        className={`p-3 rounded-xl border cursor-pointer transition-all hover:bg-white/5 ${p.isAtRisk ? 'border-rose-500/20 bg-rose-500/10' : 'border-[var(--border-main)]'}`}
                     >
                         <div className="flex justify-between items-center mb-1">
-                            <span className="font-bold text-sm text-gray-800 dark:text-gray-200 line-clamp-1">{p.courseName}</span>
+                            <span className="font-bold text-sm text-[var(--text-primary)] line-clamp-1">{p.courseName}</span>
                             {p.estimatedGrade !== 'N/A' && (
-                                <span className={`text-xs font-bold px-2 py-0.5 rounded ${p.isAtRisk ? 'bg-red-200 text-red-800' : 'bg-green-100 text-green-700'}`}>
+                                <span className={`text-xs font-bold px-2 py-0.5 rounded ${p.isAtRisk ? 'bg-rose-500/20 text-rose-500' : 'bg-emerald-500/20 text-emerald-500'}`}>
                                     {p.estimatedGrade}
                                 </span>
                             )}
                         </div>
                         {p.isAtRisk ? (
-                            <div className="flex items-center gap-1.5 text-xs text-red-600 dark:text-red-400 font-medium">
+                            <div className="flex items-center gap-1.5 text-xs text-rose-500 font-medium">
                                 <AlertTriangle size={12} /> {p.riskReason}
                             </div>
                         ) : (
-                            <div className="flex items-center gap-1.5 text-xs text-green-600 dark:text-green-400 font-medium">
+                            <div className="flex items-center gap-1.5 text-xs text-emerald-500 font-medium">
                                 <CheckCircle size={12} /> {t('widgets.student_progress.on_track')}
                             </div>
                         )}
-                        <div className="mt-2 text-[10px] text-gray-400 flex gap-3">
+                        <div className="mt-2 text-[10px] text-[var(--text-secondary)] flex gap-3">
                             <span>{t('widgets.student_progress.assignments')}: {p.completedAssignments}/{p.totalAssignments}</span>
                             <span>{t('widgets.student_progress.quizzes')}: {p.completedQuizzes}/{p.totalQuizzes}</span>
                         </div>
@@ -70,43 +70,43 @@ const StudentProgressWidget = ({ currentUser }) => {
 
             {/* MODAL FÖR DETALJER */}
             {selectedCourse && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in">
-                    <div className="bg-white dark:bg-[#1E1F20] w-full max-w-md rounded-2xl shadow-2xl p-6 relative">
-                        <button onClick={(e) => { e.stopPropagation(); setSelectedCourse(null); }} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in">
+                    <div className="bg-[var(--bg-card)] w-full max-w-md rounded-2xl border border-[var(--border-main)] shadow-2xl p-6 relative">
+                        <button onClick={(e) => { e.stopPropagation(); setSelectedCourse(null); }} className="absolute top-4 right-4 text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors">
                             <X size={20} />
                         </button>
 
-                        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-1">{selectedCourse.courseName}</h2>
-                        <p className="text-sm text-gray-500 mb-6">{t('widgets.student_progress.detailed_overview')}</p>
+                        <h2 className="text-xl font-bold text-[var(--text-primary)] mb-1">{selectedCourse.courseName}</h2>
+                        <p className="text-sm text-[var(--text-secondary)] mb-6">{t('widgets.student_progress.detailed_overview')}</p>
 
-                        <div className="space-y-6 max-h-[60vh] overflow-y-auto pr-2">
+                        <div className="space-y-6 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
                             {/* SENASTE RESULTAT */}
                             <div>
-                                <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">{t('widgets.student_progress.latest_results')}</h4>
+                                <h4 className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-2">{t('widgets.student_progress.latest_results')}</h4>
                                 {selectedCourse.recentResults && selectedCourse.recentResults.length > 0 ? (
                                     <div className="space-y-2">
                                         {selectedCourse.recentResults.slice(0, 10).map((res, i) => (
-                                            <div key={i} className="flex justify-between items-center p-2 rounded bg-gray-50 dark:bg-[#282a2c]">
+                                            <div key={i} className="flex justify-between items-center p-2 rounded bg-[var(--bg-input)]">
                                                 <div>
-                                                    <span className="text-xs font-bold text-gray-700 dark:text-gray-300 block">{res.title}</span>
-                                                    <span className="text-[10px] text-gray-500">{res.type}</span>
+                                                    <span className="text-xs font-bold text-[var(--text-primary)] block">{res.title}</span>
+                                                    <span className="text-[10px] text-[var(--text-secondary)]">{res.type}</span>
                                                 </div>
-                                                <span className="font-bold text-indigo-600">{res.scoreOrGrade}</span>
+                                                <span className="font-bold text-indigo-400">{res.scoreOrGrade}</span>
                                             </div>
                                         ))}
                                     </div>
                                 ) : (
-                                    <p className="text-sm text-gray-400 italic">{t('widgets.student_progress.no_results')}</p>
+                                    <p className="text-sm text-[var(--text-secondary)] italic font-normal">{t('widgets.student_progress.no_results')}</p>
                                 )}
                             </div>
 
                             {/* STATUS ALERT */}
                             {selectedCourse.isAtRisk && (
-                                <div className="bg-red-50 dark:bg-red-900/20 p-4 rounded-xl border border-red-100 dark:border-red-900">
-                                    <h4 className="flex items-center gap-2 text-red-700 dark:text-red-300 font-bold text-sm mb-1">
+                                <div className="bg-rose-500/10 p-4 rounded-xl border border-rose-500/20">
+                                    <h4 className="flex items-center gap-2 text-rose-500 font-bold text-sm mb-1">
                                         <AlertTriangle size={16} /> {t('widgets.student_progress.at_risk')}
                                     </h4>
-                                    <p className="text-xs text-red-600 dark:text-red-400">{selectedCourse.riskReason}. {t('widgets.student_progress.catch_up')}</p>
+                                    <p className="text-xs text-rose-400">{selectedCourse.riskReason}. {t('widgets.student_progress.catch_up')}</p>
                                 </div>
                             )}
                         </div>

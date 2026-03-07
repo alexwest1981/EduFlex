@@ -25,29 +25,29 @@ const AdminStats = ({ users = [], courses = [], documents = [], onViewMessages, 
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
 
             {/* ANVÄNDAR-STATISTIK */}
-            <div className="bg-white dark:bg-[#1c1c1e] p-5 sm:p-6 rounded-[2rem] border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-xl transition-all duration-300 group relative overflow-hidden">
+            <div className="bg-[var(--bg-card)] p-5 sm:p-6 rounded-[2rem] border border-[var(--border-main)] shadow-[var(--card-shadow)] hover:shadow-xl transition-all duration-300 group relative overflow-hidden">
                 <div className="absolute -right-4 -bottom-4 opacity-[0.03] group-hover:scale-125 transition-transform text-blue-500">
                     <Users size={120} />
                 </div>
                 <div className="flex justify-between items-start mb-4 relative z-10">
-                    <div className="p-3 rounded-2xl bg-blue-50 dark:bg-blue-900/10 text-blue-600 dark:text-blue-400">
+                    <div className="p-3 rounded-2xl bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400">
                         <Users size={22} />
                     </div>
                 </div>
                 <div className="relative z-10">
-                    <h3 className="text-4xl font-black text-gray-900 dark:text-white tracking-tighter mb-1">{userList.length}</h3>
-                    <p className="text-xs font-black text-gray-400 uppercase tracking-widest">{t('dashboard.total_users')}</p>
-                    <div className="flex flex-wrap gap-x-3 gap-y-1 mt-6 pt-4 border-t border-gray-100 dark:border-gray-800">
-                        <div className="flex items-center gap-1 text-[10px] font-black text-gray-500 uppercase" title={t('dashboard.students')}><span className="w-1.5 h-1.5 bg-green-500 rounded-full"></span> {studentCount} S</div>
-                        <div className="flex items-center gap-1 text-[10px] font-black text-gray-500 uppercase" title={t('dashboard.teachers')}><span className="w-1.5 h-1.5 bg-indigo-500 rounded-full"></span> {teacherCount} L</div>
-                        <div className="flex items-center gap-1 text-[10px] font-black text-gray-500 uppercase" title={t('dashboard.admins')}><span className="w-1.5 h-1.5 bg-red-500 rounded-full"></span> {adminCount} A</div>
-                        <div className="flex items-center gap-1 text-[10px] font-black text-gray-500 uppercase" title={t('dashboard.mentors')}><span className="w-1.5 h-1.5 bg-orange-500 rounded-full"></span> {mentorCount} M</div>
+                    <h3 className="text-4xl font-black text-[var(--text-primary)] tracking-tighter mb-1">{userList.length}</h3>
+                    <p className="text-xs font-black text-[var(--text-secondary)] uppercase tracking-widest">{t('dashboard.total_users')}</p>
+                    <div className="flex flex-wrap gap-x-3 gap-y-1 mt-6 pt-4 border-t border-[var(--border-main)]">
+                        <div className="flex items-center gap-1 text-[10px] font-black text-[var(--text-secondary)] uppercase" title={t('dashboard.students')}><span className="w-1.5 h-1.5 bg-green-500 rounded-full"></span> {studentCount} S</div>
+                        <div className="flex items-center gap-1 text-[10px] font-black text-[var(--text-secondary)] uppercase" title={t('dashboard.teachers')}><span className="w-1.5 h-1.5 bg-indigo-500 rounded-full"></span> {teacherCount} L</div>
+                        <div className="flex items-center gap-1 text-[10px] font-black text-[var(--text-secondary)] uppercase" title={t('dashboard.admins')}><span className="w-1.5 h-1.5 bg-red-500 rounded-full"></span> {adminCount} A</div>
+                        <div className="flex items-center gap-1 text-[10px] font-black text-[var(--text-secondary)] uppercase" title={t('dashboard.mentors')}><span className="w-1.5 h-1.5 bg-orange-500 rounded-full"></span> {mentorCount} M</div>
                     </div>
                 </div>
             </div>
 
             {/* KURS-STATISTIK */}
-            <div className="bg-white dark:bg-[#1c1c1e] p-5 sm:p-6 rounded-[2rem] border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-xl transition-all duration-300 group relative overflow-hidden">
+            <div className="bg-[var(--bg-card)] p-5 sm:p-6 rounded-[2rem] border border-[var(--border-main)] shadow-[var(--card-shadow)] hover:shadow-xl transition-all duration-300 group relative overflow-hidden">
                 <div className="absolute -right-4 -bottom-4 opacity-[0.03] group-hover:scale-125 transition-transform text-indigo-500">
                     <Briefcase size={120} />
                 </div>
@@ -57,9 +57,9 @@ const AdminStats = ({ users = [], courses = [], documents = [], onViewMessages, 
                     </div>
                 </div>
                 <div className="relative z-10">
-                    <h3 className="text-4xl font-black text-gray-900 dark:text-white tracking-tighter mb-1">{courseList.length}</h3>
-                    <p className="text-xs font-black text-gray-400 uppercase tracking-widest">Totalt Kurser</p>
-                    <div className="flex gap-4 mt-6 pt-4 border-t border-gray-100 dark:border-gray-800">
+                    <h3 className="text-4xl font-black text-[var(--text-primary)] tracking-tighter mb-1">{courseList.length}</h3>
+                    <p className="text-xs font-black text-[var(--text-secondary)] uppercase tracking-widest">Totalt Kurser</p>
+                    <div className="flex gap-4 mt-6 pt-4 border-t border-[var(--border-main)]">
                         <div className="flex items-center gap-1 text-[10px] font-black text-emerald-500 uppercase"><CheckCircle size={12} /> {openCourses} Aktiva</div>
                         <div className="flex items-center gap-1 text-[10px] font-black text-rose-500 uppercase"><XCircle size={12} /> {closedCourses} Arkiv</div>
                     </div>
@@ -67,7 +67,7 @@ const AdminStats = ({ users = [], courses = [], documents = [], onViewMessages, 
             </div>
 
             {/* FIL-STATISTIK */}
-            <div className="bg-white dark:bg-[#1c1c1e] p-5 sm:p-6 rounded-[2rem] border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-xl transition-all duration-300 group relative overflow-hidden">
+            <div className="bg-[var(--bg-card)] p-5 sm:p-6 rounded-[2rem] border border-[var(--border-main)] shadow-[var(--card-shadow)] hover:shadow-xl transition-all duration-300 group relative overflow-hidden">
                 <div className="absolute -right-4 -bottom-4 opacity-[0.03] group-hover:scale-125 transition-transform text-orange-500">
                     <FileText size={120} />
                 </div>
@@ -77,9 +77,9 @@ const AdminStats = ({ users = [], courses = [], documents = [], onViewMessages, 
                     </div>
                 </div>
                 <div className="relative z-10">
-                    <h3 className="text-4xl font-black text-gray-900 dark:text-white tracking-tighter mb-1">{docList.length}</h3>
-                    <p className="text-xs font-black text-gray-400 uppercase tracking-widest">{t('dashboard.archived_files')}</p>
-                    <div className="mt-6 pt-4 border-t border-gray-100 dark:border-gray-800">
+                    <h3 className="text-4xl font-black text-[var(--text-primary)] tracking-tighter mb-1">{docList.length}</h3>
+                    <p className="text-xs font-black text-[var(--text-secondary)] uppercase tracking-widest">{t('dashboard.archived_files')}</p>
+                    <div className="mt-6 pt-4 border-t border-[var(--border-main)]">
                         <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">
                             <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span> Datasync OK
                         </p>
@@ -90,7 +90,7 @@ const AdminStats = ({ users = [], courses = [], documents = [], onViewMessages, 
             {/* SENASTE MEDDELANDEN */}
             <div
                 onClick={onViewMessages}
-                className="bg-white dark:bg-[#1c1c1e] p-5 sm:p-6 rounded-[2rem] border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-xl transition-all duration-300 group relative overflow-hidden cursor-pointer active:scale-95"
+                className="bg-[var(--bg-card)] p-5 sm:p-6 rounded-[2rem] border border-[var(--border-main)] shadow-[var(--card-shadow)] hover:shadow-xl transition-all duration-300 group relative overflow-hidden cursor-pointer active:scale-95"
             >
                 <div className="absolute -right-4 -bottom-4 opacity-[0.03] group-hover:scale-125 transition-transform text-emerald-500">
                     <MessageSquare size={120} />
@@ -106,9 +106,9 @@ const AdminStats = ({ users = [], courses = [], documents = [], onViewMessages, 
                     )}
                 </div>
                 <div className="relative z-10">
-                    <h3 className="text-4xl font-black text-gray-900 dark:text-white tracking-tighter mb-1">{unreadCount}</h3>
-                    <p className="text-xs font-black text-gray-400 uppercase tracking-widest">Nya Meddelanden</p>
-                    <div className="mt-6 pt-4 border-t border-gray-100 dark:border-gray-800 flex justify-between items-center group-hover:text-indigo-600 transition-colors">
+                    <h3 className="text-4xl font-black text-[var(--text-primary)] tracking-tighter mb-1">{unreadCount}</h3>
+                    <p className="text-xs font-black text-[var(--text-secondary)] uppercase tracking-widest">Nya Meddelanden</p>
+                    <div className="mt-6 pt-4 border-t border-[var(--border-main)] flex justify-between items-center group-hover:text-indigo-600 transition-colors">
                         <p className="text-[10px] font-black uppercase tracking-widest">{t('dashboard.go_to_inbox')}</p>
                         <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
                     </div>

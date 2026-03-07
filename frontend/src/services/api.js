@@ -285,6 +285,7 @@ export const api = {
     courses: {
         getAll: () => api.get('/courses'),
         getOne: (id) => api.get(`/courses/${id}`),
+        getById: (id) => api.get(`/courses/${id}`),
         getMyCourses: (studentId) => api.get(`/courses/student/${studentId}`),
         create: (data, teacherId) => api.post('/courses', { ...data, teacherId: teacherId || 1 }),
         enroll: (cid, uid) => api.post(`/courses/${cid}/enroll/${uid}`),
@@ -293,7 +294,9 @@ export const api = {
         // Ansökan
         apply: (courseId, studentId) => api.post(`/courses/${courseId}/apply/${studentId}`),
         getApplications: (teacherId) => api.get(`/courses/applications/teacher/${teacherId}`),
+        getAllApplications: () => api.get('/courses/applications/all'),
         handleApplication: (appId, status) => api.post(`/courses/applications/${appId}/${status}`),
+        updateApplicationNote: (appId, note) => api.put(`/courses/applications/${appId}/note`, { note }),
 
         // Resultat & Certifikat
         checkCompletion: (id, studentId) => api.get(`/courses/${id}/check-completion/${studentId}`),
@@ -302,6 +305,17 @@ export const api = {
         getResult: (courseId, studentId) => api.get(`/courses/${courseId}/result/${studentId}`),
         getMyResults: (studentId) => api.get(`/courses/results/student/${studentId}`),
         getOptions: (userId, role) => api.get(`/courses/options?userId=${userId}&role=${role}`),
+    },
+
+    educationPrograms: {
+        getAll: () => api.get('/education-programs'),
+        getById: (id) => api.get(`/education-programs/${id}`),
+        getBySlug: (slug) => api.get(`/education-programs/slug/${slug}`),
+        save: (program) => api.post('/education-programs', program),
+        delete: (id) => api.delete(`/education-programs/${id}`),
+        addCourse: (programId, courseId) => api.post(`/education-programs/${programId}/courses/${courseId}`),
+        removeCourse: (programId, courseId) => api.delete(`/education-programs/${programId}/courses/${courseId}`),
+        apply: (programId, userId) => api.post(`/education-programs/apply?programId=${programId}&userId=${userId}`)
     },
 
     shop: {

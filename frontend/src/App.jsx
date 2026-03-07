@@ -40,6 +40,7 @@ import UserProfile from './features/profile/UserProfile';
 import PublicProfile from './features/profile/PublicProfile';
 import CourseCatalog from './features/catalog/CourseCatalog';
 import ProgramCatalog from './features/programs/ProgramCatalog';
+import ProgramDetail from './features/programs/ProgramDetail';
 import DocumentManager from './features/documents/DocumentManager';
 import AdminAdministrationPage from './features/dashboard/AdminAdministrationPage';
 import ResourceBank from './features/resources/ResourceBank';
@@ -75,7 +76,6 @@ import AdaptiveLearningDashboard from './features/adaptive/AdaptiveLearningDashb
 import EduAiHubPage from './features/ai/EduAiHubPage';
 import ManagementReportCenter from './features/principal/ManagementReportCenter';
 import ImpactDashboard from './features/impact/ImpactDashboard';
-import HealthCheckDashboard from './features/admin/HealthCheckDashboard';
 import DeveloperSettings from './features/settings/DeveloperSettings';
 import RoiCenter from './features/analytics/RoiCenter';
 import EduCareerPortal from './features/career/EduCareerPortal';
@@ -85,6 +85,9 @@ import CheckoutSuccess from './features/ecommerce/CheckoutSuccess';
 import CheckoutCancel from './features/ecommerce/CheckoutCancel';
 import SalesDashboard from './features/ecommerce/SalesDashboard';
 import ComplianceDashboard from './features/compliance/ComplianceDashboard';
+import SyvDashboard from './features/dashboard/components/syv/SyvDashboard';
+import ProgramManager from './features/admin/programs/ProgramManager';
+import HealthCheckDashboard from './features/admin/HealthCheckDashboard';
 
 // --- ISP (Individuell Studieplan) ---
 import IspDashboard from './features/isp/IspDashboard';
@@ -393,7 +396,7 @@ const AppRoutes = () => {
 
 
                 <Route path="/admin/gamification-management" element={
-                    <ProtectedRoute roles={['ADMIN']}>
+                    <ProtectedRoute roles={['ADMIN', 'ROLE_ADMIN']}>
                         {isModuleActive('GAMIFICATION') ? (
                             <Layout currentUser={currentUser} handleLogout={logout}>
                                 <AdminShopDashboard />
@@ -401,6 +404,14 @@ const AppRoutes = () => {
                         ) : (
                             <Navigate to="/admin" replace />
                         )}
+                    </ProtectedRoute>
+                } />
+
+                <Route path="/admin/health" element={
+                    <ProtectedRoute roles={['ADMIN', 'ROLE_ADMIN']}>
+                        <Layout currentUser={currentUser} handleLogout={logout}>
+                            <HealthCheckDashboard />
+                        </Layout>
                     </ProtectedRoute>
                 } />
 
@@ -425,14 +436,6 @@ const AppRoutes = () => {
 
 
 
-                {/* HEALTH CHECK (ADMIN ONLY) */}
-                <Route path="/admin/health" element={
-                    <ProtectedRoute roles={['ADMIN']}>
-                        <Layout currentUser={currentUser} handleLogout={logout}>
-                            <HealthCheckDashboard />
-                        </Layout>
-                    </ProtectedRoute>
-                } />
 
                 {/* DEVELOPER API KEYS */}
                 <Route path="/settings/developer" element={
@@ -468,12 +471,17 @@ const AppRoutes = () => {
                     </ProtectedRoute>
                 } />
 
+                {/* Offentlig – ingen inloggning krävs för att bläddra bland program */}
                 <Route path="/programs" element={
-                    <ProtectedRoute>
-                        <Layout currentUser={currentUser} handleLogout={logout}>
-                            <ProgramCatalog />
-                        </Layout>
-                    </ProtectedRoute>
+                    <Layout currentUser={currentUser} handleLogout={logout}>
+                        <ProgramCatalog />
+                    </Layout>
+                } />
+
+                <Route path="/programs/:id" element={
+                    <Layout currentUser={currentUser} handleLogout={logout}>
+                        <ProgramDetail />
+                    </Layout>
                 } />
 
                 <Route path="/my-courses" element={
@@ -574,6 +582,22 @@ const AppRoutes = () => {
                     <ProtectedRoute roles={['TEACHER', 'ADMIN']}>
                         <Layout currentUser={currentUser} handleLogout={logout}>
                             <EvaluationManager />
+                        </Layout>
+                    </ProtectedRoute>
+                } />
+
+                <Route path="/syv/admission" element={
+                    <ProtectedRoute roles={['ADMIN', 'SYV', 'ROLE_SYV', 'COUNSELOR', 'ROLE_COUNSELOR']}>
+                        <Layout currentUser={currentUser} handleLogout={logout}>
+                            <SyvDashboard />
+                        </Layout>
+                    </ProtectedRoute>
+                } />
+
+                <Route path="/admin/programs" element={
+                    <ProtectedRoute roles={['ADMIN', 'SYV', 'ROLE_SYV']}>
+                        <Layout currentUser={currentUser} handleLogout={logout}>
+                            <ProgramManager />
                         </Layout>
                     </ProtectedRoute>
                 } />

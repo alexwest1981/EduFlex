@@ -163,6 +163,10 @@ public class Course {
     @Column(nullable = false, columnDefinition = "boolean default false")
     private boolean requiresLia = false;
 
+    @ManyToMany(mappedBy = "courses")
+    @JsonIgnoreProperties("courses")
+    private Set<EducationProgram> educationPrograms = new HashSet<>();
+
     // --- GETTERS & SETTERS ---
     public Long getId() {
         return id;
@@ -450,5 +454,13 @@ public class Course {
 
     public void setCourseResults(java.util.List<CourseResult> courseResults) {
         this.courseResults = courseResults;
+    }
+
+    public Set<EducationProgram> getEducationPrograms() {
+        return educationPrograms;
+    }
+
+    public void setEducationPrograms(Set<EducationProgram> educationPrograms) {
+        this.educationPrograms = educationPrograms;
     }
 }

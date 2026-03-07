@@ -50,7 +50,7 @@ const SystemSettings = ({ asTab = false }) => {
     const navigate = useNavigate();
     const { themeId, themes } = useTheme();
     const { modules, refreshModules } = useModules();
-    const { currentUser, systemSettings } = useAppContext();
+    const { currentUser, systemSettings, updateSystemSetting } = useAppContext();
     const { hasAccess } = useBranding();
     const [isThemeModalOpen, setIsThemeModalOpen] = useState(false);
     const [toggling, setToggling] = useState(null);
@@ -68,15 +68,6 @@ const SystemSettings = ({ asTab = false }) => {
     const [dbLoading, setDbLoading] = useState(true);
     const [showAddDbModal, setShowAddDbModal] = useState(false);
     const [switchingDb, setSwitchingDb] = useState(null);
-
-    // AI Quiz state
-    const [aiStatus, setAiStatus] = useState(null);
-    const [aiLoading, setAiLoading] = useState(true);
-    const [apiKeyInput, setApiKeyInput] = useState('');
-    const [savingApiKey, setSavingApiKey] = useState(false);
-    const [showApiKey, setShowApiKey] = useState(false);
-    const { updateSystemSetting } = useAppContext();
-
     // Integrations State
     const [slackForm, setSlackForm] = useState({
         webhookUrl: '',
@@ -84,38 +75,18 @@ const SystemSettings = ({ asTab = false }) => {
     });
     const [integrationsLoading, setIntegrationsLoading] = useState(false);
 
+    // AI State
+    const [aiStatus, setAiStatus] = useState(null);
+    const [aiLoading, setAiLoading] = useState(false);
+    const [apiKeyInput, setApiKeyInput] = useState('');
+    const [showApiKey, setShowApiKey] = useState(false);
+    const [savingApiKey, setSavingApiKey] = useState(false);
+
 
 
     const currentTheme = themes.find(t => t.id === themeId) || themes[0];
     const isAdmin = currentUser?.role?.name === 'ADMIN' || currentUser?.role === 'ADMIN';
 
-    // Hämta licensinformation
-    useEffect(() => {
-        api.system.checkLicense()
-            .then(data => {
-                setLicenseInfo(data);
-                setLicenseLoading(false);
-            })
-            .catch(() => setLicenseLoading(false));
-    }, []);
-
-    // Hämta backup-data när server-tabben är aktiv
-    useEffect(() => {
-        if (activeTab === 'server' && isAdmin) {
-            fetchBackupData();
-            fetchDatabaseConnections();
-        }
-    }, [activeTab, isAdmin]);
-
-    // Hämta AI-status när AI-tabben är aktiv
-    useEffect(() => {
-        if (activeTab === 'ai') {
-            fetchAiStatus();
-        }
-        if (activeTab === 'integrations' && isAdmin) {
-            fetchIntegrationData();
-        }
-    }, [activeTab, isAdmin]);
 
     const fetchIntegrationData = async () => {
         try {
@@ -167,7 +138,6 @@ const SystemSettings = ({ asTab = false }) => {
             setSavingApiKey(false);
         }
     };
-
 
     const fetchBackupData = async () => {
         setBackupLoading(true);
@@ -308,6 +278,34 @@ const SystemSettings = ({ asTab = false }) => {
         }
     };
 
+    // Hämta licensinformation
+    useEffect(() => {
+        api.system.checkLicense()
+            .then(data => {
+                setLicenseInfo(data);
+                setLicenseLoading(false);
+            })
+            .catch(() => setLicenseLoading(false));
+    }, []);
+
+    // Hämta backup-data när server-tabben är aktiv
+    useEffect(() => {
+        if (activeTab === 'server' && isAdmin) {
+            fetchBackupData();
+            fetchDatabaseConnections();
+        }
+    }, [activeTab, isAdmin]);
+
+    // Hämta AI-status när AI-tabben är aktiv
+    useEffect(() => {
+        if (activeTab === 'ai') {
+            fetchAiStatus();
+        }
+        if (activeTab === 'integrations' && isAdmin) {
+            fetchIntegrationData();
+        }
+    }, [activeTab, isAdmin]);
+
     const isMaster = window.location.hostname === 'localhost' ||
         window.location.hostname === '127.0.0.1' ||
         window.location.hostname === 'www.eduflexlms.se' ||
@@ -337,7 +335,9 @@ const SystemSettings = ({ asTab = false }) => {
             category: 'Licens & Status',
             items: [
                 { id: 'license', label: 'Licensstatus', icon: ShieldCheck },
-                ...(isAdmin ? [{ id: 'server', label: 'Serverinställningar', icon: Server }] : []),
+                ...(isAdmin ? [
+                    { id: 'server', label: 'Serverinställningar', icon: Server }
+                ] : []),
             ]
         },
         {
@@ -375,36 +375,38 @@ const SystemSettings = ({ asTab = false }) => {
                 return <SkolverketManager />;
             case 'theme':
                 return (
-                    <div className="space-y-6">
+                    <div className="space-y-8 animate-in fade-in slide-in-from-bottom duration-500">
                         <div>
-                            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Tema & Utseende</h2>
-                            <p className="text-gray-500 dark:text-gray-400">Anpassa systemets färger och känsla.</p>
+                            <h2 className="text-2xl font-black text-[var(--text-primary)] mb-2">Tema & Utseende</h2>
+                            <p className="text-[var(--text-secondary)] font-bold">Anpassa systemets färger och känsla.</p>
                         </div>
 
-                        <div className="bg-white dark:bg-[#1E1F20] rounded-2xl p-6 border border-gray-200 dark:border-[#3c4043] shadow-sm">
-                            <div className="flex items-center gap-4 mb-6">
-                                <div className="w-12 h-12 bg-indigo-50 dark:bg-indigo-900/20 rounded-xl flex items-center justify-center text-indigo-600">
-                                    <Palette size={24} />
+                        <div className="bg-[var(--bg-card)] rounded-3xl p-8 border border-[var(--border-main)] shadow-xl relative overflow-hidden group">
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-brand-blue/5 blur-3xl rounded-full -mr-16 -mt-16 group-hover:bg-brand-blue/10 transition-all duration-500"></div>
+
+                            <div className="flex items-center gap-6 mb-8">
+                                <div className="w-14 h-14 bg-brand-blue rounded-2xl flex items-center justify-center text-white shadow-lg shadow-brand-blue/20">
+                                    <Palette size={28} />
                                 </div>
                                 <div>
-                                    <h3 className="font-bold text-gray-900 dark:text-white">Aktivt Tema</h3>
-                                    <p className="text-sm text-gray-500 dark:text-gray-400">Nuvarande utseende för systemet</p>
+                                    <h3 className="font-black text-xl text-[var(--text-primary)]">Aktivt Tema</h3>
+                                    <p className="text-sm text-[var(--text-secondary)] font-bold">Nuvarande utseende för systemet</p>
                                 </div>
                             </div>
 
-                            <div className="flex items-center gap-4 p-4 bg-gray-50 dark:bg-[#282a2c] rounded-xl mb-6">
-                                <div className="w-12 h-12 rounded-xl shadow-sm" style={{ backgroundColor: currentTheme.colors[600] }}></div>
+                            <div className="flex items-center gap-6 p-6 bg-[var(--bg-main)] rounded-2xl mb-8 border border-[var(--border-main)]">
+                                <div className="w-16 h-16 rounded-2xl shadow-xl ring-2 ring-white/5" style={{ backgroundColor: currentTheme.colors[600] }}></div>
                                 <div>
-                                    <span className="font-bold text-gray-900 dark:text-white text-lg">{currentTheme.name}</span>
-                                    <p className="text-sm text-gray-500 dark:text-gray-400">Primärfärg: {currentTheme.colors[600]}</p>
+                                    <span className="font-black text-[var(--text-primary)] text-xl block mb-1">{currentTheme.name}</span>
+                                    <p className="text-sm text-[var(--text-secondary)] font-mono opacity-70">Primärfärg: {currentTheme.colors[600]}</p>
                                 </div>
                             </div>
 
                             <button
                                 onClick={() => setIsThemeModalOpen(true)}
-                                className="w-full py-3 bg-gray-900 dark:bg-white text-white dark:text-black rounded-xl font-bold shadow-lg hover:transform hover:scale-[1.02] transition-all flex items-center justify-center gap-2"
+                                className="w-full py-4 bg-brand-blue text-white rounded-2xl font-black shadow-xl shadow-brand-blue/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-3 text-lg"
                             >
-                                <Zap size={18} /> Öppna Temahanterare
+                                <Zap size={22} fill="currentColor" /> Öppna Temahanterare
                             </button>
                         </div>
                     </div>
@@ -415,44 +417,46 @@ const SystemSettings = ({ asTab = false }) => {
 
             case 'whitelabel':
                 return (
-                    <div className="space-y-6">
+                    <div className="space-y-8 animate-in fade-in slide-in-from-bottom duration-500">
                         <div>
-                            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Enterprise Whitelabel</h2>
-                            <p className="text-gray-500 dark:text-gray-400">Fullt anpassningsbar branding för din organisation.</p>
+                            <h2 className="text-2xl font-black text-[var(--text-primary)] mb-2">Enterprise Whitelabel</h2>
+                            <p className="text-[var(--text-secondary)] font-bold">Fullt anpassningsbar branding för din organisation.</p>
                         </div>
 
-                        <div className="bg-white dark:bg-[#1E1F20] rounded-2xl p-6 border border-gray-200 dark:border-[#3c4043] shadow-sm">
-                            <div className="flex items-center gap-4 mb-6">
-                                <div className="w-12 h-12 bg-purple-50 dark:bg-purple-900/20 rounded-xl flex items-center justify-center text-purple-600">
-                                    <Sparkles size={24} />
+                        <div className="bg-[var(--bg-card)] rounded-3xl p-8 border border-[var(--border-main)] shadow-xl overflow-hidden relative group">
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/5 blur-3xl rounded-full -mr-16 -mt-16 group-hover:bg-purple-500/10 transition-all duration-500"></div>
+
+                            <div className="flex items-center gap-6 mb-8">
+                                <div className="w-14 h-14 bg-purple-500/10 rounded-2xl flex items-center justify-center text-purple-500 border border-purple-500/20">
+                                    <Sparkles size={28} />
                                 </div>
                                 <div>
-                                    <h3 className="font-bold text-gray-900 dark:text-white">Whitelabel-status</h3>
-                                    <p className="text-sm text-gray-500 dark:text-gray-400">Anpassa logotyp, färger och mer</p>
+                                    <h3 className="font-black text-xl text-[var(--text-primary)]">Whitelabel-status</h3>
+                                    <p className="text-sm text-[var(--text-secondary)] font-bold">Anpassa logotyp, färger och mer</p>
                                 </div>
                             </div>
 
-                            <div className="p-4 bg-gray-50 dark:bg-[#282a2c] rounded-xl mb-6">
+                            <div className="p-6 bg-[var(--bg-main)] rounded-2xl mb-8 border border-[var(--border-main)]">
                                 {hasAccess ? (
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
-                                            <svg className="w-5 h-5 text-green-600 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
+                                    <div className="flex items-center gap-4">
+                                        <div className="w-12 h-12 bg-green-500/10 rounded-full flex items-center justify-center border border-green-500/20">
+                                            <svg className="w-6 h-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
                                                 <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                                             </svg>
                                         </div>
                                         <div>
-                                            <span className="font-bold text-green-600 dark:text-green-400">ENTERPRISE-licens aktiv</span>
-                                            <p className="text-sm text-gray-500 dark:text-gray-400">Full tillgång till whitelabel-funktioner</p>
+                                            <span className="font-black text-green-500 text-lg">ENTERPRISE-licens aktiv</span>
+                                            <p className="text-sm text-[var(--text-secondary)] font-bold">Full tillgång till whitelabel-funktioner</p>
                                         </div>
                                     </div>
                                 ) : (
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 bg-amber-100 dark:bg-amber-900/30 rounded-full flex items-center justify-center">
-                                            <Lock size={20} className="text-amber-600 dark:text-amber-400" />
+                                    <div className="flex items-center gap-4">
+                                        <div className="w-12 h-12 bg-amber-500/10 rounded-full flex items-center justify-center border border-amber-500/20">
+                                            <Lock size={22} className="text-amber-500" />
                                         </div>
                                         <div>
-                                            <span className="font-bold text-amber-600 dark:text-amber-400">Kräver ENTERPRISE-licens</span>
-                                            <p className="text-sm text-gray-500 dark:text-gray-400">Uppgradera för att låsa upp</p>
+                                            <span className="font-black text-amber-500 text-lg">Kräver ENTERPRISE-licens</span>
+                                            <p className="text-sm text-[var(--text-secondary)] font-bold">Uppgradera för att låsa upp</p>
                                         </div>
                                     </div>
                                 )}
@@ -460,13 +464,13 @@ const SystemSettings = ({ asTab = false }) => {
 
                             <button
                                 onClick={() => navigate('/enterprise/whitelabel')}
-                                className={`w-full py-3 rounded-xl font-bold shadow-lg hover:transform hover:scale-[1.02] transition-all flex items-center justify-center gap-2 ${hasAccess
-                                    ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white'
-                                    : 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
+                                className={`w-full py-4 rounded-2xl font-black shadow-xl transition-all flex items-center justify-center gap-3 text-lg ${hasAccess
+                                    ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-purple-500/20 hover:scale-[1.02] active:scale-[0.98]'
+                                    : 'bg-white/5 text-white/20 cursor-not-allowed border border-white/5'
                                     }`}
                                 disabled={!hasAccess}
                             >
-                                <Sparkles size={18} /> {hasAccess ? 'Öppna Whitelabel' : 'Uppgradera för access'}
+                                <Sparkles size={22} fill={hasAccess ? "currentColor" : "none"} /> {hasAccess ? 'Öppna Whitelabel' : 'Uppgradera för access'}
                             </button>
                         </div>
                     </div>
@@ -474,102 +478,74 @@ const SystemSettings = ({ asTab = false }) => {
 
             case 'license':
                 return (
-                    <div className="space-y-6">
+                    <div className="space-y-8 animate-in fade-in slide-in-from-bottom duration-500">
                         <div>
-                            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Licensstatus</h2>
-                            <p className="text-gray-500 dark:text-gray-400">Information om din nuvarande plan och licensstatus.</p>
+                            <h2 className="text-2xl font-black text-[var(--text-primary)] mb-2">Licensstatus</h2>
+                            <p className="text-[var(--text-secondary)] font-bold">Information om din nuvarande plan och licensstatus.</p>
                         </div>
 
                         {licenseLoading ? (
-                            <div className="bg-white dark:bg-[#1E1F20] rounded-2xl p-6 border border-gray-200 dark:border-[#3c4043] shadow-sm">
-                                <div className="animate-pulse space-y-4">
-                                    <div className="h-12 bg-gray-200 dark:bg-gray-700 rounded-xl w-1/3"></div>
-                                    <div className="h-16 bg-gray-200 dark:bg-gray-700 rounded-xl"></div>
-                                    <div className="h-16 bg-gray-200 dark:bg-gray-700 rounded-xl"></div>
+                            <div className="bg-[var(--bg-card)] rounded-3xl p-8 border border-[var(--border-main)] shadow-xl">
+                                <div className="animate-pulse space-y-6">
+                                    <div className="h-14 bg-white/5 rounded-2xl w-1/3"></div>
+                                    <div className="h-20 bg-white/5 rounded-2xl"></div>
+                                    <div className="h-20 bg-white/5 rounded-2xl"></div>
                                 </div>
                             </div>
                         ) : (
-                            <div className="bg-white dark:bg-[#1E1F20] rounded-2xl p-6 border border-gray-200 dark:border-[#3c4043] shadow-sm">
-                                <div className="flex items-center gap-4 mb-6">
-                                    <div className="w-12 h-12 bg-green-50 dark:bg-green-900/20 rounded-xl flex items-center justify-center text-green-600">
-                                        <ShieldCheck size={24} />
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="bg-[var(--bg-card)] rounded-3xl p-8 border border-[var(--border-main)] shadow-xl">
+                                    <div className="flex items-center justify-between mb-8">
+                                        <div className="flex items-center gap-4">
+                                            <div className="w-14 h-14 bg-white/5 rounded-2xl flex items-center justify-center text-[var(--text-primary)] border border-white/5">
+                                                <Key size={28} />
+                                            </div>
+                                            <div>
+                                                <h3 className="text-lg font-black text-[var(--text-primary)]">Licensnyckel</h3>
+                                                <p className="text-xs text-[var(--text-secondary)] font-mono font-bold opacity-50 tracking-widest">{licenseInfo?.licenseKey?.substring(0, 12)}••••••••</p>
+                                            </div>
+                                        </div>
+                                        <button className="p-3 bg-white/5 hover:bg-white/10 text-[var(--text-secondary)] rounded-xl transition-all border border-white/5">
+                                            <RefreshCw size={20} />
+                                        </button>
                                     </div>
-                                    <div>
-                                        <h3 className="font-bold text-gray-900 dark:text-white">Aktiv Licens</h3>
-                                        <p className="text-sm text-gray-500 dark:text-gray-400">Din licens är giltig och aktiv</p>
+
+                                    <div className="space-y-6">
+                                        <div className="flex items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/5">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-8 h-8 bg-brand-blue/10 rounded-lg flex items-center justify-center text-brand-blue">
+                                                    <Users size={18} />
+                                                </div>
+                                                <span className="font-black text-[var(--text-secondary)] text-sm">Användarlicenser</span>
+                                            </div>
+                                            <span className="text-lg font-black text-[var(--text-primary)]">
+                                                {licenseInfo?.userLimit || '100'} / <span className="text-brand-blue">Obegränsad</span>
+                                            </span>
+                                        </div>
+
+                                        <div className="flex items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/5">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-8 h-8 bg-brand-blue/10 rounded-lg flex items-center justify-center text-brand-blue">
+                                                    <Clock size={18} />
+                                                </div>
+                                                <span className="font-black text-[var(--text-secondary)] text-sm">Giltig till</span>
+                                            </div>
+                                            <span className={`text-lg font-black ${licenseInfo?.isExpiringSoon ? 'text-amber-500' : 'text-[var(--text-primary)]'}`}>
+                                                {licenseInfo?.expiry || 'Obegränsad'}
+                                            </span>
+                                        </div>
                                     </div>
                                 </div>
 
-                                <div className="space-y-4">
-                                    {/* Licensägare */}
-                                    <div className="flex justify-between items-center p-4 bg-gray-50 dark:bg-[#282a2c] rounded-xl">
-                                        <div className="flex items-center gap-3">
-                                            <Users size={20} className="text-gray-400" />
-                                            <span className="font-medium text-gray-600 dark:text-gray-300">Licensägare</span>
-                                        </div>
-                                        <span className="text-sm font-bold text-gray-900 dark:text-white">
-                                            {licenseInfo?.customer || 'Okänd'}
-                                        </span>
+                                <div className="bg-[var(--bg-card)] rounded-3xl p-8 border border-[var(--border-main)] shadow-xl relative overflow-hidden group">
+                                    <div className="relative z-10">
+                                        <h3 className="text-xl font-black text-[var(--text-primary)] mb-2">Behöver du mer kraft?</h3>
+                                        <p className="text-[var(--text-secondary)] font-bold mb-6">Uppgradera till Enterprise för obegränsade domäner, dedikerad support och full kontroll.</p>
+                                        <button className="w-full py-4 bg-white text-black rounded-2xl font-black shadow-xl hover:bg-brand-blue hover:text-white transition-all transform group-hover:scale-[1.02]">
+                                            Kontakta Sales
+                                        </button>
                                     </div>
-
-                                    {/* Plan */}
-                                    <div className="flex justify-between items-center p-4 bg-gray-50 dark:bg-[#282a2c] rounded-xl">
-                                        <div className="flex items-center gap-3">
-                                            <Package size={20} className="text-gray-400" />
-                                            <span className="font-medium text-gray-600 dark:text-gray-300">Plan</span>
-                                        </div>
-                                        <span className={`px-3 py-1.5 text-sm font-black uppercase rounded-lg ${licenseInfo?.tier === 'ENTERPRISE'
-                                            ? 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400'
-                                            : 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
-                                            }`}>
-                                            {licenseInfo?.tier || 'PRO'}
-                                        </span>
-                                    </div>
-
-                                    {/* Status */}
-                                    <div className="flex justify-between items-center p-4 bg-gray-50 dark:bg-[#282a2c] rounded-xl">
-                                        <div className="flex items-center gap-3">
-                                            <ToggleLeft size={20} className="text-gray-400" />
-                                            <span className="font-medium text-gray-600 dark:text-gray-300">Status</span>
-                                        </div>
-                                        <span className={`flex items-center gap-2 text-sm font-bold ${licenseInfo?.status === 'valid'
-                                            ? 'text-green-600 dark:text-green-400'
-                                            : 'text-amber-600 dark:text-amber-400'
-                                            }`}>
-                                            {licenseInfo?.status === 'valid' ? (
-                                                <>
-                                                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                                                    </svg>
-                                                    Aktiv
-                                                </>
-                                            ) : (
-                                                <>
-                                                    <Lock size={16} />
-                                                    {licenseInfo?.status || 'Okänd'}
-                                                </>
-                                            )}
-                                        </span>
-                                    </div>
-
-                                    {/* Giltig till */}
-                                    <div className="flex justify-between items-center p-4 bg-gray-50 dark:bg-[#282a2c] rounded-xl">
-                                        <div className="flex items-center gap-3">
-                                            <Calendar size={20} className="text-gray-400" />
-                                            <span className="font-medium text-gray-600 dark:text-gray-300">Giltig till</span>
-                                        </div>
-                                        <span className={`text-sm font-medium ${licenseInfo?.isExpiringSoon
-                                            ? 'text-amber-600 dark:text-amber-400'
-                                            : 'text-gray-900 dark:text-white'
-                                            }`}>
-                                            {licenseInfo?.expiry || 'Obegränsad'}
-                                            {licenseInfo?.isExpiringSoon && licenseInfo?.daysRemaining && (
-                                                <span className="ml-2 text-xs text-amber-600 dark:text-amber-400">
-                                                    ({licenseInfo.daysRemaining} dagar kvar)
-                                                </span>
-                                            )}
-                                        </span>
-                                    </div>
+                                    <div className="absolute -right-12 -bottom-12 w-48 h-48 bg-brand-blue/10 rounded-full blur-3xl group-hover:bg-brand-blue/20 transition-all"></div>
                                 </div>
                             </div>
                         )}
@@ -578,213 +554,129 @@ const SystemSettings = ({ asTab = false }) => {
 
             case 'server':
                 return (
-                    <div className="space-y-6">
+                    <div className="space-y-8 animate-in fade-in slide-in-from-bottom duration-500">
+                        {/* Server Health Header */}
                         <div>
-                            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Serverinställningar</h2>
-                            <p className="text-gray-500 dark:text-gray-400">Hantera databas, backups och serverinställningar.</p>
+                            <h2 className="text-2xl font-black text-[var(--text-primary)] mb-2">Serverinställningar</h2>
+                            <p className="text-[var(--text-secondary)] font-bold">Hantera backuper, databaser och se systemets driftstatus.</p>
                         </div>
 
-                        {/* BACKUP SECTION */}
-                        <div className="bg-white dark:bg-[#1E1F20] rounded-2xl p-6 border border-gray-200 dark:border-[#3c4043] shadow-sm">
-                            <div className="flex items-center justify-between mb-6">
+                        {/* Backups Card */}
+                        <div className="bg-[var(--bg-card)] rounded-3xl p-8 border border-[var(--border-main)] shadow-xl relative overflow-hidden group">
+                            <div className="flex items-center justify-between mb-8">
                                 <div className="flex items-center gap-4">
-                                    <div className="w-12 h-12 bg-blue-50 dark:bg-blue-900/20 rounded-xl flex items-center justify-center text-blue-600">
+                                    <div className="w-12 h-12 bg-brand-blue/10 rounded-2xl flex items-center justify-center text-brand-blue border border-brand-blue/20">
                                         <HardDrive size={24} />
                                     </div>
                                     <div>
-                                        <h3 className="font-bold text-gray-900 dark:text-white">Databasbackup</h3>
-                                        <p className="text-sm text-gray-500 dark:text-gray-400">Hantera säkerhetskopior av databasen</p>
+                                        <h3 className="text-xl font-black text-[var(--text-primary)]">System-backuper</h3>
+                                        <p className="text-sm text-[var(--text-secondary)] font-bold italic">Senaste backup: {formatDate(backupStatus?.lastBackup)}</p>
                                     </div>
                                 </div>
                                 <button
                                     onClick={handleCreateBackup}
                                     disabled={creatingBackup}
-                                    className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-medium transition-colors disabled:opacity-50"
+                                    className="px-6 py-3 bg-brand-blue text-white rounded-2xl font-black shadow-xl shadow-brand-blue/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-2 disabled:opacity-50"
                                 >
-                                    {creatingBackup ? (
-                                        <RefreshCw size={18} className="animate-spin" />
-                                    ) : (
-                                        <Plus size={18} />
-                                    )}
-                                    {creatingBackup ? 'Skapar...' : 'Skapa backup'}
+                                    {creatingBackup ? <RefreshCw size={18} className="animate-spin" /> : <Download size={18} />}
+                                    Skapa Backup Nu
                                 </button>
                             </div>
 
-                            {/* Backup Status */}
-                            {backupStatus && (
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                                    <div className="p-4 bg-gray-50 dark:bg-[#282a2c] rounded-xl">
-                                        <div className="flex items-center gap-3 mb-2">
-                                            <Clock size={18} className="text-gray-400" />
-                                            <span className="text-sm font-medium text-gray-600 dark:text-gray-300">Senaste backup</span>
-                                        </div>
-                                        <span className={`text-lg font-bold ${backupStatus.lastBackup ? 'text-green-600 dark:text-green-400' : 'text-amber-600 dark:text-amber-400'}`}>
-                                            {backupStatus.lastBackup ? formatDate(backupStatus.lastBackup) : 'Ingen backup gjord'}
-                                        </span>
-                                    </div>
-                                    <div className="p-4 bg-gray-50 dark:bg-[#282a2c] rounded-xl">
-                                        <div className="flex items-center gap-3 mb-2">
-                                            <Calendar size={18} className="text-gray-400" />
-                                            <span className="text-sm font-medium text-gray-600 dark:text-gray-300">Nästa schemalagda</span>
-                                        </div>
-                                        <span className="text-lg font-bold text-gray-900 dark:text-white">
-                                            {backupStatus.nextScheduledBackup ? formatDate(backupStatus.nextScheduledBackup) : 'Kl 02:00 varje dag'}
-                                        </span>
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* Backup List */}
-                            <div>
-                                <h4 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-3">Tillgängliga backups</h4>
+                            <div className="space-y-3">
                                 {backupLoading ? (
-                                    <div className="space-y-3">
-                                        {[1, 2, 3].map(i => (
-                                            <div key={i} className="h-16 bg-gray-100 dark:bg-gray-800 rounded-xl animate-pulse"></div>
-                                        ))}
+                                    <div className="flex items-center justify-center py-12">
+                                        <RefreshCw className="animate-spin text-brand-blue" size={32} />
                                     </div>
                                 ) : backups.length === 0 ? (
-                                    <div className="text-center py-8 text-gray-400">
-                                        <HardDrive size={48} className="mx-auto mb-3 opacity-50" />
-                                        <p>Inga backups hittades</p>
-                                        <p className="text-sm">Skapa din första backup ovan</p>
+                                    <div className="p-8 text-center bg-black/20 rounded-2xl border border-dashed border-white/10">
+                                        <p className="text-[var(--text-secondary)] font-bold">Inga backuper hittades.</p>
                                     </div>
                                 ) : (
-                                    <div className="space-y-3 max-h-64 overflow-y-auto">
-                                        {backups.map(backup => (
-                                            <div
-                                                key={backup.id}
-                                                className="flex items-center justify-between p-4 bg-gray-50 dark:bg-[#282a2c] rounded-xl hover:bg-gray-100 dark:hover:bg-[#333] transition-colors"
-                                            >
-                                                <div className="flex items-center gap-4">
-                                                    <div className="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
-                                                        <CheckCircle2 size={20} className="text-green-600 dark:text-green-400" />
-                                                    </div>
-                                                    <div>
-                                                        <p className="font-medium text-gray-900 dark:text-white">{backup.name}</p>
-                                                        <p className="text-sm text-gray-500 dark:text-gray-400">
-                                                            {formatDate(backup.createdAt)} • {formatBytes(backup.size)}
-                                                        </p>
-                                                    </div>
+                                    backups.map(backup => (
+                                        <div key={backup.id} className="flex items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/5 hover:bg-white/10 transition-colors">
+                                            <div className="flex items-center gap-4">
+                                                <div className="p-2 bg-indigo-500/10 text-indigo-500 rounded-lg">
+                                                    <Database size={18} />
                                                 </div>
-                                                <div className="flex items-center gap-2">
-                                                    <button
-                                                        onClick={() => handleDownloadBackup(backup.id)}
-                                                        className="p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
-                                                        title="Ladda ner"
-                                                    >
-                                                        <Download size={18} />
-                                                    </button>
-                                                    <button
-                                                        onClick={() => handleDeleteBackup(backup.id)}
-                                                        className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
-                                                        title="Ta bort"
-                                                    >
-                                                        <Trash2 size={18} />
-                                                    </button>
+                                                <div>
+                                                    <p className="text-sm font-black text-[var(--text-primary)]">{backup.filename}</p>
+                                                    <p className="text-[10px] text-[var(--text-secondary)] font-bold">{formatDate(backup.createdAt)} • {formatBytes(backup.size)}</p>
                                                 </div>
                                             </div>
-                                        ))}
-                                    </div>
+                                            <div className="flex items-center gap-2">
+                                                <button onClick={() => handleDownloadBackup(backup.id)} className="p-2.5 bg-white/5 hover:bg-white/10 text-[var(--text-secondary)] hover:text-white rounded-xl transition-all border border-white/5">
+                                                    <Download size={16} />
+                                                </button>
+                                                <button onClick={() => handleDeleteBackup(backup.id)} className="p-2.5 bg-white/5 hover:bg-red-500/10 text-[var(--text-secondary)] hover:text-red-500 rounded-xl transition-all border border-white/5">
+                                                    <Trash2 size={16} />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))
                                 )}
                             </div>
                         </div>
 
-                        {/* DATABASE CONNECTIONS SECTION */}
-                        <div className="bg-white dark:bg-[#1E1F20] rounded-2xl p-6 border border-gray-200 dark:border-[#3c4043] shadow-sm">
-                            <div className="flex items-center justify-between mb-6">
+                        {/* Database Connections */}
+                        <div className="bg-[var(--bg-card)] rounded-3xl p-8 border border-[var(--border-main)] shadow-xl relative overflow-hidden group">
+                            <div className="flex items-center justify-between mb-8">
                                 <div className="flex items-center gap-4">
-                                    <div className="w-12 h-12 bg-purple-50 dark:bg-purple-900/20 rounded-xl flex items-center justify-center text-purple-600">
+                                    <div className="w-12 h-12 bg-purple-500/10 rounded-2xl flex items-center justify-center text-purple-500 border border-purple-500/20">
                                         <Database size={24} />
                                     </div>
                                     <div>
-                                        <h3 className="font-bold text-gray-900 dark:text-white">Databasanslutningar</h3>
-                                        <p className="text-sm text-gray-500 dark:text-gray-400">Hantera primär- och backup-databaser</p>
+                                        <h3 className="text-xl font-black text-[var(--text-primary)]">Databasanslutningar</h3>
+                                        <p className="text-sm text-[var(--text-secondary)] font-bold">Välj aktiv databas för systemet.</p>
                                     </div>
                                 </div>
                                 <button
                                     onClick={() => setShowAddDbModal(true)}
-                                    className="flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl font-medium transition-colors"
+                                    className="px-6 py-3 bg-purple-500 text-white rounded-2xl font-black shadow-xl shadow-purple-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-2"
                                 >
                                     <Plus size={18} />
-                                    Lägg till
+                                    Lägg till Databas
                                 </button>
                             </div>
 
-                            {/* Warning Banner */}
-                            <div className="flex items-start gap-3 p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl mb-6">
-                                <AlertTriangle size={20} className="text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
-                                <div>
-                                    <p className="text-sm font-medium text-amber-800 dark:text-amber-300">Viktigt vid databasbyte</p>
-                                    <p className="text-sm text-amber-700 dark:text-amber-400">
-                                        Att byta databas kräver att systemet startas om. Se till att alla användare är utloggade innan du byter.
-                                    </p>
-                                </div>
-                            </div>
-
-                            {/* Database Connections List */}
-                            {dbLoading ? (
-                                <div className="space-y-3">
-                                    {[1, 2].map(i => (
-                                        <div key={i} className="h-24 bg-gray-100 dark:bg-gray-800 rounded-xl animate-pulse"></div>
-                                    ))}
-                                </div>
-                            ) : dbConnections.length === 0 ? (
-                                <div className="text-center py-8 text-gray-400">
-                                    <Database size={48} className="mx-auto mb-3 opacity-50" />
-                                    <p>Inga databasanslutningar konfigurerade</p>
-                                </div>
-                            ) : (
-                                <div className="space-y-4">
-                                    {dbConnections.map(conn => (
-                                        <div
-                                            key={conn.id}
-                                            className={`p-4 rounded-xl border-2 transition-all ${conn.active
-                                                ? 'bg-green-50 dark:bg-green-900/10 border-green-500'
-                                                : 'bg-gray-50 dark:bg-[#282a2c] border-gray-200 dark:border-[#3c4043]'
-                                                }`}
-                                        >
-                                            <div className="flex items-center justify-between">
-                                                <div className="flex items-center gap-4">
-                                                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${conn.active
-                                                        ? 'bg-green-100 dark:bg-green-900/30 text-green-600'
-                                                        : 'bg-gray-200 dark:bg-gray-700 text-gray-500'
-                                                        }`}>
-                                                        <Server size={20} />
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {dbLoading ? (
+                                    <div className="col-span-2 flex items-center justify-center py-12">
+                                        <RefreshCw className="animate-spin text-purple-500" size={32} />
+                                    </div>
+                                ) : (
+                                    dbConnections.map(conn => (
+                                        <div key={conn.id} className={`p-5 rounded-2xl border transition-all ${conn.active
+                                            ? 'bg-purple-500/5 border-purple-500/40 ring-1 ring-purple-500/20'
+                                            : 'bg-white/5 border-white/5 hover:bg-white/10'
+                                            }`}>
+                                            <div className="flex items-start justify-between mb-4">
+                                                <div className="flex items-center gap-3">
+                                                    <div className={`p-2 rounded-lg ${conn.active ? 'bg-purple-500 text-white' : 'bg-white/5 text-[var(--text-secondary)]'}`}>
+                                                        <Database size={20} />
                                                     </div>
                                                     <div>
-                                                        <div className="flex items-center gap-2">
-                                                            <p className="font-bold text-gray-900 dark:text-white">{conn.name}</p>
-                                                            {conn.active && (
-                                                                <span className="px-2 py-0.5 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs font-bold rounded">
-                                                                    AKTIV
-                                                                </span>
-                                                            )}
-                                                        </div>
-                                                        <p className="text-sm text-gray-500 dark:text-gray-400">
-                                                            {conn.host}:{conn.port} / {conn.database}
-                                                        </p>
+                                                        <p className="font-black text-[var(--text-primary)]">{conn.name}</p>
+                                                        <p className="text-[10px] text-[var(--text-secondary)] font-mono">{conn.host}</p>
                                                     </div>
                                                 </div>
-                                                {!conn.active && (
-                                                    <button
-                                                        onClick={() => handleSwitchDatabase(conn.id)}
-                                                        disabled={switchingDb === conn.id}
-                                                        className="flex items-center gap-2 px-4 py-2 bg-gray-900 dark:bg-white text-white dark:text-black rounded-lg font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
-                                                    >
-                                                        {switchingDb === conn.id ? (
-                                                            <RefreshCw size={16} className="animate-spin" />
-                                                        ) : (
-                                                            <RefreshCw size={16} />
-                                                        )}
-                                                        Byt till denna
-                                                    </button>
+                                                {conn.active && (
+                                                    <span className="text-[10px] font-black bg-purple-500 text-white px-2 py-0.5 rounded-lg tracking-widest">AKTIV</span>
                                                 )}
                                             </div>
+                                            {!conn.active && (
+                                                <button
+                                                    onClick={() => handleSwitchDatabase(conn.id)}
+                                                    disabled={switchingDb === conn.id}
+                                                    className="w-full py-2.5 bg-white/5 hover:bg-purple-500 hover:text-white text-[var(--text-primary)] rounded-xl font-black text-xs transition-all border border-white/5 border-dashed"
+                                                >
+                                                    {switchingDb === conn.id ? <RefreshCw size={14} className="animate-spin mx-auto" /> : 'Byt till denna databas'}
+                                                </button>
+                                            )}
                                         </div>
-                                    ))}
-                                </div>
-                            )}
+                                    ))
+                                )}
+                            </div>
                         </div>
                     </div>
                 );
@@ -793,234 +685,160 @@ const SystemSettings = ({ asTab = false }) => {
             case 'ai': {
                 const aiModule = modules.find(m => m.moduleKey === 'AI_QUIZ');
                 return (
-                    <div className="space-y-6">
+                    <div className="space-y-8 animate-in fade-in slide-in-from-bottom duration-500">
                         <div>
-                            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">AI-inställningar</h2>
-                            <p className="text-gray-500 dark:text-gray-400">Generera quiz-frågor automatiskt från dokument med Google Gemini AI.</p>
+                            <h2 className="text-2xl font-black text-[var(--text-primary)] mb-2">AI-inställningar</h2>
+                            <p className="text-[var(--text-secondary)] font-bold">Uppgradera din lärplattform med nästa generations intelligens.</p>
                         </div>
 
-                        {/* Status Card */}
-                        <div className="bg-white dark:bg-[#1E1F20] rounded-2xl p-6 border border-gray-200 dark:border-[#3c4043] shadow-sm">
-                            <div className="flex items-center gap-4 mb-6">
-                                <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${aiStatus?.available
-                                    ? 'bg-green-50 dark:bg-green-900/20 text-green-600'
-                                    : 'bg-amber-50 dark:bg-amber-900/20 text-amber-600'
-                                    }`}>
-                                    <Sparkles size={24} />
-                                </div>
-                                <div>
-                                    <h3 className="font-bold text-gray-900 dark:text-white">AI-status</h3>
-                                    <p className="text-sm text-gray-500 dark:text-gray-400">
-                                        {aiLoading ? 'Kontrollerar...' : aiStatus?.message}
-                                    </p>
-                                </div>
-                            </div>
-
-                            {aiLoading ? (
-                                <div className="animate-pulse space-y-4">
-                                    <div className="h-16 bg-gray-200 dark:bg-gray-700 rounded-xl"></div>
-                                    <div className="h-16 bg-gray-200 dark:bg-gray-700 rounded-xl"></div>
-                                </div>
-                            ) : (
-                                <div className="space-y-4">
-                                    {/* Module Status */}
-                                    <div className="flex justify-between items-center p-4 bg-gray-50 dark:bg-[#282a2c] rounded-xl">
-                                        <div className="flex items-center gap-3">
-                                            <Package size={20} className="text-gray-400" />
-                                            <span className="font-medium text-gray-600 dark:text-gray-300">Modul</span>
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                            {aiStatus?.moduleEnabled ? (
-                                                <span className="flex items-center gap-2 text-sm font-bold text-green-600 dark:text-green-400">
-                                                    <CheckCircle2 size={16} />
-                                                    Aktiverad
-                                                </span>
-                                            ) : (
-                                                <span className="flex items-center gap-2 text-sm font-bold text-amber-600 dark:text-amber-400">
-                                                    <AlertTriangle size={16} />
-                                                    Inaktiverad
-                                                </span>
-                                            )}
-                                        </div>
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                            {/* API Status & Config */}
+                            <div className="bg-[var(--bg-card)] rounded-3xl p-8 border border-[var(--border-main)] shadow-xl relative overflow-hidden group">
+                                <div className="flex items-center gap-6 mb-8">
+                                    <div className="w-14 h-14 bg-purple-600/10 rounded-2xl flex items-center justify-center text-purple-600 border border-purple-600/20 shadow-lg shadow-purple-600/10">
+                                        <Cpu size={28} />
                                     </div>
-
-                                    {/* API Status */}
-                                    <div className="flex justify-between items-center p-4 bg-gray-50 dark:bg-[#282a2c] rounded-xl">
-                                        <div className="flex items-center gap-3">
-                                            <Cpu size={20} className="text-gray-400" />
-                                            <span className="font-medium text-gray-600 dark:text-gray-300">Gemini API</span>
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                            {aiStatus?.apiConfigured ? (
-                                                <span className="flex items-center gap-2 text-sm font-bold text-green-600 dark:text-green-400">
-                                                    <CheckCircle2 size={16} />
-                                                    Konfigurerad
-                                                </span>
-                                            ) : (
-                                                <span className="flex items-center gap-2 text-sm font-bold text-red-600 dark:text-red-400">
-                                                    <AlertTriangle size={16} />
-                                                    Ej konfigurerad
-                                                </span>
-                                            )}
-                                        </div>
+                                    <div>
+                                        <h3 className="font-black text-xl text-[var(--text-primary)]">API-konfiguration</h3>
+                                        <p className="text-sm text-[var(--text-secondary)] font-bold">Konfigurera Google Gemini API-nyckel</p>
                                     </div>
+                                </div>
 
-                                    {/* License Requirement */}
-                                    <div className="flex justify-between items-center p-4 bg-gray-50 dark:bg-[#282a2c] rounded-xl">
-                                        <div className="flex items-center gap-3">
-                                            <ShieldCheck size={20} className="text-gray-400" />
-                                            <span className="font-medium text-gray-600 dark:text-gray-300">Licenskrav</span>
+                                {/* Current Key Status */}
+                                {aiStatus?.maskedApiKey && (
+                                    <div className="flex items-center justify-between p-5 bg-[var(--bg-main)] rounded-2xl mb-6 border border-[var(--border-main)] hover:bg-white/5 transition-colors">
+                                        <div className="flex items-center gap-4">
+                                            <CheckCircle2 size={24} className="text-green-500" />
+                                            <div>
+                                                <span className="text-sm font-black text-[var(--text-secondary)]">Nuvarande nyckel: </span>
+                                                <code className="text-sm font-mono bg-white/5 px-2.5 py-1 rounded-lg text-[var(--text-primary)] border border-white/5 shadow-inner">
+                                                    {aiStatus.maskedApiKey}
+                                                </code>
+                                            </div>
                                         </div>
-                                        <span className="px-3 py-1 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 text-xs font-bold rounded-lg">
-                                            PRO / ENTERPRISE
+                                        <span className={`text-[10px] px-3 py-1.5 rounded-xl font-black tracking-widest border ${aiStatus.keySource === 'database'
+                                            ? 'bg-blue-500/10 text-blue-500 border-blue-500/20'
+                                            : 'bg-white/5 text-white/40 border-white/5'
+                                            }`}>
+                                            {aiStatus.keySource === 'database' ? 'DATABAS' : 'MILJÖVARIABEL'}
                                         </span>
                                     </div>
-                                </div>
-                            )}
-                        </div>
+                                )}
 
-                        {/* API Key Configuration Card */}
-                        <div className="bg-white dark:bg-[#1E1F20] rounded-2xl p-6 border border-gray-200 dark:border-[#3c4043] shadow-sm">
-                            <div className="flex items-center gap-4 mb-6">
-                                <div className="w-12 h-12 bg-purple-50 dark:bg-purple-900/20 rounded-xl flex items-center justify-center text-purple-600">
-                                    <Key size={24} />
-                                </div>
-                                <div>
-                                    <h3 className="font-bold text-gray-900 dark:text-white">API-konfiguration</h3>
-                                    <p className="text-sm text-gray-500 dark:text-gray-400">
-                                        Konfigurera Google Gemini API-nyckel
+                                {/* API Key Input */}
+                                <div className="space-y-4">
+                                    <label className="block text-sm font-black text-[var(--text-secondary)] uppercase tracking-widest ml-1">
+                                        {aiStatus?.apiConfigured ? 'Uppdatera API-nyckel' : 'Ange Gemini API-nyckel'}
+                                    </label>
+                                    <div className="relative group/input">
+                                        <input
+                                            type={showApiKey ? 'text' : 'password'}
+                                            value={apiKeyInput}
+                                            onChange={(e) => setApiKeyInput(e.target.value)}
+                                            placeholder="AIzaSy..."
+                                            className="w-full px-5 py-4 pr-14 border border-[var(--border-main)] rounded-2xl bg-[var(--bg-main)] text-[var(--text-primary)] font-mono text-sm focus:ring-2 focus:ring-brand-blue outline-none transition-all shadow-inner group-hover/input:border-white/20"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowApiKey(!showApiKey)}
+                                            className="absolute right-4 top-1/2 -translate-y-1/2 p-2.5 text-[var(--text-secondary)] hover:text-brand-blue hover:bg-white/5 rounded-xl transition-all"
+                                        >
+                                            {showApiKey ? <EyeOff size={20} /> : <Eye size={20} />}
+                                        </button>
+                                    </div>
+                                    <button
+                                        onClick={handleSaveApiKey}
+                                        disabled={savingApiKey || !apiKeyInput.trim()}
+                                        className="w-full flex items-center justify-center gap-3 py-4 bg-purple-600 text-white disabled:bg-white/5 disabled:text-white/20 rounded-2xl font-black shadow-xl shadow-purple-600/20 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:shadow-none disabled:border border-white/5"
+                                    >
+                                        {savingApiKey ? (
+                                            <RefreshCw size={20} className="animate-spin" />
+                                        ) : (
+                                            <Save size={20} />
+                                        )}
+                                        {savingApiKey ? 'Sparar...' : 'Spara API-nyckel'}
+                                    </button>
+                                    <p className="text-xs text-[var(--text-secondary)] font-bold px-1">
+                                        Skapa en API-nyckel på <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener noreferrer" className="text-brand-blue hover:underline">Google AI Studio</a>
                                     </p>
                                 </div>
                             </div>
 
-                            {/* Current Key Status */}
-                            {aiStatus?.maskedApiKey && (
-                                <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-[#282a2c] rounded-xl mb-4">
-                                    <div className="flex items-center gap-3">
-                                        <CheckCircle2 size={20} className="text-green-500" />
-                                        <div>
-                                            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Nuvarande nyckel: </span>
-                                            <code className="text-sm font-mono bg-gray-200 dark:bg-gray-700 px-2 py-0.5 rounded">
-                                                {aiStatus.maskedApiKey}
-                                            </code>
-                                        </div>
-                                    </div>
-                                    <span className={`text-xs px-2 py-1 rounded-lg font-medium ${aiStatus.keySource === 'database'
-                                        ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400'
-                                        : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
-                                        }`}>
-                                        {aiStatus.keySource === 'database' ? 'Databas' : 'Miljövariabel'}
-                                    </span>
-                                </div>
-                            )}
 
-                            {/* API Key Input */}
-                            <div className="space-y-3">
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    {aiStatus?.apiConfigured ? 'Uppdatera API-nyckel' : 'Ange Gemini API-nyckel'}
-                                </label>
-                                <div className="relative">
-                                    <input
-                                        type={showApiKey ? 'text' : 'password'}
-                                        value={apiKeyInput}
-                                        onChange={(e) => setApiKeyInput(e.target.value)}
-                                        placeholder="AIzaSy..."
-                                        className="w-full px-4 py-3 pr-24 border border-gray-200 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-[#282a2c] text-gray-900 dark:text-white font-mono text-sm"
-                                    />
-                                    <button
-                                        type="button"
-                                        onClick={() => setShowApiKey(!showApiKey)}
-                                        className="absolute right-3 top-1/2 -translate-y-1/2 p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-                                    >
-                                        {showApiKey ? <EyeOff size={18} /> : <Eye size={18} />}
-                                    </button>
-                                </div>
-                                <button
-                                    onClick={handleSaveApiKey}
-                                    disabled={savingApiKey || !apiKeyInput.trim()}
-                                    className="w-full flex items-center justify-center gap-2 py-3 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-300 dark:disabled:bg-gray-700 text-white disabled:text-gray-500 rounded-xl font-medium transition-colors"
-                                >
-                                    {savingApiKey ? (
-                                        <RefreshCw size={18} className="animate-spin" />
-                                    ) : (
-                                        <Save size={18} />
+
+                            {/* Actions Card */}
+                            <div className="bg-[var(--bg-card)] rounded-3xl p-8 border border-[var(--border-main)] shadow-xl overflow-hidden group">
+                                <h3 className="font-black text-xl text-[var(--text-primary)] mb-6">Åtgärder</h3>
+
+                                <div className="space-y-4">
+                                    {/* Toggle Module */}
+                                    {aiModule && (
+                                        <button
+                                            onClick={() => handleToggleModule('AI_QUIZ', aiModule.active)}
+                                            disabled={toggling === 'AI_QUIZ'}
+                                            className={`w-full flex items-center justify-between p-5 rounded-2xl border transition-all ${aiModule.active
+                                                ? 'bg-red-500/5 border-red-500/20 hover:bg-red-500/10'
+                                                : 'bg-green-500/5 border-green-500/20 hover:bg-green-500/10'
+                                                }`}
+                                        >
+                                            <div className="flex items-center gap-4">
+                                                <div className={`p-2.5 rounded-xl border ${aiModule.active ? 'bg-red-500/10 border-red-500/20 text-red-500' : 'bg-green-500/10 border-green-500/20 text-green-500'}`}>
+                                                    <ToggleLeft size={24} />
+                                                </div>
+                                                <span className={`font-black text-lg ${aiModule.active ? 'text-red-500' : 'text-green-500'}`}>
+                                                    {aiModule.active ? 'Inaktivera AI Quiz-modul' : 'Aktivera AI Quiz-modul'}
+                                                </span>
+                                            </div>
+                                            {toggling === 'AI_QUIZ' && (
+                                                <RefreshCw size={22} className="animate-spin text-[var(--text-secondary)]" />
+                                            )}
+                                        </button>
                                     )}
-                                    {savingApiKey ? 'Sparar...' : 'Spara API-nyckel'}
-                                </button>
-                                <p className="text-xs text-gray-500 dark:text-gray-400">
-                                    Skapa en API-nyckel på <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Google AI Studio</a>
-                                </p>
-                            </div>
-                        </div>
 
-
-                        {/* Actions Card */}
-                        <div className="bg-white dark:bg-[#1E1F20] rounded-2xl p-6 border border-gray-200 dark:border-[#3c4043] shadow-sm">
-                            <h3 className="font-bold text-gray-900 dark:text-white mb-4">Åtgärder</h3>
-
-                            <div className="space-y-3">
-                                {/* Toggle Module */}
-                                {aiModule && (
+                                    {/* Open AI Quiz Generator */}
                                     <button
-                                        onClick={() => handleToggleModule('AI_QUIZ', aiModule.active)}
-                                        disabled={toggling === 'AI_QUIZ'}
-                                        className={`w-full flex items-center justify-between p-4 rounded-xl border transition-colors ${aiModule.active
-                                            ? 'bg-red-50 dark:bg-red-900/10 border-red-200 dark:border-red-800 hover:bg-red-100 dark:hover:bg-red-900/20'
-                                            : 'bg-green-50 dark:bg-green-900/10 border-green-200 dark:border-green-800 hover:bg-green-100 dark:hover:bg-green-900/20'
+                                        onClick={() => navigate('/ai-quiz')}
+                                        disabled={!aiStatus?.available}
+                                        className={`w-full flex items-center justify-center gap-4 py-5 rounded-2xl font-black text-xl transition-all shadow-2xl relative overflow-hidden group/btn ${aiStatus?.available
+                                            ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-purple-500/20 hover:scale-[1.02] active:scale-[0.98]'
+                                            : 'bg-white/5 text-white/10 cursor-not-allowed border border-white/5'
                                             }`}
                                     >
-                                        <div className="flex items-center gap-3">
-                                            <ToggleLeft size={20} className={aiModule.active ? 'text-red-600' : 'text-green-600'} />
-                                            <span className={`font-medium ${aiModule.active ? 'text-red-700 dark:text-red-400' : 'text-green-700 dark:text-green-400'}`}>
-                                                {aiModule.active ? 'Inaktivera AI Quiz-modul' : 'Aktivera AI Quiz-modul'}
-                                            </span>
-                                        </div>
-                                        {toggling === 'AI_QUIZ' && (
-                                            <RefreshCw size={18} className="animate-spin text-gray-400" />
-                                        )}
+                                        <div className="absolute inset-0 bg-white/10 opacity-0 group-hover/btn:opacity-100 transition-opacity"></div>
+                                        <Sparkles size={24} fill={aiStatus?.available ? "currentColor" : "none"} />
+                                        Öppna AI Quiz-generatorn
                                     </button>
-                                )}
-
-                                {/* Open AI Quiz Generator */}
-                                <button
-                                    onClick={() => navigate('/ai-quiz')}
-                                    disabled={!aiStatus?.available}
-                                    className={`w-full flex items-center justify-center gap-3 py-4 rounded-xl font-bold transition-all ${aiStatus?.available
-                                        ? 'bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white shadow-lg hover:shadow-xl hover:scale-[1.02]'
-                                        : 'bg-gray-200 dark:bg-gray-700 text-gray-400 cursor-not-allowed'
-                                        }`}
-                                >
-                                    <span style={{ display: 'none' }}>{navigate.toString()}</span>
-                                    <Sparkles size={20} />
-                                    Öppna AI Quiz-generatorn
-                                </button>
+                                </div>
                             </div>
-                        </div>
 
-                        {/* Info Card */}
-                        <div className="bg-blue-50 dark:bg-blue-900/20 rounded-2xl p-6 border border-blue-200 dark:border-blue-800">
-                            <h3 className="font-bold text-blue-800 dark:text-blue-300 mb-3 flex items-center gap-2">
-                                <FileText size={18} />
-                                Så fungerar AI Quiz
-                            </h3>
-                            <ul className="space-y-2 text-sm text-blue-700 dark:text-blue-400">
-                                <li className="flex items-start gap-2">
-                                    <span className="font-bold">1.</span>
-                                    <span>Ladda upp ett dokument (PDF, DOCX, TXT) eller klistra in text</span>
-                                </li>
-                                <li className="flex items-start gap-2">
-                                    <span className="font-bold">2.</span>
-                                    <span>Välj antal frågor (3-15) och svårighetsgrad</span>
-                                </li>
-                                <li className="flex items-start gap-2">
-                                    <span className="font-bold">3.</span>
-                                    <span>AI:n genererar relevanta flervalsfrågor baserat på innehållet</span>
-                                </li>
-                                <li className="flex items-start gap-2">
-                                    <span className="font-bold">4.</span>
-                                    <span>Redigera, justera och spara som ett quiz i din kurs</span>
-                                </li>
-                            </ul>
+                            {/* Info Card */}
+                            <div className="bg-brand-blue/5 rounded-3xl p-8 border border-brand-blue/20 shadow-xl relative overflow-hidden">
+                                <div className="absolute -right-8 -bottom-8 bg-brand-blue/10 w-32 h-32 rounded-full blur-3xl"></div>
+                                <h3 className="font-black text-xl text-brand-blue mb-6 flex items-center gap-3">
+                                    <div className="p-2 bg-brand-blue/10 rounded-xl">
+                                        <FileText size={22} />
+                                    </div>
+                                    Så fungerar AI Quiz
+                                </h3>
+                                <ul className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <li className="flex items-start gap-4 p-4 bg-black/20 rounded-2xl border border-white/5">
+                                        <span className="w-8 h-8 rounded-full bg-brand-blue flex items-center justify-center text-white font-black text-sm shrink-0 shadow-lg shadow-brand-blue/20">1</span>
+                                        <span className="text-[var(--text-secondary)] font-bold text-sm leading-relaxed">Ladda upp ett dokument eller klistra in text</span>
+                                    </li>
+                                    <li className="flex items-start gap-4 p-4 bg-black/20 rounded-2xl border border-white/5">
+                                        <span className="w-8 h-8 rounded-full bg-brand-blue flex items-center justify-center text-white font-black text-sm shrink-0 shadow-lg shadow-brand-blue/20">2</span>
+                                        <span className="text-[var(--text-secondary)] font-bold text-sm leading-relaxed">Välj antal frågor och svårighetsgrad</span>
+                                    </li>
+                                    <li className="flex items-start gap-4 p-4 bg-black/20 rounded-2xl border border-white/5">
+                                        <span className="w-8 h-8 rounded-full bg-brand-blue flex items-center justify-center text-white font-black text-sm shrink-0 shadow-lg shadow-brand-blue/20">3</span>
+                                        <span className="text-[var(--text-secondary)] font-bold text-sm leading-relaxed">AI:n genererar flervalsfrågor direkt</span>
+                                    </li>
+                                    <li className="flex items-start gap-4 p-4 bg-black/20 rounded-2xl border border-white/5">
+                                        <span className="w-8 h-8 rounded-full bg-brand-blue flex items-center justify-center text-white font-black text-sm shrink-0 shadow-lg shadow-brand-blue/20">4</span>
+                                        <span className="text-[var(--text-secondary)] font-bold text-sm leading-relaxed">Redigera och spara som ett quiz i din kurs</span>
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
                 );
@@ -1028,45 +846,47 @@ const SystemSettings = ({ asTab = false }) => {
 
             case 'ai-audit':
                 return (
-                    <div className="space-y-6">
+                    <div className="space-y-8 animate-in fade-in slide-in-from-bottom duration-500">
                         <div>
-                            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">AI Audit Logg</h2>
-                            <p className="text-gray-500 dark:text-gray-400">Granska och spåra alla AI-beslut i systemet.</p>
+                            <h2 className="text-2xl font-black text-[var(--text-primary)] mb-2">AI Audit Logg</h2>
+                            <p className="text-[var(--text-secondary)] font-bold">Granska och spåra alla AI-beslut i systemet.</p>
                         </div>
 
-                        <div className="bg-white dark:bg-[#1E1F20] rounded-2xl p-8 border border-gray-200 dark:border-[#3c4043] shadow-sm text-center">
-                            <div className="w-16 h-16 bg-indigo-50 dark:bg-indigo-900/20 rounded-2xl flex items-center justify-center text-indigo-600 mx-auto mb-4">
-                                <Sparkles size={32} />
+                        <div className="bg-[var(--bg-card)] rounded-3xl p-12 border border-[var(--border-main)] shadow-2xl text-center relative overflow-hidden group">
+                            <div className="absolute inset-0 bg-gradient-to-br from-brand-blue/5 via-transparent to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+
+                            <div className="w-20 h-20 bg-indigo-500/10 rounded-2xl flex items-center justify-center text-indigo-500 mx-auto mb-8 border border-indigo-500/20 shadow-lg shadow-indigo-500/10 relative z-10">
+                                <Sparkles size={40} />
                             </div>
-                            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Öppna AI Audit Portal</h3>
-                            <p className="text-gray-500 dark:text-gray-400 max-w-md mx-auto mb-6">
+                            <h3 className="text-2xl font-black text-[var(--text-primary)] mb-4 relative z-10">Öppna AI Audit Portal</h3>
+                            <p className="text-[var(--text-secondary)] max-w-md mx-auto mb-10 font-bold relative z-10 leading-relaxed text-lg">
                                 Vi har en dedikerad portal för att söka, filtrera och analysera AI-beslut i detalj.
                             </p>
                             <button
                                 onClick={() => navigate('/admin/ai-audit')}
-                                className="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold shadow-lg shadow-indigo-500/20 transition-all flex items-center gap-2 mx-auto"
+                                className="px-10 py-5 bg-brand-blue text-white rounded-2xl font-black shadow-2xl shadow-brand-blue/30 hover:scale-[1.05] active:scale-[0.95] transition-all flex items-center gap-3 mx-auto relative z-10 text-xl"
                             >
-                                <Sparkles size={20} />
+                                <Sparkles size={24} fill="currentColor" />
                                 Gå till AI Audit Portal
                             </button>
                         </div>
                     </div>
                 );
 
-            case 'modules': {
-                // Group modules by category
-                const moduleCategories = {
-                    'Utbildning': ['QUIZ_BASIC', 'QUIZ_PRO', 'AI_QUIZ', 'SUBMISSIONS', 'SCORM'],
-                    'Kommunikation': ['CHAT', 'FORUM'],
-                    'Gamification': ['GAMIFICATION', 'EDUGAME'],
-                    'Analys & Rapporter': ['ANALYTICS'],
-                    'Utseende': ['DARK_MODE', 'ENTERPRISE_WHITELABEL'],
-                    'Övrigt': ['REVENUE']
-                };
 
-                // Sort modules into categories
+            case 'modules': {
                 const categorizedModules = {};
                 const usedKeys = new Set();
+                const moduleCategories = {
+                    'Kärnfunktioner': ['COURSES', 'USERS', 'RESOURCES'],
+                    'Kommunikation': ['NOTIFICATIONS', 'MAIL_SERVICE', 'SMS_SERVICE'],
+                    'AI & Intelligens': ['AI_COACH', 'AI_TUTOR', 'CONTENT_AI', 'AI_AUDIT', 'AI_QUIZ'],
+                    'Försäljning & ButIK': ['SALES', 'CHECKOUT', 'COUPONS', 'SUBSCRIPTIONS', 'REVENUE'],
+                    'Analys & Rapportering': ['ANALYTICS', 'REPORTS', 'COMPLIANCE'],
+                    'Integrationer': ['SKOLVERKET', 'LADOK', 'GOOGLE_CLASSROOM', 'TEAMS'],
+                    'Gamification': ['GAMIFICATION', 'EDUGAME', 'BADGES', 'LEADERBOARD', 'SHOP'],
+                    'Utseende': ['DARK_MODE', 'ENTERPRISE_WHITELABEL']
+                };
 
                 Object.entries(moduleCategories).forEach(([category, keys]) => {
                     const categoryModules = keys
@@ -1100,147 +920,126 @@ const SystemSettings = ({ asTab = false }) => {
                 };
 
                 return (
-                    <div className="space-y-6">
+                    <div className="space-y-8 animate-in fade-in slide-in-from-bottom duration-500">
                         <div className="flex items-start justify-between">
                             <div>
-                                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Systemmoduler</h2>
-                                <p className="text-gray-500 dark:text-gray-400">Aktivera eller inaktivera funktioner globalt. Vissa moduler kräver PRO/ENTERPRISE-licens.</p>
+                                <h2 className="text-2xl font-black text-[var(--text-primary)] mb-2">Systemmoduler</h2>
+                                <p className="text-[var(--text-secondary)] font-bold">Aktivera eller inaktivera funktioner globalt. Vissa moduler kräver PRO/ENTERPRISE-licens.</p>
                             </div>
                             <button
                                 onClick={handleSyncModules}
                                 disabled={toggling === '__sync__'}
-                                className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-medium transition-colors disabled:opacity-50"
+                                className="flex items-center gap-3 px-6 py-3 bg-brand-blue text-white rounded-2xl font-black hover:opacity-90 transition-all shadow-xl shadow-brand-blue/20 disabled:opacity-50"
                             >
-                                <RefreshCw size={16} className={toggling === '__sync__' ? 'animate-spin' : ''} />
+                                <RefreshCw size={18} className={toggling === '__sync__' ? 'animate-spin' : ''} />
                                 {toggling === '__sync__' ? 'Synkar...' : 'Synka moduler'}
                             </button>
                         </div>
 
-                        {Object.entries(categorizedModules).map(([category, categoryModules]) => (
-                            <div key={category} className="bg-white dark:bg-[#1E1F20] rounded-2xl border border-gray-200 dark:border-[#3c4043] overflow-hidden">
-                                {/* Category Header */}
-                                <div className="px-5 py-3 bg-gray-50 dark:bg-[#282a2c] border-b border-gray-200 dark:border-[#3c4043]">
-                                    <h3 className="text-sm font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">{category}</h3>
-                                </div>
+                        <div className="space-y-6">
+                            {Object.entries(categorizedModules).map(([category, categoryModules]) => (
+                                <div key={category} className="bg-[var(--bg-card)] rounded-3xl border border-[var(--border-main)] overflow-hidden shadow-xl">
+                                    {/* Category Header */}
+                                    <div className="px-6 py-4 bg-white/5 border-b border-[var(--border-main)]">
+                                        <h3 className="text-xs font-black text-[var(--text-secondary)] uppercase tracking-[0.2em]">{category}</h3>
+                                    </div>
 
-                                {/* Modules Grid */}
-                                <div className="divide-y divide-gray-100 dark:divide-[#3c4043]">
-                                    {categoryModules.map(mod => {
-                                        const ModuleIcon = getModuleIcon(mod.moduleKey);
+                                    {/* Modules Grid */}
+                                    <div className="divide-y divide-[var(--border-main)]">
+                                        {categoryModules.map(mod => {
+                                            const ModuleIcon = getModuleIcon(mod.moduleKey);
+                                            let dependencyMet = true;
+                                            let dependencyMsg = "";
 
-                                        // Specific Dependency Checks
-                                        let dependencyMet = true;
-                                        let dependencyMsg = "";
-
-                                        if (mod.moduleKey === 'EDUGAME') {
-                                            const gamificationMod = modules.find(m => m.moduleKey === 'GAMIFICATION');
-                                            if (!gamificationMod || !gamificationMod.active) {
-                                                dependencyMet = false;
-                                                dependencyMsg = "Kräver Gamification Engine";
+                                            if (mod.moduleKey === 'EDUGAME') {
+                                                const gamificationMod = modules.find(m => m.moduleKey === 'GAMIFICATION');
+                                                if (!gamificationMod || !gamificationMod.active) {
+                                                    dependencyMet = false;
+                                                    dependencyMsg = "Kräver Gamification Engine";
+                                                }
                                             }
-                                        }
 
-                                        const allowedByPlan = isModuleAllowedByPlan(mod.moduleKey);
-                                        const isDisabled = !dependencyMet || !allowedByPlan;
+                                            const allowedByPlan = isModuleAllowedByPlan(mod.moduleKey);
+                                            const isDisabled = !dependencyMet || !allowedByPlan;
 
-                                        return (
-                                            <div
-                                                key={mod.moduleKey}
-                                                className={`flex items-center gap-4 px-5 py-4 transition-colors ${!dependencyMet ? 'bg-gray-50/50 dark:bg-gray-900/10 opacity-60' : 'hover:bg-gray-50 dark:hover:bg-[#282a2c]/50'
-                                                    }`}
-                                            >
-                                                {/* Module Icon */}
-                                                <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${mod.active
-                                                    ? 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400'
-                                                    : 'bg-gray-100 dark:bg-[#333] text-gray-400'
-                                                    }`}>
-                                                    <ModuleIcon size={20} />
-                                                </div>
-
-                                                {/* Module Info */}
-                                                <div className="flex-1 min-w-0">
-                                                    <div className="flex items-center gap-2">
-                                                        <h4 className="font-semibold text-gray-900 dark:text-white text-sm">{mod.name}</h4>
-                                                        {mod.requiresLicense && (
-                                                            <span className="text-[9px] bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 px-1.5 py-0.5 rounded font-bold">PRO</span>
-                                                        )}
-                                                        <span className="text-[10px] text-gray-400 dark:text-gray-500">v{mod.version}</span>
+                                            return (
+                                                <div key={mod.moduleKey} className={`flex items-center gap-6 px-6 py-5 transition-all ${!dependencyMet ? 'bg-black/20 opacity-40' : 'hover:bg-white/5'}`}>
+                                                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 transition-all border ${mod.active ? 'bg-brand-blue/10 text-brand-blue border-brand-blue/20 shadow-lg shadow-brand-blue/10' : 'bg-white/5 text-white/20 border-white/5'}`}>
+                                                        <ModuleIcon size={24} />
                                                     </div>
-                                                    <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-1">{mod.description}</p>
-                                                    {!dependencyMet && (
-                                                        <div className="flex items-center gap-1 text-xs text-red-500 mt-1 font-medium">
-                                                            <AlertTriangle size={12} /> {dependencyMsg}
+
+                                                    <div className="flex-1 min-w-0">
+                                                        <div className="flex items-center gap-3 mb-1">
+                                                            <h4 className="font-black text-[var(--text-primary)] text-base">{mod.name}</h4>
+                                                            {mod.requiresLicense && (
+                                                                <span className="text-[10px] bg-amber-500/10 text-amber-500 px-2 py-0.5 rounded-lg font-black tracking-widest border border-amber-500/10">PRO</span>
+                                                            )}
+                                                            <span className="text-[10px] text-[var(--text-secondary)] font-mono opacity-50">v{mod.version}</span>
                                                         </div>
-                                                    )}
-                                                </div>
+                                                        <p className="text-sm text-[var(--text-secondary)] font-bold line-clamp-1">{mod.description}</p>
+                                                        {!dependencyMet && (
+                                                            <div className="flex items-center gap-2 text-xs text-red-500 mt-2 font-black">
+                                                                <AlertTriangle size={14} /> {dependencyMsg}
+                                                            </div>
+                                                        )}
+                                                    </div>
 
-                                                {/* Status Badge */}
-                                                <div className="flex-shrink-0 hidden sm:block">
-                                                    <span className={`text-[10px] font-bold px-2 py-1 rounded-full ${mod.active
-                                                        ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
-                                                        : 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-500'
-                                                        }`}>
-                                                        {mod.active ? 'AKTIV' : 'INAKTIV'}
-                                                    </span>
-                                                </div>
-
-                                                {/* Toggle Switch */}
-                                                <div className="flex-shrink-0">
-                                                    <button
-                                                        onClick={() => handleToggleModule(mod.moduleKey, mod.active)}
-                                                        disabled={toggling === mod.moduleKey || isDisabled}
-                                                        className={`relative w-11 h-6 rounded-full transition-colors duration-200 ${mod.active
-                                                            ? 'bg-indigo-500'
-                                                            : 'bg-gray-300 dark:bg-gray-600'
-                                                            } ${(toggling === mod.moduleKey || isDisabled) ? 'opacity-50 cursor-not-allowed' : ''}`}
-                                                    >
-                                                        <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform duration-200 ${mod.active ? 'translate-x-5' : 'translate-x-0'
-                                                            }`}>
-                                                            {toggling === mod.moduleKey && (
-                                                                <RefreshCw size={12} className="absolute inset-0 m-auto animate-spin text-gray-400" />
-                                                            )}
-                                                            {!allowedByPlan && (
-                                                                <Lock size={10} className="absolute inset-0 m-auto text-gray-400" />
-                                                            )}
+                                                    <div className="flex-shrink-0 hidden sm:block">
+                                                        <span className={`text-[10px] font-black px-3 py-1.5 rounded-xl tracking-widest border transition-all ${mod.active ? 'bg-green-500/10 text-green-500 border-green-500/20' : 'bg-white/5 text-white/20 border-white/5'}`}>
+                                                            {mod.active ? 'AKTIV' : 'INAKTIV'}
                                                         </span>
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        );
-                                    })}
-                                </div>
-                            </div>
-                        ))}
+                                                    </div>
 
-                        {/* Legend */}
-                        <div className="flex items-center gap-4 text-xs text-gray-500 dark:text-gray-400 pt-2">
-                            <div className="flex items-center gap-1.5">
-                                <span className="w-2 h-2 rounded-full bg-green-500"></span>
-                                <span>Aktiv modul</span>
-                            </div>
-                            <div className="flex items-center gap-1.5">
-                                <span className="px-1.5 py-0.5 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 rounded text-[9px] font-bold">PRO</span>
-                                <span>Kräver PRO/ENTERPRISE-licens</span>
+                                                    <div className="flex-shrink-0">
+                                                        <button
+                                                            onClick={() => handleToggleModule(mod.moduleKey, mod.active)}
+                                                            disabled={toggling === mod.moduleKey || isDisabled}
+                                                            className={`relative w-14 h-7 rounded-2xl transition-all duration-300 border-2 ${mod.active ? 'bg-brand-blue border-brand-blue shadow-lg shadow-brand-blue/20' : 'bg-white/5 border-white/5'} ${(toggling === mod.moduleKey || isDisabled) ? 'opacity-30 cursor-not-allowed shadow-none' : 'hover:scale-105 active:scale-95'}`}
+                                                        >
+                                                            <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow-xl transition-all duration-300 ${mod.active ? 'translate-x-7' : 'translate-x-0'}`}>
+                                                                {toggling === mod.moduleKey && <RefreshCw size={12} className="absolute inset-0 m-auto animate-spin text-brand-blue" />}
+                                                                {!allowedByPlan && <Lock size={12} className="absolute inset-0 m-auto text-amber-500" />}
+                                                            </span>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            ))}
+
+                            <div className="flex items-center gap-6 text-[10px] text-[var(--text-secondary)] font-black uppercase tracking-widest pt-4 ml-2">
+                                <div className="flex items-center gap-2">
+                                    <div className="w-2.5 h-2.5 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.5)]"></div>
+                                    <span>Aktiv modul</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <span className="px-2 py-0.5 bg-amber-500/10 text-amber-500 rounded-lg border border-amber-500/10">PRO</span>
+                                    <span>Kräver PRO/ENTERPRISE-licens</span>
+                                </div>
                             </div>
                         </div>
                     </div>
                 );
             }
 
-            case 'notifs':
+
+            case 'notifs': {
                 return (
-                    <div className="space-y-6 max-w-4xl">
+                    <div className="space-y-8 animate-in fade-in slide-in-from-bottom duration-500">
                         <div>
-                            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Globala Notisinställningar</h2>
-                            <p className="text-gray-500 dark:text-gray-400">Styr vilka kanaler som är aktiva för hela systemet och konfigurera Web Push.</p>
+                            <h2 className="text-2xl font-black text-[var(--text-primary)] mb-2">Globala Notisinställningar</h2>
+                            <p className="text-[var(--text-secondary)] font-bold">Styr vilka kanaler som är aktiva för hela systemet och konfigurera Web Push.</p>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                             {/* Email Channel */}
-                            <div className="bg-white dark:bg-[#1E1F20] border border-gray-200 dark:border-[#3c4043] rounded-2xl p-5 shadow-sm">
-                                <div className="flex justify-between items-start mb-4">
-                                    <div className="p-2.5 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 rounded-xl">
-                                        <MessageSquare size={20} />
+                            <div className="bg-[var(--bg-card)] border border-[var(--border-main)] rounded-3xl p-8 shadow-xl relative overflow-hidden group">
+                                <div className="absolute top-0 right-0 w-32 h-32 bg-brand-blue/5 blur-3xl rounded-full -mr-16 -mt-16 group-hover:bg-brand-blue/10 transition-all duration-500"></div>
+                                <div className="flex justify-between items-start mb-6 relative z-10">
+                                    <div className="p-3 bg-brand-blue/10 text-brand-blue rounded-2xl border border-brand-blue/20">
+                                        <MessageSquare size={24} />
                                     </div>
                                     <label className="relative inline-flex items-center cursor-pointer">
                                         <input
@@ -1249,18 +1048,19 @@ const SystemSettings = ({ asTab = false }) => {
                                             checked={systemSettings['notify_mail_active'] === 'true'}
                                             onChange={(e) => updateSystemSetting('notify_mail_active', e.target.checked ? 'true' : 'false')}
                                         />
-                                        <div className="w-10 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-indigo-600"></div>
+                                        <div className="w-12 h-6 bg-white/5 border border-white/5 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-6 peer-checked:after:border-white after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-white/20 after:border-white/10 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-brand-blue peer-checked:after:bg-white peer-checked:after:opacity-100"></div>
                                     </label>
                                 </div>
-                                <h3 className="font-bold text-gray-900 dark:text-white">E-post</h3>
-                                <p className="text-xs text-gray-500 mt-1">Skicka notiser via systemets SMTP-tjänst.</p>
+                                <h3 className="font-black text-xl text-[var(--text-primary)] mb-2 relative z-10">E-post</h3>
+                                <p className="text-sm text-[var(--text-secondary)] font-bold relative z-10">Skicka notiser via systemets SMTP-tjänst.</p>
                             </div>
 
                             {/* SMS Channel */}
-                            <div className="bg-white dark:bg-[#1E1F20] border border-gray-200 dark:border-[#3c4043] rounded-2xl p-5 shadow-sm">
-                                <div className="flex justify-between items-start mb-4">
-                                    <div className="p-2.5 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 rounded-xl">
-                                        <Smartphone size={20} />
+                            <div className="bg-[var(--bg-card)] border border-[var(--border-main)] rounded-3xl p-8 shadow-xl relative overflow-hidden group">
+                                <div className="absolute top-0 right-0 w-32 h-32 bg-green-500/5 blur-3xl rounded-full -mr-16 -mt-16 group-hover:bg-green-500/10 transition-all duration-500"></div>
+                                <div className="flex justify-between items-start mb-6 relative z-10">
+                                    <div className="p-3 bg-green-500/10 text-green-500 rounded-2xl border border-green-500/20">
+                                        <Smartphone size={24} />
                                     </div>
                                     <label className="relative inline-flex items-center cursor-pointer">
                                         <input
@@ -1269,18 +1069,19 @@ const SystemSettings = ({ asTab = false }) => {
                                             checked={systemSettings['notify_sms_active'] === 'true'}
                                             onChange={(e) => updateSystemSetting('notify_sms_active', e.target.checked ? 'true' : 'false')}
                                         />
-                                        <div className="w-10 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-emerald-600"></div>
+                                        <div className="w-12 h-6 bg-white/5 border border-white/5 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-6 peer-checked:after:border-white after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-white/20 after:border-white/10 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-green-500 peer-checked:after:bg-white peer-checked:after:opacity-100"></div>
                                     </label>
                                 </div>
-                                <h3 className="font-bold text-gray-900 dark:text-white">SMS</h3>
-                                <p className="text-xs text-gray-500 mt-1">Kräver konfigurerad SMS-provider API.</p>
+                                <h3 className="font-black text-xl text-[var(--text-primary)] mb-2 relative z-10">SMS</h3>
+                                <p className="text-sm text-[var(--text-secondary)] font-bold relative z-10">Kräver konfigurerad SMS-provider API.</p>
                             </div>
 
                             {/* Push Channel */}
-                            <div className="bg-white dark:bg-[#1E1F20] border border-gray-200 dark:border-[#3c4043] rounded-2xl p-5 shadow-sm">
-                                <div className="flex justify-between items-start mb-4">
-                                    <div className="p-2.5 bg-purple-50 dark:bg-purple-900/20 text-purple-600 rounded-xl">
-                                        <Globe size={20} />
+                            <div className="bg-[var(--bg-card)] border border-[var(--border-main)] rounded-3xl p-8 shadow-xl relative overflow-hidden group">
+                                <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/5 blur-3xl rounded-full -mr-16 -mt-16 group-hover:bg-purple-500/10 transition-all duration-500"></div>
+                                <div className="flex justify-between items-start mb-6 relative z-10">
+                                    <div className="p-3 bg-purple-500/10 text-purple-500 rounded-2xl border border-purple-500/20">
+                                        <Globe size={24} />
                                     </div>
                                     <label className="relative inline-flex items-center cursor-pointer">
                                         <input
@@ -1289,66 +1090,76 @@ const SystemSettings = ({ asTab = false }) => {
                                             checked={systemSettings['notify_push_active'] === 'true'}
                                             onChange={(e) => updateSystemSetting('notify_push_active', e.target.checked ? 'true' : 'false')}
                                         />
-                                        <div className="w-10 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-purple-600"></div>
+                                        <div className="w-12 h-6 bg-white/5 border border-white/5 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-6 peer-checked:after:border-white after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-white/20 after:border-white/10 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-purple-500 peer-checked:after:bg-white peer-checked:after:opacity-100"></div>
                                     </label>
                                 </div>
-                                <h3 className="font-bold text-gray-900 dark:text-white">Push (PWA)</h3>
-                                <p className="text-xs text-gray-500 mt-1">Realtidsnotiser direkt i webbläsaren.</p>
+                                <h3 className="font-black text-xl text-[var(--text-primary)] mb-2 relative z-10">Push (PWA)</h3>
+                                <p className="text-sm text-[var(--text-secondary)] font-bold relative z-10">Realtidsnotiser direkt i webbläsaren.</p>
                             </div>
                         </div>
 
                         {/* PWA / VAPID CONFIG */}
-                        <div className="bg-white dark:bg-[#1E1F20] border border-gray-200 dark:border-[#3c4043] rounded-2xl p-6 shadow-sm">
-                            <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                                <Key size={20} className="text-gray-400" /> Web Push Konfiguration
+                        <div className="bg-[var(--bg-card)] border border-[var(--border-main)] rounded-3xl p-8 shadow-xl relative overflow-hidden group">
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/5 blur-3xl rounded-full -mr-16 -mt-16 group-hover:bg-indigo-500/10 transition-all duration-500"></div>
+                            <h3 className="text-xl font-black text-[var(--text-primary)] mb-8 flex items-center gap-4 relative z-10">
+                                <div className="p-2 bg-indigo-500/10 rounded-xl text-indigo-500 border border-indigo-500/20">
+                                    <Key size={24} />
+                                </div>
+                                Web Push Konfiguration
                             </h3>
-                            <div className="space-y-4">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">VAPID Public Key</label>
+                            <div className="space-y-6 relative z-10">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                    <div className="space-y-2">
+                                        <label className="block text-sm font-black text-[var(--text-secondary)] uppercase tracking-widest ml-1">VAPID Public Key</label>
                                         <input
                                             type="text"
-                                            className="w-full px-4 py-2 bg-gray-50 dark:bg-[#282a2c] border border-gray-200 dark:border-[#3c4043] rounded-xl text-sm font-mono focus:ring-2 focus:ring-indigo-500 outline-none transition-all dark:text-white"
+                                            className="w-full px-5 py-4 bg-[var(--bg-main)] border border-[var(--border-main)] rounded-2xl text-sm font-mono focus:ring-2 focus:ring-brand-blue outline-none transition-all text-[var(--text-primary)] shadow-inner"
                                             placeholder="Nyckel för klienten..."
                                             defaultValue={systemSettings['vapid_public_key'] || ''}
                                             onBlur={(e) => updateSystemSetting('vapid_public_key', e.target.value)}
                                         />
                                     </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">VAPID Private Key</label>
+                                    <div className="space-y-2">
+                                        <label className="block text-sm font-black text-[var(--text-secondary)] uppercase tracking-widest ml-1">VAPID Private Key</label>
                                         <input
                                             type="password"
-                                            className="w-full px-4 py-2 bg-gray-50 dark:bg-[#282a2c] border border-gray-200 dark:border-[#3c4043] rounded-xl text-sm font-mono focus:ring-2 focus:ring-indigo-500 outline-none transition-all dark:text-white"
+                                            className="w-full px-5 py-4 bg-[var(--bg-main)] border border-[var(--border-main)] rounded-2xl text-sm font-mono focus:ring-2 focus:ring-brand-blue outline-none transition-all text-[var(--text-primary)] shadow-inner"
                                             placeholder="Nyckel för backend..."
                                             defaultValue={systemSettings['vapid_private_key'] || ''}
                                             onBlur={(e) => updateSystemSetting('vapid_private_key', e.target.value)}
                                         />
                                     </div>
                                 </div>
-                                <p className="text-xs text-gray-500 italic bg-gray-50 dark:bg-[#282a2c] p-3 rounded-lg border-l-4 border-indigo-500">
-                                    * VAPID-nycklar används för att signera notiser så att webbläsaren kan verifiera att de kommer från din server.
-                                </p>
+                                <div className="p-5 bg-brand-blue/5 rounded-2xl border-l-[6px] border-brand-blue shadow-lg">
+                                    <p className="text-sm font-bold text-brand-blue flex items-center gap-2">
+                                        <Zap size={16} fill="currentColor" />
+                                        VAPID-nycklar används för att signera notiser så att webbläsaren kan verifiera att de kommer från din server.
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     </div>
                 );
+            }
 
-            case 'integrations':
+            case 'integrations': {
                 return (
-                    <div className="space-y-6 max-w-3xl">
+                    <div className="space-y-8 animate-in fade-in slide-in-from-bottom duration-500">
                         <div>
-                            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">API-Integrationer & Webhooks</h2>
-                            <p className="text-gray-500 dark:text-gray-400">Hantera uppkopplingar mot externa tjänster.</p>
+                            <h2 className="text-2xl font-black text-[var(--text-primary)] mb-2">API-Integrationer & Webhooks</h2>
+                            <p className="text-[var(--text-secondary)] font-bold">Hantera uppkopplingar mot externa tjänster.</p>
                         </div>
 
-                        <div className="bg-white dark:bg-[#1E1F20] rounded-2xl p-6 border border-gray-200 dark:border-[#3c4043] shadow-sm">
-                            <div className="flex items-center gap-4 mb-6">
-                                <div className="w-12 h-12 bg-indigo-50 dark:bg-indigo-900/20 rounded-xl flex items-center justify-center text-indigo-600">
-                                    <Hash size={24} />
+                        <div className="bg-[var(--bg-card)] rounded-3xl p-8 border border-[var(--border-main)] shadow-xl relative overflow-hidden group">
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-brand-blue/5 blur-3xl rounded-full -mr-16 -mt-16 group-hover:bg-brand-blue/10 transition-all duration-500"></div>
+
+                            <div className="flex items-center gap-6 mb-8 relative z-10">
+                                <div className="w-14 h-14 bg-brand-blue/10 rounded-2xl flex items-center justify-center text-brand-blue border border-brand-blue/20 shadow-lg shadow-brand-blue/10">
+                                    <Hash size={28} />
                                 </div>
                                 <div>
-                                    <h3 className="font-bold text-gray-900 dark:text-white">Slack App & Incoming Webhook</h3>
-                                    <p className="text-sm text-gray-500 dark:text-gray-400">Koppla EduFlex till Slack</p>
+                                    <h3 className="font-black text-xl text-[var(--text-primary)]">Slack App & Incoming Webhook</h3>
+                                    <p className="text-sm text-[var(--text-secondary)] font-bold">Koppla EduFlex till Slack</p>
                                 </div>
                                 <div className="ml-auto">
                                     <label className="relative inline-flex items-center cursor-pointer">
@@ -1358,48 +1169,55 @@ const SystemSettings = ({ asTab = false }) => {
                                             checked={slackForm.isActive}
                                             onChange={(e) => setSlackForm({ ...slackForm, isActive: e.target.checked })}
                                         />
-                                        <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-indigo-600"></div>
+                                        <div className="w-12 h-6 bg-white/5 border border-white/5 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-6 peer-checked:after:border-white after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-white/20 after:border-white/10 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-brand-blue peer-checked:after:bg-white peer-checked:after:opacity-100"></div>
                                     </label>
                                 </div>
                             </div>
 
-                            <div className={`space-y-4 transition-all duration-300 ${slackForm.isActive ? 'opacity-100' : 'opacity-50 pointer-events-none'}`}>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Webhook URL</label>
+                            <div className={`space-y-6 relative z-10 transition-all duration-500 ${slackForm.isActive ? 'opacity-100' : 'opacity-20 pointer-events-none'}`}>
+                                <div className="space-y-2">
+                                    <label className="block text-sm font-black text-[var(--text-secondary)] uppercase tracking-widest ml-1">Webhook URL</label>
                                     <input
                                         type="text"
                                         placeholder="https://hooks.slack.com/services/..."
                                         value={slackForm.webhookUrl}
                                         onChange={(e) => setSlackForm({ ...slackForm, webhookUrl: e.target.value })}
-                                        className="w-full px-4 py-3 border border-gray-200 dark:border-[#3c4043] rounded-xl bg-gray-50 dark:bg-[#282a2c] text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none font-mono text-sm"
+                                        className="w-full px-5 py-4 border border-[var(--border-main)] rounded-2xl bg-[var(--bg-main)] text-[var(--text-primary)] focus:ring-2 focus:ring-brand-blue outline-none font-mono text-sm shadow-inner transition-all hover:border-white/20"
                                     />
                                 </div>
-                                <div className="bg-blue-50 dark:bg-blue-900/20 text-blue-800 dark:text-blue-300 p-4 rounded-xl text-sm flex items-start gap-3">
-                                    <AlertTriangle size={18} className="mt-0.5 shrink-0" />
+                                <div className="bg-brand-blue/5 text-brand-blue p-6 rounded-2xl border border-brand-blue/20 shadow-lg flex items-start gap-4">
+                                    <div className="p-2 bg-brand-blue/10 rounded-xl">
+                                        <AlertTriangle size={20} className="shrink-0" />
+                                    </div>
                                     <div>
-                                        <p className="font-semibold mb-1">Inkommande Slash Commands (t.ex. '/eduflex')</p>
-                                        <p>Peka din Slack App Request URL till:</p>
-                                        <code className="bg-white/50 dark:bg-black/20 px-2 py-1 rounded block mt-2 font-mono text-xs">{(window.location.origin).replace('localhost', 'eduflexlms.se')}/api/webhooks/slack/command</code>
+                                        <p className="font-black mb-2 text-base">Inkommande Slash Commands (t.ex. '/eduflex')</p>
+                                        <p className="text-sm font-bold opacity-80 mb-3">Peka din Slack App Request URL till:</p>
+                                        <code className="bg-black/40 px-3 py-2 rounded-xl block font-mono text-sm border border-white/5 shadow-inner">{(window.location.origin).replace('localhost', 'eduflexlms.se')}/api/webhooks/slack/command</code>
                                     </div>
                                 </div>
                             </div>
 
-                            <div className="pt-6 mt-6 border-t border-gray-200 dark:border-[#3c4043] flex justify-end">
+                            <div className="pt-8 mt-8 border-t border-[var(--border-main)] flex justify-end relative z-10">
                                 <button
                                     onClick={handleSaveSlack}
                                     disabled={integrationsLoading}
-                                    className="flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 disabled:opacity-50 transition-colors"
+                                    className="flex items-center gap-3 px-8 py-4 bg-brand-blue text-white rounded-2xl font-black shadow-xl shadow-brand-blue/20 hover:scale-[1.05] active:scale-[0.95] disabled:opacity-50 transition-all text-lg"
                                 >
-                                    {integrationsLoading ? <RefreshCw className="animate-spin" size={18} /> : <Save size={18} />}
+                                    {integrationsLoading ? <RefreshCw className="animate-spin" size={20} /> : <Save size={20} />}
                                     Spara Integrationer
                                 </button>
                             </div>
                         </div>
                     </div>
                 );
+            }
 
             default:
-                return <div className="p-8 text-center text-gray-500">Välj en kategori i menyn</div>;
+                return (
+                    <div className="flex items-center justify-center h-full p-12 text-center text-[var(--text-secondary)] font-bold italic">
+                        Välj en kategori i menyn för att konfigurera systemet.
+                    </div>
+                );
         }
     };
 
@@ -1407,23 +1225,23 @@ const SystemSettings = ({ asTab = false }) => {
         <div className={asTab ? "animate-in fade-in" : "p-8 max-w-7xl mx-auto animate-in fade-in pb-20"}>
             {!asTab && (
                 <>
-                    <h1 className="text-3xl font-black text-gray-900 dark:text-white mb-2">Systeminställningar</h1>
-                    <p className="text-gray-500 dark:text-gray-400 mb-8">Hantera globala inställningar, utseende och licenser för EduFlex.</p>
+                    <h1 className="text-3xl font-black text-[var(--text-primary)] mb-2">Systeminställningar</h1>
+                    <p className="text-[var(--text-secondary)] mb-8 font-bold">Hantera globala inställningar, utseende och licenser för EduFlex.</p>
                 </>
             )}
 
-            <div className="flex bg-gray-50 dark:bg-[#151718] min-h-[600px] rounded-lg border border-gray-200 dark:border-[#3c4043] overflow-hidden">
+            <div className="flex bg-[var(--bg-main)] min-h-[600px] rounded-3xl border border-[var(--border-main)] overflow-hidden shadow-2xl ring-1 ring-white/5">
                 {/* SIDEBAR */}
-                <aside className={`bg-white dark:bg-[#1e2022] w-64 border-r border-gray-200 dark:border-[#3c4043] flex-shrink-0 flex flex-col ${mobileMenuOpen ? 'block absolute z-50 h-full' : 'hidden md:flex'}`}>
-                    <div className="p-4 border-b border-gray-200 dark:border-[#3c4043] flex items-center justify-between">
-                        <h2 className="font-bold text-lg text-gray-800 dark:text-gray-200">Inställningar</h2>
-                        <button className="md:hidden" onClick={() => setMobileMenuOpen(false)}>✕</button>
+                <aside className={`bg-[var(--bg-card)] w-64 border-r border-[var(--border-main)] flex-shrink-0 flex flex-col ${mobileMenuOpen ? 'block absolute z-50 h-full shadow-2xl backdrop-blur-xl' : 'hidden md:flex'}`}>
+                    <div className="p-6 border-b border-[var(--border-main)] flex items-center justify-between">
+                        <h2 className="font-black text-lg text-[var(--text-primary)]">Inställningar</h2>
+                        <button className="md:hidden text-[var(--text-secondary)]" onClick={() => setMobileMenuOpen(false)}>✕</button>
                     </div>
 
-                    <nav className="flex-1 overflow-y-auto p-4 space-y-6">
+                    <nav className="flex-1 overflow-y-auto p-4 space-y-8">
                         {menuItems.map((group, idx) => (
-                            <div key={idx}>
-                                <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 px-2">
+                            <div key={idx} className="animate-in slide-in-from-left duration-300" style={{ animationDelay: `${idx * 100}ms` }}>
+                                <h3 className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-[0.2em] mb-3 px-3">
                                     {group.category}
                                 </h3>
                                 <div className="space-y-1">
@@ -1437,16 +1255,16 @@ const SystemSettings = ({ asTab = false }) => {
                                                 }
                                             }}
                                             disabled={item.disabled}
-                                            className={`w-full flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors ${item.disabled
-                                                ? 'text-gray-400 dark:text-gray-600 cursor-not-allowed'
+                                            className={`w-full flex items-center gap-3 px-4 py-2.5 text-xs font-black rounded-xl transition-all ${item.disabled
+                                                ? 'text-white/10 dark:text-white/10 cursor-not-allowed'
                                                 : activeTab === item.id
-                                                    ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300'
-                                                    : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#282a2c]'
+                                                    ? 'bg-brand-blue text-white shadow-lg shadow-brand-blue/20'
+                                                    : 'text-[var(--text-secondary)] hover:bg-white/5 hover:text-[var(--text-primary)]'
                                                 }`}
                                         >
-                                            <item.icon size={18} />
+                                            <item.icon size={16} strokeWidth={2.5} />
                                             {item.label}
-                                            {item.disabled && <Lock size={14} className="ml-auto" />}
+                                            {item.disabled && <Lock size={12} className="ml-auto opacity-40" />}
                                         </button>
                                     ))}
                                 </div>
@@ -1458,9 +1276,9 @@ const SystemSettings = ({ asTab = false }) => {
                 {/* MAIN CONTENT */}
                 <main className="flex-1 flex flex-col min-w-0">
                     {/* Mobile Header */}
-                    <div className="md:hidden p-4 bg-white dark:bg-[#1e2022] border-b border-gray-200 dark:border-[#3c4043] flex justify-between items-center">
-                        <span className="font-bold">Meny</span>
-                        <button onClick={() => setMobileMenuOpen(true)} className="p-2 bg-gray-100 dark:bg-[#282a2c] rounded">
+                    <div className="md:hidden p-4 bg-[var(--bg-card)] border-b border-[var(--border-main)] flex justify-between items-center">
+                        <span className="font-black text-[var(--text-primary)]">Meny</span>
+                        <button onClick={() => setMobileMenuOpen(true)} className="p-2 bg-[var(--bg-card)] border border-[var(--border-main)] rounded-xl text-[var(--text-secondary)]">
                             <Settings size={20} />
                         </button>
                     </div>
@@ -1477,3 +1295,4 @@ const SystemSettings = ({ asTab = false }) => {
 };
 
 export default SystemSettings;
+

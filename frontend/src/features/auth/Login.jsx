@@ -177,8 +177,8 @@ const Login = () => {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-[#121212] p-4 font-sans transition-colors duration-300">
-            <div className="max-w-[400px] w-full bg-white dark:bg-[#1E1F20] rounded-3xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300">
+        <div className="min-h-screen flex items-center justify-center bg-[var(--bg-main)] p-4 font-sans transition-colors duration-300">
+            <div className="max-w-[400px] w-full bg-[var(--bg-card)] border border-[var(--border-main)] rounded-3xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300">
 
                 {/* HEADER */}
                 <div className="bg-gradient-to-br from-indigo-600 to-indigo-800 px-8 pt-12 pb-8 text-center relative overflow-hidden">
@@ -196,7 +196,7 @@ const Login = () => {
                 <div className="p-8 pt-10">
                     {/* Error Display */}
                     {error && (
-                        <div className="mb-6 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-300 px-4 py-3 rounded-xl flex items-center gap-3 text-sm font-medium animate-in slide-in-from-top-2">
+                        <div className="mb-6 bg-rose-500/10 border border-rose-500/20 text-rose-500 px-4 py-3 rounded-xl flex items-center gap-3 text-sm font-medium animate-in slide-in-from-top-2">
                             <AlertCircle size={18} className="shrink-0" />
                             {error}
                         </div>
@@ -207,27 +207,27 @@ const Login = () => {
                         {/* MFA CODE INPUT (Conditional) */}
                         {mfaRequired ? (
                             <div>
-                                <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2 ml-1">
+                                <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-2 ml-1">
                                     MFA-kod (Från din app)
                                 </label>
                                 <div className="relative group">
                                     <input
                                         type="text"
-                                        className="w-full pl-4 pr-12 py-3.5 bg-gray-50 dark:bg-[#131314] border border-gray-200 dark:border-[#3c4043] rounded-xl text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 dark:focus:border-indigo-500 focus:bg-white dark:focus:bg-[#131314] transition-all font-medium text-sm shadow-sm"
+                                        className="w-full pl-4 pr-12 py-3.5 bg-[var(--bg-input)] border border-[var(--border-main)] rounded-xl text-[var(--text-primary)] placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 focus:bg-[var(--bg-input)] transition-all font-medium text-sm shadow-sm"
                                         placeholder="000000"
                                         value={mfaCode}
                                         onChange={(e) => setMfaCode(e.target.value)}
                                         maxLength={6}
                                         required
                                     />
-                                    <div className="absolute inset-y-0 right-0 w-12 flex items-center justify-center pointer-events-none text-gray-400 group-focus-within:text-indigo-600 transition-colors">
+                                    <div className="absolute inset-y-0 right-0 w-12 flex items-center justify-center pointer-events-none text-[var(--text-secondary)] group-focus-within:text-indigo-500 transition-colors">
                                         <Lock size={20} />
                                     </div>
                                 </div>
                                 <button
                                     type="button"
                                     onClick={() => setMfaRequired(false)}
-                                    className="text-xs text-indigo-600 dark:text-indigo-400 mt-2 ml-1 hover:underline underline-offset-2"
+                                    className="text-xs text-indigo-400 mt-2 ml-1 hover:underline underline-offset-2"
                                 >
                                     Tillbaka till lösenord
                                 </button>
@@ -236,13 +236,13 @@ const Login = () => {
                             <>
                                 {/* ORGANIZATION ID (Optional/Advanced) */}
                                 <div>
-                                    <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2 ml-1">
+                                    <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-2 ml-1">
                                         Organization ID (Optional)
                                     </label>
                                     <div className="relative group">
                                         <input
                                             type="text"
-                                            className="w-full pl-4 pr-12 py-3.5 bg-gray-50 dark:bg-[#131314] border border-gray-200 dark:border-[#3c4043] rounded-xl text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 dark:focus:border-indigo-500 focus:bg-white dark:focus:bg-[#131314] transition-all font-medium text-sm shadow-sm"
+                                            className="w-full pl-4 pr-12 py-3.5 bg-[var(--bg-input)] border border-[var(--border-main)] rounded-xl text-[var(--text-primary)] placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 focus:bg-[var(--bg-input)] transition-all font-medium text-sm shadow-sm"
                                             placeholder="e.g. saas-test-school"
                                             value={manualTenantId}
                                             onChange={(e) => setManualTenantId(e.target.value)}
@@ -252,20 +252,20 @@ const Login = () => {
 
                                 {/* ANVÄNDARNAMN */}
                                 <div>
-                                    <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2 ml-1">
+                                    <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-2 ml-1">
                                         {t('auth.username') || 'Användarnamn'}
                                     </label>
                                     <div className="relative group">
                                         <input
                                             name="username"
                                             type="text"
-                                            className="w-full pl-4 pr-12 py-3.5 bg-gray-50 dark:bg-[#131314] border border-gray-200 dark:border-[#3c4043] rounded-xl text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 dark:focus:border-indigo-500 focus:bg-white dark:focus:bg-[#131314] transition-all font-medium text-sm shadow-sm"
+                                            className="w-full pl-4 pr-12 py-3.5 bg-[var(--bg-input)] border border-[var(--border-main)] rounded-xl text-[var(--text-primary)] placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 focus:bg-[var(--bg-input)] transition-all font-medium text-sm shadow-sm"
                                             placeholder="Ditt användarnamn"
                                             value={formData.username}
                                             onChange={handleChange}
                                             required
                                         />
-                                        <div className="absolute inset-y-0 right-0 w-12 flex items-center justify-center pointer-events-none text-gray-400 group-focus-within:text-indigo-600 transition-colors">
+                                        <div className="absolute inset-y-0 right-0 w-12 flex items-center justify-center pointer-events-none text-[var(--text-secondary)] group-focus-within:text-indigo-500 transition-colors">
                                             <User size={20} />
                                         </div>
                                     </div>
@@ -273,20 +273,20 @@ const Login = () => {
 
                                 {/* LÖSENORD */}
                                 <div>
-                                    <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2 ml-1">
+                                    <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-2 ml-1">
                                         {t('auth.password') || 'Lösenord'}
                                     </label>
                                     <div className="relative group">
                                         <input
                                             name="password"
                                             type="password"
-                                            className="w-full pl-4 pr-12 py-3.5 bg-gray-50 dark:bg-[#131314] border border-gray-200 dark:border-[#3c4043] rounded-xl text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 dark:focus:border-indigo-500 focus:bg-white dark:focus:bg-[#131314] transition-all font-medium text-sm shadow-sm"
+                                            className="w-full pl-4 pr-12 py-3.5 bg-[var(--bg-input)] border border-[var(--border-main)] rounded-xl text-[var(--text-primary)] placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 focus:bg-[var(--bg-input)] transition-all font-medium text-sm shadow-sm"
                                             placeholder="••••••••"
                                             value={formData.password}
                                             onChange={handleChange}
                                             required
                                         />
-                                        <div className="absolute inset-y-0 right-0 w-12 flex items-center justify-center pointer-events-none text-gray-400 group-focus-within:text-indigo-600 transition-colors">
+                                        <div className="absolute inset-y-0 right-0 w-12 flex items-center justify-center pointer-events-none text-[var(--text-secondary)] group-focus-within:text-indigo-500 transition-colors">
                                             <Lock size={20} />
                                         </div>
                                     </div>
@@ -298,7 +298,7 @@ const Login = () => {
                         <button
                             type="submit"
                             disabled={isLoading}
-                            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-indigo-600/30 hover:shadow-indigo-600/50 dark:shadow-none transition-all hover:scale-[1.01] active:scale-95 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed mt-4"
+                            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-indigo-500/20 hover:shadow-indigo-500/40 transition-all hover:scale-[1.01] active:scale-95 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed mt-4"
                         >
                             {isLoading ? <Loader2 className="animate-spin" size={20} /> : <LogIn size={20} />}
                             <span className="text-sm">
@@ -309,15 +309,15 @@ const Login = () => {
 
                     {/* Footer Links and Social Login (Abbreviated for clarity) */}
                     <div className="relative my-8">
-                        <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-gray-200 dark:border-[#3c4043]"></div></div>
-                        <div className="relative flex justify-center text-xs uppercase"><span className="bg-white dark:bg-[#1E1F20] px-3 text-gray-400 font-bold tracking-wider">Eller</span></div>
+                        <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-[var(--border-main)]"></div></div>
+                        <div className="relative flex justify-center text-xs uppercase"><span className="bg-[var(--bg-card)] px-3 text-[var(--text-secondary)] font-bold tracking-wider">Eller</span></div>
                     </div>
                     <div className="space-y-3">
                         {isBankIdEnabled && (
                             <button
                                 type="button"
                                 onClick={() => window.location.href = `${API_BASE}/oauth2/authorization/keycloak?kc_idp_hint=bankid`}
-                                className="w-full bg-white dark:bg-[#282a2c] hover:bg-gray-50 dark:hover:bg-[#3c4043] text-gray-700 dark:text-white font-bold py-3.5 rounded-xl border border-gray-200 dark:border-[#3c4043] hover:border-[#003f8a] transition-all flex items-center justify-center gap-3 group text-sm shadow-sm hover:shadow-md"
+                                className="w-full bg-[var(--bg-input)] hover:bg-white/5 text-[var(--text-primary)] font-bold py-3.5 rounded-xl border border-[var(--border-main)] hover:border-indigo-500/50 transition-all flex items-center justify-center gap-3 group text-sm shadow-sm hover:shadow-md"
                             >
                                 <img src={bankIdLogo} alt="BankID" className="h-6 w-auto object-contain" />
                                 Logga in med BankID
@@ -327,18 +327,18 @@ const Login = () => {
                         <button
                             type="button"
                             onClick={handleKeycloakLogin}
-                            className="w-full bg-white dark:bg-[#282a2c] hover:bg-gray-50 dark:hover:bg-[#3c4043] text-gray-700 dark:text-white font-bold py-3.5 rounded-xl border border-gray-200 dark:border-[#3c4043] hover:border-blue-400 transition-all flex items-center justify-center gap-3 group text-sm shadow-sm hover:shadow-md"
+                            className="w-full bg-[var(--bg-input)] hover:bg-white/5 text-[var(--text-primary)] font-bold py-3.5 rounded-xl border border-[var(--border-main)] hover:border-indigo-500/50 transition-all flex items-center justify-center gap-3 group text-sm shadow-sm hover:shadow-md"
                         >
                             <img src={keycloakLogo} alt="Keycloak" className="h-5 w-auto object-contain" />
                             Logga in med Keycloak (SSO)
                         </button>
-                        <button type="button" onClick={handleGoogleLogin} className="w-full bg-white dark:bg-[#282a2c] hover:bg-gray-50 dark:hover:bg-[#3c4043] text-gray-700 dark:text-white font-bold py-3.5 rounded-xl border border-gray-200 dark:border-[#3c4043] hover:border-gray-300 dark:hover:border-gray-500 transition-all flex items-center justify-center gap-3 group text-sm shadow-sm hover:shadow-md">
+                        <button type="button" onClick={handleGoogleLogin} className="w-full bg-[var(--bg-input)] hover:bg-white/5 text-[var(--text-primary)] font-bold py-3.5 rounded-xl border border-[var(--border-main)] hover:border-indigo-500/50 transition-all flex items-center justify-center gap-3 group text-sm shadow-sm hover:shadow-md">
                             Logga in med Google
                         </button>
                     </div>
 
-                    <p className="text-center mt-8 text-xs text-gray-400 font-medium">
-                        {t('auth.no_account') || 'Har du inget konto?'} <span className="font-bold text-indigo-600 dark:text-indigo-400 cursor-pointer hover:underline">Kontakta Admin</span>
+                    <p className="text-center mt-8 text-xs text-[var(--text-secondary)] font-medium">
+                        {t('auth.no_account') || 'Har du inget konto?'} <span className="font-bold text-indigo-400 cursor-pointer hover:underline">Kontakta Admin</span>
                     </p>
                 </div>
             </div>

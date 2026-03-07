@@ -37,17 +37,38 @@
 }
 
 /* --- GLOBALA REGLER --- */
+:root {
+    --bg-main: #f9fafb;
+    --bg-card: #ffffff;
+    --bg-sidebar: rgba(255, 255, 255, 0.7);
+    --bg-input: #f3f4f6;
+    --border-main: rgba(0, 0, 0, 0.05);
+    --text-primary: #111827;
+    --text-secondary: #4b5563;
+    --accent: #4f46e5;
+    --card-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+}
+
+.dark {
+    --bg-main: #000000;
+    --bg-card: #09090b;
+    --bg-sidebar: rgba(0, 0, 0, 0.95);
+    --bg-input: #18181b;
+    --border-main: rgba(255, 255, 255, 0.1);
+    --text-primary: #f3f4f6;
+    --text-secondary: #9ca3af;
+    --accent: #6366f1;
+    --card-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.5), 0 4px 6px -4px rgb(0 0 0 / 0.5);
+}
+
 body {
     margin: 0;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-
-    /* Grundfärger */
-    @apply bg-gray-50 text-gray-900 transition-colors duration-300;
-
-    /* DARK MODE */
-    @apply dark:bg-[#131314] dark:text-[#E3E3E3];
+    background-color: var(--bg-main);
+    color: var(--text-primary);
+    @apply transition-colors duration-300;
 }
 
 /* --- GLOBALA INPUT-REGLER --- */
@@ -66,8 +87,8 @@ body {
         @apply focus:ring-1 focus:ring-black focus:border-black;
 
         /* MÖRKT LÄGE */
-        @apply dark:bg-[#282a2c] dark:border-transparent dark:text-white dark:placeholder-gray-500;
-        @apply dark:focus:bg-[#303336] dark:focus:border-gray-500 dark:focus:ring-1 dark:focus:ring-gray-500;
+        @apply dark:bg-zinc-900/50 dark:border-white/5 dark:text-white dark:placeholder-gray-500;
+        @apply dark:focus:bg-zinc-800/80 dark:focus:border-white/10 dark:focus:ring-1 dark:focus:ring-white/10;
     }
 }
 

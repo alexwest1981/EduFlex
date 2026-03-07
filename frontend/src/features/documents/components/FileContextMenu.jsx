@@ -43,11 +43,11 @@ const FileContextMenu = ({ x, y, item, onClose, onAction }) => {
     return (
         <div
             ref={menuRef}
-            className="fixed z-[9999] w-56 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-2xl py-2 animate-in fade-in zoom-in duration-100"
+            className="fixed z-[9999] w-56 bg-[var(--bg-card)] border border-[var(--border-main)] rounded-xl shadow-2xl py-2 animate-in fade-in zoom-in duration-100"
             style={{ left: x, top: y }}
         >
-            <div className="px-4 py-2 border-b border-slate-100 dark:border-slate-800 mb-1">
-                <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider truncate">
+            <div className="px-4 py-2 border-b border-[var(--border-main)] mb-1">
+                <p className="text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider truncate">
                     {item.name || item.fileName}
                 </p>
             </div>
@@ -61,8 +61,8 @@ const FileContextMenu = ({ x, y, item, onClose, onAction }) => {
                         onClose();
                     }}
                     className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm transition-colors ${action.danger
-                            ? 'text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10'
-                            : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
+                        ? 'text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10'
+                        : 'text-[var(--text-primary)] hover:bg-[var(--bg-input)]'
                         }`}
                 >
                     <action.icon size={18} />

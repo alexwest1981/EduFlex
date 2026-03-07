@@ -58,13 +58,13 @@ export const CreateUserModal = ({ isOpen, onClose, onUserCreated }) => {
                 <form onSubmit={handleSubmit} className="p-6 space-y-4">
                     {errorMsg && <div className="p-3 bg-red-100 text-red-700 text-sm rounded-lg">{errorMsg}</div>}
                     <div className="grid grid-cols-2 gap-4">
-                        <input required className="w-full p-2 rounded-lg border dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" placeholder={t('admin.firstname')} value={formData.firstName} onChange={e => setFormData({ ...formData, firstName: e.target.value })} />
-                        <input required className="w-full p-2 rounded-lg border dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" placeholder={t('admin.lastname')} value={formData.lastName} onChange={e => setFormData({ ...formData, lastName: e.target.value })} />
+                        <input required className="w-full p-2.5 rounded-xl border border-[var(--border-main)] bg-[var(--bg-input)] text-[var(--text-primary)]" placeholder={t('admin.firstname')} value={formData.firstName} onChange={e => setFormData({ ...formData, firstName: e.target.value })} />
+                        <input required className="w-full p-2.5 rounded-xl border border-[var(--border-main)] bg-[var(--bg-input)] text-[var(--text-primary)]" placeholder={t('admin.lastname')} value={formData.lastName} onChange={e => setFormData({ ...formData, lastName: e.target.value })} />
                     </div>
-                    <input required className="w-full p-2 rounded-lg border dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" placeholder={t('auth.username')} value={formData.username} onChange={e => setFormData({ ...formData, username: e.target.value })} />
-                    <input required type="email" className="w-full p-2 rounded-lg border dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" placeholder={t('admin.email')} value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })} />
-                    <input required type="password" className="w-full p-2 rounded-lg border dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" placeholder={t('admin.password')} value={formData.password} onChange={e => setFormData({ ...formData, password: e.target.value })} />
-                    <select className="w-full p-2 rounded-lg border dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" value={formData.role} onChange={e => setFormData({ ...formData, role: e.target.value })}>
+                    <input required className="w-full p-2.5 rounded-xl border border-[var(--border-main)] bg-[var(--bg-input)] text-[var(--text-primary)]" placeholder={t('auth.username')} value={formData.username} onChange={e => setFormData({ ...formData, username: e.target.value })} />
+                    <input required type="email" className="w-full p-2.5 rounded-xl border border-[var(--border-main)] bg-[var(--bg-input)] text-[var(--text-primary)]" placeholder={t('admin.email')} value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })} />
+                    <input required type="password" className="w-full p-2.5 rounded-xl border border-[var(--border-main)] bg-[var(--bg-input)] text-[var(--text-primary)]" placeholder={t('admin.password')} value={formData.password} onChange={e => setFormData({ ...formData, password: e.target.value })} />
+                    <select className="w-full p-2.5 rounded-xl border border-[var(--border-main)] bg-[var(--bg-input)] text-[var(--text-primary)]" value={formData.role} onChange={e => setFormData({ ...formData, role: e.target.value })}>
                         {roleList && roleList.length > 0 ? (
                             roleList.map(r => (
                                 <option key={r.id} value={r.name}>{r.name}</option>
@@ -135,10 +135,10 @@ export const EditUserModal = ({ isOpen, onClose, onUserUpdated, userToEdit }) =>
     if (!isOpen || !userToEdit) return null;
 
     return (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in">
-            <div className="bg-white dark:bg-[#1E1F20] w-full max-w-md rounded-2xl shadow-2xl border border-gray-200 dark:border-[#3c4043] overflow-hidden">
-                <div className="p-4 border-b border-gray-100 dark:border-[#3c4043] flex justify-between items-center">
-                    <h3 className="font-bold text-lg text-gray-900 dark:text-white">{t('admin.edit_user')}</h3>
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in">
+            <div className="bg-[var(--bg-card)] w-full max-w-md rounded-2xl shadow-2xl border border-[var(--border-main)] overflow-hidden">
+                <div className="p-4 border-b border-[var(--border-main)] flex justify-between items-center bg-[var(--bg-input)]/30">
+                    <h3 className="font-bold text-lg text-[var(--text-primary)]">{t('admin.edit_user')}</h3>
                     <button onClick={onClose}><X className="text-gray-500" size={20} /></button>
                 </div>
                 <form onSubmit={handleSubmit} className="p-6 space-y-4">
@@ -167,7 +167,7 @@ export const EditUserModal = ({ isOpen, onClose, onUserUpdated, userToEdit }) =>
                         <input
                             type="number"
                             step="0.1"
-                            className="w-full p-2.5 rounded-xl border dark:bg-[#131314] dark:border-[#3c4043] dark:text-white outline-none focus:border-indigo-500/50 transition-all font-bold"
+                            className="w-full p-2.5 rounded-xl border border-[var(--border-main)] bg-[var(--bg-input)] text-[var(--text-primary)] outline-none focus:border-indigo-500/50 transition-all font-bold"
                             placeholder="T.ex 1.0"
                             value={formData.storageQuotaGb}
                             onChange={e => setFormData({ ...formData, storageQuotaGb: e.target.value })}
@@ -218,9 +218,9 @@ export const CreateCourseModal = ({ isOpen, onClose, onCourseCreated, teachers }
 
     return (
         <>
-            <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in">
-                <div className="bg-white dark:bg-[#1E1F20] w-full max-w-md rounded-2xl shadow-2xl border border-gray-200 dark:border-[#3c4043] overflow-hidden max-h-[90vh] overflow-y-auto">
-                    <div className="p-4 border-b border-gray-100 dark:border-[#3c4043] flex justify-between items-center">
+            <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in">
+                <div className="bg-[var(--bg-card)] w-full max-w-md rounded-2xl shadow-2xl border border-[var(--border-main)] overflow-hidden max-h-[90vh] overflow-y-auto">
+                    <div className="p-4 border-b border-[var(--border-main)] flex justify-between items-center bg-[var(--bg-input)]/30">
                         <h3 className="font-bold text-lg text-gray-900 dark:text-white">{t('admin.create_course')}</h3>
                         <button onClick={onClose}><X className="text-gray-500" size={20} /></button>
                     </div>

@@ -216,7 +216,7 @@ const TeacherDashboard = ({ currentUser }) => {
         } catch (e) { alert(t('teacher_tables.error_msg')); }
     };
 
-    if (isLoading) return <div className="p-20 text-center text-gray-500">{t('messages.loading')}</div>;
+    if (isLoading) return <div className="p-20 text-center text-[var(--text-secondary)]">{t('messages.loading')}</div>;
 
     return (
         <div className="max-w-7xl mx-auto animate-in fade-in pb-20">
@@ -224,14 +224,14 @@ const TeacherDashboard = ({ currentUser }) => {
             {/* HEADER */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
                 <div>
-                    <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{t('dashboard.teacher_panel')}</h1>
-                    <p className="text-gray-500 dark:text-gray-400">{t('dashboard.overview_for', { name: currentUser.fullName })}</p>
+                    <h1 className="text-3xl font-bold text-[var(--text-primary)]">{t('dashboard.teacher_panel')}</h1>
+                    <p className="text-[var(--text-secondary)]">{t('dashboard.overview_for', { name: currentUser.fullName })}</p>
                 </div>
 
             </div>
 
             {/* TAB MENY */}
-            <div className="flex overflow-x-auto gap-1 border-b border-gray-200 dark:border-[#3c4043] mb-8">
+            <div className="flex overflow-x-auto gap-1 border-b border-[var(--border-main)] mb-8">
                 {[
                     { id: 'OVERVIEW', label: t('teacher_dashboard.tab_overview'), icon: <ArrowUpRight size={18} /> },
                     { id: 'GRADING', label: `${t('teacher_dashboard.tab_grading')} ${ungradedSubmissions.length > 0 ? `(${ungradedSubmissions.length})` : ''}`, icon: <CheckCircle size={18} /> },
@@ -240,17 +240,17 @@ const TeacherDashboard = ({ currentUser }) => {
                     { id: 'STUDENTS', label: t('teacher_dashboard.tab_students'), icon: <Users size={18} /> },
                     { id: 'SKILLS', label: t('teacher_dashboard.tab_skills', 'Kompetensanalys'), icon: <Target size={18} /> },
                 ].map(tab => (
-                    <button key={tab.id} onClick={() => setActiveTab(tab.id)} className={`flex items-center gap-2 px-6 py-3 font-bold text-sm border-b-2 transition-colors whitespace-nowrap ${activeTab === tab.id ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700'}`}>
+                    <button key={tab.id} onClick={() => setActiveTab(tab.id)} className={`flex items-center gap-2 px-6 py-3 font-bold text-sm border-b-2 transition-colors whitespace-nowrap ${activeTab === tab.id ? 'border-indigo-500 text-indigo-400' : 'border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)]'}`}>
                         {tab.icon} {tab.label}
                     </button>
                 ))}
 
                 {/* Spacer to push Customizer to the right */}
-                <div className="flex-1 border-b border-gray-200 dark:border-[#3c4043]"></div>
+                <div className="flex-1 border-b border-[var(--border-main)]"></div>
 
                 {/* Dashboard Customizer (Eye Icon) */}
                 {activeTab === 'OVERVIEW' && (
-                    <div className="flex items-center border-b border-gray-200 dark:border-[#3c4043] pr-2">
+                    <div className="flex items-center border-b border-[var(--border-main)] pr-2">
                         <DashboardCustomizer
                             widgets={widgets}
                             toggleWidget={toggleWidget}
@@ -281,23 +281,23 @@ const TeacherDashboard = ({ currentUser }) => {
                         {/* Schema & Genvägar (Vänster - 2 kolumner bred) */}
                         <div className="lg:col-span-2 space-y-8">
                             {widgets.showSchedule && (
-                                <div className="bg-white dark:bg-[#1E1F20] rounded-2xl border border-gray-200 dark:border-[#3c4043] shadow-sm p-6">
-                                    <h3 className="font-bold text-lg mb-4 flex items-center gap-2"><CalendarIcon className="text-indigo-600" /> {t('teacher_dashboard.section_schedule')}</h3>
+                                <div className="bg-[var(--bg-card)] rounded-2xl border border-[var(--border-main)] shadow-sm p-6">
+                                    <h3 className="font-bold text-lg mb-4 flex items-center gap-2 text-[var(--text-primary)]"><CalendarIcon className="text-indigo-500" /> {t('teacher_dashboard.section_schedule')}</h3>
                                     <div className="space-y-4">
                                         {upcomingEvents.length > 0 ? upcomingEvents.slice(0, 5).map((evt, idx) => (
-                                            <div key={idx} className="flex gap-4 items-center p-3 rounded-xl bg-gray-50 dark:bg-[#131314]">
-                                                <div className={`shadow-sm rounded-lg p-2 text-center min-w-[50px] ${evt.type === 'ONGOING' ? 'bg-green-50 dark:bg-green-900/20' : 'bg-white dark:bg-[#1E1F20]'}`}>
-                                                    <span className={`block text-xs font-bold uppercase ${evt.type === 'ONGOING' ? 'text-green-600' : 'text-red-500'}`}>{evt.date.toLocaleString(i18n.language, { month: 'short' })}</span>
-                                                    <span className={`block text-lg font-black ${evt.type === 'ONGOING' ? 'text-green-700 dark:text-green-400' : 'text-gray-900 dark:text-white'}`}>{evt.date.getDate()}</span>
+                                            <div key={idx} className="flex gap-4 items-center p-3 rounded-xl bg-[var(--bg-input)]">
+                                                <div className={`shadow-sm rounded-lg p-2 text-center min-w-[50px] ${evt.type === 'ONGOING' ? 'bg-emerald-500/10' : 'bg-[var(--bg-card)] border border-[var(--border-main)]'}`}>
+                                                    <span className={`block text-xs font-bold uppercase ${evt.type === 'ONGOING' ? 'text-emerald-500' : 'text-rose-500'}`}>{evt.date.toLocaleString(i18n.language, { month: 'short' })}</span>
+                                                    <span className={`block text-lg font-black ${evt.type === 'ONGOING' ? 'text-emerald-500' : 'text-[var(--text-primary)]'}`}>{evt.date.getDate()}</span>
                                                 </div>
                                                 <div>
-                                                    <h4 className="font-bold text-sm text-gray-900 dark:text-white">{evt.title}</h4>
-                                                    <p className={`text-xs ${evt.type === 'ONGOING' ? 'text-green-600 font-bold' : 'text-gray-500'}`}>
+                                                    <h4 className="font-bold text-sm text-[var(--text-primary)]">{evt.title}</h4>
+                                                    <p className={`text-xs ${evt.type === 'ONGOING' ? 'text-emerald-500 font-bold' : 'text-[var(--text-secondary)]'}`}>
                                                         {evt.type === 'ONGOING' ? t('teacher_dashboard.ongoing_course') : t('teacher_dashboard.upcoming_event')}
                                                     </p>
                                                 </div>
                                             </div>
-                                        )) : <p className="text-gray-500 text-sm italic">{t('teacher_dashboard.no_events')}</p>}
+                                        )) : <p className="text-[var(--text-secondary)] text-sm italic">{t('teacher_dashboard.no_events')}</p>}
                                     </div>
                                 </div>
                             )}
@@ -307,21 +307,21 @@ const TeacherDashboard = ({ currentUser }) => {
                             )}
 
                             {widgets.showShortcuts && (
-                                <div className="bg-white dark:bg-[#1E1F20] rounded-2xl border border-gray-200 dark:border-[#3c4043] shadow-sm p-6">
-                                    <h3 className="font-bold text-lg mb-4">{t('teacher_dashboard.section_shortcuts')}</h3>
+                                <div className="bg-[var(--bg-card)] rounded-2xl border border-[var(--border-main)] shadow-sm p-6">
+                                    <h3 className="font-bold text-lg mb-4 text-[var(--text-primary)]">{t('teacher_dashboard.section_shortcuts')}</h3>
                                     <div className="grid grid-cols-2 gap-4">
-                                        <button onClick={() => navigate('/calendar')} className="p-4 bg-indigo-50 dark:bg-indigo-900/20 rounded-xl text-indigo-700 dark:text-indigo-300 font-bold text-sm hover:bg-indigo-100 transition-colors text-left">📅 {t('shortcuts.calendar')}</button>
+                                        <button onClick={() => navigate('/calendar')} className="p-4 bg-indigo-500/10 rounded-xl text-indigo-400 font-bold text-sm hover:bg-indigo-500/20 transition-colors text-left flex items-center gap-2">📅 {t('shortcuts.calendar')}</button>
                                         <button
                                             onClick={() => {
                                                 setTentaCourseId(myCourses[0]?.id);
                                                 setShowTentaModal(true);
                                             }}
-                                            className="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-xl text-amber-700 dark:text-amber-300 font-bold text-sm hover:bg-amber-100 transition-colors text-left"
+                                            className="p-4 bg-amber-500/10 rounded-xl text-amber-500 font-bold text-sm hover:bg-amber-500/20 transition-colors text-left flex items-center gap-2"
                                         >
                                             📝 Boka Tentamen
                                         </button>
-                                        <button onClick={() => setActiveTab('STUDENTS')} className="p-4 bg-pink-50 dark:bg-pink-900/20 rounded-xl text-pink-700 dark:text-pink-300 font-bold text-sm hover:bg-pink-100 transition-colors text-left">🎓 {t('shortcuts.students')}</button>
-                                        <button onClick={() => setActiveTab('GRADING')} className="p-4 bg-orange-50 dark:bg-orange-900/20 rounded-xl text-orange-700 dark:text-orange-300 font-bold text-sm hover:bg-orange-100 transition-colors text-left">📋 {t('shortcuts.grading')}</button>
+                                        <button onClick={() => setActiveTab('STUDENTS')} className="p-4 bg-pink-500/10 rounded-xl text-pink-400 font-bold text-sm hover:bg-pink-500/20 transition-colors text-left flex items-center gap-2">🎓 {t('shortcuts.students')}</button>
+                                        <button onClick={() => setActiveTab('GRADING')} className="p-4 bg-orange-500/10 rounded-xl text-orange-400 font-bold text-sm hover:bg-orange-500/20 transition-colors text-left flex items-center gap-2">📋 {t('shortcuts.grading')}</button>
                                     </div>
                                 </div>
                             )}
@@ -352,16 +352,16 @@ const TeacherDashboard = ({ currentUser }) => {
 
             {activeTab === 'PROCTORING' && (
                 <div className="space-y-8 animate-in slide-in-from-bottom-2 duration-300">
-                    <div className="bg-white dark:bg-[#1E1F20] p-8 rounded-3xl border border-gray-200 dark:border-[#3c4043] shadow-sm">
+                    <div className="bg-[var(--bg-card)] p-8 rounded-3xl border border-[var(--border-main)] shadow-sm">
                         <div className="mb-8 flex items-center justify-between">
                             <div>
-                                <h2 className="text-2xl font-black text-gray-900 dark:text-white">Tentamensvakt Pro</h2>
-                                <p className="text-gray-500 text-sm mt-1">Övervaka pågående tentamina med realtidsvideo och AI-analys.</p>
+                                <h2 className="text-2xl font-black text-[var(--text-primary)]">Tentamensvakt Pro</h2>
+                                <p className="text-[var(--text-secondary)] text-sm mt-1">Övervaka pågående tentamina med realtidsvideo och AI-analys.</p>
                             </div>
                             {selectedProctoringQuiz && (
                                 <button
                                     onClick={() => setSelectedProctoringQuiz(null)}
-                                    className="px-4 py-2 text-sm font-bold text-gray-500 hover:text-indigo-600 transition-colors"
+                                    className="px-4 py-2 text-sm font-bold text-[var(--text-secondary)] hover:text-indigo-400 transition-colors"
                                 >
                                     ← Tillbaka till listan
                                 </button>
@@ -378,32 +378,32 @@ const TeacherDashboard = ({ currentUser }) => {
                                 {activeExams.map(exam => (
                                     <div
                                         key={exam.id}
-                                        className="p-6 rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/40 hover:border-indigo-300 dark:hover:border-indigo-900 transition-all cursor-pointer group"
+                                        className="p-6 rounded-2xl border border-[var(--border-main)] bg-[var(--bg-input)] hover:border-indigo-500/50 transition-all cursor-pointer group"
                                         onClick={() => setSelectedProctoringQuiz(exam)}
                                     >
                                         <div className="flex items-center justify-between mb-4">
-                                            <div className="p-3 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-xl">
+                                            <div className="p-3 bg-indigo-500/10 text-indigo-400 rounded-xl">
                                                 <ShieldCheck size={24} />
                                             </div>
-                                            <span className="flex items-center gap-1.5 text-[10px] font-bold text-emerald-600 uppercase tracking-widest bg-emerald-100 dark:bg-emerald-900/30 px-2.5 py-1 rounded-full">
+                                            <span className="flex items-center gap-1.5 text-[10px] font-bold text-emerald-500 uppercase tracking-widest bg-emerald-500/10 px-2.5 py-1 rounded-full">
                                                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
                                                 Aktiv
                                             </span>
                                         </div>
-                                        <h3 className="font-bold text-lg text-slate-900 dark:text-white group-hover:text-indigo-600 transition-colors">{exam.title}</h3>
-                                        <p className="text-sm text-slate-500 mb-6">{exam.courseName}</p>
+                                        <h3 className="font-bold text-lg text-[var(--text-primary)] group-hover:text-indigo-400 transition-colors">{exam.title}</h3>
+                                        <p className="text-sm text-[var(--text-secondary)] mb-6">{exam.courseName}</p>
 
-                                        <button className="w-full py-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold text-slate-700 dark:text-slate-300 hover:bg-indigo-600 hover:text-white hover:border-indigo-600 transition-all">
+                                        <button className="w-full py-3 bg-[var(--bg-card)] border border-[var(--border-main)] rounded-xl text-sm font-bold text-[var(--text-primary)] hover:bg-indigo-600 hover:text-white hover:border-indigo-600 transition-all">
                                             Öppna Övervakning
                                         </button>
                                     </div>
                                 ))}
                             </div>
                         ) : (
-                            <div className="p-24 text-center bg-slate-50 dark:bg-[#131314] rounded-3xl border-2 border-dashed border-slate-200 dark:border-[#3c4043]">
-                                <ShieldCheck className="mx-auto text-slate-200 dark:text-slate-800 w-24 h-24 mb-6" />
-                                <h3 className="text-xl font-bold text-slate-400">Inga aktiva tentamina</h3>
-                                <p className="text-slate-400 text-sm max-w-sm mx-auto mt-2">När en student startar en tentamen kommer den att dyka upp här för övervakning.</p>
+                            <div className="p-24 text-center bg-[var(--bg-input)] rounded-3xl border-2 border-dashed border-[var(--border-main)]">
+                                <ShieldCheck className="mx-auto text-[var(--text-secondary)] opacity-20 w-24 h-24 mb-6" />
+                                <h3 className="text-xl font-bold text-[var(--text-secondary)]">Inga aktiva tentamina</h3>
+                                <p className="text-[var(--text-secondary)] opacity-60 text-sm max-w-sm mx-auto mt-2">När en student startar en tentamen kommer den att dyka upp här för övervakning.</p>
                             </div>
                         )}
                     </div>
@@ -412,8 +412,8 @@ const TeacherDashboard = ({ currentUser }) => {
 
             {activeTab === 'COURSES' && (
                 <div className="space-y-6 animate-in slide-in-from-bottom-2 duration-300">
-                    <div className="flex justify-between items-center bg-gray-50 dark:bg-[#1E1F20] p-4 rounded-xl border border-gray-200 dark:border-[#3c4043]">
-                        <h3 className="font-bold text-gray-700 dark:text-white">{t('teacher_dashboard.section_admin')}</h3>
+                    <div className="flex justify-between items-center bg-[var(--bg-input)] p-4 rounded-xl border border-[var(--border-main)]">
+                        <h3 className="font-bold text-[var(--text-primary)]">{t('teacher_dashboard.section_admin')}</h3>
                         <div className="flex gap-2">
                             <button
                                 onClick={() => {
@@ -430,10 +430,10 @@ const TeacherDashboard = ({ currentUser }) => {
 
                     <div className="grid grid-cols-1 gap-4">
                         {myCourses.map(course => (
-                            <div key={course.id} className="bg-white dark:bg-[#1E1F20] p-6 rounded-2xl border border-gray-200 dark:border-[#3c4043] shadow-sm flex flex-col md:flex-row justify-between items-center gap-6">
+                            <div key={course.id} className="bg-[var(--bg-card)] p-6 rounded-2xl border border-[var(--border-main)] shadow-sm flex flex-col md:flex-row justify-between items-center gap-6">
                                 <div className="flex-1">
-                                    <div className="flex items-center gap-3 mb-1"><div className={`w-3 h-3 rounded-full ${course.color || 'bg-gray-300'}`}></div><span className={`px-2 py-1 text-[10px] font-bold uppercase rounded ${course.isOpen ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>{course.isOpen ? t('teacher_tables.open') : t('teacher_tables.closed')}</span><h3 className="text-lg font-bold text-gray-900 dark:text-white">{course.name}</h3></div>
-                                    <div className="flex items-center gap-4 text-xs text-gray-400 font-mono"><span>{course.courseCode}</span><span>•</span><span>{course.students?.length}/{course.maxStudents} {t('admin.students').toLowerCase()}</span></div>
+                                    <div className="flex items-center gap-3 mb-1"><div className={`w-3 h-3 rounded-full ${course.color || 'bg-gray-300'}`}></div><span className={`px-2 py-1 text-[10px] font-bold uppercase rounded ${course.isOpen ? 'bg-emerald-500/20 text-emerald-500' : 'bg-rose-500/20 text-rose-500'}`}>{course.isOpen ? t('teacher_tables.open') : t('teacher_tables.closed')}</span><h3 className="text-lg font-bold text-[var(--text-primary)]">{course.name}</h3></div>
+                                    <div className="flex items-center gap-4 text-xs text-[var(--text-secondary)] font-mono"><span>{course.courseCode}</span><span>•</span><span>{course.students?.length}/{course.maxStudents} {t('admin.students').toLowerCase()}</span></div>
                                 </div>
                                 <div className="flex gap-2">
                                     <button
@@ -441,12 +441,12 @@ const TeacherDashboard = ({ currentUser }) => {
                                             setTentaCourseId(course.id);
                                             setShowTentaModal(true);
                                         }}
-                                        className="px-4 py-2 bg-amber-50 text-amber-700 rounded-lg font-bold text-sm hover:bg-amber-100 flex items-center gap-2"
+                                        className="px-4 py-2 bg-amber-500/10 text-amber-500 rounded-lg font-bold text-sm hover:bg-amber-500/20 flex items-center gap-2"
                                     >
                                         <CalendarIcon size={16} /> Tenta
                                     </button>
-                                    <button onClick={() => navigate(`/course/${course.slug || course.id}`)} className="px-4 py-2 bg-gray-100 dark:bg-[#282a2c] hover:bg-gray-200 text-gray-700 dark:text-white rounded-lg font-bold text-sm">{t('course_modal.go_to_course')}</button>
-                                    <button onClick={() => { setCourseToEdit(course); setShowEditModal(true); }} className="px-4 py-2 bg-indigo-50 text-indigo-700 rounded-lg font-bold text-sm hover:bg-indigo-100 flex items-center gap-2"><Edit2 size={16} /> {t('common.edit')}</button>
+                                    <button onClick={() => navigate(`/course/${course.slug || course.id}`)} className="px-4 py-2 bg-[var(--bg-input)] hover:bg-white/5 text-[var(--text-primary)] rounded-lg font-bold text-sm">{t('course_modal.go_to_course')}</button>
+                                    <button onClick={() => { setCourseToEdit(course); setShowEditModal(true); }} className="px-4 py-2 bg-indigo-500/10 text-indigo-400 rounded-lg font-bold text-sm hover:bg-indigo-500/20 flex items-center gap-2"><Edit2 size={16} /> {t('common.edit')}</button>
                                 </div>
                             </div>
                         ))}
@@ -455,20 +455,20 @@ const TeacherDashboard = ({ currentUser }) => {
             )}
 
             {activeTab === 'STUDENTS' && (
-                <div className="bg-white dark:bg-[#1E1F20] rounded-2xl border border-gray-200 dark:border-[#3c4043] shadow-sm overflow-hidden animate-in slide-in-from-bottom-2 duration-300">
-                    <div className="p-4 border-b border-gray-100 dark:border-[#3c4043] flex justify-between items-center">
-                        <h3 className="font-bold text-gray-700 dark:text-white">{t('teacher_tables.all_students_count', { count: allStudents.length })}</h3>
-                        <div className="relative"><Search className="absolute left-3 top-2.5 text-gray-400" size={16} /><input type="text" placeholder={`${t('common.search')}...`} className="pl-9 pr-4 py-2 rounded-lg border dark:border-[#3c4043] bg-gray-50 dark:bg-[#131314] text-sm outline-none" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} /></div>
+                <div className="bg-[var(--bg-card)] rounded-2xl border border-[var(--border-main)] shadow-sm overflow-hidden animate-in slide-in-from-bottom-2 duration-300">
+                    <div className="p-4 border-b border-[var(--border-main)] flex justify-between items-center">
+                        <h3 className="font-bold text-[var(--text-primary)]">{t('teacher_tables.all_students_count', { count: allStudents.length })}</h3>
+                        <div className="relative"><Search className="absolute left-3 top-2.5 text-[var(--text-secondary)]" size={16} /><input type="text" placeholder={`${t('common.search')}...`} className="pl-9 pr-4 py-2 rounded-lg border border-[var(--border-main)] bg-[var(--bg-input)] text-sm outline-none text-[var(--text-primary)]" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} /></div>
                     </div>
                     <table className="w-full text-left text-sm">
-                        <thead className="bg-gray-50 dark:bg-[#282a2c] text-gray-500 uppercase text-xs font-bold border-b dark:border-[#3c4043]"><tr><th className="p-4">{t('teacher_tables.student')}</th><th className="p-4">{t('teacher_tables.submitted')}</th><th className="p-4 text-right">{t('common.action')}</th></tr></thead>
-                        <tbody className="divide-y divide-gray-100 dark:divide-[#3c4043]">
+                        <thead className="bg-[var(--bg-input)] text-[var(--text-secondary)] uppercase text-xs font-bold border-b border-[var(--border-main)]"><tr><th className="p-4">{t('teacher_tables.student')}</th><th className="p-4">{t('teacher_tables.submitted')}</th><th className="p-4 text-right">{t('common.action')}</th></tr></thead>
+                        <tbody className="divide-y divide-[var(--border-main)]">
                             {allStudents.filter(s => s.fullName.toLowerCase().includes(searchTerm.toLowerCase())).map(student => (
-                                <tr key={student.id} className="hover:bg-gray-50 dark:hover:bg-[#282a2c]/50"><td className="p-4 font-bold">{student.fullName}</td><td className="p-4 text-gray-500">{student.daysSinceLogin === 999 ? t('teacher_tables.never') : t('teacher_tables.days_ago', { count: student.daysSinceLogin })}</td><td className="p-4 text-right">
+                                <tr key={student.id} className="hover:bg-white/5"><td className="p-4 font-bold text-[var(--text-primary)]">{student.fullName}</td><td className="p-4 text-[var(--text-secondary)]">{student.daysSinceLogin === 999 ? t('teacher_tables.never') : t('teacher_tables.days_ago', { count: student.daysSinceLogin })}</td><td className="p-4 text-right">
                                     <button onClick={() => {
                                         setMessageRecipient(student);
                                         // setActiveTab('COMMUNICATION'); // REMOVED: Now opens modal directly via messageRecipient state
-                                    }} className="text-indigo-600 font-bold text-xs hover:underline">{t('teacher_tables.contact')}</button>
+                                    }} className="text-indigo-400 font-bold text-xs hover:underline">{t('teacher_tables.contact')}</button>
                                 </td></tr>
                             ))}
                         </tbody>
@@ -480,20 +480,20 @@ const TeacherDashboard = ({ currentUser }) => {
 
             {activeTab === 'SKILLS' && (
                 <div className="space-y-8 animate-in slide-in-from-bottom-2 duration-300">
-                    <div className="bg-white dark:bg-[#1E1F20] p-6 rounded-2xl border border-gray-200 dark:border-[#3c4043] shadow-sm">
-                        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">Analysera klasskompetens</h2>
+                    <div className="bg-[var(--bg-card)] p-6 rounded-2xl border border-[var(--border-main)] shadow-sm">
+                        <h2 className="text-xl font-bold text-[var(--text-primary)] mb-6">Analysera klasskompetens</h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {myCourses.map(course => (
                                 <button
                                     key={course.id}
                                     onClick={() => setCourseToEdit(course)} // Use courseToEdit as a temp course holder for heatmap view
                                     className={`p-6 rounded-2xl border transition-all text-left ${courseToEdit?.id === course.id
-                                        ? 'border-indigo-600 bg-indigo-50 dark:bg-indigo-900/20 shadow-md'
-                                        : 'border-gray-100 dark:border-[#3c4043] hover:border-indigo-300'
+                                        ? 'border-indigo-500 bg-indigo-500/10 shadow-md'
+                                        : 'border-[var(--border-main)] hover:border-indigo-500/50'
                                         }`}
                                 >
-                                    <h3 className="font-bold text-gray-900 dark:text-white uppercase text-xs tracking-wider mb-1 opacity-60">{course.courseCode}</h3>
-                                    <h4 className="font-bold text-gray-900 dark:text-white text-lg">{course.name}</h4>
+                                    <h3 className="font-bold text-[var(--text-primary)] uppercase text-xs tracking-wider mb-1 opacity-60">{course.courseCode}</h3>
+                                    <h4 className="font-bold text-[var(--text-primary)] text-lg">{course.name}</h4>
                                 </button>
                             ))}
                         </div>

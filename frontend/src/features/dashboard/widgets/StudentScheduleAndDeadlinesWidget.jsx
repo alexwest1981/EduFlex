@@ -96,7 +96,7 @@ const StudentScheduleAndDeadlinesWidget = ({ assignments = [] }) => {
 
     return (
         <div className="h-full w-full overflow-hidden">
-            <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-gray-100 dark:divide-[#3c4043]">
+            <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-[var(--border-main)]">
 
                 {/* COLUMN 1: DAGENS LEKTIONER */}
                 <div className="p-5">
@@ -134,7 +134,7 @@ const StudentScheduleAndDeadlinesWidget = ({ assignments = [] }) => {
                                     <h4 className="text-sm font-bold text-gray-800 dark:text-gray-200 mb-2 truncate">{lesson.subject}</h4>
 
                                     {lesson.type === 'online' && lesson.link ? (
-                                        <a href={lesson.link} target="_blank" rel="noopener noreferrer" className="w-full flex items-center justify-center gap-2 py-1.5 bg-indigo-50 hover:bg-indigo-100 dark:bg-[#282a2c] dark:hover:bg-[#3c4043] text-indigo-700 dark:text-indigo-300 rounded-lg text-xs font-bold transition-colors">
+                                        <a href={lesson.link} target="_blank" rel="noopener noreferrer" className="w-full flex items-center justify-center gap-2 py-1.5 bg-indigo-50 hover:bg-indigo-100 dark:bg-[var(--bg-input)] dark:hover:bg-[var(--bg-card)] text-indigo-700 dark:text-indigo-300 rounded-lg text-xs font-bold transition-colors border border-transparent dark:border-[var(--border-main)]">
                                             {getPlatformIcon(lesson.platform)} {t('widgets.schedule.connect')}
                                         </a>
                                     ) : (
@@ -160,7 +160,7 @@ const StudentScheduleAndDeadlinesWidget = ({ assignments = [] }) => {
                 </div>
 
                 {/* COLUMN 2: KOMMANDE DEADLINES */}
-                <div className="p-5 bg-gray-50/50 dark:bg-[#282a2c]/20">
+                <div className="p-5 bg-[var(--bg-input)]/30">
                     <h3 className="font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
                         <Bell className="text-orange-500" size={20} />
                         {t('widgets.schedule.upcoming_submissions')}
@@ -174,7 +174,7 @@ const StudentScheduleAndDeadlinesWidget = ({ assignments = [] }) => {
                     <div className="space-y-3 min-h-[150px]">
                         {assignments.length > 0 ? (
                             assignments.slice(0, 3).map(a => (
-                                <div key={a.id} className="group p-3 bg-white dark:bg-[#1E1F20] rounded-xl border border-gray-100 dark:border-[#3c4043] shadow-sm hover:border-orange-200 dark:hover:border-orange-900 transition-colors">
+                                <div key={a.id} className="group p-3 bg-[var(--bg-card)] rounded-xl border border-[var(--border-main)] shadow-sm hover:border-orange-200 dark:hover:border-orange-900 transition-colors">
                                     <div className="flex justify-between items-start mb-1">
                                         <h4 className="font-bold text-sm text-gray-900 dark:text-white truncate pr-2">{a.title}</h4>
                                         <span className="text-[10px] font-bold text-gray-400 whitespace-nowrap">

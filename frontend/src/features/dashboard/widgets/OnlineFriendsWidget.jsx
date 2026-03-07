@@ -42,15 +42,15 @@ const OnlineFriendsWidget = () => {
     }, []);
 
     if (loading) return (
-        <div className="bg-white dark:bg-[#1E1F20] rounded-2xl border border-gray-200 dark:border-[#3c4043] p-6 shadow-sm h-full flex items-center justify-center">
+        <div className="bg-[var(--bg-card)] rounded-2xl border border-[var(--border-main)] p-6 shadow-[var(--card-shadow)] h-full flex items-center justify-center">
             <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-indigo-600"></div>
         </div>
     );
 
     return (
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-6 shadow-sm h-full flex flex-col">
+        <div className="bg-[var(--bg-card)] rounded-xl border border-[var(--border-main)] p-6 shadow-[var(--card-shadow)] h-full flex flex-col">
             <div className="flex items-center justify-between mb-4">
-                <h3 className="font-bold text-lg dark:text-white flex items-center gap-2">
+                <h3 className="font-bold text-lg text-[var(--text-primary)] flex items-center gap-2">
                     <Users size={20} className="text-indigo-600" />
                     {t('widgets.online_friends.title')}
                 </h3>
@@ -67,14 +67,14 @@ const OnlineFriendsWidget = () => {
                     </div>
                 ) : (
                     friends.map(friend => (
-                        <Link key={friend.id} to={`/profile/${friend.id}`} className="flex items-center gap-3 p-2 hover:bg-gray-50 dark:hover:bg-[#282a2c] rounded-xl transition-colors group">
+                        <Link key={friend.id} to={`/profile/${friend.id}`} className="flex items-center gap-3 p-2 hover:bg-[var(--bg-input)] rounded-xl transition-colors group">
                             <div className="relative">
                                 <UserAvatar user={friend} size="w-10 h-10" fontSize="text-sm" />
-                                <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white dark:border-[#1E1F20] rounded-full"></div>
+                                <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-[var(--bg-card)] rounded-full"></div>
                             </div>
                             <div className="flex-1 min-w-0">
-                                <h4 className="font-bold text-gray-900 dark:text-white text-sm truncate">{friend.fullName}</h4>
-                                <p className="text-xs text-gray-500 truncate">{friend.role}</p>
+                                <h4 className="font-bold text-[var(--text-primary)] text-sm truncate">{friend.fullName}</h4>
+                                <p className="text-xs text-[var(--text-secondary)] truncate">{friend.role}</p>
                             </div>
                             <div className="text-[10px] text-green-600 font-bold opacity-0 group-hover:opacity-100 transition-opacity">
                                 {t('widgets.online_friends.profile')}
@@ -84,7 +84,7 @@ const OnlineFriendsWidget = () => {
                 )}
             </div>
 
-            <div className="pt-4 mt-auto border-t border-gray-100 dark:border-[#3c4043]">
+            <div className="pt-4 mt-auto border-t border-[var(--border-main)]">
                 <Link to="/profile" className="text-xs text-indigo-600 hover:underline font-bold block text-center">
                     {t('widgets.online_friends.view_all')}
                 </Link>

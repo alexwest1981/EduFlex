@@ -4,17 +4,17 @@ import { useDesignSystem } from '../../../context/DesignSystemContext';
 const WidgetWrapper = forwardRef(({ children, style, className, onMouseDown, onMouseUp, onTouchEnd, ...props }, ref) => {
     const { currentDesignSystem } = useDesignSystem();
 
-    // Combine RGL styles with Design System Card styles
+    // Combine RGL styles with Unified CSS Variables
     const combinedStyle = {
         ...style,
-        background: currentDesignSystem.card.background,
-        backdropFilter: currentDesignSystem.card.backdrop,
-        border: currentDesignSystem.card.border,
-        borderRadius: currentDesignSystem.card.radius.xl,
-        boxShadow: currentDesignSystem.card.shadow,
+        background: 'var(--bg-card)',
+        backdropFilter: 'var(--backdrop-blur, blur(12px))',
+        border: '1px solid var(--border-main)',
+        borderRadius: 'var(--radius-xl, 24px)',
+        boxShadow: 'var(--card-shadow)',
         display: 'flex',
         flexDirection: 'column',
-        overflow: 'hidden' // Ensure content stays inside
+        overflow: 'hidden'
     };
 
     return (

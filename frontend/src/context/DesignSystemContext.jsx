@@ -280,10 +280,10 @@ export const DESIGN_SYSTEMS = {
             },
             shadow: '0 2px 10px rgba(0, 0, 0, 0.03), 0 10px 25px -5px rgba(0, 0, 0, 0.04)',
             background: '#ffffff',
-            backgroundDark: '#1e1f20',
-            backdrop: 'none',
+            backgroundDark: 'rgba(9, 9, 11, 0.8)',
+            backdrop: 'blur(12px)',
             border: '1px solid #f1f5f9',
-            borderDark: '1px solid #3c4043',
+            borderDark: '1px solid rgba(255, 255, 255, 0.1)',
         },
         button: {
             radius: '10px',
@@ -292,10 +292,10 @@ export const DESIGN_SYSTEMS = {
         },
         page: {
             light: '#f9fafb',
-            dark: '#131314',
+            dark: '#000000',
         },
         layout: { spacing: '24px', maxWidth: '1600px', style: 'standard' },
-        effects: { useGradients: 'false', useBlur: 'false', useGlow: 'false' }
+        effects: { useGradients: 'true', useBlur: 'true', useGlow: 'false' }
     },
 
     // Design 2: Glass OS (Inspired by "Crextio")

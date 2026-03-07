@@ -132,76 +132,80 @@ const ShopItemEditor = ({ item, onSave, onCancel }) => {
     };
 
     return (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-            <div className="bg-white dark:bg-gray-800 rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6">
-                <div className="flex justify-between items-center mb-6">
-                    <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-                        {item ? 'Edit Shop Item' : 'Create New Item'}
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 z-50 animate-in fade-in duration-300">
+            <div className="bg-[var(--bg-card)] rounded-[2.5rem] max-w-2xl w-full max-h-[90vh] overflow-y-auto p-10 border border-[var(--border-main)] shadow-2xl relative">
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-brand-blue/30 to-transparent"></div>
+                <div className="flex justify-between items-center mb-10">
+                    <h2 className="text-2xl font-black text-[var(--text-primary)] uppercase tracking-tighter leading-none">
+                        {item ? 'Redigera föremål' : 'Skapa nytt föremål'}
                     </h2>
-                    <button onClick={onCancel} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full">
-                        <X className="w-5 h-5" />
+                    <button onClick={onCancel} className="p-3 bg-white/5 hover:bg-red-500/10 hover:text-red-500 text-[var(--text-secondary)] rounded-2xl transition-all">
+                        <X className="w-6 h-6" />
                     </button>
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-6">
                     {/* Basic Info */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Name</label>
+                            <label className="block text-[9px] font-black text-[var(--text-secondary)]/40 uppercase tracking-[0.3em] mb-2">Namn</label>
                             <input
                                 type="text"
                                 name="name"
                                 value={formData.name}
                                 onChange={handleChange}
                                 required
-                                className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600"
+                                className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-4 py-3 text-sm font-black text-[var(--text-primary)] focus:ring-2 focus:ring-brand-blue/50 focus:border-brand-blue transition-all shadow-inner"
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Type</label>
+                            <label className="block text-[9px] font-black text-[var(--text-secondary)]/40 uppercase tracking-[0.3em] mb-2">Typ</label>
                             <select
                                 name="type"
                                 value={formData.type}
                                 onChange={handleChange}
-                                className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600"
+                                className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-4 py-3 text-sm font-black text-[var(--text-primary)] focus:ring-2 focus:ring-brand-blue/50 focus:border-brand-blue transition-all shadow-inner appearance-none cursor-pointer"
                             >
-                                <option value="FRAME">Frame</option>
-                                <option value="BACKGROUND">Background</option>
-                                <option value="BADGE">Badge</option>
-                                <option value="TITLE">Title</option>
+                                <option value="FRAME">Ram</option>
+                                <option value="BACKGROUND">Bakgrund</option>
+                                <option value="BADGE">Märke</option>
+                                <option value="TITLE">Titel</option>
                             </select>
                         </div>
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description</label>
+                        <label className="block text-[9px] font-black text-[var(--text-secondary)]/40 uppercase tracking-[0.3em] mb-2">Beskrivning</label>
                         <textarea
                             name="description"
                             value={formData.description}
                             onChange={handleChange}
                             rows="2"
-                            className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600"
+                            className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-4 py-3 text-sm font-black text-[var(--text-primary)] focus:ring-2 focus:ring-brand-blue/50 focus:border-brand-blue transition-all shadow-inner resize-none"
                         />
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Cost (XP)</label>
-                            <input
-                                type="number"
-                                name="cost"
-                                value={formData.cost}
-                                onChange={handleChange}
-                                className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600"
-                            />
+                            <label className="block text-[9px] font-black text-[var(--text-secondary)]/40 uppercase tracking-[0.3em] mb-2">Kostnad (XP)</label>
+                            <div className="relative">
+                                <Zap size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-yellow-500" />
+                                <input
+                                    type="number"
+                                    name="cost"
+                                    value={formData.cost}
+                                    onChange={handleChange}
+                                    className="w-full bg-white/[0.03] border border-white/5 rounded-2xl pl-10 pr-4 py-3 text-sm font-black text-[var(--text-primary)] focus:ring-2 focus:ring-brand-blue/50 focus:border-brand-blue transition-all shadow-inner"
+                                />
+                            </div>
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Rarity</label>
+                            <label className="block text-[9px] font-black text-[var(--text-secondary)]/40 uppercase tracking-[0.3em] mb-2">Sällsynthet</label>
                             <select
                                 name="rarity"
                                 value={formData.rarity}
                                 onChange={handleChange}
-                                className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600"
+                                className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-4 py-3 text-sm font-black text-[var(--text-primary)] focus:ring-2 focus:ring-brand-blue/50 focus:border-brand-blue transition-all shadow-inner appearance-none cursor-pointer"
                             >
                                 <option value="COMMON">Common</option>
                                 <option value="RARE">Rare</option>
@@ -209,66 +213,71 @@ const ShopItemEditor = ({ item, onSave, onCancel }) => {
                                 <option value="LEGENDARY">Legendary</option>
                             </select>
                         </div>
-                        <div className="flex items-center pt-6">
-                            <label className="flex items-center space-x-2 cursor-pointer">
+                        <div className="flex items-end pb-3">
+                            <label className="flex items-center space-x-3 cursor-pointer group">
                                 <input
                                     type="checkbox"
                                     name="isLimited"
                                     checked={formData.isLimited}
                                     onChange={handleChange}
-                                    className="rounded text-indigo-600"
+                                    className="hidden"
                                 />
-                                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Limited Edition</span>
+                                <div className={`w-10 h-6 rounded-full relative transition-all duration-300 shadow-inner ${formData.isLimited ? 'bg-brand-blue' : 'bg-white/5'}`}>
+                                    <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all duration-300 ${formData.isLimited ? 'right-1' : 'left-1'}`}></div>
+                                </div>
+                                <span className="text-[10px] font-black text-[var(--text-secondary)]/60 uppercase tracking-widest group-hover:text-[var(--text-primary)] transition-colors">Limited Edition</span>
                             </label>
                         </div>
                     </div>
 
                     {/* Image Upload */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Item Image</label>
-                        <div className="flex items-center space-x-4">
-                            <div className="w-24 h-24 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center overflow-hidden bg-gray-50 dark:bg-gray-900">
+                    <div className="bg-white/[0.02] p-6 rounded-3xl border border-white/5 shadow-inner">
+                        <label className="block text-[9px] font-black text-[var(--text-secondary)]/40 uppercase tracking-[0.3em] mb-4">Föremålsbild</label>
+                        <div className="flex items-center space-x-6">
+                            <div className="w-28 h-28 border border-white/5 rounded-3xl flex items-center justify-center overflow-hidden bg-white/5 shadow-inner group/preview">
                                 {imagePreview ? (
-                                    <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
+                                    <img src={imagePreview} alt="Preview" className="w-full h-full object-cover group-hover/preview:scale-110 transition-transform" />
                                 ) : (
-                                    <div className="text-gray-400 text-xs text-center">No Image</div>
+                                    <div className="text-[var(--text-secondary)]/20 text-[9px] font-black uppercase tracking-widest text-center">Ingen bild</div>
                                 )}
                             </div>
-                            <label className="cursor-pointer bg-indigo-50 text-indigo-600 px-4 py-2 rounded-lg hover:bg-indigo-100 transition-colors flex items-center font-medium">
-                                <Upload className="w-4 h-4 mr-2" />
-                                Upload Image
-                                <input type="file" className="hidden" accept="image/*" onChange={handleFileChange} />
-                            </label>
+                            <div className="flex-1">
+                                <label className="cursor-pointer bg-brand-blue text-white px-6 py-3 rounded-2xl hover:scale-105 active:scale-95 transition-all flex items-center w-fit font-black text-[10px] uppercase tracking-widest shadow-xl shadow-brand-blue/20">
+                                    <Upload className="w-4 h-4 mr-2" />
+                                    Ladda upp bild
+                                    <input type="file" className="hidden" accept="image/*" onChange={handleFileChange} />
+                                </label>
+                                <p className="text-[10px] text-[var(--text-secondary)]/40 mt-3 font-bold">Rekommenderas: PNG med transparens, 512x512px.</p>
+                            </div>
                         </div>
-                        <p className="text-xs text-gray-500 mt-1">Recommended: PNG with transparency, 512x512px.</p>
                     </div>
 
                     {/* Unlock Criteria */}
-                    <div className="border-t pt-4 dark:border-gray-700">
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 flex items-center">
-                            <Lock className="w-4 h-4 mr-2" />
-                            Unlock Requirements
+                    <div className="bg-white/[0.02] p-6 rounded-3xl border border-white/5 shadow-inner space-y-4">
+                        <label className="block text-[9px] font-black text-[var(--text-secondary)]/40 uppercase tracking-[0.3em] flex items-center">
+                            <Lock className="w-4 h-4 mr-2 text-brand-blue" />
+                            Upplåsningskrav
                         </label>
                         <select
                             value={criteriaType}
                             onChange={(e) => handleCriteriaChange('type', null, e.target.value)}
-                            className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 mb-3"
+                            className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-4 py-3 text-sm font-black text-[var(--text-primary)] focus:ring-2 focus:ring-brand-blue/50 focus:border-brand-blue transition-all shadow-inner appearance-none cursor-pointer"
                         >
-                            <option value="NONE">None (Available for purchase)</option>
-                            <option value="COURSE_COMPLETION">Complete a Course</option>
-                            <option value="QUIZ_SCORE">Achieve Quiz Score</option>
+                            <option value="NONE">Inga (Kan köpas direkt)</option>
+                            <option value="COURSE_COMPLETION">Slutför en kurs</option>
+                            <option value="QUIZ_SCORE">Nå ett visst resultat på ett quiz</option>
                         </select>
 
                         {criteriaType === 'COURSE_COMPLETION' && (
-                            <div>
-                                <label className="block text-xs font-medium text-gray-500 mb-1">Select Course</label>
+                            <div className="animate-in slide-in-from-top-2">
+                                <label className="block text-[9px] font-black text-[var(--text-secondary)]/40 uppercase tracking-[0.3em] mb-2">Välj kurs</label>
                                 <select
                                     value={criteriaData.referenceId || ''}
                                     onChange={(e) => handleCriteriaChange('data', 'referenceId', e.target.value)}
-                                    className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600"
+                                    className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-4 py-3 text-sm font-black text-[var(--text-primary)] focus:ring-2 focus:ring-brand-blue/50 focus:border-brand-blue transition-all shadow-inner appearance-none cursor-pointer"
                                     required
                                 >
-                                    <option value="">-- Select Course --</option>
+                                    <option value="">-- Välj kurs --</option>
                                     {courses.map(c => (
                                         <option key={c.id} value={c.id}>{c.name}</option>
                                     ))}
@@ -277,28 +286,28 @@ const ShopItemEditor = ({ item, onSave, onCancel }) => {
                         )}
 
                         {criteriaType === 'QUIZ_SCORE' && (
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-2 gap-6 animate-in slide-in-from-top-2">
                                 <div>
-                                    <label className="block text-xs font-medium text-gray-500 mb-1">Select Quiz</label>
+                                    <label className="block text-[9px] font-black text-[var(--text-secondary)]/40 uppercase tracking-[0.3em] mb-2">Välj Quiz</label>
                                     <select
                                         value={criteriaData.referenceId || ''}
                                         onChange={(e) => handleCriteriaChange('data', 'referenceId', e.target.value)}
-                                        className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600"
+                                        className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-4 py-3 text-sm font-black text-[var(--text-primary)] focus:ring-2 focus:ring-brand-blue/50 focus:border-brand-blue transition-all shadow-inner appearance-none cursor-pointer"
                                         required
                                     >
-                                        <option value="">-- Select Quiz --</option>
+                                        <option value="">-- Välj Quiz --</option>
                                         {quizzes.map(q => (
                                             <option key={q.id} value={q.id}>{q.title}</option>
                                         ))}
                                     </select>
                                 </div>
                                 <div>
-                                    <label className="block text-xs font-medium text-gray-500 mb-1">Min Score</label>
+                                    <label className="block text-[9px] font-black text-[var(--text-secondary)]/40 uppercase tracking-[0.3em] mb-2">Minsta resultat %</label>
                                     <input
                                         type="number"
                                         value={criteriaData.threshold || ''}
                                         onChange={(e) => handleCriteriaChange('data', 'threshold', e.target.value)}
-                                        className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600"
+                                        className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-4 py-3 text-sm font-black text-[var(--text-primary)] focus:ring-2 focus:ring-brand-blue/50 focus:border-brand-blue transition-all shadow-inner"
                                         required
                                     />
                                 </div>
@@ -306,21 +315,21 @@ const ShopItemEditor = ({ item, onSave, onCancel }) => {
                         )}
                     </div>
 
-                    <div className="flex justify-end space-x-3 pt-4 border-t dark:border-gray-700">
+                    <div className="flex justify-end gap-4 pt-8 mt-10 border-t border-white/5">
                         <button
                             type="button"
                             onClick={onCancel}
-                            className="px-4 py-2 text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
+                            className="px-8 py-4 text-[10px] font-black text-[var(--text-secondary)]/60 uppercase tracking-widest hover:text-[var(--text-primary)] transition-all"
                         >
-                            Cancel
+                            Avbryt
                         </button>
                         <button
                             type="submit"
                             disabled={loading}
-                            className="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 flex items-center disabled:opacity-50"
+                            className="px-10 py-4 bg-brand-blue text-white rounded-2xl font-black text-[10px] uppercase tracking-[0.3em] hover:scale-105 active:scale-95 transition-all shadow-2xl shadow-brand-blue/30 flex items-center disabled:opacity-50"
                         >
-                            <Save className="w-4 h-4 mr-2" />
-                            {loading ? 'Saving...' : 'Save Item'}
+                            <Save className="w-5 h-5 mr-3" />
+                            {loading ? 'Sparar...' : 'Spara föremål'}
                         </button>
                     </div>
                 </form>

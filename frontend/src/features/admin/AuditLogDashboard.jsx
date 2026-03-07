@@ -45,10 +45,10 @@ const AuditLogDashboard = () => {
 
     const getActionColor = (action) => {
         switch (action) {
-            case 'CREATED': return 'text-green-600 bg-green-50 dark:bg-green-900/20 dark:text-green-400';
-            case 'UPDATED': return 'text-blue-600 bg-blue-50 dark:bg-blue-900/20 dark:text-blue-400';
-            case 'DELETED': return 'text-red-600 bg-red-50 dark:bg-red-900/20 dark:text-red-400';
-            default: return 'text-gray-600 bg-gray-50 dark:bg-gray-800 dark:text-gray-400';
+            case 'CREATED': return 'text-emerald-400 bg-emerald-500/10 border border-emerald-500/20';
+            case 'UPDATED': return 'text-indigo-400 bg-indigo-500/10 border border-indigo-500/20';
+            case 'DELETED': return 'text-rose-400 bg-rose-500/10 border border-rose-500/20';
+            default: return 'text-[var(--text-secondary)] bg-white/5 border border-white/10';
         }
     };
 
@@ -64,7 +64,7 @@ const AuditLogDashboard = () => {
         try {
             const data = JSON.parse(jsonStr);
             return (
-                <pre className="bg-gray-50 dark:bg-[#131314] p-4 rounded-xl border border-gray-200 dark:border-[#3c4043] text-xs font-mono overflow-auto max-h-[400px] text-gray-800 dark:text-gray-300">
+                <pre className="bg-[var(--bg-input)] p-4 rounded-xl border border-[var(--border-main)] text-xs font-mono overflow-auto max-h-[400px] text-[var(--text-secondary)]">
                     {JSON.stringify(data, null, 2)}
                 </pre>
             );
@@ -73,7 +73,7 @@ const AuditLogDashboard = () => {
         }
     };
 
-    const inputClass = "px-3 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-indigo-500 transition-colors bg-white border-gray-300 text-gray-900 dark:bg-[#131314] dark:border-[#3c4043] dark:text-white text-sm";
+    const inputClass = "px-3 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-indigo-500 transition-colors bg-[var(--bg-input)] border-[var(--border-main)] text-[var(--text-primary)] text-sm";
 
     return (
         <div className="space-y-6 animate-in fade-in">
@@ -99,7 +99,7 @@ const AuditLogDashboard = () => {
             </div>
 
             {/* Filter Bar */}
-            <form onSubmit={handleSearch} className="bg-gray-50 dark:bg-[#131314] p-4 rounded-2xl border border-gray-200 dark:border-[#3c4043] flex flex-wrap gap-3 items-center">
+            <form onSubmit={handleSearch} className="bg-[var(--bg-card)] p-4 rounded-2xl border border-[var(--border-main)] flex flex-wrap gap-3 items-center">
                 <div className="relative flex-1 min-w-[200px]">
                     <Search className="absolute left-3 top-2.5 text-gray-400" size={16} />
                     <input
@@ -132,10 +132,10 @@ const AuditLogDashboard = () => {
             </form>
 
             {/* Table Area */}
-            <div className="bg-white dark:bg-[#1E1F20] border border-gray-200 dark:border-[#282a2c] rounded-2xl shadow-sm overflow-hidden">
+            <div className="bg-[var(--bg-card)] border border-[var(--border-main)] rounded-2xl shadow-sm overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="w-full text-left text-sm border-collapse">
-                        <thead className="bg-gray-50 dark:bg-[#131314] text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-[#282a2c]">
+                        <thead className="bg-white/5 text-[var(--text-secondary)] border-b border-[var(--border-main)]">
                             <tr>
                                 <th className="px-6 py-4 font-bold text-xs uppercase tracking-wider">Tidpunkt</th>
                                 <th className="px-6 py-4 font-bold text-xs uppercase tracking-wider">Användare</th>
@@ -206,7 +206,7 @@ const AuditLogDashboard = () => {
             {/* Detail Modal / Slide-over */}
             {selectedLog && (
                 <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex justify-end animate-in fade-in slide-in-from-right-4">
-                    <div className="bg-white dark:bg-[#1E1F20] w-full max-w-2xl h-full shadow-2xl border-l border-gray-200 dark:border-[#3c4043] flex flex-col p-8 overflow-hidden">
+                    <div className="bg-[var(--bg-card)] w-full max-w-2xl h-full shadow-2xl border-l border-[var(--border-main)] flex flex-col p-8 overflow-hidden">
                         <div className="flex justify-between items-center mb-8">
                             <div className="flex items-center gap-3">
                                 <div className={`p-3 rounded-2xl ${getActionColor(selectedLog.action)}`}>
@@ -227,21 +227,21 @@ const AuditLogDashboard = () => {
 
                         <div className="space-y-6 flex-1 overflow-y-auto pr-2">
                             <div className="grid grid-cols-2 gap-4">
-                                <div className="p-4 rounded-2xl bg-gray-50 dark:bg-[#131314] border border-gray-100 dark:border-[#3c4043]">
-                                    <span className="block text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-1">Användare</span>
-                                    <span className="text-gray-900 dark:text-white font-medium">{selectedLog.modifiedBy}</span>
+                                <div className="p-4 rounded-2xl bg-[var(--bg-input)] border border-[var(--border-main)]">
+                                    <span className="block text-[10px] text-[var(--text-secondary)] font-bold uppercase tracking-wider mb-1">Användare</span>
+                                    <span className="text-[var(--text-primary)] font-medium">{selectedLog.modifiedBy}</span>
                                 </div>
-                                <div className="p-4 rounded-2xl bg-gray-50 dark:bg-[#131314] border border-gray-100 dark:border-[#3c4043]">
-                                    <span className="block text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-1">Tidpunkt</span>
-                                    <span className="text-gray-900 dark:text-white font-medium">{formatDate(selectedLog.timestamp)}</span>
+                                <div className="p-4 rounded-2xl bg-[var(--bg-input)] border border-[var(--border-main)]">
+                                    <span className="block text-[10px] text-[var(--text-secondary)] font-bold uppercase tracking-wider mb-1">Tidpunkt</span>
+                                    <span className="text-[var(--text-primary)] font-medium">{formatDate(selectedLog.timestamp)}</span>
                                 </div>
-                                <div className="p-4 rounded-2xl bg-gray-50 dark:bg-[#131314] border border-gray-100 dark:border-[#3c4043]">
-                                    <span className="block text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-1">Entitetstyp</span>
-                                    <span className="text-gray-900 dark:text-white font-medium">{selectedLog.entityName}</span>
+                                <div className="p-4 rounded-2xl bg-[var(--bg-input)] border border-[var(--border-main)]">
+                                    <span className="block text-[10px] text-[var(--text-secondary)] font-bold uppercase tracking-wider mb-1">Entitetstyp</span>
+                                    <span className="text-[var(--text-primary)] font-medium">{selectedLog.entityName}</span>
                                 </div>
-                                <div className="p-4 rounded-2xl bg-gray-50 dark:bg-[#131314] border border-gray-100 dark:border-[#3c4043]">
-                                    <span className="block text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-1">Entity ID</span>
-                                    <span className="text-gray-900 dark:text-white font-mono">#{selectedLog.entityId}</span>
+                                <div className="p-4 rounded-2xl bg-[var(--bg-input)] border border-[var(--border-main)]">
+                                    <span className="block text-[10px] text-[var(--text-secondary)] font-bold uppercase tracking-wider mb-1">Entity ID</span>
+                                    <span className="text-[var(--text-primary)] font-mono">#{selectedLog.entityId}</span>
                                 </div>
                             </div>
 

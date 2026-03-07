@@ -31,7 +31,7 @@ const RoiCenter = () => {
     };
 
     if (loading) {
-        return <div className="p-10 flex justify-center"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div></div>;
+        return <div className="p-10 flex justify-center"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-blue"></div></div>;
     }
 
     return (
@@ -39,27 +39,27 @@ const RoiCenter = () => {
             {/* Header */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                 <div>
-                    <h1 className="text-3xl font-black text-gray-900 dark:text-white flex items-center gap-3">
-                        <div className="p-2 bg-indigo-600 rounded-xl text-white">
+                    <h1 className="text-3xl font-black text-[var(--text-primary)] flex items-center gap-3">
+                        <div className="p-2 bg-brand-blue rounded-xl text-white">
                             <TrendingUp size={24} />
                         </div>
                         ROI & Prestation
                     </h1>
-                    <p className="text-gray-500 dark:text-gray-400 mt-2">
+                    <p className="text-[var(--text-secondary)] mt-2 font-bold">
                         Koppla utbildningsresultat till faktiska affärsmål och KPI:er.
                     </p>
                 </div>
 
-                <div className="flex items-center gap-4 bg-white dark:bg-[#1E1F20] p-2 rounded-2xl border border-gray-200 dark:border-[#3c4043] shadow-sm">
-                    <div className="flex items-center gap-2 px-3 border-r border-gray-100 dark:border-[#3c4043]">
-                        <Database size={16} className="text-gray-400" />
+                <div className="flex items-center gap-4 bg-[var(--bg-card)] p-2 rounded-2xl border border-[var(--border-main)] shadow-sm">
+                    <div className="flex items-center gap-2 px-3 border-r border-[var(--border-main)]">
+                        <Database size={16} className="text-[var(--text-secondary)]" />
                         <select
-                            className="bg-transparent border-none text-sm font-bold text-gray-700 dark:text-gray-200 focus:ring-0 cursor-pointer"
+                            className="bg-transparent border-none text-sm font-bold text-[var(--text-primary)] focus:ring-0 cursor-pointer outline-none"
                             value={selectedCourseId || ''}
                             onChange={(e) => setSelectedCourseId(e.target.value)}
                         >
                             {courses.map(c => (
-                                <option key={c.id} value={c.id}>{c.name}</option>
+                                <option key={c.id} value={c.id} className="bg-[var(--bg-card)]">{c.name}</option>
                             ))}
                         </select>
                     </div>
@@ -67,19 +67,19 @@ const RoiCenter = () => {
                     <div className="flex gap-1">
                         <button
                             onClick={() => setView('dashboard')}
-                            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${view === 'dashboard' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20' : 'text-gray-500 hover:bg-gray-50 dark:hover:bg-[#282a2c]'}`}
+                            className={`px-4 py-2 rounded-xl text-xs font-black transition-all ${view === 'dashboard' ? 'bg-brand-blue text-white shadow-lg shadow-brand-blue/20' : 'text-[var(--text-secondary)] hover:bg-white/5'}`}
                         >
                             Översikt
                         </button>
                         <button
                             onClick={() => setView('import')}
-                            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${view === 'import' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20' : 'text-gray-500 hover:bg-gray-50 dark:hover:bg-[#282a2c]'}`}
+                            className={`px-4 py-2 rounded-xl text-xs font-black transition-all ${view === 'import' ? 'bg-brand-blue text-white shadow-lg shadow-brand-blue/20' : 'text-[var(--text-secondary)] hover:bg-white/5'}`}
                         >
                             Importera KPI
                         </button>
                         <button
                             onClick={() => setView('tco')}
-                            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${view === 'tco' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20' : 'text-gray-500 hover:bg-gray-50 dark:hover:bg-[#282a2c]'}`}
+                            className={`px-4 py-2 rounded-xl text-xs font-black transition-all ${view === 'tco' ? 'bg-brand-blue text-white shadow-lg shadow-brand-blue/20' : 'text-[var(--text-secondary)] hover:bg-white/5'}`}
                         >
                             ROI-Kalkylator
                         </button>
@@ -97,7 +97,7 @@ const RoiCenter = () => {
                     <div className="space-y-6">
                         <button
                             onClick={() => setView('dashboard')}
-                            className="flex items-center gap-2 text-sm text-gray-500 hover:text-indigo-600 transition-colors font-medium"
+                            className="flex items-center gap-2 text-sm text-[var(--text-secondary)] hover:text-brand-blue transition-colors font-black"
                         >
                             <ChevronLeft size={16} />
                             Tillbaka till Dashboard

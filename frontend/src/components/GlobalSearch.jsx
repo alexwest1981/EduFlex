@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Search, User, BookOpen, FileText, Calendar, X, Loader2 } from 'lucide-react';
 import { api } from '../services/api';
 
-const GlobalSearch = ({ className = "", inputClassName = "bg-gray-100 dark:bg-[#282a2c]" }) => {
+const GlobalSearch = ({ className = "", inputClassName = "bg-[var(--bg-input)] border border-[var(--border-main)] text-[var(--text-primary)] focus:bg-[var(--bg-main)]" }) => {
     const [query, setQuery] = useState('');
     const [results, setResults] = useState({ users: [], courses: [], documents: [], events: [] });
     const [isOpen, setIsOpen] = useState(false);
@@ -124,11 +124,11 @@ const GlobalSearch = ({ className = "", inputClassName = "bg-gray-100 dark:bg-[#
                     placeholder="Sök..."
                     className={`w-full border-none rounded-2xl pl-5 pr-14 py-3 text-sm font-medium outline-none focus:ring-2 focus:ring-opacity-20 transition-all ${inputClassName}`}
                 />
-                <Search size={18} className={`absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none ${inputClassName.includes('text-white') || inputClassName.includes('text-black') ? 'opacity-50 inherit' : 'text-gray-400'}`} />
+                <Search size={18} className={`absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-[var(--text-secondary)] opacity-50`} />
                 {query && (
                     <button
                         onClick={() => { setQuery(''); setIsOpen(false); }}
-                        className="absolute right-10 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                        className="absolute right-10 top-1/2 -translate-y-1/2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
                     >
                         <X size={16} />
                     </button>
@@ -142,10 +142,10 @@ const GlobalSearch = ({ className = "", inputClassName = "bg-gray-100 dark:bg-[#
             {isOpen && (
                 <div
                     ref={dropdownRef}
-                    className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-[#1E1F20] rounded-2xl shadow-xl border border-gray-100 dark:border-gray-800 overflow-hidden z-50 max-h-96 overflow-y-auto"
+                    className="absolute top-full left-0 right-0 mt-2 bg-[var(--bg-card)] rounded-2xl shadow-[var(--card-shadow)] border border-[var(--border-main)] overflow-hidden z-50 max-h-96 overflow-y-auto"
                 >
                     {!hasResults && !isLoading && (
-                        <div className="p-4 text-center text-gray-500 text-sm">
+                        <div className="p-4 text-center text-[var(--text-secondary)] text-sm">
                             Inga resultat för "{query}"
                         </div>
                     )}
@@ -157,18 +157,18 @@ const GlobalSearch = ({ className = "", inputClassName = "bg-gray-100 dark:bg-[#
                                     key={`${item.type}-${item.id}`}
                                     onClick={() => handleSelect(item)}
                                     className={`w-full px-4 py-3 flex items-center gap-3 text-left transition-colors ${index === activeIndex
-                                        ? 'bg-gray-100 dark:bg-[#282a2c]'
-                                        : 'hover:bg-gray-50 dark:hover:bg-[#282a2c]'
+                                        ? 'bg-indigo-600/20'
+                                        : 'hover:bg-white/5'
                                         }`}
                                 >
-                                    <div className="w-8 h-8 rounded-lg bg-gray-100 dark:bg-[#282a2c] flex items-center justify-center">
+                                    <div className="w-8 h-8 rounded-lg bg-[var(--bg-input)] flex items-center justify-center">
                                         {getIcon(item.type)}
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                        <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                                        <p className="text-sm font-medium text-[var(--text-primary)] truncate">
                                             {getName(item)}
                                         </p>
-                                        <p className="text-xs text-gray-500">{getLabel(item.type)}</p>
+                                        <p className="text-xs text-[var(--text-secondary)]">{getLabel(item.type)}</p>
                                     </div>
                                 </button>
                             ))}
@@ -176,15 +176,16 @@ const GlobalSearch = ({ className = "", inputClassName = "bg-gray-100 dark:bg-[#
                     )}
 
                     {hasResults && (
-                        <div className="px-4 py-2 border-t border-gray-100 dark:border-gray-800">
-                            <p className="text-xs text-gray-400">
+                        <div className="px-4 py-2 border-t border-[var(--border-main)]">
+                            <p className="text-xs text-[var(--text-secondary)]">
                                 Tryck ↑↓ för att navigera, Enter för att välja, Esc för att stänga
                             </p>
                         </div>
                     )}
                 </div>
-            )}
-        </div>
+            )
+            }
+        </div >
     );
 };
 
