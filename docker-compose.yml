@@ -107,7 +107,7 @@ services:
   keycloak:
     image: quay.io/keycloak/keycloak:24.0
     container_name: eduflex-keycloak
-    command: start-dev --import-realm
+    command: start-dev --import-realm --health-enabled=true
     environment:
       - KEYCLOAK_ADMIN=admin
       - KEYCLOAK_ADMIN_PASSWORD=admin
@@ -120,15 +120,16 @@ services:
       - KC_HOSTNAME_PORT=8180
       - KC_HTTP_ENABLED=true
       - KC_PROXY=edge
+      - KC_HEALTH_ENABLED=true
     ports:
       - "8189:8080"
     volumes:
       - ./keycloak/realm-export.json:/opt/keycloak/data/import/realm-export.json
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8080/health" ]
+      test: [ "CMD-SHELL", "timeout 5s bash -c ':> /dev/tcp/127.0.0.1/8080' || exit 1" ]
       interval: 30s
       timeout: 10s
-      retries: 3
+      retries: 10
     deploy:
       resources:
         limits:
@@ -237,6 +238,15 @@ services:
       - ./uploads:/app/uploads
     networks:
       - eduflex-net
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8081/actuator/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          memory: 384M
     restart: always
 
   # --- PDF MICROSERVICE ---
@@ -258,6 +268,15 @@ services:
       - ./uploads:/app/uploads
     networks:
       - eduflex-net
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8082/actuator/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          memory: 256M
     restart: always
 
   # --- SCORM & xAPI MICROSERVICE ---
@@ -285,6 +304,15 @@ services:
       - "8084:8082"
     networks:
       - eduflex-net
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8082/actuator/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          memory: 384M
     restart: always
 
   # --- NOTIFICATIONS MICROSERVICE ---

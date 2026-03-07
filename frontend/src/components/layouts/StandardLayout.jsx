@@ -137,7 +137,7 @@ const StandardLayout = ({ children }) => {
             <aside className="hidden lg:flex sticky top-0 h-screen z-50 overflow-hidden shadow-2xl sidebar-glass" style={{ width: sidebarOpen ? '320px' : '72px', transition: 'width 0.3s cubic-bezier(0.4, 0, 0.2, 1)' }}>
 
                 {/* 1. LEFT RAIL (Icon Bar) */}
-                <div className="w-[72px] bg-white/50 dark:bg-black flex flex-col items-center py-6 shrink-0 z-10 transition-colors duration-300">
+                <div className="w-[72px] bg-white/40 dark:bg-zinc-950 flex flex-col items-center py-6 shrink-0 z-10 transition-colors duration-300 border-r border-black/5 dark:border-white/5">
                     <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center mb-10 shadow-lg shadow-indigo-500/20 cursor-pointer hover:scale-105 transition-transform" onClick={() => navigate('/')}>
                         <img src={logoTop} alt="EduFlex" className="w-7 h-7 object-contain" />
                     </div>
@@ -188,7 +188,7 @@ const StandardLayout = ({ children }) => {
                 </div>
 
                 {/* 2. DYNAMIC NAVIGATION PANEL */}
-                <div className={`flex-1 flex flex-col bg-transparent transition-all duration-300 ${!sidebarOpen ? 'opacity-0 -translate-x-10 pointer-events-none' : 'opacity-100 translate-x-0'}`}>
+                <div className={`flex-1 flex flex-col bg-gray-50/50 dark:bg-black transition-all duration-300 ${!sidebarOpen ? 'opacity-0 -translate-x-10 pointer-events-none' : 'opacity-100 translate-x-0'}`}>
                     <div className="h-16 px-6 flex items-center border-b border-black/5 dark:border-white/5 shrink-0">
                         <h2 className="font-black text-xs uppercase tracking-[0.2em] text-gray-400 dark:text-gray-500">
                             {t(`sidebar.categories.${activeSection}`) || activeSection}

@@ -1,4 +1,4 @@
-# 🎓 EduFlex LLP v3.7.0
+# 🎓 EduFlex LLP v3.7.3
 *The Complete Enterprise Learning Lifecycle Platform for Modern Education & B2B*
 
 *Developed & maintained by **Alex Weström / Fenrir Studio***  
@@ -13,16 +13,13 @@ EduFlex LLP är ett Enterprise-redo, molnbaserat ekosystem som ersätter den tra
 
 ---
 
-## 📖 Innehållsförteckning
-- [🚀 Senaste Uppdateringarna (Changelog)](#-senaste-uppdateringarna)
-- [✨ Huvudfunktioner & "Moats"](#-huvudfunktioner--unika-vallgravar)
-- [🏛 Systemarkitektur](#-systemarkitektur)
-- [🚀 Kom igång (Quick Start)](#-kom-igång)
-- [⚙️ Åtkomst & Konfiguration](#️-åtkomst--konfiguration)
-- [👤 Vem är du? (Rollspecifika guider)](#-vem-är-du-snabbguider)
-- [🗺 Roadmap](#-roadmap)
+## 🚀 Senaste Uppdateringarna (Changelog)
 
----
+### v3.7.3 (7 mar 2026) – Systemhärdning & UI Kontrast
+* **🛡️ Systemstabilitet**: Fixat kritisk CPU-spik (331%) i videotjänsten genom att implementera resursbegränsningar och korrekta hälsokontroller i Docker.
+* **🐳 Orkestrering**: Uppdaterat `docker-compose.yml` med minnesgränser för alla mikrotjänster för att förhindra resursutmattning och "Bad Gateway"-fel.
+* **🔑 Keycloak Recovery**: Åtgärdat felaktiga hälsokontroller i Keycloak som blockerade systemets startsekvens genom att växla till TCP-baserade sonder.
+* **🎨 Sidebar Refinement**: Justerat kontrasten mellan Sidebar-rail och navigeringspanelen för bättre visuell separation och ett mer premium utseende i True Black-temat.
 
 ### v3.7.2 (7 mar 2026) – Admin Suite Refactor & Health Check Fix
 * **🖤 Extended True Black Refactor**: Completed the systematic refactor of the remaining administration sub-modules. `AdminShopDashboard.jsx`, `ShopItemEditor.jsx`, `CommunityAdmin.jsx`, `AdminTicketManager.jsx`, and `SupportArticleManager.jsx` are now 100% compliant with the "True Black" (#000000) high-contrast theme.
@@ -35,173 +32,54 @@ EduFlex LLP är ett Enterprise-redo, molnbaserat ekosystem som ersätter den tra
 ### v3.7.0 (6 mar 2026) – SUSA-navet Integration & Utbildningsnavet (LLP v1)
 * **🏫 SUSA-navet Live-integration**: Admin kan nu hämta nationellt godkända YH-program direkt från Skolverkets SusaNav REST-API via en SUN-kod (t.ex. `481a`). Systemet skapar automatiskt kursstruktur med moduler, LIA-flagga och kursplaner baserade på officiell data.
 * **📚 Utbildningskatalog (`/programs`)**: Ny sida i sidomenyn – "Utbildningar" – med globövergång från LMS till LLP (Learning Lifecycle Platform). Studenter, sökande och SYV kan bläddra bland nationellt importerade program, filtrera på LIA-innehåll och ansöka direkt.
-* **🔧 CourseDTO-fix**: Lade till `sunCode` och `requiresLia` i `CourseDTO` och `CourseService`-mappningen så att API-svaret korrekt exponerar SUSA-navet-fälten till fronten.
-* **🧭 Navigation**: Lade till `Globe`-ikon och "Utbildningar"-länk i central `navigation.jsx` som gäller alla layouts.
-* **🛡️ EducationProgram Stability**: Fixat kritiska databasmigreringar (V116) för PostgreSQL-kompatibilitet. Åtgärdat oavsiktliga syntaxfel i `ProgramDetail.jsx` och säkerställt korrekt entitetsmappning för multi-tenant-miljöer.
-
-### v3.6.11.0 (6 mar 2026) – Roadmap: Mobile Offline Sync & Push Notifications
-* **📶 Mobile Offline Sync**: Implemented a global offline mutation queue. The app now intercepts `POST/PUT/DELETE` requests while offline and store them in Redux. Once internet is restored, the `SyncManager` automatically synchronizes all pending actions in the background.
-* **⚠️ Offline UI Indicator**: Added an animated `OfflineNotice` banner that alerts users when their connection is lost, providing transparency on data persistence.
-* **🔔 Push Notification Infrastructure**: Integrated Expo Push Notifications. The backend now stores `expoPushToken` for each user, and the mobile app automatically registers/updates this token upon login or session recovery in `AuthContext.js`.
-* **🛠️ Store & API Hardening**: Wrapped the `apiSlice` `baseQuery` to handle network detection and mutation interception seamlessly.
-
-### v3.6.10.0 (6 mar 2026) – Admin Command Center & User Management Overhaul
-* **📊 Admin Dashboard (Command Center)**: Introduced a new "Home" tab for administrators in the mobile app. Provides real-time stats on system health, user counts, data integrity, and total courses, along with quick-action shortcuts.
-* **👥 User Management 2.0**: Enhanced the `AdminUsersScreen` with global search, role badges, and a new detail modal. Admins can now perform secure user deletions with multi-step confirmation alerts.
-* **🧭 Navigation & UX Overhaul**: Refactored `AdminTabs.js` to include the new Command Center. Fixed missing screen imports and improved icon logic for a premium mobile experience.
-* **🛠️ Backend Integrity Sync**: Fully integrated mobile admin stats with the backend `HealthCheckService` and `/actuator/health` for live monitoring.
-* **📦 Release APK (v1.5.2)**: Generated a new high-performance release build featuring all admin and live-data enhancements.
-
-
-### v3.6.9.0 (6 mar 2026) – Rule 1 Compliance: Total Mockup Removal & Live Data
-* **📱 Total Mockup Removal (Rule 1)**: All hardcoded mockups in the mobile app have been replaced with live backend data. This includes Student Dashboard (XP/Insights), Quizzes, Global Library, Course Detail (Materials/Video), AI Coach (Real AITutor Chat), Flashcards (Spaced Repetition), Elevhälsan Metrics, and Ebook Sync.
-* **🔧 Backend Real-Time Progress**: Updated `CourseService` and `CourseDTO` to dynamically calculate `modulesCount`, providing accurate progress tracking for mobile users.
-* **🤖 AI Tutor Integration**: Fully integrated `AiCoachScreen` with the enterprise AITutor engine for real-time pedagogical support.
-* **📋 Spaced Repetition Logic**: Refactored `FlashcardsScreen` to use a data-driven SRS model, eliminating all placeholder decks.
-
-### v3.6.8.3 (5 mar 2026) – Final Build Success (Resource & Splash Fix)
-* **🔧 Native Splash & Resource Fix:** Rensat bort krockande WEBP-resurser i `mipmap`-mapparna som stoppade bygget. Skapat en ny `splash_background.xml` och uppdaterat `styles.xml` för att korrekt visa EduFlex-logotypen vid start.
-* **📦 Verified Release APK (v1.4):** En ny APK (94 MB) har genererats och verifierats med korrekt tidsstämpel (15:55). Denna innehåller alla branding- och inloggningsfixar.
-
-### v3.6.8.0 (5 mar 2026) – Android Mobile App: Dashboard Fix & Release APK
-* **📱 Auth Race Condition Fix:** Fixade ett kritiskt problem i `AuthContext.js` där `isLoggedIn()` inte skickade JWT-token explicit i `Authorization`-headern vid app-start. Interceptorn hann inte sätta headern i tid → `/user/me`-anropet fick 401 → `RoleRouter` fastnade i en oändlig spinner-loop → dashboarden laddade aldrig. Nu skickas token explicit, vilket garanterar att dashboarden alltid laddas korrekt.
-* **📦 Android Release APK:** Byggt och verifierat en fristående Release APK (`app-release.apk`, 76.8 MB) via `scripts/build_android_release.ps1` med tvingad JDK 21 och korrekt `ANDROID_HOME`. APK:n inkluderar all JavaScript-kod inbundlad och kräver inte Metro Bundler för att köras.
-
-### v3.6.6 (3 mar 2026) – Zero-Trust AI Pipeline & GDPR Shield
-*   **GDPR**: Implementerat **Zero-Trust AI Pipeline** med granulär PII-maskering och literal namn-ersättning.
-*   **GDPR**: Automatisk lokalt baserad "Zero-Trust Restore" av studentdata i AI-svar.
-*   **GDPR**: Valbart "GDPR Safe" läge för finansiella och administrativa excel-exporter.
-
-### v3.6.5 (5 mar 2026) – Stability & Microservice Hotfixes
-* **🐳 Docker Networking Fix (WS):** Centralized WebSocket routing via `WS_BASE` using `window.location.origin`, allowing Vite's proxy to handle dynamic routing in Docker environments. Added `VITE_NOTIFICATIONS_URL` to support internal service discovery.
-* **🗄️ Database Auto-Initialization:** Implemented `init-db.sql` triggered on Postgres startup to automatically create `eduflex_backend` and `eduflex_scorm` databases, preventing SCORM microservice crashes.
-* **🤖 AI PPT Stability:** Hardened `PowerPointService.java` with robust JSON parsing, handling both array and object response formats from Gemini, ensuring reliable slide generation.
-* **🔑 BankID 401 Fix:** Whitelisted the public BankID status endpoint in `SecurityConfig.java` to allow unauthenticated access to login status checks.
-* **📦 License Audit:** Implemented missing audit endpoints to enable system intelligence in the Control Center.
-
-### v3.6.4 (3 mar 2026) – AI Microservice Extraction & Ops Enhancements
-
-
-### v3.5.0 (Mars 2026) – B2B Sales Enablement & Compliance
-* **🔌 HR Sync API (Zero-Touch):** API-First design with `HrSyncController` för automatisk user provisioning från externa HR-system som Workday.
-* **📊 Interactive TCO Calculator:** Inbyggt live-säljverktyg för att räkna ut Enterprise-kunders Return on Investment (ROI).
-* **🛡️ Compliance Center:** Gränssnitt för HR/Admins för att övervaka regelefterlevnad med automatisk expiry-tracking av certifikat.
-### v3.4.0 (Feb 2026) – Enterprise B2B & Global i18n
-* **💼 Extended Enterprise Engine:** "Pointer"-baserad kursdistribution. Återförsäljare (Resellers) kan sälja "Seat Licenses" till andra företag med strikt Tenant-isolering (Single Source of Truth).
-* **🌍 AI-Driven i18n Localization:** Automatisk flerspråkighet för 8 språk (bl.a. FR, DE, ES, AR) driven av Googles Gemini-pipeline.
 
 ---
 
 ## ✨ Huvudfunktioner & Unika Vallgravar
 
 ### 1. Svensk Hyperlokalisering (The Category Killer)
-Där globala system slutar, börjar EduFlex.
-* **EduCareer Portal & JobEd Connect:** Inbyggd sökportal direktkopplad mot **Arbetsförmedlingens JobTech API:er**. AI analyserar studentens kognitiva radar och matchar live mot LIA/praktikplatser. Snart integrerat med Skolverkets SUSA-nav/JobEd Connect för att automatiskt knyta samman kursmål med faktiska branschkrav och yrkesroller.
-* **CSN Rapportering Pro:** Automatiserad XML/Excel-export enligt CSN:s exakta krav, med stöd för bulkhantering och "Dagar sedan senaste inloggning".
-* **Utökad Skolverket Sync 2.0 (SUSA-navet):** 
-  * Hämtar automatiskt kursplaner, centralt innehåll och betygskriterier via API.
-  * **Pakar via SUN-koder:** Importerar och bygger branschspecifika mallar/programstrukturer (t.ex. YH-utbildningar) dynamiskt baserat på Svensk utbildningsnomenklatur.
-  * **Nationell Export (Planerad):** Möjliggör publicering av det egna kursutbudet direkt ut till Skolverkets utbildningsnav ("Utbildningsnavet") för maximal nationell spridning med ett knapptryck.
-* **SS 12000 Kryptografi:** Betyg låses och signeras kryptografiskt med en hash-summa i databasen för att förhindra manipulation.
+* **EduCareer Portal & JobEd Connect:** Inbyggd sökportal direktkopplad mot **Arbetsförmedlingens JobTech API:er**. AI analyserar studentens kognitiva radar och matchar live mot LIA/praktikplatser.
+* **CSN Rapportering Pro:** Automatiserad XML/Excel-export enligt CSN:s exakta krav.
+* **Utökad Skolverket Sync 2.0 (SUSA-navet):** Importerar och bygger branschspecifika mallar/programstrukturer dynamiskt baserat på SUN-koder.
 
 ### 2. Etisk & Spårbar AI (EduAI Hub)
-* **AI Audit Log (Compliance Portal):** Varje enskilt AI-beslut och prompt loggas i en isolerad databastabell. Ger 100 % transparens för GDPR och AI Act, vilket är ett krav för offentlig sektor.
-* **AI Resource Generator:** Skapar quiz, studiepass och inlämningar direkt från uppladdade PDF:er och videor.
+* **AI Audit Log (Compliance Portal):** Varje enskilt AI-beslut och prompt loggas för 100 % transparens (GDPR/AI Act).
+* **AI Resource Generator:** Skapar quiz och studiepass direkt från PDF/Video.
 
 ### 3. Inbyggt Ekosystem & "Zero-TCO"
-Inga dyra tredjepartslicenser krävs.
-* **LiveKit Premium Video:** Inbyggda videomöten med bakgrundsoskärpa och chatt.
-* **OnlyOffice Integration:** Kollaborativ dokumentredigering direkt i webbläsaren.
-* **Exam Integrity Pro:** Kameraövervakning under tentamen som via Event Bus direkt larmar läraren om studenten byter flik eller misstänkt beteende uppstår.
+* **LiveKit Premium Video:** Inbyggda videomöten.
+* **OnlyOffice Integration:** Kollaborativ dokumentredigering.
 
 ---
 
 ## 🏛 Systemarkitektur
-
-EduFlex LLP drivs av en händelsedriven (Event-Driven) mikrotjänstarkitektur, skräddarsydd för massiv skalbarhet via Kubernetes.
-
-* **Frontend:** React 19, Vite, Tailwind CSS, PWA (Progressive Web App).
-* **Orchestrator / Core Backend:** Spring Boot 3.4 (Java 21), Hibernate 6. Hanterar Multi-Tenancy (Schema-per-Tenant), RBAC och agerar API Gateway.
-* **Microservices:**
-  * `eduflex-scorm` (Spring Boot 3): Dedikerad till tunga I/O-operationer för SCORM, cmi5 och xAPI (LRS).
-  * `eduflex-notifications` (WebFlux/Node): Asynkrona WebSockets för chatt och larm.
-  * `eduflex-pdf` & `eduflex-video`: Isolerad mediebearbetning.
-  * `eduflex-ai` (Python FastAPI): Dedikerad AI-motor för generativt innehåll och analys.
-* **Infrastruktur:**
-  * **PostgreSQL:** Huvuddatabas med isolerade scheman.
-  * **Redis (Event Bus):** Hanterar Pub/Sub-händelser mellan mikrotjänster och cache.
-  * **MinIO (S3):** Objektlagring för filer och media.
+EduFlex LLP drivs av en händelsedriven mikrotjänstarkitektur.
+* **Frontend:** React 19, Vite, Tailwind CSS.
+* **Core Backend:** Spring Boot 3.4 (Java 21), Hibernate 6.
+* **Microservices:** SCORM, Notifications, PDF, Video, AI (FastAPI).
 
 ---
 
-## 🚀 Kom igång
-
-### Förutsättningar
-* **Docker Desktop** (senaste versionen)
-* **Git**
-
-### Snabbstart (Lokal Miljö)
-```bash
-# 1. Klona projektet
-git clone https://github.com/alexwest1981/EduFlex.git
-cd EduFlex
-```
-
-# 2. Starta systemet (Startar Core, Redis Event Bus, MinIO, DB och Microservices)
+## 🚀 Kom igång (Snabbstart)
 ```bash
 docker compose up --build -d
 ```
 
---------------------------------------------------------------------------------
-# ⚙️ Åtkomst & Konfiguration
+---
 
-Lokala URL:er efter uppstart:
-
-* LMS (Frontend): http://localhost:5173
-* API / Backend: http://localhost:8080/api
-* Swagger API Docs: http://localhost:8080/swagger-ui.html
-* MinIO Console: http://localhost:9001 (Inloggning: minioadmin / minioadmin)
-* EduFlex Ops (Control Center): Nås direkt via Master Admin-inloggning i LMS.
-* Kritiska Miljövariabler (.env / system properties):
-* SPRING_DATASOURCE_URL – Databasanslutning (Standard: jdbc:postgresql://db:5432/eduflex)
-* SPRING_REDIS_HOST – Redis Event Bus / Cache (Standard: redis)
-* MINIO_URL – Intern S3 Endpoint (Standard: http://minio:9000)
-* EDUFLEX_AUTH_MODE – Autentiseringsläge (Standard: internal / Alternativ: keycloak)
-* GEMINI_API_KEY – Krävs för AI-funktioner & Audit Log (Din egen nyckel krävs)
-
-
---------------------------------------------------------------------------------
-# 👤 Vem är du? (Snabbguider)
-* 🎓 För Rektorer & Skolledare: Kolla in Principal Mission Control för realtids-KPI:er, SKA-motorn och interaktiva ROI-rapporter.
-* 🍎 För Lärare & Mentorer: Se dokumentationen för EduAI Hub, CSN-rapporteringsverktyget och Exam Integrity Pro.
-* 💻 För IT-drift & Investerare: Se vår Architecture Guide och Compliance Documentation för detaljer om vår Event Bus, schema-isolering och Zero-Touch HR Sync.
-
---------------------------------------------------------------------------------
-🗺 Roadmap (Q2 - Q4 2026)
+## 🗺 Roadmap (Q2 - Q4 2026)
 - [x] Schema-baserad Multi-Tenancy & Keycloak SSO
 - [x] AI Compliance Portal & Audit Log
 - [x] JobTech & CSN Integrationer
 - [x] **v3.6.6: GDPR & Privacy Shield**
-    - [x] Implementera granulära GDPR-datafilter (PII-maskering).
-    - [x] Pseudonymisering av studentdata i AI-sessioner.
-    - [x] GDPR-läge för rapportexporter.
 - [x] B2B E-commerce & Reseller Engine
 - [x] Event-Driven Microservices & Redis Event Bus
-- [ ] Q2 2026: AI Microservice Extraction (Python/FastAPI) för framtida lokala LLM-modeller.
+- [x] Addressing System Instability (Video Service CPU Fix & Healthchecks)
 - [/] Q3 2026: React Native Mobile App med Offline-sync.
-    - [x] Android Release APK byggd och verifierad (v1.0).
-    - [x] Dashboard auth race condition fixad.
-    - [ ] Offline Redux Persist verifiering.
-    - [ ] Push Notifications integration.
 - [ ] Q4 2026: Nationell Utbildningsintegration (SUSA-navet & JobEd Connect).
-    - [ ] Auto-strukturering av YH/Komvux-paket via SUN-koder.
-    - [ ] Tvåvägskommunikation: Publicera kurser till Skolverkets Utbildningsnav.
-    - [ ] Synergi JobTech/JobEd: Mappa kursmål mot skarpa yrkesroller/praktik.
 
---------------------------------------------------------------------------------
+---
+
 ⚖ License & Contact
 EduFlex LLP™ © 2026 Alex Weström / Fenrir Studio
-Proprietary Software. Unauthorized copying or distribution is strictly prohibited.
-För kommersiella förfrågningar och licensiering: 📧 alexwestrom81@gmail.com
-Last updated: 2026-03-07 (v3.7.2 - Admin Suite Refactor & Health Check Fix)
-
+Last updated: 2026-03-07 (v3.7.3 - Stability & Sidebar Contrast)
