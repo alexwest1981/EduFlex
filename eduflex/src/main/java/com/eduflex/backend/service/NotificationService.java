@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class NotificationService {
@@ -17,6 +18,7 @@ public class NotificationService {
     private final EmailService emailService;
     private final SmsService smsService;
     private final WebPushService webPushService;
+    private final ExpoPushService expoPushService;
     private final EventBusService eventBusService;
 
     public NotificationService(
@@ -25,12 +27,14 @@ public class NotificationService {
             EmailService emailService,
             SmsService smsService,
             WebPushService webPushService,
+            ExpoPushService expoPushService,
             EventBusService eventBusService) {
         this.notificationRepository = notificationRepository;
         this.userRepository = userRepository;
         this.emailService = emailService;
         this.smsService = smsService;
         this.webPushService = webPushService;
+        this.expoPushService = expoPushService;
         this.eventBusService = eventBusService;
     }
 
@@ -75,6 +79,8 @@ public class NotificationService {
 
                 if (sendPush) {
                     webPushService.sendPushNotification(userId, "EduFlex Notis", message, actionUrl);
+                    expoPushService.sendPush(userId, "EduFlex Notis", message,
+                            actionUrl != null ? Map.of("url", actionUrl) : null);
                 }
             });
         }

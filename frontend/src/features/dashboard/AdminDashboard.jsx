@@ -7,6 +7,7 @@ import { api } from '../../services/api';
 import AdminOverview from './AdminOverview';
 import MessageCenter from '../messages/MessageCenter';
 import CompanyLicenses from './CompanyLicenses';
+import LiaMatrixView from './LiaMatrixView';
 
 // --- SHARED ---
 import { useDashboardWidgets } from '../../hooks/useDashboardWidgets';
@@ -31,7 +32,9 @@ const AdminDashboard = () => {
         recentDocs: true,
         messages: true,
         onlineFriends: true,
-        tickets: true
+        tickets: true,
+        ghostingRadar: true,
+        liaRadar: true
     });
 
     const widgetLabels = {
@@ -41,7 +44,9 @@ const AdminDashboard = () => {
         recentDocs: t('dashboard.widgets.recent_docs'),
         messages: t('dashboard.widgets.messages'),
         onlineFriends: t('dashboard.widgets.online_friends'),
-        tickets: t('dashboard.widgets.tickets')
+        tickets: t('dashboard.widgets.tickets'),
+        ghostingRadar: "CSN Ghosting Radar",
+        liaRadar: "LIA Compliance Radar"
     };
 
     const fetchStats = async () => {
@@ -160,6 +165,17 @@ const AdminDashboard = () => {
                     <Shield size={18} />
                     Företagslicenser
                 </button>
+                <button
+                    onClick={() => setActiveTab('lia')}
+                    className={`flex items-center gap-2 px-6 py-2.5 rounded-full text-sm font-bold transition-all duration-300
+                        ${activeTab === 'lia'
+                            ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-100 dark:shadow-none'
+                            : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
+                        }`}
+                >
+                    <Shield size={18} />
+                    LIA / MYH Management
+                </button>
             </div>
 
             {/* --- CONTENT AREA --- */}
@@ -185,6 +201,12 @@ const AdminDashboard = () => {
                 {activeTab === 'licenses' && (
                     <div className="p-2 sm:p-0">
                         <CompanyLicenses />
+                    </div>
+                )}
+
+                {activeTab === 'lia' && (
+                    <div className="p-2 sm:p-0">
+                        <LiaMatrixView users={users} courses={courses} />
                     </div>
                 )}
             </main>

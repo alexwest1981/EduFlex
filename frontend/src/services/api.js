@@ -436,6 +436,17 @@ export const api = {
             return api.get(`/admin/audit?${searchParams}`);
         },
         getAuditLog: (id) => api.get(`/admin/audit/${id}`),
+        getGhostingRadar: () => api.get('/admin/compliance/ghosting-radar'),
+        getLiaRadar: () => api.get('/admin/compliance/lia-radar'),
+        getJobTechDemand: (ssyk, region = '00') => api.get(`/admin/jobtech/demand?ssykCode=${ssyk}&region=${region}`),
+
+        // LIA Placements Matrix
+        liaPlacements: {
+            getAll: () => api.get('/admin/lia/placements'),
+            create: (data) => api.post('/admin/lia/placements', data),
+            update: (id, data) => api.put(`/admin/lia/placements/${id}`, data),
+            delete: (id) => api.delete(`/admin/lia/placements/${id}`)
+        },
 
         // Guardians
         guardians: {

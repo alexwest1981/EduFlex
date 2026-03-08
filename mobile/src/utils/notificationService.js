@@ -41,8 +41,10 @@ export async function registerForPushNotificationsAsync() {
         }
 
         try {
-            // In a real app we would pass projectId here from expo config
-            token = (await Notifications.getExpoPushTokenAsync()).data;
+            // Pass explicit projectId from app.json for standalone build reliability
+            token = (await Notifications.getExpoPushTokenAsync({
+                projectId: 'fa07b6f5-8970-43fc-b2be-b2b32b471834'
+            })).data;
             console.log("Push Token Generated:", token);
         } catch (e) {
             console.warn("Could not generate push token:", e);

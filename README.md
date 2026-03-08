@@ -1,7 +1,7 @@
-# 🎓 EduFlex LLP v3.7.3
-*The Complete Enterprise Learning Lifecycle Platform for Modern Education & B2B*
+# 🎓 EduFlex LLP v3.7.4
+*Den kompletta Learning Lifecycle-plattformen för modern utbildning och B2B*
 
-*Developed & maintained by **Alex Weström / Fenrir Studio***  
+*Utvecklas & underhålls av **Alex Weström / Fenrir Studio***  
 🇸🇪 Svenska | 🇬🇧 English
 
 ![EduFlex Architecture](https://img.shields.io/badge/Architecture-Event--Driven%20Microservices-blue)
@@ -9,60 +9,68 @@
 ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.4-6db33f)
 ![Compliance](https://img.shields.io/badge/Compliance-GDPR%20%7C%20ISO%2027001%20Ready-success)
 
-EduFlex LLP är ett Enterprise-redo, molnbaserat ekosystem som ersätter den traditionella, fragmenterade skol-it-miljön (Canvas + Zoom + Moodle + Alvis). Genom en distribuerad mikrotjänstarkitektur, asynkron händelsebuss, svensk myndighetsintegration och marknadens första 100 % spårbara AI-motor, sänker EduFlex kundernas Total Cost of Ownership (TCO) drastiskt.
+EduFlex LLP är ett enterprise-redo, molnbaserat ekosystem som ersätter traditionella, fragmenterade skol-it-miljöer (Canvas + Zoom + Moodle + Alvis). Genom en distribuerad mikrotjänstarkitektur, asynkron händelsebuss, svensk myndighetsintegration och marknadens första 100 % spårbara AI-motor, sänker EduFlex kundernas Total Cost of Ownership (TCO) drastiskt.
 
 ---
 
 ## 🚀 Senaste Uppdateringarna (Changelog)
 
+### v3.8.0 (8 mar 2026) – Enterprise Compliance & Automation (ERP+)
+- **CSN Autopilot / Ghosting Radar**: Implementerat en automatiserad kontroll (Ghosting Radar) för att identifiera elever som saknar inloggning på >14 eller >30 dagar och skicka händelsekoder (99/41/81) för att förhindra felaktiga CSN-utbetalningar.
+- **LIA Compliance Matrix**: En helt ny administratörsvy (LIA Radar) för att hantera LIA-placeringar, handledare och MYH-krav (8-veckorsregeln), där saknade avtal, mitt- och slutbedömningar flaggas i realtid.
+- **JobTech / Yrkesbarometern Integration**: Integrerat Arbetsförmedlingens öppna API:er direkt i kurs-skapandet. Administratörer får direkt regionalarbetsmarknadsdata och 1-årsprognos för valda SSYK-koder innan utbildningen skapas.
+
+### v3.7.4 (8 mar 2026) – Mobil Build-stabilitet & Release Fix
+- **📱 Android Release Fix**: Genomfört en komplett åtgärd för `:app:assembleRelease`. Implementerat en manuell `expo export:embed`-brygga i Gradle för att kringgå defekta interna bundling-skript.
+- **🎨 Resurs-sanering**: Rensat dubbletter i mipmap-resurser (.png vs .webp) och lagat adaptiva ikoner (`ic_launcher.xml`) för att möjliggöra felfri AAPT-merging.
+- **☕ Kotlin Modernisering**: Refaktorerat `MainApplication.kt` för att vara kompatibel med React Native 0.76 och Expo 52 (ny arkitektur).
+- **🛠️ Miljö-anpassning**: Tvingat NDK `27.1.12297006` och Build Tools `35.0.0` för att hantera skrivrättigheter i SDK-mappen.
+- **📝 Dokumentation**: Städat upp README och standardiserat språket till svenska.
+
 ### v3.7.3 (7 mar 2026) – Stabilitet & Integration
 - **Nationell Integration (SUSA/JobEd)**: Implementerat Reverse Sync mot SUSA-navet (export) och utökat JobEd Connect till program-nivå.
 - **ISP-Automation**: Möjliggjort direktimport av hela utbildningsprogram till individuella studieplaner.
-- **Systemstabilitet**: Fixat 331% CPU-spik i Video-tjänst och optimerat Keycloak-hälsa.
+- **Systemstabilitet**: Fixat CPU-spik i Video-tjänst och optimerat Keycloak-hälsa.
 - **UI Design**: Förfinat kontrast i Sidebar (True Black) för bättre visuell separation.
 
 ### v3.7.2 (7 mar 2026) – Systemhärdning & UI Kontrast
-* **🛡️ Systemstabilitet**: Fixat kritisk CPU-spik (331%) i videotjänsten genom att implementera resursbegränsningar och korrekta hälsokontroller i Docker.
-* **🐳 Orkestrering**: Uppdaterat `docker-compose.yml` med minnesgränser för alla mikrotjänster för att förhindra resursutmattning och "Bad Gateway"-fel.
-* **🔑 Keycloak Recovery**: Åtgärdat felaktiga hälsokontroller i Keycloak som blockerade systemets startsekvens genom att växla till TCP-baserade sonder.
-* **🎨 Sidebar Refinement**: Justerat kontrasten mellan Sidebar-rail och navigeringspanelen för bättre visuell separation och ett mer premium utseende i True Black-temat.
-
-### v3.7.1 (7 mar 2026) – Admin Suite Refactor & Health Check Fix
-* **🖤 Extended True Black Refactor**: Completed the systematic refactor of the remaining administration sub-modules. `AdminShopDashboard.jsx`, `ShopItemEditor.jsx`, `CommunityAdmin.jsx`, `AdminTicketManager.jsx`, and `SupportArticleManager.jsx` are now 100% compliant with the "True Black" (#000000) high-contrast theme.
-* **🏥 Service Health Fix**: Resolved an issue in the Control Center (`DeployPanel.jsx`) where services would incorrectly show as "Offline" despite being active. Added JWT Bearer authentication to health check probes and improved actuator response parsing for Backend and Redis.
-* **✨ UI/UX Polishing**: Replaced all hardcoded colors with CSS variables across the administration panel to ensure perfect consistency and a premium feel.
-
-### v3.7.1 (7 mar 2026) – Infrastructure UI Hardening
-* **🖤 True Black Design System**: Commenced the systematic refactor of the administration suite. `SystemSettings.jsx`, `AdministrationPanel.jsx`, and `DeployPanel.jsx` (EduFlex Ops) are now 100% compliant with the "True Black" (#000000) high-contrast theme.
-
-### v3.7.0 (6 mar 2026) – SUSA-navet Integration & Utbildningsnavet (LLP v1)
-* **🏫 SUSA-navet Live-integration**: Admin kan nu hämta nationellt godkända YH-program direkt från Skolverkets SusaNav REST-API via en SUN-kod (t.ex. `481a`). Systemet skapar automatiskt kursstruktur med moduler, LIA-flagga och kursplaner baserade på officiell data.
-* **📚 Utbildningskatalog (`/programs`)**: Ny sida i sidomenyn – "Utbildningar" – med globövergång från LMS till LLP (Learning Lifecycle Platform). Studenter, sökande och SYV kan bläddra bland nationellt importerade program, filtrera på LIA-innehåll och ansöka direkt.
+- **🛡️ Systemstabilitet**: Fixat kritisk CPU-spik (331 %) i videotjänsten genom att implementera resursbegränsningar och korrekta hälsokontroller i Docker.
+- **🐳 Orkestrering**: Uppdaterat `docker-compose.yml` med minnesgränser för alla mikrotjänster för att förhindra resursutmattning.
+- **🔑 Keycloak Recovery**: Åtgärdat felaktiga hälsokontroller i Keycloak genom att växla till TCP-baserade sonder.
+- **🎨 Sidebar-förfinig**: Justerat kontrasten i True Black-temat för bättre visuell separation.
 
 ---
 
-## ✨ Huvudfunktioner & Unika Vallgravar
+## ✨ Huvudfunktioner & Fördelar
 
-### 1. Svensk Hyperlokalisering (The Category Killer)
-* **EduCareer Portal & JobEd Connect:** Inbyggd sökportal direktkopplad mot **Arbetsförmedlingens JobTech API:er**. AI analyserar studentens kognitiva radar och matchar live mot LIA/praktikplatser.
-* **CSN Rapportering Pro:** Automatiserad XML/Excel-export enligt CSN:s exakta krav.
-* **Utökad Skolverket Sync 2.0 (SUSA-navet):** Importerar och bygger branschspecifika mallar/programstrukturer dynamiskt baserat på SUN-koder.
+### 1. Svensk Hyperlokalisering
+- **EduCareer & JobEd Connect**: Inbyggd sökportal direktkopplad mot **Arbetsförmedlingens JobTech-API:er**.
+- **CSN Rapportering Pro**: Automatiserad och exakt export enligt CSN:s krav.
+- **Skolverket Sync 2.0 (SUSA-navet)**: Dynamisk import av programstrukturer baserat på SUN-koder.
 
 ### 2. Etisk & Spårbar AI (EduAI Hub)
-* **AI Audit Log (Compliance Portal):** Varje enskilt AI-beslut och prompt loggas för 100 % transparens (GDPR/AI Act).
-* **AI Resource Generator:** Skapar quiz och studiepass direkt från PDF/Video.
+- **AI Audit Log**: Full transparens för alla AI-beslut och prompter (GDPR/AI Act-kompatibel).
+- **AI Resource Generator**: Skapar quiz och studiematerial direkt från PDF och video.
 
-### 3. Inbyggt Ekosystem & "Zero-TCO"
-* **LiveKit Premium Video:** Inbyggda videomöten.
-* **OnlyOffice Integration:** Kollaborativ dokumentredigering.
+### 3. Integrerat Ekosystem
+- **LiveKit Premium Video**: Inbyggda videomöten i hög kvalitet.
+- **OnlyOffice Integration**: Kollaborativ dokumentredigering direkt i plattformen.
+
+### 4. Enterprise Compliance & Automation (ERP+)
+- **LIA Compliance Radar**: Automatisk 8-veckorsvarning för MYH-regelverket.
+- **CSN Autopilot & "Ghosting Radar"**: Agerar på dolda avhopp och skickar händelsekoder (99/41/81) per automatik.
+- **Yrkesbarometern & JobAd Enrichment (NLP)**: 5-årsprognoser per utbildning och AI-driven kompetensmatchning direkt mot annonser.
+- **BankID & E-signering**: Automatiserade trepartsavtal för LIA och validering.
+- **MYH Alumn-Tracker**: Automatiserad uppföljning av sysselsättningsgrad 6 månader efter examen.
+- **AI Kompetensvalidering**: Automatisk NLP-matchning av CV mot Skolverkets kursmål.
 
 ---
 
 ## 🏛 Systemarkitektur
 EduFlex LLP drivs av en händelsedriven mikrotjänstarkitektur.
-* **Frontend:** React 19, Vite, Tailwind CSS.
-* **Core Backend:** Spring Boot 3.4 (Java 21), Hibernate 6.
-* **Microservices:** SCORM, Notifications, PDF, Video, AI (FastAPI).
+- **Frontend**: React 19, Vite, Tailwind CSS.
+- **Core Backend**: Spring Boot 3.4 (Java 21), Hibernate 6.
+- **Mikrotjänster**: SCORM, Notifications, PDF, Video, AI (FastAPI).
 
 ---
 
@@ -73,19 +81,25 @@ docker compose up --build -d
 
 ---
 
-## 🗺 Roadmap (Q2 - Q4 2026)
+## 🗺 Roadmap (2026)
 - [x] Schema-baserad Multi-Tenancy & Keycloak SSO
 - [x] AI Compliance Portal & Audit Log
 - [x] JobTech & CSN Integrationer
 - [x] **v3.6.6: GDPR & Privacy Shield**
-- [x] B2B E-commerce & Reseller Engine
-- [x] Event-Driven Microservices & Redis Event Bus
-- [x] Addressing System Instability (Video Service CPU Fix & Healthchecks)
-- [/] Q3 2026: React Native Mobile App med Offline-sync.
-- [x] Q4 2026: Nationell Utbildningsintegration (SUSA-navet & JobEd Connect).
+- [x] B2B E-handel & Reseller Engine
+- [x] Händelsedriven mikrotjänstarkitektur & Redis Event Bus
+- [x] Åtgärdat systeminstabilitet (Video-tjänst CPU-fix)
+- [x] **v3.7.4: Android Build Fix & Bridge**
+- [x] **v3.8.0: Enterprise Compliance & Automation Hub (ERP+)**
+    - [x] CSN Autopilot (Kod 99/41/81) & "Ghosting Radar"
+    - [x] LIA Compliance Radar (8-veckorsregeln)
+    - [ ] AI Alumn-Tracker & Kompetensvalidering
+    - [x] Yrkesbarometern & NLP Deep Match
+- [ ] Q3 2026: React Native mobilapp med offline-sync.
+- [x] Q4 2026: Nationell utbildningsintegration (SUSA-navet).
 
 ---
 
-⚖ License & Contact
-EduFlex LLP™ © 2026 Alex Weström / Fenrir Studio
-Last updated: 2026-03-07 (v3.7.3 - Stability & Sidebar Contrast)
+⚖ **Licens & Kontakt**  
+EduFlex LLP™ © 2026 Alex Weström / Fenrir Studio  
+Senast uppdaterad: 2026-03-08 (v3.8.0 - CSN Autopilot, LIA Radar & JobTech)

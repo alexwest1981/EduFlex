@@ -184,8 +184,9 @@ export const EditUserModal = ({ isOpen, onClose, onUserUpdated, userToEdit }) =>
 // --- CREATE COURSE ---
 export const CreateCourseModal = ({ isOpen, onClose, onCourseCreated, teachers }) => {
     const { t } = useTranslation();
-    const [formData, setFormData] = useState({ name: '', courseCode: '', description: '', category: 'Övrigt', tags: '', teacherId: '', startDate: '', endDate: '', color: 'bg-indigo-600', maxStudents: 30, isOpen: true });
+    const [formData, setFormData] = useState({ name: '', courseCode: '', description: '', category: 'Övrigt', tags: '', teacherId: '', startDate: '', endDate: '', color: 'bg-indigo-600', maxStudents: 30, isOpen: true, ssykCode: '' });
     const [loading, setLoading] = useState(false);
+    const [jobDemand, setJobDemand] = useState(null);
     const [useSkolverket, setUseSkolverket] = useState(false);
     const [showSkolverketSelector, setShowSkolverketSelector] = useState(false);
     const [selectedSkolverketCourse, setSelectedSkolverketCourse] = useState(null);
@@ -200,8 +201,19 @@ export const CreateCourseModal = ({ isOpen, onClose, onCourseCreated, teachers }
             onClose();
             setSelectedSkolverketCourse(null);
             setUseSkolverket(false);
+            setJobDemand(null);
         } catch (error) { alert(t('course.error_occurred') || "Kunde inte skapa kursen."); } finally { setLoading(false); }
     };
+
+    useEffect(() => {
+        if (formData.ssykCode && formData.ssykCode.length === 4) {
+            api.admin.getJobTechDemand(formData.ssykCode)
+                .then(res => setJobDemand(res.data))
+                .catch(err => console.error("JobTech API Error", err));
+        } else {
+            setJobDemand(null);
+        }
+    }, [formData.ssykCode]);
 
     const handleSkolverketSelect = (course) => {
         setSelectedSkolverketCourse(course);
@@ -261,10 +273,37 @@ export const CreateCourseModal = ({ isOpen, onClose, onCourseCreated, teachers }
                         <input required className="w-full p-2 border rounded dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" placeholder={t('admin.course_name')} value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} />
                         <div className="grid grid-cols-2 gap-4">
                             <input required className="w-full p-2 border rounded dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" placeholder={t('admin.course_code')} value={formData.courseCode} onChange={e => setFormData({ ...formData, courseCode: e.target.value })} />
-                            <select className="w-full p2 border rounded dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" value={formData.category} onChange={e => setFormData({ ...formData, category: e.target.value })}>
+                            <select className="w-full p-2 border rounded dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" value={formData.category} onChange={e => setFormData({ ...formData, category: e.target.value })}>
                                 <option value="">{t('course_modal.category')}...</option>
                                 {COURSE_CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
                             </select>
+                        </div>
+
+                        {/* JOBTECH / YRKESBAROMETERN INDICATOR */}
+                        <div className="p-4 bg-blue-50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-900/30 rounded-lg space-y-3">
+                            <div className="flex justify-between items-center">
+                                <h4 className="text-xs font-bold text-blue-800 dark:text-blue-300 uppercase tracking-wider">Arbetsmarknad (Yrkesbarometern)</h4>
+                                {jobDemand && (
+                                    <span className={`text-xs px-2 py-1 rounded font-bold text-white ${jobDemand.currentDemandIndicator >= 4 ? 'bg-green-500' : jobDemand.currentDemandIndicator === 3 ? 'bg-yellow-500' : 'bg-red-500'}`}>
+                                        INDEX: {jobDemand.currentDemandIndicator}/5
+                                    </span>
+                                )}
+                            </div>
+                            <div className="flex gap-4">
+                                <input
+                                    className="flex-1 p-2 text-sm border rounded dark:bg-[#131314] dark:border-[#3c4043] dark:text-white"
+                                    placeholder="Ange 4-siffrig SSYK-kod (t.ex. 2512)"
+                                    maxLength="4"
+                                    value={formData.ssykCode}
+                                    onChange={e => setFormData({ ...formData, ssykCode: e.target.value })}
+                                />
+                            </div>
+                            {jobDemand && (
+                                <div className="text-sm text-blue-900 dark:text-blue-200 mt-2 bg-white/50 dark:bg-black/20 p-2 rounded">
+                                    <p><strong>Nuläge:</strong> {jobDemand.currentDemandText}</p>
+                                    <p><strong>1 års sikt:</strong> {jobDemand.forecastText}</p>
+                                </div>
+                            )}
                         </div>
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-1">

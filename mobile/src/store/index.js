@@ -22,7 +22,7 @@ const rootReducer = combineReducers({
 
 // Setup Redux Persist config
 const persistConfig = {
-    key: 'root',
+    key: 'root-v2',
     version: 1,
     storage: AsyncStorage,
     // We don't want to persist the entire apiSlice cache identically, 

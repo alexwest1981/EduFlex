@@ -27,10 +27,12 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Genererar CSN XML-rapportfiler för utskick till CSN (Centrala studiestödsnämnden).
+ * Genererar CSN XML-rapportfiler för utskick till CSN (Centrala
+ * studiestödsnämnden).
  * Stöder utbildningstyperna Komvux, Yrkeshögskola (YH) och Högskola.
  *
- * CSN processar inkomna XML-filer som batch-körning varje vardagskväll efter 17:00.
+ * CSN processar inkomna XML-filer som batch-körning varje vardagskväll efter
+ * 17:00.
  * Filen kan antingen laddas upp manuellt i CSN:s portal "Mina tjänster"
  * eller skickas system-till-system med säkerhetscertifikat.
  */
@@ -43,6 +45,7 @@ public class CsnXmlService {
     private final CourseResultRepository courseResultRepository;
     private final SystemSettingService systemSettingService;
     private final GdprAuditService gdprAuditService;
+    private final com.eduflex.backend.repository.CsnEventLogRepository csnEventLogRepository;
 
     private static final DateTimeFormatter DATE_FMT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
@@ -51,25 +54,27 @@ public class CsnXmlService {
      *
      * @param courseIds        kurser att inkludera
      * @param educationType    KOMVUX, YH eller HOGSKOLA
-     * @param niva             GY (gymnasial) eller GR (grundläggande) — endast Komvux
+     * @param niva             GY (gymnasial) eller GR (grundläggande) — endast
+     *                         Komvux
      * @param studieomfattning 25/50/75/100 procent studietakt — endast Komvux
      * @return XML som byte-array (UTF-8)
      */
     public byte[] generateXml(List<Long> courseIds, String educationType,
-                               String niva, Integer studieomfattning) throws Exception {
+            String niva, Integer studieomfattning) throws Exception {
 
         // Läs inställningar
-        String schoolCode        = getSettingValue("csn.school.code", "");
-        String municipalityCode  = getSettingValue("csn.municipality.code", "");
-        String resolvedType      = educationType != null
+        String schoolCode = getSettingValue("csn.school.code", "");
+        String municipalityCode = getSettingValue("csn.municipality.code", "");
+        String resolvedType = educationType != null
                 ? educationType.toUpperCase()
                 : getSettingValue("csn.default.education.type", "KOMVUX").toUpperCase();
-        int resolvedScope        = studieomfattning != null
+        int resolvedScope = studieomfattning != null
                 ? studieomfattning
                 : parseIntSetting("csn.default.study.scope", 100);
-        String resolvedNiva      = niva != null ? niva.toUpperCase() : "GY";
+        String resolvedNiva = niva != null ? niva.toUpperCase() : "GY";
 
-        // Bygg DOM-träd. Vi genererar XML (inte parsar extern input) så standard factory räcker.
+        // Bygg DOM-träd. Vi genererar XML (inte parsar extern input) så standard
+        // factory räcker.
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         DocumentBuilder db = dbf.newDocumentBuilder();
         Document doc = db.newDocument();
@@ -82,7 +87,7 @@ public class CsnXmlService {
         addElement(doc, root, "Utbildningstyp", resolvedType);
 
         int totalStudents = 0;
-        int skippedNoSsn  = 0;
+        int skippedNoSsn = 0;
 
         for (Long courseId : courseIds) {
             Optional<Course> courseOpt = courseRepository.findById(courseId);
@@ -108,7 +113,7 @@ public class CsnXmlService {
                 Element period = doc.createElement("Studieperiod");
                 studerande.appendChild(period);
                 addElement(doc, period, "Startdatum", course.getStartDate() != null ? course.getStartDate() : "");
-                addElement(doc, period, "Slutdatum",  course.getEndDate()   != null ? course.getEndDate()   : "");
+                addElement(doc, period, "Slutdatum", course.getEndDate() != null ? course.getEndDate() : "");
 
                 // Utbildningstyp-specifika fält
                 switch (resolvedType) {
@@ -118,10 +123,10 @@ public class CsnXmlService {
                         if (kurskod == null && course.getSkolverketCourse() != null) {
                             kurskod = course.getSkolverketCourse().getCourseCode();
                         }
-                        addElement(doc, studerande, "Kurskod",          kurskod != null ? kurskod : "");
-                        addElement(doc, studerande, "DelAvKurs",         "1:1");
-                        addElement(doc, studerande, "Niva",              resolvedNiva);
-                        addElement(doc, studerande, "Studieomfattning",  String.valueOf(resolvedScope));
+                        addElement(doc, studerande, "Kurskod", kurskod != null ? kurskod : "");
+                        addElement(doc, studerande, "DelAvKurs", "1:1");
+                        addElement(doc, studerande, "Niva", resolvedNiva);
+                        addElement(doc, studerande, "Studieomfattning", String.valueOf(resolvedScope));
                     }
                     case "YH" -> {
                         int points = resolvePoints(course);
@@ -166,6 +171,27 @@ public class CsnXmlService {
                     }
                 }
 
+                // Hantera CSN Händelser (Autopilot: Kod 99, 41, 81)
+                List<com.eduflex.backend.model.CsnEventLog> events = csnEventLogRepository
+                        .findByCourseIdAndStudentId(course.getId(), student.getId())
+                        .stream().filter(e -> !e.isReportedToCsn()).toList();
+
+                if (!events.isEmpty()) {
+                    Element handelser = doc.createElement("Handelser");
+                    studerande.appendChild(handelser);
+                    for (com.eduflex.backend.model.CsnEventLog event : events) {
+                        Element handelse = doc.createElement("Handelse");
+                        handelser.appendChild(handelse);
+                        addElement(doc, handelse, "HandelseKod", event.getEventCode());
+                        addElement(doc, handelse, "HandelseDatum", event.getEventDate().toLocalDate().format(DATE_FMT));
+
+                        // Mark as reported
+                        event.setReportedToCsn(true);
+                        event.setReportedAt(java.time.LocalDateTime.now());
+                        csnEventLogRepository.save(event);
+                    }
+                }
+
                 totalStudents++;
             }
         }
@@ -182,8 +208,8 @@ public class CsnXmlService {
         TransformerFactory tf = TransformerFactory.newInstance();
         tf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
         Transformer transformer = tf.newTransformer();
-        transformer.setOutputProperty(OutputKeys.ENCODING,   "UTF-8");
-        transformer.setOutputProperty(OutputKeys.INDENT,     "yes");
+        transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+        transformer.setOutputProperty(OutputKeys.INDENT, "yes");
         transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
         transformer.setOutputProperty(OutputKeys.STANDALONE, "yes");
 

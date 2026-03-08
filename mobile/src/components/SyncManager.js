@@ -9,7 +9,12 @@ import { API_URL } from '../api/apiClient';
 
 const SyncManager = () => {
     const dispatch = useDispatch();
-    const { queue, isSyncing } = useSelector((state) => state.offlineQueue);
+    const offlineQueue = useSelector((state) => state?.offlineQueue);
+    if (!offlineQueue) {
+        console.warn('SyncManager: offlineQueue is undefined in global state.');
+        return null;
+    }
+    const { queue, isSyncing } = offlineQueue;
 
     useEffect(() => {
         const processQueue = async () => {
@@ -33,8 +38,11 @@ const SyncManager = () => {
 
                     if (response.ok) {
                         dispatch(dequeueAction(req.id));
+                    } else if (response.status === 401) {
+                        console.warn(`Unauthorized (401) syncing ${req.url}. Pausing sync to allow re-auth.`);
+                        break; // Stop loop and wait for next trigger (e.g. after login/refresh)
                     } else if (response.status >= 400 && response.status < 500) {
-                        console.error(`Client error syncing ${req.url}, removing to prevent block.`);
+                        console.error(`Client error (${response.status}) syncing ${req.url}, removing to prevent block.`);
                         dispatch(dequeueAction(req.id));
                     }
                 } catch (error) {

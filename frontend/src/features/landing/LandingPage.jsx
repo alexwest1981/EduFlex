@@ -202,11 +202,19 @@ const LandingPage = () => {
         },
         {
             icon: <Map className="w-7 h-7" />,
-            title: "EduCareer Portal (Live)",
-            description: "Hitta din nästa LIA- eller praktikplats direkt i EduFlex via realtidsdata från JobTech. Inkluderar AI-driven matchningsanalys.",
+            title: "EduCareer & JobTech (Live)",
+            description: "Arbetsförmedlingens öppna data (Yrkesbarometern) visar arbetsmarknadsprognoser direkt vid kursskapandet. Importera LIA- och praktikplatser med AI-driven matchning.",
             color: 'text-brand-teal',
             bgColor: 'bg-brand-teal/10',
             hoverBorder: 'hover:border-brand-teal/50'
+        },
+        {
+            icon: <Shield className="w-7 h-7" />,
+            title: "ERP+: LIA & CSN Autopilot",
+            description: "Säkra myndighetskraven. Automatisk 8-veckorsvarning för MYH-bedömningar (LIA Radar) och Ghosting Radar (CSN Autopilot) som agerar på inaktiva studenter.",
+            color: 'text-rose-400',
+            bgColor: 'bg-rose-500/10',
+            hoverBorder: 'hover:border-rose-500/50'
         },
         {
             icon: <Map className="w-7 h-7" />,

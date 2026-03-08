@@ -164,6 +164,18 @@
 
 ---
 
+### [v3.8.0] - 2026-03-08
+- **New Feature**: **CSN Autopilot & Ghosting Radar**.
+  - **Automation**: Bakgrundsjobb identifierar "ghosting"-studenter (14 dagar & 30 dagar inaktivitet) och skapar CSN-händelser (kod 99, 41, 81).
+  - **Databas**: Nya entiteter `CourseEnrollmentDetails` och `CsnEventLog`.
+- **New Feature**: **LIA Compliance Matrix (MYH)**.
+  - **Dashboard**: Ny matris (LiaMatrixView) och admin-widget (LiaRadarWidget) varnar för saknade avtal, mitt- och slutbedömningar i enlighet med MYH:s 8-veckorsregel.
+- **New Feature**: **JobTech / Yrkesbarometern**.
+  - **Integration**: Kurs-skapandet varnar nu och visar regional prognos och efterfrågan på 1 års & 5 års basis med Arbetsförmedlingens öppna API (SSYK).
+
+### [v3.7.4] - 2026-03-08
+- **Mobile**: Kringgick expo/gradle bundling-fel med anpassade skript och ikonsanering för stabil `:app:assembleRelease`.
+
 ### [v3.1.0] - 2026-02-28
 - **New Feature**: **Advanced E-commerce Engine**.
   - **Storefront**: External `/store` for browsing and purchasing courses.

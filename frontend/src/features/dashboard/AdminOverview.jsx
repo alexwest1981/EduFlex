@@ -6,6 +6,8 @@ import OnlineFriendsWidget from './widgets/OnlineFriendsWidget';
 import AdminTicketsWidget from './widgets/AdminTicketsWidget';
 import CalendarWidget from '../../components/dashboard/CalendarWidget';
 import { CreateUserModal } from './components/admin/AdminModals';
+import GhostingRadarWidget from './widgets/GhostingRadarWidget';
+import LiaRadarWidget from './widgets/LiaRadarWidget';
 
 import { useAppContext } from '../../context/AppContext';
 
@@ -34,6 +36,14 @@ const AdminOverview = ({ users, courses, documents, fetchStats, setActiveTab, wi
                 {/* 2. Aktivitet */}
                 {widgets.calendar && (
                     <CalendarWidget />
+                )}
+
+                {widgets.ghostingRadar && (
+                    <GhostingRadarWidget />
+                )}
+
+                {widgets.liaRadar && (
+                    <LiaRadarWidget />
                 )}
 
                 {widgets.recentUsers && (
