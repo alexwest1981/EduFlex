@@ -1,0 +1,18 @@
+{
+    "header": "Afleveringer",
+    "new": "Ny opgave",
+    "create_header": "Opret opgave",
+    "cancel": "Annuller",
+    "save": "Gem",
+    "deadline": "Deadline",
+    "no_assignments": "Ingen opgaver.",
+    "submissions": "Indsendelser",
+    "no_submissions": "Ingen indsendelser endnu.",
+    "file_received": "Fil modtaget",
+    "grade_placeholder": "- Sæt karakter -",
+    "feedback_placeholder": "Feedback...",
+    "submitted": "Indsendt!",
+    "submitted_desc": "Du har indsendt denne opgave.",
+    "submit_button": "Indsend opgave",
+    "select_file_alert": "Vælg fil!"
+}

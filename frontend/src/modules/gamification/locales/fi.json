@@ -1,0 +1,13 @@
+{
+    "level_title": "Nykyinen taso",
+    "student_rank": "Oppilaan sijoitus",
+    "points_to_next": "pistettä seuraavalle tasolle",
+    "my_badges": "Omat merkkini",
+    "no_awards": "Ei vielä palkintoja. Jatka yrittämistä!",
+    "view_all": "Näytä kaikki palkinnot",
+    "rank_newbie": "Aloittelija",
+    "rank_apprentice": "Oppipoika",
+    "rank_expert": "Asiantuntija",
+    "rank_master": "Mestari",
+    "rank_legend": "Legenda"
+}

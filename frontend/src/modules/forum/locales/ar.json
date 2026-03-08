@@ -1,0 +1,21 @@
+{
+    "title": "منتدى الصف",
+    "threads": "المواضيع",
+    "all_categories": "جميع الفئات",
+    "new_thread": "موضوع جديد",
+    "empty_title": "كان هنا فارغًا.",
+    "empty_student": "ابدأ مناقشة!",
+    "empty_teacher": "انتظر معلومات من المعلم.",
+    "replies": "الردود",
+    "create_header": "ابدأ مناقشة جديدة في \"{{category}}\"",
+    "subject": "موضوع",
+    "subject_placeholder": "موضوع...",
+    "content": "محتوى",
+    "content_placeholder": "اكتب رسالتك هنا...",
+    "publish_btn": "نشر الموضوع",
+    "back_to": "العودة إلى {{category}}",
+    "answers_header": "إجابات",
+    "write_reply": "اكتب رداً...",
+    "create_error": "تعذر إنشاء الموضوع.",
+    "reply_error": "تعذر الرد."
+}

@@ -1,0 +1,11 @@
+{
+  "title": "Kurskatalog",
+  "subtitle": "Finden und melden Sie sich für neue Kurse an.",
+  "search_placeholder": "Kurse suchen...",
+  "no_results": "Keine Kurse gefunden.",
+  "teacher": "Lehrer",
+  "start": "Start",
+  "not_set": "Nicht festgelegt",
+  "join": "Dem Kurs beitreten",
+  "closed_msg": "Der Kurs ist noch nicht für die Anmeldung geöffnet"
+}

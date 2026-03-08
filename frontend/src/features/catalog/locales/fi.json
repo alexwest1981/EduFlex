@@ -1,0 +1,11 @@
+{
+    "title": "Kurssiluettelo",
+    "subtitle": "Etsi ja ilmoittaudu uusille kursseille.",
+    "search_placeholder": "Hae kursseja...",
+    "no_results": "Kursseja ei löytynyt.",
+    "teacher": "Opettaja",
+    "start": "Alkaa",
+    "not_set": "Ei asetettu",
+    "join": "Liity kurssille",
+    "closed_msg": "Kurssi ei ole vielä avoinna hakemuksille"
+}

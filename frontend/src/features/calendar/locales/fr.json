@@ -1,0 +1,15 @@
+{
+    "title": "Calendrier",
+    "subtitle": "Gardez une trace de vos échéances et des dates de début des cours.",
+    "events_in": "Événements dans",
+    "no_events": "Rien de prévu ce mois-ci.",
+    "days": [
+        "Lun",
+        "Mar",
+        "Mer",
+        "Jeu",
+        "Ven",
+        "Sam",
+        "Dim"
+    ]
+}

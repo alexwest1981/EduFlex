@@ -1,0 +1,15 @@
+{
+  "title": "Kalenteri",
+  "subtitle": "Seuraa määräaikojasi ja kurssien alkamispäiviä.",
+  "events_in": "Tapahtumia kuukaudessa",
+  "no_events": "Tässä kuussa ei ole suunniteltu mitään.",
+  "days": [
+    "Ma",
+    "Ti",
+    "Ke",
+    "To",
+    "Pe",
+    "La",
+    "Su"
+  ]
+}

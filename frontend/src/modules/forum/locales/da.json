@@ -1,0 +1,21 @@
+{
+  "title": "Klasseforum",
+  "threads": "Tråde",
+  "all_categories": "Alle Kategorier",
+  "new_thread": "Nyt Indlæg",
+  "empty_title": "Her var det tomt.",
+  "empty_student": "Start en diskussion!",
+  "empty_teacher": "Afvent information fra læreren.",
+  "replies": "svar",
+  "create_header": "Start ny diskussion i \"{{category}}\"",
+  "subject": "Emne",
+  "subject_placeholder": "Emne...",
+  "content": "Indhold",
+  "content_placeholder": "Skriv din besked her...",
+  "publish_btn": "Publicer Indlæg",
+  "back_to": "Tilbage til {{category}}",
+  "answers_header": "Svar",
+  "write_reply": "Skriv et svar...",
+  "create_error": "Kunne ikke oprette tråd.",
+  "reply_error": "Kunne ikke svare."
+}

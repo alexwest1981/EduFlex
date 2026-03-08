@@ -1,0 +1,18 @@
+{
+    "header": "Devoirs",
+    "new": "Nouveau devoir",
+    "create_header": "Créer un devoir",
+    "cancel": "Annuler",
+    "save": "Enregistrer",
+    "deadline": "Date limite",
+    "no_assignments": "Aucun devoir.",
+    "submissions": "Soumissions",
+    "no_submissions": "Aucune soumission pour le moment.",
+    "file_received": "Fichier reçu",
+    "grade_placeholder": "- Attribuer une note -",
+    "feedback_placeholder": "Commentaires...",
+    "submitted": "Soumis !",
+    "submitted_desc": "Vous avez soumis ce devoir.",
+    "submit_button": "Soumettre le devoir",
+    "select_file_alert": "Sélectionnez un fichier !"
+}

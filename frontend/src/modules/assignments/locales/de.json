@@ -1,0 +1,18 @@
+{
+  "header": "Aufgaben",
+  "new": "Neue Aufgabe",
+  "create_header": "Aufgabe erstellen",
+  "cancel": "Abbrechen",
+  "save": "Speichern",
+  "deadline": "Frist",
+  "no_assignments": "Keine Aufgaben.",
+  "submissions": "Einreichungen",
+  "no_submissions": "Noch keine Einreichungen.",
+  "file_received": "Datei empfangen",
+  "grade_placeholder": "- Note festlegen -",
+  "feedback_placeholder": "Feedback...",
+  "submitted": "Eingereicht!",
+  "submitted_desc": "Sie haben diese Aufgabe eingereicht.",
+  "submit_button": "Aufgabe einreichen",
+  "select_file_alert": "Datei auswählen!"
+}

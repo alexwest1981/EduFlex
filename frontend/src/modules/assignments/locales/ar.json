@@ -1,0 +1,18 @@
+{
+  "header": "المهام",
+  "new": "مهمة جديدة",
+  "create_header": "إنشاء مهمة",
+  "cancel": "إلغاء",
+  "save": "حفظ",
+  "deadline": "الموعد النهائي",
+  "no_assignments": "لا توجد مهام.",
+  "submissions": "عمليات الإرسال",
+  "no_submissions": "لا توجد عمليات إرسال حتى الآن.",
+  "file_received": "تم استلام الملف",
+  "grade_placeholder": "- ضع علامة -",
+  "feedback_placeholder": "ملاحظات...",
+  "submitted": "تم الإرسال!",
+  "submitted_desc": "لقد أرسلت هذه المهمة.",
+  "submit_button": "إرسال المهمة",
+  "select_file_alert": "اختر ملفا!"
+}

@@ -1,0 +1,18 @@
+{
+    "header": "Tareas",
+    "new": "Nueva Tarea",
+    "create_header": "Crear Tarea",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "deadline": "Fecha límite",
+    "no_assignments": "No hay tareas.",
+    "submissions": "Entregas",
+    "no_submissions": "Aún no hay entregas.",
+    "file_received": "Archivo recibido",
+    "grade_placeholder": "- Poner nota -",
+    "feedback_placeholder": "Comentarios...",
+    "submitted": "¡Entregado!",
+    "submitted_desc": "Has entregado esta tarea.",
+    "submit_button": "Entregar tarea",
+    "select_file_alert": "¡Selecciona un archivo!"
+}

@@ -1,0 +1,15 @@
+{
+    "title": "Kalender",
+    "subtitle": "Hold oversikt over dine tidsfrister og kursstarter.",
+    "events_in": "Skjer i",
+    "no_events": "Ingenting planlagt denne måneden.",
+    "days": [
+        "Man",
+        "Tir",
+        "Ons",
+        "Tor",
+        "Fre",
+        "Lør",
+        "Søn"
+    ]
+}

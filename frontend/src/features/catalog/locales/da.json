@@ -1,0 +1,11 @@
+{
+  "title": "Kursuskatalog",
+  "subtitle": "Find og tilmeld dig nye kurser.",
+  "search_placeholder": "Søg kurser...",
+  "no_results": "Ingen kurser fundet.",
+  "teacher": "Lærer",
+  "start": "Start",
+  "not_set": "Ikke indstillet",
+  "join": "Deltag i kursus",
+  "closed_msg": "Kurset er ikke åbent for ansøgning endnu"
+}

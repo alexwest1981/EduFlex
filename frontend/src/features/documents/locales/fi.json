@@ -1,0 +1,9 @@
+{
+    "title": "Dokumenttien hallinta",
+    "upload_title": "Lataa tiedosto",
+    "drop_text": "Napsauta tai vedä tiedosto tähän",
+    "search_placeholder": "Hae tiedostoista...",
+    "save_btn": "Tallenna tiedosto",
+    "saving": "Tallennetaan...",
+    "no_results": "Dokumentteja ei löytynyt."
+}

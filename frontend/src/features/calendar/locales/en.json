@@ -1,0 +1,15 @@
+{
+    "title": "Calendar",
+    "subtitle": "Keep track of your deadlines and course starts.",
+    "events_in": "Events in",
+    "no_events": "Nothing scheduled this month.",
+    "days": [
+        "Mon",
+        "Tue",
+        "Wed",
+        "Thu",
+        "Fri",
+        "Sat",
+        "Sun"
+    ]
+}

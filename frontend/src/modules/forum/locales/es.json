@@ -1,0 +1,21 @@
+{
+    "title": "Foro de la clase",
+    "threads": "Hilos",
+    "all_categories": "Todas las categorías",
+    "new_thread": "Nuevo hilo",
+    "empty_title": "Aquí no hay nada.",
+    "empty_student": "¡Inicia un debate!",
+    "empty_teacher": "Espera la información del profesor.",
+    "replies": "respuestas",
+    "create_header": "Inicia un nuevo debate en \"{{category}}\"",
+    "subject": "Título",
+    "subject_placeholder": "Asunto...",
+    "content": "Contenido",
+    "content_placeholder": "Escribe tu mensaje aquí...",
+    "publish_btn": "Publicar hilo",
+    "back_to": "Volver a {{category}}",
+    "answers_header": "Respuestas",
+    "write_reply": "Escribe una respuesta...",
+    "create_error": "No se pudo crear el hilo.",
+    "reply_error": "No se pudo responder."
+}

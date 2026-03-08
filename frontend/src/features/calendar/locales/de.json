@@ -1,0 +1,15 @@
+{
+    "title": "Kalender",
+    "subtitle": "Behalten Sie Ihre Fristen und Kursstarts im Auge.",
+    "events_in": "Veranstaltungen in",
+    "no_events": "Diesen Monat ist nichts geplant.",
+    "days": [
+        "Mo",
+        "Di",
+        "Mi",
+        "Do",
+        "Fr",
+        "Sa",
+        "So"
+    ]
+}

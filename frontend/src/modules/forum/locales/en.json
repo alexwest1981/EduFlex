@@ -1,0 +1,21 @@
+{
+    "title": "Class Forum",
+    "threads": "Threads",
+    "all_categories": "All Categories",
+    "new_thread": "New Thread",
+    "empty_title": "It's empty here.",
+    "empty_student": "Start a discussion!",
+    "empty_teacher": "Await information from the teacher.",
+    "replies": "replies",
+    "create_header": "Start new discussion in \"{{category}}\"",
+    "subject": "Subject",
+    "subject_placeholder": "Subject...",
+    "content": "Content",
+    "content_placeholder": "Write your message here...",
+    "publish_btn": "Publish Thread",
+    "back_to": "Back to {{category}}",
+    "answers_header": "Answers",
+    "write_reply": "Write a reply...",
+    "create_error": "Could not create thread.",
+    "reply_error": "Could not reply."
+}

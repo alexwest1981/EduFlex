@@ -1,0 +1,21 @@
+{
+    "title": "Luokkaketju",
+    "threads": "Säikeet",
+    "all_categories": "Kaikki luokat",
+    "new_thread": "Uusi säie",
+    "empty_title": "Täällä oli tyhjää.",
+    "empty_student": "Aloita keskustelu!",
+    "empty_teacher": "Odota opettajan tietoja.",
+    "replies": "vastaukset",
+    "create_header": "Aloita uusi keskustelu \"{{category}}\" -osiossa",
+    "subject": "Aihe",
+    "subject_placeholder": "Aihe...",
+    "content": "Sisältö",
+    "content_placeholder": "Kirjoita viestisi tähän...",
+    "publish_btn": "Julkaise säie",
+    "back_to": "Takaisin kohtaan {{category}}",
+    "answers_header": "Vastaukset",
+    "write_reply": "Kirjoita vastaus...",
+    "create_error": "Säiettä ei voitu luoda.",
+    "reply_error": "Vastausta ei voitu lähettää."
+}

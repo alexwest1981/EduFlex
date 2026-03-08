@@ -1,0 +1,9 @@
+{
+    "title": "Document Management",
+    "upload_title": "Upload File",
+    "drop_text": "Click or drag file here",
+    "search_placeholder": "Search files...",
+    "save_btn": "Save File",
+    "saving": "Saving...",
+    "no_results": "No documents found."
+}

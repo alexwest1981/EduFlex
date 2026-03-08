@@ -15,6 +15,11 @@ EduFlex LLP är ett enterprise-redo, molnbaserat ekosystem som ersätter traditi
 
 ## 🚀 Senaste Uppdateringarna (Changelog)
 
+### v3.8.1 (8 mar 2026) – Plug-and-Play & Universal Startup
+- **🚀 One-Click Startup**: Implementerat en enhetlig start-metod för Windows (`Start-EduFlex.bat`) och Linux/WSL (`start.sh`).
+- **🌐 Browser Automation**: Systemet öppnar nu automatiskt webbläsaren till inloggningssidan (`eduflexlms.se/login`) när tjänsterna är redo.
+- **🐧 Bazzite/Linux Support**: Skapat en ren Bash-orkestrerare för Linux-miljöer, optimerad för smärtfri körning utanför Windows.
+
 ### v3.8.0 (8 mar 2026) – Enterprise Compliance & Automation (ERP+)
 - **CSN Autopilot / Ghosting Radar**: Implementerat en automatiserad kontroll (Ghosting Radar) för att identifiera elever som saknar inloggning på >14 eller >30 dagar och skicka händelsekoder (99/41/81) för att förhindra felaktiga CSN-utbetalningar.
 - **LIA Compliance Matrix**: En helt ny administratörsvy (LIA Radar) för att hantera LIA-placeringar, handledare och MYH-krav (8-veckorsregeln), där saknade avtal, mitt- och slutbedömningar flaggas i realtid.
@@ -75,8 +80,14 @@ EduFlex LLP drivs av en händelsedriven mikrotjänstarkitektur.
 ---
 
 ## 🚀 Kom igång (Snabbstart)
+
+### Windows
+Dubbelklicka på **`Start-EduFlex.bat`** i rotkatalogen. Det startar infrastrukturen i WSL och kör backend/frontend lokalt för max prestanda.
+
+### Linux / WSL
+Kör följande kommando:
 ```bash
-docker compose up --build -d
+./start.sh
 ```
 
 ---

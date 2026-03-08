@@ -1,0 +1,18 @@
+{
+  "header": "Oppgaver",
+  "new": "Ny Oppgave",
+  "create_header": "Opprett Oppgave",
+  "cancel": "Avbryt",
+  "save": "Lagre",
+  "deadline": "Frist",
+  "no_assignments": "Ingen oppgaver.",
+  "submissions": "Innleveringer",
+  "no_submissions": "Ingen innleveringer ennå.",
+  "file_received": "Fil mottatt",
+  "grade_placeholder": "- Sett Karakter -",
+  "feedback_placeholder": "Tilbakemelding...",
+  "submitted": "Levert!",
+  "submitted_desc": "Du har levert denne oppgaven.",
+  "submit_button": "Lever oppgave",
+  "select_file_alert": "Velg fil!"
+}

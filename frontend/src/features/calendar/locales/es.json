@@ -1,0 +1,15 @@
+{
+    "title": "Calendario",
+    "subtitle": "Realice un seguimiento de sus plazos y fechas de inicio del curso.",
+    "events_in": "Eventos en",
+    "no_events": "Nada programado este mes.",
+    "days": [
+        "Lun",
+        "Mar",
+        "Mié",
+        "Jue",
+        "Vie",
+        "Sáb",
+        "Dom"
+    ]
+}

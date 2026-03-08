@@ -63,8 +63,7 @@ export default defineConfig(({ mode }) => {
                     globPatterns: ['**/*.{js,css,html,ico,svg,woff,woff2}'],
                     // Exclude the 200MB+ gamification folder and large screenshot from precache
                     globIgnores: ['**/gamification/**', '**/screenshot*'],
-                    // The main JS bundle is ~1.85MB; give a comfortable margin
-                    maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
+                    maximumFileSizeToCacheInBytes: 10 * 1024 * 1024,
                     // Let the app shell handle routing for SPA — match everything except /api/
                     // Let the app shell handle routing for SPA — match everything except /api/ and OnlyOffice assets
                     navigateFallback: 'index.html',

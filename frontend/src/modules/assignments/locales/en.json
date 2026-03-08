@@ -1,0 +1,18 @@
+{
+    "header": "Assignments",
+    "new": "New Assignment",
+    "create_header": "Create Assignment",
+    "cancel": "Cancel",
+    "save": "Save",
+    "deadline": "Deadline",
+    "no_assignments": "No assignments.",
+    "submissions": "Submissions",
+    "no_submissions": "No submissions yet.",
+    "file_received": "File received",
+    "grade_placeholder": "- Set Grade -",
+    "feedback_placeholder": "Feedback...",
+    "submitted": "Submitted!",
+    "submitted_desc": "You have submitted this assignment.",
+    "submit_button": "Submit assignment",
+    "select_file_alert": "Select file!"
+}

@@ -1,0 +1,21 @@
+{
+    "title": "Forum de la classe",
+    "threads": "Fils de discussion",
+    "all_categories": "Toutes Catégories",
+    "new_thread": "Nouveau Fil",
+    "empty_title": "C'était vide ici.",
+    "empty_student": "Lancez une discussion !",
+    "empty_teacher": "Attendez les informations de l'enseignant.",
+    "replies": "réponses",
+    "create_header": "Démarrer une nouvelle discussion dans \"{{category}}\"",
+    "subject": "Sujet",
+    "subject_placeholder": "Sujet...",
+    "content": "Contenu",
+    "content_placeholder": "Écrivez votre message ici...",
+    "publish_btn": "Publier le fil",
+    "back_to": "Retour à {{category}}",
+    "answers_header": "Réponses",
+    "write_reply": "Écrire une réponse...",
+    "create_error": "Impossible de créer le fil.",
+    "reply_error": "Impossible de répondre."
+}

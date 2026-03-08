@@ -1,0 +1,18 @@
+{
+  "header": "Tehtävät",
+  "new": "Uusi tehtävä",
+  "create_header": "Luo tehtävä",
+  "cancel": "Peruuta",
+  "save": "Tallenna",
+  "deadline": "Määräaika",
+  "no_assignments": "Ei tehtäviä.",
+  "submissions": "Palautukset",
+  "no_submissions": "Ei vielä palautuksia.",
+  "file_received": "Tiedosto vastaanotettu",
+  "grade_placeholder": "- Aseta arvosana -",
+  "feedback_placeholder": "Palaute...",
+  "submitted": "Lähetetty!",
+  "submitted_desc": "Olet lähettänyt tämän tehtävän.",
+  "submit_button": "Lähetä tehtävä",
+  "select_file_alert": "Valitse tiedosto!"
+}
