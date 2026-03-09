@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
-import { LayoutDashboard, FileText, User, Settings, LogOut, Layers, Menu, X, Award, Zap, Moon, Sun, Calendar, BookOpen, TrendingUp, HelpCircle, Store, Library, Shield, Folder, BarChart2, HardDrive, Wallet, Music, Play, Pause, Heart, Speaker, MessageSquare, Users } from 'lucide-react';
+import { LayoutDashboard, FileText, User, Settings, LogOut, Layers, Menu, X, Award, Zap, Moon, Sun, Calendar, BookOpen, TrendingUp, HelpCircle, Store, Library, Shield, Folder, BarChart2, HardDrive, Wallet, Music, Play, Pause, Heart, Speaker, MessageSquare, Users, ChevronRight } from 'lucide-react';
 import { useAppContext } from '../../context/AppContext';
 import { useModules } from '../../context/ModuleContext';
 import { useTranslation } from 'react-i18next';
@@ -48,13 +48,13 @@ const PulseLayout = ({ children }) => {
         <div className="flex items-center justify-center p-8 min-h-screen w-full text-gray-800 font-sans transition-colors duration-300" style={{ background: 'var(--app-background)' }}> {/* Soft Grey BG */}
             <style>{`
                 @media (prefers-color-scheme: dark) {
-                    .dark-mode-bg { background: var(--app-background-dark) !important; }
+                    .dark-mode-bg { background: var(--app-background-dark)!important; }
                 }
-                :root.dark body { background: var(--app-background-dark) !important; }
+                :root.dark body { background: var(--app-background-dark)!important; }
                 .app-wrapper { background: var(--app-background); }
                 .dark .app-wrapper { background: var(--app-background-dark); }
                 .pulse-scroll::-webkit-scrollbar { width: 0px; background: transparent; } /* Hidden scrollbar for clean look */
-            `}</style>
+`}</style>
 
             {/* FLOATING APP CONTAINER - Soft Card */}
             <div className="w-full min-h-screen max-w-[1500px] bg-[#F4F4F4] dark:bg-[#1E1E1E] rounded-[40px] shadow-2xl flex flex-row relative border border-white/40">
@@ -79,7 +79,7 @@ const PulseLayout = ({ children }) => {
                                 ${isActive
                                             ? 'bg-black dark:bg-white text-white dark:text-black shadow-lg scale-110'
                                             : 'text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 hover:bg-white dark:hover:bg-white/10'
-                                        }`;
+                                        } `;
                                 }}
                                 title={item.label}
                             >
@@ -90,11 +90,18 @@ const PulseLayout = ({ children }) => {
 
                     {/* Bottom Utility */}
                     <div className="mt-auto flex flex-col gap-6 items-center">
-                        <button onClick={handleLogout} className="w-12 h-12 rounded-full flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-white transition-all">
+                        <button onClick={handleLogout} className="w-12 h-12 rounded-full flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-white transition-all shadow-sm active:scale-90">
                             <LogOut size={20} />
                         </button>
-                        <button onClick={() => navigate('/profile')} className="w-12 h-12 rounded-full overflow-hidden border-2 border-white shadow-sm hover:scale-105 transition-transform">
+                        <button
+                            onClick={() => navigate('/profile')}
+                            className="w-12 h-12 rounded-full overflow-hidden border-2 border-white shadow-md hover:scale-110 hover:border-red-500 transition-all duration-300 relative group/profile active:scale-95"
+                            title={t('sidebar.profile') || 'Profil'}
+                        >
                             {profileImgUrl ? <img src={profileImgUrl} alt="Profil" className="w-full h-full object-cover" /> : <div className="w-full h-full bg-red-100 flex items-center justify-center font-bold text-xs text-red-600">{currentUser?.firstName?.[0]}</div>}
+                            <div className="absolute inset-0 bg-black/20 opacity-0 group-hover/profile:opacity-100 flex items-center justify-center transition-opacity">
+                                <ChevronRight size={16} className="text-white" />
+                            </div>
                         </button>
                     </div>
 
@@ -118,7 +125,7 @@ const PulseLayout = ({ children }) => {
                             {/* Online Friends Toggle */}
                             <button
                                 onClick={() => setFriendsPanelOpen(!friendsPanelOpen)}
-                                className={`relative p-2.5 rounded-full transition-colors ${friendsPanelOpen ? 'bg-indigo-100 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400' : 'hover:bg-gray-100 text-gray-500 dark:text-gray-400 dark:hover:bg-[#282a2c]'}`}
+                                className={`relative p - 2.5 rounded - full transition - colors ${friendsPanelOpen ? 'bg-indigo-100 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400' : 'hover:bg-gray-100 text-gray-500 dark:text-gray-400 dark:hover:bg-[#282a2c]'} `}
                                 title="Online Vänner"
                             >
                                 <Users size={20} />

@@ -4,8 +4,8 @@
     "search_placeholder": "Buscar cursos...",
     "no_results": "No se encontraron cursos.",
     "teacher": "Profesor",
-    "start": "Comienzo",
+    "start": "Inicio",
     "not_set": "No establecido",
     "join": "Unirse al curso",
-    "closed_msg": "El curso aún no está abierto para la solicitud"
+    "closed_msg": "El curso no está abierto para la solicitud todavía"
 }

@@ -1,9 +1,9 @@
 {
-  "title": "Dokumentenverwaltung",
-  "upload_title": "Datei hochladen",
-  "drop_text": "Klicken oder Datei hierher ziehen",
-  "search_placeholder": "Dateien durchsuchen...",
-  "save_btn": "Datei speichern",
-  "saving": "Speichern...",
-  "no_results": "Keine Dokumente gefunden."
+    "title": "Dokumentenverwaltung",
+    "upload_title": "Datei hochladen",
+    "drop_text": "Klicken oder Datei hierher ziehen",
+    "search_placeholder": "Suche in Dateien...",
+    "save_btn": "Datei speichern",
+    "saving": "Speichert...",
+    "no_results": "Keine Dokumente gefunden."
 }

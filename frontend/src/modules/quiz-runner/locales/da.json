@@ -6,9 +6,9 @@
     "no_quizzes": "Ingen quizzer tilgængelige for dette kursus endnu.",
     "updated_alert": "Quiz opdateret!",
     "created_alert": "Quiz oprettet!",
-    "save_error": "Fejl ved lagring af quiz.",
-    "delete_confirm": "Er du sikker på, at du vil slette denne quiz?",
-    "delete_error": "Kunne ikke slette quiz.",
+    "save_error": "Fejl ved gemning af quiz.",
+    "delete_confirm": "Er du sikker på, at du vil fjerne denne quiz?",
+    "delete_error": "Kunne ikke fjerne quiz.",
     "result_saved": "Resultat gemt",
     "create_title": "Opret Quiz",
     "edit_title": "Rediger Quiz",
@@ -23,6 +23,6 @@
     "update_btn": "Opdater Quiz",
     "submit_btn": "Indsend Quiz",
     "result_header": "Resultat",
-    "result_msg": "Godt klaret! Dit resultat er blevet gemt.",
+    "result_msg": "Godt arbejde! Dit resultat er blevet gemt.",
     "start_quiz": "Start Quiz"
 }

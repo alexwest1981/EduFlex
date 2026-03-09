@@ -1,7 +1,7 @@
 {
-  "title": "Chat & Support",
-  "messenger": "Messenger",
-  "contacts": "Contacts",
-  "type_placeholder": "Type...",
-  "image": "Image"
+    "title": "Chat & Support",
+    "messenger": "Messenger",
+    "contacts": "Contacts",
+    "type_placeholder": "Type...",
+    "image": "Image"
 }

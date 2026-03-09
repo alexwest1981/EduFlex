@@ -1,13 +1,13 @@
 {
     "level_title": "المستوى الحالي",
     "student_rank": "ترتيب الطالب",
-    "points_to_next": "نقاط للمستوى التالي",
+    "points_to_next": "نقاط إلى المستوى التالي",
     "my_badges": "شاراتي",
-    "no_awards": "لا توجد جوائز حتى الآن. استمر في الكفاح!",
+    "no_awards": "لا توجد جوائز حتى الآن. استمر في القتال!",
     "view_all": "عرض جميع الجوائز",
     "rank_newbie": "مبتدئ",
     "rank_apprentice": "متدرب",
     "rank_expert": "خبير",
-    "rank_master": "مايسترو",
+    "rank_master": "متقن",
     "rank_legend": "أسطورة"
 }

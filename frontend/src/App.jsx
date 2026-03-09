@@ -6,6 +6,8 @@ import { GamificationProvider } from './context/GamificationContext';
 import { BrandingProvider } from './context/BrandingContext';
 import { DesignSystemProvider } from './context/DesignSystemContext';
 import { CartProvider } from './context/CartContext';
+import i18n, { initDynamicLanguages } from './i18n';
+import { I18nextProvider } from 'react-i18next';
 import ErrorBoundary from './components/common/ErrorBoundary';
 
 // --- LAYOUT ---
@@ -674,32 +676,37 @@ const AppRoutes = () => {
 };
 
 const App = () => {
-    return (
-        <AppProvider>
-            <DesignSystemProvider>
-                <CartProvider>
-                    <ModuleProvider>
-                        <GamificationProvider>
-                            <ErrorBoundary>
-                                <HelmetProvider>
-                                    <Helmet>
-                                        <title>EduFlex LLP</title>
+    React.useEffect(() => {
+        initDynamicLanguages();
+    }, []);
 
-                                        <meta http-equiv="X-XSS-Protection" content="1; mode=block" />
-                                    </Helmet>
-                                    <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-                                        <Toaster position="top-right" />
-                                        <AchievementToast />
-                                        <FloatingAudioPlayer />
-                                        <AppRoutes />
-                                    </Router>
-                                </HelmetProvider>
-                            </ErrorBoundary>
-                        </GamificationProvider>
-                    </ModuleProvider>
-                </CartProvider>
-            </DesignSystemProvider>
-        </AppProvider>
+    return (
+        <I18nextProvider i18n={i18n}>
+            <AppProvider>
+                <DesignSystemProvider>
+                    <CartProvider>
+                        <ModuleProvider>
+                            <GamificationProvider>
+                                <ErrorBoundary>
+                                    <HelmetProvider>
+                                        <Helmet>
+                                            <title>EduFlex LLP</title>
+                                            <meta http-equiv="X-XSS-Protection" content="1; mode=block" />
+                                        </Helmet>
+                                        <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+                                            <Toaster position="top-right" />
+                                            <AchievementToast />
+                                            <FloatingAudioPlayer />
+                                            <AppRoutes />
+                                        </Router>
+                                    </HelmetProvider>
+                                </ErrorBoundary>
+                            </GamificationProvider>
+                        </ModuleProvider>
+                    </CartProvider>
+                </DesignSystemProvider>
+            </AppProvider>
+        </I18nextProvider>
     );
 };
 

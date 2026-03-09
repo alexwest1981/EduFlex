@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { LayoutDashboard, BookOpen, FolderOpen, Users, UserCircle, LogOut, ShieldCheck, Calendar, MessageSquare, Settings2, FileQuestion, Palette, Store, Sparkles, TrendingUp, Award, GraduationCap, Heart, Download, Brain, Briefcase } from 'lucide-react';
+import { LayoutDashboard, BookOpen, FolderOpen, Users, UserCircle, LogOut, ShieldCheck, Calendar, MessageSquare, Settings2, FileQuestion, Palette, Store, Sparkles, TrendingUp, Award, GraduationCap, Heart, Download, Brain, Briefcase, ChevronRight } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
@@ -71,17 +71,20 @@ const Sidebar = ({ currentUser, logout, siteName, version }) => {
             </div>
 
             {/* USER PROFILE SNIPPET */}
-            <div className="p-4 mx-4 mt-4 bg-gray-50 rounded-xl border border-gray-100 flex items-center gap-3 cursor-pointer hover:bg-gray-100 transition-colors relative" onClick={() => navigate('/profile')}>
-                <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center overflow-hidden border border-indigo-200">
+            <div className="p-4 mx-4 mt-4 bg-gray-50 rounded-xl border border-gray-100 flex items-center gap-3 cursor-pointer hover:bg-gray-100 transition-all duration-300 relative active:scale-95 group/profile" onClick={() => navigate('/profile')}>
+                <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center overflow-hidden border border-indigo-200 group-hover/profile:border-indigo-400 transition-colors">
                     {profileImg ? (
                         <img src={profileImg} alt="Profil" className="w-full h-full object-cover" />
                     ) : (
                         <UserCircle size={24} className="text-indigo-500" />
                     )}
                 </div>
-                <div className="overflow-hidden">
-                    <p className="text-sm font-bold text-gray-900 truncate">{currentUser?.fullName || currentUser?.username}</p>
+                <div className="overflow-hidden flex-1">
+                    <p className="text-sm font-bold text-gray-900 truncate group-hover/profile:text-indigo-600 transition-colors">{currentUser?.fullName || currentUser?.username}</p>
                     <p className="text-xs text-indigo-600 font-medium truncate capitalize">{(currentUser?.role?.name || currentUser?.role || '').toLowerCase()}</p>
+                </div>
+                <div className="text-gray-300 group-hover/profile:text-indigo-400 transition-colors">
+                    <ChevronRight size={16} />
                 </div>
                 {requestCount > 0 && (
                     <div className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full shadow-md border-2 border-white">

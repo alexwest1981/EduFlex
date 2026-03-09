@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
-import { LayoutDashboard, FileText, User, Settings, LogOut, Layers, Menu, X, Award, Zap, Moon, Sun, Calendar, BookOpen, TrendingUp, Bell, Search, Plus, HelpCircle, Shield, Folder, BarChart2, HardDrive, Wallet, Music, Play, Pause, Heart, Speaker, Store, Library, ClipboardList, MessageSquare } from 'lucide-react';
+import { LayoutDashboard, FileText, User, Settings, LogOut, Layers, Menu, X, Award, Zap, Moon, Sun, Calendar, BookOpen, TrendingUp, Bell, Search, Plus, HelpCircle, Shield, Folder, BarChart2, HardDrive, Wallet, Music, Play, Pause, Heart, Speaker, Store, Library, ClipboardList, MessageSquare, ChevronRight } from 'lucide-react';
 import { useAppContext } from '../../context/AppContext';
 import { useModules } from '../../context/ModuleContext';
 import { useTranslation } from 'react-i18next';
@@ -54,14 +54,14 @@ const VoltageLayout = ({ children }) => {
     return (
         <div className="flex items-center justify-center p-8 min-h-screen w-full text-[#1E1E1E] font-sans transition-colors duration-300" style={{ background: 'var(--app-background)' }}>
             <style>{`
-@media(prefers - color - scheme: dark) {
-                    .dark - mode - bg { background: var(--app - background - dark)!important; }
-}
-                : root.dark body { background: var(--app - background - dark)!important; }
-                .app - wrapper { background: var(--app - background); }
-                .dark.app - wrapper { background: var(--app - background - dark); }
-`}</style>
-            <div className={`fixed inset - 0 - z - 10 app - wrapper transition - colors duration - 300 pointer - events - none`} />
+                @media (prefers-color-scheme: dark) {
+                    .dark-mode-bg { background: var(--app-background-dark) !important; }
+                }
+                :root.dark body { background: var(--app-background-dark) !important; }
+                .app-wrapper { background: var(--app-background); }
+                .dark .app-wrapper { background: var(--app-background-dark); }
+            `}</style>
+            <div className={`fixed inset-0 -z-10 app-wrapper transition-colors duration-300 pointer-events-none`} />
 
             {/* CONSOLE CONTAINER - High Contrast */}
             <div className="w-full min-h-screen max-w-[1600px] bg-[#F2F3F5] dark:bg-[#121212] rounded-[40px] shadow-2xl flex flex-row relative ring-4 ring-black/5 dark:ring-white/5">
@@ -127,10 +127,11 @@ const VoltageLayout = ({ children }) => {
                                     </div>
                                 )}
                             </div>
-                            <div className="hidden lg:block min-w-0">
+                            <div className="hidden lg:block min-w-0 flex-1">
                                 <p className="text-sm font-bold text-white truncate">{currentUser?.firstName}</p>
                                 <p className="text-[10px] text-gray-500 truncate">{roleName}</p>
                             </div>
+                            <ChevronRight size={16} className="text-gray-500 hidden lg:block group-hover:text-[#CCFF00] transition-colors" />
                         </div>
 
                         <button

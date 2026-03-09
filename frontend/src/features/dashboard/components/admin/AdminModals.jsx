@@ -20,7 +20,7 @@ const COURSE_COLORS = [
 // --- CREATE USER ---
 export const CreateUserModal = ({ isOpen, onClose, onUserCreated }) => {
     const { t } = useTranslation();
-    const [formData, setFormData] = useState({ firstName: '', lastName: '', email: '', username: '', password: '', role: 'STUDENT' });
+    const [formData, setFormData] = useState({ firstName: '', lastName: '', email: '', username: '', password: '', role: 'STUDENT', isUppdragsutbildning: false, isProtectedIdentity: false });
     const [loading, setLoading] = useState(false);
     const [roleList, setRoleList] = useState([]);
     const [errorMsg, setErrorMsg] = useState('');
@@ -77,17 +77,44 @@ export const CreateUserModal = ({ isOpen, onClose, onUserCreated }) => {
                             </>
                         )}
                     </select>
+                    <div className="flex items-center gap-2 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl">
+                        <input
+                            type="checkbox"
+                            id="isUppdragsutbildning"
+                            checked={formData.isUppdragsutbildning}
+                            onChange={(e) => setFormData({ ...formData, isUppdragsutbildning: e.target.checked })}
+                            className="w-4 h-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
+                        />
+                        <label htmlFor="isUppdragsutbildning" className="text-sm font-medium text-blue-900 dark:text-blue-100 flex items-center gap-2">
+                            <span>Uppdragsutbildning (U-kod)</span>
+                            <span className="text-[10px] bg-blue-200 dark:bg-blue-800 px-1.5 py-0.5 rounded text-blue-700 dark:text-blue-300 font-bold">REVISION</span>
+                        </label>
+                    </div>
+                    {/* SKYDDAD IDENTITET (ENTERPRISE SECURITY) */}
+                    <div className="flex items-center gap-2 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl">
+                        <input
+                            type="checkbox"
+                            id="isProtectedIdentity"
+                            checked={formData.isProtectedIdentity}
+                            onChange={(e) => setFormData({ ...formData, isProtectedIdentity: e.target.checked })}
+                            className="w-4 h-4 rounded border-gray-300 text-red-600 focus:ring-red-600"
+                        />
+                        <label htmlFor="isProtectedIdentity" className="text-sm font-medium text-red-900 dark:text-red-100 flex items-center gap-2">
+                            <span>Skyddad identitet</span>
+                            <span className="text-[10px] bg-red-200 dark:bg-red-800 px-1.5 py-0.5 rounded text-red-700 dark:text-red-300 font-bold">SÄKERHET</span>
+                        </label>
+                    </div>
                     <button disabled={loading} type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 rounded-lg mt-2">{loading ? t('common.loading') : t('admin.create_account')}</button>
                 </form>
             </div>
-        </div>
+        </div >
     );
 };
 
 // --- EDIT USER ---
 export const EditUserModal = ({ isOpen, onClose, onUserUpdated, userToEdit }) => {
     const { t } = useTranslation();
-    const [formData, setFormData] = useState({ firstName: '', lastName: '', email: '', username: '', role: '', storageQuotaGb: 1 });
+    const [formData, setFormData] = useState({ firstName: '', lastName: '', email: '', username: '', role: '', storageQuotaGb: 1, isUppdragsutbildning: false, isProtectedIdentity: false });
     const [loading, setLoading] = useState(false);
     const [roleList, setRoleList] = useState([]);
     const [errorMsg, setErrorMsg] = useState('');
@@ -100,7 +127,9 @@ export const EditUserModal = ({ isOpen, onClose, onUserUpdated, userToEdit }) =>
                 email: userToEdit.email || '',
                 username: userToEdit.username || '',
                 role: userToEdit.role?.name || userToEdit.role || 'STUDENT',
-                storageQuotaGb: userToEdit.storageQuota ? Math.round(userToEdit.storageQuota / (1024 * 1024 * 1024) * 10) / 10 : 1
+                storageQuotaGb: userToEdit.storageQuota ? Math.round(userToEdit.storageQuota / (1024 * 1024 * 1024) * 10) / 10 : 1,
+                isUppdragsutbildning: userToEdit.isUppdragsutbildning || false,
+                isProtectedIdentity: userToEdit.isProtectedIdentity || false
             });
         }
     }, [userToEdit]);
@@ -162,6 +191,33 @@ export const EditUserModal = ({ isOpen, onClose, onUserUpdated, userToEdit }) =>
                             </>
                         )}
                     </select>
+                    <div className="flex items-center gap-2 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl">
+                        <input
+                            type="checkbox"
+                            id="editIsUppdragsutbildning"
+                            checked={formData.isUppdragsutbildning}
+                            onChange={(e) => setFormData({ ...formData, isUppdragsutbildning: e.target.checked })}
+                            className="w-4 h-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
+                        />
+                        <label htmlFor="editIsUppdragsutbildning" className="text-sm font-medium text-blue-900 dark:text-blue-100 flex items-center gap-2">
+                            <span>Uppdragsutbildning (U-kod)</span>
+                            <span className="text-[10px] bg-blue-200 dark:bg-blue-800 px-1.5 py-0.5 rounded text-blue-700 dark:text-blue-300 font-bold">REVISION</span>
+                        </label>
+                    </div>
+                    {/* SKYDDAD IDENTITET (ENTERPRISE SECURITY) */}
+                    <div className="flex items-center gap-2 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl">
+                        <input
+                            type="checkbox"
+                            id="editIsProtectedIdentity"
+                            checked={formData.isProtectedIdentity}
+                            onChange={(e) => setFormData({ ...formData, isProtectedIdentity: e.target.checked })}
+                            className="w-4 h-4 rounded border-gray-300 text-red-600 focus:ring-red-600"
+                        />
+                        <label htmlFor="editIsProtectedIdentity" className="text-sm font-medium text-red-900 dark:text-red-100 flex items-center gap-2">
+                            <span>Skyddad identitet</span>
+                            <span className="text-[10px] bg-red-200 dark:bg-red-800 px-1.5 py-0.5 rounded text-red-700 dark:text-red-300 font-bold">SÄKERHET</span>
+                        </label>
+                    </div>
                     <div className="space-y-1">
                         <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Lagringsutrymme (GB)</label>
                         <input
@@ -176,7 +232,7 @@ export const EditUserModal = ({ isOpen, onClose, onUserUpdated, userToEdit }) =>
                     <button disabled={loading} type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 rounded-lg mt-2">{loading ? t('common.loading') : t('dashboard.active')}</button>
                 </form>
             </div>
-        </div>
+        </div >
     );
 };
 
@@ -184,7 +240,7 @@ export const EditUserModal = ({ isOpen, onClose, onUserUpdated, userToEdit }) =>
 // --- CREATE COURSE ---
 export const CreateCourseModal = ({ isOpen, onClose, onCourseCreated, teachers }) => {
     const { t } = useTranslation();
-    const [formData, setFormData] = useState({ name: '', courseCode: '', description: '', category: 'Övrigt', tags: '', teacherId: '', startDate: '', endDate: '', color: 'bg-indigo-600', maxStudents: 30, isOpen: true, ssykCode: '' });
+    const [formData, setFormData] = useState({ name: '', courseCode: '', description: '', category: 'Övrigt', tags: '', teacherId: '', startDate: '', endDate: '', color: 'bg-indigo-600', maxStudents: 30, isOpen: true, ssykCode: '', isFardighetstraning: false });
     const [loading, setLoading] = useState(false);
     const [jobDemand, setJobDemand] = useState(null);
     const [useSkolverket, setUseSkolverket] = useState(false);
@@ -251,6 +307,19 @@ export const CreateCourseModal = ({ isOpen, onClose, onCourseCreated, teachers }
                         <div className="flex items-center gap-2 p-3 bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-800 rounded-lg">
                             <input type="checkbox" id="useSkolverket" checked={useSkolverket} onChange={(e) => { setUseSkolverket(e.target.checked); if (!e.target.checked) setSelectedSkolverketCourse(null); }} className="w-4 h-4" />
                             <label htmlFor="useSkolverket" className="text-sm font-medium text-indigo-900 dark:text-indigo-100">{t('admin.base_on_skolverket')}</label>
+                        </div>
+                        <div className="flex items-center gap-2 p-3 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-lg">
+                            <input
+                                type="checkbox"
+                                id="isFardighetstraning"
+                                checked={formData.isFardighetstraning}
+                                onChange={(e) => setFormData({ ...formData, isFardighetstraning: e.target.checked })}
+                                className="w-4 h-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-600"
+                            />
+                            <label htmlFor="isFardighetstraning" className="text-sm font-medium text-emerald-900 dark:text-emerald-100 flex items-center gap-2">
+                                <span>Färdighetsträning (J-kod)</span>
+                                <span className="text-[10px] bg-emerald-200 dark:bg-emerald-800 px-1.5 py-0.5 rounded text-emerald-700 dark:text-emerald-300 font-bold">CSN+</span>
+                            </label>
                         </div>
                         {useSkolverket && (
                             <div>
@@ -411,6 +480,19 @@ export const EditCourseModal = ({ isOpen, onClose, onCourseUpdated, teachers, co
                         >
                             <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${formData.isOpen ? 'translate-x-6' : 'translate-x-1'}`} />
                         </button>
+                    </div>
+                    <div className="flex items-center gap-2 p-3 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-lg">
+                        <input
+                            type="checkbox"
+                            id="editIsFardighetstraning"
+                            checked={formData.isFardighetstraning}
+                            onChange={(e) => setFormData({ ...formData, isFardighetstraning: e.target.checked })}
+                            className="w-4 h-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-600"
+                        />
+                        <label htmlFor="editIsFardighetstraning" className="text-sm font-medium text-emerald-900 dark:text-emerald-100 flex items-center gap-2">
+                            <span>Färdighetsträning (J-kod)</span>
+                            <span className="text-[10px] bg-emerald-200 dark:bg-emerald-800 px-1.5 py-0.5 rounded text-emerald-700 dark:text-emerald-300 font-bold">CSN+</span>
+                        </label>
                     </div>
                     <input className="w-full p-2 border rounded dark:bg-[#131314] dark:border-[#3c4043] dark:text-white" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} />
                     <div className="grid grid-cols-2 gap-4">

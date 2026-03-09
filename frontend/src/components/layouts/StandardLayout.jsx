@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
-import { LayoutDashboard, FileText, User, Settings, LogOut, Layers, Menu, X, Award, Zap, Moon, Sun, Calendar, BookOpen, TrendingUp, Users, HelpCircle, Store, Library, ClipboardList, ShieldCheck, MessageSquare, Heart, Thermometer, BarChart2, Brain, FolderOpen, Link2, GraduationCap, Briefcase } from 'lucide-react';
+import { LayoutDashboard, FileText, User, Settings, LogOut, Layers, Menu, X, Award, Zap, Moon, Sun, Calendar, BookOpen, TrendingUp, Users, HelpCircle, Store, Library, ClipboardList, ShieldCheck, MessageSquare, Heart, Thermometer, BarChart2, Brain, FolderOpen, Link2, GraduationCap, Briefcase, ChevronRight } from 'lucide-react';
 import { useAppContext } from '../../context/AppContext';
 import { useModules } from '../../context/ModuleContext';
 import { useTranslation } from 'react-i18next';
@@ -115,7 +115,7 @@ const StandardLayout = ({ children }) => {
                 .custom-scrollbar::-webkit-scrollbar { width: 4px; }
                 .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
                 .custom-scrollbar::-webkit-scrollbar-thumb { background: #E2E8F0; border-radius: 10px; }
-                .dark .custom-scrollbar::-webkit-scrollbar-thumb { background: #2D2D2D; }
+                .dark.custom-scrollbar::-webkit-scrollbar-thumb { background: #2D2D2D; }
 
                 .no-scrollbar::-webkit-scrollbar { display: none; }
                 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
@@ -125,7 +125,7 @@ const StandardLayout = ({ children }) => {
                     backdrop-filter: blur(20px);
                     border-right: 1px solid rgba(0, 0, 0, 0.05);
                 }
-                .dark .sidebar-glass {
+                .dark.sidebar-glass {
                     background: rgba(0, 0, 0, 0.95);
                     backdrop-filter: blur(25px);
                     border-right: 1px solid rgba(255, 255, 255, 0.1);
@@ -232,9 +232,9 @@ const StandardLayout = ({ children }) => {
                     </div>
 
                     {/* PANEL FOOTER (User Info) */}
-                    <div className="p-4 border-t border-black/5 dark:border-white/10 bg-black/5 dark:bg-zinc-950/50 m-4 rounded-3xl">
-                        <div className="flex items-center gap-3" onClick={() => navigate('/profile')}>
-                            <div className="w-10 h-10 rounded-2xl bg-white dark:bg-black shadow-sm border border-black/5 dark:border-white/10 overflow-hidden p-0.5">
+                    <div className="p-4 border-t border-black/5 dark:border-white/10 bg-black/5 dark:bg-zinc-950/50 m-4 rounded-3xl group/profile transition-all duration-300 hover:bg-black/10 dark:hover:bg-white/5 cursor-pointer active:scale-95" onClick={() => navigate('/profile')}>
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-2xl bg-white dark:bg-black shadow-sm border border-black/5 dark:border-white/10 overflow-hidden p-0.5 group-hover/profile:border-indigo-500/50 transition-colors">
                                 <div className="w-full h-full rounded-[14px] overflow-hidden">
                                     {profileImgUrl ? (
                                         <img src={profileImgUrl} alt="P" className="w-full h-full object-cover" />
@@ -245,9 +245,12 @@ const StandardLayout = ({ children }) => {
                                     )}
                                 </div>
                             </div>
-                            <div className="min-w-0">
-                                <h4 className="text-xs font-black text-gray-900 dark:text-white truncate tracking-tight">{currentUser?.fullName}</h4>
+                            <div className="min-w-0 flex-1">
+                                <h4 className="text-xs font-black text-gray-900 dark:text-white truncate tracking-tight group-hover/profile:text-indigo-600 dark:group-hover/profile:text-indigo-400 transition-colors">{currentUser?.fullName}</h4>
                                 <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest truncate">{roleName}</p>
+                            </div>
+                            <div className="text-gray-300 dark:text-gray-700 group-hover/profile:text-indigo-500 transition-colors">
+                                <ChevronRight size={14} />
                             </div>
                         </div>
                     </div>
@@ -308,7 +311,7 @@ const StandardLayout = ({ children }) => {
                         onClick={() => setMobileMenuOpen(true)}
                         className="flex flex-col items-center justify-center gap-1 text-gray-400"
                     >
-                        <div className="p-2 rounded-xl bg-indigo-600 text-white -mt-8 shadow-lg shadow-indigo-500/30">
+                        <div className="p-2 rounded-xl bg-indigo-600 text-white -mt-8 shadow-lg shadow-indigo-500/20">
                             <Menu size={24} />
                         </div>
                         <span className="text-[10px] font-bold">Meny</span>
@@ -334,7 +337,7 @@ const StandardLayout = ({ children }) => {
 
                             <div className="flex-1 overflow-y-auto p-4 space-y-6 custom-scrollbar">
                                 {Object.entries(navItems).map(([key, items]) => (
-                                    items.length > 0 && <SidebarSection key={key} title={t(`sidebar.categories.${key}`) || key} items={items} sidebarOpen={true} />
+                                    items.length > 0 && <SidebarSection key={key} title={t(`sidebar.categories.${key} `) || key} items={items} sidebarOpen={true} />
                                 ))}
 
                                 <div className="pt-4 space-y-2 border-t border-black/5 dark:border-white/5">
@@ -378,8 +381,8 @@ const StandardLayout = ({ children }) => {
 const MobileNavItem = ({ to, icon, label, active }) => (
     <NavLink
         to={to}
-        className={`flex flex-col items-center justify-center gap-1 flex-1 transition-colors ${active ? 'text-indigo-600 dark:text-indigo-400' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'
-            }`}
+        className={`flex flex - col items - center justify - center gap - 1 flex - 1 transition - colors ${active ? 'text-indigo-600 dark:text-indigo-400' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'
+            } `}
     >
         {icon}
         <span className="text-[10px] font-bold">{label}</span>

@@ -17,6 +17,7 @@ import { api } from '../../services/api';
 import TenantManagement from '../admin/TenantManagement';
 import SkolverketManager from '../admin/SkolverketManager';
 import PdfTemplateEditor from '../admin/PdfTemplateEditor';
+import LanguageManager from './LanguageManager';
 
 // Mappa modulnycklar till ikoner
 const moduleIcons = {
@@ -351,6 +352,7 @@ const SystemSettings = ({ asTab = false }) => {
             category: 'Moduler',
             items: [
                 { id: 'modules', label: 'Systemmoduler', icon: Database },
+                { id: 'languages', label: 'Språkhantering', icon: Globe },
             ]
         },
         {
@@ -1211,6 +1213,9 @@ const SystemSettings = ({ asTab = false }) => {
                     </div>
                 );
             }
+
+            case 'languages':
+                return <LanguageManager />;
 
             default:
                 return (

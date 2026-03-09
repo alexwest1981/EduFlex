@@ -1,6 +1,6 @@
 {
     "title": "My Profile",
-    "details": "Personal Details",
+    "details": "Personal Information",
     "security": "Security",
     "language": "Language",
     "firstname": "First Name",
@@ -21,9 +21,9 @@
     "password_error": "Could not change password.",
     "choose_strong_password": "Choose a strong password to protect your account.",
     "settings": "Settings",
-    "settings_header": "Customize Homepage",
+    "settings_header": "Customize Start Page",
     "settings_desc": "Choose which nodes you want to see on your overview.",
     "show_calendar": "Show Calendar",
     "show_messages": "Show Messages",
-    "show_stats": "Show Stats"
+    "show_stats": "Show Statistics"
 }

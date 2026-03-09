@@ -120,6 +120,45 @@ const handleResponse = async (res) => {
     return res.text();
 };
 
+export const maskProtectedUsers = (data) => {
+    const token = localStorage.getItem('token');
+    let isAdmin = false;
+    if (token) {
+        try {
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            isAdmin = payload.role === 'ADMIN' || (payload.roles && payload.roles.includes('ROLE_ADMIN')) || (payload.realm_access && payload.realm_access.roles && payload.realm_access.roles.includes('ADMIN'));
+        } catch (e) {
+            console.error("Masking token parse error", e);
+        }
+    }
+
+    if (isAdmin) return data;
+
+    const processUser = (u) => {
+        if (u && u.isProtectedIdentity) {
+            return {
+                ...u,
+                firstName: 'Skyddad',
+                lastName: 'Identitet',
+                fullName: 'Skyddad Identitet',
+                username: 'hidden',
+                email: 'hidden@skyddad.se',
+                profilePictureUrl: null
+            };
+        }
+        return u;
+    };
+
+    if (Array.isArray(data)) {
+        return data.map(processUser);
+    } else if (data && data.content && Array.isArray(data.content)) {
+        return { ...data, content: data.content.map(processUser) };
+    } else if (data && typeof data === 'object') {
+        return processUser(data);
+    }
+    return data;
+};
+
 export const api = {
     get: (url) => fetch(`${API_BASE}${url}`, { headers: getHeaders() }).then(handleResponse),
     post: (url, body) => {
@@ -270,10 +309,10 @@ export const api = {
     },
 
     users: {
-        getAll: (page = 0, size = 20) => api.get(`/users?page=${page}&size=${size}`),
-        getRelated: () => api.get('/users/related'),
-        search: (query) => api.get(`/users/search?query=${encodeURIComponent(query)}`),
-        getById: (id) => api.get(`/users/${id}?t=${new Date().getTime()}`),
+        getAll: (page = 0, size = 20) => api.get(`/users?page=${page}&size=${size}`).then(maskProtectedUsers),
+        getRelated: () => api.get('/users/related').then(maskProtectedUsers),
+        search: (query) => api.get(`/users/search?query=${encodeURIComponent(query)}`).then(maskProtectedUsers),
+        getById: (id) => api.get(`/users/${id}?t=${new Date().getTime()}`).then(maskProtectedUsers),
         register: (data) => api.post('/users/register', data),
         generateUsernames: (data) => api.post('/users/generate-usernames', data),
         delete: (id) => api.delete(`/users/${id}`),

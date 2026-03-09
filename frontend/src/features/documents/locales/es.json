@@ -1,8 +1,8 @@
 {
-    "title": "Gestión de Documentos",
+    "title": "Gestión de documentos",
     "upload_title": "Subir archivo",
-    "drop_text": "Haga clic o arrastre el archivo aquí",
-    "search_placeholder": "Buscar en archivos...",
+    "drop_text": "Haz clic o arrastra el archivo aquí",
+    "search_placeholder": "Buscar entre archivos...",
     "save_btn": "Guardar archivo",
     "saving": "Guardando...",
     "no_results": "No se encontraron documentos."

@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
-import { LayoutDashboard, FileText, User, Settings, LogOut, Layers, Menu, X, Award, Zap, Moon, Sun, Calendar, BookOpen, TrendingUp, Bell, Search, Plus, HelpCircle, Shield, Folder, BarChart2, HardDrive, Wallet, PieChart, Activity, Store, Library, MessageSquare, Heart } from 'lucide-react';
+import { LayoutDashboard, FileText, User, Settings, LogOut, Layers, Menu, X, Award, Zap, Moon, Sun, Calendar, BookOpen, TrendingUp, Bell, Search, Plus, HelpCircle, Shield, Folder, BarChart2, HardDrive, Wallet, PieChart, Activity, Store, Library, MessageSquare, Heart, ChevronRight } from 'lucide-react';
 import { useAppContext } from '../../context/AppContext';
 import { useModules } from '../../context/ModuleContext';
 import { useTranslation } from 'react-i18next';
@@ -44,17 +44,17 @@ const MidnightLayout = ({ children }) => {
     return (
         <div className="flex items-center justify-center p-6 min-h-screen w-full text-zinc-300 font-sans transition-colors duration-300" style={{ background: 'var(--app-background)' }}> {/* Rich Zinc Black */}
             <style>{`
-@media(prefers - color - scheme: dark) {
-                    .dark - mode - bg { background: var(--app - background - dark)!important; }
-}
-                : root.dark body { background: var(--app - background - dark)!important; }
-                .app - wrapper { background: var(--app - background); }
-                .dark.app - wrapper { background: var(--app - background - dark); }
-                .midnight - scroll:: -webkit - scrollbar { width: 6px; }
-                .midnight - scroll:: -webkit - scrollbar - track { background: #121212; }
-                .midnight - scroll:: -webkit - scrollbar - thumb { background: #27272a; border - radius: 10px; }
-                .midnight - scroll:: -webkit - scrollbar - thumb:hover { background: #3f3f46; }
-`}</style>
+                @media (prefers-color-scheme: dark) {
+                    .dark-mode-bg { background: var(--app-background-dark) !important; }
+                }
+                :root.dark body { background: var(--app-background-dark) !important; }
+                .app-wrapper { background: var(--app-background); }
+                .dark .app-wrapper { background: var(--app-background-dark); }
+                .midnight-scroll::-webkit-scrollbar { width: 6px; }
+                .midnight-scroll::-webkit-scrollbar-track { background: #121212; }
+                .midnight-scroll::-webkit-scrollbar-thumb { background: #27272a; border-radius: 10px; }
+                .midnight-scroll::-webkit-scrollbar-thumb:hover { background: #3f3f46; }
+            `}</style>
 
             {/* FLOATING APP CONTAINER - Dark Zinc Card */}
             <div className="w-full min-h-screen max-w-[1700px] bg-[#121212] rounded-[32px] shadow-2xl flex flex-col border border-white/10 relative items-stretch">
@@ -82,11 +82,11 @@ const MidnightLayout = ({ children }) => {
                                     to={item.path}
                                     className={({ isActive: navActive }) => {
                                         const isActive = navActive || (item.path === '/admin' && location.pathname.startsWith('/enterprise'));
-                                        return `px - 4 py - 1.5 rounded - full text - xs font - medium transition - all duration - 300 flex items - center gap - 2
+                                        return `px-4 py-1.5 rounded-full text-xs font-medium transition-all duration-300 flex items-center gap-2
                                         ${isActive
                                                 ? 'bg-zinc-800 text-white shadow-sm ring-1 ring-white/10'
                                                 : 'text-zinc-500 hover:text-zinc-200 hover:bg-white/5'
-                                            } `;
+                                            }`;
                                     }}
                                 >
                                     {({ isActive: navActive }) => {
@@ -105,20 +105,21 @@ const MidnightLayout = ({ children }) => {
 
                     {/* Right: Utilities */}
                     <div className="flex items-center gap-4">
-                        <GlobalSearch className="w-72" inputClassName="bg-zinc-900/50 text-white placeholder-zinc-600 border border-white/10 rounded-xl focus:border-[#00DC82]/50 focus:ring-1 focus:ring-[#00DC82]/20" />
+                        <GlobalSearch className="w-72" inputClassName="bg-zinc-900/50 text-white placeholder-zinc-600" />
 
                         <div className="h-8 w-px bg-white/10 mx-2"></div>
 
                         <NotificationBell />
 
-                        <div className="flex items-center gap-3 pl-2 cursor-pointer group" onClick={() => navigate('/profile')}>
-                            <div className="w-9 h-9 rounded-full overflow-hidden border border-white/10 ring-2 ring-transparent group-hover:ring-[#00DC82]/30 transition-all">
+                        <div className="flex items-center gap-3 pl-2 cursor-pointer group/profile active:scale-95 transition-transform" onClick={() => navigate('/profile')}>
+                            <div className="w-9 h-9 rounded-full overflow-hidden border border-white/10 ring-2 ring-transparent group-hover/profile:ring-[#00DC82]/30 transition-all">
                                 {profileImgUrl ? <img src={profileImgUrl} alt="Profil" className="w-full h-full object-cover" /> : <div className="w-full h-full bg-zinc-800 flex items-center justify-center font-bold text-xs text-[#00DC82]">{currentUser?.firstName?.[0]}</div>}
                             </div>
                             <div className="hidden xl:block">
-                                <p className="text-xs font-semibold text-white/90 leading-tight">{currentUser?.firstName}</p>
+                                <p className="text-xs font-semibold text-white/90 leading-tight group-hover/profile:text-[#00DC82] transition-colors">{currentUser?.firstName}</p>
                                 <p className="text-[10px] text-zinc-500 font-medium tracking-wide uppercase">{roleName}</p>
                             </div>
+                            <ChevronRight size={14} className="text-zinc-600 group-hover/profile:text-[#00DC82] transition-colors hidden xl:block" />
                         </div>
 
                         <button onClick={handleLogout} className="w-9 h-9 flex items-center justify-center rounded-full text-zinc-500 hover:text-red-400 hover:bg-red-500/10 transition-colors ml-1">

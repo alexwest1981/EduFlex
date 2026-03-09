@@ -1,5 +1,5 @@
 {
-    "title": "Mon profil",
+    "title": "Mon Profil",
     "details": "Informations personnelles",
     "security": "Sécurité",
     "language": "Langue",
@@ -22,7 +22,7 @@
     "choose_strong_password": "Choisissez un mot de passe fort pour protéger votre compte.",
     "settings": "Paramètres",
     "settings_header": "Personnaliser la page d'accueil",
-    "settings_desc": "Choisissez les nœuds que vous souhaitez voir dans votre aperçu.",
+    "settings_desc": "Choisissez les nœuds que vous souhaitez voir sur votre aperçu.",
     "show_calendar": "Afficher le calendrier",
     "show_messages": "Afficher les messages",
     "show_stats": "Afficher les statistiques"

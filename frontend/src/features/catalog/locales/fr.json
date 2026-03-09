@@ -1,11 +1,11 @@
 {
-  "title": "Catalogue de cours",
-  "subtitle": "Trouvez et inscrivez-vous à de nouveaux cours.",
-  "search_placeholder": "Rechercher des cours...",
-  "no_results": "Aucun cours trouvé.",
-  "teacher": "Professeur",
-  "start": "Début",
-  "not_set": "Non défini",
-  "join": "Rejoindre le cours",
-  "closed_msg": "Cours pas encore ouvert aux candidatures"
+    "title": "Catalogue de cours",
+    "subtitle": "Trouvez et inscrivez-vous à de nouveaux cours.",
+    "search_placeholder": "Rechercher des cours...",
+    "no_results": "Aucun cours trouvé.",
+    "teacher": "Professeur",
+    "start": "Début",
+    "not_set": "Non défini",
+    "join": "Rejoindre le cours",
+    "closed_msg": "Le cours n'est pas encore ouvert aux candidatures"
 }

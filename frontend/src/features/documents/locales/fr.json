@@ -1,6 +1,6 @@
 {
-    "title": "Gestion de documents",
-    "upload_title": "Téléverser un fichier",
+    "title": "Gestion des documents",
+    "upload_title": "Télécharger un fichier",
     "drop_text": "Cliquez ou faites glisser le fichier ici",
     "search_placeholder": "Rechercher parmi les fichiers...",
     "save_btn": "Enregistrer le fichier",

@@ -13,8 +13,8 @@ public record CreateCourseDTO(
                 String color,
                 Integer maxStudents, // <--- NYTT FÄLT
                 Long skolverketCourseId, // Link to Skolverket course
-                java.util.List<java.util.Map<String, String>> groupRooms // New field for group rooms
-) {
+                java.util.List<java.util.Map<String, String>> groupRooms, // New field for group rooms
+                Boolean isFardighetstraning) {
         // Records automatically provide an accessor method named after the component
         // (e.g., skolverketCourseId()).
         // If you need a getter with the 'get' prefix, you can define it explicitly.

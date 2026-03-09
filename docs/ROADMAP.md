@@ -45,6 +45,10 @@
 | :--- | :--- | :--- | :--- | :--- |
 | **Hög** | **Security Hardening (ISO 27001)** | AES-256 kryptering (resten av PII), MFA stöd, Security Headers (CSP). | ✅ **Klar** (v3.2.0) | Kritiskt för offentlig sektor. |
 | **Hög** | **Enhanced Audit Logs** | Global administrativ audit-log (vem gjorde vad, när). GDPR-spårbarhet för all dataåtkomst. | ✅ **Klar** | Compliance-krav. |
+| **Hög** | **Read Audit Logs** | Detaljerad loggning vid läsning av personuppgifter ("read_audit_logs"). | ✅ **Klar** (v3.8.2) | Krav för Stockholm stads Bilaga 3c. |
+| **Hög** | **Skyddad Identitet** | UI-maskering och DB-härdning för studenter med skyddade personuppgifter. | ✅ **Klar** (v3.8.2) | Kritiskt för offentlig sektor (GDPR). |
+| **Hög** | **Inbyggd DRM (Enterprise)** | Mekanism för att begränsa nedladdning och utskrift av äganderättskyddat material i webbläsaren. | ✅ **Klar** (v3.8.2) | B2B Content Protection. |
+| **Medel** | **Incident Response Plan** | Formell IRP-dokumentation med procedurer för inneslutning av dataintrång och ransomware. | ✅ **Klar** (v3.8.2) | Krav för anbud. |
 | **Medel** | **MFA (Multi-Factor Auth)** | Stöd för TOTP (Google Authenticator) vid admin-inloggning. | ✅ **Klar** | Högre säkerhetskrav. |
 | **Medel** | **xAPI/SCORM 2.0** | Full import + State API (suspend_data) för persistens. | ✅ **Klar** (v3.2.0) | Legacy-innehåll. |
 
@@ -163,6 +167,21 @@
 > **Arkitektonisk målbild:** När Video, PDF, AI, SCORM/xAPI, WebSockets, Integrationer och Gamification är utbrutna hanterar kärn-backenden *enbart* inloggningar, RBAC-behörigheter och orkestrering — vilket öppnar för miljontals användare utan prestandatak.
 
 ---
+
+### [v3.8.2] - 2026-03-09 (Planned)
+- **Authority Integration & Regulatory Flags**:
+  - **Ladok Integration**: Modul-mappning och "Resultat till Ladok" utkast-flöde.
+  - **CSN Kod 31/32**: Automatisk frånvarorapportering för elever under 20 år.
+  - **Digital Tillgänglighet**: EN 301 549 / DOS-lagen Accessibility Checker i kursbyggaren.
+  - **Skolfederation (SAML V2)**: Plug-and-play SSO för kommunal sektor.
+  - **AF Personal Data Gateway**: Verifiering av inskrivningsstatus (Min Inskrivning).
+  - **YH-flex Validering**: Dynamisk ISP-omräkning baserat på reell kompetens.
+
+### [v3.8.1] - 2026-03-08
+- **Dynamic Language Manager (AI-Powered)**:
+  - **Automation**: Nya språk översätts automatiskt med Gemini AI.
+  - **Storage**: Översättningar lagras i MinIO.
+- **Plug-and-Play Startup**: Unified startup scripts for Windows and Linux/WSL.
 
 ### [v3.8.0] - 2026-03-08
 - **New Feature**: **CSN Autopilot & Ghosting Radar**.

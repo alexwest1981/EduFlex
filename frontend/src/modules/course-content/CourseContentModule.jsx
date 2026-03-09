@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { QuizRunnerModal } from '../quiz-runner/QuizModals';
-import { BookOpen, Plus, Edit2, Trash2, Save, ChevronRight, Video, Download, Paperclip, Loader2, Image as ImageIcon, Film, HelpCircle, Trophy, PlayCircle, Sparkles, Share2, FileText, ChevronDown, Book, ExternalLink } from 'lucide-react';
+import { BookOpen, Plus, Edit2, Trash2, Save, ChevronRight, Video, Download, Paperclip, Loader2, Image as ImageIcon, Film, HelpCircle, Trophy, PlayCircle, Sparkles, Share2, FileText, ChevronDown, Book, ExternalLink, Shield } from 'lucide-react';
 import { api, getSafeUrl, API_BASE, WS_BASE } from '../../services/api';
 import OnlyOfficeEditor from '../../features/documents/OnlyOfficeEditor';
 import VideoPlayer from './components/VideoPlayer';
@@ -48,7 +48,8 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
         videoUrl: '',
         difficultyLevel: 3,
         estimatedTimeMinutes: 15,
-        prerequisiteMaterialId: ''
+        prerequisiteMaterialId: '',
+        isDrmProtected: false
     });
     const [file, setFile] = useState(null);
 
@@ -228,7 +229,7 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
     };
 
     const handleCreateClick = () => {
-        setFormData({ title: 'Nytt Innehåll', content: '', videoUrl: '', type: 'LESSON', availableFrom: '' });
+        setFormData({ title: 'Nytt Innehåll', content: '', videoUrl: '', type: 'LESSON', availableFrom: '', isDrmProtected: false });
         setFile(null);
         setSelectedLesson(null);
         setSelectedQuiz(null);
@@ -260,6 +261,7 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
         if (formData.difficultyLevel) fd.append('difficulty', formData.difficultyLevel);
         if (formData.estimatedTimeMinutes) fd.append('estimatedTime', formData.estimatedTimeMinutes);
         if (formData.prerequisiteMaterialId) fd.append('prerequisiteId', formData.prerequisiteMaterialId);
+        if (formData.isDrmProtected !== undefined) fd.append('isDrmProtected', formData.isDrmProtected);
 
         // Skicka fil om det finns
         if (file) fd.append('file', file);
@@ -392,7 +394,8 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
             availableFrom: lesson.availableFrom || '',
             difficultyLevel: lesson.difficultyLevel || 3,
             estimatedTimeMinutes: lesson.estimatedTimeMinutes || 15,
-            prerequisiteMaterialId: lesson.prerequisiteMaterial?.id || ''
+            prerequisiteMaterialId: lesson.prerequisiteMaterial?.id || '',
+            isDrmProtected: lesson.isDrmProtected || false
         });
         setFile(null);
         setSelectedLesson(lesson);
@@ -626,6 +629,31 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
                                 onChange={e => setFormData({ ...formData, availableFrom: e.target.value })}
                             />
                             <p className="text-[10px] text-gray-400 mt-1">Låt stå tomt för att publicera direkt.</p>
+                        </div>
+
+                        {/* ENTERPRISE SECURITY: DRM PROTECTION */}
+                        <div className="bg-orange-50 dark:bg-orange-900/10 border border-orange-200 dark:border-orange-800/50 rounded-xl p-4 my-2">
+                            <label className="flex items-center gap-3 cursor-pointer">
+                                <div className="relative">
+                                    <input
+                                        type="checkbox"
+                                        className="sr-only"
+                                        checked={formData.isDrmProtected}
+                                        onChange={(e) => setFormData({ ...formData, isDrmProtected: e.target.checked })}
+                                    />
+                                    <div className={`block w-10 h-6 rounded-full transition-colors ${formData.isDrmProtected ? 'bg-orange-500' : 'bg-gray-300 dark:bg-gray-600'}`}></div>
+                                    <div className={`dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform ${formData.isDrmProtected ? 'transform translate-x-4' : ''}`}></div>
+                                </div>
+                                <div className="flex flex-col">
+                                    <span className="text-sm font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+                                        <Shield size={16} className="text-orange-500" />
+                                        DRM-Kopieringsskydd (Enterprise)
+                                    </span>
+                                    <span className="text-xs text-gray-500 mt-1">
+                                        Om aktiverad förhindras nedladdning, utskrift och markering av text i materialet.
+                                    </span>
+                                </div>
+                            </label>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -1055,36 +1083,40 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
                                                 )}
 
                                                 {/* Spara till mina filer */}
-                                                <button
-                                                    onClick={() => handleSaveToMyFiles(selectedLesson)}
-                                                    disabled={isSavingFile}
-                                                    className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-bold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-[var(--dark-bg)] hover:text-indigo-600 dark:hover:text-indigo-400 text-left transition-colors disabled:opacity-50"
-                                                >
-                                                    {isSavingFile ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
-                                                    {isSavingFile ? 'Sparar...' : 'Spara till mina filer'}
-                                                </button>
+                                                {(!selectedLesson.isDrmProtected || isTeacher) && (
+                                                    <button
+                                                        onClick={() => handleSaveToMyFiles(selectedLesson)}
+                                                        disabled={isSavingFile}
+                                                        className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-bold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-[var(--dark-bg)] hover:text-indigo-600 dark:hover:text-indigo-400 text-left transition-colors disabled:opacity-50"
+                                                    >
+                                                        {isSavingFile ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
+                                                        {isSavingFile ? 'Sparar...' : 'Spara till mina filer'}
+                                                    </button>
+                                                )}
 
                                                 {/* Ladda ner */}
-                                                <a
-                                                    href={getSafeUrl(selectedLesson.fileUrl)}
-                                                    download
-                                                    target="_blank"
-                                                    rel="noreferrer"
-                                                    onClick={() => {
-                                                        if (!isTeacher) {
-                                                            api.activity.log({
-                                                                userId: currentUser.id,
-                                                                courseId: courseId,
-                                                                materialId: selectedLesson.id,
-                                                                type: 'DOWNLOAD_FILE',
-                                                                details: selectedLesson.fileUrl.split('/').pop()
-                                                            }).catch(console.error);
-                                                        }
-                                                    }}
-                                                    className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-bold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-[var(--dark-bg)] hover:text-indigo-600 dark:hover:text-indigo-400 text-left transition-colors"
-                                                >
-                                                    <Download size={16} /> Ladda ner
-                                                </a>
+                                                {(!selectedLesson.isDrmProtected || isTeacher) && (
+                                                    <a
+                                                        href={getSafeUrl(selectedLesson.fileUrl)}
+                                                        download
+                                                        target="_blank"
+                                                        rel="noreferrer"
+                                                        onClick={() => {
+                                                            if (!isTeacher) {
+                                                                api.activity.log({
+                                                                    userId: currentUser.id,
+                                                                    courseId: courseId,
+                                                                    materialId: selectedLesson.id,
+                                                                    type: 'DOWNLOAD_FILE',
+                                                                    details: selectedLesson.fileUrl.split('/').pop()
+                                                                }).catch(console.error);
+                                                            }
+                                                        }}
+                                                        className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-bold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-[var(--dark-bg)] hover:text-indigo-600 dark:hover:text-indigo-400 text-left transition-colors"
+                                                    >
+                                                        <Download size={16} /> Ladda ner
+                                                    </a>
+                                                )}
 
                                                 {/* Separator if teacher tools are shown */}
                                                 {isTeacher && (
@@ -1126,9 +1158,25 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
                             </div>
                         )}
 
+                        {/* DRM Style Block */}
+                        {selectedLesson.isDrmProtected && !isTeacher && (
+                            <style>{`
+                                @media print {
+                                    body * {
+                                        visibility: hidden;
+                                    }
+                                }
+                            `}</style>
+                        )}
+
                         {/* TEXT CONTENT */}
                         <div
-                            className="prose dark:prose-invert max-w-full overflow-hidden text-gray-700 dark:text-gray-300 leading-relaxed mb-12 prose-pre:overflow-x-auto prose-pre:max-w-full break-words"
+                            onContextMenu={e => {
+                                if (selectedLesson.isDrmProtected && !isTeacher) {
+                                    e.preventDefault();
+                                }
+                            }}
+                            className={`prose dark:prose-invert max-w-full overflow-hidden text-gray-700 dark:text-gray-300 leading-relaxed mb-12 prose-pre:overflow-x-auto prose-pre:max-w-full break-words ${selectedLesson.isDrmProtected && !isTeacher ? 'select-none pointer-events-none' : ''}`}
                             dangerouslySetInnerHTML={{ __html: selectedLesson.content }}
                         />
 
@@ -1155,6 +1203,8 @@ const CourseContentModule = ({ courseId, isTeacher, currentUser, mode = 'COURSE'
                     entityType={mode === 'COURSE' ? 'MATERIAL' : 'LESSON'}
                     entityId={onlyOfficeDoc.id}
                     userId={currentUser?.id}
+                    isDrmProtected={onlyOfficeDoc.isDrmProtected}
+                    isTeacher={isTeacher}
                     onClose={() => {
                         setOnlyOfficeDoc(null);
                         loadLessons();

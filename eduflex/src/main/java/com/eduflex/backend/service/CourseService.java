@@ -182,6 +182,10 @@ public class CourseService {
         course.setColor(dto.color() != null && !dto.color().isEmpty() ? dto.color() : "bg-indigo-600");
         course.setMaxStudents(dto.maxStudents() != null ? dto.maxStudents() : 30);
 
+        if (dto.isFardighetstraning() != null) {
+            course.setIsFardighetstraning(dto.isFardighetstraning());
+        }
+
         // Link to Skolverket course if provided + fetch rich data from API
         if (dto.skolverketCourseId() != null) {
             skolverketCourseRepository.findById(dto.skolverketCourseId()).ifPresent(skCourse -> {
@@ -429,6 +433,14 @@ public class CourseService {
             course.setColor((String) updates.get("color"));
         if (updates.containsKey("maxStudents"))
             course.setMaxStudents((Integer) updates.get("maxStudents"));
+        if (updates.containsKey("isFardighetstraning")) {
+            Object val = updates.get("isFardighetstraning");
+            if (val instanceof Boolean) {
+                course.setIsFardighetstraning((Boolean) val);
+            } else {
+                course.setIsFardighetstraning(Boolean.parseBoolean(val.toString()));
+            }
+        }
 
         if (updates.containsKey("teacherId")) {
             Object tId = updates.get("teacherId");
@@ -884,47 +896,63 @@ public class CourseService {
     }
 
     public CourseDTO convertToDTO(Course c) {
+        org.springframework.security.core.Authentication auth = org.springframework.security.core.context.SecurityContextHolder
+                .getContext().getAuthentication();
+        final boolean isAdmin = auth != null && auth.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN") || a.getAuthority().equals("ADMIN"));
+
         UserSummaryDTO teacherDTO = null;
         if (c.getTeacher() != null) {
+            boolean maskTeacher = c.getTeacher().getIsProtectedIdentity() && !isAdmin;
             teacherDTO = new UserSummaryDTO(
                     c.getTeacher().getId(),
-                    c.getTeacher().getFirstName(),
-                    c.getTeacher().getLastName(),
-                    c.getTeacher().getFullName(),
-                    c.getTeacher().getUsername(),
+                    maskTeacher ? "Skyddad" : c.getTeacher().getFirstName(),
+                    maskTeacher ? "Identitet" : c.getTeacher().getLastName(),
+                    maskTeacher ? "Skyddad Identitet" : c.getTeacher().getFullName(),
+                    maskTeacher ? "hidden" : c.getTeacher().getUsername(),
                     c.getTeacher().getRole().getName(),
                     c.getTeacher().getProfilePictureUrl(),
                     c.getTeacher().getLastLogin(),
                     c.getTeacher().getLastActive(),
-                    c.getTeacher().getActiveMinutes());
+                    c.getTeacher().getActiveMinutes(),
+                    c.getTeacher().getIsProtectedIdentity());
         }
-        List<UserSummaryDTO> studentDTOs = c.getStudents().stream()
-                .map(s -> new UserSummaryDTO(
-                        s.getId(),
-                        s.getFirstName(),
-                        s.getLastName(),
-                        s.getFullName(),
-                        s.getUsername(),
-                        s.getRole().getName(),
-                        s.getProfilePictureUrl(),
-                        s.getLastLogin(),
-                        s.getLastActive(),
-                        s.getActiveMinutes()))
-                .collect(Collectors.toList());
 
-        return new CourseDTO(
-                c.getId(), c.getName(), c.getCourseCode(), c.getCategory(), c.getDescription(),
-                c.getStartDate(), c.getEndDate(), c.getColor(), teacherDTO, studentDTOs,
-                c.isOpen(), c.getVisibility(), c.getEvaluation(), c.getMaxStudents(), c.getStudents().size(),
-                c.getClassroomLink(), c.getClassroomType(), c.getExamLink(), // Nya fält
+        List<UserSummaryDTO> studentDTOs = c.getStudents().stream()
+                .map(s -> {
+                    boolean maskStudent = s.getIsProtectedIdentity() && !isAdmin;
+                    return new UserSummaryDTO(
+                            s.getId(),
+                            maskStudent ? "Skyddad" : s.getFirstName(),
+                            maskStudent ? "Identitet" : s.getLastName(),
+                            maskStudent ? "Skyddad Identitet" : s.getFullName(),
+                            maskStudent ? "hidden" : s.getUsername(),
+                            s.getRole().getName(),
+                            s.getProfilePictureUrl(),
+                            s.getLastLogin(),
+                            s.getLastActive(),
+                            s.getActiveMinutes(),
+                            s.getIsProtectedIdentity());
+                })
+                .collect(java.util.stream.Collectors.toList());
+
+        return new CourseDTO(c.getId(), c.getName(), c.getCourseCode(), c.getCategory(), c.getDescription(),
+                c.getStartDate(), c.getEndDate(), c.getColor(), teacherDTO, studentDTOs, c.isOpen(), c.getVisibility(),
+                c.getEvaluation(), c.getMaxStudents(), c.getStudents().size(), c.getClassroomLink(),
+                c.getClassroomType(), c.getExamLink(), // Nya
+                                                       // fält
                 c.getSlug(), // New slug field
                 c.getPrice(), // New price field
                 c.getSkolverketCourse(), // Include Skolverket course data
                 c.getGroupRooms(), // Include Group Rooms
-                (c.getMaterials() != null ? c.getMaterials().size() : 0) +
-                        (c.getQuizzes() != null ? c.getQuizzes().size() : 0) +
-                        (c.getAssignments() != null ? c.getAssignments().size() : 0),
-                c.getSunCode(), // SUN-kod för SUSA-navet program
-                c.isRequiresLia()); // LIA/praktik-flagga
+                (c.getMaterials() != null ? c.getMaterials().size() : 0)
+                        + (c.getQuizzes() != null ? c.getQuizzes().size() : 0)
+                        + (c.getAssignments() != null ? c.getAssignments().size() : 0),
+                c.getSunCode(), // SUN-kod
+                                // för
+                                // SUSA-navet
+                                // program
+                c.isRequiresLia(), // LIA/praktik-flagga
+                c.getIsFardighetstraning()); // Färdighetsträning-flagga
     }
 }

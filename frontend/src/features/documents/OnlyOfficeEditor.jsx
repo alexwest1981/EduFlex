@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import { X, Save, CheckCircle, Loader2 } from 'lucide-react';
 import { api, getTenantFromUrl } from '../../services/api';
 
-const OnlyOfficeEditor = ({ entityType = 'DOCUMENT', entityId, userId, onClose }) => {
+const OnlyOfficeEditor = ({ entityType = 'DOCUMENT', entityId, userId, onClose, isDrmProtected = false, isTeacher = false }) => {
     const [isLoading, setIsLoading] = useState(true);
     const [config, setConfig] = useState(null);
     const [error, setError] = useState(null);
@@ -117,6 +117,9 @@ const OnlyOfficeEditor = ({ entityType = 'DOCUMENT', entityId, userId, onClose }
                     permissions: {
                         ...config.editorConfig?.permissions,
                         chat: false,
+                        download: isDrmProtected && !isTeacher ? false : (config.editorConfig?.permissions?.download !== false),
+                        print: isDrmProtected && !isTeacher ? false : (config.editorConfig?.permissions?.print !== false),
+                        copy: isDrmProtected && !isTeacher ? false : (config.editorConfig?.permissions?.copy !== false),
                     },
                     customization: {
                         autosave: true,

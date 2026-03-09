@@ -4,7 +4,7 @@ import { toast } from 'react-hot-toast';
 import {
     Link2, Settings, Power, PowerOff, RefreshCw, Upload,
     CheckCircle, XCircle, AlertTriangle, Wifi, WifiOff,
-    Video, Users, BookOpen, FileSpreadsheet, Library, GraduationCap
+    Video, Users, BookOpen, FileSpreadsheet, Library, GraduationCap, Shield
 } from 'lucide-react';
 
 /**
@@ -20,7 +20,9 @@ const INTEGRATION_ICONS = {
     SKOLVERKET: BookOpen,
     SIS: FileSpreadsheet,
     LIBRARY: Library,
-    BANKID: Link2
+    BANKID: Link2,
+    LADOK: GraduationCap,
+    SKOLFEDERATION: Shield
 };
 
 // Färg-mappning per status
@@ -131,7 +133,7 @@ const IntegrationHub = () => {
                     Integration Hub
                 </h1>
                 <p style={{ color: '#6b7280', fontSize: '0.95rem' }}>
-                    Konfigurera och övervaka alla externa integrationer – LTI, Zoom, Teams, Skolverket, SIS, bibliotek och BankID.
+                    Konfigurera och övervaka alla externa integrationer – Ladok, Skolfederation, LTI, Zoom, Teams, Skolverket, SIS, bibliotek och BankID.
                 </p>
             </div>
 
@@ -290,7 +292,11 @@ const IntegrationHub = () => {
                                                         ? 'Ingen konfiguration krävs – använder Open Library API.'
                                                         : integration.platform === 'BANKID'
                                                             ? 'Konfigurerar OIDC-anslutningen för BankID. Växla mellan Sandbox och Live genom att ändra Issuer URL.'
-                                                            : 'Ingen extra konfiguration tillgänglig.'}
+                                                            : integration.platform === 'LADOK'
+                                                                ? 'Synkroniserar betyg och moduler direkt mot Ladok (Högskola/YH-flex).'
+                                                                : integration.platform === 'SKOLFEDERATION'
+                                                                    ? 'SAML V2 SSO-integration för nationell identitetsfederation inom utbildningssektorn.'
+                                                                    : 'Ingen extra konfiguration tillgänglig.'}
                                         </p>
                                     )}
 

@@ -44,6 +44,9 @@ public class CourseMaterial {
 
     private String aiVideoUrl; // URL for the generated AI video explanation
 
+    @Column(nullable = false, columnDefinition = "boolean default false")
+    private boolean isDrmProtected = false; // Flag for Digital Rights Management
+
     // NYTT: Datumstyrning
     @com.fasterxml.jackson.annotation.JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     private java.time.LocalDateTime availableFrom;
@@ -239,5 +242,13 @@ public class CourseMaterial {
 
     public void setAiVideoUrl(String aiVideoUrl) {
         this.aiVideoUrl = aiVideoUrl;
+    }
+
+    public boolean getIsDrmProtected() {
+        return isDrmProtected;
+    }
+
+    public void setIsDrmProtected(boolean isDrmProtected) {
+        this.isDrmProtected = isDrmProtected;
     }
 }

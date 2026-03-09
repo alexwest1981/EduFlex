@@ -256,6 +256,30 @@ const LandingPage = () => {
             bgColor: 'bg-emerald-500/10',
             hoverBorder: 'hover:border-emerald-500/50'
         },
+        {
+            icon: <Database className="w-7 h-7" />,
+            title: "Ladok Sync Engine",
+            description: "Direktöverföring av betyg till Ladok som utkast. Spara timmar av dubbelarbete genom sömlös integration för högskola och yrkeshögskola.",
+            color: 'text-blue-400',
+            bgColor: 'bg-blue-500/10',
+            hoverBorder: 'hover:border-blue-500/50'
+        },
+        {
+            icon: <Shield className="w-7 h-7" />,
+            title: "DOS-lagen & EN 301 549",
+            description: "Inbyggd tillgänglighetskontroll som säkerställer att ert innehåll följer svenska lagkrav för offentlig digital service.",
+            color: 'text-brand-teal',
+            bgColor: 'bg-brand-teal/10',
+            hoverBorder: 'hover:border-brand-teal/50'
+        },
+        {
+            icon: <Lock className="w-7 h-7" />,
+            title: "Skolfederation (SAML V2)",
+            description: "Plug-and-play-stöd för nationell SSO-standard. Redo för kommunal och statlig sektor i hela landet.",
+            color: 'text-cyan-400',
+            bgColor: 'bg-cyan-500/10',
+            hoverBorder: 'hover:border-cyan-500/50'
+        },
     ];
 
 

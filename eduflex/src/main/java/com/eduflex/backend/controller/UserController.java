@@ -2,7 +2,9 @@ package com.eduflex.backend.controller;
 
 import com.eduflex.backend.model.User;
 import com.eduflex.backend.repository.UserRepository;
+import com.eduflex.backend.service.SecurityAuditService;
 import com.eduflex.backend.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -24,13 +26,16 @@ public class UserController {
     private final UserService userService;
     private final UserRepository userRepository;
     private final com.eduflex.backend.repository.RoleRepository roleRepository;
+    private final SecurityAuditService securityAuditService;
 
     @Autowired
     public UserController(UserService userService, UserRepository userRepository,
-            com.eduflex.backend.repository.RoleRepository roleRepository) {
+            com.eduflex.backend.repository.RoleRepository roleRepository,
+            SecurityAuditService securityAuditService) {
         this.userService = userService;
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
+        this.securityAuditService = securityAuditService;
     }
 
     @PostMapping("/register")
@@ -121,9 +126,22 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<User> getUser(@PathVariable Long id) {
+    public ResponseEntity<User> getUser(@PathVariable Long id, HttpServletRequest request) {
         try {
-            return ResponseEntity.ok(userService.getUserById(id));
+            User targetUser = userService.getUserById(id);
+
+            // LOG READ ACCESS
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            if (auth != null && auth.isAuthenticated() && !auth.getName().equals("anonymousUser")) {
+                User actor = userRepository.findByUsername(auth.getName())
+                        .orElseGet(() -> userRepository.findByEmail(auth.getName()).orElse(null));
+                if (actor != null) {
+                    securityAuditService.logReadAccess(actor, targetUser, "USER_PROFILE", request.getRemoteAddr(),
+                            request.getHeader("User-Agent"));
+                }
+            }
+
+            return ResponseEntity.ok(targetUser);
         } catch (Exception e) {
             return ResponseEntity.notFound().build();
         }
@@ -175,6 +193,24 @@ public class UserController {
                     user.setActive((Boolean) activeVal);
                 } else {
                     user.setActive(Boolean.parseBoolean(activeVal.toString()));
+                }
+            }
+
+            if (updates.containsKey("isUppdragsutbildning")) {
+                Object val = updates.get("isUppdragsutbildning");
+                if (val instanceof Boolean) {
+                    user.setIsUppdragsutbildning((Boolean) val);
+                } else {
+                    user.setIsUppdragsutbildning(Boolean.parseBoolean(val.toString()));
+                }
+            }
+
+            if (updates.containsKey("isProtectedIdentity")) {
+                Object val = updates.get("isProtectedIdentity");
+                if (val instanceof Boolean) {
+                    user.setIsProtectedIdentity((Boolean) val);
+                } else {
+                    user.setIsProtectedIdentity(Boolean.parseBoolean(val.toString()));
                 }
             }
 

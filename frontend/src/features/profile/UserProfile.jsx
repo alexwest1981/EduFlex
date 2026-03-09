@@ -268,12 +268,23 @@ const UserProfile = ({ currentUser, showMessage, refreshUser, logout }) => {
     const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
     const [ssnRevealed, setSsnRevealed] = useState(false);
     const [ssnValue, setSsnValue] = useState(''); // Holds decrypted/readable SSN
+    const [availableLanguages, setAvailableLanguages] = useState([]);
 
     useEffect(() => {
         if (activeTab === 'notifications') {
             fetchPreferences();
         }
+        fetchAvailableLanguages();
     }, [activeTab]);
+
+    const fetchAvailableLanguages = async () => {
+        try {
+            const langs = await api.get('/languages/enabled');
+            setAvailableLanguages(langs || []);
+        } catch (e) {
+            console.error("Failed to fetch languages", e);
+        }
+    };
 
     const fetchPreferences = async () => {
         setIsPrefLoading(true);
@@ -647,9 +658,18 @@ const UserProfile = ({ currentUser, showMessage, refreshUser, logout }) => {
                                                 i18n.changeLanguage(e.target.value);
                                             }}
                                         >
-                                            <option value="sv">Svenska</option>
-                                            <option value="en">English</option>
-                                            {/* Add other languages */}
+                                            {availableLanguages.length > 0 ? (
+                                                availableLanguages.map(lang => (
+                                                    <option key={lang.code} value={lang.code}>
+                                                        {lang.nativeName || lang.name}
+                                                    </option>
+                                                ))
+                                            ) : (
+                                                <>
+                                                    <option value="sv">Svenska</option>
+                                                    <option value="en">English</option>
+                                                </>
+                                            )}
                                         </select>
                                     </div>
                                 </div>

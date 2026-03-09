@@ -1,11 +1,11 @@
 {
-  "title": "Course Catalog",
-  "subtitle": "Find and sign up for new courses.",
-  "search_placeholder": "Search courses...",
-  "no_results": "No courses found.",
-  "teacher": "Teacher",
-  "start": "Start",
-  "not_set": "Not set",
-  "join": "Join course",
-  "closed_msg": "Course not open for application yet"
+    "title": "Course Catalog",
+    "subtitle": "Find and sign up for new courses.",
+    "search_placeholder": "Search courses...",
+    "no_results": "No courses found.",
+    "teacher": "Teacher",
+    "start": "Start",
+    "not_set": "Not set",
+    "join": "Join course",
+    "closed_msg": "Course not open for application yet"
 }

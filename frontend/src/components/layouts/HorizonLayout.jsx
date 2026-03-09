@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
-import { LayoutDashboard, FileText, User, Settings, LogOut, Layers, Menu, X, Award, Zap, Moon, Sun, Calendar, BookOpen, TrendingUp, Bell, Search, HelpCircle, Store, Library, MessageSquare, Heart } from 'lucide-react';
+import { LayoutDashboard, FileText, User, Settings, LogOut, Layers, Menu, X, Award, Zap, Moon, Sun, Calendar, BookOpen, TrendingUp, Bell, Search, HelpCircle, Store, Library, MessageSquare, Heart, ChevronRight } from 'lucide-react';
 import { useAppContext } from '../../context/AppContext';
 import { useModules } from '../../context/ModuleContext';
 import { useTranslation } from 'react-i18next';
@@ -90,11 +90,15 @@ const HorizonLayout = ({ children }) => {
                     <NotificationBell />
 
                     {/* User Profile Pill */}
-                    <div className="flex items-center gap-3 pl-2 pr-2 py-1.5 bg-white dark:bg-[#1E1F20] rounded-full border border-gray-100 dark:border-[#3c4043] shadow-sm cursor-pointer hover:shadow-md transition-all" onClick={() => navigate('/profile')}>
-                        <div className="w-8 h-8 rounded-full overflow-hidden bg-gray-100">
+                    <div
+                        className="flex items-center gap-3 pl-2 pr-3 py-1.5 bg-white dark:bg-[#1E1F20] rounded-full border border-gray-100 dark:border-[#3c4043] shadow-sm cursor-pointer hover:shadow-md active:scale-[0.98] transition-all group"
+                        onClick={() => navigate('/profile')}
+                    >
+                        <div className="w-8 h-8 rounded-full overflow-hidden bg-gray-100 group-hover:shadow-inner transition-all">
                             {profileImgUrl ? <img src={profileImgUrl} alt="Profil" className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center font-bold text-xs">{currentUser?.firstName?.[0]}</div>}
                         </div>
-                        <span className="text-sm font-bold pr-2 hidden xl:block">{currentUser?.firstName}</span>
+                        <span className="text-sm font-bold hidden xl:block group-hover:text-black dark:group-hover:text-white transition-colors">{currentUser?.firstName}</span>
+                        <ChevronRight size={12} className="text-gray-300 group-hover:text-gray-500 transition-all transform group-hover:translate-x-0.5" />
                     </div>
                 </div>
             </header>

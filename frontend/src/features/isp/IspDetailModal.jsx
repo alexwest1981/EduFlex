@@ -268,6 +268,18 @@ const IspDetailModal = ({ plan: initialPlan, onClose, onEdit }) => {
                                 </button>
                             )}
 
+                            {/* Validering (YH-flex) — Placeholder */}
+                            {(plan.status === 'DRAFT' || plan.status === 'ACTIVE') && (
+                                <button
+                                    onClick={() => toast('Valideringsmodulen (YH-flex) öppnas...')}
+                                    className="flex items-center gap-2 px-5 py-2.5 bg-purple-100 dark:bg-purple-900/30 hover:bg-purple-200 dark:hover:bg-purple-900/50 text-purple-700 dark:text-purple-400 rounded-2xl font-black text-xs uppercase tracking-widest transition-all"
+                                    title="Validera tidigare kompetens för att förkorta studietiden"
+                                >
+                                    <CheckCircle size={14} />
+                                    Validering (YH-flex)
+                                </button>
+                            )}
+
                             {/* Activate — DRAFT or REVISED */}
                             {(plan.status === 'DRAFT' || plan.status === 'REVISED') && (
                                 <button

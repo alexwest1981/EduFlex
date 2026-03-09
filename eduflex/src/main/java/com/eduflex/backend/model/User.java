@@ -63,6 +63,30 @@ public class User implements Serializable {
     @Column(columnDefinition = "boolean default true")
     private Boolean isActive = true;
 
+    // --- REGULATORY FLAGS ---
+    @Column(nullable = false, columnDefinition = "boolean default false")
+    private boolean isUppdragsutbildning = false;
+
+    // --- SECURITY FLAGS ---
+    @Column(nullable = false, columnDefinition = "boolean default false")
+    private boolean isProtectedIdentity = false;
+
+    public boolean getIsUppdragsutbildning() {
+        return isUppdragsutbildning;
+    }
+
+    public void setIsUppdragsutbildning(boolean isUppdragsutbildning) {
+        this.isUppdragsutbildning = isUppdragsutbildning;
+    }
+
+    public boolean getIsProtectedIdentity() {
+        return isProtectedIdentity;
+    }
+
+    public void setIsProtectedIdentity(boolean isProtectedIdentity) {
+        this.isProtectedIdentity = isProtectedIdentity;
+    }
+
     // --- KEYCLOAK & MFA ---
     private String keycloakUserId;
     private String expoPushToken;

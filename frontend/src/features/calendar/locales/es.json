@@ -1,8 +1,8 @@
 {
     "title": "Calendario",
-    "subtitle": "Realice un seguimiento de sus plazos y fechas de inicio del curso.",
+    "subtitle": "Mantén un registro de tus fechas límite y comienzos de curso.",
     "events_in": "Eventos en",
-    "no_events": "Nada programado este mes.",
+    "no_events": "No hay nada programado para este mes.",
     "days": [
         "Lun",
         "Mar",

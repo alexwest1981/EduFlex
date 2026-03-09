@@ -163,6 +163,17 @@ public class Course {
     @Column(nullable = false, columnDefinition = "boolean default false")
     private boolean requiresLia = false;
 
+    @Column(nullable = false, columnDefinition = "boolean default false")
+    private boolean isFardighetstraning = false;
+
+    public boolean getIsFardighetstraning() {
+        return isFardighetstraning;
+    }
+
+    public void setIsFardighetstraning(boolean isFardighetstraning) {
+        this.isFardighetstraning = isFardighetstraning;
+    }
+
     @ManyToMany(mappedBy = "courses")
     @JsonIgnoreProperties("courses")
     private Set<EducationProgram> educationPrograms = new HashSet<>();

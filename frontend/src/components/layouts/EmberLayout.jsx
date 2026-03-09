@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
-import { LayoutDashboard, FileText, User, Settings, LogOut, Layers, Menu, X, Award, Zap, Moon, Sun, Calendar, BookOpen, TrendingUp, Bell, Search, Plus, HelpCircle, Shield, Folder, BarChart2, HardDrive, Wallet, Music, Play, Pause, Heart, Speaker, Store, Library, ClipboardList, MessageSquare } from 'lucide-react';
+import { LayoutDashboard, FileText, User, Settings, LogOut, Layers, Menu, X, Award, Zap, Moon, Sun, Calendar, BookOpen, TrendingUp, Bell, Search, Plus, HelpCircle, Shield, Folder, BarChart2, HardDrive, Wallet, Music, Play, Pause, Heart, Speaker, Store, Library, ClipboardList, MessageSquare, ChevronRight } from 'lucide-react';
 import { useAppContext } from '../../context/AppContext';
 import { useModules } from '../../context/ModuleContext';
 import { useTranslation } from 'react-i18next';
@@ -118,19 +118,20 @@ const EmberLayout = ({ children }) => {
                     <div className="p-6 border-t border-gray-100 dark:border-gray-800">
                         <div
                             onClick={() => navigate('/profile')}
-                            className="flex items-center gap-3 p-2 rounded-xl cursor-pointer hover:bg-orange-50 dark:hover:bg-orange-900/10 transition-colors group"
+                            className="flex items-center gap-3 p-3 rounded-xl cursor-pointer hover:bg-orange-50 dark:hover:bg-orange-900/10 active:scale-[0.98] transition-all group border border-transparent hover:border-orange-200 dark:hover:border-orange-800/30"
                         >
-                            <div className="w-10 h-10 rounded-full bg-orange-100 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 flex items-center justify-center overflow-hidden shrink-0">
+                            <div className="w-10 h-10 rounded-full bg-orange-100 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 flex items-center justify-center overflow-hidden shrink-0 group-hover:shadow-md transition-all">
                                 {profileImgUrl ? (
                                     <img src={profileImgUrl} alt="Profil" className="w-full h-full object-cover" />
                                 ) : (
                                     <User size={18} className="text-[#FF5722]" />
                                 )}
                             </div>
-                            <div className="min-w-0">
-                                <p className="text-sm font-bold text-gray-900 dark:text-white truncate">{currentUser?.firstName}</p>
-                                <p className="text-[10px] uppercase font-bold text-[#FF5722] tracking-wider">{roleName}</p>
+                            <div className="flex-1 min-w-0">
+                                <p className="text-sm font-bold text-gray-900 dark:text-white truncate group-hover:text-[#FF5722] transition-colors">{currentUser?.firstName}</p>
+                                <p className="text-[10px] uppercase font-bold text-[#FF5722] tracking-wider opacity-80">{roleName}</p>
                             </div>
+                            <ChevronRight size={14} className="text-gray-300 group-hover:text-[#FF5722] transition-all transform group-hover:translate-x-0.5" />
                         </div>
 
                         <button

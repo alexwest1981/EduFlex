@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
-import { LayoutDashboard, FileText, User, Settings, LogOut, Layers, Menu, X, Award, Zap, Moon, Sun, Calendar, BookOpen, TrendingUp, HelpCircle, Store, Library, MessageSquare, Heart } from 'lucide-react';
+import { LayoutDashboard, FileText, User, Settings, LogOut, Layers, Menu, X, Award, Zap, Moon, Sun, Calendar, BookOpen, TrendingUp, HelpCircle, Store, Library, MessageSquare, Heart, ChevronRight } from 'lucide-react';
 import { useAppContext } from '../../context/AppContext';
 import { useModules } from '../../context/ModuleContext';
 import { useTranslation } from 'react-i18next';
@@ -61,7 +61,7 @@ const FloatingLayout = ({ children }) => {
             <div className={`fixed inset-0 -z-10 app-wrapper transition-colors duration-300 pointer-events-none`} />
 
             <aside className={`
-                ${sidebarOpen ? 'w-64' : 'w-20'} 
+                ${sidebarOpen ? 'w-64' : 'w-20'}
                 rounded-[30px] border-none shadow-none bg-white dark:bg-[#1E1F20]
                 transition-all duration-300 flex flex-col z-20 sticky top-4 h-[calc(100vh-2rem)]
             `}>
@@ -86,16 +86,16 @@ const FloatingLayout = ({ children }) => {
                                 to={item.path}
                                 className={({ isActive: navActive }) => {
                                     const isActive = navActive || (item.path === '/admin' && location.pathname.startsWith('/enterprise'));
-                                    return `flex items-center px-4 py-3 transition-all duration-200 group relative
+                                    return `flex items - center px - 4 py - 3 transition - all duration - 200 group relative
                                     ${isActive ? 'text-gray-900 dark:text-white font-bold' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'}
-                                    `;
+`;
                                 }}
                             >
                                 {({ isActive: navActive }) => {
                                     const isActive = navActive || (item.path === '/admin' && location.pathname.startsWith('/enterprise'));
                                     return (
                                         <>
-                                            <div className={`${!sidebarOpen && 'mx-auto'} ${isActive ? 'text-green-800 dark:text-green-400' : ''}`}>{item.icon}</div>
+                                            <div className={`${!sidebarOpen && 'mx-auto'} ${isActive ? 'text-green-800 dark:text-green-400' : ''} `}>{item.icon}</div>
                                             {sidebarOpen && <span className="ml-4 font-medium text-sm">{item.label}</span>}
                                         </>
                                     );
@@ -146,12 +146,26 @@ const FloatingLayout = ({ children }) => {
                         {/* Notifications */}
                         <NotificationBell />
 
-                        <div className="flex flex-col text-right">
-                            <span className="font-bold text-sm text-gray-900 dark:text-white">{currentUser?.fullName}</span>
-                            <span className="text-xs text-gray-500">{currentUser?.email}</span>
-                        </div>
-                        <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-gray-100 dark:border-gray-700 cursor-pointer" onClick={() => navigate('/profile')}>
-                            {profileImgUrl ? <img src={profileImgUrl} alt="Profil" className="w-full h-full object-cover" /> : <div className="w-full h-full bg-indigo-100 flex items-center justify-center font-bold text-indigo-800">{currentUser?.firstName?.[0]}</div>}
+                        <div
+                            className="flex items-center gap-4 p-1.5 pr-3 rounded-full hover:bg-gray-50 dark:hover:bg-gray-800/50 active:scale-[0.98] transition-all cursor-pointer group border border-transparent hover:border-gray-100 dark:hover:border-gray-700/50"
+                            onClick={() => navigate('/profile')}
+                        >
+                            <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-gray-100 dark:border-gray-700 group-hover:shadow-md transition-all">
+                                {profileImgUrl ? (
+                                    <img src={profileImgUrl} alt="Profil" className="w-full h-full object-cover" />
+                                ) : (
+                                    <div className="w-full h-full bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center font-bold text-indigo-800 dark:text-indigo-400">
+                                        {currentUser?.firstName?.[0]}
+                                    </div>
+                                )}
+                            </div>
+                            <div className="flex flex-col text-left">
+                                <span className="font-bold text-sm text-gray-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors uppercase tracking-tight">
+                                    {currentUser?.firstName}
+                                </span>
+                                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{roleName}</span>
+                            </div>
+                            <ChevronRight size={14} className="text-gray-300 group-hover:text-indigo-500 transition-all transform group-hover:translate-x-0.5" />
                         </div>
                     </div>
                 </div>

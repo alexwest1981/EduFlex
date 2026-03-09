@@ -1,6 +1,6 @@
 {
     "title": "Min Profil",
-    "details": "Personlige detaljer",
+    "details": "Personopplysninger",
     "security": "Sikkerhet",
     "language": "Språk",
     "firstname": "Fornavn",
@@ -9,7 +9,7 @@
     "phone": "Telefon",
     "address_header": "ADRESSEOPPLYSNINGER",
     "street": "Gateadresse",
-    "zip": "Postnummer",
+    "zip": "Postnr",
     "city": "Sted",
     "country": "Land",
     "current_password": "Nåværende Passord",

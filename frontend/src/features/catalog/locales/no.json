@@ -1,8 +1,8 @@
 {
     "title": "Kurskatalog",
     "subtitle": "Finn og meld deg på nye kurs.",
-    "search_placeholder": "Søk etter kurs...",
-    "no_results": "Ingen kurs ble funnet.",
+    "search_placeholder": "Søk kurs...",
+    "no_results": "Ingen kurs funnet.",
     "teacher": "Lærer",
     "start": "Start",
     "not_set": "Ikke satt",

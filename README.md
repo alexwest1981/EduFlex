@@ -1,4 +1,4 @@
-# 🎓 EduFlex LLP v3.7.4
+# 🎓 EduFlex LLP v3.8.1
 *Den kompletta Learning Lifecycle-plattformen för modern utbildning och B2B*
 
 *Utvecklas & underhålls av **Alex Weström / Fenrir Studio***  
@@ -14,6 +14,19 @@ EduFlex LLP är ett enterprise-redo, molnbaserat ekosystem som ersätter traditi
 ---
 
 ## 🚀 Senaste Uppdateringarna (Changelog)
+
+### v3.8.2 (9 mar 2026) – Enterprise Security & Compliance
+- **Enterprise IAM & Privacy**: Implementerat "Skyddad identitet" för studenter med automatiskt dold profil överallt utom för systemadministratörer (GDPR).
+- **Data Protection & Audit**: Alla visningar av användarprofiler loggas nu i en spårbar "Read Audit Log", enligt krav från svenska kommuner och myndigheter (ex. Stockholms stad Bilaga 3c).
+- **Inbyggd DRM (Enterprise)**: Filskyddsmekanism (DRM) i materialvisaren som förhindrar nedladdning, utskrift och kopiering (right-click) av unikt kursmaterial, optimalt för stängd B2B-distribution.
+- **Incident Response Plan**: Nyskriven IRP-dokumentation med procedurer för inneslutning av dataintrång och ransomware för anbud inom offentlig sektor.
+
+### v3.8.1 (8 mar 2026) – Dynamic Language Manager (AI-Powered)
+- **🌍 Dynamic Language Manager**: Implementerat ett centralt system för att hantera språk direkt från Kontrollcenter.
+- **🤖 AI-Driven översättning**: Nya språk översätts automatiskt med Gemini AI genom att läsa av systemets existerande språkfiler.
+- **📦 MinIO Storage**: Alla översättningar lagras persistent i MinIO för att eliminera lokala filberoenden.
+- **🔄 Dynamisk i18n**: Frontend hämtar nu tillgängliga språk och översättningar i realtid från backendens API.
+- **👤 Profil-integration**: Användare kan nu välja mellan alla administratörs-aktiverade språk i sin profil.
 
 ### v3.8.1 (8 mar 2026) – Plug-and-Play & Universal Startup
 - **🚀 One-Click Startup**: Implementerat en enhetlig start-metod för Windows (`Start-EduFlex.bat`) och Linux/WSL (`start.sh`).
@@ -64,10 +77,20 @@ EduFlex LLP är ett enterprise-redo, molnbaserat ekosystem som ersätter traditi
 ### 4. Enterprise Compliance & Automation (ERP+)
 - **LIA Compliance Radar**: Automatisk 8-veckorsvarning för MYH-regelverket.
 - **CSN Autopilot & "Ghosting Radar"**: Agerar på dolda avhopp och skickar händelsekoder (99/41/81) per automatik.
+- **Protected Identity / Skyddad Id**: Fullständigt automatiserat integritetsskydd över databas (GCM-krypterat) och klient (UI maskering).
+- **Read Audit Logs**: Granulär övervakning av all personuppgiftsbehandling enligt offentliga säkerhetskrav.
+- **Kursmaterial med DRM**: Restriktiva rättigheter kring delning och utskrift inbyggt direkt i LMS:et.
 - **Yrkesbarometern & JobAd Enrichment (NLP)**: 5-årsprognoser per utbildning och AI-driven kompetensmatchning direkt mot annonser.
 - **BankID & E-signering**: Automatiserade trepartsavtal för LIA och validering.
 - **MYH Alumn-Tracker**: Automatiserad uppföljning av sysselsättningsgrad 6 månader efter examen.
 - **AI Kompetensvalidering**: Automatisk NLP-matchning av CV mot Skolverkets kursmål.
+
+### 🏛️ Strategic Enterprise Initiatives (Roadmap Q2-Q4 2026)
+- **Ladok Sync Engine**: Direktöverföring av betyg från EduFlex till Ladok (Högskola/YH).
+- **Skolfederation (SAML V2)**: Inbyggt stöd för nationell SSO-standard i kommunal sektor.
+- **DOS-Lagen & EN 301 549**: Inbyggd tillgänglighetskontroll i kursbyggaren för 100% compliance.
+- **AF Personal Data Gateway**: Automatisk verifiering av inskrivningsstatus via Arbetsförmedlingens API.
+- **YH-flex Validering**: Modul för att korta studietid baserat på reell kompetens.
 
 ---
 
@@ -113,4 +136,4 @@ Kör följande kommando:
 
 ⚖ **Licens & Kontakt**  
 EduFlex LLP™ © 2026 Alex Weström / Fenrir Studio  
-Senast uppdaterad: 2026-03-08 (v3.8.0 - CSN Autopilot, LIA Radar & JobTech)
+Senast uppdaterad: 2026-03-08 (v3.8.1 - Dynamic Language Manager, CSN Autopilot & JobTech)

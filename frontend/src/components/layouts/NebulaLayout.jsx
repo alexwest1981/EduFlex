@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
-import { LayoutDashboard, FileText, User, Settings, LogOut, Layers, Menu, X, Award, Zap, Moon, Sun, Calendar, BookOpen, TrendingUp, Bell, Search, ShoppingBag, MessageSquare, PieChart, HelpCircle, Store, Library, ClipboardList, Heart } from 'lucide-react';
+import { LayoutDashboard, FileText, User, Settings, LogOut, Layers, Menu, X, Award, Zap, Moon, Sun, Calendar, BookOpen, TrendingUp, Bell, Search, ShoppingBag, MessageSquare, PieChart, HelpCircle, Store, Library, ClipboardList, Heart, ChevronRight } from 'lucide-react';
 import { useAppContext } from '../../context/AppContext';
 import { useModules } from '../../context/ModuleContext';
 import logoTop from '../../assets/images/Logo_top.png';
@@ -48,14 +48,14 @@ const NebulaLayout = ({ children }) => {
     return (
         <div className="flex flex-col min-h-screen w-full text-gray-800 dark:text-[#E3E3E3] font-sans transition-colors duration-300" style={{ background: 'var(--app-background)' }}>
             <style>{`
-@media(prefers - color - scheme: dark) {
-                    .dark - mode - bg { background: var(--app - background - dark)!important; }
-}
-                : root.dark body { background: var(--app - background - dark)!important; }
-                .app - wrapper { background: var(--app - background); }
-                .dark.app - wrapper { background: var(--app - background - dark); }
-`}</style>
-            <div className={`fixed inset - 0 - z - 10 app - wrapper transition - colors duration - 300 pointer - events - none`} />
+                @media (prefers-color-scheme: dark) {
+                    .dark-mode-bg { background: var(--app-background-dark) !important; }
+                }
+                :root.dark body { background: var(--app-background-dark) !important; }
+                .app-wrapper { background: var(--app-background); }
+                .dark .app-wrapper { background: var(--app-background-dark); }
+            `}</style>
+            <div className={`fixed inset-0 -z-10 app-wrapper transition-colors duration-300 pointer-events-none`} />
 
             {/* NEBULA TOP BAR - Minimalist & Glassy */}
             <header className="h-24 px-10 flex items-center justify-between shrink-0 sticky top-0 z-50 backdrop-blur-md bg-white/40 dark:bg-[#131314]/40 transition-colors duration-300">
@@ -76,11 +76,11 @@ const NebulaLayout = ({ children }) => {
                     {navItems.map((item) => {
                         const isActive = location.pathname === item.path || (item.path === '/admin' && location.pathname.startsWith('/enterprise'));
                         return (
-                            <NavLink key={item.path} to={item.path} className={`p - 3.5 rounded - 2xl transition - all duration - 300 group
+                            <NavLink key={item.path} to={item.path} className={`p-3.5 rounded-2xl transition-all duration-300 group
                                 ${isActive
                                     ? 'bg-white dark:bg-[#2D2D2D] text-purple-600 dark:text-purple-400 shadow-xl shadow-purple-900/5 scale-110'
                                     : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-white/50 dark:hover:bg-white/5'
-                                } `}>
+                                }`}>
                                 {item.icon}
                             </NavLink>
                         );
@@ -89,14 +89,15 @@ const NebulaLayout = ({ children }) => {
 
                 {/* Right Utilities - Glass Capsules */}
                 <div className="flex items-center gap-6">
-                    <div className="flex items-center gap-3 bg-white/40 dark:bg-black/20 p-2 rounded-full border border-white/20">
+                    <div className="flex items-center gap-3 bg-white/40 dark:bg-black/20 p-2 rounded-full border border-white/20 hover:bg-white/60 dark:hover:bg-black/40 transition-all cursor-pointer group/profile active:scale-95" onClick={() => navigate('/profile')}>
                         <div className="flex flex-col text-right px-2">
                             <span className="font-bold text-xs uppercase tracking-wider text-gray-500 dark:text-gray-400">Welcome</span>
-                            <span className="font-bold text-sm text-gray-800 dark:text-gray-200">{currentUser?.firstName}</span>
+                            <span className="font-bold text-sm text-gray-800 dark:text-gray-200 group-hover/profile:text-purple-600 dark:group-hover/profile:text-purple-400 transition-colors">{currentUser?.firstName}</span>
                         </div>
-                        <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-white/50 cursor-pointer hover:border-purple-400 transition-colors" onClick={() => navigate('/profile')}>
+                        <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-white/50 group-hover/profile:border-purple-400 transition-colors relative">
                             {profileImgUrl ? <img src={profileImgUrl} alt="Profil" className="w-full h-full object-cover" /> : <div className="w-full h-full bg-purple-100 flex items-center justify-center font-bold text-purple-800">{currentUser?.firstName?.[0]}</div>}
                         </div>
+                        <ChevronRight size={14} className="text-gray-400 group-hover/profile:text-purple-500 transition-colors mr-1" />
                     </div>
 
                     {/* Settings Button - Only for Admin */}

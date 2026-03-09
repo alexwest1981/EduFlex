@@ -8,7 +8,7 @@
     "empty_teacher": "Vent på informasjon fra læreren.",
     "replies": "svar",
     "create_header": "Start ny diskusjon i \"{{category}}\"",
-    "subject": "Emne",
+    "subject": "Overskrift",
     "subject_placeholder": "Emne...",
     "content": "Innhold",
     "content_placeholder": "Skriv meldingen din her...",
