@@ -126,31 +126,31 @@ const LandingPage = () => {
         {
             icon: <Layers className="w-7 h-7" />,
             title: t('landing.features.multi_tenancy.title'),
-            description: "Full isolering och kontroll över varje organisation. Master-admin kan nu styra moduler och licensnivåer (BASIC/PRO/ENT) per tenant.",
+            description: t('landing.features.multi_tenancy.desc'),
             color: 'text-brand-teal',
             bgColor: 'bg-brand-teal/10',
             hoverBorder: 'hover:border-brand-teal/50'
         },
         {
             icon: <Building2 className="w-7 h-7" />,
-            title: "B2B Extended Enterprise",
-            description: "Sälj Seat Licenses direkt till företagskunder med Pointer-baserad distribution. Behåll Single Source of Truth för kurser samtidigt som kunders data isoleras.",
+            title: t('landing.features.b2b.title'),
+            description: t('landing.features.b2b.desc'),
             color: 'text-brand-gold',
             bgColor: 'bg-brand-gold/10',
             hoverBorder: 'hover:border-brand-gold/50'
         },
         {
             icon: <Zap className="w-7 h-7" />,
-            title: "Microservice Scale",
-            description: "SCORM, xAPI och CMI5 drivs nu av en dedikerad mikrotjänst. Detta isolerar resurskrävande processer och garanterar en blixtsnabb upplevelse även under hög belastning.",
+            title: t('landing.features.microservice.title'),
+            description: t('landing.features.microservice.desc'),
             color: 'text-indigo-500',
             bgColor: 'bg-indigo-500/10',
             hoverBorder: 'hover:border-indigo-500/50'
         },
         {
             icon: <Zap className="w-7 h-7" />,
-            title: "Real-time Event Bus",
-            description: "En helt ny arkitektur baserad på Redis Event Bus och dedikerade mikroservices för realtidskommunikation. Skalar för tiotusentals samtidiga användare.",
+            title: t('landing.features.event_bus.title'),
+            description: t('landing.features.event_bus.desc'),
             color: 'text-brand-teal',
             bgColor: 'bg-brand-teal/10',
             hoverBorder: 'hover:border-brand-teal/50'
@@ -173,152 +173,152 @@ const LandingPage = () => {
         },
         {
             icon: <Smartphone className="w-7 h-7" />,
-            title: "Native PWA Experience",
-            description: "Installera EduFlex direkt på hemskärmen. Fullt stöd för offline-åtkomst och blixtsnabb respons på alla enheter.",
+            title: t('landing.features.pwa.title'),
+            description: t('landing.features.pwa.desc'),
             color: 'text-sky-400',
             bgColor: 'bg-sky-500/10',
             hoverBorder: 'hover:border-sky-500/50'
         },
         {
             icon: <VideoIcon className="w-7 h-7" />,
-            title: "Premium Live Video",
-            description: "Högpresterande videomöten via LiveKit. Inkluderar Zoom-liknande bakgrundsoskärpa och snyggt glassmorphiskt UI.",
+            title: t('landing.features.live_video.title'),
+            description: t('landing.features.live_video.desc'),
             color: 'text-indigo-400',
             bgColor: 'bg-indigo-500/10',
             hoverBorder: 'hover:border-indigo-500/50'
         },
         {
             icon: <FileText className="w-7 h-7" />,
-            title: "Collaborative Editing",
-            description: "Redigera dokument tillsammans i realtid med OnlyOffice. Sömlös integration för Word, Excel och PowerPoint direkt i webbläsaren.",
+            title: t('landing.features.collaborative.title'),
+            description: t('landing.features.collaborative.desc'),
             color: 'text-brand-orange',
             bgColor: 'bg-brand-orange/10',
             hoverBorder: 'hover:border-brand-orange/50'
         },
         {
             icon: <TrendingUp className="w-7 h-7" />,
-            title: "ROI Reporting Engine",
-            description: "Koppla utbildningsresultat till faktiska affärsmål. Maximera avkastningen på er kompetensutveckling med datadrivna insikter.",
+            title: t('landing.features.roi.title'),
+            description: t('landing.features.roi.desc'),
             color: 'text-brand-gold',
             bgColor: 'bg-brand-gold/10',
             hoverBorder: 'hover:border-brand-gold/50'
         },
         {
             icon: <Bell className="w-7 h-7" />,
-            title: "Multi-Channel Notifications",
-            description: "Håll dig alltid uppdaterad. Få realtidsaviseringar via E-post, SMS och Push för chatt, kalender och feedback direkt i webbläsaren.",
+            title: t('landing.features.notifications.title'),
+            description: t('landing.features.notifications.desc'),
             color: 'text-purple-400',
             bgColor: 'bg-purple-500/10',
             hoverBorder: 'hover:border-purple-500/50'
         },
         {
             icon: <Shield className="w-7 h-7" />,
-            title: "Exam Integrity Pro",
-            description: "Säkerställ rättvisa tentamen med realtidsvideo-proctoring. AI-övervakning upptäcker misstänkt beteende och tvingar fram tydligt videomaterial.",
+            title: t('landing.features.exams.title'),
+            description: t('landing.features.exams.desc'),
             color: 'text-rose-400',
             bgColor: 'bg-rose-500/10',
             hoverBorder: 'hover:border-rose-500/50'
         },
         {
             icon: <Link2 className="w-7 h-7" />,
-            title: "Integration Hub Pro",
-            description: "Koppla EduFlex till LTI 1.3, Zoom, Microsoft Teams, Skolverkets API, SIS-import och Bibliotekssökning – allt hanterat från ett enda admin-centrum.",
+            title: t('landing.features.integrations.title'),
+            description: t('landing.features.integrations.desc'),
             color: 'text-cyan-400',
             bgColor: 'bg-cyan-500/10',
             hoverBorder: 'hover:border-cyan-500/50'
         },
         {
             icon: <Brain className="w-7 h-7" />,
-            title: "AI Compliance Portal",
-            description: "Full spårbarhet för varje AI-beslut. Granska prompt, svar, modell och användar-ID i realtid – GDPR-redo och klart för revision.",
+            title: t('landing.features.compliance.title'),
+            description: t('landing.features.compliance.desc'),
             color: 'text-violet-400',
             bgColor: 'bg-violet-500/10',
             hoverBorder: 'hover:border-violet-500/50'
         },
         {
             icon: <Lock className="w-7 h-7" />,
-            title: "Secure PII Masking",
-            description: "Känslig persondata (SSN) är nu maskerad som standard och kräver säker lösenordsverifiering för att visas. Trygghet genom design.",
+            title: t('landing.features.pii.title'),
+            description: t('landing.features.pii.desc'),
             color: 'text-amber-400',
             bgColor: 'bg-amber-500/10',
             hoverBorder: 'hover:border-amber-500/50'
         },
         {
             icon: <Map className="w-7 h-7" />,
-            title: "EduCareer & JobTech (Live)",
-            description: "Arbetsförmedlingens öppna data (Yrkesbarometern) visar arbetsmarknadsprognoser direkt vid kursskapandet. Importera LIA- och praktikplatser med AI-driven matchning.",
+            title: t('landing.features.educareer.title'),
+            description: t('landing.features.educareer.desc'),
             color: 'text-brand-teal',
             bgColor: 'bg-brand-teal/10',
             hoverBorder: 'hover:border-brand-teal/50'
         },
         {
             icon: <Shield className="w-7 h-7" />,
-            title: "ERP+: LIA & CSN Autopilot",
-            description: "Säkra myndighetskraven. Automatisk 8-veckorsvarning för MYH-bedömningar (LIA Radar) och Ghosting Radar (CSN Autopilot) som agerar på inaktiva studenter.",
+            title: t('landing.features.erp.title'),
+            description: t('landing.features.erp.desc'),
             color: 'text-rose-400',
             bgColor: 'bg-rose-500/10',
             hoverBorder: 'hover:border-rose-500/50'
         },
         {
             icon: <Map className="w-7 h-7" />,
-            title: "Next-Gen ISP (AI & PDF)",
-            description: "Revolutionera studieplaneringen med AI-kursförslag, automatisk poängberäkning och Komvux-kompatibla PDF-exporter med ett klick.",
+            title: t('landing.features.isp.title'),
+            description: t('landing.features.isp.desc'),
             color: 'text-brand-gold',
             bgColor: 'bg-brand-gold/10',
             hoverBorder: 'hover:border-brand-gold/50'
         },
         {
             icon: <Lock className="w-7 h-7" />,
-            title: "BankID Identity Broker",
-            description: "Säker inloggning med svenskt BankID via OIDC. Fullt konfigurerbart för både Sandbox och Live direkt via vår Integration Hub.",
+            title: t('landing.features.bankid.title'),
+            description: t('landing.features.bankid.desc'),
             color: 'text-brand-teal',
             bgColor: 'bg-brand-teal/10',
             hoverBorder: 'hover:border-brand-teal/50'
         },
         {
             icon: <Play className="w-7 h-7" />,
-            title: "AI Video Tutor v3.6.2 (Live)",
-            description: "Automatisk generering av högkvalitativa förklaringsvideor med undertexter och ljud direkt från kursinnehåll.",
+            title: t('landing.features.video_tutor.title'),
+            description: t('landing.features.video_tutor.desc'),
             color: 'text-red-400',
             bgColor: 'bg-brand-red/10',
             hoverBorder: 'hover:border-brand-red/50'
         },
         {
             icon: <Globe className="w-7 h-7" />,
-            title: "Global Language Sync",
-            description: "Fullt stöd för 9+ språk med AI-driven synkronisering. Växla sömlöst mellan svenska, engelska, franska och fler direkt i hela plattformen.",
+            title: t('landing.features.language_sync.title'),
+            description: t('landing.features.language_sync.desc'),
             color: 'text-brand-teal',
             bgColor: 'bg-brand-teal/10',
             hoverBorder: 'hover:border-brand-teal/50'
         },
         {
             icon: <Globe className="w-7 h-7" />,
-            title: "Utbildningsnavet (SUSA-navet)",
-            description: "Importera nationellt godkända YH-program direkt från Skolverkets SusaNav via SUN-kod. Kurser skapas automatiskt med LIA-flagga och kursplan. Studenter bläddrar via den nya Utbildningskatalogen.",
+            title: t('landing.features.susa.title'),
+            description: t('landing.features.susa.desc'),
             color: 'text-emerald-400',
             bgColor: 'bg-emerald-500/10',
             hoverBorder: 'hover:border-emerald-500/50'
         },
         {
             icon: <Database className="w-7 h-7" />,
-            title: "Ladok Sync Engine",
-            description: "Direktöverföring av betyg till Ladok som utkast. Spara timmar av dubbelarbete genom sömlös integration för högskola och yrkeshögskola.",
+            title: t('landing.features.ladok.title'),
+            description: t('landing.features.ladok.desc'),
             color: 'text-blue-400',
             bgColor: 'bg-blue-500/10',
             hoverBorder: 'hover:border-blue-500/50'
         },
         {
             icon: <Shield className="w-7 h-7" />,
-            title: "DOS-lagen & EN 301 549",
-            description: "Inbyggd tillgänglighetskontroll som säkerställer att ert innehåll följer svenska lagkrav för offentlig digital service.",
+            title: t('landing.features.accessibility.title'),
+            description: t('landing.features.accessibility.desc'),
             color: 'text-brand-teal',
             bgColor: 'bg-brand-teal/10',
             hoverBorder: 'hover:border-brand-teal/50'
         },
         {
             icon: <Lock className="w-7 h-7" />,
-            title: "Skolfederation (SAML V2)",
-            description: "Plug-and-play-stöd för nationell SSO-standard. Redo för kommunal och statlig sektor i hela landet.",
+            title: t('landing.features.skolfederation.title'),
+            description: t('landing.features.skolfederation.desc'),
             color: 'text-cyan-400',
             bgColor: 'bg-cyan-500/10',
             hoverBorder: 'hover:border-cyan-500/50'
@@ -327,16 +327,16 @@ const LandingPage = () => {
 
 
     const screenshotData = [
-        { src: adminDashboardImg, title: 'Admin Dashboard 2.0', description: 'Total kontroll över organisationen med live-data och widgets.' },
-        { src: teacherDashboardImg, title: 'Lärarpanelen', description: 'Effektiv översikt av elevers närvaro, framsteg och inlämningar.' },
-        { src: aiQuizImg, title: 'AI Quiz Generator', description: 'Ladda upp dokument och låt AI skapa provfrågor på sekunder.' },
-        { src: libraryImg, title: 'E-boksbibliotek', description: 'Ett centralt bibliotek för litteratur med inbyggd läsare.' },
-        { src: catalogNewImg, title: 'Kurskatalog', description: 'Visuell och filtrerbar katalog för elever att hitta nya kurser.' },
-        { src: resourceImg, title: 'Resursbank & Community', description: 'Dela och hämta material från ett gemensamt Community-bibliotek.' },
-        { src: analyticsNewImg, title: 'Djupgående Statistik', description: 'Analysera intäkter, användarengagemang och kursresultat.' },
-        { src: analyticsNewImg, title: 'ROI Reporting Engine', description: 'Visualisera korrelationen mellan Mastery Score och KPI:er.' },
-        { src: settingsNewImg, title: 'Systeminställningar', description: 'Hantera LTI, moduler, tema och lagringsbackends.' },
-        { src: debugImg, title: 'Live Debug Terminal', description: 'Matrix-inspirerad loggvisning för teknisk felsökning i realtid.' }
+        { src: adminDashboardImg, title: t('landing.screenshots.admin.title'), description: t('landing.screenshots.admin.desc') },
+        { src: teacherDashboardImg, title: t('landing.screenshots.teacher.title'), description: t('landing.screenshots.teacher.desc') },
+        { src: aiQuizImg, title: t('landing.screenshots.quiz.title'), description: t('landing.screenshots.quiz.desc') },
+        { src: libraryImg, title: t('landing.screenshots.library.title'), description: t('landing.screenshots.library.desc') },
+        { src: catalogNewImg, title: t('landing.screenshots.catalog.title'), description: t('landing.screenshots.catalog.desc') },
+        { src: resourceImg, title: t('landing.screenshots.resource.title'), description: t('landing.screenshots.resource.desc') },
+        { src: analyticsNewImg, title: t('landing.screenshots.analytics.title'), description: t('landing.screenshots.analytics.desc') },
+        { src: analyticsNewImg, title: t('landing.screenshots.roi.title'), description: t('landing.screenshots.roi.desc') },
+        { src: settingsNewImg, title: t('landing.screenshots.settings.title'), description: t('landing.screenshots.settings.desc') },
+        { src: debugImg, title: t('landing.screenshots.debug.title'), description: t('landing.screenshots.debug.desc') }
     ];
 
     return (
@@ -499,10 +499,10 @@ const LandingPage = () => {
 
                     <div className="hidden md:flex items-center gap-8 text-slate-300">
                         <a className="text-sm font-medium hover:text-brand-teal transition-colors" href="#features">{t('landing.nav.features')}</a>
-                        <button onClick={() => navigate('/features#gamification')} className="text-sm font-medium hover:text-brand-teal transition-colors">Gamification</button>
-                        <button onClick={() => navigate('/features#showcase')} className="text-sm font-medium hover:text-brand-teal transition-colors">Showcase</button>
-                        <button onClick={() => navigate('/pricing')} className="text-sm font-medium hover:text-brand-teal transition-colors">Prissättning</button>
-                        <button onClick={() => navigate('/features#highlights')} className="text-sm font-medium hover:text-brand-teal transition-colors">Teknologi</button>
+                        <button onClick={() => navigate('/features#gamification')} className="text-sm font-medium hover:text-brand-teal transition-colors">{t('landing.nav.gamification')}</button>
+                        <button onClick={() => navigate('/features#showcase')} className="text-sm font-medium hover:text-brand-teal transition-colors">{t('landing.nav.showcase')}</button>
+                        <button onClick={() => navigate('/pricing')} className="text-sm font-medium hover:text-brand-teal transition-colors">{t('landing.nav.pricing')}</button>
+                        <button onClick={() => navigate('/features#highlights')} className="text-sm font-medium hover:text-brand-teal transition-colors">{t('landing.nav.technology')}</button>
                     </div>
 
                     <div className="flex items-center gap-3">
@@ -511,7 +511,7 @@ const LandingPage = () => {
                                 onClick={() => setIsLangOpen(!isLangOpen)}
                                 className="flex items-center gap-2 px-3 py-1.5 bg-white/5 rounded-full border border-white/10 text-xs font-bold hover:bg-white/10 transition-all"
                             >
-                                <span>{flagEmoji[i18n.language.split('-')[0]] || '🌐'}</span>
+                                <span>{flagEmoji[i18n.language.split('-')[0].toLowerCase()] || '🌐'}</span>
                                 <span className="uppercase">{i18n.language.split('-')[0]}</span>
                                 <ChevronDown className={`w-3 h-3 transition-transform ${isLangOpen ? 'rotate-180' : ''}`} />
                             </button>
@@ -534,8 +534,8 @@ const LandingPage = () => {
                                                         }`}
                                                 >
                                                     <span className="flex items-center gap-2">
-                                                        <span>{flagEmoji[lang.code.split('-')[0]] || '🌐'}</span>
-                                                        <span>{languageNames[lang.code.split('-')[0]] || lang.name}</span>
+                                                        <span>{flagEmoji[lang.code.split('-')[0].toLowerCase()] || '🌐'}</span>
+                                                        <span>{languageNames[lang.code.split('-')[0].toLowerCase()] || lang.name}</span>
                                                     </span>
                                                     {i18n.language.split('-')[0] === lang.code.split('-')[0] && <Check className="w-3 h-3" />}
                                                 </button>
@@ -556,7 +556,7 @@ const LandingPage = () => {
                             onClick={() => setIsContactModalOpen(true)}
                             className="bg-brand-gold text-slate-900 text-sm font-bold px-5 py-2.5 rounded-xl hover:brightness-110 transition-all shadow-lg glow-gold"
                         >
-                            Boka Demo
+                            {t('landing.nav.book_demo')}
                         </button>
 
                         {/* Mobile Menu Button */}
@@ -575,12 +575,12 @@ const LandingPage = () => {
             <div className={`md:hidden fixed inset-x-4 top-20 z-40 glass-card-dark rounded-2xl transition-all duration-300 ${isMobileMenuOpen ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4 pointer-events-none'}`}>
                 <div className="p-4 space-y-2">
                     <button onClick={() => { navigate('/features'); setIsMobileMenuOpen(false); }} className="block w-full text-left py-3 px-4 text-slate-300 hover:bg-white/5 rounded-lg transition-colors">{t('landing.nav.features')}</button>
-                    <button onClick={() => { navigate('/features#showcase'); setIsMobileMenuOpen(false); }} className="block w-full text-left py-3 px-4 text-slate-300 hover:bg-white/5 rounded-lg transition-colors">Showcase</button>
-                    <button onClick={() => { navigate('/features#gamification'); setIsMobileMenuOpen(false); }} className="block w-full text-left py-3 px-4 text-slate-300 hover:bg-white/5 rounded-lg transition-colors">Gamification</button>
-                    <button onClick={() => { navigate('/features#highlights'); setIsMobileMenuOpen(false); }} className="block w-full text-left py-3 px-4 text-slate-300 hover:bg-white/5 rounded-lg transition-colors">Teknologi</button>
+                    <button onClick={() => { navigate('/features#showcase'); setIsMobileMenuOpen(false); }} className="block w-full text-left py-3 px-4 text-slate-300 hover:bg-white/5 rounded-lg transition-colors">{t('landing.nav.showcase')}</button>
+                    <button onClick={() => { navigate('/features#gamification'); setIsMobileMenuOpen(false); }} className="block w-full text-left py-3 px-4 text-slate-300 hover:bg-white/5 rounded-lg transition-colors">{t('landing.nav.gamification')}</button>
+                    <button onClick={() => { navigate('/features#highlights'); setIsMobileMenuOpen(false); }} className="block w-full text-left py-3 px-4 text-slate-300 hover:bg-white/5 rounded-lg transition-colors">{t('landing.nav.technology')}</button>
 
                     <div className="px-4 py-3 border-t border-white/10 mt-2">
-                        <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-3 ml-1">Välj Språk</p>
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-3 ml-1">{t('landing.nav.select_language')}</p>
                         <div className="grid grid-cols-2 gap-2">
                             {enabledLanguages.map(lang => (
                                 <button
@@ -589,13 +589,13 @@ const LandingPage = () => {
                                         i18n.changeLanguage(lang.code.split('-')[0]);
                                         setIsMobileMenuOpen(false);
                                     }}
-                                    className={`flex items-center gap-2 py-2 px-3 text-xs font-semibold rounded-lg transition-all ${i18n.language.split('-')[0] === lang.code.split('-')[0]
+                                    className={`flex items-center gap-2 py-2 px-3 text-xs font-semibold rounded-lg transition-all ${i18n.language.split('-')[0].toLowerCase() === lang.code.split('-')[0].toLowerCase()
                                         ? 'bg-brand-teal text-slate-900 shadow-lg shadow-brand-teal/20'
                                         : 'bg-white/5 text-slate-400 border border-white/5'
                                         }`}
                                 >
-                                    <span>{flagEmoji[lang.code.split('-')[0]] || '🌐'}</span>
-                                    <span>{languageNames[lang.code.split('-')[0]] || lang.name}</span>
+                                    <span>{flagEmoji[lang.code.split('-')[0].toLowerCase()] || '🌐'}</span>
+                                    <span>{languageNames[lang.code.split('-')[0].toLowerCase()] || lang.name}</span>
                                 </button>
                             ))}
                         </div>
@@ -612,7 +612,7 @@ const LandingPage = () => {
                             onClick={() => { navigate('/register-org'); setIsMobileMenuOpen(false); }}
                             className="w-full py-3 text-center bg-brand-gold text-slate-900 font-bold rounded-xl"
                         >
-                            Kom igång
+                            {t('landing.nav.get_started')}
                         </button>
                     </div>
                 </div>
@@ -625,17 +625,17 @@ const LandingPage = () => {
                         {/* Badge */}
                         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-gold/10 border border-brand-gold/20 text-brand-gold text-xs font-bold uppercase tracking-widest shadow-[0_0_15px_rgba(255,183,3,0.2)]">
                             <Sparkles className="w-3.5 h-3.5" />
-                            v3.9.1: Global Language Sync & Security Hardening
+                            {t('landing.hero.badge')}
                         </div>
 
                         {/* Heading */}
                         <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-black leading-[1.1] tracking-tight">
-                            Framtidens <span className="text-brand-teal">LLP</span> med <br /><span className="text-gradient drop-shadow-lg">EduAI Hub</span>
+                            {t('landing.hero.title_start')} <span className="text-brand-teal">{t('landing.hero.title_llp')}</span> {t('landing.hero.title_with')} <br /><span className="text-gradient drop-shadow-lg">{t('landing.hero.title_hub')}</span>
                         </h1>
 
                         {/* Subtitle */}
                         <p className="text-lg text-slate-300 max-w-xl leading-relaxed font-light">
-                            Upptäck vårt nya intelligenta kunskapscenter. Generera skräddarsydda studiepass med AI, spela engagerande minispel och följ din exakta kunskapsutveckling via vår dynamiska Live Radar. Allt drivet av Google Gemini.
+                            {t('landing.hero.subtitle')}
                         </p>
 
                         {/* CTA Buttons */}
@@ -644,31 +644,31 @@ const LandingPage = () => {
                                 onClick={() => navigate('/login')}
                                 className="brand-gradient text-white font-bold px-8 py-4 rounded-xl hover:scale-105 transition-transform text-lg shadow-xl shadow-brand-teal/30 flex items-center gap-2"
                             >
-                                <Brain className="w-5 h-5" /> Starta din första AI Session
+                                <Brain className="w-5 h-5" /> {t('landing.hero.cta_ai')}
                             </button>
                             <button
                                 onClick={() => navigate('/features')}
                                 className="glass-card font-bold px-8 py-4 rounded-xl hover:bg-white/10 transition-all text-lg flex items-center gap-2 text-slate-200"
                             >
-                                Läs mer om plattformen <ArrowRight className="w-5 h-5 text-brand-teal" />
+                                {t('landing.hero.cta_learn_more')} <ArrowRight className="w-5 h-5 text-brand-teal" />
                             </button>
                         </div>
 
                         {/* Tech Stack */}
                         <div className="flex flex-col gap-4 pt-4">
-                            <p className="text-xs font-bold uppercase tracking-[0.2em] text-slate-500">Drivs av modern AI & beprövad pedagogik</p>
+                            <p className="text-xs font-bold uppercase tracking-[0.2em] text-slate-500">{t('landing.hero.tech_tagline')}</p>
                             <div className="flex flex-wrap items-center gap-6 opacity-60 hover:opacity-100 transition-all duration-500">
                                 <div className="flex items-center gap-2 group">
                                     <Brain className="w-5 h-5 text-blue-400 group-hover:scale-110 transition-transform" />
-                                    <span className="text-sm font-semibold text-slate-400 group-hover:text-slate-200">Google Gemini</span>
+                                    <span className="text-sm font-semibold text-slate-400 group-hover:text-slate-200">{t('common.brands.gemini') || 'Google Gemini'}</span>
                                 </div>
                                 <div className="flex items-center gap-2 group">
                                     <Database className="w-5 h-5 text-emerald-400 group-hover:scale-110 transition-transform" />
-                                    <span className="text-sm font-semibold text-slate-400 group-hover:text-slate-200">PostgreSQL</span>
+                                    <span className="text-sm font-semibold text-slate-400 group-hover:text-slate-200">{t('common.brands.postgresql') || 'PostgreSQL'}</span>
                                 </div>
                                 <div className="flex items-center gap-2 group">
                                     <Sparkles className="w-5 h-5 text-brand-teal group-hover:scale-110 transition-transform" />
-                                    <span className="text-sm font-semibold text-slate-400 group-hover:text-slate-200">OpenAI API</span>
+                                    <span className="text-sm font-semibold text-slate-400 group-hover:text-slate-200">{t('common.brands.openai') || 'OpenAI API'}</span>
                                 </div>
                             </div>
                         </div>
@@ -695,20 +695,20 @@ const LandingPage = () => {
                                         </div>
                                         <div>
                                             <p className="text-xl font-bold text-white">+47%</p>
-                                            <p className="text-xs text-slate-400">Engagemang</p>
+                                            <p className="text-xs text-slate-400">{t('landing.hero.stats.engagement')}</p>
                                         </div>
                                     </div>
                                 </div>
 
                                 {/* Floating Achievement Card */}
-                                <div className="absolute top-4 right-4 glass-card rounded-xl p-3">
+                                        <div className="absolute top-4 right-4 glass-card rounded-xl p-3">
                                     <div className="flex items-center space-x-2">
                                         <div className="w-8 h-8 bg-brand-gold/20 rounded-lg flex items-center justify-center">
                                             <Award className="w-4 h-4 text-brand-gold" />
                                         </div>
                                         <div>
-                                            <p className="text-sm font-bold text-white">Ny nivå!</p>
-                                            <p className="text-xs text-slate-400">Level 12</p>
+                                            <p className="text-sm font-bold text-white">{t('landing.hero.stats.new_level')}</p>
+                                            <p className="text-xs text-slate-400">{t('landing.hero.stats.level_value', { level: 12 })}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -744,7 +744,7 @@ const LandingPage = () => {
                             onClick={() => navigate('/features')}
                             className="bg-white/5 hover:bg-white/10 text-white font-bold px-8 py-3 rounded-xl transition-all border border-white/10 flex items-center gap-2"
                         >
-                            Se alla funktioner <ArrowRight className="w-4 h-4" />
+                            {t('landing.hero.cta_see_all')} <ArrowRight className="w-4 h-4" />
                         </button>
                     </div>
                 </section>
@@ -756,10 +756,10 @@ const LandingPage = () => {
                     <div className="max-w-7xl mx-auto px-6">
                         <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
                             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-blue/10 border border-brand-blue/20 text-brand-blue text-xs font-bold uppercase tracking-wider">
-                                <Users className="w-3 h-3" /> Personalisering
+                                <Users className="w-3 h-3" /> {t('landing.roles.badge')}
                             </div>
-                            <h2 className="text-3xl lg:text-5xl font-black">Anpassat för din roll</h2>
-                            <p className="text-slate-400 text-lg">EduFlex levererar ett skräddarsytt gränssnitt och specifika verktyg beroende på din profil.</p>
+                            <h2 className="text-3xl lg:text-5xl font-black">{t('landing.roles.title')}</h2>
+                            <p className="text-slate-400 text-lg">{t('landing.roles.subtitle')}</p>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 stagger-animation fade-in-section">
@@ -771,22 +771,22 @@ const LandingPage = () => {
                                 <div className="size-12 bg-brand-teal/10 rounded-xl flex items-center justify-center mb-6 text-brand-teal">
                                     <Globe className="w-6 h-6" />
                                 </div>
-                                <h3 className="text-xl font-bold mb-2">För Rektor</h3>
-                                <p className="text-slate-400 text-sm mb-6 flex-grow">Få full kontroll över skolan med realtidsdata för SKA, bemanning och hälsa.</p>
+                                <h3 className="text-xl font-bold mb-2">{t('landing.roles.rector.title')}</h3>
+                                <p className="text-slate-400 text-sm mb-6 flex-grow">{t('landing.roles.rector.desc')}</p>
                                 <ul className="space-y-3 mb-8">
                                     <li className="flex items-center gap-2 text-xs font-semibold text-slate-300">
-                                        <Check className="w-4 h-4 text-brand-teal" /> Dashboards för beslutsstöd
+                                        <Check className="w-4 h-4 text-brand-teal" /> {t('landing.roles.rector.feature1')}
                                     </li>
                                     <li className="flex items-center gap-2 text-xs font-semibold text-slate-300">
-                                        <Check className="w-4 h-4 text-brand-teal" /> Incident- & hälsohantering
+                                        <Check className="w-4 h-4 text-brand-teal" /> {t('landing.roles.rector.feature2')}
                                     </li>
                                     <li className="flex items-center gap-2 text-xs font-semibold text-slate-300">
-                                        <Check className="w-4 h-4 text-brand-teal" /> SKA-årshjul & KPIer
+                                        <Check className="w-4 h-4 text-brand-teal" /> {t('landing.roles.rector.feature3')}
                                     </li>
                                 </ul>
                                 <div className="pt-4 border-t border-white/5">
-                                    <span className="text-[10px] font-bold uppercase tracking-widest text-brand-teal">Outcome:</span>
-                                    <p className="text-xs font-bold text-white">Full insyn i verksamheten</p>
+                                    <span className="text-[10px] font-bold uppercase tracking-widest text-brand-teal">{t('landing.roles.outcome_label')}:</span>
+                                    <p className="text-xs font-bold text-white">{t('landing.roles.rector.outcome')}</p>
                                 </div>
                             </div>
 
@@ -798,22 +798,22 @@ const LandingPage = () => {
                                 <div className="size-12 bg-brand-blue/10 rounded-xl flex items-center justify-center mb-6 text-brand-blue">
                                     <Zap className="w-6 h-6" />
                                 </div>
-                                <h3 className="text-xl font-bold mb-2">För Lärare</h3>
-                                <p className="text-slate-400 text-sm mb-6 flex-grow">Minska administrationen och fokusera på undervisningen med AI-stöd.</p>
+                                <h3 className="text-xl font-bold mb-2">{t('landing.roles.teacher.title')}</h3>
+                                <p className="text-slate-400 text-sm mb-6 flex-grow">{t('landing.roles.teacher.desc')}</p>
                                 <ul className="space-y-3 mb-8">
                                     <li className="flex items-center gap-2 text-xs font-semibold text-slate-300">
-                                        <Check className="w-4 h-4 text-brand-blue" /> AI Course & Quiz Creator
+                                        <Check className="w-4 h-4 text-brand-blue" /> {t('landing.roles.teacher.feature1')}
                                     </li>
                                     <li className="flex items-center gap-2 text-xs font-semibold text-slate-300">
-                                        <Check className="w-4 h-4 text-brand-blue" /> Automatiserad rättning
+                                        <Check className="w-4 h-4 text-brand-blue" /> {t('landing.roles.teacher.feature2')}
                                     </li>
                                     <li className="flex items-center gap-2 text-xs font-semibold text-slate-300">
-                                        <Check className="w-4 h-4 text-brand-blue" /> LTI 1.3 Advantage-synk
+                                        <Check className="w-4 h-4 text-brand-blue" /> {t('landing.roles.teacher.feature3')}
                                     </li>
                                 </ul>
                                 <div className="pt-4 border-t border-white/5">
-                                    <span className="text-[10px] font-bold uppercase tracking-widest text-brand-blue">Outcome:</span>
-                                    <p className="text-xs font-bold text-white">Spara 10h administration/vecka</p>
+                                    <span className="text-[10px] font-bold uppercase tracking-widest text-brand-blue">{t('landing.roles.outcome_label')}:</span>
+                                    <p className="text-xs font-bold text-white">{t('landing.roles.teacher.outcome')}</p>
                                 </div>
                             </div>
 
@@ -825,22 +825,22 @@ const LandingPage = () => {
                                 <div className="size-12 bg-brand-gold/10 rounded-xl flex items-center justify-center mb-6 text-brand-gold">
                                     <Gamepad2 className="w-6 h-6" />
                                 </div>
-                                <h3 className="text-xl font-bold mb-2">För Elev</h3>
-                                <p className="text-slate-400 text-sm mb-6 flex-grow">Ett engagerande sätt att lära med adaptiva stigar och spelifiering.</p>
+                                <h3 className="text-xl font-bold mb-2">{t('landing.roles.student.title')}</h3>
+                                <p className="text-slate-400 text-sm mb-6 flex-grow">{t('landing.roles.student.desc')}</p>
                                 <ul className="space-y-3 mb-8">
                                     <li className="flex items-center gap-2 text-xs font-semibold text-slate-300">
-                                        <Check className="w-4 h-4 text-brand-gold" /> Personlig AI-lärväg
+                                        <Check className="w-4 h-4 text-brand-gold" /> {t('landing.roles.student.feature1')}
                                     </li>
                                     <li className="flex items-center gap-2 text-xs font-semibold text-slate-300">
-                                        <Check className="w-4 h-4 text-brand-gold" /> XP, Streaks & Achievements
+                                        <Check className="w-4 h-4 text-brand-gold" /> {t('landing.roles.student.feature2')}
                                     </li>
                                     <li className="flex items-center gap-2 text-xs font-semibold text-slate-300">
-                                        <Check className="w-4 h-4 text-brand-gold" /> Social Learning & Vänner
+                                        <Check className="w-4 h-4 text-brand-gold" /> {t('landing.roles.student.feature3')}
                                     </li>
                                 </ul>
                                 <div className="pt-4 border-t border-white/5">
-                                    <span className="text-[10px] font-bold uppercase tracking-widest text-brand-gold">Outcome:</span>
-                                    <p className="text-xs font-bold text-white">Ökad motivation & resultat</p>
+                                    <span className="text-[10px] font-bold uppercase tracking-widest text-brand-gold">{t('landing.roles.outcome_label')}:</span>
+                                    <p className="text-xs font-bold text-white">{t('landing.roles.student.outcome')}</p>
                                 </div>
                             </div>
 
@@ -852,22 +852,22 @@ const LandingPage = () => {
                                 <div className="size-12 bg-purple-500/10 rounded-xl flex items-center justify-center mb-6 text-purple-400">
                                     <Shield className="w-6 h-6" />
                                 </div>
-                                <h3 className="text-xl font-bold mb-2">För Förälder</h3>
-                                <p className="text-slate-400 text-sm mb-6 flex-grow">Håll dig uppdaterad om barnets framsteg direkt via mobilen.</p>
+                                <h3 className="text-xl font-bold mb-2">{t('landing.roles.parent.title')}</h3>
+                                <p className="text-slate-400 text-sm mb-6 flex-grow">{t('landing.roles.parent.desc')}</p>
                                 <ul className="space-y-3 mb-8">
                                     <li className="flex items-center gap-2 text-xs font-semibold text-slate-300">
-                                        <Check className="w-4 h-4 text-purple-400" /> AI-genererad barnstatus
+                                        <Check className="w-4 h-4 text-purple-400" /> {t('landing.roles.parent.feature1')}
                                     </li>
                                     <li className="flex items-center gap-2 text-xs font-semibold text-slate-300">
-                                        <Check className="w-4 h-4 text-purple-400" /> Digital sjukanmälan
+                                        <Check className="w-4 h-4 text-purple-400" /> {t('landing.roles.parent.feature2')}
                                     </li>
                                     <li className="flex items-center gap-2 text-xs font-semibold text-slate-300">
-                                        <Check className="w-4 h-4 text-purple-400" /> Insyn i schema & betyg
+                                        <Check className="w-4 h-4 text-purple-400" /> {t('landing.roles.parent.feature3')}
                                     </li>
                                 </ul>
                                 <div className="pt-4 border-t border-white/5">
-                                    <span className="text-[10px] font-bold uppercase tracking-widest text-purple-400">Outcome:</span>
-                                    <p className="text-xs font-bold text-white">Full trygghet & insyn</p>
+                                    <span className="text-[10px] font-bold uppercase tracking-widest text-purple-400">{t('landing.roles.outcome_label')}:</span>
+                                    <p className="text-xs font-bold text-white">{t('landing.roles.parent.outcome')}</p>
                                 </div>
                             </div>
                         </div>
@@ -882,23 +882,23 @@ const LandingPage = () => {
                             <div className="absolute -top-12 -right-12 w-64 h-64 bg-white/10 rounded-full blur-3xl"></div>
                             <div className="absolute -bottom-12 -left-12 w-48 h-48 bg-brand-blue/20 rounded-full blur-3xl"></div>
                             <h2 className="text-3xl lg:text-5xl font-black text-white max-w-4xl mx-auto leading-tight relative z-10">
-                                Redo att transformera er utbildning?
+                                {t('landing.cta.title')}
                             </h2>
                             <p className="text-white/80 text-xl max-w-2xl mx-auto relative z-10">
-                                Börja resan mot ett modernare sätt att lära och utvecklas.
+                                {t('landing.cta.subtitle')}
                             </p>
                             <div className="flex flex-wrap justify-center gap-4 relative z-10">
                                 <button
                                     onClick={() => setIsContactModalOpen(true)}
                                     className="bg-brand-gold text-slate-900 font-bold px-10 py-4 rounded-2xl hover:scale-105 transition-transform shadow-xl glow-gold text-lg"
                                 >
-                                    Boka en gratis demo
+                                    {t('landing.cta.button_demo')}
                                 </button>
                                 <button
                                     onClick={() => navigate('/register-org')}
                                     className="bg-[#06141b]/30 backdrop-blur-md text-white border border-white/30 font-bold px-10 py-4 rounded-2xl hover:bg-white/10 transition-all text-lg"
                                 >
-                                    Testa gratis
+                                    {t('landing.cta.button_test')}
                                 </button>
                             </div>
                         </div>
@@ -925,30 +925,30 @@ const LandingPage = () => {
                         <h4 className="font-bold mb-6">{t('landing.footer.product')}</h4>
                         <ul className="space-y-4 text-sm text-slate-500">
                             <li><a className="hover:text-brand-teal transition-colors" href="#features">{t('landing.footer.features')}</a></li>
-                            <li><a className="hover:text-brand-teal transition-colors" href="#">Säkerhet</a></li>
-                            <li><a className="hover:text-brand-teal transition-colors" href="#">API</a></li>
+                            <li><a className="hover:text-brand-teal transition-colors" href="#">{t('landing.footer.security')}</a></li>
+                            <li><a className="hover:text-brand-teal transition-colors" href="#">{t('landing.footer.api')}</a></li>
                             <li><a className="hover:text-brand-teal transition-colors" href="#">{t('landing.footer.roadmap')}</a></li>
                         </ul>
                     </div>
                     <div>
-                        <h4 className="font-bold mb-6">Support</h4>
+                        <h4 className="font-bold mb-6">{t('landing.footer.support') || 'Support'}</h4>
                         <ul className="space-y-4 text-sm text-slate-500">
-                            <li><a className="hover:text-brand-teal transition-colors" href="#">Hjälpcenter</a></li>
+                            <li><a className="hover:text-brand-teal transition-colors" href="#">{t('landing.footer.help_center')}</a></li>
                             <li><a className="hover:text-brand-teal transition-colors" href="#">{t('landing.footer.documentation')}</a></li>
                             <li><a className="hover:text-brand-teal transition-colors" href="#">{t('landing.footer.system_status')}</a></li>
                             <li><a className="hover:text-brand-teal transition-colors" href="#">{t('landing.footer.contact_sales')}</a></li>
                         </ul>
                     </div>
                     <div>
-                        <h4 className="font-bold mb-6">Nyhetsbrev</h4>
-                        <p className="text-sm text-slate-500 mb-4">Få de senaste insikterna om digitalt lärande.</p>
+                        <h4 className="font-bold mb-6">{t('landing.footer.newsletter')}</h4>
+                        <p className="text-sm text-slate-500 mb-4">{t('landing.footer.newsletter_desc')}</p>
                         <div className="flex gap-2">
                             <input
                                 className="bg-white/5 border border-white/10 rounded-xl text-sm flex-1 px-4 py-2.5 focus:ring-brand-teal focus:border-brand-teal placeholder:text-slate-600 text-white"
-                                placeholder="Din e-post"
+                                placeholder={t('landing.footer.email_placeholder')}
                                 type="email"
                             />
-                            <button className="brand-gradient p-2.5 rounded-xl shadow-lg shadow-brand-teal/20">
+                            <button className="brand-gradient p-2.5 rounded-xl shadow-lg shadow-brand-teal/20" aria-label="Subscribe">
                                 <ArrowRight className="w-5 h-5 text-white" />
                             </button>
                         </div>
@@ -957,9 +957,9 @@ const LandingPage = () => {
                 <div className="max-w-7xl mx-auto px-6 pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-slate-600">
                     <p>{t('landing.footer.copyright')}</p>
                     <div className="flex gap-6">
-                        <a className="hover:text-white transition-colors" href="#">Integritetspolicy</a>
-                        <a className="hover:text-white transition-colors" href="#">Användarvillkor</a>
-                        <a className="hover:text-white transition-colors" href="#">Cookie-inställningar</a>
+                        <a className="hover:text-white transition-colors" href="#">{t('landing.footer.privacy_policy')}</a>
+                        <a className="hover:text-white transition-colors" href="#">{t('landing.footer.terms_of_service')}</a>
+                        <a className="hover:text-white transition-colors" href="#">{t('landing.footer.cookie_settings')}</a>
                     </div>
                 </div>
             </footer>

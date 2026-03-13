@@ -1,8 +1,8 @@
-# 🎓 EduFlex LLP v3.9.1
+# 🎓 EduFlex LLP v3.9.2
 *Den kompletta Learning Lifecycle-plattformen för modern utbildning och B2B*
 
 *Utvecklas & underhålls av **Alex Weström / Fenrir Studio***  
-🇸🇪 Svenska | 🇬🇧 English | 🇫🇷 Français | 🇩🇪 Deutsch | 🇫🇮 Suomi
+🇸🇪 Svenska | 🇬🇧 English | 🇫🇷 Français | 🇩🇪 Deutsch | 🇫🇮 Suomi | 🇳🇴 Norsk | 🇩🇰 Dansk | 🇪🇸 Español | 🇸🇦 العربية
 
 ![EduFlex Architecture](https://img.shields.io/badge/Architecture-Kubernetes%20%7C%20Helm-blue)
 ![React Version](https://img.shields.io/badge/React-19-61dafb)
@@ -15,11 +15,19 @@ EduFlex LLP är ett enterprise-redo, molnbaserat ekosystem som ersätter traditi
 
 ## 🚀 Senaste Uppdateringarna (Changelog)
 
-### v3.9.1 (13 mar 2026) – Global Language Sync & Security Hardening
-- **🌍 Multi-Language Sync (Fixed)**: Full restaurering av språkstödet. Systemet synkar nu 9+ språk (sv, en, fr, de, fi, etc.) via AI Microservice till MinIO. Fixat trasig engelska och automatiserat översättningsflödet.
-- **⚙️ System Settings Mapping**: Åtgärdat felaktig mappning i frontendens API-lager som hindrade korrekt läsning av `default_language` och andra systeminställningar.
+### v3.9.2 (13 mar 2026) – Operation Globalization (Full System Localization)
+- **🌍 100% Landing Page Localization**: Removed all hardcoded Swedish from `LandingPage.jsx`, `ContactModal.jsx`, and `Footer`.
+- **🏗️ Backend i18n Architecture**: Implemented Spring `MessageSource` for dynamic system messages.
+- **🌍 Frontend Deep Localization**: Refactored `TentaManager`, `Catalog`, `QuizModule`, and `SkolverketCourseInfo` to use i18n keys.
+- **🔄 Robust Language Sync**: All 9 supported languages (EN, FR, DE, ES, AR, NO, DA, FI) are now 100% synchronized via AI-driven hub.
+- **⚖️ Compliance & PII**: Enhanced PII masking for international AI sessions.
+
+### v3.9.1 - Global Language Sync & Security Hardening
+- **🌍 Landing Page Globalization**: Genomfört en komplett lokalisering av landningssidan (`LandingPage.jsx`). Alla hårdkodade strängar har ersatts med dynamiska nycklar, vilket möjliggör fullt stöd för alla 9+ språk direkt vid första anblick.
+- **🔄 Multi-Language AI-Sync**: Synkroniserat över 100 nya översättningsnycklar på tvärs av alla språkfiler (sv, en, fr, de, ar, no, da, fi) via vår Gemini-drivna översättningshub.
+- **⚙️ i18n Resource Robustness**: Förbättrat laddningslogiken i `i18n.js` för att hantera exporterade JSON-moduler mer robust, vilket eliminerar "flicker" och laddningsfel vid språkbyte.
 - **🛡️ Security Hardening**: Optimerat `SecurityConfig` för att tillåta publik åtkomst till språkvals-API:er på inloggningssidan, samt standardiserat roll-auktorisering (`hasAnyAuthority`).
-- **🧬 Database Schema Isolation**: Migrerat Keycloak och Backend till separata databaser (`eduflex` vs `eduflex_backend`) för att eliminera schema-konflikter i Kubernetes-miljön.
+- **🧬 Database Schema Isolation**: Migrerat Keycloak och Backend till separata databaser för att eliminera schema-konflikter i Kubernetes-miljön.
 
 ### v3.9.0 (13 mar 2026) – Cloud-Native Transition (Kubernetes & Helm)
 - **☸️ Kubernetes Migration**: Hela ekosystemet har flyttats till Kubernetes (K3s via Helm) för oändlig skalbarhet och automatisk självläkning (Self-healing).
@@ -74,10 +82,10 @@ EduFlex LLP är ett enterprise-redo, molnbaserat ekosystem som ersätter traditi
 
 ## ✨ Huvudfunktioner & Fördelar
 
-### 1. Svensk Hyperlokalisering
+### 1. Svensk Hyperlokalisering & Global Skalbarhet
 - **EduCareer & JobEd Connect**: Inbyggd sökportal direktkopplad mot **Arbetsförmedlingens JobTech-API:er**.
 - **CSN Rapportering Pro**: Automatiserad och exakt export enligt CSN:s krav.
-- **Skolverket Sync 2.0 (SUSA-navet)**: Dynamisk import av programstrukturer baserat på SUN-koder.
+- **Full Multi-Language (9+ språk)**: Hela systemet, från landningssida till djupt inbäddade lärarverktyg, är nu 100% lokaliserat.
 
 ### 2. Etisk & Spårbar AI (EduAI Hub)
 - **AI Audit Log**: Full transparens för alla AI-beslut och prompter (GDPR/AI Act-kompatibel).
@@ -109,8 +117,8 @@ EduFlex LLP är ett enterprise-redo, molnbaserat ekosystem som ersätter traditi
 
 ## 🏛 Systemarkitektur
 EduFlex LLP drivs av en händelsedriven mikrotjänstarkitektur.
-- **Frontend**: React 19, Vite, Tailwind CSS.
-- **Core Backend**: Spring Boot 3.4 (Java 21), Hibernate 6.
+- **Frontend**: React 19, Vite, Tailwind CSS, i18next Localization.
+- **Core Backend**: Spring Boot 3.4 (Java 21), Spring Security i18n, Hibernate 6.
 - **Mikrotjänster**: SCORM, Notifications, PDF, Video, AI (FastAPI).
 
 ---
@@ -144,6 +152,7 @@ Kör följande kommando:
     - [x] Yrkesbarometern & NLP Deep Match
 - [x] **v3.9.0: Cloud-Native Kubernetes (K3s/Helm)**
 - [x] **v3.9.1: Global Language Sync & Security Hardening**
+- [x] **v3.9.2: Operation Globalization (Full System Localization)**
 - [ ] Q3 2026: React Native mobilapp med offline-sync.
 - [x] Q4 2026: Nationell utbildningsintegration (SUSA-navet).
 
@@ -151,4 +160,4 @@ Kör följande kommando:
 
 ⚖ **Licens & Kontakt**  
 EduFlex LLP™ © 2026 Alex Weström / Fenrir Studio  
-Senast uppdaterad: 2026-03-13 (v3.9.1 - Global Language Sync & Security Hardening)
+Senast uppdaterad: 2026-03-13 (v3.9.1 - Global Language Sync & Globalization)

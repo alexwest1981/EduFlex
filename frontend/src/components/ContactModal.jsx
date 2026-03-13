@@ -38,7 +38,7 @@ const ContactModal = ({ isOpen, onClose }) => {
             if (response.ok) {
                 setStatus({
                     type: 'success',
-                    message: t('contact.success_message') || 'Tack! Vi kontaktar dig inom 24 timmar.'
+                    message: t('contact.success_message')
                 });
                 setFormData({ name: '', email: '', organization: '', phone: '', message: '' });
                 setTimeout(() => onClose(), 2000);
@@ -48,7 +48,7 @@ const ContactModal = ({ isOpen, onClose }) => {
         } catch (error) {
             setStatus({
                 type: 'error',
-                message: t('contact.error_message') || 'Något gick fel. Försök igen eller maila oss direkt.'
+                message: t('contact.error_message')
             });
         } finally {
             setIsSubmitting(false);
@@ -62,7 +62,7 @@ const ContactModal = ({ isOpen, onClose }) => {
             <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
                 <div className="p-6 border-b border-gray-200 flex items-center justify-between">
                     <h2 className="text-2xl font-bold text-gray-900">
-                        {t('contact.title') || 'Boka Demo'}
+                        {t('contact.title')}
                     </h2>
                     <button
                         onClick={onClose}
@@ -75,7 +75,7 @@ const ContactModal = ({ isOpen, onClose }) => {
                 <form onSubmit={handleSubmit} className="p-6 space-y-4">
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
-                            {t('contact.name') || 'Namn'} *
+                            {t('contact.name')} *
                         </label>
                         <div className="relative">
                             <input
@@ -85,7 +85,7 @@ const ContactModal = ({ isOpen, onClose }) => {
                                 onChange={handleChange}
                                 required
                                 className="w-full pl-4 pr-11 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                placeholder={t('contact.name_placeholder') || 'Ditt namn'}
+                                placeholder={t('contact.name_placeholder')}
                             />
                             <User className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                         </div>
@@ -93,7 +93,7 @@ const ContactModal = ({ isOpen, onClose }) => {
 
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
-                            {t('contact.email') || 'E-post'} *
+                            {t('contact.email')} *
                         </label>
                         <div className="relative">
                             <input
@@ -103,7 +103,7 @@ const ContactModal = ({ isOpen, onClose }) => {
                                 onChange={handleChange}
                                 required
                                 className="w-full pl-4 pr-11 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                placeholder={t('contact.email_placeholder') || 'din@email.se'}
+                                placeholder={t('contact.email_placeholder')}
                             />
                             <Mail className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                         </div>
@@ -111,7 +111,7 @@ const ContactModal = ({ isOpen, onClose }) => {
 
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
-                            {t('contact.organization') || 'Organisation'} *
+                            {t('contact.organization')} *
                         </label>
                         <div className="relative">
                             <input
@@ -121,7 +121,7 @@ const ContactModal = ({ isOpen, onClose }) => {
                                 onChange={handleChange}
                                 required
                                 className="w-full pl-4 pr-11 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                placeholder={t('contact.organization_placeholder') || 'Skolans namn'}
+                                placeholder={t('contact.organization_placeholder')}
                             />
                             <Building className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                         </div>
@@ -129,7 +129,7 @@ const ContactModal = ({ isOpen, onClose }) => {
 
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
-                            {t('contact.phone') || 'Telefon'}
+                            {t('contact.phone')}
                         </label>
                         <div className="relative">
                             <input
@@ -138,7 +138,7 @@ const ContactModal = ({ isOpen, onClose }) => {
                                 value={formData.phone}
                                 onChange={handleChange}
                                 className="w-full pl-4 pr-11 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                placeholder={t('contact.phone_placeholder') || '+46 70 123 45 67'}
+                                placeholder={t('contact.phone_placeholder')}
                             />
                             <Phone className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                         </div>
@@ -146,7 +146,7 @@ const ContactModal = ({ isOpen, onClose }) => {
 
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
-                            {t('contact.message') || 'Meddelande'}
+                            {t('contact.message')}
                         </label>
                         <textarea
                             name="message"
@@ -154,7 +154,7 @@ const ContactModal = ({ isOpen, onClose }) => {
                             onChange={handleChange}
                             rows={4}
                             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-                            placeholder={t('contact.message_placeholder') || 'Berätta lite om era behov...'}
+                            placeholder={t('contact.message_placeholder')}
                         />
                     </div>
 
@@ -175,12 +175,12 @@ const ContactModal = ({ isOpen, onClose }) => {
                         {isSubmitting ? (
                             <>
                                 <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                                {t('contact.sending') || 'Skickar...'}
+                                {t('contact.sending')}
                             </>
                         ) : (
                             <>
                                 <Send className="w-5 h-5" />
-                                {t('contact.submit') || 'Skicka förfrågan'}
+                                {t('contact.submit')}
                             </>
                         )}
                     </button>
