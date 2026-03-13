@@ -1,10 +1,10 @@
-# 🎓 EduFlex LLP v3.8.1
+# 🎓 EduFlex LLP v3.9.1
 *Den kompletta Learning Lifecycle-plattformen för modern utbildning och B2B*
 
 *Utvecklas & underhålls av **Alex Weström / Fenrir Studio***  
-🇸🇪 Svenska | 🇬🇧 English
+🇸🇪 Svenska | 🇬🇧 English | 🇫🇷 Français | 🇩🇪 Deutsch | 🇫🇮 Suomi
 
-![EduFlex Architecture](https://img.shields.io/badge/Architecture-Event--Driven%20Microservices-blue)
+![EduFlex Architecture](https://img.shields.io/badge/Architecture-Kubernetes%20%7C%20Helm-blue)
 ![React Version](https://img.shields.io/badge/React-19-61dafb)
 ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.4-6db33f)
 ![Compliance](https://img.shields.io/badge/Compliance-GDPR%20%7C%20ISO%2027001%20Ready-success)
@@ -14,6 +14,19 @@ EduFlex LLP är ett enterprise-redo, molnbaserat ekosystem som ersätter traditi
 ---
 
 ## 🚀 Senaste Uppdateringarna (Changelog)
+
+### v3.9.1 (13 mar 2026) – Global Language Sync & Security Hardening
+- **🌍 Multi-Language Sync (Fixed)**: Full restaurering av språkstödet. Systemet synkar nu 9+ språk (sv, en, fr, de, fi, etc.) via AI Microservice till MinIO. Fixat trasig engelska och automatiserat översättningsflödet.
+- **⚙️ System Settings Mapping**: Åtgärdat felaktig mappning i frontendens API-lager som hindrade korrekt läsning av `default_language` och andra systeminställningar.
+- **🛡️ Security Hardening**: Optimerat `SecurityConfig` för att tillåta publik åtkomst till språkvals-API:er på inloggningssidan, samt standardiserat roll-auktorisering (`hasAnyAuthority`).
+- **🧬 Database Schema Isolation**: Migrerat Keycloak och Backend till separata databaser (`eduflex` vs `eduflex_backend`) för att eliminera schema-konflikter i Kubernetes-miljön.
+
+### v3.9.0 (13 mar 2026) – Cloud-Native Transition (Kubernetes & Helm)
+- **☸️ Kubernetes Migration**: Hela ekosystemet har flyttats till Kubernetes (K3s via Helm) för oändlig skalbarhet och automatisk självläkning (Self-healing).
+- **📦 Helm Orchestration**: Implementerat en robust Helm-chart för alla 10+ mikrotjänster, inklusive automatiserad databasinitialisering och Ingress-hantering.
+- **🔄 Production Data Restoration**: Återställt 79MB produktionsdata till K8s-klustret, vilket inkluderar alla 43 användare, utbildningsprogram och historik.
+- **🛠️ Control Center K8s-Link**: Kontrollcenter kan nu bygga, importera och deploya direkt till Kubernetes med ett klick.
+- **🛡️ Database Resilience**: Sanerat och optimerat databasbackuper för felfri återställning mellan olika PostgreSQL-versioner.
 
 ### v3.8.2 (9 mar 2026) – Enterprise Security & Compliance
 - **Enterprise IAM & Privacy**: Implementerat "Skyddad identitet" för studenter med automatiskt dold profil överallt utom för systemadministratörer (GDPR).
@@ -129,6 +142,8 @@ Kör följande kommando:
     - [x] LIA Compliance Radar (8-veckorsregeln)
     - [ ] AI Alumn-Tracker & Kompetensvalidering
     - [x] Yrkesbarometern & NLP Deep Match
+- [x] **v3.9.0: Cloud-Native Kubernetes (K3s/Helm)**
+- [x] **v3.9.1: Global Language Sync & Security Hardening**
 - [ ] Q3 2026: React Native mobilapp med offline-sync.
 - [x] Q4 2026: Nationell utbildningsintegration (SUSA-navet).
 
@@ -136,4 +151,4 @@ Kör följande kommando:
 
 ⚖ **Licens & Kontakt**  
 EduFlex LLP™ © 2026 Alex Weström / Fenrir Studio  
-Senast uppdaterad: 2026-03-08 (v3.8.1 - Dynamic Language Manager, CSN Autopilot & JobTech)
+Senast uppdaterad: 2026-03-13 (v3.9.1 - Global Language Sync & Security Hardening)

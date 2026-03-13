@@ -117,6 +117,7 @@ public class SecurityConfig {
                                                                 "/api/settings/**", "/login/**", "/api/tenants/**",
                                                                 "/api/public/**", "/api/integrations/public/**",
                                                                 "/api/branding/**", "/api/debug/**",
+                                                                "/api/languages/**",
                                                                 "/api/onlyoffice/**",
                                                                 "/api/gamification/config/system", "/api/payment/**",
                                                                 "/api/community/subjects",

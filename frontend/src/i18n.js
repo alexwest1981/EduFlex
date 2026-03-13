@@ -35,14 +35,17 @@ Object.keys(baseFiles).forEach(path => {
 
 // --- 3. Process Bundled Module/Feature Translations ---
 const moduleNameMapping = {
-    'quiz-runner': 'quiz'
+    'quiz-runner': 'quiz',
+    'feedback': 'evaluation'
 };
+
+const cleanCode = (code) => code ? code.split('-')[0].split('_')[0].toLowerCase() : 'sv';
 
 Object.keys(moduleFiles).forEach(path => {
     const match = path.match(/\.\/(modules|features)\/([^/]+)\/locales\/([^/]+)\.json/);
     if (match) {
         let moduleName = match[2];
-        const lang = match[3];
+        const lang = cleanCode(match[3]);
 
         if (moduleNameMapping[moduleName]) {
             moduleName = moduleNameMapping[moduleName];
@@ -69,6 +72,7 @@ i18n
         },
         detection: {
             order: ['localStorage', 'cookie', 'navigator'],
+            lookupLocalStorage: 'i18nextLng',
             caches: ['localStorage', 'cookie'],
         }
     });
@@ -77,27 +81,31 @@ i18n
 export const initDynamicLanguages = async () => {
     try {
         const languages = await api.get('/languages/enabled');
+        if (!Array.isArray(languages)) return;
 
-        for (const lang of languages) {
+        for (const langObj of languages) {
+            const code = cleanCode(langObj.code);
             // If it's a new language not in our bundle, we need to fetch its parts
-            if (!bundledLangs.has(lang.code)) {
+            if (!bundledLangs.has(code)) {
                 // Fetch base translation
                 try {
-                    const baseRes = await api.get(`/languages/${lang.code}/translations/translation`);
+                    const baseRes = await api.get(`/languages/${code}/translations/translation`);
                     if (baseRes) {
-                        i18n.addResourceBundle(lang.code, 'translation', JSON.parse(baseRes), true, true);
+                        const data = typeof baseRes === 'string' ? JSON.parse(baseRes) : baseRes;
+                        i18n.addResourceBundle(code, 'translation', data, true, true);
                     }
-                } catch (e) { console.warn(`Base translations missing for ${lang.code}`); }
+                } catch (e) { console.warn(`Base translations missing for ${code}`); }
 
-                // Fetch important module translations (can be optimized to fetch on demand)
+                // Fetch important module translations
                 const modulesToFetch = ['auth', 'dashboard', 'common'];
                 for (const mod of modulesToFetch) {
                     try {
-                        const modRes = await api.get(`/languages/${lang.code}/translations/${mod}`);
+                        const modRes = await api.get(`/languages/${code}/translations/${mod}`);
                         if (modRes) {
-                            const current = i18n.getResourceBundle(lang.code, 'translation') || {};
-                            current[mod] = JSON.parse(modRes);
-                            i18n.addResourceBundle(lang.code, 'translation', current, true, true);
+                            const data = typeof modRes === 'string' ? JSON.parse(modRes) : modRes;
+                            const current = i18n.getResourceBundle(code, 'translation') || {};
+                            current[mod] = data;
+                            i18n.addResourceBundle(code, 'translation', current, true, true);
                         }
                     } catch (e) { }
                 }

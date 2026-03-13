@@ -32,6 +32,7 @@ public class SystemSettingService {
         createIfMissing("livekit_enabled", "true", "Aktivera eller inaktivera LiveKit-integrationen.");
         createIfMissing("onlyoffice_jwt_secret", "",
                 "JWT-hemlighet för ONLYOFFICE Document Server (lämna tomt för att använda systemets JWT-nyckel).");
+        createIfMissing("default_language", "sv", "Systemets standardspråk (t.ex. sv, en).");
 
         // --- EduAI Center v2.0 INSTÄLLNINGAR ---
         createIfMissing("eduai_xp_ratio", "1.0", "XP-multiplikator för AI-baserade aktiviteter (0.1 - 5.0).");

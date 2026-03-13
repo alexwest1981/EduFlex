@@ -17,7 +17,7 @@ services:
       test: [ "CMD-SHELL", "pg_isready -U postgres" ]
       interval: 10s
       timeout: 5s
-      retries: 5
+      retries: 20
     deploy:
       resources:
         limits:
@@ -130,10 +130,6 @@ services:
       interval: 30s
       timeout: 10s
       retries: 10
-    deploy:
-      resources:
-        limits:
-          memory: 512M
     depends_on:
       db:
         condition: service_healthy
@@ -148,56 +144,33 @@ services:
     ports:
       - "8080:8080"
     environment:
-      # Dessa variabler skriver över din application.properties
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/eduflex_backend
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=gotland81
-      - FILE_UPLOAD_DIR=/app/uploads
-      - SPRING_DATA_REDIS_HOST=redis
       - SPRING_DATA_REDIS_HOST=redis
       - SPRING_DATA_REDIS_PORT=6379
       - MINIO_URL=http://minio:9000
-      - MINIO_PUBLIC_URL=https://storage.eduflexlms.se
       - MINIO_ACCESS_KEY=minioadmin
       - MINIO_SECRET_KEY=minioadmin
       - MINIO_BUCKET=eduflex-storage
       - ONLYOFFICE_INTERNAL_URL=http://eduflex-onlyoffice
-      # Keycloak OAuth2/OIDC Configuration
-      # issuer-uri must match what Keycloak puts in tokens (localhost:8180)
-      # jwk-set-uri can use internal Docker hostname for server-to-server communication
       - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI=http://localhost:8180/realms/eduflex
       - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI=http://keycloak:8080/realms/eduflex/protocol/openid-connect/certs
       - KEYCLOAK_AUTH_SERVER_URL=http://keycloak:8080
       - KEYCLOAK_REALM=eduflex
       - KEYCLOAK_CLIENT_ID=eduflex-app
-      - KEYCLOAK_CLIENT_SECRET=eduflex-secret-key-change-in-production
-      # Override Client Provider URLs for Docker internal network
-      - SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_TOKEN_URI=http://keycloak:8080/realms/eduflex/protocol/openid-connect/token
-      - SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_USER_INFO_URI=http://keycloak:8080/realms/eduflex/protocol/openid-connect/userinfo
-      - SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_JWK_SET_URI=http://keycloak:8080/realms/eduflex/protocol/openid-connect/certs
-      # Enable Hybrid Mode for proper JWT validation
-      - EDUFLEX_AUTH_MODE=hybrid
-      # Override Resource Server URLs for Docker internal network (Validation)
-      - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI=http://keycloak:8080/realms/eduflex/protocol/openid-connect/certs
-      - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI=http://localhost:8180/realms/eduflex
-      - EDUFLEX_REGISTRATION_KEY=master_key_2026
-      # AI Quiz Generation (Google Gemini via Microservice)
-      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
       - AI_SERVICE_URL=http://eduflex-ai:8000
-      # Stripe Payments
-      - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY:-}
-      - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET:-}
-      - EDUFLEX_DOMAIN_URL=${EDUFLEX_DOMAIN_URL:-}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
+      - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET}
       - ONLYOFFICE_JWT_SECRET=${ONLYOFFICE_JWT_SECRET:-S0raknJQXb1gcrvpgkNlpRQW3OyfiR9Q}
-      # Disable Kafka Auto-Configuration to prevent startup failure
       - SPRING_AUTOCONFIGURE_EXCLUDE=org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration
       - EDUFLEX_LICENSE_PATH=/app/eduflex.license
-    extra_hosts:
-      - "localhost:host-gateway"
     volumes:
-      - ./uploads:/app/uploads # Sparar uppladdade filer på din hårddisk
+      - ./uploads:/app/uploads
       - ./eduflex.license:/app/eduflex.license
       - ./backups:/app/backups
+      - ./frontend/src:/frontend/src
     deploy:
       resources:
         limits:
@@ -348,7 +321,6 @@ services:
   frontend:
     build:
       context: ./frontend
-      target: build
     container_name: eduflex-frontend
     ports:
       - "5173:5173"
@@ -356,7 +328,6 @@ services:
       - VITE_API_BASE_URL=/api
       - VITE_BACKEND_URL=http://backend:8080
       - VITE_NOTIFICATIONS_URL=http://eduflex-notifications:8085
-      - VITE_JITSI_URL=${JITSI_URL:-http://localhost:8085}
     command: npm run dev -- --host
     volumes:
       - ./frontend:/app

@@ -17,6 +17,9 @@ public class LanguageController {
     @Autowired
     private LanguageService languageService;
 
+    public LanguageController() {
+    }
+
     @GetMapping
     public List<Language> getAll() {
         return languageService.getAllLanguages();
@@ -28,7 +31,7 @@ public class LanguageController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN')")
     public ResponseEntity<Language> addLanguage(@RequestBody Map<String, String> request) {
         Language language = languageService.addLanguage(
                 request.get("code"),
@@ -50,21 +53,21 @@ public class LanguageController {
     }
 
     @PutMapping("/{code}/toggle")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN')")
     public ResponseEntity<Void> toggle(@PathVariable String code, @RequestBody Map<String, Boolean> request) {
         languageService.toggleLanguage(code, request.get("enabled"));
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/sync")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN')")
     public ResponseEntity<Void> sync() {
         languageService.syncAllEnabledLanguages();
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{code}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN')")
     public ResponseEntity<Void> delete(@PathVariable String code) {
         languageService.deleteLanguage(code);
         return ResponseEntity.ok().build();

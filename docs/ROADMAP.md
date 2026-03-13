@@ -137,7 +137,8 @@
 | **Unified Storage** | MinIO standalone restoration & auto-bucket sync. | ✅ **Klar** | Noll dataförlust & hög tillgänglighet. |
 | **Hög** | **CI/CD Pipeline (Git Hooks)** | Fullt automatiserade pre-push hooks och verifieringsscript. | ✅ **Klar** | Snabbare time-to-market. |
 | **Hög** | **Linting & Code Quality** | 0 lint-fel i frontend och backend-validering. | ✅ **Klar** | Stabilare kodbas. |
-| **Medel** | **Kubernetes Migration** | Helm-charts för skalbarhet. | 📅 **Planerad** | Oändlig skalbarhet (Cloud-native). |
+| **Medel** | **Kubernetes Migration** | Helm-charts för skalbarhet och automatiserad drift. | ✅ **Klar** (v3.9.0) | Oändlig skalbarhet (Cloud-native). |
+| **Hög** | **Global Language Sync** | Full restaurering av språkstöd (9+ språk), AI-driven synk och säkerhetsfixar. | ✅ **Klar** (v3.9.1) | Eliminera statiska filer och stödja internationell försäljning. |
 | **Live Classrooms** | LiveKit-powered video conferencing with scheduling, background blur, and glassmorphic UI. | ✅ **Klar** | **+20%** engagemang i distansundervisning. |
 | **Rektorspaket (Mission Control)** | Komplett skolledningslager: Organisationshierarki, Dashboard för nyckeltal (8 realtids-KPIer), Incidenthantering, Elevhälsa och Masskommunikation. | ✅ **Klar** | **Mission Control** för hela verksamheten. |
 | **PDF Whitelabeling** | Visuell editor för certifikat- och betygsmallar. Ladda upp logotyp, bakgrundsbild, konfigurera färger, texter, QR-position och layout. Live-förhandsvisning. | ✅ **Klar** | Professionell visuell identitet. |

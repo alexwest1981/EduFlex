@@ -495,12 +495,11 @@ export const api = {
             unlink: (linkId) => api.delete(`/admin/guardians/links/${linkId}`),
             searchStudents: (query) => api.get(`/users/search?role=STUDENT&query=${query}`),
         },
-
         // Integrations
         integrations: {
             get: (platform) => api.get(`/admin/integrations/${platform}`),
             save: (platform, data) => api.post(`/admin/integrations/${platform}`, data),
-        }
+        },
     },
 
     license: {
@@ -512,7 +511,7 @@ export const api = {
         getAll: () => api.get('/settings').then(data => {
             if (Array.isArray(data)) {
                 return data.reduce((acc, curr) => {
-                    acc[curr.key] = curr.value;
+                    acc[curr.settingKey] = curr.settingValue;
                     return acc;
                 }, {});
             }
@@ -526,6 +525,7 @@ export const api = {
         markRead: (id) => api.put(`/notifications/${id}/read`),
         getUnreadCount: (userId) => api.get(`/notifications/user/${userId}/unread-count`),
         markAllAsRead: (userId) => api.put(`/notifications/user/${userId}/mark-all-read`),
+        
         // Preferences
         getPreferences: (userId) => api.get(`/notifications/preferences/${userId}`),
         updatePreference: (userId, category, channel, enabled) =>

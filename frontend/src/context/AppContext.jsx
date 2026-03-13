@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { api } from '../services/api';
-import i18n from '../i18n';
+import i18n, { initDynamicLanguages } from '../i18n';
 
 const AppContext = createContext({
     currentUser: null,
@@ -58,6 +58,7 @@ export const AppProvider = ({ children }) => {
         }
 
         loadSettings();
+        initDynamicLanguages();
         checkLicense();
 
         const handleLock = () => setLicenseLocked(true);
