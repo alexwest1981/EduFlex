@@ -6,8 +6,10 @@ import {
     Globe, Database, Server, Zap, BarChart,
     Check, ArrowRight, Menu, X, Play, Sparkles,
     Award, TrendingUp, Layers, Gamepad2, Brain, Map, Flame, MessageSquare, Bell,
-    FileText, ClipboardList, Thermometer, Target, Smartphone, Video as VideoIcon, Link2, Lock, Building2, ShoppingCart
+    FileText, ClipboardList, Thermometer, Target, Smartphone, Video as VideoIcon, Link2, Lock, Building2, ShoppingCart, ChevronDown
 } from 'lucide-react';
+
+import { api } from '../../services/api';
 
 // Assets
 import heroImage from '../../assets/images/Hero.jpg';
@@ -46,6 +48,47 @@ const LandingPage = () => {
         window.addEventListener('scroll', handleScroll, { passive: true });
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
+
+    const [enabledLanguages, setEnabledLanguages] = useState([]);
+    const [isLangOpen, setIsLangOpen] = useState(false);
+
+    useEffect(() => {
+        const fetchLangs = async () => {
+            try {
+                const langs = await api.get('/languages/enabled');
+                if (Array.isArray(langs)) {
+                    setEnabledLanguages(langs);
+                }
+            } catch (error) {
+                console.error('Failed to fetch languages:', error);
+            }
+        };
+        fetchLangs();
+    }, []);
+
+    const languageNames = {
+        'sv': 'Svenska',
+        'en': 'English',
+        'fr': 'Français',
+        'de': 'Deutsch',
+        'es': 'Español',
+        'fi': 'Suomi',
+        'da': 'Dansk',
+        'no': 'Norsk',
+        'ar': 'العربية'
+    };
+
+    const flagEmoji = {
+        'sv': '🇸🇪',
+        'en': '🇬🇧',
+        'fr': '🇫🇷',
+        'de': '🇩🇪',
+        'es': '🇪🇸',
+        'fi': '🇫🇮',
+        'da': '🇩🇰',
+        'no': '🇳🇴',
+        'ar': '🇸🇦'
+    };
 
     // Intersection Observer for fade-in animations
     useEffect(() => {
@@ -463,26 +506,44 @@ const LandingPage = () => {
                     </div>
 
                     <div className="flex items-center gap-3">
-                        {/* Language Switcher */}
-                        <div className="hidden sm:flex items-center gap-1 px-2 py-1.5 bg-white/5 rounded-full border border-white/10">
+                        <div className="hidden sm:relative sm:flex items-center">
                             <button
-                                onClick={() => i18n.changeLanguage('sv')}
-                                className={`px-3 py-1 text-xs font-semibold rounded-full transition-all duration-200 ${i18n.language === 'sv'
-                                    ? 'bg-brand-teal text-slate-900'
-                                    : 'text-slate-400 hover:text-white'
-                                    }`}
+                                onClick={() => setIsLangOpen(!isLangOpen)}
+                                className="flex items-center gap-2 px-3 py-1.5 bg-white/5 rounded-full border border-white/10 text-xs font-bold hover:bg-white/10 transition-all"
                             >
-                                SV
+                                <span>{flagEmoji[i18n.language.split('-')[0]] || '🌐'}</span>
+                                <span className="uppercase">{i18n.language.split('-')[0]}</span>
+                                <ChevronDown className={`w-3 h-3 transition-transform ${isLangOpen ? 'rotate-180' : ''}`} />
                             </button>
-                            <button
-                                onClick={() => i18n.changeLanguage('en')}
-                                className={`px-3 py-1 text-xs font-semibold rounded-full transition-all duration-200 ${i18n.language === 'en'
-                                    ? 'bg-brand-teal text-slate-900'
-                                    : 'text-slate-400 hover:text-white'
-                                    }`}
-                            >
-                                EN
-                            </button>
+
+                            {isLangOpen && (
+                                <>
+                                    <div className="fixed inset-0 z-40" onClick={() => setIsLangOpen(false)} />
+                                    <div className="absolute top-full right-0 mt-2 p-2 w-48 glass-card-dark rounded-xl shadow-2xl z-50 border border-white/10 animate-in fade-in slide-in-from-top-2 duration-200">
+                                        <div className="grid grid-cols-1 gap-1">
+                                            {enabledLanguages.map(lang => (
+                                                <button
+                                                    key={lang.code}
+                                                    onClick={() => {
+                                                        i18n.changeLanguage(lang.code.split('-')[0]);
+                                                        setIsLangOpen(false);
+                                                    }}
+                                                    className={`flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-all ${i18n.language.split('-')[0] === lang.code.split('-')[0]
+                                                        ? 'bg-brand-teal/20 text-brand-teal'
+                                                        : 'hover:bg-white/5 text-slate-300'
+                                                        }`}
+                                                >
+                                                    <span className="flex items-center gap-2">
+                                                        <span>{flagEmoji[lang.code.split('-')[0]] || '🌐'}</span>
+                                                        <span>{languageNames[lang.code.split('-')[0]] || lang.name}</span>
+                                                    </span>
+                                                    {i18n.language.split('-')[0] === lang.code.split('-')[0] && <Check className="w-3 h-3" />}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </>
+                            )}
                         </div>
 
                         <button
@@ -518,19 +579,26 @@ const LandingPage = () => {
                     <button onClick={() => { navigate('/features#gamification'); setIsMobileMenuOpen(false); }} className="block w-full text-left py-3 px-4 text-slate-300 hover:bg-white/5 rounded-lg transition-colors">Gamification</button>
                     <button onClick={() => { navigate('/features#highlights'); setIsMobileMenuOpen(false); }} className="block w-full text-left py-3 px-4 text-slate-300 hover:bg-white/5 rounded-lg transition-colors">Teknologi</button>
 
-                    <div className="flex items-center gap-2 px-4 py-3 border-t border-white/10 mt-2">
-                        <button
-                            onClick={() => i18n.changeLanguage('sv')}
-                            className={`flex-1 py-2 text-sm font-semibold rounded-lg transition-all ${i18n.language === 'sv' ? 'bg-brand-teal text-slate-900' : 'bg-white/5 text-slate-400'}`}
-                        >
-                            Svenska
-                        </button>
-                        <button
-                            onClick={() => i18n.changeLanguage('en')}
-                            className={`flex-1 py-2 text-sm font-semibold rounded-lg transition-all ${i18n.language === 'en' ? 'bg-brand-teal text-slate-900' : 'bg-white/5 text-slate-400'}`}
-                        >
-                            English
-                        </button>
+                    <div className="px-4 py-3 border-t border-white/10 mt-2">
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-3 ml-1">Välj Språk</p>
+                        <div className="grid grid-cols-2 gap-2">
+                            {enabledLanguages.map(lang => (
+                                <button
+                                    key={lang.code}
+                                    onClick={() => {
+                                        i18n.changeLanguage(lang.code.split('-')[0]);
+                                        setIsMobileMenuOpen(false);
+                                    }}
+                                    className={`flex items-center gap-2 py-2 px-3 text-xs font-semibold rounded-lg transition-all ${i18n.language.split('-')[0] === lang.code.split('-')[0]
+                                        ? 'bg-brand-teal text-slate-900 shadow-lg shadow-brand-teal/20'
+                                        : 'bg-white/5 text-slate-400 border border-white/5'
+                                        }`}
+                                >
+                                    <span>{flagEmoji[lang.code.split('-')[0]] || '🌐'}</span>
+                                    <span>{languageNames[lang.code.split('-')[0]] || lang.name}</span>
+                                </button>
+                            ))}
+                        </div>
                     </div>
 
                     <div className="pt-2 space-y-2 border-t border-white/10">

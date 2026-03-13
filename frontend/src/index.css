@@ -352,3 +352,22 @@ html[data-use-blur="false"][data-use-glow="false"] {
 .dark .ql-rendered table tr:nth-child(even) td {
     background: #1e1f20;
 }
+/* --- PREMIUM UI UTILITIES --- */
+.glass-card-dark {
+    background: rgba(15, 15, 20, 0.8) !important;
+    backdrop-filter: blur(12px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(12px) saturate(180%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.glow-teal {
+    box-shadow: 0 0 20px rgba(45, 212, 191, 0.2) !important;
+}
+
+.glow-gold {
+    box-shadow: 0 0 20px rgba(255, 183, 3, 0.2) !important;
+}
+
+.glow-brand-teal {
+    box-shadow: 0 0 15px rgba(20, 184, 166, 0.3) !important;
+}
