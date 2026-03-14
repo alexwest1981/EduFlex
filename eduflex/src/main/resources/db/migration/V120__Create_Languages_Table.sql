@@ -1,4 +1,4 @@
-CREATE TABLE languages (
+CREATE TABLE IF NOT EXISTS languages (
     id SERIAL PRIMARY KEY,
     code VARCHAR(10) UNIQUE NOT NULL,
     name VARCHAR(100) NOT NULL,
@@ -8,8 +8,9 @@ CREATE TABLE languages (
     flag_icon VARCHAR(50)
 );
 
--- Insert initial supported languages
-INSERT INTO languages (code, name, native_name, is_enabled, is_default) VALUES
+-- Insert initial supported languages if they don't exist
+INSERT INTO languages (code, name, native_name, is_enabled, is_default)
+VALUES
 ('sv', 'Swedish', 'Svenska', true, true),
 ('en', 'English', 'English', true, false),
 ('fr', 'French', 'Français', true, false),
@@ -18,4 +19,5 @@ INSERT INTO languages (code, name, native_name, is_enabled, is_default) VALUES
 ('ar', 'Arabic', 'العربية', true, false),
 ('no', 'Norwegian', 'Norsk', true, false),
 ('da', 'Danish', 'Dansk', true, false),
-('fi', 'Finnish', 'Suomi', true, false);
+('fi', 'Finnish', 'Suomi', true, false)
+ON CONFLICT (code) DO NOTHING;

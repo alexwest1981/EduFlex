@@ -5,6 +5,8 @@ import com.eduflex.backend.model.Course;
 import com.eduflex.backend.model.User;
 import com.eduflex.backend.repository.ConnectionRepository;
 import com.eduflex.backend.repository.UserRepository;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,6 +32,7 @@ public class UserService {
     private final AchievementService achievementService;
     private final UserStreakService userStreakService;
     private final com.eduflex.backend.security.KeycloakService keycloakService;
+    private final MessageSource messageSource;
 
     public UserService(UserRepository userRepository,
             com.eduflex.backend.repository.RoleRepository roleRepository,
@@ -39,7 +42,8 @@ public class UserService {
             ConnectionRepository connectionRepository,
             AchievementService achievementService,
             UserStreakService userStreakService,
-            com.eduflex.backend.security.KeycloakService keycloakService) {
+            com.eduflex.backend.security.KeycloakService keycloakService,
+            MessageSource messageSource) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
@@ -50,6 +54,7 @@ public class UserService {
         this.achievementService = achievementService;
         this.userStreakService = userStreakService;
         this.keycloakService = keycloakService;
+        this.messageSource = messageSource;
     }
 
     public List<User> getAllUsers() {
@@ -95,7 +100,7 @@ public class UserService {
 
     @Transactional
     public User getUserById(Long id) {
-        User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("Användare hittades inte"));
+        User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException(messageSource.getMessage("error.user_not_found", null, LocaleContextHolder.getLocale())));
         // Force initialization of lazy collection for Frontend Widgets
         if (user.getEarnedBadges() != null) {
             user.getEarnedBadges().size();
@@ -106,7 +111,7 @@ public class UserService {
     @Transactional
     public User getUserByUsernameWithBadges(String username) {
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("Användare hittades inte: " + username));
+                .orElseThrow(() -> new RuntimeException(messageSource.getMessage("error.user_not_found", null, LocaleContextHolder.getLocale()) + ": " + username));
         // Force initialization of lazy collection
         if (user.getEarnedBadges() != null) {
             user.getEarnedBadges().size();
@@ -121,14 +126,14 @@ public class UserService {
     // Enkel hämtning av användare baserat på användarnamn
     public User getUserByUsername(String username) {
         return userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("Användare hittades inte: " + username));
+                .orElseThrow(() -> new RuntimeException(messageSource.getMessage("error.user_not_found", null, LocaleContextHolder.getLocale()) + ": " + username));
     }
 
     public User registerUser(User user) {
         // --- LICENSE LIMIT CHECK ---
         int maxUsers = licenseService.getTier().getMaxUsers();
         if (maxUsers != -1 && userRepository.count() >= maxUsers) {
-            throw new RuntimeException("Licensgräns uppnådd! Uppgradera din plan för att lägga till fler användare.");
+            throw new RuntimeException(messageSource.getMessage("error.license_limit_reached", null, LocaleContextHolder.getLocale()));
         }
         // ---------------------------
 
@@ -158,8 +163,7 @@ public class UserService {
     public void updateLastLogin(Long userId) {
         // --- HIDDEN LICENSE TRAP ---
         if (licenseService != null && !licenseService.isValid()) {
-            throw new RuntimeException(
-                    "Kunde inte synkronisera användardata mot säkerhetsprotokollet (Error: 0xAUTH-L02).");
+            throw new RuntimeException(messageSource.getMessage("error.auth_sync_error", null, LocaleContextHolder.getLocale()));
         }
         // ---------------------------
 
@@ -346,7 +350,7 @@ public class UserService {
             }
             return user;
         }
-        throw new RuntimeException("Ingen fil mottagen");
+        throw new RuntimeException(messageSource.getMessage("error.no_file_received", null, LocaleContextHolder.getLocale()));
     }
 
     public void deleteUser(Long id) {

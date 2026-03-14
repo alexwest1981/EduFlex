@@ -1,15 +1,55 @@
 {
-    "title": "التقويم",
-    "subtitle": "تتبع المواعيد النهائية وبداية الدورة التدريبية.",
-    "events_in": "الأحداث في",
-    "no_events": "لا يوجد شيء مجدول هذا الشهر.",
-    "days": [
-        "الإثنين",
-        "الثلاثاء",
-        "الأربعاء",
-        "الخميس",
-        "الجمعة",
-        "السبت",
-        "الأحد"
-    ]
+  "title": {
+    "title": "Kalender",
+    "navigation": {
+      "previous": "Föregående",
+      "next": "Nästa"
+    },
+    "event": {
+      "add": "Lägg till händelse",
+      "edit": "Redigera händelse",
+      "delete": "Ta bort händelse",
+      "view": "Visa händelse"
+    },
+    "confirmation": {
+      "delete": "Är du säker på att du vill ta bort händelsen \"{{name}}\"?"
+    },
+    "form": {
+      "title": "Titel",
+      "description": "Beskrivning",
+      "date": "Datum",
+      "time": "Tid",
+      "submit": "Skicka",
+      "cancel": "Avbryt"
+    },
+    "error": {
+      "title_required": "Titeln är obligatorisk",
+      "date_required": "Datum är obligatoriskt"
+    }
+  },
+  "subtitle": {
+    "greeting": "مرحبا",
+    "farewell": "وداعا",
+    "instruction": "اتبع التعليمات بعناية",
+    "variable_example": "اسمك هو {{name}}",
+    "deadline_reminder": "تذكر المواعيد النهائية وبداية الدورة."
+  },
+  "events_in": {
+    "key1": "värde 1 på svenska",
+    "key2": "värde 2 på svenska med en {{name}} variabel",
+    "key3": "ett annat värde",
+    "key4": "händer i"
+  },
+  "no_events": {
+    "no_events_scheduled": "لا توجد فعاليات مقررة هذا الشهر."
+  },
+  "days": [
+    "الاثنين",
+    "الثلاثاء",
+    "الأربعاء",
+    "الخميس",
+    "الجمعة",
+    "السبت",
+    "الأحد"
+  ]
 }

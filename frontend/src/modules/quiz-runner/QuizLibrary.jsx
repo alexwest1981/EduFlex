@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { api } from '../../services/api';
 import { useAppContext } from '../../context/AppContext';
 import { Edit, Trash2, Copy, Search, Plus } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 export const QuizLibrary = () => {
+    const { t } = useTranslation();
     const { currentUser } = useAppContext();
     const [quizzes, setQuizzes] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -52,7 +54,7 @@ export const QuizLibrary = () => {
             // We just strip the ID and set the new course.
 
             const quizCopy = {
-                title: `${selectedQuiz.title} (Kopia)`,
+                title: `${selectedQuiz.title} (${t('common.copy')})`,
                 description: selectedQuiz.description || '',
                 questions: selectedQuiz.questions?.map(q => ({
                     text: q.text,
@@ -64,10 +66,10 @@ export const QuizLibrary = () => {
             };
 
             await api.quiz.create(targetCourseId, currentUser.id, quizCopy);
-            alert("Quiz kopierat till kursen!");
+            alert(t('quiz.copy_success'));
             setCopyModalOpen(false);
         } catch (e) {
-            alert("Fel vid kopiering.");
+            alert(t('quiz.copy_error'));
         }
     };
 
@@ -82,13 +84,13 @@ export const QuizLibrary = () => {
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
                     <input
                         className="w-full pl-10 pr-4 py-2 bg-gray-50 dark:bg-[#131314] rounded-lg border border-gray-200 dark:border-[#3c4043] outline-none"
-                        placeholder="Sök i bibliotek..."
+                        placeholder={t('quiz.search_library')}
                         value={searchTerm}
                         onChange={e => setSearchTerm(e.target.value)}
                     />
                 </div>
                 <div className="text-sm text-gray-500">
-                    Visar {filteredQuizzes.length} av {quizzes.length} quiz
+                    {t('quiz.showing_x_of_y', { count: filteredQuizzes.length, total: quizzes.length })}
                 </div>
             </div>
 
@@ -96,22 +98,22 @@ export const QuizLibrary = () => {
                 <table className="w-full text-left text-sm">
                     <thead className="bg-gray-50 dark:bg-[#131314] text-gray-500 font-bold border-b border-gray-200 dark:border-[#3c4043]">
                         <tr>
-                            <th className="p-4">Titel</th>
-                            <th className="p-4">Nuvarande Kurs</th>
-                            <th className="p-4">Frågor</th>
-                            <th className="p-4">Skapad</th>
-                            <th className="p-4 text-right">Åtgärder</th>
+                            <th className="p-4">{t('common.title')}</th>
+                            <th className="p-4">{t('quiz.course_current')}</th>
+                            <th className="p-4">{t('common.questions')}</th>
+                            <th className="p-4">{t('common.created')}</th>
+                            <th className="p-4 text-right">{t('quiz.actions')}</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-100 dark:divide-[#3c4043]">
                         {filteredQuizzes.map(q => (
                             <tr key={q.id} className="hover:bg-gray-50 dark:hover:bg-[#3c4043]/50">
                                 <td className="p-4 font-medium">{q.title}</td>
-                                <td className="p-4 text-gray-500">{q.course ? q.course.name || q.course.title || "Globalt" : "Ingen"}</td>
+                                <td className="p-4 text-gray-500">{q.course ? q.course.name || q.course.title || t('quiz.global') : t('common.none')}</td>
                                 <td className="p-4">{q.questions?.length || 0}</td>
                                 <td className="p-4 text-gray-500">TODO: Date</td>
                                 <td className="p-4 text-right flex justify-end gap-2">
-                                    <button onClick={() => { setSelectedQuiz(q); setCopyModalOpen(true); }} className="p-2 hover:bg-blue-50 text-blue-600 rounded-lg" title="Kopiera till kurs">
+                                    <button onClick={() => { setSelectedQuiz(q); setCopyModalOpen(true); }} className="p-2 hover:bg-blue-50 text-blue-600 rounded-lg" title={t('quiz.copy_to_course')}>
                                         <Copy size={16} />
                                     </button>
                                 </td>
@@ -119,14 +121,14 @@ export const QuizLibrary = () => {
                         ))}
                     </tbody>
                 </table>
-                {filteredQuizzes.length === 0 && <div className="p-8 text-center text-gray-500">Inga quiz hittades i ditt bibliotek.</div>}
+                {filteredQuizzes.length === 0 && <div className="p-8 text-center text-gray-500">{t('quiz.no_quizzes_library')}</div>}
             </div>
 
             {/* Copy Modal */}
             {copyModalOpen && (
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
                     <div className="bg-white dark:bg-[#1E1F20] p-6 rounded-xl w-full max-w-md">
-                        <h3 className="text-lg font-bold mb-4">Kopiera "{selectedQuiz?.title}"</h3>
+                        <h3 className="text-lg font-bold mb-4">{t('quiz.copy_title', { title: selectedQuiz?.title })}</h3>
                         <div className="mb-4">
                             <label className="block text-sm font-bold mb-2">Välj Kurs</label>
                             <select
@@ -134,13 +136,13 @@ export const QuizLibrary = () => {
                                 value={targetCourseId}
                                 onChange={e => setTargetCourseId(e.target.value)}
                             >
-                                <option value="">-- Välj Kurs --</option>
+                                <option value="">{t('quiz.select_course_placeholder')}</option>
                                 {courses.map(c => <option key={c.id} value={c.id}>{c.title}</option>)}
                             </select>
                         </div>
                         <div className="flex justify-end gap-2">
-                            <button onClick={() => setCopyModalOpen(false)} className="px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-[#3c4043]">Avbryt</button>
-                            <button onClick={handleCopy} disabled={!targetCourseId} className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50">Kopiera</button>
+                            <button onClick={() => setCopyModalOpen(false)} className="px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-[#3c4043]">{t('common.cancel')}</button>
+                            <button onClick={handleCopy} disabled={!targetCourseId} className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50">{t('quiz.copy_label')}</button>
                         </div>
                     </div>
                 </div>

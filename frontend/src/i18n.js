@@ -28,7 +28,8 @@ Object.keys(baseFiles).forEach(path => {
     if (match) {
         const lang = match[1];
         if (resources[lang]) {
-            resources[lang].translation = { ...resources[lang].translation, ...baseFiles[path].default };
+            const content = baseFiles[path].default || baseFiles[path];
+            resources[lang].translation = { ...resources[lang].translation, ...content };
         }
     }
 });
@@ -52,9 +53,10 @@ Object.keys(moduleFiles).forEach(path => {
         }
 
         if (resources[lang]) {
+            const content = moduleFiles[path].default || moduleFiles[path];
             resources[lang].translation[moduleName] = {
                 ...resources[lang].translation[moduleName],
-                ...moduleFiles[path].default
+                ...content
             };
         }
     }
@@ -107,7 +109,7 @@ export const initDynamicLanguages = async () => {
                             current[mod] = data;
                             i18n.addResourceBundle(code, 'translation', current, true, true);
                         }
-                    } catch (e) { }
+                    } catch { /* error ignored */ }
                 }
             }
         }

@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { FileText, Search, Download, Trash2, Filter, User, Calendar, File, Image as ImageIcon } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { api } from '../services/api';
 import { useAppContext } from '../context/AppContext';
 
 const DocumentArchive = () => {
+    const { t } = useTranslation();
     const { currentUser } = useAppContext();
     const [documents, setDocuments] = useState([]);
     const [search, setSearch] = useState('');
@@ -22,19 +24,19 @@ const DocumentArchive = () => {
             const data = await api.documents.getAll();
             setDocuments(Array.isArray(data) ? data : []);
         } catch (e) {
-            console.error("Kunde inte hämta dokument", e);
+            console.error(t('archive.errors.fetch_failed'), e);
         } finally {
             setIsLoading(false);
         }
     };
 
     const handleDelete = async (id) => {
-        if (!confirm("Är du säker på att du vill radera filen?")) return;
+        if (!confirm(t('archive.delete_confirm'))) return;
         try {
             await api.documents.delete(id);
             setDocuments(prev => prev.filter(d => d.id !== id));
         } catch (e) {
-            alert("Kunde inte radera filen.");
+            alert(t('archive.errors.delete_failed'));
         }
     };
 
@@ -67,8 +69,8 @@ const DocumentArchive = () => {
         <div className="max-w-6xl mx-auto animate-in fade-in">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Dokumentarkiv</h1>
-                    <p className="text-gray-500 dark:text-gray-400">Hantera alla filer i systemet.</p>
+                    <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">{t('archive.title')}</h1>
+                    <p className="text-gray-500 dark:text-gray-400">{t('archive.subtitle')}</p>
                 </div>
 
                 {/* SÖK OCH FILTER */}
@@ -77,7 +79,7 @@ const DocumentArchive = () => {
                         <Search className="absolute left-3 top-3 text-gray-400" size={18} />
                         <input
                             type="text"
-                            placeholder="Sök filnamn eller ägare..."
+                            placeholder={t('archive.search_placeholder')}
                             className="pl-10 w-full"
                             value={search}
                             onChange={e => setSearch(e.target.value)}
@@ -89,10 +91,10 @@ const DocumentArchive = () => {
                         value={filterType}
                         onChange={e => setFilterType(e.target.value)}
                     >
-                        <option value="ALL">Alla typer</option>
-                        <option value="PDF">PDF-filer</option>
-                        <option value="IMAGE">Bilder</option>
-                        <option value="WORD">Word-dok.</option>
+                        <option value="ALL">{t('archive.filter_all')}</option>
+                        <option value="PDF">{t('archive.filter_pdf')}</option>
+                        <option value="IMAGE">{t('archive.filter_image')}</option>
+                        <option value="WORD">{t('archive.filter_word')}</option>
                     </select>
                 </div>
             </div>
@@ -102,17 +104,17 @@ const DocumentArchive = () => {
                     <table className="w-full text-left text-sm">
                         <thead className="bg-gray-50 dark:bg-[#282a2c] text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-[#282a2c]">
                             <tr>
-                                <th className="px-6 py-4 font-medium">Filnamn</th>
-                                <th className="px-6 py-4 font-medium">Ägare</th>
-                                <th className="px-6 py-4 font-medium">Uppladdad</th>
-                                <th className="px-6 py-4 font-medium text-right">Åtgärd</th>
+                                <th className="px-6 py-4 font-medium">{t('archive.table_filename')}</th>
+                                <th className="px-6 py-4 font-medium">{t('archive.table_owner')}</th>
+                                <th className="px-6 py-4 font-medium">{t('archive.table_uploaded')}</th>
+                                <th className="px-6 py-4 font-medium text-right">{t('archive.table_action')}</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100 dark:divide-[#282a2c]">
                             {isLoading ? (
-                                <tr><td colSpan="4" className="px-6 py-8 text-center text-gray-500">Laddar filer...</td></tr>
+                                <tr><td colSpan="4" className="px-6 py-8 text-center text-gray-500">{t('archive.loading')}</td></tr>
                             ) : filteredDocs.length === 0 ? (
-                                <tr><td colSpan="4" className="px-6 py-8 text-center text-gray-500">Inga dokument matchade din sökning.</td></tr>
+                                <tr><td colSpan="4" className="px-6 py-8 text-center text-gray-500">{t('archive.no_results')}</td></tr>
                             ) : (
                                 filteredDocs.map(doc => (
                                     <tr key={doc.id} className="hover:bg-gray-50 dark:hover:bg-[#282a2c]/50 transition-colors group">
@@ -126,7 +128,7 @@ const DocumentArchive = () => {
                                         </td>
                                         <td className="px-6 py-4 text-gray-600 dark:text-gray-300">
                                             <div className="flex items-center gap-2">
-                                                <User size={14} className="text-gray-400" /> {doc.owner?.fullName || "Okänd"}
+                                                <User size={14} className="text-gray-400" /> {doc.owner?.fullName || t('archive.unknown_owner')}
                                             </div>
                                         </td>
                                         <td className="px-6 py-4 text-gray-500 dark:text-gray-400">
@@ -142,7 +144,7 @@ const DocumentArchive = () => {
                                                     target="_blank"
                                                     rel="noreferrer"
                                                     className="p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
-                                                    title="Ladda ner"
+                                                    title={t('archive.download_title')}
                                                 >
                                                     <Download size={18} />
                                                 </a>
@@ -150,7 +152,7 @@ const DocumentArchive = () => {
                                                     <button
                                                         onClick={() => handleDelete(doc.id)}
                                                         className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
-                                                        title="Ta bort"
+                                                        title={t('archive.delete_title')}
                                                     >
                                                         <Trash2 size={18} />
                                                     </button>

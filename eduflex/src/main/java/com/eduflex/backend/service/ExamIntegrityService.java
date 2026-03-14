@@ -6,6 +6,8 @@ import com.eduflex.backend.model.User;
 import com.eduflex.backend.repository.ExamIntegrityRepository;
 import com.eduflex.backend.repository.QuizRepository;
 import com.eduflex.backend.repository.UserRepository;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
@@ -18,17 +20,20 @@ public class ExamIntegrityService {
     private final QuizRepository quizRepository;
     private final UserRepository userRepository;
     private final EventBusService eventBusService;
+    private final MessageSource messageSource;
 
     public ExamIntegrityService(ExamIntegrityRepository integrityRepository,
             NotificationService notificationService,
             QuizRepository quizRepository,
             UserRepository userRepository,
-            EventBusService eventBusService) {
+            EventBusService eventBusService,
+            MessageSource messageSource) {
         this.integrityRepository = integrityRepository;
         this.notificationService = notificationService;
         this.quizRepository = quizRepository;
         this.userRepository = userRepository;
         this.eventBusService = eventBusService;
+        this.messageSource = messageSource;
     }
 
     public ExamIntegrityEvent logEvent(ExamIntegrityEvent event) {
@@ -57,8 +62,9 @@ public class ExamIntegrityService {
         User student = userRepository.findById(event.getStudentId()).orElse(null);
 
         if (quiz != null && quiz.getAuthor() != null && student != null) {
-            String message = String.format("⚠️ Integrity Alert: %s just lost focus during the exam '%s' (%s)",
-                    student.getFullName(), quiz.getTitle(), event.getEventType());
+            String message = messageSource.getMessage("integrity.alert", 
+                    new Object[]{student.getFullName(), quiz.getTitle(), event.getEventType()}, 
+                    LocaleContextHolder.getLocale());
 
             notificationService.createNotification(
                     quiz.getAuthor().getId(),

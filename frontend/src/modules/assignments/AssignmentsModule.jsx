@@ -385,6 +385,7 @@ const AssignmentsModule = ({ courseId, currentUser, isTeacher, mode = 'COURSE' }
 
 // --- SUB-COMPONENT: KORT FÖR VARJE UPPGIFT ---
 const AssignmentCard = ({ id, assignment, isTeacher, currentUser, expanded, toggleExpand, preloadedSubmission, onUploadSuccess, onDelete, onEdit }) => {
+    const { t } = useTranslation();
     const [mySubmission, setMySubmission] = useState(preloadedSubmission);
     const [allSubmissions, setAllSubmissions] = useState([]); // Endast för lärare
     const [file, setFile] = useState(null); // För upload

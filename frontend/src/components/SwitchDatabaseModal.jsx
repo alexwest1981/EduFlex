@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { X, AlertTriangle, Lock, Eye, EyeOff, ShieldAlert } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const SwitchDatabaseModal = ({ isOpen, onClose, onConfirm, targetDatabase }) => {
+    const { t } = useTranslation();
     const [adminPassword, setAdminPassword] = useState('');
     const [confirmText, setConfirmText] = useState('');
     const [showPassword, setShowPassword] = useState(false);
@@ -11,14 +13,14 @@ const SwitchDatabaseModal = ({ isOpen, onClose, onConfirm, targetDatabase }) => 
         e.preventDefault();
 
         // Validate confirmation text
-        if (confirmText.toUpperCase() !== 'BYTA DATABAS') {
-            setError('Du måste skriva "BYTA DATABAS" för att bekräfta');
+        if (confirmText.toUpperCase() !== t('db_switch.confirm_text').toUpperCase()) {
+            setError(t('db_switch.errors.confirm_mismatch'));
             return;
         }
 
         // Validate admin password
         if (!adminPassword) {
-            setError('Administratörslösenord krävs');
+            setError(t('db_switch.errors.password_required'));
             return;
         }
 
@@ -28,7 +30,7 @@ const SwitchDatabaseModal = ({ isOpen, onClose, onConfirm, targetDatabase }) => 
             setConfirmText('');
             onClose();
         } catch (err) {
-            setError(err.message || 'Fel lösenord eller operation misslyckades');
+            setError(err.message || t('db_switch.errors.failed'));
         }
     };
 
@@ -51,7 +53,7 @@ const SwitchDatabaseModal = ({ isOpen, onClose, onConfirm, targetDatabase }) => 
                             <ShieldAlert size={20} className="text-white" />
                         </div>
                         <h2 className="text-2xl font-bold text-white">
-                            Kritisk Operation
+                            {t('db_switch.title')}
                         </h2>
                     </div>
                     <button
@@ -69,12 +71,12 @@ const SwitchDatabaseModal = ({ isOpen, onClose, onConfirm, targetDatabase }) => 
                         <div className="flex items-start gap-3">
                             <AlertTriangle size={24} className="text-red-600 dark:text-red-400 mt-0.5 flex-shrink-0" />
                             <div>
-                                <h4 className="font-bold text-red-900 dark:text-red-100 mb-2">VARNING: Systemet kommer att starta om</h4>
+                                <h4 className="font-bold text-red-900 dark:text-red-100 mb-2">{t('db_switch.warning_title')}</h4>
                                 <ul className="text-sm text-red-700 dark:text-red-300 space-y-1">
-                                    <li>• Alla användare kommer att kopplas från</li>
-                                    <li>• Pågående arbete kan gå förlorat</li>
-                                    <li>• Systemet kan vara otillgängligt i flera minuter</li>
-                                    <li>• Felaktig konfiguration kan orsaka dataförlust</li>
+                                    <li>• {t('db_switch.warning_disconnect')}</li>
+                                    <li>• {t('db_switch.warning_loss')}</li>
+                                    <li>• {t('db_switch.warning_unavailable')}</li>
+                                    <li>• {t('db_switch.warning_config')}</li>
                                 </ul>
                             </div>
                         </div>
@@ -82,7 +84,7 @@ const SwitchDatabaseModal = ({ isOpen, onClose, onConfirm, targetDatabase }) => 
 
                     {/* Target Database Info */}
                     <div className="bg-gray-50 dark:bg-[#282a2c] rounded-xl p-4 border border-gray-200 dark:border-[#3c4043]">
-                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Du är på väg att byta till:</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">{t('db_switch.switch_target')}</p>
                         <p className="font-bold text-lg text-gray-900 dark:text-white">{targetDatabase.name}</p>
                         <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                             {targetDatabase.host}:{targetDatabase.port} / {targetDatabase.database}
@@ -98,7 +100,7 @@ const SwitchDatabaseModal = ({ isOpen, onClose, onConfirm, targetDatabase }) => 
                     {/* Confirmation Text */}
                     <div>
                         <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                            Skriv "BYTA DATABAS" för att bekräfta *
+                            {t('db_switch.confirm_label')}
                         </label>
                         <input
                             type="text"
@@ -107,7 +109,7 @@ const SwitchDatabaseModal = ({ isOpen, onClose, onConfirm, targetDatabase }) => 
                                 setConfirmText(e.target.value);
                                 setError('');
                             }}
-                            placeholder="BYTA DATABAS"
+                            placeholder={t('db_switch.confirm_placeholder')}
                             className="w-full px-4 py-2.5 border border-gray-300 dark:border-[#3c4043] rounded-lg bg-white dark:bg-[#282a2c] text-gray-900 dark:text-white focus:ring-2 focus:ring-red-500 focus:border-transparent font-mono uppercase"
                         />
                     </div>
@@ -116,7 +118,7 @@ const SwitchDatabaseModal = ({ isOpen, onClose, onConfirm, targetDatabase }) => 
                     <div>
                         <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-2">
                             <Lock size={16} className="text-red-600" />
-                            Administratörslösenord *
+                            {t('db_switch.password_label')}
                         </label>
                         <div className="relative">
                             <input
@@ -126,7 +128,7 @@ const SwitchDatabaseModal = ({ isOpen, onClose, onConfirm, targetDatabase }) => 
                                     setAdminPassword(e.target.value);
                                     setError('');
                                 }}
-                                placeholder="Ange ditt lösenord"
+                                placeholder={t('db_switch.password_placeholder')}
                                 className="w-full px-4 py-2.5 pr-12 border border-red-300 dark:border-red-800 rounded-lg bg-red-50 dark:bg-red-900/20 text-gray-900 dark:text-white focus:ring-2 focus:ring-red-500 focus:border-transparent"
                             />
                             <button
@@ -146,14 +148,14 @@ const SwitchDatabaseModal = ({ isOpen, onClose, onConfirm, targetDatabase }) => 
                             onClick={handleClose}
                             className="flex-1 px-6 py-3 border border-gray-300 dark:border-[#3c4043] rounded-xl font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-[#282a2c] transition"
                         >
-                            Avbryt
+                            {t('db_switch.cancel')}
                         </button>
                         <button
                             type="submit"
-                            disabled={confirmText.toUpperCase() !== 'BYTA DATABAS' || !adminPassword}
+                            disabled={confirmText.toUpperCase() !== t('db_switch.confirm_text').toUpperCase() || !adminPassword}
                             className="flex-1 px-6 py-3 bg-red-600 text-white rounded-xl font-semibold hover:bg-red-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                            Byt Databas Nu
+                            {t('db_switch.confirm_btn')}
                         </button>
                     </div>
                 </form>

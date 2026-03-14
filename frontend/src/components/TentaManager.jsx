@@ -79,8 +79,8 @@ const TentaManager = ({ courseId, teacherId, onClose, onSave }) => {
     };
 
     const handleSave = async () => {
-        if (!exam.quizData.title) return alert("Tentamen måste ha en titel.");
-        if (!exam.startTime || !exam.endTime) return alert("Du måste ange start- och sluttid.");
+        if (!exam.quizData.title) return alert(t('tenta.errors.title_required'));
+        if (!exam.startTime || !exam.endTime) return alert(t('tenta.errors.times_required'));
 
         setIsLoading(true);
         try {
@@ -89,7 +89,7 @@ const TentaManager = ({ courseId, teacherId, onClose, onSave }) => {
             if (onClose) onClose();
         } catch (e) {
             console.error(e);
-            alert("Kunde inte boka tentamen: " + e.message);
+            alert(t('tenta.errors.booking_failed') + e.message);
         } finally {
             setIsLoading(false);
         }
@@ -106,16 +106,16 @@ const TentaManager = ({ courseId, teacherId, onClose, onSave }) => {
                             <Calendar size={24} />
                         </div>
                         <div>
-                            <h2 className="text-xl font-black text-gray-900 dark:text-white leading-tight">Tenta Manager</h2>
-                            <p className="text-xs font-bold text-gray-500 uppercase tracking-widest">Boka examination & meddela studenter</p>
+                            <h2 className="text-xl font-black text-gray-900 dark:text-white leading-tight">{t('tenta.manager_title')}</h2>
+                            <p className="text-xs font-bold text-gray-500 uppercase tracking-widest">{t('tenta.manager_subtitle')}</p>
                         </div>
                     </div>
 
                     <div className="hidden md:flex items-center gap-8 px-8">
                         {[
-                            { id: 1, label: 'Innehåll', icon: Plus },
-                            { id: 2, label: 'Inställningar', icon: Settings },
-                            { id: 3, label: 'Bokning', icon: Bell }
+                            { id: 1, label: t('tenta.steps.content'), icon: Plus },
+                            { id: 2, label: t('tenta.steps.settings'), icon: Settings },
+                            { id: 3, label: t('tenta.steps.scheduling'), icon: Bell }
                         ].map((s) => (
                             <div key={s.id} className={`flex items-center gap-2 transition-all ${step === s.id ? 'text-indigo-600 scale-105' : 'text-gray-400 opacity-50'}`}>
                                 <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${step === s.id ? 'bg-indigo-600 text-white' : 'bg-gray-200 dark:bg-[#3c4043]'}`}>
@@ -140,20 +140,20 @@ const TentaManager = ({ courseId, teacherId, onClose, onSave }) => {
                             <div className="space-y-8 animate-in slide-in-from-bottom-4">
                                 <section className="space-y-4">
                                     <div>
-                                        <label className="block text-xs font-black text-gray-400 uppercase mb-2 tracking-widest">Tentamens Titel</label>
+                                        <label className="block text-xs font-black text-gray-400 uppercase mb-2 tracking-widest">{t('tenta.fields.title_label')}</label>
                                         <input
                                             className="w-full text-3xl font-black bg-transparent border-b-4 border-gray-100 dark:border-[#3c4043] focus:border-indigo-500 outline-none pb-2 text-gray-900 dark:text-white placeholder-gray-200"
-                                            placeholder="T.ex. Sluttentamen Webbdesign"
+                                            placeholder={t('tenta.fields.title_placeholder')}
                                             value={exam.quizData.title}
                                             onChange={e => setExam({ ...exam, quizData: { ...exam.quizData, title: e.target.value } })}
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-xs font-black text-gray-400 uppercase mb-2 tracking-widest">Beskrivning</label>
+                                        <label className="block text-xs font-black text-gray-400 uppercase mb-2 tracking-widest">{t('tenta.fields.description_label')}</label>
                                         <textarea
                                             className="w-full p-4 bg-gray-50 dark:bg-[#131314] rounded-2xl border border-gray-200 dark:border-[#3c4043] text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-indigo-500"
                                             rows="3"
-                                            placeholder="Instruktioner till studenterna..."
+                                            placeholder={t('tenta.fields.description_placeholder')}
                                             value={exam.quizData.description}
                                             onChange={e => setExam({ ...exam, quizData: { ...exam.quizData, description: e.target.value } })}
                                         />
@@ -162,7 +162,7 @@ const TentaManager = ({ courseId, teacherId, onClose, onSave }) => {
 
                                 <section className="space-y-6">
                                     <div className="flex justify-between items-center">
-                                        <h3 className="font-black text-gray-900 dark:text-white uppercase tracking-tighter text-lg">Frågor ({exam.quizData.questions.length})</h3>
+                                        <h3 className="font-black text-gray-900 dark:text-white uppercase tracking-tighter text-lg">{t('tenta.fields.questions_count', { count: exam.quizData.questions.length })}</h3>
                                     </div>
 
                                     {exam.quizData.questions.map((q, qIndex) => (
@@ -172,10 +172,10 @@ const TentaManager = ({ courseId, teacherId, onClose, onSave }) => {
                                             </button>
 
                                             <div className="mb-6">
-                                                <label className="block text-xs font-bold text-indigo-500 uppercase mb-2">Fråga {qIndex + 1}</label>
+                                                <label className="block text-xs font-bold text-indigo-500 uppercase mb-2">{t('tenta.fields.question_number', { number: qIndex + 1 })}</label>
                                                 <input
                                                     className="w-full font-bold bg-white dark:bg-[#1E1F20] border border-gray-200 dark:border-[#3c4043] rounded-xl p-4 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-indigo-500"
-                                                    placeholder="Skriv din fråga här..."
+                                                    placeholder={t('tenta.fields.question_placeholder')}
                                                     value={q.text}
                                                     onChange={e => updateQuestion(qIndex, 'text', e.target.value)}
                                                 />
@@ -192,14 +192,14 @@ const TentaManager = ({ courseId, teacherId, onClose, onSave }) => {
                                                         </button>
                                                         <input
                                                             className="flex-1 bg-transparent border-b border-gray-200 dark:border-[#3c4043] focus:border-indigo-500 py-2 text-gray-900 dark:text-white outline-none font-medium"
-                                                            placeholder={`Svarsalternativ ${oIndex + 1}`}
+                                                            placeholder={t('tenta.fields.option_number', { number: oIndex + 1 })}
                                                             value={opt.text}
                                                             onChange={e => updateOption(qIndex, oIndex, 'text', e.target.value)}
                                                         />
                                                     </div>
                                                 ))}
                                                 <button onClick={() => addOption(qIndex)} className="text-xs font-black text-indigo-500 flex items-center gap-2 mt-4 hover:translate-x-1 transition-transform">
-                                                    <Plus size={16} /> LÄGG TILL ALTERNATIV
+                                                    <Plus size={16} /> {t('tenta.fields.add_option')}
                                                 </button>
                                             </div>
                                         </div>
@@ -207,7 +207,7 @@ const TentaManager = ({ courseId, teacherId, onClose, onSave }) => {
 
                                     <button onClick={addQuestion} className="w-full py-8 border-4 border-dashed border-gray-100 dark:border-[#3c4043] rounded-3xl text-gray-400 hover:border-indigo-500 hover:text-indigo-600 transition-all flex flex-col items-center justify-center gap-2 group">
                                         <Plus size={32} className="group-hover:scale-125 transition-transform" />
-                                        <span className="font-black uppercase tracking-widest text-sm">Lägg till ny fråga</span>
+                                        <span className="font-black uppercase tracking-widest text-sm">{t('tenta.fields.add_question')}</span>
                                     </button>
                                 </section>
                             </div>
@@ -218,7 +218,7 @@ const TentaManager = ({ courseId, teacherId, onClose, onSave }) => {
                             <div className="space-y-12 animate-in slide-in-from-right-4">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                     <div className="bg-gray-50 dark:bg-[#131314] p-8 rounded-3xl border border-gray-100 dark:border-[#3c4043]">
-                                        <h3 className="font-black flex items-center gap-2 mb-6 dark:text-white"><Clock size={20} className="text-indigo-500" /> Tidsbegränsning</h3>
+                                        <h3 className="font-black flex items-center gap-2 mb-6 dark:text-white"><Clock size={20} className="text-indigo-500" /> {t('tenta.fields.time_limit')}</h3>
                                         <div className="flex items-center gap-4">
                                             <input
                                                 type="number"
@@ -226,18 +226,18 @@ const TentaManager = ({ courseId, teacherId, onClose, onSave }) => {
                                                 value={exam.quizData.durationMinutes}
                                                 onChange={e => setExam({ ...exam, quizData: { ...exam.quizData, durationMinutes: parseInt(e.target.value) } })}
                                             />
-                                            <span className="font-bold text-gray-500 uppercase tracking-widest text-sm">Minuter</span>
+                                            <span className="font-bold text-gray-500 uppercase tracking-widest text-sm">{t('tenta.fields.minutes')}</span>
                                         </div>
-                                        <p className="mt-4 text-xs text-gray-400 font-medium italic">Studenter har denna tid på sig att slutföra tentamen när de väl startat.</p>
+                                        <p className="mt-4 text-xs text-gray-400 font-medium italic">{t('tenta.fields.time_info')}</p>
                                     </div>
 
                                     <div className="bg-gray-50 dark:bg-[#131314] p-8 rounded-3xl border border-gray-100 dark:border-[#3c4043]">
-                                        <h3 className="font-black flex items-center gap-2 mb-6 dark:text-white"><Settings size={20} className="text-indigo-500" /> Rättningsmetod</h3>
+                                        <h3 className="font-black flex items-center gap-2 mb-6 dark:text-white"><Settings size={20} className="text-indigo-500" /> {t('tenta.fields.grading_method')}</h3>
                                         <div className="space-y-3">
                                             {[
-                                                { id: 'MANUAL', label: 'Manuell rättning', desc: 'Du rättar allt själv.' },
-                                                { id: 'AUTO', label: 'Automatisk (MCQ)', desc: 'Systemet rättar direkt.' },
-                                                { id: 'AI', label: 'AI Rättning (Gemini)', desc: 'AI förslår betyg & feedback.' }
+                                                { id: 'MANUAL', label: t('tenta.fields.grading_manual'), desc: t('tenta.fields.grading_manual_desc') },
+                                                { id: 'AUTO', label: t('tenta.fields.grading_auto'), desc: t('tenta.fields.grading_auto_desc') },
+                                                { id: 'AI', label: t('tenta.fields.grading_ai'), desc: t('tenta.fields.grading_ai_desc') }
                                             ].map(method => (
                                                 <button
                                                     key={method.id}
@@ -255,8 +255,8 @@ const TentaManager = ({ courseId, teacherId, onClose, onSave }) => {
                                 <div className="bg-amber-50 dark:bg-amber-950/20 p-6 rounded-3xl border border-amber-100 dark:border-amber-900/30 flex gap-4">
                                     <Info className="text-amber-500 shrink-0" size={24} />
                                     <div>
-                                        <h4 className="font-black text-amber-800 dark:text-amber-400 text-sm uppercase">Säkerhetsläge: Exam Integrity Pro</h4>
-                                        <p className="text-xs text-amber-700 dark:text-amber-500 font-medium mt-1">När du skapar en "Tenta" aktiveras automatiskt integritetsövervakning. Detta innebär att fönsterbyten loggas och att studenten måste stanna i tentaläget.</p>
+                                        <h4 className="font-black text-amber-800 dark:text-amber-400 text-sm uppercase">{t('tenta.fields.security_mode')}</h4>
+                                        <p className="text-xs text-amber-700 dark:text-amber-500 font-medium mt-1">{t('tenta.fields.security_info')}</p>
                                     </div>
                                 </div>
                             </div>
@@ -266,10 +266,10 @@ const TentaManager = ({ courseId, teacherId, onClose, onSave }) => {
                         {step === 3 && (
                             <div className="space-y-10 animate-in slide-in-from-right-4">
                                 <div className="bg-gray-50 dark:bg-[#131314] p-8 rounded-3xl border border-gray-100 dark:border-[#3c4043]">
-                                    <h3 className="font-black text-gray-900 dark:text-white uppercase tracking-widest text-sm mb-6 flex items-center gap-2"><Calendar className="text-indigo-500" size={20} /> Kalenderbokning</h3>
+                                    <h3 className="font-black text-gray-900 dark:text-white uppercase tracking-widest text-sm mb-6 flex items-center gap-2"><Calendar className="text-indigo-500" size={20} /> {t('tenta.fields.calendar_booking')}</h3>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         <div>
-                                            <label className="block text-xs font-black text-gray-400 uppercase mb-2">Öppnas (Start)</label>
+                                            <label className="block text-xs font-black text-gray-400 uppercase mb-2">{t('tenta.fields.start_time')}</label>
                                             <input
                                                 type="datetime-local"
                                                 className="w-full p-4 rounded-2xl bg-white dark:bg-[#1E1F20] border border-gray-200 dark:border-[#3c4043] dark:text-white font-bold"
@@ -278,7 +278,7 @@ const TentaManager = ({ courseId, teacherId, onClose, onSave }) => {
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-xs font-black text-gray-400 uppercase mb-2">Stängs (Slut)</label>
+                                            <label className="block text-xs font-black text-gray-400 uppercase mb-2">{t('tenta.fields.end_time')}</label>
                                             <input
                                                 type="datetime-local"
                                                 className="w-full p-4 rounded-2xl bg-white dark:bg-[#1E1F20] border border-gray-200 dark:border-[#3c4043] dark:text-white font-bold"
@@ -290,13 +290,13 @@ const TentaManager = ({ courseId, teacherId, onClose, onSave }) => {
                                 </div>
 
                                 <div className="space-y-6">
-                                    <h3 className="font-black text-gray-900 dark:text-white uppercase tracking-widest text-sm flex items-center gap-2"><Bell className="text-indigo-500" size={20} /> Notifiera studenter</h3>
+                                    <h3 className="font-black text-gray-900 dark:text-white uppercase tracking-widest text-sm flex items-center gap-2"><Bell className="text-indigo-500" size={20} /> {t('tenta.fields.notify_students')}</h3>
                                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                                         {[
-                                            { id: 'notifyInternal', label: 'Internt Inbox', icon: MessageSquare, color: 'indigo' },
-                                            { id: 'notifyPush', label: 'Push (PWA)', icon: Smartphone, color: 'purple' },
-                                            { id: 'notifyEmail', label: 'E-post', icon: Mail, color: 'blue' },
-                                            { id: 'notifySms', label: 'SMS', icon: Smartphone, color: 'green' }
+                                            { id: 'notifyInternal', label: t('tenta.fields.channel_internal'), icon: MessageSquare, color: 'indigo' },
+                                            { id: 'notifyPush', label: t('tenta.fields.channel_push'), icon: Smartphone, color: 'purple' },
+                                            { id: 'notifyEmail', label: t('tenta.fields.channel_email'), icon: Mail, color: 'blue' },
+                                            { id: 'notifySms', label: t('tenta.fields.channel_sms'), icon: Smartphone, color: 'green' }
                                         ].map(channel => {
                                             const Icon = channel.icon;
                                             const active = exam[channel.id];
@@ -314,7 +314,7 @@ const TentaManager = ({ courseId, teacherId, onClose, onSave }) => {
                                             );
                                         })}
                                     </div>
-                                    <p className="text-center text-xs text-gray-400 font-medium">Systemet filtrerar bort kanaler som studenten har valt bort i sin profil.</p>
+                                    <p className="text-center text-xs text-gray-400 font-medium">{t('tenta.fields.channel_info')}</p>
                                 </div>
                             </div>
                         )}
@@ -330,7 +330,7 @@ const TentaManager = ({ courseId, teacherId, onClose, onSave }) => {
                                 onClick={() => setStep(step - 1)}
                                 className="flex items-center gap-2 px-6 py-3 rounded-2xl font-black text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-950/30 transition-all uppercase tracking-widest text-xs"
                             >
-                                <ChevronLeft size={20} /> Tillbaka
+                                <ChevronLeft size={20} /> {t('tenta.actions.back')}
                             </button>
                         )}
                     </div>
@@ -340,7 +340,7 @@ const TentaManager = ({ courseId, teacherId, onClose, onSave }) => {
                             onClick={onClose}
                             className="px-8 py-3 rounded-2xl font-black text-gray-500 hover:bg-gray-200 dark:hover:bg-[#3c4043] transition-all uppercase tracking-widest text-xs"
                         >
-                            Avbryt
+                            {t('tenta.actions.cancel')}
                         </button>
 
                         {step < 3 ? (
@@ -348,7 +348,7 @@ const TentaManager = ({ courseId, teacherId, onClose, onSave }) => {
                                 onClick={() => setStep(step + 1)}
                                 className="flex items-center gap-4 px-10 py-4 bg-indigo-600 text-white rounded-2xl font-black shadow-xl shadow-indigo-200 dark:shadow-none hover:bg-indigo-700 hover:scale-105 transition-all uppercase tracking-widest text-sm"
                             >
-                                Nästa Steg <ChevronRight size={20} />
+                                {t('tenta.actions.next')} <ChevronRight size={20} />
                             </button>
                         ) : (
                             <button
@@ -356,7 +356,7 @@ const TentaManager = ({ courseId, teacherId, onClose, onSave }) => {
                                 disabled={isLoading}
                                 className="flex items-center gap-4 px-12 py-4 bg-green-600 text-white rounded-2xl font-black shadow-xl shadow-green-200 dark:shadow-none hover:bg-green-700 hover:scale-105 transition-all uppercase tracking-widest text-sm disabled:opacity-50"
                             >
-                                {isLoading ? 'Bokar...' : <><Save size={20} /> SLUTFÖR & BOKA</>}
+                                {isLoading ? t('tenta.actions.booking') : <><Save size={20} /> {t('tenta.actions.finish')}</>}
                             </button>
                         )}
                     </div>

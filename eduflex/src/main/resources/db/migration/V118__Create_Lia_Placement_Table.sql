@@ -1,6 +1,6 @@
 -- Migration for LIA Placements (Phase 2 compliance)
 
-CREATE TABLE lia_placements (
+CREATE TABLE IF NOT EXISTS lia_placements (
     id BIGSERIAL PRIMARY KEY,
     course_id BIGINT NOT NULL,
     student_id BIGINT NOT NULL,
@@ -19,5 +19,5 @@ CREATE TABLE lia_placements (
     CONSTRAINT fk_lia_student FOREIGN KEY (student_id) REFERENCES app_users (id) ON DELETE CASCADE
 );
 
-CREATE INDEX idx_lia_course ON lia_placements (course_id);
-CREATE INDEX idx_lia_student ON lia_placements (student_id);
+CREATE INDEX IF NOT EXISTS idx_lia_course ON lia_placements (course_id);
+CREATE INDEX IF NOT EXISTS idx_lia_student ON lia_placements (student_id);

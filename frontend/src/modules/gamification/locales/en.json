@@ -1,13 +1,107 @@
 {
-    "level_title": "Current Level",
-    "student_rank": "Student Ranking",
-    "points_to_next": "points to next level",
-    "my_badges": "My Badges",
-    "no_awards": "No awards yet. Keep up the good work!",
-    "view_all": "View all awards",
-    "rank_newbie": "Newbie",
-    "rank_apprentice": "Apprentice",
-    "rank_expert": "Expert",
-    "rank_master": "Master",
-    "rank_legend": "Legend"
+  "level_title": {
+    "Nuvarande Nivå": "Current Level",
+    "Nästa Nivå": "Next Level",
+    "Erfarenhet": "Experience",
+    "Krav för Nästa Nivå": "Requirement for Next Level",
+    "Du har låst upp en ny hatt!": "You have unlocked a new hat!",
+    "Du har låst upp ett nytt ansikte!": "You have unlocked a new face!",
+    "Du har låst upp ett nytt märke!": "You have unlocked a new badge!",
+    "Du har låst upp ett nytt husdjur!": "You have unlocked a new pet!",
+    "Du har låst upp ett nytt tema!": "You have unlocked a new theme!",
+    "Du har låst upp ett nytt föremål!": "You have unlocked a new item!",
+    "Grattis, {{name}}!": "Congratulations, {{name}}!",
+    "Du har nått nivå {{level}}!": "You have reached level {{level}}!",
+    "Belöning": "Reward",
+    "Gå till butiken": "Go to the store",
+    "Spela igen": "Play again"
+  },
+  "student_rank": "Elevranking",
+  "points_to_next": {
+    "points_to_next_level": "Points to next level"
+  },
+  "my_badges": {
+    "Mina Utmärkelser": "My Awards",
+    "Du har ännu inga utmärkelser.": "You don't have any awards yet.",
+    "Utforska utmärkelser": "Explore awards",
+    "Visa alla utmärkelser": "Show all awards",
+    "Dölj alla utmärkelser": "Hide all awards",
+    "Tillgängliga utmärkelser": "Available awards",
+    "Du har fått utmärkelsen {{name}}!": "You have received the award {{name}}!",
+    "Du har fått alla utmärkelser!": "You have received all the awards!",
+    "Grattis!": "Congratulations!",
+    "Fortsätt så!": "Keep it up!",
+    "Bra jobbat!": "Good job!",
+    "Fantastiskt!": "Fantastic!",
+    "Otroligt!": "Incredible!",
+    "Enastående!": "Outstanding!"
+  },
+  "no_awards": {
+    "title": "Min profil",
+    "name": "Namn",
+    "email": "E-post",
+    "save": "Spara",
+    "cancel": "Avbryt",
+    "profile_saved": "Profilen har sparats!",
+    "welcome_message": "Välkommen, {{name}}!",
+    "error_message": "Ett fel uppstod. Försök igen.",
+    "no_achievements": "Inga utmärkelser ännu. Fortsätt kämpa!"
+  },
+  "view_all": {
+    "show_all_awards": "Show all awards"
+  },
+  "rank_newbie": {
+    "cancel": "Avbryt",
+    "submit": "Skicka",
+    "reset": "Återställ",
+    "name": "Namn",
+    "email": "E-post",
+    "message": "Meddelande",
+    "success": "Tack, {{name}}, ditt meddelande har skickats.",
+    "error": "Beklager, {{name}}, det uppstod ett fel."
+  },
+  "rank_apprentice": {
+    "greeting": "Hej {{name}}, välkommen till vår plattform!",
+    "farewell": "Adjö {{name}}, vi hoppas att du snart är tillbaka!",
+    "instruction": "Vänligen fyll i alla obligatoriska fält.",
+    "confirmation": "Är du säker på att du vill fortsätta?",
+    "error_message": "Ett fel uppstod. Vänligen försök igen senare.",
+    "success_message": "Åtgärden lyckades!",
+    "button_label": "Skicka",
+    "link_text": "Klicka här",
+    "placeholder_text": "Ange ditt namn",
+    "tooltip_text": "Detta fält är obligatoriskt"
+  },
+  "rank_expert": {
+    "greeting": "Hej {{name}}, välkommen till vår app!",
+    "farewell": "Adjö, {{name}}! Tack för att du använde vår tjänst.",
+    "confirmation": "Är du säker på att du vill fortsätta?",
+    "error_message": "Ett fel har uppstått. Försök igen senare.",
+    "success_message": "Åtgärden lyckades!",
+    "button_label": "Klicka här",
+    "input_placeholder": "Ange ditt namn",
+    "item_count": "{{count}} objekt",
+    "date_format": "YYYY-MM-DD",
+    "price_label": "Pris: {{price}} kr"
+  },
+  "rank_master": {
+    "greeting": "Hej {{name}}, välkommen till vår app!",
+    "farewell": "Adjö, {{name}}! Vi hoppas att du kommer tillbaka snart.",
+    "instruction": "Vänligen fyll i alla obligatoriska fält.",
+    "confirmation": "Är du säker på att du vill fortsätta?",
+    "error_message": "Ett fel uppstod. Vänligen försök igen senare.",
+    "button_label": "Skicka",
+    "link_text": "Klicka här för mer information.",
+    "placeholder_text": "Skriv ditt namn här",
+    "success_message": "Din begäran har skickats.",
+    "warning_message": "Var försiktig, denna åtgärd kan inte ångras."
+  },
+  "rank_legend": {
+    "Legend": "Legend",
+    "Map": "Map",
+    "Satellite": "Satellite",
+    "Hybrid": "Hybrid",
+    "Terrain": "Terrain",
+    "{{name}}'s Map": "{{name}}'s Map"
+  }
 }

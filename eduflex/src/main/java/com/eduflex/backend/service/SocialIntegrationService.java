@@ -7,6 +7,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,9 +19,12 @@ public class SocialIntegrationService {
 
     private static final Logger logger = LoggerFactory.getLogger(SocialIntegrationService.class);
     private final RestTemplate restTemplate;
+    private final MessageSource messageSource;
 
-    public SocialIntegrationService() {
+    @Autowired
+    public SocialIntegrationService(MessageSource messageSource) {
         this.restTemplate = new RestTemplate();
+        this.messageSource = messageSource;
     }
 
     /**
@@ -74,9 +80,9 @@ public class SocialIntegrationService {
      * Notify social channels about new Community content
      */
     public void notifyNewContent(String title, String author, String type, String url) {
-        String message = String.format(
-                "🚀 *Nytt material i EduFlex Community!* \n\n*%s*\nTyp: %s\nSkapat av: %s\nKolla in det här: %s",
-                title, type, author, url);
+        String message = messageSource.getMessage("social.new_content", 
+                new Object[]{title, type, author, url}, 
+                LocaleContextHolder.getLocale());
 
         // In a real implementation, we would fetch configured webhooks for the tenant
         // or global community

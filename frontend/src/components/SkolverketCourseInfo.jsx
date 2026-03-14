@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Book, FileText, Award, ExternalLink } from 'lucide-react';
 import { api } from '../services/api';
+import { useTranslation } from 'react-i18next';
 
 const SkolverketCourseInfo = ({ skolverketCourse }) => {
+    const { t } = useTranslation();
     const [activeTab, setActiveTab] = useState('grundinfo');
     const [criteria, setCriteria] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -30,9 +32,9 @@ const SkolverketCourseInfo = ({ skolverketCourse }) => {
     }
 
     const tabs = [
-        { id: 'grundinfo', label: 'Grundinfo', icon: FileText },
-        { id: 'innehall', label: 'Innehåll', icon: Book },
-        { id: 'kunskapskrav', label: 'Kunskapskrav', icon: Award }
+        { id: 'grundinfo', label: t('skolverket.tabs.basic_info'), icon: FileText },
+        { id: 'innehall', label: t('skolverket.tabs.content'), icon: Book },
+        { id: 'kunskapskrav', label: t('skolverket.tabs.criteria'), icon: Award }
     ];
 
     const gradeColors = {
@@ -50,7 +52,7 @@ const SkolverketCourseInfo = ({ skolverketCourse }) => {
                     <Book className="text-indigo-600 dark:text-indigo-400" size={24} />
                 </div>
                 <div>
-                    <h2 className="text-xl font-bold text-gray-900 dark:text-white">Skolverkets Kursinformation</h2>
+                    <h2 className="text-xl font-bold text-gray-900 dark:text-white">{t('skolverket.title')}</h2>
                     <p className="text-sm text-gray-600 dark:text-gray-400">{skolverketCourse.courseCode} - {skolverketCourse.courseName}</p>
                 </div>
             </div>
@@ -79,12 +81,12 @@ const SkolverketCourseInfo = ({ skolverketCourse }) => {
             <div className="space-y-4">
                 {activeTab === 'grundinfo' && (
                     <div className="space-y-4">
-                        <InfoItem label="Kurskod" value={skolverketCourse.courseCode} />
-                        <InfoItem label="Kursnamn" value={skolverketCourse.courseName} />
-                        {skolverketCourse.englishTitle && <InfoItem label="Engelsk titel" value={skolverketCourse.englishTitle} />}
-                        <InfoItem label="Poäng" value={`${skolverketCourse.points} poäng`} />
-                        <InfoItem label="Ämne" value={skolverketCourse.subject} />
-                        {skolverketCourse.skolformer && <InfoItem label="Skolformer" value={skolverketCourse.skolformer} />}
+                        <InfoItem label={t('skolverket.labels.course_code')} value={skolverketCourse.courseCode} />
+                        <InfoItem label={t('skolverket.labels.course_name')} value={skolverketCourse.courseName} />
+                        {skolverketCourse.englishTitle && <InfoItem label={t('skolverket.labels.english_title')} value={skolverketCourse.englishTitle} />}
+                        <InfoItem label={t('skolverket.labels.points')} value={t('skolverket.labels.points_value', { count: skolverketCourse.points })} />
+                        <InfoItem label={t('skolverket.labels.subject')} value={skolverketCourse.subject} />
+                        {skolverketCourse.skolformer && <InfoItem label={t('skolverket.labels.skolformer')} value={skolverketCourse.skolformer} />}
                         {skolverketCourse.pdfUrl && (
                             <div>
                                 <label className="text-sm font-bold text-gray-700 dark:text-gray-300">PDF</label>
@@ -95,7 +97,7 @@ const SkolverketCourseInfo = ({ skolverketCourse }) => {
                                     className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 hover:underline mt-1"
                                 >
                                     <ExternalLink size={16} />
-                                    Öppna officiell kursplan (Skolverket)
+                                    {t('skolverket.labels.open_syllabus')}
                                 </a>
                             </div>
                         )}
@@ -105,17 +107,17 @@ const SkolverketCourseInfo = ({ skolverketCourse }) => {
                 {activeTab === 'innehall' && (
                     <div className="space-y-6">
                         {skolverketCourse.description && (
-                            <Section title="Kursbeskrivning" content={skolverketCourse.description} />
+                            <Section title={t('skolverket.sections.description')} content={skolverketCourse.description} />
                         )}
                         {skolverketCourse.subjectPurpose && (
-                            <Section title="Ämnets syfte" content={skolverketCourse.subjectPurpose} />
+                            <Section title={t('skolverket.sections.purpose')} content={skolverketCourse.subjectPurpose} />
                         )}
                         {skolverketCourse.objectives && (
-                            <Section title="Kursmål" content={skolverketCourse.objectives} />
+                            <Section title={t('skolverket.sections.objectives')} content={skolverketCourse.objectives} />
                         )}
                         {!skolverketCourse.description && !skolverketCourse.subjectPurpose && !skolverketCourse.objectives && (
                             <p className="text-gray-500 dark:text-gray-400 italic">
-                                Ingen detaljerad information tillgänglig ännu. Denna data kommer läggas till framöver.
+                                {t('skolverket.messages.no_info')}
                             </p>
                         )}
                     </div>
@@ -123,10 +125,10 @@ const SkolverketCourseInfo = ({ skolverketCourse }) => {
 
                 {activeTab === 'kunskapskrav' && (
                     <div className="space-y-4">
-                        {loading && <p className="text-gray-500">Laddar betygskriterier...</p>}
+                        {loading && <p className="text-gray-500">{t('skolverket.messages.loading_criteria')}</p>}
                         {!loading && criteria.length === 0 && (
                             <p className="text-gray-500 dark:text-gray-400 italic">
-                                Inga betygskriterier tillgängliga ännu. Dessa kommer läggas till framöver.
+                                {t('skolverket.messages.no_criteria')}
                             </p>
                         )}
                         {!loading && criteria.map((criterion) => (
@@ -136,7 +138,7 @@ const SkolverketCourseInfo = ({ skolverketCourse }) => {
                             >
                                 <div className="flex items-center gap-2 mb-2">
                                     <Award size={20} />
-                                    <h3 className="font-bold text-lg">Betyget {criterion.gradeLevel}</h3>
+                                    <h3 className="font-bold text-lg">{t('skolverket.messages.grade_level', { level: criterion.gradeLevel })}</h3>
                                 </div>
                                 <div
                                     className="text-sm prose dark:prose-invert max-w-none"

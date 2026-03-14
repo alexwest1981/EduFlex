@@ -1,15 +1,29 @@
 {
-    "title": "Kalender",
-    "subtitle": "Behalten Sie den Überblick über Ihre Fristen und Kursstarts.",
-    "events_in": "Veranstaltungen in",
-    "no_events": "Diesen Monat ist nichts geplant.",
-    "days": [
-        "Mo",
-        "Di",
-        "Mi",
-        "Do",
-        "Fr",
-        "Sa",
-        "So"
-    ]
+  "title": {
+    "Kalender": "Kalender",
+    "Lägg till {{name}} i kalendern?": "{{name}} zum Kalender hinzufügen?",
+    "Är du säker på att du vill lägga till det här i din kalender?": "Sind Sie sicher, dass Sie dies Ihrem Kalender hinzufügen möchten?",
+    "Det gick inte att lägga till i kalendern": "Konnte nicht zum Kalender hinzugefügt werden",
+    "OK": "OK",
+    "Stäng": "Schließen"
+  },
+  "subtitle": {
+    "deadline_reminder": "Behalten Sie Ihre Fristen und Kursstarts im Auge."
+  },
+  "events_in": {
+    "Händer i": "Passiert in"
+  },
+  "no_events": {
+    "title": "Inga händelser",
+    "no_events": "Ingenting inplanerat denna månad."
+  },
+  "days": [
+    "Mo",
+    "Di",
+    "Mi",
+    "Do",
+    "Fr",
+    "Sa",
+    "So"
+  ]
 }

@@ -1,4 +1,5 @@
 import React, { useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import { Table } from '@tiptap/extension-table';
@@ -35,6 +36,7 @@ const Divider = () => (
 );
 
 const RichTextEditor = ({ value, onChange, placeholder, style }) => {
+    const { t } = useTranslation();
     const editor = useEditor({
         extensions: [
             StarterKit.configure({
@@ -48,7 +50,7 @@ const RichTextEditor = ({ value, onChange, placeholder, style }) => {
             TableCell,
             Link.configure({ openOnClick: false, HTMLAttributes: { class: 'text-indigo-500 underline' } }),
             TextAlign.configure({ types: ['heading', 'paragraph'] }),
-            Placeholder.configure({ placeholder: placeholder || 'Skriv här...' }),
+            Placeholder.configure({ placeholder: placeholder || t('editor.placeholder') }),
         ],
         content: value || '',
         onUpdate: ({ editor: e }) => {
@@ -81,7 +83,7 @@ const RichTextEditor = ({ value, onChange, placeholder, style }) => {
     const setLink = useCallback(() => {
         if (!editor) return;
         const prev = editor.getAttributes('link').href;
-        const url = window.prompt('Länk URL:', prev || 'https://');
+        const url = window.prompt(t('editor.link_prompt'), prev || 'https://');
         if (url === null) return;
         if (url === '') { editor.chain().focus().unsetLink().run(); return; }
         editor.chain().focus().setLink({ href: url }).run();
@@ -116,44 +118,44 @@ const RichTextEditor = ({ value, onChange, placeholder, style }) => {
                     }}
                     className="text-xs border border-gray-200 dark:border-[#3c4043] rounded px-1 py-0.5 bg-white dark:bg-[#282a2c] text-gray-700 dark:text-gray-300"
                 >
-                    <option value="">Normal</option>
-                    <option value="1">Rubrik 1</option>
-                    <option value="2">Rubrik 2</option>
-                    <option value="3">Rubrik 3</option>
+                    <option value="">{t('editor.normal')}</option>
+                    <option value="1">{t('editor.heading', { level: 1 })}</option>
+                    <option value="2">{t('editor.heading', { level: 2 })}</option>
+                    <option value="3">{t('editor.heading', { level: 3 })}</option>
                 </select>
 
                 <Divider />
 
                 {/* Formatering */}
-                <ToolbarButton onClick={() => editor.chain().focus().toggleBold().run()} active={isActive('bold')} title="Fet">B</ToolbarButton>
-                <ToolbarButton onClick={() => editor.chain().focus().toggleItalic().run()} active={isActive('italic')} title="Kursiv"><em>I</em></ToolbarButton>
-                <ToolbarButton onClick={() => editor.chain().focus().toggleUnderline?.() || editor.chain().focus().run()} active={isActive('underline')} title="Understruken"><u>U</u></ToolbarButton>
-                <ToolbarButton onClick={() => editor.chain().focus().toggleStrike().run()} active={isActive('strike')} title="Genomstruken"><s>S</s></ToolbarButton>
-                <ToolbarButton onClick={() => editor.chain().focus().toggleBlockquote().run()} active={isActive('blockquote')} title="Citat">❝</ToolbarButton>
-                <ToolbarButton onClick={() => editor.chain().focus().toggleCodeBlock().run()} active={isActive('codeBlock')} title="Kodblock">{'</>'}</ToolbarButton>
+                <ToolbarButton onClick={() => editor.chain().focus().toggleBold().run()} active={isActive('bold')} title={t('editor.bold')}>B</ToolbarButton>
+                <ToolbarButton onClick={() => editor.chain().focus().toggleItalic().run()} active={isActive('italic')} title={t('editor.italic')}><em>I</em></ToolbarButton>
+                <ToolbarButton onClick={() => editor.chain().focus().toggleUnderline?.() || editor.chain().focus().run()} active={isActive('underline')} title={t('editor.underline')}><u>U</u></ToolbarButton>
+                <ToolbarButton onClick={() => editor.chain().focus().toggleStrike().run()} active={isActive('strike')} title={t('editor.strike')}><s>S</s></ToolbarButton>
+                <ToolbarButton onClick={() => editor.chain().focus().toggleBlockquote().run()} active={isActive('blockquote')} title={t('editor.blockquote')}>❝</ToolbarButton>
+                <ToolbarButton onClick={() => editor.chain().focus().toggleCodeBlock().run()} active={isActive('codeBlock')} title={t('editor.code_block')}>{'</>'}</ToolbarButton>
 
                 <Divider />
 
                 {/* Listor */}
-                <ToolbarButton onClick={() => editor.chain().focus().toggleBulletList().run()} active={isActive('bulletList')} title="Punktlista">• Lista</ToolbarButton>
-                <ToolbarButton onClick={() => editor.chain().focus().toggleOrderedList().run()} active={isActive('orderedList')} title="Numrerad lista">1. Lista</ToolbarButton>
+                <ToolbarButton onClick={() => editor.chain().focus().toggleBulletList().run()} active={isActive('bulletList')} title={t('editor.bullet_list')}>• Lista</ToolbarButton>
+                <ToolbarButton onClick={() => editor.chain().focus().toggleOrderedList().run()} active={isActive('orderedList')} title={t('editor.ordered_list')}>1. Lista</ToolbarButton>
 
                 <Divider />
 
                 {/* Justering */}
-                <ToolbarButton onClick={() => editor.chain().focus().setTextAlign('left').run()} active={isActive({ textAlign: 'left' })} title="Vänster">⟵</ToolbarButton>
-                <ToolbarButton onClick={() => editor.chain().focus().setTextAlign('center').run()} active={isActive({ textAlign: 'center' })} title="Centrerat">⟺</ToolbarButton>
-                <ToolbarButton onClick={() => editor.chain().focus().setTextAlign('right').run()} active={isActive({ textAlign: 'right' })} title="Höger">⟶</ToolbarButton>
+                <ToolbarButton onClick={() => editor.chain().focus().setTextAlign('left').run()} active={isActive({ textAlign: 'left' })} title={t('editor.align_left')}>⟵</ToolbarButton>
+                <ToolbarButton onClick={() => editor.chain().focus().setTextAlign('center').run()} active={isActive({ textAlign: 'center' })} title={t('editor.align_center')}>⟺</ToolbarButton>
+                <ToolbarButton onClick={() => editor.chain().focus().setTextAlign('right').run()} active={isActive({ textAlign: 'right' })} title={t('editor.align_right')}>⟶</ToolbarButton>
 
                 <Divider />
 
                 {/* Länk */}
-                <ToolbarButton onClick={setLink} active={isActive('link')} title="Länk">🔗</ToolbarButton>
+                <ToolbarButton onClick={setLink} active={isActive('link')} title={t('editor.link')}>🔗</ToolbarButton>
 
                 <Divider />
 
                 {/* Tabell – infoga */}
-                <ToolbarButton onClick={() => insertTable(3, 3)} active={false} title="Infoga 3×3 tabell">
+                <ToolbarButton onClick={() => insertTable(3, 3)} active={false} title={t('editor.insert_table')}>
                     <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" className="inline mr-1">
                         <rect x="1" y="1" width="6" height="3" rx="1" />
                         <rect x="9" y="1" width="6" height="3" rx="1" />
@@ -162,25 +164,25 @@ const RichTextEditor = ({ value, onChange, placeholder, style }) => {
                         <rect x="1" y="11" width="6" height="3" rx="1" opacity="0.4" />
                         <rect x="9" y="11" width="6" height="3" rx="1" opacity="0.4" />
                     </svg>
-                    Tabell
+                    {t('editor.table')}
                 </ToolbarButton>
 
                 {/* Tabell-operationer – visas bara när cursor är i en tabell */}
                 {inTable && (
                     <>
                         <Divider />
-                        <ToolbarButton onClick={() => editor.chain().focus().addColumnBefore().run()} active={false} title="Kolumn vänster">+Kol↑</ToolbarButton>
-                        <ToolbarButton onClick={() => editor.chain().focus().addColumnAfter().run()} active={false} title="Kolumn höger">+Kol↓</ToolbarButton>
-                        <ToolbarButton onClick={() => editor.chain().focus().deleteColumn().run()} active={false} title="Ta bort kolumn">−Kol</ToolbarButton>
-                        <ToolbarButton onClick={() => editor.chain().focus().addRowBefore().run()} active={false} title="Rad ovan">+Rad↑</ToolbarButton>
-                        <ToolbarButton onClick={() => editor.chain().focus().addRowAfter().run()} active={false} title="Rad nedan">+Rad↓</ToolbarButton>
-                        <ToolbarButton onClick={() => editor.chain().focus().deleteRow().run()} active={false} title="Ta bort rad">−Rad</ToolbarButton>
-                        <ToolbarButton onClick={() => editor.chain().focus().deleteTable().run()} active={false} title="Ta bort tabell">✕ Tabell</ToolbarButton>
+                        <ToolbarButton onClick={() => editor.chain().focus().addColumnBefore().run()} active={false} title={t('editor.column_before')}>+Kol↑</ToolbarButton>
+                        <ToolbarButton onClick={() => editor.chain().focus().addColumnAfter().run()} active={false} title={t('editor.column_after')}>+Kol↓</ToolbarButton>
+                        <ToolbarButton onClick={() => editor.chain().focus().deleteColumn().run()} active={false} title={t('editor.delete_column')}>−Kol</ToolbarButton>
+                        <ToolbarButton onClick={() => editor.chain().focus().addRowBefore().run()} active={false} title={t('editor.row_before')}>+Rad↑</ToolbarButton>
+                        <ToolbarButton onClick={() => editor.chain().focus().addRowAfter().run()} active={false} title={t('editor.row_after')}>+Rad↓</ToolbarButton>
+                        <ToolbarButton onClick={() => editor.chain().focus().deleteRow().run()} active={false} title={t('editor.delete_row')}>−Rad</ToolbarButton>
+                        <ToolbarButton onClick={() => editor.chain().focus().deleteTable().run()} active={false} title={t('editor.delete_table')}>✕ Tabell</ToolbarButton>
                     </>
                 )}
 
                 <Divider />
-                <ToolbarButton onClick={() => editor.chain().focus().clearNodes().unsetAllMarks().run()} active={false} title="Rensa formatering">✕ Format</ToolbarButton>
+                <ToolbarButton onClick={() => editor.chain().focus().clearNodes().unsetAllMarks().run()} active={false} title={t('editor.clear_format')}>✕ Format</ToolbarButton>
             </div>
 
             {/* ─── Editor ──────────────────────────────────────── */}

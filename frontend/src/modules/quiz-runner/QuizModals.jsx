@@ -3,10 +3,12 @@ import { HelpCircle, X, Trash2, PlusCircle, Award, CheckCircle, AlertTriangle, S
 
 import { useAppContext } from '../../context/AppContext';
 import { api } from '../../services/api';
+import { useTranslation } from 'react-i18next';
 
 // --- QUIZ BUILDER (SKAPA / REDIGERA) ---
 // --- QUIZ BUILDER (SKAPA / REDIGERA) ---
 export const QuizBuilderModal = ({ onClose, onSubmit, initialData, isPro }) => {
+    const { t } = useTranslation();
     const { currentUser } = useAppContext();
     const [quizTitle, setQuizTitle] = useState('');
     const [description, setDescription] = useState('');
@@ -59,7 +61,7 @@ export const QuizBuilderModal = ({ onClose, onSubmit, initialData, isPro }) => {
             setBankQuestions(data || []);
         } catch (error) {
             console.error(error);
-            alert("Kunde inte hämta frågor från banken");
+            alert(t('quiz.bank_fetch_error'));
         }
     };
 
@@ -112,7 +114,7 @@ export const QuizBuilderModal = ({ onClose, onSubmit, initialData, isPro }) => {
         e.preventDefault();
         console.log("Submitting quiz, title:", quizTitle);
         if (!quizTitle || quizTitle.trim() === '') {
-            alert("Ange en titel");
+            alert(t('quiz.enter_title'));
             return;
         }
 
@@ -143,25 +145,25 @@ export const QuizBuilderModal = ({ onClose, onSubmit, initialData, isPro }) => {
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex justify-center items-center z-50 p-4 animate-in fade-in zoom-in duration-200">
             <div className={`bg-white dark:bg-[#1E1F20] rounded-2xl shadow-2xl w-full max-w-4xl overflow-hidden flex flex-col max-h-[90vh] border border-gray-200 dark:border-[#3c4043] ${showBankImport ? 'opacity-50 pointer-events-none' : ''}`}>
                 <div className="bg-indigo-600 p-6 flex justify-between items-center text-white shrink-0">
-                    <h2 className="text-xl font-bold flex items-center gap-2"><HelpCircle /> {initialData ? 'Redigera Quiz' : 'Skapa Quiz (Manuellt)'}</h2>
+                    <h2 className="text-xl font-bold flex items-center gap-2"><HelpCircle /> {initialData ? t('quiz.edit_title') : t('quiz.create_manual')}</h2>
                     <button onClick={onClose}><X size={24} /></button>
                 </div>
                 <div className="p-8 overflow-y-auto flex-1 bg-gray-50 dark:bg-[#131314]">
                     <div className="space-y-4 mb-8">
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div>
-                                <label className="text-xs font-bold text-gray-500 uppercase mb-1 block">Kurs</label>
+                                <label className="text-xs font-bold text-gray-500 uppercase mb-1 block">{t('common.course')}</label>
                                 <select
                                     className="w-full p-2 rounded-lg border border-gray-300 dark:border-[#3c4043] bg-white dark:bg-[#1E1F20] text-gray-900 dark:text-white"
                                     value={courseId}
                                     onChange={e => setCourseId(e.target.value)}
                                 >
-                                    <option value="">-- Ingen Kurs (Globalt) --</option>
+                                    <option value="">{t('quiz.no_course_global')}</option>
                                     {courseOptions.map(c => <option key={c.id} value={c.id}>{c.title}</option>)}
                                 </select>
                             </div>
                             <div>
-                                <label className="text-xs font-bold text-gray-500 uppercase mb-1 block">Tillgänglig Från</label>
+                                <label className="text-xs font-bold text-gray-500 uppercase mb-1 block">{t('quiz.available_from')}</label>
                                 <input
                                     type="datetime-local"
                                     className="w-full p-2 rounded-lg border border-gray-300 dark:border-[#3c4043] bg-white dark:bg-[#1E1F20] text-gray-900 dark:text-white"
@@ -170,7 +172,7 @@ export const QuizBuilderModal = ({ onClose, onSubmit, initialData, isPro }) => {
                                 />
                             </div>
                             <div>
-                                <label className="text-xs font-bold text-gray-500 uppercase mb-1 block">T.o.m (Stänger)</label>
+                                <label className="text-xs font-bold text-gray-500 uppercase mb-1 block">{t('quiz.available_until')}</label>
                                 <input
                                     type="datetime-local"
                                     className="w-full p-2 rounded-lg border border-gray-300 dark:border-[#3c4043] bg-white dark:bg-[#1E1F20] text-gray-900 dark:text-white"
@@ -181,10 +183,10 @@ export const QuizBuilderModal = ({ onClose, onSubmit, initialData, isPro }) => {
                         </div>
 
                         <div className="mb-2">
-                            <label className="text-xs font-bold text-gray-500 uppercase mb-1 block">Quiz Titel</label>
-                            <input className="w-full p-2 rounded-lg border border-gray-300 dark:border-[#3c4043] bg-white dark:bg-[#1E1F20] text-gray-900 dark:text-white font-bold text-lg" value={quizTitle} onChange={e => setQuizTitle(e.target.value)} placeholder="t.ex. Java Basics" />
+                            <label className="text-xs font-bold text-gray-500 uppercase mb-1 block">{t('quiz.modal_quiz_title')}</label>
+                            <input className="w-full p-2 rounded-lg border border-gray-300 dark:border-[#3c4043] bg-white dark:bg-[#1E1F20] text-gray-900 dark:text-white font-bold text-lg" value={quizTitle} onChange={e => setQuizTitle(e.target.value)} placeholder={t('quiz.title_placeholder')} />
                         </div>
-                        <textarea className="w-full p-3 bg-white dark:bg-[#1E1F20] rounded-lg border border-gray-300 dark:border-[#3c4043] text-sm text-gray-900 dark:text-white outline-none" rows="2" value={description} onChange={e => setDescription(e.target.value)} placeholder="Beskrivning..." />
+                        <textarea className="w-full p-3 bg-white dark:bg-[#1E1F20] rounded-lg border border-gray-300 dark:border-[#3c4043] text-sm text-gray-900 dark:text-white outline-none" rows="2" value={description} onChange={e => setDescription(e.target.value)} placeholder={t('common.description') + "..."} />
                     </div>
 
                     <div className="space-y-6">
@@ -192,36 +194,36 @@ export const QuizBuilderModal = ({ onClose, onSubmit, initialData, isPro }) => {
                             <div key={qIdx} className="bg-white dark:bg-[#1E1F20] p-6 rounded-xl border border-gray-200 dark:border-[#3c4043] relative shadow-sm group">
                                 <button onClick={() => setQuestions(questions.filter((_, i) => i !== qIdx))} className="absolute top-4 right-4 text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 size={18} /></button>
                                 <div className="mb-4">
-                                    <label className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-1 block">Fråga {qIdx + 1}</label>
-                                    <input className="w-full font-medium bg-gray-50 dark:bg-[#131314] border border-gray-200 dark:border-[#3c4043] rounded-lg p-3 text-gray-900 dark:text-white" value={q.text} onChange={e => updateQuestion(qIdx, 'text', e.target.value)} placeholder="Skriv frågan här..." />
+                                    <label className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-1 block">{t('quiz.question')} {qIdx + 1}</label>
+                                    <input className="w-full font-medium bg-gray-50 dark:bg-[#131314] border border-gray-200 dark:border-[#3c4043] rounded-lg p-3 text-gray-900 dark:text-white" value={q.text} onChange={e => updateQuestion(qIdx, 'text', e.target.value)} placeholder={t('quiz.question_placeholder')} />
                                 </div>
                                 <div className="space-y-2 pl-4 border-l-2 border-indigo-100 dark:border-indigo-900/30">
                                     {q.options.map((opt, oIdx) => (
                                         <div key={oIdx} className="flex items-center gap-3">
                                             <input type="radio" name={`correct-${qIdx}`} checked={opt.isCorrect === true} onChange={() => setCorrectOption(qIdx, oIdx)} className="w-5 h-5 accent-green-600 cursor-pointer" />
-                                            <input className="flex-1 bg-transparent border-b border-gray-200 dark:border-[#3c4043] py-1 text-sm text-gray-900 dark:text-white outline-none" value={opt.text} onChange={e => updateOption(qIdx, oIdx, 'text', e.target.value)} placeholder={`Alternativ ${oIdx + 1}`} />
+                                            <input className="flex-1 bg-transparent border-b border-gray-200 dark:border-[#3c4043] py-1 text-sm text-gray-900 dark:text-white outline-none" value={opt.text} onChange={e => updateOption(qIdx, oIdx, 'text', e.target.value)} placeholder={`${t('quiz.option')} ${oIdx + 1}`} />
                                         </div>
                                     ))}
-                                    <button onClick={() => addOption(qIdx)} className="text-xs text-indigo-600 dark:text-indigo-400 font-bold hover:underline mt-2 flex items-center gap-1"><PlusCircle size={14} /> Lägg till alternativ</button>
+                                    <button onClick={() => addOption(qIdx)} className="text-xs text-indigo-600 dark:text-indigo-400 font-bold hover:underline mt-2 flex items-center gap-1"><PlusCircle size={14} /> {t('quiz.add_option')}</button>
                                 </div>
                             </div>
                         ))}
 
                         <div className="flex gap-4">
                             <button onClick={() => setQuestions([...questions, { text: '', options: [{ text: '', isCorrect: true }, { text: '', isCorrect: false }] }])} className="flex-1 py-4 border-2 border-dashed border-gray-300 dark:border-[#3c4043] rounded-xl text-gray-500 dark:text-gray-400 hover:border-indigo-500 font-bold flex items-center justify-center gap-2">
-                                <PlusCircle size={20} /> Lägg till ny fråga
+                                <PlusCircle size={20} /> {t('quiz.add_question')}
                             </button>
                             {isPro && (
                                 <button onClick={handleOpenBank} className="flex-1 py-4 border-2 border-dashed border-indigo-200 dark:border-indigo-900 rounded-xl text-indigo-600 dark:text-indigo-400 hover:border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20 font-bold flex items-center justify-center gap-2">
-                                    <Award size={20} /> Hämta från Frågebank
+                                    <Award size={20} /> {t('quiz.fetch_from_bank')}
                                 </button>
                             )}
                         </div>
                     </div>
                 </div>
                 <div className="p-6 border-t border-gray-100 dark:border-[#3c4043] bg-white dark:bg-[#1E1F20] flex justify-end gap-3">
-                    <button onClick={onClose} className="px-6 py-2.5 rounded-lg font-bold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#3c4043]">Avbryt</button>
-                    <button onClick={handleSubmit} className="px-6 py-2.5 bg-indigo-600 text-white rounded-lg font-bold hover:bg-indigo-700 flex items-center gap-2"><Save size={18} /> Spara Quiz</button>
+                    <button onClick={onClose} className="px-6 py-2.5 rounded-lg font-bold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#3c4043]">{t('common.cancel')}</button>
+                    <button onClick={handleSubmit} className="px-6 py-2.5 bg-indigo-600 text-white rounded-lg font-bold hover:bg-indigo-700 flex items-center gap-2"><Save size={18} /> {t('quiz.save_btn')}</button>
                 </div>
             </div >
 
@@ -230,7 +232,7 @@ export const QuizBuilderModal = ({ onClose, onSubmit, initialData, isPro }) => {
                 <div className="fixed inset-0 z-[60] flex justify-center items-center p-8 bg-black/40">
                     <div className="bg-white dark:bg-[#1E1F20] w-full max-w-3xl rounded-xl shadow-2xl flex flex-col max-h-[80vh] animate-in zoom-in-95">
                         <div className="p-6 border-b border-gray-100 dark:border-[#3c4043] flex justify-between items-center">
-                            <h3 className="text-lg font-bold dark:text-white">Välj frågor från Banken</h3>
+                            <h3 className="text-lg font-bold dark:text-white">{t('quiz.select_from_bank')}</h3>
                             <button onClick={() => setShowBankImport(false)}><X size={20} /></button>
                         </div>
 
@@ -239,7 +241,7 @@ export const QuizBuilderModal = ({ onClose, onSubmit, initialData, isPro }) => {
                                 onClick={() => setBankCategoryFilter('')}
                                 className={`px-3 py-1 rounded-full text-sm font-bold ${!bankCategoryFilter ? 'bg-indigo-600 text-white' : 'bg-gray-100 text-gray-600'}`}
                             >
-                                Alla
+                                {t('common.all')}
                             </button>
                             {uniqueCategories.map(cat => (
                                 <button
@@ -253,7 +255,7 @@ export const QuizBuilderModal = ({ onClose, onSubmit, initialData, isPro }) => {
                         </div>
 
                         <div className="p-6 overflow-y-auto flex-1 space-y-2">
-                            {filteredBankQuestions.length === 0 ? <p className="text-gray-500 text-center">Inga frågor hittades.</p> :
+                            {filteredBankQuestions.length === 0 ? <p className="text-gray-500 text-center">{t('quiz.no_questions_found')}</p> :
                                 filteredBankQuestions.map(q => (
                                     <div
                                         key={q.id}
@@ -279,10 +281,10 @@ export const QuizBuilderModal = ({ onClose, onSubmit, initialData, isPro }) => {
                         </div>
 
                         <div className="p-6 border-t border-gray-100 dark:border-[#3c4043] flex justify-between items-center bg-gray-50 dark:bg-[#131314]">
-                            <span className="font-bold text-gray-500">{selectedBankIds.length} valda</span>
+                            <span className="font-bold text-gray-500">{selectedBankIds.length} {t('quiz.selected')}</span>
                             <div className="flex gap-2">
-                                <button onClick={() => setShowBankImport(false)} className="px-4 py-2 text-gray-600 dark:text-gray-300 font-bold">Avbryt</button>
-                                <button onClick={handleImportSelected} disabled={selectedBankIds.length === 0} className="px-6 py-2 bg-indigo-600 text-white rounded-lg font-bold hover:bg-indigo-700 disabled:opacity-50">Importera Valda</button>
+                                <button onClick={() => setShowBankImport(false)} className="px-4 py-2 text-gray-600 dark:text-gray-300 font-bold">{t('common.cancel')}</button>
+                                <button onClick={handleImportSelected} disabled={selectedBankIds.length === 0} className="px-6 py-2 bg-indigo-600 text-white rounded-lg font-bold hover:bg-indigo-700 disabled:opacity-50">{t('quiz.import_selected')}</button>
                             </div>
                         </div>
                     </div>
@@ -293,6 +295,7 @@ export const QuizBuilderModal = ({ onClose, onSubmit, initialData, isPro }) => {
 };
 
 export const QuizGeneratorModal = ({ onClose, onSubmit }) => {
+    const { t } = useTranslation();
     const { currentUser } = useAppContext();
     const [title, setTitle] = useState('');
     const [category, setCategory] = useState('');
@@ -309,7 +312,7 @@ export const QuizGeneratorModal = ({ onClose, onSubmit }) => {
     const handleSubmit = (e) => {
         e.preventDefault();
         if (!title || !category) {
-            alert("Vänligen ange titel och välj kategori.");
+            alert(t('quiz.enter_title_category'));
             return;
         }
         setIsLoading(true);
@@ -323,38 +326,38 @@ export const QuizGeneratorModal = ({ onClose, onSubmit }) => {
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex justify-center items-center z-50 p-4 animate-in fade-in zoom-in duration-200">
             <div className="bg-white dark:bg-[#1E1F20] rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col border border-gray-200 dark:border-[#3c4043]">
                 <div className="bg-indigo-600 p-6 flex justify-between items-center text-white shrink-0">
-                    <h2 className="text-xl font-bold flex items-center gap-2"><Award /> Generera Quiz</h2>
+                    <h2 className="text-xl font-bold flex items-center gap-2"><Award /> {t('quiz.generate_quiz')}</h2>
                     <button onClick={onClose}><X size={24} /></button>
                 </div>
                 <div className="p-8 space-y-6">
                     <div className="bg-indigo-50 dark:bg-indigo-900/10 p-4 rounded-lg flex gap-3 text-indigo-800 dark:text-indigo-200 text-sm">
                         <Award className="shrink-0" />
-                        <p>Välj ett ämne från din frågebank så skapar vi ett färdigt quiz med slumpade frågor åt dig direkt.</p>
+                        <p>{t('quiz.generate_desc')}</p>
                     </div>
 
                     <div>
-                        <label className="block text-sm font-bold mb-1 dark:text-gray-300">Titel på Quiz</label>
-                        <input className="w-full p-2 rounded border dark:bg-[#1E1F20] dark:border-[#3c4043] dark:text-white" value={title} onChange={e => setTitle(e.target.value)} placeholder="t.ex. Java Slutprov" autoFocus />
+                        <label className="block text-sm font-bold mb-1 dark:text-gray-300">{t('quiz.modal_quiz_title')}</label>
+                        <input className="w-full p-2 rounded border dark:bg-[#1E1F20] dark:border-[#3c4043] dark:text-white" value={title} onChange={e => setTitle(e.target.value)} placeholder={t('quiz.title_placeholder')} autoFocus />
                     </div>
 
                     <div>
-                        <label className="block text-sm font-bold mb-1 dark:text-gray-300">Kategori</label>
+                        <label className="block text-sm font-bold mb-1 dark:text-gray-300">{t('common.category')}</label>
                         <select className="w-full p-2 rounded border dark:bg-[#1E1F20] dark:border-[#3c4043] dark:text-white" value={category} onChange={e => setCategory(e.target.value)}>
-                            <option value="">-- Välj Kategori --</option>
+                            <option value="">{t('quiz.select_category')}</option>
                             {categories.map((c, i) => <option key={i} value={c}>{c}</option>)}
                         </select>
-                        {categories.length === 0 && <p className="text-xs text-red-500 mt-1">Inga kategorier hittades. Importera frågor först via Frågebanken.</p>}
+                        {categories.length === 0 && <p className="text-xs text-red-500 mt-1">{t('quiz.no_categories_found')}</p>}
                     </div>
 
                     <div>
-                        <label className="block text-sm font-bold mb-1 dark:text-gray-300">Antal Frågor</label>
+                        <label className="block text-sm font-bold mb-1 dark:text-gray-300">{t('quiz.questions_count')}</label>
                         <input type="number" className="w-full p-2 rounded border dark:bg-[#1E1F20] dark:border-[#3c4043] dark:text-white" value={count} onChange={e => setCount(parseInt(e.target.value))} min="1" max="50" />
                     </div>
                 </div>
                 <div className="p-6 border-t border-gray-100 dark:border-[#3c4043] flex justify-end gap-3">
-                    <button onClick={onClose} className="px-4 py-2 rounded-lg font-bold text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-[#3c4043]">Avbryt</button>
+                    <button onClick={onClose} className="px-4 py-2 rounded-lg font-bold text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-[#3c4043]">{t('common.cancel')}</button>
                     <button onClick={handleSubmit} disabled={isLoading} className="px-6 py-2 bg-indigo-600 text-white rounded-lg font-bold hover:bg-indigo-700 disabled:opacity-50 flex items-center gap-2">
-                        {isLoading ? 'Genererar...' : 'Generera Quiz'}
+                        {isLoading ? t('quiz.generating') : t('quiz.generate_quiz')}
                     </button>
                 </div>
             </div>
@@ -364,6 +367,7 @@ export const QuizGeneratorModal = ({ onClose, onSubmit }) => {
 
 // --- QUIZ RUNNER (GÖRA PROVET) ---
 export const QuizRunnerModal = ({ quiz, onClose, onSubmit }) => {
+    const { t } = useTranslation();
     const [answers, setAnswers] = useState({});
     const [submitted, setSubmitted] = useState(false);
     const [score, setScore] = useState(0);
@@ -411,7 +415,7 @@ export const QuizRunnerModal = ({ quiz, onClose, onSubmit }) => {
                 <div className="p-8 overflow-y-auto bg-gray-50 dark:bg-[#131314] flex-1">
                     {submitted && (
                         <div className="bg-green-100 dark:bg-green-900/30 border border-green-300 dark:border-green-900 text-green-800 dark:text-green-300 p-6 rounded-xl text-center mb-8">
-                            <Award size={48} className="mx-auto mb-3" /><h3 className="text-2xl font-bold">Resultat: {score} / {normalizedQuestions.length}</h3>
+                            <Award size={48} className="mx-auto mb-3" /><h3 className="text-2xl font-bold">{t('quiz.result_score', { score, total: normalizedQuestions.length })}</h3>
                         </div>
                     )}
                     <div className="space-y-8">
@@ -442,7 +446,7 @@ export const QuizRunnerModal = ({ quiz, onClose, onSubmit }) => {
                                     </div>
                                     {submitted && q.options.find(o => o.isCorrect)?.explanation && (
                                         <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 text-blue-800 dark:text-blue-200 rounded-lg text-sm">
-                                            <span className="font-bold">Förklaring:</span> {q.options.find(o => o.isCorrect).explanation}
+                                            <span className="font-bold">{t('quiz.explanation')}</span> {q.options.find(o => o.isCorrect).explanation}
                                         </div>
                                     )}
                                 </div>
@@ -452,11 +456,11 @@ export const QuizRunnerModal = ({ quiz, onClose, onSubmit }) => {
                 </div>
                 {!submitted ? (
                     <div className="p-6 border-t border-gray-100 dark:border-[#3c4043] bg-white dark:bg-[#1E1F20] flex justify-end gap-3">
-                        <button onClick={onClose} className="text-gray-500 dark:text-gray-400 font-bold px-4">Avbryt</button>
-                        <button onClick={finishQuiz} disabled={Object.keys(answers).length < normalizedQuestions.length} className="bg-indigo-600 text-white font-bold py-3 px-8 rounded-xl hover:bg-indigo-700 shadow-lg disabled:opacity-50">Lämna in Quiz</button>
+                        <button onClick={onClose} className="text-gray-500 dark:text-gray-400 font-bold px-4">{t('common.cancel')}</button>
+                        <button onClick={finishQuiz} disabled={Object.keys(answers).length < normalizedQuestions.length} className="bg-indigo-600 text-white font-bold py-3 px-8 rounded-xl hover:bg-indigo-700 shadow-lg disabled:opacity-50">{t('quiz.submit_btn')}</button>
                     </div>
                 ) : (
-                    <div className="p-6 border-t border-gray-100 dark:border-[#3c4043] bg-white dark:bg-[#1E1F20] flex justify-end"><button onClick={onClose} className="bg-gray-900 dark:bg-white text-white dark:text-black font-bold py-3 px-8 rounded-xl">Stäng</button></div>
+                    <div className="p-6 border-t border-gray-100 dark:border-[#3c4043] bg-white dark:bg-[#1E1F20] flex justify-end"><button onClick={onClose} className="bg-gray-900 dark:bg-white text-white dark:text-black font-bold py-3 px-8 rounded-xl">{t('common.close')}</button></div>
                 )}
             </div>
         </div>

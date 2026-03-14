@@ -1,15 +1,35 @@
 {
-    "title": "Calendrier",
-    "subtitle": "Gardez une trace de vos échéances et des dates de début des cours.",
-    "events_in": "Événements à",
-    "no_events": "Rien de prévu ce mois-ci.",
-    "days": [
-        "Lun",
-        "Mar",
-        "Mer",
-        "Jeu",
-        "Ven",
-        "Sam",
-        "Dim"
-    ]
+  "title": {
+    "Nyckel1": "Värde 1 på svenska",
+    "Nyckel2": "Värde 2 på svenska med en {{name}} variabel",
+    "Nyckel3": "Ett tredje värde på svenska",
+    "Nyckel4": "Kalender"
+  },
+  "subtitle": {
+    "alert_deadline": "Attention ! La date limite d'inscription approche.",
+    "alert_course_starts": "Attention ! Le cours commence bientôt."
+  },
+  "events_in": {
+    "title": "Händer i {{name}}",
+    "description": "Se vad som händer i {{name}}",
+    "ogTitle": "Händer i {{name}}",
+    "ogDescription": "Se vad som händer i {{name}}"
+  },
+  "no_events": {
+    "title": "Min applikation",
+    "greeting": "Välkommen, {{name}}!",
+    "description": "Detta är en beskrivning av applikationen.",
+    "button_label": "Klicka här",
+    "error_message": "Ett fel har inträffat.",
+    "no_events": "Ingenting inplanerat denna månad."
+  },
+  "days": [
+    "Lun",
+    "Mar",
+    "Mer",
+    "Jeu",
+    "Ven",
+    "Sam",
+    "Dim"
+  ]
 }

@@ -7,6 +7,8 @@ import com.eduflex.backend.service.ai.GeminiService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -27,6 +29,7 @@ public class ExamService {
     private final GeminiService geminiService;
     private final MessageService messageService;
     private final ObjectMapper objectMapper;
+    private final MessageSource messageSource;
 
     public ExamService(CalendarEventRepository calendarEventRepository,
             QuizResultRepository quizResultRepository,
@@ -36,7 +39,8 @@ public class ExamService {
             NotificationService notificationService,
             GeminiService geminiService,
             MessageService messageService,
-            ObjectMapper objectMapper) {
+            ObjectMapper objectMapper,
+            MessageSource messageSource) {
         this.calendarEventRepository = calendarEventRepository;
         this.quizResultRepository = quizResultRepository;
         this.quizRepository = quizRepository;
@@ -46,6 +50,7 @@ public class ExamService {
         this.geminiService = geminiService;
         this.messageService = messageService;
         this.objectMapper = objectMapper;
+        this.messageSource = messageSource;
     }
 
     /**
@@ -80,7 +85,7 @@ public class ExamService {
 
         // 2. Create Calendar Event
         CalendarEvent event = new CalendarEvent();
-        event.setTitle("Tentamen: " + savedQuiz.getTitle());
+        event.setTitle(messageSource.getMessage("exam.title_prefix", null, LocaleContextHolder.getLocale()) + savedQuiz.getTitle());
         event.setDescription(savedQuiz.getDescription());
         event.setStartTime(request.getStartTime());
         event.setEndTime(request.getEndTime());
@@ -98,8 +103,9 @@ public class ExamService {
         CalendarEvent savedEvent = calendarEventRepository.save(event);
 
         // 3. Send Notifications
-        String message = String.format("Ny tentamen inbokad: %s den %s",
-                savedQuiz.getTitle(), request.getStartTime().toString());
+        String message = messageSource.getMessage("exam.booked_message", 
+                new Object[]{savedQuiz.getTitle(), request.getStartTime().toString()}, 
+                LocaleContextHolder.getLocale());
 
         for (User student : course.getStudents()) {
             notificationService.createNotification(
@@ -118,8 +124,8 @@ public class ExamService {
                 messageService.sendMessage(
                         teacher.getId(),
                         student.getId(),
-                        "Inbjudan till tentamen: " + savedQuiz.getTitle(),
-                        message + "\n\nLycka till!",
+                        messageSource.getMessage("exam.invitation_subject", new Object[]{savedQuiz.getTitle()}, LocaleContextHolder.getLocale()),
+                        message + "\n\n" + messageSource.getMessage("exam.good_luck", null, LocaleContextHolder.getLocale()),
                         "inbox",
                         null,
                         null);
@@ -234,46 +240,19 @@ public class ExamService {
     }
 
     private String buildAiGradingPrompt(QuizResult result) {
-        // This is a simplified version - in a real app, you'd include the actual
-        // questions and student answers
-        return String.format("""
-                Du är en lärare som rättar en tentamen.
-                Tentamen: %s
-                Student: %s
-
-                Uppgift: Rätta svaren och ge poäng (1-5 baserat på svårighet).
-                Svara ENDAST med giltig JSON:
-                {
-                  "totalScore": 25.5,
-                  "generalComment": "Bra jobbat...",
-                  "answers": [
-                    { "questionIndex": 0, "points": 5, "feedback": "Perfekt svar." }
-                  ]
-                }
-                """, result.getQuiz().getTitle(), result.getStudent().getFullName());
+        return messageSource.getMessage("ai.grading.prompt.header", 
+                new Object[]{result.getQuiz().getTitle(), result.getStudent().getFullName()}, 
+                LocaleContextHolder.getLocale());
     }
 
     public void sendResultsToInBox(QuizResult result) {
         if (result.getStudent() == null || result.getQuiz() == null)
             return;
 
-        String subject = "Resultat för tentamen: " + result.getQuiz().getTitle();
-        String content = String.format("""
-                Hej %s,
-
-                Din tentamen '%s' har nu rättats.
-
-                Resultat: %.2f / %.2f
-
-                Lärarens kommentar:
-                %s
-
-                Logga in i EduFlex för att se detaljerad feedback per fråga.
-
-                Vänliga hälsningar,
-                EduFlex Team
-                """, result.getStudent().getFirstName(), result.getQuiz().getTitle(),
-                result.getScore(), result.getMaxScore(), result.getTeacherFeedback());
+        String subject = messageSource.getMessage("exam.results_subject", new Object[]{result.getQuiz().getTitle()}, LocaleContextHolder.getLocale());
+        String content = messageSource.getMessage("exam.results_body", 
+                new Object[]{result.getStudent().getFirstName(), result.getQuiz().getTitle(), result.getScore(), result.getMaxScore(), result.getTeacherFeedback()}, 
+                LocaleContextHolder.getLocale());
 
         // Assuming System user or Quiz author sends the mail
         Long senderId = (result.getQuiz().getAuthor() != null) ? result.getQuiz().getAuthor().getId() : 1L;

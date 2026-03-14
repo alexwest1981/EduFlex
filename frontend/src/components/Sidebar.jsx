@@ -47,13 +47,13 @@ const Sidebar = ({ currentUser, logout, siteName, version }) => {
     const navItemsConfig = getNavigationConfig(currentUser, t, isModuleActive, licenseTier, { unreadMessages });
 
     const sectionLabels = {
-        main: 'Huvudmeny',
-        education: 'Utbildning & Studium',
-        tools: 'Verktyg',
-        syv: 'Studievägledning & Antagning',
-        admin: 'Administration',
-        rektor: 'Rektorspaket',
-        guardian: 'Vårdnadshavare'
+        main: t('sidebar.categories.main'),
+        education: t('sidebar.categories.education'),
+        tools: t('sidebar.categories.tools'),
+        syv: t('sidebar.categories.syv'),
+        admin: t('sidebar.categories.admin'),
+        rektor: t('sidebar.categories.rektor'),
+        guardian: t('sidebar.categories.guardian')
     };
     const profileImg = currentUser?.profilePictureUrl ? getSafeUrl(currentUser.profilePictureUrl) : null;
 
@@ -66,7 +66,7 @@ const Sidebar = ({ currentUser, logout, siteName, version }) => {
                 </div>
                 <div>
                     <h1 className="font-bold text-xl text-gray-900 tracking-tight">{siteName || 'EduFlex'}</h1>
-                    <span className="text-[10px] text-gray-400 font-medium tracking-widest uppercase">LMS PLATTFORM</span>
+                    <span className="text-[10px] text-gray-400 font-medium tracking-widest uppercase">{t('sidebar.lms_platform')}</span>
                 </div>
             </div>
 
@@ -149,7 +149,7 @@ const Sidebar = ({ currentUser, logout, siteName, version }) => {
                         onClick={install}
                         className="w-full flex items-center justify-center gap-2 py-2 px-4 bg-indigo-50 text-indigo-700 rounded-lg text-xs font-bold hover:bg-indigo-100 transition-colors mb-3"
                     >
-                        <Download size={14} /> INSTALLERA APP
+                        <Download size={14} /> {t('sidebar.install_app')}
                     </button>
                 )}
                 <button
@@ -159,7 +159,7 @@ const Sidebar = ({ currentUser, logout, siteName, version }) => {
                     <div className="text-gray-400 group-hover:text-red-500">
                         <LogOut size={20} />
                     </div>
-                    Logga ut
+                    {t('sidebar.logout')}
                 </button>
                 {version && (
                     <div className="mt-4 text-[10px] text-gray-400 text-center font-mono">

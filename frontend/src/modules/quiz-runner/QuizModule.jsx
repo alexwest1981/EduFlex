@@ -34,21 +34,21 @@ export const QuizModuleProMetadata = {
 export const QuizModuleMetadata = QuizModuleProMetadata;
 
 // Helper to check availability
-const getAvailabilityStatus = (quiz) => {
+const getAvailabilityStatus = (quiz, t) => {
     const now = new Date();
     const from = quiz.availableFrom ? new Date(quiz.availableFrom) : null;
     const to = quiz.availableTo ? new Date(quiz.availableTo) : null;
 
-    if (from && now < from) return { status: 'LOCKED', message: `Öppnar ${from.toLocaleString()} ` };
-    if (to && now > to) return { status: 'CLOSED', message: `Stängde ${to.toLocaleString()} ` };
-    return { status: 'OPEN', message: to ? `Öppet t.o.m ${to.toLocaleString()} ` : 'Tillgänglig' };
+    if (from && now < from) return { status: 'LOCKED', message: t('quiz.availability.locked', { date: from.toLocaleString() }) };
+    if (to && now > to) return { status: 'CLOSED', message: t('quiz.availability.closed', { date: to.toLocaleString() }) };
+    return { status: 'OPEN', message: to ? t('quiz.availability.open_until', { date: to.toLocaleString() }) : t('quiz.availability.open') };
 };
 
 const QuizModule = ({ courseId, currentUser, isTeacher, mode = 'COURSE' }) => {
     const { t } = useTranslation();
     const { refreshUser } = useAppContext();
     const { isModuleActive } = useModules(); // <--- Access module context
-    const navigate = useNavigate();
+    // const navigate = useNavigate();
 
     // Check if Pro features are valid
     const isPro = isModuleActive('QUIZ_PRO') || isModuleActive('quiz_runner_pro');
@@ -162,7 +162,7 @@ const QuizModule = ({ courseId, currentUser, isTeacher, mode = 'COURSE' }) => {
                     <p className="text-indigo-700/80 dark:text-indigo-400/80 text-sm mt-1 flex items-center gap-2">
                         {t('quiz.subtitle')}
                         <span className={`px-2 py-0.5 rounded text-[10px] uppercase font-bold ${isPro ? 'bg-indigo-600 text-white' : 'bg-gray-400 text-white'}`}>
-                            {isPro ? 'Pro' : 'Basic'}
+                            {isPro ? t('common.pro') || 'Pro' : t('common.basic') || 'Basic'}
                         </span>
                     </p>
                 </div>
@@ -175,7 +175,7 @@ const QuizModule = ({ courseId, currentUser, isTeacher, mode = 'COURSE' }) => {
                             className="bg-indigo-600 text-white px-5 py-2.5 rounded-xl font-bold shadow-lg shadow-indigo-200 dark:shadow-none hover:bg-indigo-700 flex items-center gap-2 transition-all transform hover:scale-[1.02] active:scale-[0.98]"
                         >
                             <Sparkles size={18} />
-                            {t('quiz.practice_ai') || 'Öva med AI'}
+                            {t('quiz.practice_ai')}
                         </button>
                     )}
 
@@ -183,9 +183,9 @@ const QuizModule = ({ courseId, currentUser, isTeacher, mode = 'COURSE' }) => {
                     {isTeacher && isPro && (
                         <div className="flex bg-white/80 dark:bg-[#1E1F20]/80 backdrop-blur-sm rounded-xl p-1 border border-indigo-100 dark:border-indigo-900/30 shadow-sm">
                             {[
-                                { id: 'COURSE', label: mode === 'GLOBAL' ? 'Mina Quiz' : 'Kursquiz', icon: HelpCircle },
-                                { id: 'LIBRARY', label: 'Bibliotek', icon: Library },
-                                { id: 'BANK', label: 'Frågebank', icon: Award }
+                                { id: 'COURSE', label: mode === 'GLOBAL' ? t('quiz.my_quizzes') : t('quiz.course_quiz'), icon: HelpCircle },
+                                { id: 'LIBRARY', label: t('quiz.library'), icon: Library },
+                                { id: 'BANK', label: t('quiz.question_bank'), icon: Award }
                             ].map(tab => (
                                 <button
                                     key={tab.id}
@@ -211,7 +211,7 @@ const QuizModule = ({ courseId, currentUser, isTeacher, mode = 'COURSE' }) => {
                                     className="flex items-center gap-2 px-5 py-2.5 bg-purple-600 text-white rounded-xl hover:bg-purple-700 transition-all font-bold shadow-lg shadow-purple-100 dark:shadow-none transform hover:scale-[1.02] active:scale-[0.98]"
                                 >
                                     <Sparkles size={18} />
-                                    Generera Quiz
+                                    {t('quiz.generate_quiz')}
                                 </button>
                             )}
                             <button
@@ -222,7 +222,7 @@ const QuizModule = ({ courseId, currentUser, isTeacher, mode = 'COURSE' }) => {
                                 className="flex items-center gap-2 px-5 py-2.5 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-all font-bold shadow-lg shadow-indigo-100 dark:shadow-none transform hover:scale-[1.02] active:scale-[0.98]"
                             >
                                 <Plus size={22} />
-                                {t('quiz.create_title') || 'Skapa Quiz'}
+                                {t('quiz.create_title')}
                             </button>
                         </div>
                     )}
@@ -240,12 +240,12 @@ const QuizModule = ({ courseId, currentUser, isTeacher, mode = 'COURSE' }) => {
                         {isLoading ? (
                             <div className="flex flex-col items-center justify-center py-20 text-gray-400">
                                 <Clock className="animate-spin mb-4" size={48} />
-                                <p className="font-medium">Hämtar quiz...</p>
+                                <p className="font-medium">{t('quiz.fetching_quizzes')}</p>
                             </div>
                         ) : quizzes.length > 0 ? (
                             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                                 {quizzes.map(quiz => {
-                                    const avail = getAvailabilityStatus(quiz);
+                                    const avail = getAvailabilityStatus(quiz, t);
                                     const isLocked = avail.status !== 'OPEN' && !isTeacher;
 
                                     return (
@@ -305,7 +305,7 @@ const QuizModule = ({ courseId, currentUser, isTeacher, mode = 'COURSE' }) => {
                                                         }`}
                                                 >
                                                     {isLocked ? <Lock size={18} /> : <PlayCircle size={20} />}
-                                                    {isLocked ? 'Låst' : t('quiz.start_quiz')}
+                                                    {isLocked ? t('quiz.availability.locked_status') : t('quiz.start_quiz')}
                                                 </button>
                                             </div>
                                         </div>
@@ -317,8 +317,8 @@ const QuizModule = ({ courseId, currentUser, isTeacher, mode = 'COURSE' }) => {
                                 <div className="bg-white dark:bg-[#1E1F20] p-6 rounded-2xl shadow-sm mb-4">
                                     <Award size={64} className="text-indigo-200" />
                                 </div>
-                                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">{t('quiz.no_quizzes') || 'Inga quiz ännu'}</h3>
-                                <p className="text-gray-500 max-w-sm">Här dyker de quiz upp som skapas för den här kursen eller läggs till i ditt bibliotek.</p>
+                                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">{t('quiz.no_quizzes')}</h3>
+                                <p className="text-gray-500 max-w-sm">{t('quiz.no_quizzes_desc')}</p>
                             </div>
                         )}
                     </>
@@ -329,10 +329,10 @@ const QuizModule = ({ courseId, currentUser, isTeacher, mode = 'COURSE' }) => {
             {!isPro && activeTab === 'LIBRARY' && (
                 <div className="p-12 text-center bg-indigo-50 dark:bg-indigo-900/10 rounded-3xl border border-indigo-100 dark:border-indigo-900/20">
                     <Award size={64} className="mx-auto mb-6 text-indigo-300" />
-                    <h3 className="text-2xl font-extrabold mb-3 text-indigo-900 dark:text-indigo-200">QuizRunner Pro krävs</h3>
-                    <p className="text-indigo-700/70 dark:text-indigo-400/70 max-w-md mx-auto mb-8">Uppgradera till Pro för att få tillgång till ditt personliga quiz-bibliotek och AI-generering.</p>
+                    <h3 className="text-2xl font-extrabold mb-3 text-indigo-900 dark:text-indigo-200">{t('quiz.pro_required')}</h3>
+                    <p className="text-indigo-700/70 dark:text-indigo-400/70 max-w-md mx-auto mb-8">{t('quiz.pro_required_desc')}</p>
                     <button className="bg-indigo-600 text-white px-8 py-3 rounded-xl font-bold shadow-lg shadow-indigo-200 dark:shadow-none hover:bg-indigo-700 transition-all">
-                        Uppgradera nu
+                        {t('quiz.upgrade_now')}
                     </button>
                 </div>
             )}

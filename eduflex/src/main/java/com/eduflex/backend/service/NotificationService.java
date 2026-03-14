@@ -3,6 +3,8 @@ package com.eduflex.backend.service;
 import com.eduflex.backend.model.Notification;
 import com.eduflex.backend.repository.NotificationRepository;
 import com.eduflex.backend.repository.UserRepository;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +22,7 @@ public class NotificationService {
     private final WebPushService webPushService;
     private final ExpoPushService expoPushService;
     private final EventBusService eventBusService;
+    private final MessageSource messageSource;
 
     public NotificationService(
             NotificationRepository notificationRepository,
@@ -28,7 +31,8 @@ public class NotificationService {
             SmsService smsService,
             WebPushService webPushService,
             ExpoPushService expoPushService,
-            EventBusService eventBusService) {
+            EventBusService eventBusService,
+            MessageSource messageSource) {
         this.notificationRepository = notificationRepository;
         this.userRepository = userRepository;
         this.emailService = emailService;
@@ -36,6 +40,7 @@ public class NotificationService {
         this.webPushService = webPushService;
         this.expoPushService = expoPushService;
         this.eventBusService = eventBusService;
+        this.messageSource = messageSource;
     }
 
     /**
@@ -70,16 +75,16 @@ public class NotificationService {
         if (sendEmail || sendSms || sendPush) {
             userRepository.findById(userId).ifPresent(user -> {
                 if (sendEmail && user.getEmail() != null) {
-                    emailService.sendSimpleEmail(user.getEmail(), "EduFlex Notis: " + type, message);
+                    emailService.sendSimpleEmail(user.getEmail(), messageSource.getMessage("notification.subject_prefix", null, LocaleContextHolder.getLocale()) + type, message);
                 }
 
                 if (sendSms && user.getPhone() != null) {
-                    smsService.sendSms(user.getPhone(), "[EduFlex] " + message);
+                    smsService.sendSms(user.getPhone(), messageSource.getMessage("notification.sms_prefix", null, LocaleContextHolder.getLocale()) + message);
                 }
 
                 if (sendPush) {
-                    webPushService.sendPushNotification(userId, "EduFlex Notis", message, actionUrl);
-                    expoPushService.sendPush(userId, "EduFlex Notis", message,
+                    webPushService.sendPushNotification(userId, messageSource.getMessage("notification.push_title", null, LocaleContextHolder.getLocale()), message, actionUrl);
+                    expoPushService.sendPush(userId, messageSource.getMessage("notification.push_title", null, LocaleContextHolder.getLocale()), message,
                             actionUrl != null ? Map.of("url", actionUrl) : null);
                 }
             });

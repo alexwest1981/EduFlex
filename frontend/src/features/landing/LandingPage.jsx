@@ -660,15 +660,15 @@ const LandingPage = () => {
                             <div className="flex flex-wrap items-center gap-6 opacity-60 hover:opacity-100 transition-all duration-500">
                                 <div className="flex items-center gap-2 group">
                                     <Brain className="w-5 h-5 text-blue-400 group-hover:scale-110 transition-transform" />
-                                    <span className="text-sm font-semibold text-slate-400 group-hover:text-slate-200">{t('common.brands.gemini') || 'Google Gemini'}</span>
+                                    <span className="text-sm font-semibold text-slate-400 group-hover:text-slate-200">{t('common.brands.gemini')}</span>
                                 </div>
                                 <div className="flex items-center gap-2 group">
                                     <Database className="w-5 h-5 text-emerald-400 group-hover:scale-110 transition-transform" />
-                                    <span className="text-sm font-semibold text-slate-400 group-hover:text-slate-200">{t('common.brands.postgresql') || 'PostgreSQL'}</span>
+                                    <span className="text-sm font-semibold text-slate-400 group-hover:text-slate-200">{t('common.brands.postgresql')}</span>
                                 </div>
                                 <div className="flex items-center gap-2 group">
                                     <Sparkles className="w-5 h-5 text-brand-teal group-hover:scale-110 transition-transform" />
-                                    <span className="text-sm font-semibold text-slate-400 group-hover:text-slate-200">{t('common.brands.openai') || 'OpenAI API'}</span>
+                                    <span className="text-sm font-semibold text-slate-400 group-hover:text-slate-200">{t('common.brands.openai')}</span>
                                 </div>
                             </div>
                         </div>
@@ -931,7 +931,7 @@ const LandingPage = () => {
                         </ul>
                     </div>
                     <div>
-                        <h4 className="font-bold mb-6">{t('landing.footer.support') || 'Support'}</h4>
+                        <h4 className="font-bold mb-6">{t('landing.footer.support')}</h4>
                         <ul className="space-y-4 text-sm text-slate-500">
                             <li><a className="hover:text-brand-teal transition-colors" href="#">{t('landing.footer.help_center')}</a></li>
                             <li><a className="hover:text-brand-teal transition-colors" href="#">{t('landing.footer.documentation')}</a></li>

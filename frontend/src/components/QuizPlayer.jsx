@@ -93,7 +93,7 @@ const QuizPlayer = ({ quiz, currentUser, onClose, isPractice = false }) => {
             setSubmitted(true);
         } catch (e) {
             console.error(e);
-            alert("Kunde inte skicka in resultat.");
+            alert(t('quiz.submit_error'));
         }
     };
 
@@ -110,7 +110,7 @@ const QuizPlayer = ({ quiz, currentUser, onClose, isPractice = false }) => {
                                 {quiz.isExam && (
                                     <span className="flex items-center gap-1 bg-white/20 px-2 py-0.5 rounded-full text-[10px] uppercase font-bold tracking-wider">
                                         <ShieldCheck className="w-3 h-3" />
-                                        Övervakad Tenta
+                                        {t('quiz.monitored_exam')}
                                     </span>
                                 )}
                             </div>
@@ -196,7 +196,7 @@ const QuizPlayer = ({ quiz, currentUser, onClose, isPractice = false }) => {
 
                                 {submitted && isPractice && q.explanation && (
                                     <div className="mt-4 ml-11 p-3 bg-blue-50 dark:bg-blue-900/20 text-blue-800 dark:text-blue-200 rounded-lg text-sm">
-                                        <strong>Förklaring:</strong> {q.explanation}
+                                        <strong>{t('quiz.explanation')}</strong> {q.explanation}
                                     </div>
                                 )}
                             </div>
@@ -210,7 +210,7 @@ const QuizPlayer = ({ quiz, currentUser, onClose, isPractice = false }) => {
                         <div className="flex items-center gap-4 w-full justify-between">
                             <div className="flex items-center gap-4">
                                 <div className="text-right">
-                                    <p className="text-sm text-gray-500 dark:text-gray-400 uppercase font-bold">Ditt Resultat</p>
+                                    <p className="text-sm text-gray-500 dark:text-gray-400 uppercase font-bold">{t('quiz.your_result')}</p>
                                     <p className="text-3xl font-bold text-gray-900 dark:text-white">
                                         {result.score} <span className="text-lg text-gray-400">/ {result.maxScore}</span>
                                     </p>
@@ -219,11 +219,11 @@ const QuizPlayer = ({ quiz, currentUser, onClose, isPractice = false }) => {
                             <div className="flex gap-3">
                                 {isPractice && (
                                     <button onClick={() => { setSubmitted(false); setAnswers({}); setResult(null); onClose(); }} className="px-6 py-3 bg-indigo-100 text-indigo-700 hover:bg-indigo-200 font-bold rounded-xl transition-colors">
-                                        Öva igen
+                                        {t('quiz.practice_again')}
                                     </button>
                                 )}
                                 <button onClick={onClose} className="px-6 py-3 bg-gray-900 dark:bg-white text-white dark:text-black font-bold rounded-xl">
-                                    Stäng
+                                    {t('common.close')}
                                 </button>
                             </div>
                         </div>
