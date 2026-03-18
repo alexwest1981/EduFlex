@@ -911,6 +911,61 @@ const LandingPage = () => {
                 </section>
 
 
+                {/* --- UPDATES & ROADMAP SECTION --- */}
+                <section id="updates" className="max-w-7xl mx-auto px-6 py-16 space-y-12 fade-in-section">
+                    <div className="text-center max-w-3xl mx-auto space-y-4">
+                        <h2 className="text-3xl lg:text-5xl font-black">{t('landing.updates.title')}</h2>
+                        <p className="text-slate-400 text-lg">{t('landing.updates.subtitle')}</p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 stagger-animation">
+                        {/* Changelog Card */}
+                        <div className="glass-card p-10 rounded-3xl group border-brand-teal/20 hover:border-brand-teal/50 transition-all duration-300 feature-card relative overflow-hidden">
+                            <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-opacity">
+                                <FileText className="w-24 h-24" />
+                            </div>
+                            <div className="size-16 bg-brand-teal/10 rounded-2xl flex items-center justify-center mb-8 text-brand-teal">
+                                <Sparkles className="w-8 h-8" />
+                            </div>
+                            <h3 className="text-3xl font-bold mb-4">{t('landing.updates.changelog_title')}</h3>
+                            <p className="text-slate-400 text-lg mb-8 leading-relaxed">
+                                {t('landing.updates.changelog_desc')}
+                            </p>
+                            <a
+                                href="https://github.com/alexwest1981/EduFlex/blob/main/CHANGELOG.md"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-2 text-brand-teal font-bold hover:gap-3 transition-all"
+                            >
+                                {t('landing.updates.view_full_changelog')} <ArrowRight className="w-5 h-5" />
+                            </a>
+                        </div>
+
+                        {/* Roadmap Card */}
+                        <div className="glass-card p-10 rounded-3xl group border-brand-gold/20 hover:border-brand-gold/50 transition-all duration-300 feature-card relative overflow-hidden">
+                            <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-opacity">
+                                <Map className="w-24 h-24" />
+                            </div>
+                            <div className="size-16 bg-brand-gold/10 rounded-2xl flex items-center justify-center mb-8 text-brand-gold">
+                                <Target className="w-8 h-8" />
+                            </div>
+                            <h3 className="text-3xl font-bold mb-4">{t('landing.updates.roadmap_title')}</h3>
+                            <p className="text-slate-400 text-lg mb-8 leading-relaxed">
+                                {t('landing.updates.roadmap_desc')}
+                            </p>
+                            <a
+                                href="https://github.com/alexwest1981/EduFlex/blob/main/ROADMAP.md"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-2 text-brand-gold font-bold hover:gap-3 transition-all"
+                            >
+                                {t('landing.updates.view_full_roadmap')} <ArrowRight className="w-5 h-5" />
+                            </a>
+                        </div>
+                    </div>
+                </section>
+
+
                 {/* --- CTA SECTION --- */}
                 <section className="py-16 lg:py-24 fade-in-section">
                     <div className="max-w-7xl mx-auto px-6">

@@ -132,6 +132,16 @@ async def generate_ppt(request: CourseRequest):
 
 @app.post("/api/ai/chat")
 async def chat(request: AIRequest):
+    # Use specialized chat helper for fallback-aware chat
+    try:
+        return await call_gemini_chat(request.system_prompt, request.prompt, request.temperature)
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        logger.error(f"Chat failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+async def call_gemini_chat(system_prompt: Optional[str], user_prompt: str, temperature: float = 0.7):
     models_to_try = [config.GEMINI_MODEL] + config.GEMINI_FALLBACK_MODELS
     last_error = None
 
@@ -140,11 +150,19 @@ async def chat(request: AIRequest):
         try:
             logger.info(f"Attempting chat Gemini call with model: {model_name}")
             model = genai.GenerativeModel(model_name)
-            prompt = request.prompt
-            if request.system_prompt:
-                prompt = f"{request.system_prompt}\n\n{prompt}"
-                
-            response = model.generate_content(prompt)
+            
+            full_prompt = f"{system_prompt}\n\n{user_prompt}" if system_prompt else user_prompt
+            
+            response = model.generate_content(
+                full_prompt,
+                generation_config={
+                    "temperature": temperature,
+                    "top_p": 0.95,
+                    "top_k": 40,
+                    "max_output_tokens": 4000,
+                }
+            )
+            
             if not response.text:
                 raise Exception(f"Empty response from {model_name}")
                 
