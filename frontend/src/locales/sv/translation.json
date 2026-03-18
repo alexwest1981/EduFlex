@@ -987,6 +987,16 @@
         "desc": "Visualisera framsteg och resultat med våra kraftfulla analysverktyg."
       }
     },
+    "updates": {
+      "title": "Vad är nytt & Vad är näst?",
+      "subtitle": "Följ vår resa mot v4.0 och se de senaste förbättringarna i plattformen.",
+      "changelog_title": "Versionshistorik",
+      "changelog_desc": "Håll dig uppdaterad med varje fix, optimering och ny funktion vi rullar ut.",
+      "view_full_changelog": "Visa fullständig changelog",
+      "roadmap_title": "Projekt Roadmap",
+      "roadmap_desc": "Se vår vision för 2026 och de spännande moduler vi utvecklar just nu.",
+      "view_full_roadmap": "Visa projektets roadmap"
+    },
     "roles": {
       "badge": "Lösningar för alla",
       "title": "En plattform, oändliga möjligheter",

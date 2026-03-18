@@ -825,7 +825,7 @@
       "select_language" : "Select Language"
     },
     "hero" : {
-      "badge" : "v3.9.2: Operation Globalization - 100% Localization",
+      "badge" : "v3.9.3: Performance & Stability - Repository Hardening",
       "title_start" : "The Future of",
       "title_llp" : "LLP",
       "title_with" : "with",
@@ -987,6 +987,16 @@
         "desc" : "Visualize progress and results with our powerful analysis tools."
       }
     },
+    "updates": {
+      "title": "What's New & What's Next?",
+      "subtitle": "Follow our journey towards v4.0 and see the latest improvements in the platform.",
+      "changelog_title": "Release History",
+      "changelog_desc": "Stay updated with every fix, optimization, and new feature we roll out.",
+      "view_full_changelog": "View full changelog",
+      "roadmap_title": "Project Roadmap",
+      "roadmap_desc": "See our vision for 2026 and the exciting modules we are developing right now.",
+      "view_full_roadmap" : "View project roadmap"
+    },
     "roles" : {
       "badge" : "Solutions for Everyone",
       "title" : "One Platform, Endless Possibilities",
@@ -1049,7 +1059,7 @@
       "copyright" : "© 2026 EduFlex LLP. All Rights Reserved.",
       "privacy_policy" : "Privacy Policy",
       "terms_of_service" : "Terms of Service",
-      "cookie_settings" : "Cookie Settings"
+      "cookie_settings": "Cookie Settings"
     }
   },
   "dashboard_v2" : {
