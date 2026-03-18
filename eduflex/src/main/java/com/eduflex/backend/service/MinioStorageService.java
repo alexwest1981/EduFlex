@@ -99,6 +99,29 @@ public class MinioStorageService implements StorageService {
     }
 
     @Override
+    public boolean exists(String storageId) {
+        String key = storageId;
+        if (key.startsWith("/uploads/")) {
+            key = key.substring("/uploads/".length());
+        } else if (key.startsWith("uploads/")) {
+            key = key.substring("uploads/".length());
+        }
+
+        try {
+            minioClient.statObject(
+                    io.minio.StatObjectArgs.builder()
+                            .bucket(bucketName)
+                            .object(key)
+                            .build());
+            logger.info("MinIO: Object '{}' exists in bucket '{}'", key, bucketName);
+            return true;
+        } catch (Exception e) {
+            logger.debug("MinIO: Object '{}' does not exist in bucket '{}': {}", key, bucketName, e.getMessage());
+            return false;
+        }
+    }
+
+    @Override
     public InputStream load(String storageId) {
         // FIX: Strip leading /uploads/ if present, as MinIO keys are usually just
         // filenames or UUIDs

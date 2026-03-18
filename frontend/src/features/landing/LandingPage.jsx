@@ -53,33 +53,61 @@ const LandingPage = () => {
     const [isLangOpen, setIsLangOpen] = useState(false);
 
     useEffect(() => {
-        const fetchLangs = async () => {
-            try {
-                const langs = await api.get('/languages/enabled');
-                if (Array.isArray(langs)) {
-                    setEnabledLanguages(langs);
-                }
-            } catch (error) {
-                console.error('Failed to fetch languages:', error);
-            }
-        };
-        fetchLangs();
-    }, []);
+        // Deriving enabled languages directly from i18n resources (Static Mode)
+        const codes = Object.keys(i18n.options.resources || {});
+        
+        // Sorting priority: Nordic first, then by commonality
+        const nordicCodes = ['sv', 'no', 'da', 'fi', 'se'];
+        const commonCodes = ['en', 'de', 'fr', 'es', 'ar'];
+        
+        const sortedCodes = codes.sort((a, b) => {
+            const indexA = [...nordicCodes, ...commonCodes].indexOf(a);
+            const indexB = [...nordicCodes, ...commonCodes].indexOf(b);
+            
+            if (indexA !== -1 && indexB !== -1) return indexA - indexB;
+            if (indexA !== -1) return -1;
+            if (indexB !== -1) return 1;
+            return a.localeCompare(b);
+        });
+
+        const langs = sortedCodes
+            .filter(code => code !== 'sv2' && code !== 'v2')
+            .map(code => ({
+                code,
+                name: code.toUpperCase()
+            }));
+        setEnabledLanguages(langs);
+    }, [i18n.options.resources]);
 
     const languageNames = {
         'sv': 'Svenska',
-        'en': 'English',
-        'fr': 'Français',
-        'de': 'Deutsch',
-        'es': 'Español',
-        'fi': 'Suomi',
-        'da': 'Dansk',
         'no': 'Norsk',
+        'da': 'Dansk',
+        'fi': 'Suomi',
+        'se': 'Davvisámegiella',
+        'en': 'English',
+        'de': 'Deutsch',
+        'fr': 'Français',
+        'es': 'Español',
         'ar': 'العربية'
+    };
+
+    const languageDescriptions = {
+        'sv': 'Svenska - Officiellt språk i Sverige',
+        'no': 'Norsk - Officiellt språk i Norge',
+        'da': 'Dansk - Officiellt språk i Danmark',
+        'fi': 'Suomi - Officiellt språk i Finland',
+        'se': 'Davvisámegiella - Nordligt samiskt språk',
+        'en': 'English - Global communication language',
+        'de': 'Deutsch - Officiellt språk i Tyskland/Österrike',
+        'fr': 'Français - Officiellt språk i Frankrike',
+        'es': 'Español - Officiellt språk i Spanien/Latinamerika',
+        'ar': 'العربية - Officiellt språk i Arabvärlden'
     };
 
     const flagEmoji = {
         'sv': '🇸🇪',
+        'se': '🏳️',
         'en': '🇬🇧',
         'fr': '🇫🇷',
         'de': '🇩🇪',
@@ -528,15 +556,23 @@ const LandingPage = () => {
                                                         i18n.changeLanguage(lang.code.split('-')[0]);
                                                         setIsLangOpen(false);
                                                     }}
-                                                    className={`flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-all ${i18n.language.split('-')[0] === lang.code.split('-')[0]
-                                                        ? 'bg-brand-teal/20 text-brand-teal'
+                                                    className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-all duration-200 ${i18n.language.split('-')[0] === lang.code.split('-')[0]
+                                                        ? 'bg-brand-teal/20 text-brand-teal font-bold'
                                                         : 'hover:bg-white/5 text-slate-300'
                                                         }`}
+                                                    title={languageDescriptions[lang.code] || ''}
                                                 >
-                                                    <span className="flex items-center gap-2">
-                                                        <span>{flagEmoji[lang.code.split('-')[0].toLowerCase()] || '🌐'}</span>
-                                                        <span>{languageNames[lang.code.split('-')[0].toLowerCase()] || lang.name}</span>
-                                                    </span>
+                                                    <div className="flex items-center gap-2 text-left">
+                                                        <span className="text-xl leading-none">{flagEmoji[lang.code.split('-')[0].toLowerCase()] || '🌐'}</span>
+                                                        <div className="flex flex-col">
+                                                            <span>{languageNames[lang.code.split('-')[0].toLowerCase()] || lang.name}</span>
+                                                            {languageDescriptions[lang.code] && (
+                                                                <span className={`text-[9px] font-normal leading-tight ${i18n.language.split('-')[0] === lang.code.split('-')[0] ? 'text-brand-teal/80' : 'text-slate-500'}`}>
+                                                                    {languageDescriptions[lang.code].split(' - ')[1]}
+                                                                </span>
+                                                            )}
+                                                        </div>
+                                                    </div>
                                                     {i18n.language.split('-')[0] === lang.code.split('-')[0] && <Check className="w-3 h-3" />}
                                                 </button>
                                             ))}

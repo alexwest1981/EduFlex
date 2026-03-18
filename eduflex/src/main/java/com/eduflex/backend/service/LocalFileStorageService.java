@@ -61,6 +61,16 @@ public class LocalFileStorageService implements StorageService {
     }
 
     @Override
+    public boolean exists(String storageId) {
+        try {
+            Path filePath = this.fileStorageLocation.resolve(storageId).normalize();
+            return Files.exists(filePath);
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    @Override
     public InputStream load(String storageId) {
         try {
             Path filePath = this.fileStorageLocation.resolve(storageId).normalize();

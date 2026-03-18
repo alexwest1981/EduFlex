@@ -125,7 +125,7 @@ const PulseLayout = ({ children }) => {
                             {/* Online Friends Toggle */}
                             <button
                                 onClick={() => setFriendsPanelOpen(!friendsPanelOpen)}
-                                className={`relative p - 2.5 rounded - full transition - colors ${friendsPanelOpen ? 'bg-indigo-100 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400' : 'hover:bg-gray-100 text-gray-500 dark:text-gray-400 dark:hover:bg-[#282a2c]'} `}
+                                className={`relative p - 2.5 rounded - full transition-colors ${friendsPanelOpen ? 'bg-indigo-100 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400' : 'hover:bg-gray-100 text-gray-500 dark:text-gray-400 dark:hover:bg-[#282a2c]'} `}
                                 title="Online Vänner"
                             >
                                 <Users size={20} />

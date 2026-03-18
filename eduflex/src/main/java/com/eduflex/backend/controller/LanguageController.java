@@ -36,7 +36,8 @@ public class LanguageController {
         Language language = languageService.addLanguage(
                 request.get("code"),
                 request.get("name"),
-                request.get("nativeName"));
+                request.get("nativeName"),
+                request.get("flagIcon"));
         return ResponseEntity.ok(language);
     }
 

@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,6 +31,9 @@ public class LanguageService {
     @Autowired
     private MinioStorageService storageService;
 
+    @Autowired
+    private ObjectMapper objectMapper;
+
     @Value("${eduflex.frontend.path:../frontend/src}")
     private String frontendPath;
 
@@ -42,7 +46,7 @@ public class LanguageService {
     }
 
     @Transactional
-    public Language addLanguage(String code, String name, String nativeName) {
+    public Language addLanguage(String code, String name, String nativeName, String flagIcon) {
         if (repository.findByCode(code).isPresent()) {
             throw new RuntimeException("Language already exists: " + code);
         }
@@ -51,6 +55,7 @@ public class LanguageService {
                 .code(code)
                 .name(name)
                 .nativeName(nativeName)
+                .flagIcon(flagIcon)
                 .isEnabled(true)
                 .isDefault(false)
                 .build();
@@ -81,14 +86,9 @@ public class LanguageService {
         logger.info("Starting global language sync for all enabled languages.");
         List<Language> enabledLanguages = repository.findByIsEnabledTrue();
         for (Language lang : enabledLanguages) {
-            if (lang.getCode().equals("sv"))
-                continue; // Skip primary
             translateAllFilesForLanguage(lang.getCode());
         }
     }
-
-    @Autowired
-    private com.fasterxml.jackson.databind.ObjectMapper objectMapper;
 
     private void translateAllFilesForLanguage(String targetCode) {
         logger.info("Starting AI translation for language: {}", targetCode);
@@ -102,9 +102,9 @@ public class LanguageService {
                 logger.info("Translating module: {} for language: {}", moduleName, targetCode);
 
                 String translatedJson;
-                // If it's a large file (translation.json), translate in chunks to avoid token
-                // limits
-                if (svFile.getName().equals("translation.json") && content.length() > 5000) {
+                if (targetCode.equals("sv") || targetCode.equals("sv2")) {
+                    translatedJson = content; // Source is Swedish
+                } else if (svFile.getName().equals("translation.json") && content.length() > 5000) {
                     translatedJson = translateLargeJson(content, targetCode);
                 } else {
                     String prompt = String.format(

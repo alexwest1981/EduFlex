@@ -5,12 +5,14 @@ import {
     BookOpen, Video, ChevronRight, ExternalLink,
     Clock, CheckCircle, Info, Users
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { api } from '../../services/api';
 import { useAppContext } from '../../context/AppContext';
 import toast from 'react-hot-toast';
 
 
 const SupportPage = () => {
+    const { t } = useTranslation();
     const { currentUser, licenseTier } = useAppContext();
     const [submitting, setSubmitting] = useState(false);
     const [tickets, setTickets] = useState([]);
@@ -25,10 +27,10 @@ const SupportPage = () => {
     });
 
     const faqCategories = [
-        { id: 'system', name: 'System & Inloggning', icon: <Globe className="w-4 h-4" /> },
-        { id: 'pedagogy', name: 'Pedagogik & Kurser', icon: <BookOpen className="w-4 h-4" /> },
-        { id: 'ai', name: 'EduAI & Innovation', icon: <Zap className="w-4 h-4" /> },
-        { id: 'security', name: 'Säkerhet & GDPR', icon: <Shield className="w-4 h-4" /> }
+        { id: 'system', name: t('support.cat_system') || 'System & Inloggning', icon: <Globe className="w-4 h-4" /> },
+        { id: 'pedagogy', name: t('support.cat_pedagogy') || 'Pedagogik & Kurser', icon: <BookOpen className="w-4 h-4" /> },
+        { id: 'ai', name: t('support.cat_ai') || 'EduAI & Innovation', icon: <Zap className="w-4 h-4" /> },
+        { id: 'security', name: t('support.cat_security') || 'Säkerhet & GDPR', icon: <Shield className="w-4 h-4" /> }
     ];
 
     // FAQ-artiklar och videoguider - hämtas från databasen via API
@@ -64,7 +66,7 @@ const SupportPage = () => {
             setFaqArticles(sorted.filter(a => a.type === 'FAQ'));
             setVideoArticles(sorted.filter(a => a.type === 'VIDEO'));
         } catch (e) {
-            console.warn('Kunde inte hämta support-artiklar', e);
+            console.warn(t('support.articles_load_error') || 'Kunde inte hämta support-artiklar', e);
         } finally {
             setArticlesLoading(false);
         }
@@ -103,7 +105,7 @@ const SupportPage = () => {
             const data = await api.support.getMyTickets(currentUser.id);
             setTickets(data);
         } catch (e) {
-            console.error("Kunde inte hämta ärenden", e);
+            console.error(t('support.tickets_load_error') || "Kunde inte hämta ärenden", e);
         } finally {
             setLoading(false);
         }
@@ -114,7 +116,7 @@ const SupportPage = () => {
         switch (tier) {
             case 'ENTERPRISE':
                 return {
-                    name: 'Enterprise Support',
+                    name: t('support.sla_enterprise') || 'Enterprise Support',
                     time: 'Direkt / < 1h',
                     features: ['Personlig Case Manager', 'Obegränsad Chat', 'On-prem assistans'],
                     color: 'from-brand-teal to-brand-emerald',
@@ -122,7 +124,7 @@ const SupportPage = () => {
                 };
             case 'PRO':
                 return {
-                    name: 'Priority Support',
+                    name: t('support.sla_priority') || 'Priority Support',
                     time: 'Inom 4h',
                     features: ['Prioriterad kö', 'E-post & Chat', 'Månadsvis uppföljning'],
                     color: 'from-brand-blue to-indigo-500',
@@ -130,7 +132,7 @@ const SupportPage = () => {
                 };
             default:
                 return {
-                    name: 'Standard Support',
+                    name: t('support.sla_standard') || 'Standard Support',
                     time: 'Inom 24h',
                     features: ['FAQ & Knowledge Base', 'E-post support', 'Community Forum'],
                     color: 'from-slate-600 to-slate-800',
@@ -142,7 +144,7 @@ const SupportPage = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!formData.category || !formData.message) {
-            toast.error("Vänligen fyll i alla fält");
+            toast.error(t('support.all_fields_required') || "Vänligen fyll i alla fält");
             return;
         }
 
@@ -153,12 +155,12 @@ const SupportPage = () => {
                 userId: currentUser.id,
                 contextUrl: window.location.origin + window.location.pathname
             });
-            toast.success("Ditt ärende har skickats!");
+            toast.success(t('support.ticket_sent') || "Ditt ärende har skickats!");
             setFormData({ category: '', message: '', severity: 'MEDIUM' });
             fetchMyTickets();
             setView('history');
         } catch (e) {
-            toast.error("Kunde inte skicka ärendet");
+            toast.error(t('support.ticket_send_error') || "Kunde inte skicka ärendet");
         } finally {
             setSubmitting(false);
         }
@@ -176,13 +178,13 @@ const SupportPage = () => {
                 <div className="relative z-10 max-w-3xl space-y-6">
                     <div className="inline-flex items-center gap-3 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 backdrop-blur-md text-brand-teal text-xs font-black uppercase tracking-[0.2em]">
                         <div className="w-2 h-2 bg-brand-teal rounded-full animate-ping"></div>
-                        EduFlex Help Center 2.0
+                        {t('support.help_center_title') || 'EduFlex Help Center 2.0'}
                     </div>
                     <h1 className="text-5xl lg:text-7xl font-black text-white tracking-tight leading-[1.1]">
-                        Hur kan vi <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-teal to-brand-blue">hjälpa dig</span> idag?
+                        {t('support.hero_title_prefix') || 'Hur kan vi'} <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-teal to-brand-blue">{t('support.hero_title_highlight') || 'hjälpa dig'}</span> {t('support.hero_title_suffix') || 'idag?'}
                     </h1>
                     <p className="text-slate-300 text-xl font-medium max-w-xl leading-relaxed">
-                        Sök i vår kunskapsbank, titta på guider eller kontakta våra experter för personlig assistans.
+                        {t('support.hero_subtitle') || 'Sök i vår kunskapsbank, titta på guider eller kontakta våra experter för personlig assistans.'}
                     </p>
 
                     <div className="pt-6 flex items-center gap-3">
@@ -190,7 +192,7 @@ const SupportPage = () => {
                             <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-500 w-6 h-6 group-focus-within:text-brand-teal transition-colors" />
                             <input
                                 type="text"
-                                placeholder="Sök efter svar (t.ex. GDPR, LTI, AI)..."
+                                placeholder={t('support.search_placeholder') || "Sök efter svar (t.ex. GDPR, LTI, AI)..."}
                                 value={searchQuery}
                                 onChange={(e) => {
                                     setSearchQuery(e.target.value);
@@ -208,10 +210,10 @@ const SupportPage = () => {
                 <div className="lg:col-span-3 space-y-8">
                     <nav className="flex items-center gap-3 p-2 bg-slate-900/80 backdrop-blur-md border border-white/5 rounded-2xl overflow-x-auto no-scrollbar shadow-xl">
                         {[
-                            { id: 'knowledge', label: 'Kunskapsbank', icon: <BookOpen className="w-4 h-4" /> },
-                            { id: 'videos', label: 'Video-guider', icon: <Video className="w-4 h-4" /> },
-                            { id: 'new', label: 'Skapa Ärende', icon: <Send className="w-4 h-4" /> },
-                            { id: 'history', label: 'Mina Ärenden', icon: <History className="w-4 h-4" /> }
+                            { id: 'knowledge', label: t('support.knowledge_bank') || 'Kunskapsbank', icon: <BookOpen className="w-4 h-4" /> },
+                            { id: 'videos', label: t('support.video_guides') || 'Video-guider', icon: <Video className="w-4 h-4" /> },
+                            { id: 'new', label: t('support.create_ticket') || 'Skapa Ärende', icon: <Send className="w-4 h-4" /> },
+                            { id: 'history', label: t('support.my_tickets') || 'Mina Ärenden', icon: <History className="w-4 h-4" /> }
                         ].map(tab => (
                             <button
                                 key={tab.id}
@@ -238,7 +240,7 @@ const SupportPage = () => {
                                             ? 'bg-brand-teal text-slate-900 border-brand-teal'
                                             : 'bg-white/5 text-slate-400 border-white/10 hover:border-white/20'}`}
                                     >
-                                        Visa alla
+                                        {t('support.show_all') || 'Visa alla'}
                                     </button>
                                     {faqCategories.map(cat => (
                                         <button
@@ -262,7 +264,7 @@ const SupportPage = () => {
                                                     {faqCategories.find(c => c.id === catId)?.icon || <Info className="w-5 h-5" />}
                                                 </div>
                                                 <h2 className="text-2xl font-black text-slate-900 dark:text-white uppercase tracking-tight">
-                                                    {faqCategories.find(c => c.id === catId)?.name || 'Övrigt'}
+                                                    {faqCategories.find(c => c.id === catId)?.name || t('support.faqs_other') || 'Övrigt'}
                                                 </h2>
                                                 <div className="flex-grow h-[1px] bg-slate-200 dark:bg-white/10"></div>
                                                 <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">{items.length} artiklar</span>
@@ -307,8 +309,8 @@ const SupportPage = () => {
                                 ) : (
                                     <div className="text-center py-32 bg-slate-100 dark:bg-slate-900/40 rounded-[3rem] border-2 border-dashed border-slate-200 dark:border-white/5">
                                         <Search className="w-16 h-16 text-slate-400 dark:text-slate-700 mx-auto mb-6 opacity-40" />
-                                        <h3 className="text-slate-900 dark:text-white font-black text-2xl">Inga träffar</h3>
-                                        <p className="text-slate-500 font-bold max-w-sm mx-auto">Vi hittade inget för "{searchQuery}". Pröva att söka på något annat eller rensa filtret.</p>
+                                        <h3 className="text-slate-900 dark:text-white font-black text-2xl">{t('support.no_results') || 'Inga träffar'}</h3>
+                                        <p className="text-slate-500 font-bold max-w-sm mx-auto">{t('support.no_results_desc', { query: searchQuery }) || `Vi hittade inget för "${searchQuery}". Pröva att söka på något annat eller rensa filtret.`}</p>
                                     </div>
                                 )}
                             </div>
@@ -321,8 +323,8 @@ const SupportPage = () => {
                                 ) : videoArticles.length === 0 ? (
                                     <div className="col-span-2 text-center py-20 bg-slate-100 dark:bg-slate-900/40 rounded-[3rem] border-2 border-dashed border-slate-200 dark:border-white/5">
                                         <Video className="w-14 h-14 text-slate-400 dark:text-slate-700 mx-auto mb-4 opacity-40" />
-                                        <h3 className="text-slate-900 dark:text-white font-black text-xl">Inga videoguider ännu</h3>
-                                        <p className="text-slate-500 font-bold text-sm mt-1">Admins kan lägga till videoguider från administrationspanelen.</p>
+                                        <h3 className="text-slate-900 dark:text-white font-black text-xl">{t('support.no_videos') || 'Inga videoguider ännu'}</h3>
+                                        <p className="text-slate-500 font-bold text-sm mt-1">{t('support.no_videos_desc') || 'Admins kan lägga till videoguider från administrationspanelen.'}</p>
                                     </div>
                                 ) : videoArticles.map((guide, idx) => (
                                     <div key={guide.id || idx} className="bg-white border border-slate-200 dark:bg-white/5 dark:border-white/10 rounded-[2.5rem] overflow-hidden group hover:border-brand-blue/50 hover:-translate-y-2 transition-all duration-500 shadow-lg hover:shadow-2xl">
@@ -366,40 +368,40 @@ const SupportPage = () => {
                                 <form onSubmit={handleSubmit} className="space-y-8 relative z-10">
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                         <div className="space-y-3">
-                                            <label className="text-xs font-black text-slate-500 uppercase tracking-widest ml-1">Kategori</label>
+                                            <label className="text-xs font-black text-slate-500 uppercase tracking-widest ml-1">{t('support.category_label') || 'Kategori'}</label>
                                             <select
                                                 value={formData.category}
                                                 onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                                                 className="w-full bg-white/5 border border-white/10 rounded-2xl p-5 text-white focus:ring-4 focus:ring-brand-teal/20 transition-all outline-none font-bold appearance-none cursor-pointer"
                                             >
-                                                <option value="" className="bg-slate-900 text-white">Välj kategori...</option>
-                                                <option value="Tekniskt fel" className="bg-slate-900 text-white">Tekniskt fel</option>
-                                                <option value="Fakturering" className="bg-slate-900 text-white">Fakturering</option>
-                                                <option value="Säkerhet" className="bg-slate-900 text-white">Säkerhet & GDPR</option>
-                                                <option value="Annat" className="bg-slate-900 text-white">Övrigt</option>
+                                                <option value="" className="bg-slate-900 text-white">{t('support.category_placeholder') || 'Välj kategori...'}</option>
+                                                <option value="Tekniskt fel" className="bg-slate-900 text-white">{t('support.category_tech_error') || 'Tekniskt fel'}</option>
+                                                <option value="Fakturering" className="bg-slate-900 text-white">{t('support.category_billing') || 'Fakturering'}</option>
+                                                <option value="Säkerhet" className="bg-slate-900 text-white">{t('support.category_security') || 'Säkerhet & GDPR'}</option>
+                                                <option value="Annat" className="bg-slate-900 text-white">{t('support.category_other') || 'Övrigt'}</option>
                                             </select>
                                         </div>
                                         <div className="space-y-3">
-                                            <label className="text-xs font-black text-slate-500 uppercase tracking-widest ml-1">Prioritet</label>
+                                            <label className="text-xs font-black text-slate-500 uppercase tracking-widest ml-1">{t('support.priority_label') || 'Prioritet'}</label>
                                             <select
                                                 value={formData.severity}
                                                 onChange={(e) => setFormData({ ...formData, severity: e.target.value })}
                                                 className="w-full bg-white/5 border border-white/10 rounded-2xl p-5 text-white focus:ring-4 focus:ring-brand-teal/20 transition-all outline-none font-bold appearance-none cursor-pointer"
                                             >
-                                                <option value="LOW" className="bg-slate-900 text-white">Låg</option>
-                                                <option value="MEDIUM" className="bg-slate-900 text-white">Medium</option>
-                                                <option value="HIGH" className="bg-slate-900 text-white">Hög</option>
-                                                <option value="CRITICAL" className="bg-slate-900 text-white">Kritisk</option>
+                                                <option value="LOW" className="bg-slate-900 text-white">{t('support.priority_low') || 'Låg'}</option>
+                                                <option value="MEDIUM" className="bg-slate-900 text-white">{t('support.priority_medium') || 'Medium'}</option>
+                                                <option value="HIGH" className="bg-slate-900 text-white">{t('support.priority_high') || 'Hög'}</option>
+                                                <option value="CRITICAL" className="bg-slate-900 text-white">{t('support.priority_critical') || 'Kritisk'}</option>
                                             </select>
                                         </div>
                                     </div>
                                     <div className="space-y-3">
-                                        <label className="text-xs font-black text-slate-500 uppercase tracking-widest ml-1">Beskrivning</label>
+                                        <label className="text-xs font-black text-slate-500 uppercase tracking-widest ml-1">{t('support.message_label') || 'Beskrivning'}</label>
                                         <textarea
                                             value={formData.message}
                                             onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                                             className="w-full bg-white/5 border border-white/10 rounded-2xl p-6 text-white focus:ring-4 focus:ring-brand-teal/20 transition-all outline-none font-bold min-h-[180px] resize-none"
-                                            placeholder="Vad kan vi hjälpa dig med? Var så detaljerad som möjligt..."
+                                            placeholder={t('support.ticket_message_placeholder') || "Vad kan vi hjälpa dig med? Var så detaljerad som möjligt..."}
                                         />
                                     </div>
                                     <button
@@ -407,7 +409,7 @@ const SupportPage = () => {
                                         disabled={submitting}
                                         className="w-full bg-gradient-to-r from-brand-teal to-brand-emerald text-slate-950 font-black py-6 rounded-2xl shadow-2xl shadow-brand-teal/30 hover:scale-[1.01] hover:brightness-110 active:scale-[0.99] transition-all flex items-center justify-center gap-3 group disabled:opacity-50"
                                     >
-                                        {submitting ? 'Skickar...' : 'Skicka ärende'}
+                                        {submitting ? (t('support.sending') || 'Skickar...') : (t('support.submit_ticket') || 'Skicka ärende')}
                                         <Send className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                                     </button>
                                 </form>
@@ -421,8 +423,8 @@ const SupportPage = () => {
                                 ) : tickets.length === 0 ? (
                                     <div className="text-center py-32 bg-slate-100 dark:bg-slate-900/40 rounded-[3rem] border-2 border-dashed border-slate-200 dark:border-white/5">
                                         <History className="w-16 h-16 text-slate-400 dark:text-slate-700 mx-auto mb-6 opacity-40" />
-                                        <h3 className="text-slate-900 dark:text-white font-black text-xl">Inga ärenden ännu</h3>
-                                        <p className="text-slate-500 font-bold">Dina skickade ärenden kommer att visas här.</p>
+                                        <h3 className="text-slate-900 dark:text-white font-black text-xl">{t('support.no_tickets_yet') || 'Inga ärenden ännu'}</h3>
+                                        <p className="text-slate-500 font-bold">{t('support.no_tickets_desc') || 'Dina skickade ärenden kommer att visas här.'}</p>
                                     </div>
                                 ) : (
                                     tickets.map(ticket => (
@@ -430,10 +432,10 @@ const SupportPage = () => {
                                             <div className="flex justify-between items-start mb-6">
                                                 <div className="space-y-2">
                                                     <div className="flex items-center gap-3">
-                                                        <span className="text-xs font-black text-slate-500 uppercase tracking-widest">Ärende #{ticket.id}</span>
+                                                        <span className="text-xs font-black text-slate-500 uppercase tracking-widest">{t('support.ticket_id', { id: ticket.id }) || `Ärende #${ticket.id}`}</span>
                                                         <span className={`px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider ${ticket.status === 'RESOLVED' ? 'bg-brand-emerald/20 text-brand-emerald border border-brand-emerald/30' : 'bg-brand-gold/20 text-brand-gold border border-brand-gold/30'
                                                             }`}>
-                                                            {ticket.status === 'RESOLVED' ? 'Åtgärdad' : 'Hanteras'}
+                                                            {ticket.status === 'RESOLVED' ? (t('support.resolved') || 'Åtgärdad') : (t('support.in_progress') || 'Hanteras')}
                                                         </span>
                                                     </div>
                                                     <h4 className="text-2xl font-black text-slate-900 dark:text-white">{ticket.category}</h4>
@@ -474,7 +476,7 @@ const SupportPage = () => {
                             </div>
 
                             <div className="space-y-2">
-                                <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-500">Garanterad Svarstid</h3>
+                                <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-500">{t('support.guaranteed_response') || 'Garanterad Svarstid'}</h3>
                                 <div className="flex items-center gap-3 text-3xl font-black text-slate-900 dark:text-white">
                                     <Clock className="w-8 h-8 text-brand-teal" /> {slaInfo.time}
                                 </div>
@@ -493,7 +495,7 @@ const SupportPage = () => {
                     {/* RESOURCE LINKS */}
                     <div className="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-[2.5rem] p-8 space-y-6 shadow-xl relative overflow-hidden">
                         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-brand-blue/50 to-transparent"></div>
-                        <h4 className="font-black text-slate-900 dark:text-white text-sm uppercase tracking-[0.2em]">Resurser</h4>
+                        <h4 className="font-black text-slate-900 dark:text-white text-sm uppercase tracking-[0.2em]">{t('support.resources') || 'Resurser'}</h4>
                         <div className="space-y-3">
                             <a href="#" className="flex items-center justify-between p-5 bg-slate-50 dark:bg-white/5 rounded-2xl hover:bg-slate-100 dark:hover:bg-white/[0.08] transition-all group border border-transparent hover:border-slate-300 dark:hover:border-white/10">
                                 <div className="flex items-center gap-3">
@@ -513,7 +515,7 @@ const SupportPage = () => {
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <div className="w-2 h-2 bg-brand-emerald rounded-full animate-pulse shadow-[0_0_10px_rgba(0,212,170,0.5)]"></div>
-                                    <span className="text-[10px] font-black text-brand-emerald uppercase tracking-wider">Online</span>
+                                    <span className="text-[10px] font-black text-brand-emerald uppercase tracking-wider">{t('support.online') || 'Online'}</span>
                                 </div>
                             </a>
                         </div>
@@ -524,9 +526,9 @@ const SupportPage = () => {
                         <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-md">
                             <Play className="w-6 h-6 fill-slate-950" />
                         </div>
-                        <h3 className="text-xl font-black">Personlig Demo?</h3>
-                        <p className="text-sm font-bold opacity-80">Behöver ni mer djupgående hjälp? Boka ett möte med en expert.</p>
-                        <button className="w-full bg-slate-950 text-white font-black py-4 rounded-xl hover:scale-105 transition-transform">Boka nu</button>
+                        <h3 className="text-xl font-black">{t('support.demo_title') || 'Personlig Demo?'}</h3>
+                        <p className="text-sm font-bold opacity-80">{t('support.demo_subtitle') || 'Behöver ni mer djupgående hjälp? Boka ett möte med en expert.'}</p>
+                        <button className="w-full bg-slate-950 text-white font-black py-4 rounded-xl hover:scale-105 transition-transform">{t('support.book_now') || 'Boka nu'}</button>
                     </div>
                 </aside>
             </div>

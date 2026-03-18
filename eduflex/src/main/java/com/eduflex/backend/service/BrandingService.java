@@ -333,22 +333,44 @@ public class BrandingService {
         // Icons
         List<Map<String, String>> icons = new ArrayList<>();
 
+        // Default icons from /public
         String icon192Url = "/pwa-192x192.png";
         String icon512Url = "/pwa-512x512.png";
 
-        // Override from customTheme if available
+        // Override from customTheme if available AND exists in storage
         if (branding.getCustomTheme() != null) {
             try {
+                logger.debug("PWA: Checking organization {} for custom PWA icons", organizationKey);
                 JsonNode root = objectMapper.readTree(branding.getCustomTheme());
                 if (root.has("pwa")) {
                     JsonNode pwa = root.get("pwa");
-                    if (pwa.has("icon192"))
-                        icon192Url = pwa.get("icon192").asText();
-                    if (pwa.has("icon512"))
-                        icon512Url = pwa.get("icon512").asText();
+                    if (pwa.has("icon192")) {
+                        String prospectiveUrl = pwa.get("icon192").asText();
+                        if (prospectiveUrl.startsWith("/api/storage/")) {
+                            String storageId = prospectiveUrl.substring("/api/storage/".length());
+                            if (storageService.exists(storageId)) {
+                                logger.info("PWA: Found 192 icon in storage: {}", storageId);
+                                icon192Url = prospectiveUrl;
+                            } else {
+                                logger.warn("PWA: 192 icon {} NOT in storage, Org: {}", storageId, organizationKey);
+                            }
+                        }
+                    }
+                    if (pwa.has("icon512")) {
+                        String prospectiveUrl = pwa.get("icon512").asText();
+                        if (prospectiveUrl.startsWith("/api/storage/")) {
+                            String storageId = prospectiveUrl.substring("/api/storage/".length());
+                            if (storageService.exists(storageId)) {
+                                logger.info("PWA: Found 512 icon in storage: {}", storageId);
+                                icon512Url = prospectiveUrl;
+                            } else {
+                                logger.warn("PWA: 512 icon {} NOT in storage, Org: {}", storageId, organizationKey);
+                            }
+                        }
+                    }
                 }
             } catch (Exception e) {
-                // Ignore
+                logger.warn("PWA icon parsing error for {}: {}", organizationKey, e.getMessage());
             }
         }
 

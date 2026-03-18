@@ -140,3 +140,66 @@ backups_list*
 copy_blocks*
 deploy*
 root_compile_errors*
+
+# Temporary & Working Files
+tmp/
+manual/
+mcp-server/
+restore_db.sh
+nul
+private.pem
+public.pem
+
+# OnlyOffice (ensure strict exclusion)
+onlyoffice/
+onlyoffice-data/
+onlyoffice-logs/
+config/onlyoffice/
+
+# Localization (Exclude test/placeholder files)
+**/locales/**/sv2.json
+**/locales/**/is.json
+**/locales/**/se.json
+**/locales/**/v2.json
+frontend/src/features/*/locales/
+frontend/src/locales/is/
+frontend/src/locales/se/
+frontend/src/locales/sv2/
+
+# OS-Specific & Installer Files
+*.apk
+*.deb
+*.msi
+*.dmg
+
+# Local Config & Payloads
+payload.json
+prometheus.yml
+cloudflared_config_local.yml
+frontend/dev-dist/
+
+# Test/Audit Scripts (Local)
+tmp/
+mobile_bak/
+payload.json
+prometheus.yml
+tests/load/smoke-test.js
+frontend/src/assets/images/favico.png
+cloudflared.deb
+EduFlex-v1.5.2.apk
+cloudflared_config_local.yml
+
+# Root-level leftovers
+payload.json
+prometheus.yml
+cloudflared.deb
+EduFlex-v1.5.2.apk
+cloudflared_config_local.yml
+tests/load/smoke-test.js
+mobile_bak/
+tmp/audit_translations.ps1
+tmp/compare_translations.ps1
+tmp/count_translations.ps1
+tmp/hardcoded_files_utf8.txt
+tmp/translation_audit.csv
+tmp/translation_key_counts.csv

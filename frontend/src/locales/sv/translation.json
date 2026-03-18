@@ -42,7 +42,9 @@
       "gemini": "Google Gemini",
       "postgresql": "PostgreSQL",
       "openai": "OpenAI API"
-    }
+    },
+    "pro": "Pro",
+    "menu": "Meny"
   },
   "sidebar": {
     "dashboard": "Översikt",
@@ -60,10 +62,10 @@
     "ebooks": "E-böcker",
     "system": "System",
     "ai_quiz": "AI Quiz",
-    "shop": "Shop",
+    "shop": "Butik",
     "categories": {
       "main": "Huvudmeny",
-      "education": "Utbildning & Studie",
+      "education": "Utbildning & Studium",
       "tools": "Verktyg",
       "syv": "Studievägledning & Antagning",
       "admin": "Administration",
@@ -76,7 +78,7 @@
   "library": {
     "title": "Bibliotek",
     "subtitle": "Utforska och läs e-böcker",
-    "search_placeholder": "Sök på titel eller författare...",
+    "search_placeholder": "Sök efter titel eller författare...",
     "categories": "Kategorier",
     "all_categories": "Alla",
     "read_book": "Läs bok",
@@ -97,106 +99,865 @@
     "cover_image_label": "Omslagsbild",
     "no_cover": "Inget omslag",
     "select_file_alert": "Vänligen välj en EPUB-fil",
-    "delete_confirm": "Är du säker på att du vill ta bort denna bok?"
+    "delete_confirm": "Är du säker på att du vill ta bort denna bok?",
+    "delete_success": "Bok borttagen",
+    "no_books_desc": "Prova att söka på något annat eller ladda upp din första e-bok till biblioteket."
+  },
+  "dashboard": {
+    "welcome": "Välkommen tillbaka, {{name}}!",
+    "welcome_back": "Välkommen tillbaka,",
+    "logged_in_as": "Du är inloggad som",
+    "live_overview": "Live-översikt",
+    "realtime_data": "Data i realtid från hela plattformen",
+    "tabs": {
+      "overview": "Översikt",
+      "communication": "Kommunikation"
+    },
+    "widgets": {
+      "stats": "Statistik",
+      "calendar": "Kalender & Schema",
+      "recent_users": "Senaste Användare",
+      "recent_docs": "Nyligen Uppladdat",
+      "messages": "Senaste Meddelanden",
+      "online_friends": "Online Vänner",
+      "tickets": "Supportärenden",
+      "gamification": "Gamification Status",
+      "attendance": "Min Närvaro",
+      "my_courses": "Mina Kurser",
+      "tasks": "Uppgifter & Feedback",
+      "daily_challenges": "Dagens Utmaningar",
+      "achievements": "Mina Prestationer",
+      "ai_insights": "AI-Insikter",
+      "ai_personalization": "Personliga Studietips",
+      "daily_challenges_widget": {
+        "title": "Dagens Utmaningar",
+        "subtitle": "Slutför för att tjäna XP",
+        "days": "{{count}} dagar",
+        "empty": "Inga utmaningar tillgängliga än",
+        "completed": "✓ Klar",
+        "reset_in": "Nya utmaningar om {{hours}}h {{minutes}}m"
+      }
+    },
+    "my_courses": "Mina Kurser",
+    "files": "Filer",
+    "no_active_courses": "Du har inga aktiva kurser.",
+    "total_users": "Totalt Användare",
+    "total_courses": "Totalt Kurser",
+    "open": "Öppna",
+    "closed": "Stängda",
+    "realtime_update_notice": "Data uppdateras i realtid.",
+    "new_messages": "Nya Meddelanden",
+    "go_to_inbox": "Gå till inkorgen",
+    "students": "Studenter",
+    "teachers": "Lärare",
+    "admins": "Admins",
+    "mentors": "Mentorer",
+    "principals": "Rektorer",
+    "evaluations": "Utvärderingar",
+    "give_rating": "Ge betyg",
+    "to_grade": "Att Rätta",
+    "submissions": "Inlämningar",
+    "no_pending_grades": "Inga inlämningar väntar!",
+    "upcoming_deadlines": "Nästa Deadlines",
+    "no_deadlines": "Inga kommande inlämningar.",
+    "active_plural": "Aktiva",
+    "archive_plural": "Arkiverade",
+    "datasync_ok": "Synkroniserad",
+    "new_badge": "NY",
+    "archived_files": "Arkiverade Filer",
+    "urgent": "Bråttom!",
+    "go_to": "Gå till",
+    "avg_grade": "Snittbetyg",
+    "based_on": "Baserat på {{count}} avslutade kurser",
+    "users": "Användare",
+    "courses": "Kurser",
+    "latest_registered": "Senast registrerade",
+    "latest_uploads": "Senaste uppladdningar",
+    "archive": "Arkiv",
+    "no_archive_docs": "Inga dokument i arkivet.",
+    "teacher_panel": "Lärarpanel",
+    "overview_for": "Översikt för {{name}}",
+    "my_students": "Mina Studenter",
+    "active_courses": "Aktiva Kurser",
+    "students_at_risk": "Elever i riskzonen (Sena inlämningar)",
+    "missed_deadlines": "Har missat {{count}} deadlines",
+    "no_risk_students": "Inga sena inlämningar!",
+    "all_in_phase": "Alla dina studenter är i fas.",
+    "grading_todo": "Att göra: Rättning",
+    "grade_now": "Rätta",
+    "all_graded": "Allt är rättat! Bra jobbat.",
+    "hi_student": "Hej, {{name}}! 👋",
+    "student_subtitle": "Här är dina studier just nu.",
+    "not_registered": "Du är inte registrerad på några kurser.",
+    "comming_assignments": "Kommande Deadlines",
+    "no_upcoming_assignments": "Inga kommande uppgifter just nu.",
+    "admin_overview": "Systemöversikt",
+    "admin_subtitle": "Administration och Kursstyrning",
+    "active_students": "Aktiva Studenter",
+    "locked_courses": "Låsta Kurser",
+    "files_in_system": "Filer i system",
+    "course_registry": "Kursregister",
+    "search_placeholder": "Sök kurskod eller namn...",
+    "all_statuses": "Alla Statusar",
+    "no_match": "Inga kurser matchade din sökning.",
+    "showing_x_of_y": "Visar {{count}} av {{total}} kurser",
+    "manage": "Hantera",
+    "new_course": "Ny Kurs",
+    "search_course": "Sök kurs...",
+    "table": {
+      "status": "Status",
+      "code": "Kod",
+      "name": "Namn",
+      "date": "Datum",
+      "action": "Åtgärd",
+      "user": "Användare",
+      "email": "Email",
+      "role": "Roll"
+    },
+    "course_color": "Kursfärg",
+    "edit_course": "Redigera kurs",
+    "delete_course": "Ta bort kurs",
+    "no_new_users": "Inga nya användare registrerade.",
+    "recent_uploads": "Senaste uppladdningar",
+    "unknown_file": "Okänd fil",
+    "unknown_size": "Okänd storlek",
+    "unknown_date": "Okänt datum",
+    "no_files_uploaded": "Inga filer uppladdade än.",
+    "user_registry": "Användarregister",
+    "new_user": "Ny Användare",
+    "search_user": "Sök användare...",
+    "all_roles": "Alla Roller",
+    "active": "Aktiv",
+    "edit_user": "Redigera användare",
+    "delete_user": "Ta bort användare",
+    "feedback": {
+      "new": "Ny Feedback",
+      "course": "Kurs: {{name}}",
+      "praise": "Bra jobbat!",
+      "details": "Visa detaljer"
+    }
+  },
+  "attendance": {
+    "title": "Närvarorapport",
+    "presence": "Närvaro:",
+    "occasions": "tillfällen",
+    "no_records": "Inga obligatoriska moment registrerade än.",
+    "not_reported": "Ej rapporterad",
+    "present": "Närvarande",
+    "absent": "Frånvarande",
+    "description": "Beskrivning",
+    "no_description": "Ingen beskrivning tillgänglig.",
+    "note": "Notering",
+    "manage_attendance": "Hantera Närvaro",
+    "new_event": "Nytt Tillfälle",
+    "create_event_title": "Skapa nytt tillfälle",
+    "event_title": "Titel",
+    "event_start": "Start",
+    "event_end": "Slut",
+    "event_type": "Typ",
+    "type_lesson": "Lektion",
+    "type_workshop": "Workshop",
+    "type_exam": "Prov",
+    "type_other": "Annat",
+    "create_btn": "Skapa",
+    "save_attendance": "Spara Närvaro",
+    "saved_success": "Närvaro sparad!",
+    "save_error": "Fel vid sparande",
+    "create_error": "Kunde inte skapa event"
+  },
+  "assessment": {
+    "title": "Bedömning & Resultat",
+    "no_assignments": "Inga uppgifter i denna kurs.",
+    "deadline": "Deadline",
+    "go_to_task": "Gå till uppgift",
+    "my_file": "Min fil",
+    "grade": "Betyg",
+    "waiting": "Väntar på rättning",
+    "submitted_at": "Inlämnad",
+    "not_submitted": "Ej inlämnad",
+    "submit_now": "Lämna in nu"
+  },
+  "evaluation": {
+    "title": "Kursutvärdering",
+    "intro": "Dina svar är anonyma och hjälper oss att förbättra utbildningen. Ge betyg 1-10 och skriv gärna en kommentar.",
+    "your_rating": "Ditt betyg (1 = Dåligt, 10 = Utmärkt)",
+    "comment_label": "Kommentar (Valfritt)",
+    "comment_placeholder": "Skriv din åsikt här...",
+    "submit_btn": "Skicka in utvärdering",
+    "validation_error": "Vänligen ge ett betyg på alla frågor.",
+    "manage_btn": "Hantera Utvärdering",
+    "saved_success": "Utvärdering sparad!",
+    "save_error": "Kunde inte spara utvärderingen."
+  },
+  "license": {
+    "locked_title": "Systemet är Låst",
+    "locked_desc": "Ingen giltig licens hittades.",
+    "key_label": "Licensnyckel",
+    "key_placeholder": "XXXX-XXXX-XXXX-XXXX",
+    "activate_btn": "Aktivera System"
+  },
+  "auth": {
+    "login_header": "Logga in",
+    "register_header": "Skapa konto",
+    "username": "Användarnamn",
+    "password": "Lösenord",
+    "login_button": "Logga in",
+    "no_account": "Inget konto?",
+    "register_link": "Registrera dig",
+    "has_account": "Har du redan ett konto?",
+    "login_link": "Logga in",
+    "firstname": "Förnamn",
+    "lastname": "Efternamn",
+    "ssn": "Personnummer (YYYYMMDD-XXXX)",
+    "email": "E-post",
+    "generate": "Generera förslag",
+    "choose_or_generate": "Välj eller generera...",
+    "profane": "Olämpligt ord valt.",
+    "taken": "Upptaget användarnamn.",
+    "available": "Tillgängligt!",
+    "role": "Roll",
+    "student": "Student",
+    "admin": "Administratör",
+    "teacher": "Lärare",
+    "contact_address": "Kontakt & Adress",
+    "phone": "Telefon",
+    "street": "Gatuadress",
+    "zip": "Postnr",
+    "city": "Ort",
+    "country": "Land",
+    "register_user_btn": "Registrera Användare",
+    "create_account_btn": "Skapa Mitt Konto"
+  },
+  "admin": {
+    "title": "Systemadministration",
+    "subtitle": "Hantera användare, kurser och systemarkiv.",
+    "tab_users": "Användare",
+    "tab_courses": "Kurser",
+    "tab_docs": "Dokumentarkiv",
+    "tab_settings": "Inställningar",
+    "register_new": "Registrera ny användare",
+    "firstname": "Förnamn",
+    "lastname": "Efternamn",
+    "ssn": "Personnummer (12 siffror)",
+    "email": "E-post",
+    "account_role": "Konto & Roll",
+    "generate": "Generera",
+    "password": "Lösenord",
+    "create_account": "Skapa Konto",
+    "registered_users": "Registrerade Användare",
+    "course_overview": "Kursöversikt",
+    "create_course": "Skapa ny kurs",
+    "search_course": "Sök på kursnamn eller kurskod...",
+    "no_courses": "Inga kurser hittades.",
+    "teacher": "Lärare",
+    "students": "Studenter",
+    "settings": "Inställningar",
+    "content": "Innehåll",
+    "global_docs": "Globalt Dokumentarkiv",
+    "upload_file": "Ladda upp fil",
+    "no_docs": "Systemet är tomt på arkiverade filer.",
+    "module_management": "Modulhantering & Systeminfo",
+    "site_name": "Sidans Namn",
+    "chat_module": "Chattmodul",
+    "chat_desc": "Tillåter elever och lärare att chatta i realtid.",
+    "registration": "Nyregistrering",
+    "registration_desc": "Tillåter admin att skapa nya användarkonton.",
+    "version": "Systemversion",
+    "edit_course_settings": "Redigera Kursinställningar",
+    "course_name": "Kursnamn",
+    "course_code": "Kurskod",
+    "color_theme": "Färgtema",
+    "register_new_user": "Registrera ny användare",
+    "edit_user": "Redigera användare",
+    "edit_course": "Redigera kurs",
+    "base_on_skolverket": "Baserad på Skolverkskurs",
+    "choose_skolverket_course": "Välj Skolverkskurs",
+    "max_seats": "Max platser",
+    "tags": "Taggar",
+    "digital_classroom": "Digitalt Klassrum (Frivilligt)",
+    "choose_platform": "Välj plattform...",
+    "paste_link": "Klistra in länk...",
+    "choose_teacher": "Välj lärare..."
+  },
+  "course": {
+    "back": "Tillbaka till översikten",
+    "material": "Material",
+    "assignments": "Uppgifter",
+    "quiz": "Quiz & Prov",
+    "forum": "Forum",
+    "scorm": "Interaktiva Moduler",
+    "kursinformation": "Kursinformation",
+    "students": "Studenter & Betyg",
+    "attendance": "Närvaro",
+    "create_quiz": "Skapa Nytt Quiz",
+    "start_quiz": "Starta Quiz",
+    "no_material": "Inget kursmaterial uppladdat än.",
+    "add_material": "Lägg till Material",
+    "upload": "Ladda upp",
+    "title": "Titel",
+    "description": "Beskrivning",
+    "link": "Länk (URL)",
+    "type_text": "Text / Artikel",
+    "type_video": "Video",
+    "type_link": "Extern Länk",
+    "type_file": "Fil",
+    "read": "Läst",
+    "mark_read": "Markera som läst",
+    "open_link": "Öppna länk",
+    "participants": "Kursdeltagare",
+    "add_student": "Lägg till",
+    "select_student": "Välj student...",
+    "role": "Roll",
+    "status": "Status",
+    "active": "Aktiv",
+    "connect_classroom": "Anslut till Klassrum",
+    "evaluate_course": "Utvärdera Kurs",
+    "feedback_thanks": "Tack för din feedback!",
+    "error_occurred": "Ett fel uppstod:",
+    "result_passed": "Godkänd",
+    "result_failed": "Underkänd",
+    "result_pending": "Ej bedömd",
+    "mark_passed": "Godkänn",
+    "mark_failed": "Underkänn",
+    "certificate": "Certifikat",
+    "course_completed": "Kursen avslutad",
+    "view_certificate": "Visa Certifikat",
+    "claim_certificate": "Hämta Certifikat"
+  },
+  "messages": {
+    "profile_updated": "Profil sparad!",
+    "password_changed": "Lösenord bytt!",
+    "login_failed": "Fel inloggning.",
+    "login_error": "Inloggning misslyckades.",
+    "account_created": "Konto skapat!",
+    "register_error": "Kunde inte registrera.",
+    "license_approved": "Licens godkänd!",
+    "license_error": "Kunde inte aktivera.",
+    "upload_success": "Fil uppladdad!",
+    "upload_error": "Uppladdning misslyckades.",
+    "setting_saved": "Sparat!",
+    "setting_error": "Kunde inte spara inställning.",
+    "user_deleted": "Användare raderad.",
+    "delete_error": "Kunde inte radera användare.",
+    "course_deleted": "Kurs raderad.",
+    "course_delete_error": "Kunde inte radera kurs.",
+    "joined_course": "Gick med!",
+    "loading": "Laddar...",
+    "loading_course": "Laddar kurs..."
+  },
+  "teacher_dashboard": {
+    "tab_overview": "Översikt",
+    "tab_grading": "Att Rätta",
+    "tab_applications": "Ansökningar",
+    "tab_courses": "Mina Kurser",
+    "tab_students": "Studentuppföljning",
+    "tab_communication": "Kommunikation",
+    "section_schedule": "Kommande Schema",
+    "section_shortcuts": "Genvägar",
+    "section_admin": "Administration",
+    "ongoing_course": "Pågående kurs",
+    "upcoming_event": "Kommande händelse",
+    "course_start": "Kursstart: {{name}}",
+    "no_events": "Inga inbokade händelser.",
+    "new_message": "Nytt Meddelande"
+  },
+  "shortcuts": {
+    "calendar": "Gå till Kalender",
+    "students": "Hantera Studenter",
+    "grading": "Rätta Uppgifter",
+    "messages": "Meddelanden",
+    "create_course": "Skapa ny kurs"
+  },
+  "widgets": {
+    "recent_messages": {
+      "title": "Senaste Meddelanden",
+      "view_all": "Visa alla",
+      "empty": "Inga nya meddelanden.",
+      "from": "Från"
+    },
+    "online_friends": {
+      "title": "Online Vänner",
+      "x_online": "{{count}} online",
+      "empty": "Inga vänner online just nu.",
+      "profile": "Profil",
+      "view_all": "Visa alla vänner"
+    },
+    "live_lessons": {
+      "title": "Live-lektioner",
+      "subtitle": "Kommande videomöten",
+      "soon": "Snart",
+      "host": "Värd",
+      "join": "Gå med",
+      "prepare": "Förbered",
+      "view": "Visa",
+      "see_all_calendar": "Se alla i kalendern",
+      "error_load": "Kunde inte ladda lektioner",
+      "error_join": "Kunde inte ansluta till lektion"
+    },
+    "tickets": {
+      "active": "Aktiva Supportärenden",
+      "critical": "Kritiska",
+      "high": "Hög prioritet",
+      "medium": "Medium prioritet",
+      "low": "Låg prioritet",
+      "open": "Öppna ärenden",
+      "empty": "Inga öppna ärenden just nu."
+    },
+    "student_progress": {
+      "title": "Mina Kursresultat",
+      "on_track": "Ligger bra till",
+      "at_risk": "Varning",
+      "assignments": "Uppgifter",
+      "quizzes": "Quiz",
+      "detailed_overview": "Detaljerad översikt",
+      "latest_results": "Senaste Resultat",
+      "no_results": "Inga resultat än.",
+      "catch_up": "Se till att komma ikapp!",
+      "go_to_course": "Gå till kursen"
+    },
+    "attendance_widget": {
+      "title": "Min Digitala Närvaro",
+      "activity_level": "Aktivitetsnivå",
+      "registered_time": "Registrerad tid",
+      "gold_week": "Mål (Vecka)",
+      "low_warning": "Obs! Din närvaro är låg. Kontakta din mentor."
+    },
+    "schedule": {
+      "title": "Dagens & Veckans Schema",
+      "loading": "Laddar schema...",
+      "campus": "Campus",
+      "online": "Online",
+      "connect": "Anslut",
+      "empty": "Inga lektioner idag",
+      "view_full": "Se hela schemat",
+      "upcoming_submissions": "Kommande Inlämningar",
+      "go_to_task": "Gå till uppgift",
+      "no_deadlines": "Inga kommande deadlines",
+      "view_all_count": "Visa alla ({{count}})",
+      "room_missing": "Sal saknas"
+    }
+  },
+  "teacher_widgets": {
+    "active_courses": "Aktiva Kurser",
+    "my_students": "Mina Studenter",
+    "to_grade": "Att Rätta",
+    "applications": "Ansökningar",
+    "risk_zone": "Riskzon",
+    "at_risk_title": "Elever i Farozonen",
+    "students_count": "{{count}} st",
+    "no_at_risk": "Inga elever i riskzonen just nu. 👍",
+    "completion_prefix": "slutfört",
+    "view_all_risk": "Visa alla risk-elever"
+  },
+  "teacher_tables": {
+    "all_graded_title": "Allt är rättat!",
+    "all_graded_desc": "Bra jobbat, inga väntande inlämningar.",
+    "pending_submissions_count": "Väntande inlämningar ({{count}})",
+    "action_required": "Kräver åtgärd",
+    "student": "Student",
+    "assignment": "Uppgift",
+    "course": "Kurs",
+    "submitted": "Inlämnad",
+    "go_to_grading": "Gå till Rättning",
+    "no_pending_applications": "Inga väntande ansökningar just nu.",
+    "applying_to": "Söker till kurs",
+    "date": "Datum",
+    "decision": "Beslut",
+    "approve": "Godkänn",
+    "reject": "Avslå",
+    "never": "Aldrig",
+    "days_ago": "{{count}} dagar sedan",
+    "contact": "Kontakta",
+    "admitted_msg": "Student antagen!",
+    "rejected_msg": "Ansökan avslagen.",
+    "error_msg": "Något gick fel.",
+    "unknown_student": "Okänd"
+  },
+  "student_contact": {
+    "title": "Kontakta Student",
+    "subtitle": "Rapportera och följ upp med {{name}}",
+    "risk_factor": "Identifierad Riskfaktor",
+    "never_logged_in": "Studenten har aldrig loggat in på plattformen.",
+    "inactive_days": "Studenten har varit inaktiv i {{count}} dagar.",
+    "no_risk": "Ingen kritisk risk identifierad för tillfället, men uppföljning rekommenderas.",
+    "subject_label": "Ämne (Baserat på risk)",
+    "auto_generated_label": "Automatiskt Genererat Underlag",
+    "auto_generated_desc": "Detta underlag baseras på systemets data och skickas med i mailet.",
+    "teacher_notes_label": "Dina kommentarer / Åtgärdsplan",
+    "teacher_notes_placeholder": "Skriv ett personligt meddelande, instruktioner eller specifika åtgärder som studenten behöver göra...",
+    "report_and_send": "Rapportera & Skicka",
+    "sending": "Skickar...",
+    "sent_success": "Meddelande skickat!",
+    "send_error": "Kunde inte skicka meddelandet.",
+    "divider": "Lärarens kommentar:",
+    "regards": "Med vänlig hälsning,",
+    "templates": {
+      "follow_up_subject": "Uppföljning av dina studier",
+      "no_login_subject": "Viktigt: Du har inte loggat in ännu",
+      "no_login_body": "Jag ser att du ännu inte har loggat in på EduFlex. För att kunna tillgodogöra dig kursen är det viktigt att du kommer igång snart.",
+      "need_help_login": "Behöver du hjälp med inloggningen eller att hitta rätt material?",
+      "warning_inactivity_subject": "Varning: Hög frånvaro och inaktivitet",
+      "warning_inactivity_body": "Jag ser att du inte har varit aktiv på EduFlex på {{count}} dagar. Detta är oroande och påverkar dina studier negativt.",
+      "review_plan": "Vi behöver se över din studieplan för att säkerställa att du hinner med alla moment.",
+      "follow_up_absence_subject": "Uppföljning: Frånvaro",
+      "follow_up_absence_body": "Jag noterade att det var {{count}} dagar sedan du senast var aktiv.",
+      "reach_out": "Hör av dig om du behöver hjälp med något specifikt moment.",
+      "generic_body": "Jag want stämma av hur det går för dig i kursen."
+    }
+  },
+  "teacher_modals": {
+    "tags_placeholder": "Taggar (separera med komma, t.ex. AI, Matematik, Algebra)",
+    "group_rooms": "Grupprum",
+    "room_name_placeholder": "Namn",
+    "link": "Länk",
+    "add_room": "+ Lägg till grupprum",
+    "course_color": "Kursfärg",
+    "error_create": "Kunde inte skapa kursen.",
+    "error_update": "Kunde inte uppdatera kursen.",
+    "course_name": "Kursnamn",
+    "course_code": "Kurskod"
+  },
+  "course_modal": {
+    "create_title": "Skapa ny kurs",
+    "edit_title": "Redigera kurs",
+    "name": "Kursnamn",
+    "code": "Kurskod",
+    "category": "Kategori",
+    "description": "Kursbeskrivning",
+    "start_date": "Startdatum",
+    "end_date": "Slutdatum",
+    "max_students": "Max platser",
+    "classroom_section": "Digitalt Klassrum",
+    "classroom_link": "Möteslänk",
+    "exam_link": "Länk till Tentarum",
+    "create_btn": "Skapa",
+    "go_to_course": "Gå till kurs"
+  },
+  "analytics": {
+    "title": "Systeminsikter",
+    "subtitle": "Djupgående analys av plattformens prestanda och tillväxt.",
+    "financial_overview": "Ekonomisk Översikt",
+    "revenue_analytics": "Intäktsanalys",
+    "student_insights": "Studentinsikter",
+    "system_infrastructure": "Systeminfrastruktur",
+    "monthly_recurring_revenue": "Månatlig Återkommande Intäkt",
+    "total_users": "Totalt Användare",
+    "active_sessions": "Aktiva Sessioner",
+    "server_health": "Serverhälsa",
+    "operational": "Operationell",
+    "stable": "Stabil",
+    "revenue_growth": "Intäktstillväxt",
+    "user_acquisition": "Användarförvärv",
+    "export_csv": "Exportera CSV",
+    "day": "Dag",
+    "week": "Vecka",
+    "month": "Månad",
+    "year": "År",
+    "vs_last_month": "vs förra månaden",
+    "system_status": "Systemstatus",
+    "total_students": "Totalt Studenter",
+    "at_risk": "I Riskzonen",
+    "avg_time_online": "Genomsnittlig Tid Online",
+    "student_performance_registry": "Studentprestandaregister",
+    "student_name": "Studentnamn",
+    "status": "Status",
+    "courses": "Kurser",
+    "completion": "Genomförande",
+    "total_time_online": "Total Tid Online",
+    "risk_factor": "Riskfaktor",
+    "no_student_data": "Ingen studentdata tillgänglig.",
+    "grafana_dashboard": "Grafana Dashboard",
+    "grafana_description": "Realtidsmetrik för system (CPU, Minne, Förfrågningar).",
+    "open_full_grafana": "Öppna Fullständig Grafana",
+    "prometheus_metrics": "Prometheus-mätningar",
+    "prometheus_description": "Rå mätutforskare.",
+    "open_prometheus": "Öppna Prometheus",
+    "all_systems_normal": "Alla system kör normalt.",
+    "uptime": "Drifttid",
+    "revenue_title": "Intäktsanalys",
+    "revenue_subtitle": "Omfattande intäkts- och betalningsinsikter",
+    "loading_revenue_data": "Laddar intäktsdata...",
+    "annual_recurring_revenue": "Årlig Återkommande Intäkt",
+    "payment_success_rate": "Betalningsframgång",
+    "avg_payment_amount": "Genomsnittligt Betalningsbelopp",
+    "excellent": "Utmärkt",
+    "good": "Bra",
+    "revenue_growth_trend": "Intäktstillväxttrend",
+    "payment_methods": "Betalningsmetoder",
+    "no_payment_data": "Ingen betalningsdata tillgänglig",
+    "total_payments": "Totalt Betalningar",
+    "successful": "Lyckade",
+    "failed": "Misslyckade"
+  },
+  "invoices": {
+    "title": "Fakturahantering",
+    "create_invoice": "Skapa Faktura",
+    "export_csv": "Exportera CSV",
+    "exporting": "Exporterar...",
+    "loading": "Laddar fakturor...",
+    "all": "Alla",
+    "draft": "Utkast",
+    "pending": "Väntande",
+    "sent": "Skickad",
+    "paid": "Betald",
+    "overdue": "Försenad",
+    "cancelled": "Avbruten",
+    "invoice_number": "Fakturanummer",
+    "customer": "Kund",
+    "amount": "Belopp",
+    "issue_date": "Utfärdandedatum",
+    "due_date": "Förfallodatum",
+    "status": "Status",
+    "actions": "Åtgärder",
+    "no_invoices_found": "Inga fakturor hittades",
+    "total_invoices": "Totalt Fakturor",
+    "send_reminder_confirm": "Skicka betalningspåminnelse till kund?",
+    "reminder_sent": "Betalningspåminnelse skickad!",
+    "delete_confirm": "Är du säker på att du vill ta bort denna faktura?",
+    "refund_confirm": "Är du säker på att du vill återbetala denna betalning? Denna åtgärd kan inte ångras.",
+    "refund_success": "Återbetalning initierad",
+    "refund_failed": "Kunde inte återbetala. Kontrollera konsolen för detaljer.",
+    "no_payment_details": "Kan inte hitta betalningsdetaljer för denna faktura.",
+    "view_pdf": "Visa PDF",
+    "generate_pdf": "Generera PDF"
+  },
+  "subscription_plans": {
+    "title": "Prenumerationsplaner",
+    "subtitle": "Hantera prisnivåer och prenumerationsalternativ",
+    "create_plan": "Skapa Plan",
+    "loading": "Laddar prenumerationsplaner...",
+    "default_badge": "STANDARD",
+    "inactive_badge": "INAKTIV",
+    "unlimited": "Obegränsat",
+    "users": "Användare",
+    "courses": "Kurser",
+    "storage": "Lagring",
+    "features": "Funktioner",
+    "edit": "Redigera",
+    "activate": "Aktivera",
+    "deactivate": "Inaktivera",
+    "delete_confirm": "Är du säker på att du vill ta bort denna plan?",
+    "edit_plan": "Redigera Plan",
+    "create_new_plan": "Skapa Ny Plan",
+    "plan_name_internal": "Plannamn (Internt)",
+    "display_name": "Visningsnamn",
+    "description": "Beskrivning",
+    "price": "Pris",
+    "currency": "Valuta",
+    "trial_period_days": "Provperiod (Dagar)",
+    "billing_interval": "Faktureringsintervall",
+    "monthly": "Månadvis",
+    "yearly": "Årsvis",
+    "lifetime": "Livstid",
+    "max_users": "Max Användare (-1 = obegränsat)",
+    "max_courses": "Max Kurser (-1 = obegränsat)",
+    "max_storage": "Lagring GB (-1 = obegränsat)",
+    "add_feature": "+ Lägg till Funktion",
+    "enter_feature": "Ange funktionsnamn:",
+    "active": "Aktiv",
+    "default_plan": "Standardplan",
+    "sort_order": "Sorteringsordning",
+    "cancel": "Avbryt",
+    "update_plan": "Uppdatera Plan",
+    "create_plan_btn": "Skapa Plan"
+  },
+  "admin_tabs": {
+    "title": "Administration",
+    "administration": "Administration",
+    "pilot_kit": "Pilot-kit",
+    "system_settings": "Systeminställningar",
+    "tickets": "Ärenden",
+    "support_content": "Supportinnehåll",
+    "gamification": "Gamifiering",
+    "community": "Gemenskap",
+    "users": "Användare",
+    "guardians": "Vårdnadshavare",
+    "courses": "Kurser",
+    "structure": "Skolstruktur",
+    "merits": "Meriter",
+    "roles": "Roller",
+    "overview": "Översikt",
+    "subscription_plans": "Prenumerationsplaner",
+    "invoices": "Fakturor",
+    "payment_settings": "Betalningsinställningar",
+    "promo_codes": "Kampanjkoder",
+    "storage": "Lagring",
+    "content": "Innehåll",
+    "system_logs_file": "Systemloggar (Fil)",
+    "debug_terminal_live": "Debug Terminal (Live)",
+    "audit_log": "Granskningslogg",
+    "integration_hub": "Integrationshub",
+    "ai_audit": "AI-granskning",
+    "eduflex_ops": "EduFlex Ops",
+    "skolverket_import": "Skolverket-import",
+    "skolverket_data": "Skolverket-data",
+    "categories": {
+      "general": "Allmänt",
+      "finance": "Ekonomi",
+      "system": "System"
+    },
+    "students": "Studenter",
+    "logs": "Systemloggar",
+    "terminal": "Terminal",
+    "deploy": "Driftsättning",
+    "select_category": "Välj en kategori i menyn",
+    "total_storage": "Total Lagring",
+    "system_wide_use": "Används i hela systemet",
+    "total_files": "Totala Filer",
+    "uploaded_documents": "Uppladdade dokument",
+    "stats_fetch_error": "Kunde inte hämta statistik.",
+    "revenue": "Intäkter",
+    "delete_course_confirm": "Är du säker på att du vill ta bort denna kurs? Detta går inte att ångra.",
+    "delete_course_error": "Kunde inte ta bort kursen. Kontrollera att den inte har aktiva studenter.",
+    "delete_user_confirm": "Är du säker på att du vill ta bort denna användare? Detta går inte att ångra.",
+    "delete_user_error": "Kunde inte ta bort användaren."
   },
   "landing": {
     "nav": {
       "features": "Funktioner",
       "gamification": "Gamification",
-      "showcase": "Systemöversikt",
-      "pricing": "Prisplaner",
+      "showcase": "Showcase",
+      "pricing": "Prissättning",
       "technology": "Teknologi",
       "login": "Logga in",
-      "book_demo": "Boka Demo",
       "get_started": "Kom igång",
+      "book_demo": "Boka Demo",
       "select_language": "Välj Språk"
     },
     "hero": {
-      "badge": "version 3.9.2 nu live",
+      "badge": "v3.9.3: Performance & Stability - Repository Hardening",
       "title_start": "Framtidens",
       "title_llp": "LLP",
       "title_with": "med",
       "title_hub": "EduAI Hub",
-      "subtitle": "En unifierad, AI-driven plattform för skolor, företag och myndigheter. Maximera pedagogisk effekt och minimera administration dygnet runt.",
-      "cta_ai": "Testa AI-studion",
-      "cta_learn_more": "Läs om funktioner",
-      "cta_see_all": "Se alla 40+ funktioner",
-      "tech_tagline": "Drivs av världsledande teknologi",
+      "subtitle": "Upptäck vårt nya intelligenta kunskapscenter. Generera skräddarsydda studiepass med AI, spela engagerande minispel och följ din exakta kunskapsutveckling via vår dynamiska Live Radar. Allt drivet av Google Gemini.",
+      "cta_ai": "Starta din första AI Session",
+      "cta_learn_more": "Läs mer om plattformen",
+      "cta_see_all": "Se alla funktioner",
+      "tech_tagline": "Drivs av modern AI & beprövad pedagogik",
       "stats": {
-        "engagement": "Ökat studentengagemang",
-        "new_level": "Ny Prestation!",
+        "engagement": "Engagemang",
+        "new_level": "Ny nivå!",
         "level_value": "Nivå {{level}}"
       }
     },
     "features": {
-      "title": "Allt du behöver för modern utbildning",
-      "subtitle": "Från AI-driven analys till gamification och administration. Allt samlat i en kraftfull plattform.",
+      "title": "Allt du behöver för att driva en modern skola",
+      "subtitle": "Från robusta bedömningsverktyg till revolutionerande AI-stöd - vi har dig täckt.",
       "multi_tenancy": {
-        "title": "Multi-Tenancy",
-        "desc": "Isolerad data för varje skola med oändlig skalbarhet."
+        "title": "Äkta Multi-Tenancy",
+        "desc": "Fullständig dataisolering med schema-per-tenant-arkitektur. Varje skola har sin egen skyddade databas."
       },
       "b2b": {
-        "title": "B2B Admin Console",
-        "desc": "Hantera användare, kurser och licenser smidigt på distans."
+        "title": "B2B SaaS Engine",
+        "desc": "Hantera flera organisationer och underkonton med dedikerade faktureringsstöd och admin-översikt."
       },
       "microservice": {
-        "title": "Mikrotjänster",
-        "desc": "Byggt med Spring Boot för maximal prestanda och stabilitet."
+        "title": "Distributed Microservices",
+        "desc": "Skalbar arkitektur med Node.js, Spring Boot & Python som körs i isolerade Docker-containrar."
       },
       "event_bus": {
-        "title": "Realtids Event-Bus",
-        "desc": "Omedelbar notering och synkronisering mellan alla moduler."
+        "title": "Real-time Event Bus",
+        "desc": "Omedelbar datasynkronisering med RabbitMQ för realtidsnotiser och systemhändelser."
       },
       "gamification": {
-        "title": "Game Engine",
-        "desc": "XP, Badges och Leaderboards som motiverar lärande."
+        "title": "Advanced Gamification",
+        "desc": "Engagera elever med XP, Streaks, Achievements och vår unika AI-drivna Live Radar."
       },
       "ai_creator": {
-        "title": "AI Course Creator",
-        "desc": "Autogenerera hela kurser från PDF eller länk på 60 sek."
+        "title": "AI Content Lifecycle",
+        "desc": "Från generering av quiz till automatiserad rättning och personliga studietips via Gemini."
       },
       "pwa": {
-        "title": "PWA Mobil-App",
-        "desc": "Installera EduFlex direkt på mobilen utan app-butik."
+        "title": "Cross-Platform PWA",
+        "desc": "EduFlex fungerar lika bra i webbläsaren som installerad app på iOS, Android och Windows."
       },
       "live_video": {
-        "title": "Live Video & Chatt",
-        "desc": "Integrerat Zoom/Teams stöd för digitala klassrum."
+        "title": "Native Live Lessons",
+        "desc": "Inbyggda verktyg för videoseminarier och inspelat material direkt i kursmiljön."
       },
       "collaborative": {
-        "title": "Collaborative Editing",
-        "desc": "Redigera dokument tillsammans i realtid genom OnlyOffice."
+        "title": "Live Collaborative Learning",
+        "desc": "Lär tillsammans med inbyggt stöd för OnlyOffice och gemensamma arbetsytor i realtid."
       },
       "roi": {
-        "title": "Pedagogisk ROI",
-        "desc": "Mät exakt hur mycket tid och resurser ni sparar dagligen."
+        "title": "ROI & Analytics Engine",
+        "desc": "Visualisera träningseffektivitet med djupgående statistik för både rektorer och lärare."
       },
       "notifications": {
-        "title": "Smart Notifications",
-        "desc": "Kontextuella push-notiser för deadliner och feedback."
+        "title": "Event-Driven Notifications",
+        "desc": "Viktiga händelser missas aldrig tack vare vårt avancerade aviseringssystem för alla enheter."
       },
       "exams": {
-        "title": "Säkra Tentamen",
-        "desc": "Övervakad miljö med fokus-kontroll och integritetsskydd."
+        "title": "Digital Exams & Proctoring",
+        "desc": "Säkra och rättssäkra digitala examinationer med inbyggt stöd för identitetsverifiering."
       },
       "integrations": {
-        "title": "LTI 1.3 Advantage",
-        "desc": "Fullt kompatibel med Canvas, Moodle och Blackboard."
+        "title": "Enterprise Integrations",
+        "desc": "Anslut sömlöst till befintliga system via LTI 1.3, BankID och moderna REST-API:er."
       },
       "compliance": {
-        "title": "WCAG Compliance",
-        "desc": "Designat för 100% tillgänglighet oavsett förutsättningar."
+        "title": "Zero-Trust Compliance",
+        "desc": "GDPR-säkrad datalagring med kryptering i alla led och automatiserad pseudonymisering."
       },
       "pii": {
-        "title": "GDPR Zero-Trust",
-        "desc": "Banbrytande PII-maskning av all känslig studentdata."
+        "title": "PII Masking Pipeline",
+        "desc": "Vår unika AI-pipeline tvättar all personlig data innan den når externa språkmodeller."
       },
       "educareer": {
         "title": "EduCareer Roadmap",
-        "desc": "AI-driven karriärvägar för att nå studentens drömmål."
+        "desc": "Hjälp studenter visualisera sin framtid genom adaptiva karriärvägar kopplade till arbetsmarknaden."
+      },
+      "erp": {
+        "title": "ERP+ Integration",
+        "desc": "Hantera inköp, fakturering och personal i samma gränssnitt som undervisningen sker."
+      },
+      "isp": {
+        "title": "Dynamic ISP & LIA",
+        "desc": "Hantera individuella studieplaner och praktikplatser (LIA) med automatiserad matchning."
+      },
+      "bankid": {
+        "title": "BankID & FrejaeID",
+        "desc": "Säker autentisering enligt svensk standard för både personal, studenter och vårdnadshavare."
+      },
+      "video_tutor": {
+        "title": "Interactive AI Video Tutor",
+        "desc": "Interagera direkt med videoinnehåll genom AI-driven sökning och följdfrågor."
+      },
+      "language_sync": {
+        "title": "Global Language Sync",
+        "desc": "Hela systemet kan översättas till valfritt språk på sekunder via vår AI-översättningshub."
+      },
+      "susa": {
+        "title": "SUSA & Ladok Ready",
+        "desc": "Fullt stöd för svensk rapporteringsstandard till myndigheter och studieadministrativa system."
+      },
+      "ladok": {
+        "title": "Cloud-Native Infrastructure",
+        "desc": "Serverlös skalbarhet med Kubernetes och MinIO för hög tillgänglighet och prestanda."
+      },
+      "accessibility": {
+        "title": "WCAG 2.1 Accessibility",
+        "desc": "Designat för inkludering. Full tillgänglighet för alla användare oavsett förutsättningar."
+      },
+      "skolfederation": {
+        "title": "Skolfederation & SSO",
+        "desc": "Förenklad inloggning via gemensamma standarder för svensk skola och myndigheter."
       }
     },
     "screenshots": {
+      "roi": {
+        "title": "ROI Analytics Hub",
+        "desc": "Följ utbildningseffekt och avkastning i realtid med djupgående statistik."
+      },
+      "settings": {
+        "title": "Global System Control",
+        "desc": "Full kontroll över alla instanser, användare och nätverkskonfigurationer."
+      },
+      "debug": {
+        "title": "Developer Terminal",
+        "desc": "Inbyggda debug-verktyg och systemloggar för tekniska administratörer."
+      },
       "admin": {
         "title": "Admin Dashboard 2.0",
         "desc": "Total kontroll över organisationen med live-data och widgets."
@@ -215,539 +976,262 @@
       },
       "catalog": {
         "title": "Kurskatalog",
-        "desc": "Visuell och filtrerbar katalog för elever att hitta nya kurser."
+        "desc": "Utforska vårt breda utbud av kurser direkt från landningssidan."
       },
       "resource": {
-        "title": "Resursbank & Community",
-        "desc": "Dela och hämta material från ett gemensamt Community-bibliotek."
+        "title": "Resursbank",
+        "desc": "Hitta användbara verktyg och dokument för dina studier."
       },
       "analytics": {
-        "title": "Analyser & Insikter",
-        "desc": "Realtidsdashboards för rektorer och lärare. Värmekartor och avhoppsförutsägelse."
-      },
-      "security": {
-        "title": "Enterprise-Säkerhet",
-        "desc": "Rollbaserad åtkomstkontroll (RBAC), granskningsloggning och säker Keycloak SSO-integration."
-      },
-      "evaluation_system": {
-        "title": "Kursutvärdering & Insikter",
-        "desc": "Komplett system för kurskvalitet. Automatiska studentnotiser och AI-analys av fritextsvar för att mäta utbildningens ROI."
+        "title": "Djupgående Analys",
+        "desc": "Visualisera framsteg och resultat med våra kraftfulla analysverktyg."
       }
-    },
-    "architecture": {
-      "badge": "Byggd för Skalning",
-      "title": "Enterprise-Arkitektur",
-      "powered_by": "Drivs av Branschstandarder",
-      "items": [
-        "Spring Boot 3.4 Mikrotjänster",
-        "PostgreSQL med Schema-per-Tenant",
-        "Redis Caching-lager",
-        "MinIO S3-Kompatibel Lagring",
-        "Keycloak SSO Identitetshantering",
-        "Kubernetes & Helm Charts"
-      ]
-    },
-    "pricing": {
-      "title": "Enkel, Transparent Prissättning",
-      "subtitle": "Välj planen som passar din skola.",
-      "basic": {
-        "name": "Basic",
-        "price": "990 SEK / månad",
-        "features": [
-          "Upp till 100 användare",
-          "Grundläggande Kurshantering",
-          "Enkel Rapportering",
-          "Community Support"
-        ],
-        "cta": "Kom igång"
-      },
-      "pro": {
-        "name": "Pro",
-        "price": "2 990 SEK / månad",
-        "features": [
-          "Upp till 500 användare",
-          "Fullständig Gamification",
-          "Skolverket-Integration",
-          "CSN-Export",
-          "Prioriterad Support"
-        ],
-        "cta": "Boka Demo",
-        "badge": "Mest Populär"
-      },
-      "enterprise": {
-        "name": "Enterprise",
-        "price": "Kontakta Oss",
-        "features": [
-          "Obegränsat Antal Användare",
-          "White-label Branding",
-          "Keycloak SSO",
-          "SLA 99.99%",
-          "Dedikerad Infrastruktur"
-        ],
-        "cta": "Kontakta Försäljning"
-      }
-    },
-    "pricing_page": {
-      "back": "Tillbaka till start",
-      "badge": "Transparens",
-      "title": "Enkel & Rättvis {{gradient}}",
-      "gradient_text": "Prissättning",
-      "subtitle": "Välj den nivå som passar er organisation bäst. Inga dolda avgifter, bara ren pedagogisk kraft.",
-      "most_popular": "Mest Populär",
-      "currency_suffix": "SEK / elev / mån",
-      "cta_prefix": "Kom igång med",
-      "security_title": "GDPR & Säkerhet",
-      "security_desc": "All data lagras inom EU (Sverige/Tyskland). Vi följer de strängaste kraven för PII-maskning och integritet genom design.",
-      "availability_title": "Hög Tillgänglighet",
-      "availability_desc": "Vår Kubernetes-arkitektur garanterar 99.9% drifttid för Enterprise. Systemet skalar automatiskt efter antalet användare.",
-      "onboarding_title": "Personlig Onboarding",
-      "onboarding_desc": "Vi hjälper er med SIS integration, LTI uppsättning och lärarutbildning för att säkerställa en lyckad pilotperiod.",
-      "custom_title": "Behöver ni ett skräddarsytt upplägg?",
-      "custom_subtitle": "För större koncerner eller specifika pedagogiska behov erbjuder vi skräddarsydda ENTERPRISE-paket.",
-      "button_calc": "Boka en priskalkyl",
-      "button_kit": "Ladda ner Pilot Kit (PDF)",
-      "tiers": {
-        "basic": {
-          "desc": "Perfekt för mindre skolor eller föreningar som vill digitalisera sin administration.",
-          "features": [
-            "Fullständigt LMS",
-            "Kurs- & Media verktyg",
-            "Elevregister (PII-maskat)",
-            "Incident- & Hälsohantering",
-            "E-postsupport"
-          ]
-        },
-        "pro": {
-          "desc": "Den intelligenta nivån för moderna utbildningsanordnare med AI-stöd.",
-          "features": [
-            "Allt i BASIC",
-            "AI Tutor (Google Gemini)",
-            "AI Quiz Generator",
-            "Gamification (XP, Shop, Badges)",
-            "LTI 1.3 & Zoom/Teams Integrations",
-            "Prioriterad support"
-          ]
-        },
-        "enterprise": {
-          "desc": "Fullskalig lösning för koncerner och myndigheter med höga krav på kontroll.",
-          "features": [
-            "Allt i PRO",
-            "Full Whitelabeling (Egen domän)",
-            "Produktionsklar Kubernetes Ops",
-            "Dedikerad Success Manager",
-            "SLA: 99.9% Drifttid",
-            "Anpassad API-utveckling"
-          ]
-        }
-      }
-    },
-    "footer": {
-      "tagline": "Stärker utbildning med modern teknik. Byggd med ❤️ i Sverige.",
-      "product": "Produkt",
-      "features": "Funktioner",
-      "pricing": "Priser",
-      "roadmap": "Roadmap",
-      "resources": "Resurser",
-      "documentation": "Dokumentation",
-      "api_reference": "API-Referens",
-      "system_status": "Systemstatus",
-      "connect": "Kontakt",
-      "contact_sales": "Kontakta Försäljning",
-      "twitter": "Twitter",
-      "github": "GitHub",
-      "copyright": "© 2026 EduFlex. Alla rättigheter förbehållna.",
-      "privacy_policy": "Integritetspolicy",
-      "terms_of_service": "Användarvillkor",
-      "cookie_settings": "Cookie-inställningar",
-      "developed_by": "Utvecklad av",
-      "fenrir": "Fenrir Studio",
-      "security": "Säkerhet",
-      "api": "API-Dokumentation",
-      "help_center": "Hjälpcenter",
-      "support": "Support",
-      "newsletter": "Nyhetsbrev",
-      "newsletter_desc": "Få de senaste uppdateringarna om AI och utbildning direkt i din inkorg.",
-      "email_placeholder": "din@email.se"
     },
     "roles": {
       "badge": "Lösningar för alla",
-      "title": "Anpassat för din roll i skolan",
-      "subtitle": "EduFlex är designat för att underlätta vardagen för alla intressenter inom utbildning.",
-      "outcome_label": "Effekt",
+      "title": "En plattform, oändliga möjligheter",
+      "subtitle": "EduFlex är designat för att stötta varje roll i utbildningsresan, från administrativ kontroll till engagerat lärande.",
+      "outcome_label": "Resultat",
       "rector": {
-        "title": "Rektor & Skolledning",
-        "desc": "Få full kontroll över verksamheten med realtidsdata och strategiska beslutsunderlag.",
-        "feature1": "Realtids-KPIer & Dashboards",
-        "feature2": "Systematiskt kvalitetsarbete (SKA)",
-        "feature3": "Ekonomi- & resursplanering",
-        "outcome": "Ökad genomströmning & tryggare styrning."
+        "title": "För Rektorer & Ledning",
+        "desc": "Få total kontroll över organisationens tillväxt, lönsamhet och utbildningskvalitet.",
+        "feature1": "Strategisk planering",
+        "feature2": "Ekonomisk uppföljning",
+        "feature3": "Kvalitetssäkring (MYH/SUSA)",
+        "outcome": "Ökad lönsamhet och regelefterlevnad."
       },
       "teacher": {
-        "title": "Lärare & Mentorer",
-        "desc": "Minska administrationen och fokusera på pedagogik med AI-stöd i världsklass.",
-        "feature1": "AI-genererade prov & quiz",
-        "feature2": "Automatiserad närvaro & omdömen",
-        "feature3": "At-Risk tidig varning (Gemini)",
-        "outcome": "Sparar upp till 70% adm-tid."
+        "title": "För Lärare & Utbildare",
+        "desc": "Automatisera det administrativa arbetet och lägg mer tid på det som faktiskt räknas: pedagogik.",
+        "feature1": "AI-assisterad rättning",
+        "feature2": "Dynamisk närvarohantering",
+        "feature3": "Enkel kursdesign",
+        "outcome": "Minskad stress och högre elevengagemang."
       },
       "student": {
-        "title": "Elever & Studenter",
-        "desc": "Engagerande lärmiljö med gamification och personligt AI-stöd dygnet runt.",
-        "feature1": "Live Radar kunskapsvy",
-        "feature2": "Personlig AI Tutor (Video/Chatt)",
-        "feature3": "XP, Streaks & Achievements",
-        "outcome": "+40% ökat engagemang."
+        "title": "För Studenter & Elever",
+        "desc": "En modern och spelifierad upplevelse som gör lärandet roligt, begripligt och tillgängligt.",
+        "feature1": "Personlig AI-coach",
+        "feature2": "Gamification & XP",
+        "feature3": "Mobilanpassad PWA",
+        "outcome": "Högre fokus och snabbare måluppfyllelse."
       },
       "parent": {
-        "title": "Vårdnadshavare",
-        "desc": "Håll dig uppdaterad om barnets framsteg och kommunicera direkt med skolan.",
-        "feature1": "AI-rapport om barnets hälsa",
-        "feature2": "Enkel sjukanmälan & ledighet",
-        "feature3": "Direktkontakt med mentor",
-        "outcome": "Tryggare dialog & bättre insyn."
+        "title": "För Vårdnadshavare",
+        "desc": "Följ ditt barns utveckling i realtid och kommunicera enkelt med skolan.",
+        "feature1": "Närvarokontroll",
+        "feature2": "Omdömen & Feedback",
+        "feature3": "Säker kommunikation",
+        "outcome": "Trygghet och full insyn i skolgången."
       }
     },
     "cta": {
-      "title": "Är du redo att digitalisera din skola på riktigt?",
-      "subtitle": "Gör som 500+ andra användare och upplev framtidens LLP med EduAI Hub.",
+      "title": "Är du redo att transformera din utbildningsverksamhet?",
+      "subtitle": "Gör som hundratals andra organisationer och kliv in i framtidens digitala lärande redan idag.",
       "button_demo": "Boka en personlig demo",
-      "button_test": "Testa gratis i 14 dagar"
+      "button_test": "Testa gratis nu"
     },
-    "features_page": {
-      "intro_badge": "Allt du behöver för modern utbildning",
-      "title": "Fullmatad med funktioner",
-      "subtitle": "Från AI-driven analys till gamification och administration. Här hittar du allt som gör EduFlex unikt.",
-      "back": "Tillbaka",
-      "highlights_title": "Teknologiska Höjdpunkter",
-      "showcase_title": "Systemöversikt",
-      "cta_title": "Redo att komma igång?",
-      "cta_button": "Skapa ditt konto nu",
-      "highlights": {
-        "ai_creator": {
-          "title": "AI Course Creator",
-          "desc": "Skapa kompletta kurser från PDF-dokument på under 60 sekunder. Autogenererade lektioner, datum och smarta koder med inbyggd databassynkronisering."
-        },
-        "predictive": {
-          "title": "Prediktiv AI-Analys",
-          "desc": "Identifiera riskstudenter innan det är för sent. AI analyserar beteendemönster och ger lärare beslutsstöd samt elever personliga studietips."
-        },
-        "lti": {
-          "title": "LTI 1.3 Advantage",
-          "desc": "Fullt verifierat stöd för AGS (Betyg) och NRPS (Roller/Namn). Sömlös integration med Canvas, Moodle och Blackboard för säker autentisering och datautbyte."
-        },
-        "xapi": {
-          "title": "xAPI & CMI5 LRS",
-          "desc": "Nästa generations spårning. Kör simuleringar och offline-mobilkurser med full detaljrapportering via vårt inbyggda Learning Record Store."
-        },
-        "minio": {
-          "title": "MinIO & S3 Storage",
-          "desc": "Skalbar Enterprise-lagring. All media (ljudböcker, video) streamas blixtsnabbt med stöd för uppspelning där du slutade."
-        },
-        "edugame": {
-          "title": "EduGame Engine",
-          "desc": "XP-system, Shop, Profilteman, dagliga utmaningar och streaks. Gör lärandet till ett äventyr."
-        },
-        "schema": {
-          "title": "Schema-per-Tenant",
-          "desc": "Äkta multi-tenancy med komplett dataisolering. Varje organisation får sitt eget PostgreSQL-schema automatiskt."
-        },
-        "resource": {
-          "title": "Resursbank & Community",
-          "desc": "Ett unifierat bibliotek för alla dina quiz, uppgifter och lektioner. Dela och importera material från andra lärare med ett klick."
-        },
-        "cascading": {
-          "title": "Cascading Deletes",
-          "desc": "Underhållsfri hantering. När du tar bort en kurs raderas allt tillhörande material och lektioner automatiskt utan databaskonflikter."
-        },
-        "sso": {
-          "title": "Enterprise SSO",
-          "desc": "Keycloak-integration med OAuth2/OIDC. Full kontroll över identiteter och åtkomstnivåer i organisationen."
-        },
-        "slugs": {
-          "title": "Friendly URLs (Slugs)",
-          "desc": "Sökmotorvänliga och läsbara adresser för alla kurser. Navigera via läsbara namn istället för tekniska ID:n."
-        },
-        "quiz_gen": {
-          "title": "Quiz Generator",
-          "desc": "Slumpa quiz automatiskt från din frågebank (Math, Java, Svenska etc.) för snabb kunskapskontroll utan manuellt arbete."
-        },
-        "security": {
-          "title": "Enterprise Security",
-          "desc": "Fullständig AES-256 GCM kryptering av känslig data, domän-låst licensiering och rate-limiting skyddar din organisation dygnet runt."
-        },
-        "insights": {
-          "title": "Kursutvärdering & Insikter",
-          "desc": "Komplett system för kurskvalitet, automatiserade studentnotiser och AI-analys av fritextsvar för att mäta ROI."
-        },
-        "social": {
-          "title": "Contextual Social Learning",
-          "desc": "Diskutera lektioner och kurser i realtid direkt i spelaren. Lär av dina kurskamrater genom trådade konversationer och realtidsnotiser."
-        },
-        "streaks": {
-          "title": "Milestone Streaks",
-          "desc": "Fortsätt din \"Learning Streak\" och lås upp exklusiva XP-bonusar och märken. Centraliserad spårning som motiverar dig varje dag."
-        },
-        "mission_control": {
-          "title": "Rektorspaket (Mission Control)",
-          "desc": "Fullständigt skolledningslager med realtids-KPIer. Hantera organisationshierarki (Avdelning, Program, Klass), se aggregerad statistik och hantera incidenter i en unifierad, live-vy."
-        },
-        "health": {
-          "title": "Säker Elevhälsa",
-          "desc": "Rollbaserad åtkomstkontroll och krypterade journaler för maximal sekretess och trygghet."
-        },
-        "ai_analysis": {
-          "title": "Prediktiv AI-Analys 2.0",
-          "desc": "Identifierar elever i riskzonen innan de själva vet det. Deep learning mönsteranalys av närvaro, aktivitet och resultat."
-        },
-        "skolverket": {
-          "title": "Skolverket Sync 2.0",
-          "desc": "Sömlös integration med hela Skolverkets kurskatalog. Automatiserad uppdatering av kursmål och betygskriterier."
-        },
-        "pwa": {
-          "title": "Native PWA Experience",
-          "desc": "Installera EduFlex direkt på hemskärmen. Fullt stöd för offline-åtkomst och blixtsnabb respons på alla enheter."
-        },
-        "gamification_expansion": {
-          "title": "Gamification Expansion",
-          "desc": "Nya Quest-system, Social-hub och utökad Shop. Öka engagemanget genom meningsfullt spelifierat lärande."
-        },
-        "guardian": {
-          "title": "Guardian & Health Control",
-          "desc": "Vårdnadshavarportal, digital sjukanmälan och enkäter för elevhälsa. Allt samlat med AES-256 kryptering och sekretessvakter för säker datahantering."
-        },
-        "ai_center": {
-          "title": "EduAI Center 2.1",
-          "desc": "Avancerad Spaced Repetition med SM-2 algoritm. Tjäna AI-credits genom intelligenta repetitioner och visualisera din kunskapsresa i realtid."
-        }
-      }
+    "footer": {
+      "tagline": "Framtidens LLP och ekosystem för digitalt lärande. Designat med hjärta, drivet av AI.",
+      "product": "Produkten",
+      "features": "Funktioner",
+      "security": "Säkerhet & GDPR",
+      "api": "API & Utvecklare",
+      "roadmap": "Roadmap",
+      "support": "Support",
+      "help_center": "Hjälpcenter",
+      "documentation": "Dokumentation",
+      "system_status": "Systemstatus",
+      "contact_sales": "Kontakta Försäljning",
+      "newsletter": "Nyhetsbrev",
+      "newsletter_desc": "Få de senaste uppdateringarna om AI och digitalt lärande direkt i din inkorg.",
+      "email_placeholder": "Din e-postadress",
+      "copyright": "© 2026 EduFlex LLP. Alla rättigheter förbehållna.",
+      "privacy_policy": "Integritetspolicy",
+      "terms_of_service": "Användarvillkor",
+      "cookie_settings": "Cookie-inställningar"
     }
   },
-  "contact": {
-    "title": "Boka Demo",
-    "name": "Namn",
-    "name_placeholder": "Ditt namn",
-    "email": "E-post",
-    "email_placeholder": "din@email.se",
-    "organization": "Organisation",
-    "organization_placeholder": "Skolans namn",
-    "phone": "Telefon",
-    "phone_placeholder": "+46 70 123 45 67",
-    "message": "Meddelande",
-    "message_placeholder": "Berätta lite om era behov...",
-    "submit": "Skicka förfrågan",
-    "sending": "Skickar...",
-    "success_message": "Tack! Vi kontaktar dig inom 24 timmar.",
-    "error_message": "Något gick fel. Försök igen eller maila oss direkt."
+  "dashboard_v2": {
+    "total_students": "Totalt Studenter",
+    "total_teachers": "Totalt Lärare",
+    "total_admins": "Totalt Admins",
+    "active_users": "Aktiva Användare (Just Nu)",
+    "revenue_status": "Intäktsstatus",
+    "system_health": "Systemhälsa",
+    "storage_limit": "Lagringsgräns",
+    "active": "Aktiv",
+    "excellent": "Utmärkt",
+    "warning": "Varning",
+    "critical": "Kritisk",
+    "manage_systems": "Hantera System",
+    "view_reports": "Visa Rapporter",
+    "audit_logs": "Granskningsloggar"
   },
   "ai_personalization": {
-    "title": "AI-Insikter & Rekommendationer",
-    "risk_low": "Låg risk",
-    "risk_medium": "Medelrisk",
-    "risk_high": "Hög risk",
-    "suggested_activities": "Föreslagna aktiviteter",
-    "coaching_advice": "Coachande råd",
-    "update_analysis": "Uppdatera AI-analys",
-    "lesson_type": "Lektion",
-    "practice_type": "Övning",
-    "rationale_prefix": "AI-resonemang:",
-    "no_data": "Inte tillräckligt med data för AI-analys än. Fortsätt arbeta i kurserna!"
+    "title": "Din AI-Studiecoach",
+    "subtitle": "Personliga insikter baserade på din studieaktivitet",
+    "analyzing": "Analyserar din data...",
+    "insights": "AI-Insikter & Tips",
+    "focus_areas": "Rekommenderade Fokusområden",
+    "next_steps": "Föreslagna Nästa Steg",
+    "no_data": "Börja studera för att få personliga AI-tips!",
+    "generate_btn": "Generera Nya Tips",
+    "tip_of_day": "Dagens Studietips",
+    "radar_title": "Din Kunskapsradar"
   },
   "gamification": {
-    "level_title": "Nuvarande Nivå",
-    "student_rank": "Elevranking",
-    "points_to_next": "poäng till nästa nivå",
-    "my_badges": "Mina Utmärkelser",
-    "no_awards": "Inga utmärkelser ännu. Fortsätt kämpa!",
-    "view_all": "Visa alla utmärkelser"
+    "level": "Nivå {{level}}",
+    "xp_progress": "{{current}} / {{next}} XP",
+    "streak_days": "{{count}} dagars streak!",
+    "rank": "Rank: {{name}}",
+    "achievements": "Prestationer",
+    "leaderboard": "Topplista",
+    "recent_badges": "Senaste märken",
+    "view_all": "Visa alla",
+    "daily_bonus": "Daglig bonus tillgänglig!",
+    "claim": "Hämta"
   },
   "tenta": {
-    "manager_title": "Tenta Manager",
-    "manager_subtitle": "Boka examination & meddela studenter",
-    "steps": {
-      "content": "Innehåll",
-      "settings": "Inställningar",
-      "scheduling": "Bokning"
-    },
-    "errors": {
-      "title_required": "Tentamen måste ha en titel.",
-      "times_required": "Du måste ange start- och sluttid.",
-      "booking_failed": "Kunde inte boka tentamen: "
-    },
-    "fields": {
-      "title_label": "Tentamens Titel",
-      "title_placeholder": "T.ex. Sluttentamen Webbdesign",
-      "description_label": "Beskrivning",
-      "description_placeholder": "Instruktioner till studenterna...",
-      "questions_count": "Frågor ({{count}})",
-      "question_number": "Fråga {{number}}",
-      "question_placeholder": "Skriv din fråga här...",
-      "option_number": "Svarsalternativ {{number}}",
-      "add_option": "LÄGG TILL ALTERNATIV",
-      "add_question": "Lägg till ny fråga",
-      "time_limit": "Tidsbegränsning",
-      "minutes": "Minuter",
-      "time_info": "Studenter har denna tid på sig att slutföra tentamen när de väl startat.",
-      "grading_method": "Rättningsmetod",
-      "grading_manual": "Manuell rättning",
-      "grading_manual_desc": "Du rättar allt själv.",
-      "grading_auto": "Automatisk (MCQ)",
-      "grading_auto_desc": "Systemet rättar direkt.",
-      "grading_ai": "AI Rättning (Gemini)",
-      "grading_ai_desc": "AI föreslår betyg & feedback.",
-      "security_mode": "Säkerhetsläge: Exam Integrity Pro",
-      "security_info": "När du skapar en \"Tenta\" aktiveras automatiskt integritetsövervakning. Detta innebär att fönsterbyten loggas och att studenten måste stanna i tentaläget.",
-      "calendar_booking": "Kalenderbokning",
-      "start_time": "Öppnas (Start)",
-      "end_time": "Stängs (Slut)",
-      "notify_students": "Notifiera studenter",
-      "channel_internal": "Internt Inbox",
-      "channel_push": "Push (PWA)",
-      "channel_email": "E-post",
-      "channel_sms": "SMS",
-      "channel_info": "Systemet filtrerar bort kanaler som studenten har valt bort i sin profil."
-    },
-    "actions": {
-      "back": "Tillbaka",
-      "cancel": "Avbryt",
-      "next": "Nästa Steg",
-      "booking": "Bokar...",
-      "finish": "SLUTFÖR & BOKA"
-    }
+    "title": "Digital Examination",
+    "proctoring_active": "Övervakning Aktiv",
+    "start_exam": "Starta Inlämning / Prov",
+    "time_left": "Tid kvar: {{time}}",
+    "submit_exam": "Slutför & Lämna in",
+    "finish_confirm": "Är du helt säker på att du vill lämna in? Du kan inte ändra dina svar efteråt.",
+    "warning_tab_switch": "Varning! Du får inte byta flik under pågående examination.",
+    "warning_out_of_focus": "Systemet har noterat att du lämnat fönstret."
   },
   "catalog_page": {
     "title": "Kurskatalog",
-    "subtitle": "Hitta och anmäl dig till nya kurser.",
-    "search_placeholder": "Sök kurser...",
-    "loading": "Laddar kurser...",
-    "no_courses": "Inga kurser hittades",
-    "no_courses_desc": "Prova att söka på något annat eller be en lärare skapa en kurs.",
-    "is_enrolled": "Deltar",
-    "is_teacher": "Lärare",
-    "no_description": "Ingen beskrivning tillgänglig.",
-    "no_teacher": "Ingen lärare",
-    "students_count": "{{count}} studenter",
-    "enroll_btn": "Gå med i kurs",
-    "enroll_confirm": "Vill du gå med i denna kurs?",
-    "enroll_success": "Du har gått med i kursen!",
-    "enroll_error": "Kunde inte gå med i kursen.",
-    "fetch_error": "Kunde inte hämta kurser"
+    "subtitle": "Utforska vårt breda utbud av kurser och utbildningar",
+    "search": "Sök i katalogen...",
+    "enroll": "Anmäl dig",
+    "enrolled": "Anmäld",
+    "price_free": "Kostnadsfri",
+    "view_details": "Visa detaljer",
+    "no_results": "Inga kurser matchade din sökning.",
+    "categories": "Kategorier",
+    "filter_all": "Alla kurser"
   },
   "editor": {
-    "placeholder": "Skriv här...",
-    "link_prompt": "Länk URL:",
-    "normal": "Normal",
-    "heading": "Rubrik {{level}}",
-    "bold": "Fet",
-    "italic": "Kursiv",
-    "underline": "Understruken",
-    "strike": "Genomstruken",
-    "blockquote": "Citat",
-    "code_block": "Kodblock",
-    "bullet_list": "Punktlista",
-    "ordered_list": "Numrerad lista",
-    "align_left": "Vänster",
-    "align_center": "Centrerat",
-    "align_right": "Höger",
-    "link": "Länk",
-    "insert_table": "Infoga 3×3 tabell",
-    "table": "Tabell",
-    "column_before": "Kolumn vänster",
-    "column_after": "Kolumn höger",
-    "delete_column": "Ta bort kolumn",
-    "row_before": "Rad ovan",
-    "row_after": "Rad nedan",
-    "delete_row": "Ta bort rad",
-    "delete_table": "Ta bort tabell",
-    "clear_format": "Rensa formatering"
+    "title": "Dokumentredigering",
+    "save_success": "Dokumentet har sparats.",
+    "save_error": "Ett fel uppstod vid sparande.",
+    "collaborators": "Medarbetare online",
+    "version_history": "Versionshistorik",
+    "open_onlyoffice": "Öppna i OnlyOffice"
   },
   "db_switch": {
-    "title": "Kritisk Operation",
-    "warning_title": "VARNING: Systemet kommer att starta om",
-    "warning_disconnect": "Alla användare kommer att kopplas från",
-    "warning_loss": "Pågående arbete kan gå förlorat",
-    "warning_unavailable": "Systemet kan vara otillgängligt i flera minuter",
-    "warning_config": "Felaktig konfiguration kan orsaka dataförlust",
-    "switch_target": "Du är på väg att byta till:",
-    "confirm_label": "Skriv \"BYTA DATABAS\" för att bekräfta *",
-    "confirm_placeholder": "BYTA DATABAS",
-    "confirm_text": "BYTA DATABAS",
-    "password_label": "Administratörslösenord *",
-    "password_placeholder": "Ange ditt lösenord",
-    "cancel": "Avbryt",
-    "confirm_btn": "Byt Databas Nu",
-    "errors": {
-      "confirm_mismatch": "Du måste skriva \"BYTA DATABAS\" för att bekräfta",
-      "password_required": "Administratörslösenord krävs",
-      "failed": "Fel lösenord eller operation misslyckades"
-    }
+    "title": "Växla Databas",
+    "current": "Nuvarande miljö",
+    "connect": "Anslut till {{name}}",
+    "error": "Kunde inte växla miljö."
   },
   "archive": {
-    "title": "Dokumentarkiv",
-    "subtitle": "Hantera alla filer i systemet.",
-    "search_placeholder": "Sök filnamn eller ägare...",
-    "filter_all": "Alla typer",
-    "filter_pdf": "PDF-filer",
-    "filter_image": "Bilder",
-    "filter_word": "Word-dok.",
-    "table_filename": "Filnamn",
-    "table_owner": "Ägare",
-    "table_uploaded": "Uppladdad",
-    "table_action": "Åtgärd",
-    "loading": "Laddar filer...",
-    "no_results": "Inga dokument matchade din sökning.",
-    "unknown_owner": "Okänd",
-    "download_title": "Ladda ner",
-    "delete_title": "Ta bort",
-    "delete_confirm": "Är du säker på att du vill radera filen?",
-    "errors": {
-      "fetch_failed": "Kunde inte hämta dokument",
-      "delete_failed": "Kunde inte radera filen."
-    }
+    "title": "Systemarkiv",
+    "restore": "Återställ",
+    "permanent_delete": "Ta bort permanent",
+    "empty_trash": "Töm papperskorgen",
+    "no_items": "Inga objekt i papperskorgen."
   },
   "quiz": {
-    "submit_btn": "Skicka in",
-    "submit_error": "Kunde inte skicka in resultat.",
-    "monitored_exam": "Övervakad Tenta",
-    "explanation": "Förklaring:",
-    "your_result": "Ditt Resultat",
-    "practice_again": "Öva igen",
-    "close": "Stäng"
+    "generate": "Generera Quiz med AI",
+    "processing": "AI arbetar... Detta kan ta upp till en minut.",
+    "success": "Quiz genererat!",
+    "error": "Kunde inte generera quiz.",
+    "upload_context": "Ladda upp dokument som kontext...",
+    "questions_count": "Antal frågor",
+    "difficulty": "Svårighetsgrad",
+    "easy": "Lätt",
+    "medium": "Medel",
+    "hard": "Svår"
   },
   "integrity": {
-    "focus_lost_log": "Studenten lämnade fliken/fönstret",
-    "focus_lost_warn": "Varning: Fokusförlust registrerad. Din lärare har meddelats.",
-    "tab_switch_log": "Fönstret tappade fokus",
-    "fullscreen_exit_log": "Studenten lämnade helskärmsläge",
-    "proctoring_started_log": "Tentamensövervakning startad",
-    "proctoring_stopped_log": "Tentamensövervakning avslutad"
+    "gdpr_notice": "Vi värnar om din integritet. Denna plattform följer GDPR.",
+    "request_data": "Begär utdrag",
+    "delete_account_request": "Begär borttagning av konto"
   },
   "skolverket": {
-    "title": "Skolverkets Kursinformation",
-    "tabs": {
-      "basic_info": "Grundinfo",
-      "content": "Innehåll",
-      "criteria": "Kunskapskrav"
-    },
-    "labels": {
-      "course_code": "Kurskod",
-      "course_name": "Kursnamn",
-      "english_title": "Engelsk titel",
-      "points": "Poäng",
-      "points_value": "{{count}} poäng",
-      "subject": "Ämne",
-      "skolformer": "Skolformer",
-      "open_syllabus": "Öppna officiell kursplan (Skolverket)"
+    "import_title": "Skolverket Integration",
+    "syncing": "Synkroniserar med Skolverket...",
+    "last_sync": "Senaste synk: {{date}}",
+    "import_course": "Importera kurskod",
+    "course_found": "Hittade: {{name}}"
+  },
+  "contact": {
+    "title": "Kontakta Oss",
+    "description": "Vi finns här för att hjälpa dig dygnet runt.",
+    "form": {
+        "name": "Ditt Namn",
+        "email": "Ditt Email",
+        "subject": "Ämne",
+        "message": "Meddelande",
+        "send": "Skicka Meddelande"
+    }
+  },
+  "system_settings": {
+    "sidebar": {
+      "categories": {
+        "config": "Konfiguration",
+        "appearance": "Utseende",
+        "license": "Licens & Server",
+        "ai": "AI & Intelligens",
+        "modules": "Moduler & Språk",
+        "integrations": "Integrationer",
+        "communication": "Kommunikation"
+      },
+      "tenants": "Tenant-hantering",
+      "skolverket": "Skolverket-hanterare",
+      "theme": "Temainställningar",
+      "pdf_templates": "PDF-mallar",
+      "whitelabel": "Whitelabeling",
+      "license": "Licensstatus",
+      "server": "Serverhälsa",
+      "ai_config": "AI-konfiguration",
+      "ai_audit": "AI-granskningslogg",
+      "system_modules": "Systemmoduler",
+      "languages": "Språkhanterare",
+      "webhooks": "Webhooks & API",
+      "notifications": "Notifieringsregler"
     },
     "sections": {
-      "description": "Kursbeskrivning",
-      "purpose": "Ämnets syfte",
-      "objectives": "Kursmål"
-    },
-    "messages": {
-      "no_info": "Ingen detaljerad information tillgänglig ännu. Denna data kommer läggas till framöver.",
-      "loading_criteria": "Laddar betygskriterier...",
-      "no_criteria": "Inga betygskriterier tillgängliga ännu. Dessa kommer läggas till framöver.",
-      "grade_level": "Betyget {{level}}"
+      "theme": {
+        "title": "Tema & Estetik",
+        "description": "Anpassa utseendet och känslan i din EduFlex-miljö.",
+        "active_theme": "Aktivt Tema",
+        "current_look": "Plattformens nuvarande utseende",
+        "primary_color": "Primärfärg"
+      },
+      "whitelabel": {
+        "title": "Whitelabeling",
+        "description": "Ta bort EduFlex branding och gör det till ditt eget.",
+        "status": "Whitelabel-status",
+        "customize": "Anpassa logotyp, färger och namn",
+        "enterprise_active": "Enterprise-läge aktivt",
+        "full_access": "Du har full tillgång till whitelabeling-funktioner.",
+        "enterprise_required": "Enterprise-licens krävs",
+        "upgrade_unlock": "Uppgradera till Enterprise för att låsa upp whitelabeling."
+      },
+      "license": {
+        "title": "Licenshantering",
+        "description": "Hantera din EduFlex-prenumeration och licensnycklar."
+      },
+      "server": {
+        "title": "Serverhälsa & Backuper",
+        "description": "Övervaka systemhälsan och hantera databasbackuper.",
+        "backups": "Systembackuper",
+        "latest_backup": "Senaste backup",
+        "create_backup": "Skapa ny backup",
+        "no_backups": "Inga backuper hittades.",
+        "db_connections": "Databasanslutningar",
+        "db_description": "Hantera externa och interna databasanslutningar.",
+        "add_db": "Lägg till anslutning",
+        "switch_db": "Byt aktiv DB"
+      },
+      "ai": {
+        "description": "Konfigurera Google Gemini och AI-drivna funktioner."
+      }
     }
   }
 }

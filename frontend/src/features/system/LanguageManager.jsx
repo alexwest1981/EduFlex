@@ -5,6 +5,7 @@ import {
     Settings2, Info, Loader2, Sparkles
 } from 'lucide-react';
 import { api } from '../../services/api';
+import i18n from '../../i18n';
 
 const LanguageManager = () => {
     const [languages, setLanguages] = useState([]);
@@ -22,11 +23,28 @@ const LanguageManager = () => {
     const fetchLanguages = async () => {
         setIsLoading(true);
         try {
-            const data = await api.get('/languages');
-            setLanguages(data || []);
+            const response = await api.get('/languages');
+            const data = response.data || [];
+            
+            // Sorting priority: Nordic first, then by commonality
+            const nordicCodes = ['sv', 'no', 'da', 'fi', 'se'];
+            const commonCodes = ['en', 'de', 'fr', 'es', 'ar'];
+            
+            const sortedLangs = data.sort((a, b) => {
+                const indexA = [...nordicCodes, ...commonCodes].indexOf(a.code);
+                const indexB = [...nordicCodes, ...commonCodes].indexOf(b.code);
+                
+                if (indexA !== -1 && indexB !== -1) return indexA - indexB;
+                if (indexA !== -1) return -1;
+                if (indexB !== -1) return 1;
+                return a.code.localeCompare(b.code);
+            });
+
+            setLanguages(sortedLangs);
+            setStatus(null);
         } catch (error) {
-            console.error("Failed to fetch languages", error);
-            setStatus({ type: 'error', message: 'Kunde inte hämta språklista.' });
+            console.error("Failed to load languages from API", error);
+            setStatus({ type: 'error', message: 'Kunde inte hämta språk från servern.' });
         } finally {
             setIsLoading(false);
         }

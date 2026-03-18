@@ -23,11 +23,11 @@ const StandardLayout = ({ children }) => {
     const { t } = useTranslation() || { t: k => k };
     const navigate = useNavigate();
     const location = useLocation();
-    const [sidebarOpen, setSidebarOpen] = React.useState(true);
-    const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
-    const [friendsPanelOpen, setFriendsPanelOpen] = React.useState(false);
-    const [scrolled, setScrolled] = React.useState(false);
     const { isInstalled, canInstall, install } = usePwaInstall() || {};
+    const [sidebarOpen, setSidebarOpen] = useState(true);
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [friendsPanelOpen, setFriendsPanelOpen] = useState(false);
+    const [scrolled, setScrolled] = useState(false);
 
     const handleInstall = () => {
         if (canInstall) {
@@ -337,7 +337,7 @@ const StandardLayout = ({ children }) => {
 
                             <div className="flex-1 overflow-y-auto p-4 space-y-6 custom-scrollbar">
                                 {Object.entries(navItems).map(([key, items]) => (
-                                    items.length > 0 && <SidebarSection key={key} title={t(`sidebar.categories.${key} `) || key} items={items} sidebarOpen={true} />
+                                    items.length > 0 && <SidebarSection key={key} title={t(`sidebar.categories.${key}`) || key} items={items} sidebarOpen={true} />
                                 ))}
 
                                 <div className="pt-4 space-y-2 border-t border-black/5 dark:border-white/5">
@@ -381,7 +381,7 @@ const StandardLayout = ({ children }) => {
 const MobileNavItem = ({ to, icon, label, active }) => (
     <NavLink
         to={to}
-        className={`flex flex - col items - center justify - center gap - 1 flex - 1 transition - colors ${active ? 'text-indigo-600 dark:text-indigo-400' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'
+        className={`flex flex-col items-center justify-center gap-1 flex-1 transition-colors ${active ? 'text-indigo-600 dark:text-indigo-400' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'
             } `}
     >
         {icon}

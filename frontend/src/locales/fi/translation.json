@@ -1,755 +1,1237 @@
 {
-  "common": {
-    "save": "Tallenna",
-    "cancel": "Peruuta",
-    "delete": "Poista",
-    "edit": "Muokkaa",
-    "upload": "Lataa",
-    "download": "Lataa alas",
-    "search": "Hae...",
-    "filter": "Suodata",
-    "name": "Nimi",
-    "action": "Toiminto",
-    "description": "Kuvaus",
-    "date": "Päivämäärä",
-    "size": "Koko",
-    "loading": "Ladataan...",
-    "student": "Opiskelija",
-    "file": "Tiedosto",
-    "close": "Sulje",
-    "back": "Takaisin",
-    "send": "Lähetä",
-    "yes": "Kyllä",
-    "no": "Ei",
-    "unknown": "Tuntematon",
-    "light_mode": "Vaalea tila",
-    "dark_mode": "Tumma tila",
-    "choose": "Valitse...",
-    "optional": "Valinnainen",
-    "minimize_menu": "Pienennä valikko",
-    "expand_menu": "Laajenna valikko",
-    "online_friends": "Online-ystävät",
-    "today": "Tänään",
-    "tomorrow": "Huomenna",
-    "all": "Kaikki",
-    "none": "Ei mitään",
-    "title": "Otsikko",
-    "questions": "Kysymykset",
-    "created": "Luotu",
-    "category": "Luokka",
-    "copy": "Kopio",
-    "brands": {
-      "gemini": "Google Gemini",
-      "postgresql": "PostgreSQL",
-      "openai": "OpenAI API"
+  "common" : {
+    "save" : "Tallenna",
+    "cancel" : "Peruuta",
+    "delete" : "Poista",
+    "edit" : "Muokkaa",
+    "upload" : "Lataa",
+    "download" : "Lataa",
+    "search" : "Hae...",
+    "filter" : "Suodata",
+    "name" : "Nimi",
+    "action" : "Toiminto",
+    "description" : "Kuvaus",
+    "date" : "Päivämäärä",
+    "size" : "Koko",
+    "loading" : "Ladataan...",
+    "student" : "Opiskelija",
+    "file" : "Tiedosto",
+    "close" : "Sulje",
+    "back" : "Takaisin",
+    "send" : "Lähetä",
+    "yes" : "Kyllä",
+    "no" : "Ei",
+    "unknown" : "Tuntematon",
+    "light_mode" : "Vaalea tila",
+    "dark_mode" : "Tumma tila",
+    "choose" : "Valitse...",
+    "optional" : "Valinnainen",
+    "minimize_menu" : "Pienennä valikko",
+    "expand_menu" : "Laajenna valikko",
+    "online_friends" : "Online-ystävät",
+    "today" : "Tänään",
+    "tomorrow" : "Huomenna",
+    "all" : "Kaikki",
+    "none" : "Ei mitään",
+    "title" : "Otsikko",
+    "questions" : "Kysymykset",
+    "created" : "Luotu",
+    "category" : "Luokka",
+    "copy" : "Kopio",
+    "brands" : {
+      "gemini" : "Google Gemini",
+      "postgresql" : "PostgreSQL",
+      "openai" : "OpenAI API"
+    },
+    "pro" : "Pro",
+    "menu" : "Valikko"
+  },
+  "sidebar" : {
+    "dashboard" : "Yleiskatsaus",
+    "admin" : "Hallinnointi",
+    "my_profile" : "Oma profiili",
+    "logout" : "Kirjaudu ulos",
+    "documents" : "Tiedostot & Dokumentit",
+    "catalog" : "Kurssiluettelo",
+    "calendar" : "Kalenteri",
+    "resource_bank" : "Resurssipankki",
+    "library" : "Kirjasto",
+    "analytics" : "Analyysit & Oivallukset",
+    "support" : "Tuki & Yhteystiedot",
+    "my_courses" : "Omat kurssit",
+    "ebooks" : "E-kirjat",
+    "system" : "Järjestelmä",
+    "ai_quiz" : "AI-visa",
+    "shop" : "Kauppa",
+    "categories" : {
+      "main" : "Päävalikko",
+      "education" : "Koulutus & Opiskelu",
+      "tools" : "Työkalut",
+      "syv" : "Opinto-ohjaus & Sisäänpääsy",
+      "admin" : "Hallinnointi",
+      "rektor" : "Rehtorin paketti",
+      "guardian" : "Huoltaja"
+    },
+    "lms_platform" : "LMS-ALUSTA",
+    "install_app" : "ASENNA SOVELLUS"
+  },
+  "library" : {
+    "title" : "Kirjasto",
+    "subtitle" : "Tutki ja lue e-kirjoja",
+    "search_placeholder" : "Hae nimikkeellä tai tekijällä...",
+    "categories" : "Luokat",
+    "all_categories" : "Kaikki",
+    "read_book" : "Lue kirja",
+    "edit_book" : "Muokkaa kirjaa",
+    "delete_book" : "Poista kirja",
+    "upload_book" : "Lataa uusi kirja",
+    "no_books_found" : "Kirjoja ei löytynyt.",
+    "edit_modal_title" : "Muokkaa e-kirjaa",
+    "upload_modal_title" : "Lataa uusi e-kirja",
+    "title_label" : "Otsikko",
+    "author_label" : "Tekijä",
+    "category_label" : "Luokka",
+    "description_label" : "Kuvaus",
+    "save_changes" : "Tallenna muutokset",
+    "upload_btn" : "Lataa",
+    "language_label" : "Kieli",
+    "epub_file_label" : "EPUB-tiedosto",
+    "cover_image_label" : "Kansikuva",
+    "no_cover" : "Ei kantta",
+    "select_file_alert" : "Valitse EPUB-tiedosto",
+    "delete_confirm" : "Haluatko varmasti poistaa tämän kirjan?",
+    "delete_success" : "Kirja poistettu",
+    "no_books_desc" : "Yritä etsiä jotain muuta tai lataa ensimmäinen e-kirjasi kirjastoon."
+  },
+  "dashboard" : {
+    "welcome" : "Tervetuloa takaisin, {{name}}!",
+    "welcome_back" : "Tervetuloa takaisin,",
+    "logged_in_as" : "Olet kirjautunut sisään nimellä",
+    "live_overview" : "Live-näkymä",
+    "realtime_data" : "Reaaliaikaista dataa koko alustalta",
+    "tabs" : {
+      "overview" : "Yleiskatsaus",
+      "communication" : "Viestintä"
+    },
+    "widgets" : {
+      "stats" : "Tilastot",
+      "calendar" : "Kalenteri & Aikataulu",
+      "recent_users" : "Viimeisimmät Käyttäjät",
+      "recent_docs" : "Äskettäin Ladattu",
+      "messages" : "Viimeisimmät Viestit",
+      "online_friends" : "Online-ystävät",
+      "tickets" : "Tukipyynnöt",
+      "gamification" : "Gamification-tila",
+      "attendance" : "Oma Läsnäolo",
+      "my_courses" : "Omat Kurssit",
+      "tasks" : "Tehtävät & Palaute",
+      "daily_challenges" : "Päivän Haasteet",
+      "achievements" : "Omat Saavutukset",
+      "ai_insights" : "AI-näkemykset",
+      "ai_personalization" : "Henkilökohtaiset opiskeluvinkit",
+      "daily_challenges_widget" : {
+        "title" : "Päivän Haasteet",
+        "subtitle" : "Suorita ansaitaksesi XP:tä",
+        "days" : "{{count}} päivää",
+        "empty" : "Ei haasteita vielä saatavilla",
+        "completed" : "✓ Valmis",
+        "reset_in" : "Uusia haasteita {{hours}}h {{minutes}}m päästä"
+      }
+    },
+    "my_courses" : "Omat Kurssit",
+    "files" : "Tiedostot",
+    "no_active_courses" : "Sinulla ei ole aktiivisia kursseja.",
+    "total_users" : "Käyttäjiä yhteensä",
+    "total_courses" : "Kursseja yhteensä",
+    "open" : "Avoinna",
+    "closed" : "Suljettu",
+    "realtime_update_notice" : "Data päivitetään reaaliajassa.",
+    "new_messages" : "Uusia viestejä",
+    "go_to_inbox" : "Siirry postilaatikkoon",
+    "students" : "Opiskelijat",
+    "teachers" : "Opettajat",
+    "admins" : "Ylläpitäjät",
+    "mentors" : "Mentor",
+    "principals" : "Rehtorit",
+    "evaluations" : "Arvioinnit",
+    "give_rating" : "Anna arvosana",
+    "to_grade" : "Arvioitavana",
+    "submissions" : "Palautukset",
+    "no_pending_grades" : "Ei odottavia arviointeja!",
+    "upcoming_deadlines" : "Tulevat Määräajat",
+    "no_deadlines" : "Ei tulevia palautuksia.",
+    "active_plural" : "Aktiiviset",
+    "archive_plural" : "Arkistoidut",
+    "datasync_ok" : "Synkronoitu",
+    "new_badge" : "UUSI",
+    "archived_files" : "Arkistoidut tiedostot",
+    "urgent" : "Kiireellinen!",
+    "go_to" : "Siirry",
+    "avg_grade" : "Keskiarvo",
+    "based_on" : "Perustuu {{count}} suoritettuun kurssiin",
+    "users" : "Käyttäjät",
+    "courses" : "Kurssit",
+    "latest_registered" : "Viimeksi rekisteröityneet",
+    "latest_uploads" : "Viimeisimmät lataukset",
+    "archive" : "Arkisto",
+    "no_archive_docs" : "Ei dokumentteja arkistossa.",
+    "teacher_panel" : "Opettajan paneeli",
+    "overview_for" : "Yleiskatsaus käyttäjälle {{name}}",
+    "my_students" : "Omat Opiskelijat",
+    "active_courses" : "Aktiiviset Kurssit",
+    "students_at_risk" : "Riskiryhmään kuuluvat opiskelijat (Myöhästyneet palautukset)",
+    "missed_deadlines" : "Myöhästyneet {{count}} määräajat",
+    "no_risk_students" : "Ei myöhästyneitä palautuksia!",
+    "all_in_phase" : "Kaikki opiskelijasi ovat vaiheessa.",
+    "grading_todo" : "Tehtävät: Arviointi",
+    "grade_now" : "Arvioi",
+    "all_graded" : "Kaikki on arvioitu! Hyvää työtä.",
+    "hi_student" : "Hei, {{name}}! 👋",
+    "student_subtitle" : "Tässä ovat opintosi juuri nyt.",
+    "not_registered" : "Et ole rekisteröitynyt millekään kurssille.",
+    "comming_assignments" : "Tulevat Määräajat",
+    "no_upcoming_assignments" : "Ei tulevia tehtäviä juuri nyt.",
+    "admin_overview" : "Järjestelmän yleiskatsaus",
+    "admin_subtitle" : "Hallinnointi ja Kurssienhallinta",
+    "active_students" : "Aktiiviset Opiskelijat",
+    "locked_courses" : "Lukitut Kurssit",
+    "files_in_system" : "Tiedostot järjestelmässä",
+    "course_registry" : "Kurssirekisteri",
+    "search_placeholder" : "Hae kurssikoodilla tai nimellä...",
+    "all_statuses" : "Kaikki tilat",
+    "no_match" : "Mikään kurssi ei vastannut hakua.",
+    "showing_x_of_y" : "Näytetään {{count}} / {{total}} kurssia",
+    "manage" : "Hallitse",
+    "new_course" : "Uusi Kurssi",
+    "search_course" : "Hae kurssia...",
+    "table" : {
+      "status" : "Tila",
+      "code" : "Koodi",
+      "name" : "Nimi",
+      "date" : "Päivämäärä",
+      "action" : "Toiminto",
+      "user" : "Käyttäjä",
+      "email" : "Sähköposti",
+      "role" : "Rooli"
+    },
+    "course_color" : "Kurssin väri",
+    "edit_course" : "Muokkaa kurssia",
+    "delete_course" : "Poista kurssi",
+    "no_new_users" : "Yhtään uutta käyttäjää ei ole rekisteröitynyt.",
+    "recent_uploads" : "Viimeisimmät lataukset",
+    "unknown_file" : "Tuntematon tiedosto",
+    "unknown_size" : "Tuntematon koko",
+    "unknown_date" : "Tuntematon päivämäärä",
+    "no_files_uploaded" : "Yhtään tiedostoa ei ole ladattu vielä.",
+    "user_registry" : "Käyttäjärekisteri",
+    "new_user" : "Uusi Käyttäjä",
+    "search_user" : "Hae käyttäjää...",
+    "all_roles" : "Kaikki Roolit",
+    "active" : "Aktiivinen",
+    "edit_user" : "Muokkaa käyttäjää",
+    "delete_user" : "Poista käyttäjä",
+    "feedback" : {
+      "new" : "Uusi Palaute",
+      "course" : "Kurssi: {{name}}",
+      "praise" : "Hyvää työtä!",
+      "details" : "Näytä tiedot"
     }
   },
-  "sidebar": {
-    "dashboard": "Yleiskatsaus",
-    "admin": "Hallinto",
-    "my_profile": "Oma profiili",
-    "logout": "Kirjaudu ulos",
-    "documents": "Tiedostot ja dokumentit",
-    "catalog": "Kurssiluettelo",
-    "calendar": "Kalenteri",
-    "resource_bank": "Resurssipankki",
-    "library": "Kirjasto",
-    "analytics": "Analyysit ja oivallukset",
-    "support": "Tuki ja yhteystiedot",
-    "my_courses": "Omat kurssit",
-    "ebooks": "E-kirjat",
-    "system": "Järjestelmä",
-    "ai_quiz": "AI-visa",
-    "shop": "Kauppa",
-    "categories": {
-      "main": "Päävalikko",
-      "education": "Koulutus ja opiskelu",
-      "tools": "Työkalut",
-      "syv": "Opinto-ohjaus ja sisäänpääsy",
-      "admin": "Hallinto",
-      "rektor": "Rehtorin paketti",
-      "guardian": "Huoltaja"
-    },
-    "lms_platform": "LMS-YMPÄRISTÖ",
-    "install_app": "ASENNA SOVELLUS"
+  "attendance" : {
+    "title" : "Läsnäoloraportti",
+    "presence" : "Läsnäolo:",
+    "occasions" : "kertaa",
+    "no_records" : "Pakollisia osallistumisia ei ole vielä rekisteröity.",
+    "not_reported" : "Ei raportoitu",
+    "present" : "Läsnä",
+    "absent" : "Poissa",
+    "description" : "Kuvaus",
+    "no_description" : "Kuvausta ei saatavilla.",
+    "note" : "Huomautus",
+    "manage_attendance" : "Hallitse läsnäoloa",
+    "new_event" : "Uusi Kerta",
+    "create_event_title" : "Luo uusi kerta",
+    "event_title" : "Otsikko",
+    "event_start" : "Alku",
+    "event_end" : "Loppu",
+    "event_type" : "Tyyppi",
+    "type_lesson" : "Oppitunti",
+    "type_workshop" : "Työpaja",
+    "type_exam" : "Koe",
+    "type_other" : "Muu",
+    "create_btn" : "Luo",
+    "save_attendance" : "Tallenna Läsnäolo",
+    "saved_success" : "Läsnäolo tallennettu!",
+    "save_error" : "Virhe tallennettaessa",
+    "create_error" : "Tapahtuman luominen epäonnistui"
   },
-  "library": {
-    "title": "Kirjasto",
-    "subtitle": "Tutki ja lue e-kirjoja",
-    "search_placeholder": "Hae nimellä tai tekijällä...",
-    "categories": "Luokat",
-    "all_categories": "Kaikki",
-    "read_book": "Lue kirja",
-    "edit_book": "Muokkaa kirjaa",
-    "delete_book": "Poista kirja",
-    "upload_book": "Lataa uusi kirja",
-    "no_books_found": "Kirjoja ei löytynyt.",
-    "edit_modal_title": "Muokkaa e-kirjaa",
-    "upload_modal_title": "Lataa uusi e-kirja",
-    "title_label": "Otsikko",
-    "author_label": "Tekijä",
-    "category_label": "Luokka",
-    "description_label": "Kuvaus",
-    "save_changes": "Tallenna muutokset",
-    "upload_btn": "Lataa",
-    "language_label": "Kieli",
-    "epub_file_label": "EPUB-tiedosto",
-    "cover_image_label": "Kansikuva",
-    "no_cover": "Ei kantta",
-    "select_file_alert": "Valitse EPUB-tiedosto",
-    "delete_confirm": "Haluatko varmasti poistaa tämän kirjan?",
-    "delete_success": "Kirja poistettu",
-    "no_books_desc": "Yritä etsiä jotain muuta tai lataa ensimmäinen e-kirjasi kirjastoon."
+  "assessment" : {
+    "title" : "Arviointi & Tulokset",
+    "no_assignments" : "Ei tehtäviä tällä kurssilla.",
+    "deadline" : "Määräaika",
+    "go_to_task" : "Siirry tehtävään",
+    "my_file" : "Oma tiedosto",
+    "grade" : "Arvosana",
+    "waiting" : "Odottaa arvostelua",
+    "submitted_at" : "Lähetetty",
+    "not_submitted" : "Ei lähetetty",
+    "submit_now" : "Lähetä nyt"
   },
-  "landing": {
-    "nav": {
-      "features": "Ominaisuudet",
-      "gamification": "Pelillistäminen",
-      "showcase": "Esittely",
-      "pricing": "Hintasuunnitelmat",
-      "technology": "Teknologia",
-      "login": "Kirjaudu",
-      "book_demo": "Varaa demo",
-      "get_started": "Aloita",
-      "select_language": "Valitse kieli"
+  "evaluation" : {
+    "title" : "Kurssin arviointi",
+    "intro" : "Vastauksesi ovat anonyymejä ja auttavat meitä parantamaan koulutusta. Anna arvosana 1-10 ja kirjoita mielellään kommentti.",
+    "your_rating" : "Arvosanasi (1 = Huono, 10 = Erinomainen)",
+    "comment_label" : "Kommentti (Valinnainen)",
+    "comment_placeholder" : "Kirjoita mielipiteesi tähän...",
+    "submit_btn" : "Lähetä arviointi",
+    "validation_error" : "Anna arvosana kaikkiin kysymyksiin.",
+    "manage_btn" : "Hallitse arviointia",
+    "saved_success" : "Arviointi tallennettu!",
+    "save_error" : "Arvioinnin tallentaminen epäonnistui."
+  },
+  "license" : {
+    "locked_title" : "Järjestelmä on lukittu",
+    "locked_desc" : "Kelvollista lisenssiä ei löytynyt.",
+    "key_label" : "Lisenssiavain",
+    "key_placeholder" : "XXXX-XXXX-XXXX-XXXX",
+    "activate_btn" : "Aktivoi järjestelmä"
+  },
+  "auth" : {
+    "login_header" : "Kirjaudu sisään",
+    "register_header" : "Luo tili",
+    "username" : "Käyttäjänimi",
+    "password" : "Salasana",
+    "login_button" : "Kirjaudu sisään",
+    "no_account" : "Eikö sinulla ole tiliä?",
+    "register_link" : "Rekisteröidy",
+    "has_account" : "Onko sinulla jo tili?",
+    "login_link" : "Kirjaudu sisään",
+    "firstname" : "Etunimi",
+    "lastname" : "Sukunimi",
+    "ssn" : "Henkilötunnus (YYYYMMDD-XXXX)",
+    "email" : "Sähköposti",
+    "generate" : "Generoi ehdotus",
+    "choose_or_generate" : "Valitse tai luo...",
+    "profane" : "Sopimaton sana valittu.",
+    "taken" : "Käyttäjänimi on varattu.",
+    "available" : "Saatavilla!",
+    "role" : "Rooli",
+    "student" : "Opiskelija",
+    "admin" : "Ylläpitäjä",
+    "teacher" : "Opettaja",
+    "contact_address" : "Yhteystiedot ja Osoite",
+    "phone" : "Puhelin",
+    "street" : "Katuosoite",
+    "zip" : "Postinumero",
+    "city" : "Paikkakunta",
+    "country" : "Maa",
+    "register_user_btn" : "Rekisteröi Käyttäjä",
+    "create_account_btn" : "Luo Tilini"
+  },
+  "admin" : {
+    "title" : "Järjestelmän hallinta",
+    "subtitle" : "Hallitse käyttäjiä, kursseja ja järjestelmäarkistoa.",
+    "tab_users" : "Käyttäjät",
+    "tab_courses" : "Kurssit",
+    "tab_docs" : "Dokumenttiarkisto",
+    "tab_settings" : "Asetukset",
+    "register_new" : "Rekisteröi uusi käyttäjä",
+    "firstname" : "Etunimi",
+    "lastname" : "Sukunimi",
+    "ssn" : "Henkilötunnus (12 numeroa)",
+    "email" : "Sähköposti",
+    "account_role" : "Tili & Rooli",
+    "generate" : "Generoi",
+    "password" : "Salasana",
+    "create_account" : "Luo tili",
+    "registered_users" : "Rekisteröidyt käyttäjät",
+    "course_overview" : "Kurssin yleiskatsaus",
+    "create_course" : "Luo uusi kurssi",
+    "search_course" : "Hae kurssin nimen tai kurssikoodin perusteella...",
+    "no_courses" : "Kursseja ei löytynyt.",
+    "teacher" : "Opettaja",
+    "students" : "Opiskelijat",
+    "settings" : "Asetukset",
+    "content" : "Sisältö",
+    "global_docs" : "Globaali dokumenttiarkisto",
+    "upload_file" : "Lataa tiedosto",
+    "no_docs" : "Järjestelmässä ei ole arkistoituja tiedostoja.",
+    "module_management" : "Moduulien hallinta & Järjestelmätiedot",
+    "site_name" : "Sivun nimi",
+    "chat_module" : "Chat-moduuli",
+    "chat_desc" : "Sallii oppilaiden ja opettajien keskustella reaaliajassa.",
+    "registration" : "Uusrekisteröinti",
+    "registration_desc" : "Sallii ylläpitäjän luoda uusia käyttäjätilejä.",
+    "version" : "Järjestelmäversio",
+    "edit_course_settings" : "Muokkaa kurssiasetuksia",
+    "course_name" : "Kurssin nimi",
+    "course_code" : "Kurssikoodi",
+    "color_theme" : "Värimaailma",
+    "register_new_user" : "Rekisteröi uusi käyttäjä",
+    "edit_user" : "Muokkaa käyttäjää",
+    "edit_course" : "Muokkaa kurssia",
+    "base_on_skolverket" : "Perustuu Skolverketin kurssiin",
+    "choose_skolverket_course" : "Valitse Skolverketin kurssi",
+    "max_seats" : "Max paikkoja",
+    "tags" : "Tagit",
+    "digital_classroom" : "Digitaalinen luokkahuone (Valinnainen)",
+    "choose_platform" : "Valitse alusta...",
+    "paste_link" : "Liitä linkki...",
+    "choose_teacher" : "Valitse opettaja..."
+  },
+  "course" : {
+    "back" : "Takaisin yleiskatsaukseen",
+    "material" : "Materiaali",
+    "assignments" : "Tehtävät",
+    "quiz" : "Visat & Kokeet",
+    "forum" : "Foorumi",
+    "scorm" : "Interaktiiviset Moduulit",
+    "kursinformation" : "Kurssitiedot",
+    "students" : "Opiskelijat & Arvosanat",
+    "attendance" : "Läsnäolo",
+    "create_quiz" : "Luo Uusi Visa",
+    "start_quiz" : "Aloita Visa",
+    "no_material" : "Kurssimateriaalia ei ole vielä ladattu.",
+    "add_material" : "Lisää materiaalia",
+    "upload" : "Lataa",
+    "title" : "Otsikko",
+    "description" : "Kuvaus",
+    "link" : "Linkki (URL)",
+    "type_text" : "Teksti / Artikkeli",
+    "type_video" : "Video",
+    "type_link" : "Ulkoinen Linkki",
+    "type_file" : "Tiedosto",
+    "read" : "Luettu",
+    "mark_read" : "Merkitse luetuksi",
+    "open_link" : "Avaa linkki",
+    "participants" : "Kurssilaiset",
+    "add_student" : "Lisää",
+    "select_student" : "Valitse opiskelija...",
+    "role" : "Rooli",
+    "status" : "Tila",
+    "active" : "Aktiivinen",
+    "connect_classroom" : "Yhdistä luokkahuoneeseen",
+    "evaluate_course" : "Arvioi kurssi",
+    "feedback_thanks" : "Kiitos palautteestasi!",
+    "error_occurred" : "Tapahtui virhe:",
+    "result_passed" : "Hyväksytty",
+    "result_failed" : "Hylätty",
+    "result_pending" : "Odottaa arviointia",
+    "mark_passed" : "Hyväksy",
+    "mark_failed" : "Hylkää",
+    "certificate" : "Todistus",
+    "course_completed" : "Kurssi suoritettu",
+    "view_certificate" : "Näytä Todistus",
+    "claim_certificate" : "Lunasta Todistus"
+  },
+  "messages" : {
+    "profile_updated" : "Profiili tallennettu!",
+    "password_changed" : "Salasana vaihdettu!",
+    "login_failed" : "Virheellinen kirjautuminen.",
+    "login_error" : "Kirjautuminen epäonnistui.",
+    "account_created" : "Tili luotu!",
+    "register_error" : "Rekisteröinti epäonnistui.",
+    "license_approved" : "Lisenssi hyväksytty!",
+    "license_error" : "Lisenssin aktivointi epäonnistui.",
+    "upload_success" : "Tiedosto ladattu!",
+    "upload_error" : "Lataus epäonnistui.",
+    "setting_saved" : "Tallennettu!",
+    "setting_error" : "Asetuksen tallennus epäonnistui.",
+    "user_deleted" : "Käyttäjä poistettu.",
+    "delete_error" : "Käyttäjän poisto epäonnistui.",
+    "course_deleted" : "Kurssi poistettu.",
+    "course_delete_error" : "Kurssin poisto epäonnistui.",
+    "joined_course" : "Liittyi!",
+    "loading" : "Ladataan...",
+    "loading_course" : "Ladataan kurssia..."
+  },
+  "teacher_dashboard" : {
+    "tab_overview" : "Yleiskatsaus",
+    "tab_grading" : "Arviointi",
+    "tab_applications" : "Hakemukset",
+    "tab_courses" : "Omat kurssit",
+    "tab_students" : "Opiskelijaseuranta",
+    "tab_communication" : "Viestintä",
+    "section_schedule" : "Tuleva aikataulu",
+    "section_shortcuts" : "Pikakuvakkeet",
+    "section_admin" : "Hallinto",
+    "ongoing_course" : "Käynnissä oleva kurssi",
+    "upcoming_event" : "Tuleva tapahtuma",
+    "course_start" : "Kurssin alku: {{name}}",
+    "no_events" : "Ei ajastettuja tapahtumia.",
+    "new_message" : "Uusi viesti"
+  },
+  "shortcuts" : {
+    "calendar" : "Siirry kalenteriin",
+    "students" : "Hallitse opiskelijoita",
+    "grading" : "Arvioi tehtäviä",
+    "messages" : "Viestit",
+    "create_course" : "Luo uusi kurssi"
+  },
+  "widgets" : {
+    "recent_messages" : {
+      "title" : "Uusimmat viestit",
+      "view_all" : "Näytä kaikki",
+      "empty" : "Ei uusia viestejä.",
+      "from" : "Lähettäjä"
     },
-    "hero": {
-      "badge": "versio 3.9.2 nyt livenä",
-      "title_start": "Tulevaisuuden",
-      "title_llp": "LLP",
-      "title_with": "kanssa",
-      "title_hub": "EduAI Hub",
-      "subtitle": "Yhtenäinen, tekoälypohjainen alusta kouluille, yrityksille ja viranomaisille. Maksimoi pedagoginen vaikutus ja minimoi hallinto kellon ympäri.",
-      "cta_ai": "Testaa AI Studio",
-      "cta_learn_more": "Lue ominaisuuksista",
-      "cta_see_all": "Katso kaikki 40+ ominaisuutta",
-      "tech_tagline": "Maailman johtavan teknologian voimalla",
-      "stats": {
-        "engagement": "Lisääntynyt opiskelijoiden sitoutuminen",
-        "new_level": "Uusi saavutus!",
-        "level_value": "Taso {{level}}"
-      }
+    "online_friends" : {
+      "title" : "Online-ystävät",
+      "x_online" : "{{count}} paikalla",
+      "empty" : "Yhtään ystävää ei ole paikalla juuri nyt.",
+      "profile" : "Profiili",
+      "view_all" : "Näytä kaikki ystävät"
     },
-    "features": {
-      "title": "Kaikki mitä tarvitset moderniin koulutukseen",
-      "subtitle": "Tekoälypohjaisesta analyysistä pelillistämiseen ja hallintoon. Kaikki koottuna yhteen voimakkaaseen alustaan.",
-      "multi_tenancy": {
-        "title": "Multi-Tenancy",
-        "desc": "Eristetyt tiedot jokaiselle koululle ja rajaton skaalautuvuus."
-      },
-      "b2b": {
-        "title": "B2B Hallintapaneeli",
-        "desc": "Hallitse käyttäjiä, kursseja ja lisenssejä sujuvasti etänä."
-      },
-      "microservice": {
-        "title": "Mikropalvelut",
-        "desc": "Rakennettu Spring Bootilla maksimaalisen suorituskyvyn ja vakauden saavuttamiseksi."
-      },
-      "event_bus": {
-        "title": "Reaaliaikainen Event-Bus",
-        "desc": "Välitön ilmoitus ja synkronointi kaikkien moduulien välillä."
-      },
-      "gamification": {
-        "title": "Pelimoottori",
-        "desc": "XP:t, merkit ja tulostaulut, jotka motivoivat oppimista."
-      },
-      "ai_creator": {
-        "title": "AI-kurssien luoja",
-        "desc": "Luo kokonaisia kursseja automaattisesti PDF-tiedostoista tai linkeistä 60 sekunnissa."
-      },
-      "pwa": {
-        "title": "PWA-mobiilisovellus",
-        "desc": "Asenna EduFlex suoraan mobiililaitteeseesi ilman sovelluskauppaa."
-      },
-      "live_video": {
-        "title": "Live-video ja chat",
-        "desc": "Integroitu Zoom/Teams-tuki digitaalisille luokkahuoneille."
-      },
-      "collaborative": {
-        "title": "Yhteistyömuokkaus",
-        "desc": "Muokkaa dokumentteja yhdessä reaaliajassa OnlyOfficen kautta."
-      },
-      "roi": {
-        "title": "Pedagoginen ROI",
-        "desc": "Mittaa tarkalleen, kuinka paljon aikaa ja resursseja säästät päivittäin."
-      },
-      "notifications": {
-        "title": "Älykkäät ilmoitukset",
-        "desc": "Kontekstuaaliset push-ilmoitukset määräajoista ja palautteesta."
-      },
-      "exams": {
-        "title": "Säkeret tentit",
-        "desc": "Valvottu ympäristö fokuksen hallinnalla ja integriteetin suojauksella."
-      },
-      "integrations": {
-        "title": "LTI 1.3 Advantage",
-        "desc": "Täysin yhteensopiva Canvasin, Moodlen ja Blackboardin kanssa."
-      },
-      "compliance": {
-        "title": "WCAG-yhteensopivuus",
-        "desc": "Suunniteltu 100 % saavutettavuuteen kaikille käyttäjille."
-      },
-      "pii": {
-        "title": "GDPR Zero-Trust",
-        "desc": "Mullistava PII-maskaus kaikille herkille opiskelijatiedoille."
-      },
-      "educareer": {
-        "title": "EduCareer Roadmap",
-        "desc": "Tekoälypohjaiset urapolut opiskelijan unelmatavoitteen saavuttamiseksi."
-      }
+    "live_lessons" : {
+      "title" : "Live-oppitunnit",
+      "subtitle" : "Tulevat videokokoukset",
+      "soon" : "Pian",
+      "host" : "Isäntä",
+      "join" : "Liity",
+      "prepare" : "Valmistele",
+      "view" : "Näytä",
+      "see_all_calendar" : "Katso kaikki kalenterissa",
+      "error_load" : "Oppituntien lataaminen epäonnistui",
+      "error_join" : "Yhteyden muodostaminen oppituntiin epäonnistui"
     },
-    "screenshots": {
-      "admin": {
-        "title": "Hallintapaneeli 2.0",
-        "desc": "Täysi hallinta organisaatiosta reaaliaikaisen tiedon ja widgettien avulla."
-      },
-      "teacher": {
-        "title": "Opettajan paneeli",
-        "desc": "Tehokas yleisnäkymä opiskelijoiden läsnäoloon, edistymiseen ja palautuksiin."
-      },
-      "quiz": {
-        "title": "AI-visojen luonti",
-        "desc": "Lataa dokumentteja ja anna tekoälyn luoda testimonivalintoja sekunneissa."
-      },
-      "library": {
-        "title": "E-kirjasto",
-        "desc": "Keskitetty kirjasto kirjallisuudelle sisäänrakennetulla lukijalla."
-      },
-      "catalog": {
-        "title": "Kurssiluettelo",
-        "desc": "Visuaalinen ja suodatettava luettelo opiskelijoille uusien kurssien löytämiseksi."
-      },
-      "resource": {
-        "title": "Resurssipankki & Yhteisö",
-        "desc": "Jaa ja lataa materiaalia yhteisestä Community-kirjastosta."
-      },
-      "analytics": {
-        "title": "Analyysit & Oivallukset",
-        "desc": "Reaaliaikaiset koontinäytöt rehtoreille ja opettajille. Lämpökartat ja keskeyttämisennusteet."
-      },
-      "security": {
-        "title": "Enterprise-tietoturva",
-        "desc": "Roolipohjainen pääsynhallinta (RBAC), lokitus ja turvallinen Keycloak SSO -integraatio."
-      },
-      "evaluation_system": {
-        "title": "Kurssiarviointi & Oivallukset",
-        "desc": "Täydellinen järjestelmä kurssien laadulle. Automaattiset opiskelijailmoitukset ja tekoälyanalyysi vapaatekstivastauksista ROI:n mittaamiseksi."
-      }
+    "tickets" : {
+      "active" : "Aktiiviset tukipyynnöt",
+      "critical" : "Kriittiset",
+      "high" : "Korkea prioriteetti",
+      "medium" : "Keskitason prioriteetti",
+      "low" : "Matala prioriteetti",
+      "open" : "Avoimet pyynnöt",
+      "empty" : "Ei avoimia pyyntöjä juuri nyt."
     },
-    "architecture": {
-      "badge": "Rakennettu skaalautuvaksi",
-      "title": "Enterprise-arkkitehtuuri",
-      "powered_by": "Alan standardien voimalla",
-      "items": [
-        "Spring Boot 3.4 -mikropalvelut",
-        "PostgreSQL Schema-per-Tenant",
-        "Redis-välimuistikerros",
-        "MinIO S3-yhteensopiva tallennus",
-        "Keycloak SSO -identiteetinhallinta",
-        "Kubernetes & Helm Charts"
-      ]
+    "student_progress" : {
+      "title" : "Kurssisuoritukseni",
+      "on_track" : "Hyvin aikataulussa",
+      "at_risk" : "Vaarassa",
+      "assignments" : "Tehtävät",
+      "quizzes" : "Visat",
+      "detailed_overview" : "Yksityiskohtainen yleiskatsaus",
+      "latest_results" : "Uusimmat tulokset",
+      "no_results" : "Ei vielä tuloksia.",
+      "catch_up" : "Yritä päästä mukaan!",
+      "go_to_course" : "Siirry kurssille"
     },
-    "pricing": {
-      "title": "Yksinkertainen, läpinäkyvä hinnoittelu",
-      "subtitle": "Valitse kouluunne parhaiten sopiva suunnitelma.",
-      "basic": {
-        "name": "Basic",
-        "price": "99 eur / kuukausi",
-        "features": [
-          "Jopa 100 käyttäjää",
-          "Peruskurssien hallinta",
-          "Yksinkertainen raportointi",
-          "Yhteisön tuki"
-        ],
-        "cta": "Aloita nyt"
-      },
-      "pro": {
-        "name": "Pro",
-        "price": "299 eur / kuukausi",
-        "features": [
-          "Jopa 500 käyttäjää",
-          "Täysi pelillistäminen",
-          "Skolverket-integraatio",
-          "CSN-vienti",
-          "Priorisoitu tuki"
-        ],
-        "cta": "Varaa demo",
-        "badge": "Suosituin"
-      },
-      "enterprise": {
-        "name": "Enterprise",
-        "price": "Ota yhteyttä",
-        "features": [
-          "Rajoittamaton määrä käyttäjiä",
-          "White-label branding",
-          "Keycloak SSO",
-          "SLA 99.99%",
-          "Dedikoitu infrastruktuuri"
-        ],
-        "cta": "Ota yhteyttä myyntiin"
-      }
+    "attendance_widget" : {
+      "title" : "Digitaalinen Läsnäoloni",
+      "activity_level" : "Aktiivisuustaso",
+      "registered_time" : "Kirjattu aika",
+      "gold_week" : "Tavoite (viikko)",
+      "low_warning" : "Huomio! Läsnäolosi on vähäistä. Ota yhteyttä mentoriisi."
     },
-    "pricing_page": {
-      "back": "Takaisin alkuun",
-      "badge": "Läpinäkyvyys",
-      "title": "Yksinkertainen & Reilu {{gradient}}",
-      "gradient_text": "Hinnoittelu",
-      "subtitle": "Valitse taso, joka sopii parhaiten organisaatiollesi. Ei piilokuluja, vain puhdasta pedagogista voimaa.",
-      "most_popular": "Suosituin",
-      "currency_suffix": "eur / opiskelija / kk",
-      "cta_prefix": "Aloita tasolla",
-      "security_title": "GDPR & Tietoturva",
-      "security_desc": "Kaikki tiedot tallennetaan EU:ssa (Ruotsi/Saksa). Noudatamme tiukimpia vaatimuksia PII-maskaukselle ja sisäänrakennetulle tietosuojalle.",
-      "availability_title": "Korkea käytettävyys",
-      "availability_desc": "Kubernetes-arkkitehtuurimme takaa 99,9 % käytettävyysajan Enterprise-asiakkaille. Järjestelmä skaalautuu automaattisesti käyttäjämäärän mukaan.",
-      "onboarding_title": "Henkilökohtainen onboarding",
-      "onboarding_desc": "Autamme sinua SIS-integraatiossa, LTI-asetuksissa ja opettajakoulutuksessa varmistaaksemme onnistuneen pilottijakson.",
-      "custom_title": "Tarvitsetko räätälöidyn ratkaisun?",
-      "custom_subtitle": "Tarjoamme räätälöityjä ENTERPRISE-paketteja suurille konserneille tai erityisiin pedagogisiin tarpeisiin.",
-      "button_calc": "Varaa hinta-arvio",
-      "button_kit": "Lataa Pilot Kit (PDF)",
-      "tiers": {
-        "basic": {
-          "desc": "Täydellinen pienemmille kouluille tai yhdistyksille, jotka haluavat digitalisoida hallintonsa.",
-          "features": [
-            "Täysi LMS",
-            "Kurssi- & mediatyökalut",
-            "Opiskelijarekisteri (PII-maskattu)",
-            "Vahinko- & terveyshallinta",
-            "Sähköpostituki"
-          ]
-        },
-        "pro": {
-          "desc": "Älykäs taso moderneille koulutuksen tarjoajille tekoälytuella.",
-          "features": [
-            "Kaikki BASICissa",
-            "AI Tutor (Google Gemini)",
-            "AI-visojen luonti",
-            "Pelillistäminen (XP, kauppa, merkit)",
-            "LTI 1.3 & Zoom/Teams -integraatiot",
-            "Priorisoitu tuki"
-          ]
-        },
-        "enterprise": {
-          "desc": "Täysimittainen ratkaisu yrityksille ja viranomaisille, joilla on korkeat hallintavaatimukset.",
-          "features": [
-            "Kaikki PROssa",
-            "Täysi Whitelabel-tuki (oma verkkotunnus)",
-            "Tuotantovalmis Kubernetes-ylläpito",
-            "Oma Success Manager",
-            "SLA: 99.9% Uptime",
-            "Räätälöity API-kehitys"
-          ]
-        }
-      }
-    },
-    "footer": {
-      "tagline": "Koulutuksen vahvistaminen modernilla teknologialla. Rakennettu ❤️:llä Ruotsissa.",
-      "product": "Tuote",
-      "features": "Ominaisuudet",
-      "pricing": "Hinnoittelu",
-      "roadmap": "Tiekartta",
-      "resources": "Resurssit",
-      "documentation": "Dokumentaatio",
-      "api_reference": "API-viite",
-      "system_status": "Järjestelmän tila",
-      "connect": "Yhteys",
-      "support": "Tuki",
-      "newsletter": "Uutiskirje",
-      "newsletter_desc": "Saat uusimmat päivitykset tekoälystä ja koulutuksesta suoraan sähköpostiisi.",
-      "email_placeholder": "sinun@email.fi",
-      "contact_sales": "Ota yhteyttä myyntiin",
-      "twitter": "Twitter",
-      "github": "GitHub",
-      "copyright": "© 2026 EduFlex. Kaikki oikeudet pidätetään.",
-      "privacy_policy": "Tietosuojakäytäntö",
-      "terms_of_service": "Käyttöehdot",
-      "cookie_settings": "Evästeasetukset",
-      "developed_by": "Kehittäjä",
-      "fenrir": "Fenrir Studio",
-      "security": "Tietoturva",
-      "api": "API-dokumentaatio",
-      "help_center": "Ohjekeskus"
-    },
-    "roles": {
-      "badge": "Ratkaisuja kaikille",
-      "title": "Mukautettu roolisi mukaan koulussa",
-      "subtitle": "EduFlex on suunniteltu helpottamaan kaikkien koulutuksen sidosryhmien arkea.",
-      "outcome_label": "Vaikutus",
-      "rector": {
-        "title": "Rehtori & koulun johto",
-        "desc": "Hanki täysi hallinta toiminnasta reaaliaikaisen tiedon ja strategisen päätöksentuen avulla.",
-        "feature1": "Reaaliaikaiset KPI:t & koontinäytöt",
-        "feature2": "Systemaattinen laatutyö (SKA)",
-        "feature3": "Talous- & resurssisuunnittelu",
-        "outcome": "Lisääntynyt läpimeno & turvallisempi hallinto."
-      },
-      "teacher": {
-        "title": "Opettajat & mentorit",
-        "desc": "Vähennä hallintoa ja keskity pedagogiikkaan maailmanluokan tekoälytuen avulla.",
-        "feature1": "AI-luodut testit & visat",
-        "feature2": "Automatisoitu läsnäolo & arvioinnit",
-        "feature3": "At-Risk -varhaisvaroitus (Gemini)",
-        "outcome": "Säästää jopa 70 % hallintoajasta."
-      },
-      "student": {
-        "title": "Oppilaat & opiskelijat",
-        "desc": "Mukaansatempaava oppimisympäristö pelillistämisellä ja henkilökohtaisella tekoälytuella kellon ympäri.",
-        "feature1": "Live Radar -tietonäkymä",
-        "feature2": "Henkilökohtainen AI Tutor (Video/Chat)",
-        "feature3": "XP:t, putket & saavutukset",
-        "outcome": "+40 % lisääntynyt sitoutuminen."
-      },
-      "parent": {
-        "title": "Huoltajat",
-        "desc": "Pysy ajan tasalla lapsesi edistymisestä ja viesti suoraan koulun kanssa.",
-        "feature1": "AI-raportti lapsen hyvinvoinnista",
-        "feature2": "Helppo sairasloma- & poissaoloilmoitus",
-        "feature3": "Suora yhteys mentoriin",
-        "outcome": "Turvallisempi vuoropuhelu & parempi näkemys."
-      }
-    },
-    "cta": {
-      "title": "Oletko valmis todella digitalisoimaan koulusi?",
-      "subtitle": "Liity 500+ muun käyttäjän joukkoon ja koe LLP:n tulevaisuus EduAI Hubin avulla.",
-      "button_demo": "Varaa henkilökohtainen demo",
-      "button_test": "Testaa ilmaiseksi 14 päivää"
-    },
-    "features_page": {
-      "intro_badge": "Kaikki mitä tarvitset moderniin koulutukseen",
-      "title": "Täynnä ominaisuuksia",
-      "subtitle": "Tekoälypohjaisesta analyysistä pelillistämiseen ja hallintoon. Täältä löydät kaiken, mikä tekee EduFlexistä ainutlaatuisen.",
-      "back": "Takaisin",
-      "highlights_title": "Teknologiset kohokohdat",
-      "showcase_title": "Järjestelmän yleiskuva",
-      "cta_title": "Valmis aloittamaan?",
-      "cta_button": "Luo tilisi nyt",
-      "highlights": {
-        "ai_creator": {
-          "title": "AI-kurssien luoja",
-          "desc": "Luo täydellisiä kursseja PDF-dokumenteista alle 60 sekunissa. Automaattisesti generoidut oppitunnit, päivämäärät ja älykkäät koodit sisäänrakennetulla tietokantasynkronoinnilla."
-        },
-        "predictive": {
-          "title": "Ennakoiva AI-analyysi",
-          "desc": "Tunnista riskiryhmään kuuluvat opiskelijat ennen kuin on liian myöhäistä. Tekoäly analysoi käyttäytymismalleja ja tarjoaa opettajille päätöksentukea ja opiskelijoille henkilökohtaisia opiskeluvinkkejä."
-        },
-        "lti": {
-          "title": "LTI 1.3 Advantage",
-          "desc": "Täysin varmennettu tuki AGS:lle (arvosanat) ja NRPS:lle (roolit/nimet). Saumaton integraatio Canvasin, Moodlen ja Blackboardin kanssa turvallista todennusta ja tiedonvaihtoa varten."
-        },
-        "xapi": {
-          "title": "xAPI & CMI5 LRS",
-          "desc": "Seuraavan sukupolven seuranta. Suorita simulaatioita ja offline-mobiilikursseja täydellisellä raportoinnilla sisäänrakennetun Learning Record Store -palvelumme kautta."
-        },
-        "minio": {
-          "title": "MinIO & S3 -tallennus",
-          "desc": "Skaalautuva yritystason tallennus. Kaikki media (äänikirjat, videot) striimataan salamannopeasti ja tuki toiston jatkamiselle siitä, mihin jäit."
-        },
-        "edugame": {
-          "title": "EduGame Moottori",
-          "desc": "XP-järjestelmä, kauppa, profiiliteemat, päivittäiset haasteet ja putket. Tee oppimisesta seikkailu."
-        },
-        "schema": {
-          "title": "Schema-per-Tenant",
-          "desc": "Aito multi-tenancy täydellisellä tietojen eristämisellä. Jokainen organisaatio saa automaattisesti oman PostgreSQL-skeemansa."
-        },
-        "resource": {
-          "title": "Resurssipankki & Yhteisö",
-          "desc": "Yhtenäinen kirjasto kaikille visoille, tehtäville ja oppitunneille. Jaa ja tuo materiaalia muilta opettajilta yhdellä klikkauksella."
-        },
-        "cascading": {
-          "title": "Cascading Deletes",
-          "desc": "Huoltovapaa hallinta. Kun poistat kurssin, kaikki siihen liittyvät materiaalit ja oppitunnit poistetaan automaattisesti ilman tietokantakonflikteja."
-        },
-        "sso": {
-          "title": "Enterprise SSO",
-          "desc": "Keycloak-integraatio OAuth2/OIDC:llä. Täysi hallinta identiteeteistä ja pääsytasoista organisaatiossa."
-        },
-        "slugs": {
-          "title": "Ystävälliset URL-osoitteet (Slugit)",
-          "desc": "Hakukoneystävälliset ja luettavat osoitteet kaikille kursseille. Navigoi selkeiden nimien avulla teknisten ID:iden sijaan."
-        },
-        "quiz_gen": {
-          "title": "Visa-generaattori",
-          "desc": "Satunnaista visat automaattisesti kysymyspankistasi (matematiikka, Java, ruotsi jne.) nopeita tietotarkistuksia varten ilman manuaalista työtä."
-        },
-        "security": {
-          "title": "Enterprise-tietoturva",
-          "desc": "Täysi AES-256 GCM -salaus herkille tiedoille, verkkotunnuslukittu lisensointi ja nopeuden rajoitus suojaavat organisaatiotasi 24/7."
-        },
-        "insights": {
-          "title": "Kurssiarviointi & Oivallukset",
-          "desc": "Täydellinen järjestelmä kurssien laadulle, automatisoidut opiskelijailmoitukset ja tekoälyanalyysi vapaatekstivastauksista ROI:n mittaamiseksi."
-        },
-        "social": {
-          "title": "Kontekstuaalinen sosiaalinen oppiminen",
-          "desc": "Keskustele oppitunneista ja kursseista reaaliajassa suoraan soittimessa. Opi vertaisiltasi ketjutettujen keskustelujen ja reaaliaikaisten ilmoitusten kautta."
-        },
-        "streaks": {
-          "title": "Virstanpylväiden putket",
-          "desc": "Jatka \"oppimisputkeasi\" ja avaa eksklusiivisia XP-bonuksia ja merkkejä. Keskitetty seuranta, joka motivoi sinua joka päivä."
-        },
-        "mission_control": {
-          "title": "Rehtorin paketti (Mission Control)",
-          "desc": "Täydellinen koulun hallintakerros reaaliaikaisilla KPI:illä. Hallitse organisaatiohierarkiaa (osasto, ohjelma, luokka), näe koottuja tilastoja ja käsittele vaaratilanteita yhtenäisessä live-näkymässä."
-        },
-        "health": {
-          "title": "Turvallinen opiskelijaterveys",
-          "desc": "Roolipohjainen pääsynhallinta ja salatut rekisterit maksimaalisen luottamuksellisuuden ja turvallisuuden takaamiseksi."
-        },
-        "ai_analysis": {
-          "title": "Ennakoiva AI-analyysi 2.0",
-          "desc": "Tunnistaa riskivyöhykkeellä olevat opiskelijat ennen kuin he itse tietävät sitä. Syväoppiva poikkeavuusanalyysi läsnäolosta, aktiivisuudesta ja tuloksista."
-        },
-        "skolverket": {
-          "title": "Skolverket Sync 2.0",
-          "desc": "Saumaton integraatio koko Skolverketin kurssiluetteloon. Kurssitavoitteiden ja arviointikriteerien automaattinen päivitys."
-        },
-        "pwa": {
-          "title": "Natiivi PWA-kokemus",
-          "desc": "Asenna EduFlex suoraan aloitusnäyttöön. Täysi tuki offline-käytölle ja salamannopea vaste kaikilla laitteilla."
-        },
-        "gamification_expansion": {
-          "title": "Gamification-laajennus",
-          "desc": "Uudet tehtäväjärjestelmät, sosiaalinen keskus ja laajennettu kauppa. Lisää sitoutumista merkityksellisen pelillisen oppimisen avulla."
-        },
-        "guardian": {
-          "title": "Huoltaja- & terveysvalvonta",
-          "desc": "Huoltajaportaali, digitaalinen sairasloma-ilmoitus ja opiskelijoiden terveyskyselyt. Kaikki kerätty AES-256-salauksella ja tietosuojasuojilla turvallista tietojen käsittelyä varten."
-        },
-        "ai_center": {
-          "title": "EduAI Center 2.1",
-          "desc": "Edistynyt Spaced Repetition SM-2-algoritmilla. Ansaitse AI-krediittejä älykkäiden toistojen kautta ja visualisoi tietomatkasi reaaliajassa."
-        }
-      }
+    "schedule" : {
+      "title" : "Päivän & Viikon Aikataulu",
+      "loading" : "Ladataan aikataulua...",
+      "campus" : "Kampus",
+      "online" : "Online",
+      "connect" : "Yhdistä",
+      "empty" : "Ei oppitunteja tänään",
+      "view_full" : "Katso koko aikataulu",
+      "upcoming_submissions" : "Tulevat Palautukset",
+      "go_to_task" : "Siirry tehtävään",
+      "no_deadlines" : "Ei tulevia määräaikoja",
+      "view_all_count" : "Näytä kaikki ({{count}})",
+      "room_missing" : "Huone puuttuu"
     }
   },
-  "contact": {
-    "title": "Varaa demo",
-    "name": "Nimi",
-    "name_placeholder": "Nimesi",
-    "email": "Sähköposti",
-    "email_placeholder": "sinun@email.fi",
-    "organization": "Organisaatio",
-    "organization_placeholder": "Koulun nimi",
-    "phone": "Puhelin",
-    "phone_placeholder": "+358 40 123 4567",
-    "message": "Viesti",
-    "message_placeholder": "Kerro meille hieman tarpeistasi...",
-    "submit": "Lähetä kysely",
-    "sending": "Lähetetään...",
-    "success_message": "Kiitos! Otamme sinuun yhteyttä 24 tunnin kuluessa.",
-    "error_message": "Jokin meni pieleen. Yritä uudelleen tai lähetä meille sähköpostia suoraan."
+  "teacher_widgets" : {
+    "active_courses" : "Aktiiviset kurssit",
+    "my_students" : "Oppilaani",
+    "to_grade" : "Arvioitavana",
+    "applications" : "Hakemukset",
+    "risk_zone" : "Riskivyöhyke",
+    "at_risk_title" : "Riskiryhmään kuuluvat oppilaat",
+    "students_count" : "{{count}} kpl",
+    "no_at_risk" : "Tällä hetkellä ei riskiryhmään kuuluvia oppilaita. 👍",
+    "completion_prefix" : "suoritettu",
+    "view_all_risk" : "Näytä kaikki riskioppilaat"
   },
-  "ai_personalization": {
-    "title": "AI-oivallukset ja suositukset",
-    "risk_low": "Matala riski",
-    "risk_medium": "Keskitason riski",
-    "risk_high": "Korkea riski",
-    "suggested_activities": "Ehdotetut aktiviteetit",
-    "coaching_advice": "Valmennusohjeet",
-    "update_analysis": "Päivitä AI-analyysi",
-    "lesson_type": "Oppitunti",
-    "practice_type": "Harjoitus",
-    "rationale_prefix": "AI-perustelu:",
-    "no_data": "Ei vielä tarpeeksi tietoa AI-analyysiä varten. Jatka työskentelyä kursseilla!"
+  "teacher_tables" : {
+    "all_graded_title" : "Kaikki on arvioitu!",
+    "all_graded_desc" : "Hyvää työtä, ei odottavia palautuksia.",
+    "pending_submissions_count" : "Odottaa arviointia ({{count}})",
+    "action_required" : "Vaatii toimenpiteitä",
+    "student" : "Opiskelija",
+    "assignment" : "Tehtävä",
+    "course" : "Kurssi",
+    "submitted" : "Palautettu",
+    "go_to_grading" : "Siirry arviointiin",
+    "no_pending_applications" : "Ei odottavia hakemuksia tällä hetkellä.",
+    "applying_to" : "Hakee kurssille",
+    "date" : "Päivämäärä",
+    "decision" : "Päätös",
+    "approve" : "Hyväksy",
+    "reject" : "Hylkää",
+    "never" : "Ei koskaan",
+    "days_ago" : "{{count}} päivää sitten",
+    "contact" : "Ota yhteyttä",
+    "admitted_msg" : "Opiskelija hyväksytty!",
+    "rejected_msg" : "Hakemus hylätty.",
+    "error_msg" : "Jotain meni pieleen.",
+    "unknown_student" : "Tuntematon"
   },
-  "gamification": {
-    "level_title": "Nykyinen taso",
-    "student_rank": "Opiskelijan sijoitus",
-    "points_to_next": "pistettä seuraavaan tasoon",
-    "my_badges": "Omat merkkini",
-    "no_awards": "Ei vielä merkkejä. Jatka hyvää työtä!",
-    "view_all": "Näytä kaikki merkit"
-  },
-  "tenta": {
-    "manager_title": "Tenttinhallinta",
-    "manager_subtitle": "Varaa tentti ja ilmoita opiskelijoille",
-    "steps": {
-      "content": "Sisältö",
-      "settings": "Asetukset",
-      "scheduling": "Varaus"
-    },
-    "errors": {
-      "title_required": "Tentillä on oltava otsikko.",
-      "times_required": "Sinun on ilmoitettava alku- ja päättymisaika.",
-      "booking_failed": "Tentin varaaminen epäonnistui: "
-    },
-    "fields": {
-      "title_label": "Tentin otsikko",
-      "title_placeholder": "esim. Verkkosuunnittelun lopputentti",
-      "description_label": "Kuvaus",
-      "description_placeholder": "Ohjeet opiskelijoille...",
-      "questions_count": "Kysymykset ({{count}})",
-      "question_number": "Kysymys {{number}}",
-      "question_placeholder": "Kirjoita kysymyksesi tähän...",
-      "option_number": "Vastausvaihtoehto {{number}}",
-      "add_option": "LISÄÄ VAIHTOEHTO",
-      "add_question": "Lisää uusi kysymys",
-      "time_limit": "Aikaraja",
-      "minutes": "minuuttia",
-      "time_info": "Opiskelijoilla on tämä aika tentin suorittamiseen sen aloittamisen jälkeen.",
-      "grading_method": "Arvostelumenetelmä",
-      "grading_manual": "Manuaalinen arvostelu",
-      "grading_manual_desc": "Arvostet kaiken itse.",
-      "grading_auto": "Automaattinen (MCQ)",
-      "grading_auto_desc": "Järjestelmä korjaa heti.",
-      "grading_ai": "AI-arvostelu (Gemini)",
-      "grading_ai_desc": "AI ehdottaa arvosanaa ja palautetta.",
-      "security_mode": "Tietoturvatila: Exam Integrity Pro",
-      "security_info": "Kun luot \"Tentin\", integriteetin valvonta aktivoituu automaattisesti. Tämä tarkoittaa, että ikkunanvaihdot lokitetaan ja opiskelijan on pysyttävä tenttitilassa.",
-      "calendar_booking": "Kalenterivaraus",
-      "start_time": "Avautuu (alku)",
-      "end_time": "Sulkeutuu (loppu)",
-      "notify_students": "Ilmoita opiskelijoille",
-      "channel_internal": "Sisäinen postilaatikko",
-      "channel_push": "Push (PWA)",
-      "channel_email": "Sähköposti",
-      "channel_sms": "SMS",
-      "channel_info": "Järjestelmä suodattaa pois kanavat, jotka opiskelija on hylännyt profiilissaan."
-    },
-    "actions": {
-      "back": "Takaisin",
-      "cancel": "Peruuta",
-      "next": "Seuraava vaihe",
-      "booking": "Varataan...",
-      "finish": "VALMISTELE JA VARAA"
+  "student_contact" : {
+    "title" : "Ota yhteyttä opiskelijaan",
+    "subtitle" : "Raportoi ja seuraa {{name}} kanssa",
+    "risk_factor" : "Tunnistettu riskitekijä",
+    "never_logged_in" : "Opiskelija ei ole koskaan kirjautunut alustalle.",
+    "inactive_days" : "Opiskelija on ollut passiivinen {{count}} päivää.",
+    "no_risk" : "Tällä hetkellä ei ole tunnistettu kriittisiä riskejä, mutta seurantaa suositellaan.",
+    "subject_label" : "Aihe (perustuu riskiin)",
+    "auto_generated_label" : "Automaattisesti luotu pohja",
+    "auto_generated_desc" : "Tämä pohja perustuu järjestelmän tietoihin ja lähetetään sähköpostin mukana.",
+    "teacher_notes_label" : "Omat kommenttisi / Toimintasuunnitelma",
+    "teacher_notes_placeholder" : "Kirjoita henkilökohtainen viesti, ohjeita tai erityisiä toimenpiteitä, jotka opiskelijan on tehtävä...",
+    "report_and_send" : "Raportoi & Lähetä",
+    "sending" : "Lähettää...",
+    "sent_success" : "Viesti lähetetty!",
+    "send_error" : "Viestin lähettäminen epäonnistui.",
+    "divider" : "Opettajan kommentti:",
+    "regards" : "Ystävällisin terveisin,",
+    "templates" : {
+      "follow_up_subject" : "Opintojesi seuranta",
+      "no_login_subject" : "Tärkeää: Et ole vielä kirjautunut sisään",
+      "no_login_body" : "Huomaan, että et ole vielä kirjautunut EduFlexiin. Jotta voit hyötyä kurssista, on tärkeää, että pääset alkuun pian.",
+      "need_help_login" : "Tarvitsetko apua kirjautumisessa tai oikean materiaalin löytämisessä?",
+      "warning_inactivity_subject" : "Varoitus: Korkea poissaolo ja passiivisuus",
+      "warning_inactivity_body" : "Huomaan, että et ole ollut aktiivinen EduFlexissä {{count}} päivään. Tämä on huolestuttavaa ja vaikuttaa opintoihisi negatiivisesti.",
+      "review_plan" : "Meidän on tarkasteltava opintosuunnitelmaasi varmistaaksemme, että ehdit suorittaa kaikki osiot.",
+      "follow_up_absence_subject" : "Seuranta: Poissaolo",
+      "follow_up_absence_body" : "Huomasin, että on {{count}} päivää siitä, kun olit viimeksi aktiivinen.",
+      "reach_out" : "Ota yhteyttä, jos tarvitset apua jonkin tietyn kohdan kanssa.",
+      "generic_body" : "Haluan tarkistaa, miten kurssi sujuu."
     }
   },
-  "catalog_page": {
-    "title": "Kurssiluettelo",
-    "subtitle": "Etsi ja ilmoittaudu uusille kursseille.",
-    "search_placeholder": "Hae kursseja...",
-    "loading": "Ladataan kursseja...",
-    "no_courses": "Kursseja ei löytynyt",
-    "no_courses_desc": "Yritä etsiä jotain muuta tai pyydä opettajaa luomaan kurssi.",
-    "is_enrolled": "Osallistuu",
-    "is_teacher": "Opettaja",
-    "no_description": "Kuvausta ei saatavilla.",
-    "no_teacher": "Ei opettajaa",
-    "students_count": "{{count}} opiskelijaa",
-    "enroll_btn": "Osallistu kurssille",
-    "enroll_confirm": "Haluatko osallistua tälle kurssille?",
-    "enroll_success": "Olet osallistunut kurssille!",
-    "enroll_error": "Kurssille osallistuminen epäonnistui.",
-    "fetch_error": "Kursseja ei voitu hakea"
+  "teacher_modals" : {
+    "tags_placeholder" : "Tagit (erota pilkuilla, esim. AI, Matematiikka, Algebra)",
+    "group_rooms" : "Ryhmätyöskentelytilat",
+    "room_name_placeholder" : "Nimi",
+    "link" : "Linkki",
+    "add_room" : "+ Lisää ryhmätyötila",
+    "course_color" : "Kurssin väri",
+    "error_create" : "Kurssia ei voitu luoda.",
+    "error_update" : "Kurssia ei voitu päivittää.",
+    "course_name" : "Kurssin nimi",
+    "course_code" : "Kurssikoodi"
   },
-  "editor": {
-    "placeholder": "Kirjoita tähän...",
-    "link_prompt": "Linkin URL:",
-    "normal": "Normaali",
-    "heading": "Otsikko {{level}}",
-    "bold": "Lihavoitu",
-    "italic": "Kursivoitu",
-    "underline": "Alleviivattu",
-    "strike": "Yliviivattu",
-    "blockquote": "Lainaus",
-    "code_block": "Koodilohko",
-    "bullet_list": "Luettelomerkit",
-    "ordered_list": "Numeroitu luettelo",
-    "align_left": "Tasaa vasemmalle",
-    "align_center": "Keskitä",
-    "align_right": "Tasaa oikealle",
-    "link": "Linkki",
-    "insert_table": "Lisää 3×3-taulukko",
-    "table": "Taulukko",
-    "column_before": "Sarake ennen",
-    "column_after": "Sarake jälkeen",
-    "delete_column": "Poista sarake",
-    "row_before": "Rivi yläpuolelle",
-    "row_after": "Rivi alapuolelle",
-    "delete_row": "Poista rivi",
-    "delete_table": "Poista taulukko",
-    "clear_format": "Tyhjennä muotoilu"
+  "course_modal" : {
+    "create_title" : "Luo uusi kurssi",
+    "edit_title" : "Muokkaa kurssia",
+    "name" : "Kurssin nimi",
+    "code" : "Kurssikoodi",
+    "category" : "Kategoria",
+    "description" : "Kurssin kuvaus",
+    "start_date" : "Aloituspäivämäärä",
+    "end_date" : "Päättymispäivämäärä",
+    "max_students" : "Maksimimäärä paikkoja",
+    "classroom_section" : "Digitaalinen luokkahuone",
+    "classroom_link" : "Kokouslinkki",
+    "exam_link" : "Linkki tenttiin",
+    "create_btn" : "Luo",
+    "go_to_course" : "Siirry kurssille"
   },
-  "db_switch": {
-    "title": "Kriittinen Toimenpide",
-    "warning_title": "VAROITUS: Järjestelmä käynnistyy uudelleen",
-    "warning_disconnect": "Kaikki käyttäjät katkaistaan",
-    "warning_loss": "Keskeneräinen työ voi kadota",
-    "warning_unavailable": "Järjestelmä voi olla poissa käytöstä useita minuutteja",
-    "warning_config": "Väärä konfiguraatio voi aiheuttaa tietojen menetyksen",
-    "switch_target": "Olet vaihtamassa kohteeseen:",
-    "confirm_label": "Kirjoita \"VAIHDA TIETOKANTA\" vahvistaaksesi *",
-    "confirm_placeholder": "VAIHDA TIETOKANTA",
-    "confirm_text": "VAIHDA TIETOKANTA",
-    "password_label": "Ylläpitäjän salasana *",
-    "password_placeholder": "Syötä salasanasi",
-    "cancel": "Peruuta",
-    "confirm_btn": "Vaihda tietokanta nyt",
-    "errors": {
-      "confirm_mismatch": "Sinun on kirjoitettava \"VAIHDA TIETOKANTA\" vahvistaaksesi",
-      "password_required": "Ylläpitäjän salasana vaaditaan",
-      "failed": "Väärä salasana tai toimenpide epäonnistui"
+  "analytics" : {
+    "title" : "Järjestelmäoivallukset",
+    "subtitle" : "Perusteellinen analyysi alustan suorituskyvystä ja kasvusta.",
+    "financial_overview" : "Taloudellinen Yleiskatsaus",
+    "revenue_analytics" : "Tulojen analyysi",
+    "student_insights" : "Opiskelijoiden oivallukset",
+    "system_infrastructure" : "Järjestelmäinfrastruktuuri",
+    "monthly_recurring_revenue" : "Kuukausittainen Toistuva Tulo",
+    "total_users" : "Käyttäjiä yhteensä",
+    "active_sessions" : "Aktiivisia istuntoja",
+    "server_health" : "Palvelimen kunto",
+    "operational" : "Toiminnassa",
+    "stable" : "Vakaa",
+    "revenue_growth" : "Tulojen kasvu",
+    "user_acquisition" : "Käyttäjähankinta",
+    "export_csv" : "Vie CSV",
+    "day" : "Päivä",
+    "week" : "Viikko",
+    "month" : "Kuukausi",
+    "year" : "Vuosi",
+    "vs_last_month" : "vs viime kuukausi",
+    "system_status" : "Järjestelmän tila",
+    "total_students" : "Opiskelijoita yhteensä",
+    "at_risk" : "Riskiryhmässä",
+    "avg_time_online" : "Keskimääräinen Aika Online",
+    "student_performance_registry" : "Opiskelijoiden suoritusrekisteri",
+    "student_name" : "Opiskelijan nimi",
+    "status" : "Tila",
+    "courses" : "Kurssit",
+    "completion" : "Suoritus",
+    "total_time_online" : "Aika yhteensä online",
+    "risk_factor" : "Riskitekijä",
+    "no_student_data" : "Opiskelijatietoja ei ole saatavilla.",
+    "grafana_dashboard" : "Grafana-koontinäyttö",
+    "grafana_description" : "Reaaliaikaiset järjestelmän mittarit (CPU, Muisti, Pyynnöt).",
+    "open_full_grafana" : "Avaa Täysi Grafana",
+    "prometheus_metrics" : "Prometheus-mittaukset",
+    "prometheus_description" : "Raakojen mittausten tutkija.",
+    "open_prometheus" : "Avaa Prometheus",
+    "all_systems_normal" : "Kaikki järjestelmät toimivat normaalisti.",
+    "uptime" : "Käyttöaika",
+    "revenue_title" : "Tulojen analyysi",
+    "revenue_subtitle" : "Kattavat tulot ja maksutiedot",
+    "loading_revenue_data" : "Ladataan tulotietoja...",
+    "annual_recurring_revenue" : "Vuosittainen Toistuva Tulo",
+    "payment_success_rate" : "Maksujen onnistumisprosentti",
+    "avg_payment_amount" : "Keskimääräinen Maksumäärä",
+    "excellent" : "Erinomainen",
+    "good" : "Hyvä",
+    "revenue_growth_trend" : "Tulojen kasvutrendi",
+    "payment_methods" : "Maksutavat",
+    "no_payment_data" : "Maksutietoja ei ole saatavilla",
+    "total_payments" : "Maksuja yhteensä",
+    "successful" : "Onnistuneita",
+    "failed" : "Epäonnistuneita"
+  },
+  "invoices" : {
+    "title" : "Laskujen hallinta",
+    "create_invoice" : "Luo lasku",
+    "export_csv" : "Vie CSV",
+    "exporting" : "Viedään...",
+    "loading" : "Ladataan laskuja...",
+    "all" : "Kaikki",
+    "draft" : "Luonnos",
+    "pending" : "Odottaa",
+    "sent" : "Lähetetty",
+    "paid" : "Maksettu",
+    "overdue" : "Myöhässä",
+    "cancelled" : "Peruutettu",
+    "invoice_number" : "Laskun numero",
+    "customer" : "Asiakas",
+    "amount" : "Summa",
+    "issue_date" : "Päivämäärä",
+    "due_date" : "Eräpäivä",
+    "status" : "Tila",
+    "actions" : "Toiminnot",
+    "no_invoices_found" : "Laskuja ei löytynyt",
+    "total_invoices" : "Laskuja yhteensä",
+    "send_reminder_confirm" : "Lähetetäänkö maksumuistutus asiakkaalle?",
+    "reminder_sent" : "Maksumuistutus lähetetty!",
+    "delete_confirm" : "Haluatko varmasti poistaa tämän laskun?",
+    "refund_confirm" : "Haluatko varmasti palauttaa tämän maksun? Tätä toimintoa ei voi peruuttaa.",
+    "refund_success" : "Hyvitys aloitettu",
+    "refund_failed" : "Hyvitystä ei voitu suorittaa. Tarkista konsoli saadaksesi lisätietoja.",
+    "no_payment_details" : "Tälle laskulle ei löydy maksutietoja.",
+    "view_pdf" : "Näytä PDF",
+    "generate_pdf" : "Generoi PDF"
+  },
+  "subscription_plans" : {
+    "title" : "Tilauspaketit",
+    "subtitle" : "Hallitse hinnoittelutasoja ja tilausvaihtoehtoja",
+    "create_plan" : "Luo paketti",
+    "loading" : "Ladataan tilauspaketteja...",
+    "default_badge" : "VAKIO",
+    "inactive_badge" : "EPÄAKTIIVINEN",
+    "unlimited" : "Rajoittamaton",
+    "users" : "Käyttäjät",
+    "courses" : "Kurssit",
+    "storage" : "Tallennustila",
+    "features" : "Ominaisuudet",
+    "edit" : "Muokkaa",
+    "activate" : "Aktivoi",
+    "deactivate" : "Poista käytöstä",
+    "delete_confirm" : "Haluatko varmasti poistaa tämän paketin?",
+    "edit_plan" : "Muokkaa pakettia",
+    "create_new_plan" : "Luo uusi paketti",
+    "plan_name_internal" : "Paketin nimi (sisäinen)",
+    "display_name" : "Näyttönimi",
+    "description" : "Kuvaus",
+    "price" : "Hinta",
+    "currency" : "Valuutta",
+    "trial_period_days" : "Kokeilujakso (päivää)",
+    "billing_interval" : "Laskutusväli",
+    "monthly" : "Kuukausittain",
+    "yearly" : "Vuosittain",
+    "lifetime" : "Elinikäinen",
+    "max_users" : "Max Käyttäjämäärä (-1 = rajoittamaton)",
+    "max_courses" : "Max Kurssimäärä (-1 = rajoittamaton)",
+    "max_storage" : "Tallennustila GB (-1 = rajoittamaton)",
+    "add_feature" : "+ Lisää ominaisuus",
+    "enter_feature" : "Syötä ominaisuuden nimi:",
+    "active" : "Aktiivinen",
+    "default_plan" : "Oletuspaketti",
+    "sort_order" : "Lajittelujärjestys",
+    "cancel" : "Peruuta",
+    "update_plan" : "Päivitä paketti",
+    "create_plan_btn" : "Luo paketti"
+  },
+  "admin_tabs" : {
+    "title" : "Hallinto",
+    "administration" : "Hallinto",
+    "pilot_kit" : "Pilottipaketti",
+    "system_settings" : "Järjestelmäasetukset",
+    "tickets" : "Liput",
+    "support_content" : "Tuki-sisältö",
+    "gamification" : "Pelillistäminen",
+    "community" : "Yhteisö",
+    "users" : "Käyttäjät",
+    "guardians" : "Huoltajat",
+    "courses" : "Kurssit",
+    "structure" : "Koulurakenne",
+    "merits" : "Ansioita",
+    "roles" : "Roolit",
+    "overview" : "Yleiskatsaus",
+    "subscription_plans" : "Tilaussuunnitelmat",
+    "invoices" : "Laskut",
+    "payment_settings" : "Maksuasetukset",
+    "promo_codes" : "Kampanjakoodit",
+    "storage" : "Varastointi",
+    "content" : "Sisältö",
+    "system_logs_file" : "Järjestelmälokit (Tiedosto)",
+    "debug_terminal_live" : "Debug-pääte (Live)",
+    "audit_log" : "Tarkastusloki",
+    "integration_hub" : "Integraatiokeskus",
+    "ai_audit" : "AI-tarkastus",
+    "eduflex_ops" : "EduFlex Ops",
+    "skolverket_import" : "Skolverket-tuonti",
+    "skolverket_data" : "Skolverket-data",
+    "categories" : {
+      "general" : "Yleistä",
+      "finance" : "Rahoitus",
+      "system" : "Järjestelmä"
+    },
+    "students" : "Opiskelijat",
+    "logs" : "Järjestelmälokit",
+    "terminal" : "Pääte",
+    "deploy" : "Käyttöönotto",
+    "select_category" : "Valitse luokka valikosta",
+    "total_storage" : "Kokonaistallennustila",
+    "system_wide_use" : "Käytössä koko järjestelmässä",
+    "total_files" : "Tiedostoja yhteensä",
+    "uploaded_documents" : "Ladattuja asiakirjoja",
+    "stats_fetch_error" : "Tilastojen noutaminen epäonnistui.",
+    "revenue" : "Tulot",
+    "delete_course_confirm" : "Haluatko varmasti poistaa tämän kurssin? Tätä ei voi peruuttaa.",
+    "delete_course_error" : "Kurssia ei voitu poistaa. Tarkista, ettei sillä ole aktiivisia opiskelijoita.",
+    "delete_user_confirm" : "Haluatko varmasti poistaa tämän käyttäjän? Tätä ei voi peruuttaa.",
+    "delete_user_error" : "Käyttäjää ei voitu poistaa."
+  },
+  "landing" : {
+    "nav" : {
+      "features" : "Ominaisuudet",
+      "gamification" : "Pelillistäminen",
+      "showcase" : "Esittely",
+      "pricing" : "Hinnoittelu",
+      "technology" : "Teknologia",
+      "login" : "Kirjaudu sisään",
+      "get_started" : "Aloita",
+      "book_demo" : "Varaa Demo",
+      "select_language" : "Valitse kieli"
+    },
+    "hero" : {
+      "badge" : "v3.9.2: Operation Globalization - 100% Lokalisointi",
+      "title_start" : "Tulevaisuuden",
+      "title_llp" : "LLP",
+      "title_with" : "kanssa",
+      "title_hub" : "EduAI Hub",
+      "subtitle" : "Tutustu uuteen älykkääseen tietokeskukseemme. Luo räätälöityjä opintojaksoja tekoälyn avulla, pelaa mukaansatempaavia minipelejä ja seuraa tarkkaa tiedon kehitystäsi dynaamisen Live Radar -järjestelmämme kautta. Kaikki Google Geminin avulla.",
+      "cta_ai" : "Aloita ensimmäinen AI-istunto",
+      "cta_learn_more" : "Lue lisää alustasta",
+      "cta_see_all" : "Katso kaikki ominaisuudet",
+      "tech_tagline" : "Toimii modernin tekoälyn ja todistetun pedagogiikan avulla",
+      "stats" : {
+        "engagement" : "Sitoutuminen",
+        "new_level" : "Uusi taso!",
+        "level_value" : "Taso {{level}}"
+      }
+    },
+    "features" : {
+      "title" : "Kaikki mitä tarvitset modernin koulun pyörittämiseen",
+      "subtitle" : "Meillä on kaikki katettuna vankasta arviointityökalusta vallankumoukselliseen tekoälytukeen.",
+      "multi_tenancy" : {
+        "title" : "Aito Multi-Tenancy",
+        "desc" : "Täydellinen datan eristys skeema-per-tenant -arkkitehtuurilla. Jokaisella koululla on oma suojattu tietokanta."
+      },
+      "b2b" : {
+        "title" : "B2B SaaS Engine",
+        "desc" : "Hallitse useita organisaatioita ja alatilejä erillisillä laskutustuella ja hallintayleiskatsauksella."
+      },
+      "microservice" : {
+        "title" : "Distributed Microservices",
+        "desc" : "Skaalautuva arkkitehtuuri Node.js:n, Spring Bootin ja Pythonin avulla, jotka toimivat eristetyissä Docker-säiliöissä."
+      },
+      "event_bus" : {
+        "title" : "Real-time Event Bus",
+        "desc" : "Välitön datan synkronointi RabbitMQ:n avulla reaaliaikaisiin ilmoituksiin ja järjestelmätapahtumiin."
+      },
+      "gamification" : {
+        "title" : "Advanced Gamification",
+        "desc" : "Sitouta oppilaat XP:llä, Streaksillä, Achievementsillä ja ainutlaatuisella AI-pohjaisella Live Radarilla."
+      },
+      "ai_creator" : {
+        "title" : "AI Content Lifecycle",
+        "desc" : "Visailun luomisesta automatisoituun korjaukseen ja henkilökohtaisiin opiskeluvinkkeihin Geminin kautta."
+      },
+      "pwa" : {
+        "title" : "Cross-Platform PWA",
+        "desc" : "EduFlex toimii yhtä hyvin selaimessa kuin asennettuna sovelluksena iOS:ssä, Androidissa ja Windowsissa."
+      },
+      "live_video" : {
+        "title" : "Native Live Lessons",
+        "desc" : "Sisäänrakennetut työkalut videoseminaareihin ja tallennettuun materiaaliin suoraan kurssiympäristössä."
+      },
+      "collaborative" : {
+        "title" : "Live Collaborative Learning",
+        "desc" : "Opi yhdessä sisäänrakennetulla OnlyOffice-tuella ja yhteisillä reaaliaikaisilla työtiloilla."
+      },
+      "roi" : {
+        "title" : "ROI & Analytics Engine",
+        "desc" : "Visualisoi koulutuksen tehokkuus syvällisellä tilastolla sekä rehtoreille että opettajille."
+      },
+      "notifications" : {
+        "title" : "Event-Driven Notifications",
+        "desc" : "Tärkeitä tapahtumia ei koskaan unohdeta edistyneen ilmoitusjärjestelmämme ansiosta kaikille laitteille."
+      },
+      "exams" : {
+        "title" : "Digital Exams & Proctoring",
+        "desc" : "Turvalliset ja oikeusvarmat digitaaliset kokeet sisäänrakennetulla identiteetin varmistustuella."
+      },
+      "integrations" : {
+        "title" : "Enterprise Integrations",
+        "desc" : "Yhdistä saumattomasti olemassa oleviin järjestelmiin LTI 1.3:n, BankID:n ja moderneiden REST-API:en kautta."
+      },
+      "compliance" : {
+        "title" : "Zero-Trust Compliance",
+        "desc" : "GDPR-suojattu datan tallennus salauksella kaikissa vaiheissa ja automatisoidulla pseudonymisoinnilla."
+      },
+      "pii" : {
+        "title" : "PII Masking Pipeline",
+        "desc" : "Ainutlaatuinen AI-putkemme pesee kaikki henkilötiedot ennen kuin ne saavuttavat ulkoiset kielimallit."
+      },
+      "educareer" : {
+        "title" : "EduCareer Roadmap",
+        "desc" : "Auta opiskelijoita visualisoimaan tulevaisuutensa mukautuvien urapolkujen avulla, jotka on yhdistetty työmarkkinoihin."
+      },
+      "erp" : {
+        "title" : "ERP+ Integration",
+        "desc" : "Hallitse ostoksia, laskutusta ja henkilöstöä samassa käyttöliittymässä opetuksen kanssa."
+      },
+      "isp" : {
+        "title" : "Dynamic ISP & LIA",
+        "desc" : "Hallitse yksilöllisiä opintosuunnitelmia ja harjoittelupaikkoja (LIA) automatisoidulla täsmäytyksellä."
+      },
+      "bankid" : {
+        "title" : "BankID & FrejaeID",
+        "desc" : "Turvallinen todennus ruotsalaisen standardin mukaisesti sekä henkilöstölle, opiskelijoille että huoltajille."
+      },
+      "video_tutor" : {
+        "title" : "Interactive AI Video Tutor",
+        "desc" : "Ole vuorovaikutuksessa suoraan videosisällön kanssa tekoälypohjaisen haun ja jatkokysymysten avulla."
+      },
+      "language_sync" : {
+        "title" : "Global Language Sync",
+        "desc" : "Koko järjestelmä voidaan kääntää mille tahansa kielelle sekunneissa tekoälykäännöskeskuksemme kautta."
+      },
+      "susa" : {
+        "title" : "SUSA & Ladok Ready",
+        "desc" : "Täysi tuki ruotsalaiselle raportointistandardille viranomaisille ja opintohallintojärjestelmille."
+      },
+      "ladok" : {
+        "title" : "Cloud-Native Infrastructure",
+        "desc" : "Palvelimeton skaalautuvuus Kubernetesin ja MinIO:n avulla korkean saatavuuden ja suorituskyvyn takaamiseksi."
+      },
+      "accessibility" : {
+        "title" : "WCAG 2.1 Accessibility",
+        "desc" : "Suunniteltu osallistavuutta varten. Täysi saavutettavuus kaikille käyttäjille riippumatta edellytyksistä."
+      },
+      "skolfederation" : {
+        "title" : "Skolfederation & SSO",
+        "desc" : "Yksinkertaistettu kirjautuminen ruotsalaisten koulujen ja viranomaisten yhteisten standardien avulla."
+      }
+    },
+    "screenshots" : {
+      "roi" : {
+        "title" : "ROI Analytics Hub",
+        "desc" : "Seuraa koulutuksen vaikutusta ja tuottoa reaaliajassa syvällisen tilaston avulla."
+      },
+      "settings" : {
+        "title" : "Global System Control",
+        "desc" : "Täysi hallinta kaikista esiintymistä, käyttäjistä ja verkkokokoonpanoista."
+      },
+      "debug" : {
+        "title" : "Developer Terminal",
+        "desc" : "Sisäänrakennetut virheenkorjaustyökalut ja järjestelmälokit teknisille järjestelmänvalvojille."
+      },
+      "admin" : {
+        "title" : "Admin Dashboard 2.0",
+        "desc" : "Kokonaisvaltainen hallinta organisaatiossa live-datan ja widgetien avulla."
+      },
+      "teacher" : {
+        "title" : "Lärarpanelen",
+        "desc" : "Tehokas yleiskuva oppilaiden läsnäolosta, edistymisestä ja palautuksista."
+      },
+      "quiz" : {
+        "title" : "AI Quiz Generator",
+        "desc" : "Lataa asiakirjoja ja anna tekoälyn luoda koekysymyksiä sekunneissa."
+      },
+      "library" : {
+        "title" : "E-boksbibliotek",
+        "desc" : "Keskitetty kirjasto kirjallisuudelle sisäänrakennetulla lukijalla."
+      },
+      "catalog" : {
+        "title" : "Kurskatalog",
+        "desc" : "Tutustu laajaan kurssivalikoimaamme suoraan aloitussivulta."
+      },
+      "resource" : {
+        "title" : "Resursbank",
+        "desc" : "Etsi hyödyllisiä työkaluja ja asiakirjoja opintoihisi."
+      },
+      "analytics" : {
+        "title" : "Djupgående Analys",
+        "desc" : "Visualisoi edistystä ja tuloksia tehokkaiden analyysityökalujemme avulla."
+      }
+    },
+    "roles" : {
+      "badge" : "Ratkaisut kaikille",
+      "title" : "Yksi alusta, äärettömät mahdollisuudet",
+      "subtitle" : "EduFlex on suunniteltu tukemaan kaikkia rooleja koulutusmatkalla, hallinnollisesta valvonnasta mukaansatempaavaan oppimiseen.",
+      "outcome_label" : "Tulos",
+      "rector" : {
+        "title" : "Rektoreille ja johdolle",
+        "desc" : "Hanki täysi hallinta organisaation kasvusta, kannattavuudesta ja koulutuksen laadusta.",
+        "feature1" : "Strateginen suunnittelu",
+        "feature2" : "Taloudellinen seuranta",
+        "feature3" : "Laadunvarmistus (MYH/SUSA)",
+        "outcome" : "Lisääntynyt kannattavuus ja sääntöjen noudattaminen."
+      },
+      "teacher" : {
+        "title" : "Opettajille ja kouluttajille",
+        "desc" : "Automatisoi hallinnollista työtä ja käytä enemmän aikaa siihen, mikä todella merkitsee: pedagogiikkaan.",
+        "feature1" : "AI-avusteinen korjaus",
+        "feature2" : "Dynaaminen läsnäolonhallinta",
+        "feature3" : "Helppo kurssisuunnittelu",
+        "outcome" : "Vähentynyt stressi ja korkeampi oppilaiden sitoutuminen."
+      },
+      "student" : {
+        "title" : "Opiskelijoille ja oppilaille",
+        "desc" : "Moderni ja pelillistetty kokemus, joka tekee oppimisesta hauskaa, ymmärrettävää ja saatavilla olevaa.",
+        "feature1" : "Henkilökohtainen AI-valmentaja",
+        "feature2" : "Gamification & XP",
+        "feature3" : "Mobiiliystävällinen PWA",
+        "outcome" : "Suurempi keskittyminen ja nopeampi tavoitteiden saavuttaminen."
+      },
+      "parent" : {
+        "title" : "Huoltajille",
+        "desc" : "Seuraa lapsesi kehitystä reaaliajassa ja kommunikoi helposti koulun kanssa.",
+        "feature1" : "Läsnäolon valvonta",
+        "feature2" : "Arvostelut ja palaute",
+        "feature3" : "Turvallinen viestintä",
+        "outcome" : "Turvallisuus ja täysi näkyvyys koulunkäyntiin."
+      }
+    },
+    "cta" : {
+      "title" : "Oletko valmis muuttamaan koulutustoimintaasi?",
+      "subtitle" : "Tee kuten sadat muut organisaatiot ja astu digitaalisen oppimisen tulevaisuuteen jo tänään.",
+      "button_demo" : "Varaa henkilökohtainen demo",
+      "button_test" : "Testaa ilmaiseksi nyt"
+    },
+    "footer" : {
+      "tagline" : "Tulevaisuuden LLP ja digitaalisen oppimisen ekosysteemi. Suunniteltu sydämellä, tekoälyn ohjaama.",
+      "product" : "Tuote",
+      "features" : "Ominaisuudet",
+      "security" : "Turvallisuus ja GDPR",
+      "api" : "API ja kehittäjät",
+      "roadmap" : "Roadmap",
+      "support" : "Tuki",
+      "help_center" : "Ohjekeskus",
+      "documentation" : "Dokumentaatio",
+      "system_status" : "Järjestelmän tila",
+      "contact_sales" : "Ota yhteyttä myyntiin",
+      "newsletter" : "Uutiskirje",
+      "newsletter_desc" : "Hanki uusimmat päivitykset tekoälystä ja digitaalisesta oppimisesta suoraan sähköpostiisi.",
+      "email_placeholder" : "Sähköpostiosoitteesi",
+      "copyright" : "© 2026 EduFlex LLP. Kaikki oikeudet pidätetään.",
+      "privacy_policy" : "Tietosuojakäytäntö",
+      "terms_of_service" : "Käyttöehdot",
+      "cookie_settings" : "Evästeasetukset"
     }
   },
-  "archive": {
-    "title": "Dokumenttiarkisto",
-    "subtitle": "Hallitse kaikkia järjestelmän tiedostoja.",
-    "search_placeholder": "Hae tiedostonimeä tai omistajaa...",
-    "filter_all": "Kaikki tyypit",
-    "filter_pdf": "PDF-tiedostot",
-    "filter_image": "Kuvat",
-    "filter_word": "Word-dokumentit",
-    "table_filename": "Tiedostonimi",
-    "table_owner": "Omistaja",
-    "table_uploaded": "Ladattu",
-    "table_action": "Toiminto",
-    "loading": "Ladataan tiedostoja...",
-    "no_results": "Yksikään dokumentti ei vastannut hakua.",
-    "unknown_owner": "Tuntematon",
-    "download_title": "Lataa alas",
-    "delete_title": "Poista",
-    "delete_confirm": "Haluatko varmasti poistaa tiedoston?",
-    "errors": {
-      "fetch_failed": "Dokumentteja ei voitu hakea",
-      "delete_failed": "Tiedoston poisto epäonnistui."
+  "dashboard_v2" : {
+    "total_students" : "Opiskelijoita yhteensä",
+    "total_teachers" : "Opettajia yhteensä",
+    "total_admins" : "Yhteensä järjestelmänvalvojia",
+    "active_users" : "Aktiivisia käyttäjiä (juuri nyt)",
+    "revenue_status" : "Tulotilanne",
+    "system_health" : "Järjestelmän kunto",
+    "storage_limit" : "Tallennusraja",
+    "active" : "Aktiivinen",
+    "excellent" : "Erinomainen",
+    "warning" : "Varoitus",
+    "critical" : "Kriittinen",
+    "manage_systems" : "Hallitse järjestelmiä",
+    "view_reports" : "Näytä raportit",
+    "audit_logs" : "Tarkastusloki"
+  },
+  "ai_personalization" : {
+    "title" : "AI-opinto-ohjaajasi",
+    "subtitle" : "Henkilökohtaisia oivalluksia, jotka perustuvat opiskeluaktiivisuuteesi",
+    "analyzing" : "Analysoidaan tietojasi...",
+    "insights" : "AI-oivallukset ja -vinkit",
+    "focus_areas" : "Suositellut kohdealueet",
+    "next_steps" : "Ehdotetut seuraavat vaiheet",
+    "no_data" : "Aloita opiskelu saadaksesi henkilökohtaisia AI-vinkkejä!",
+    "generate_btn" : "Luo uusia vinkkejä",
+    "tip_of_day" : "Päivän opiskeluvinkki",
+    "radar_title" : "Osaamisesi tutka"
+  },
+  "gamification" : {
+    "level" : "Taso {{level}}",
+    "xp_progress" : "{{current}} / {{next}} XP",
+    "streak_days" : "{{count}} päivän putki!",
+    "rank" : "Sijoitus: {{name}}",
+    "achievements" : "Saavutukset",
+    "leaderboard" : "Tulostaulu",
+    "recent_badges" : "Viimeisimmät merkit",
+    "view_all" : "Näytä kaikki",
+    "daily_bonus" : "Päivittäinen bonus saatavilla!",
+    "claim" : "Lunasta"
+  },
+  "tenta" : {
+    "title" : "Digitaalinen Tentti",
+    "proctoring_active" : "Valvonta Aktiivinen",
+    "start_exam" : "Aloita Palautus / Tentti",
+    "time_left" : "Aikaa jäljellä: {{time}}",
+    "submit_exam" : "Viimeistele & Palauta",
+    "finish_confirm" : "Oletko aivan varma, että haluat palauttaa? Et voi muuttaa vastauksiasi sen jälkeen.",
+    "warning_tab_switch" : "Varoitus! Et saa vaihtaa välilehteä meneillään olevan tentin aikana.",
+    "warning_out_of_focus" : "Järjestelmä on havainnut, että olet poistunut ikkunasta."
+  },
+  "catalog_page" : {
+    "title" : "Kurssiluettelo",
+    "subtitle" : "Tutustu laajaan kurssi- ja koulutusvalikoimaamme",
+    "search" : "Hae luettelosta...",
+    "enroll" : "Ilmoittaudu",
+    "enrolled" : "Ilmoittautunut",
+    "price_free" : "Maksuton",
+    "view_details" : "Näytä tiedot",
+    "no_results" : "Yksikään kurssi ei vastannut hakua.",
+    "categories" : "Luokat",
+    "filter_all" : "Kaikki kurssit"
+  },
+  "editor" : {
+    "title" : "Asiakirjan muokkaus",
+    "save_success" : "Asiakirja on tallennettu.",
+    "save_error" : "Tallennuksessa tapahtui virhe.",
+    "collaborators" : "Yhteistyökumppanit paikalla",
+    "version_history" : "Versiohistoria",
+    "open_onlyoffice" : "Avaa OnlyOfficessa"
+  },
+  "db_switch" : {
+    "title" : "Vaihda tietokantaa",
+    "current" : "Nykyinen ympäristö",
+    "connect" : "Yhdistä kohteeseen {{name}}",
+    "error" : "Ympäristön vaihtaminen epäonnistui."
+  },
+  "archive" : {
+    "title" : "Järjestelmäarkisto",
+    "restore" : "Palauta",
+    "permanent_delete" : "Poista pysyvästi",
+    "empty_trash" : "Tyhjennä roskakori",
+    "no_items" : "Roskakorissa ei ole kohteita."
+  },
+  "quiz" : {
+    "generate" : "Generoi tietovisa tekoälyllä",
+    "processing" : "Tekoäly työskentelee... Tämä voi kestää jopa minuutin.",
+    "success" : "Tietovisa luotu!",
+    "error" : "Tietovisan luominen epäonnistui.",
+    "upload_context" : "Lataa dokumentteja kontekstiksi...",
+    "questions_count" : "Kysymysten määrä",
+    "difficulty" : "Vaikeustaso",
+    "easy" : "Helppo",
+    "medium" : "Keskitaso",
+    "hard" : "Vaikea"
+  },
+  "integrity" : {
+    "gdpr_notice" : "Me välitämme yksityisyydestäsi. Tämä alusta noudattaa GDPR:ää.",
+    "request_data" : "Pyydä otteita",
+    "delete_account_request" : "Pyydä tilin poistamista"
+  },
+  "skolverket" : {
+    "import_title" : "Skolverket Integraatio",
+    "syncing" : "Synkronoidaan Skolverketin kanssa...",
+    "last_sync" : "Viimeisin synkronointi: {{date}}",
+    "import_course" : "Tuo kurssikoodi",
+    "course_found" : "Löydetty: {{name}}"
+  },
+  "contact" : {
+    "title" : "Ota yhteyttä",
+    "description" : "Olemme täällä auttamassa sinua ympäri vuorokauden.",
+    "form" : {
+      "name" : "Nimesi",
+      "email" : "Sähköpostiosoitteesi",
+      "subject" : "Aihe",
+      "message" : "Viesti",
+      "send" : "Lähetä viesti"
     }
   },
-  "quiz": {
-    "submit_btn": "Lähetä",
-    "submit_error": "Tuloksen lähettäminen epäonnistui.",
-    "monitored_exam": "Valvottu tentti",
-    "explanation": "Selitys:",
-    "your_result": "Tuloksesi",
-    "practice_again": "Harjoittele uudelleen",
-    "close": "Sulje"
-  },
-  "integrity": {
-    "focus_lost_log": "Opiskelija poistui välilehdeltä/ikkunasta",
-    "focus_lost_warn": "Varoitus: Fokuksen menetys havaittu. Opettajallesi on ilmoitettu.",
-    "tab_switch_log": "Ikkuna menetti fokuksen",
-    "fullscreen_exit_log": "Opiskelija poistui kokoruudun tilasta",
-    "proctoring_started_log": "Tentin valvonta aloitettu",
-    "proctoring_stopped_log": "Tentin valvonta lopetettu"
-  },
-  "skolverket": {
-    "title": "Skolverketin kurssitiedot",
-    "tabs": {
-      "basic_info": "Perustiedot",
-      "content": "Sisältö",
-      "criteria": "Arviointikriteerit"
+  "system_settings" : {
+    "sidebar" : {
+      "categories" : {
+        "config" : "Konfiguraatio",
+        "appearance" : "Ulkoasu",
+        "license" : "Lisenssi & Palvelin",
+        "ai" : "AI & Älykkyys",
+        "modules" : "Moduulit & Kielet",
+        "integrations" : "Integraatiot",
+        "communication" : "Viestintä"
+      },
+      "tenants" : "Tenant-hallinta",
+      "skolverket" : "Skolverket-hallinta",
+      "theme" : "Teema-asetukset",
+      "pdf_templates" : "PDF-mallipohjat",
+      "whitelabel" : "Whitelabeling",
+      "license" : "Lisenssitila",
+      "server" : "Palvelimen kunto",
+      "ai_config" : "AI-konfiguraatio",
+      "ai_audit" : "AI-tarkastusloki",
+      "system_modules" : "Järjestelmämoduulit",
+      "languages" : "Kieltenhallinta",
+      "webhooks" : "Webhookit & API",
+      "notifications" : "Ilmoitussäännöt"
     },
-    "labels": {
-      "course_code": "Kurssikoodi",
-      "course_name": "Kurssin nimi",
-      "english_title": "Englanninkielinen otsikko",
-      "points": "Pisteet",
-      "points_value": "{{count}} pistettä",
-      "subject": "Aihe",
-      "skolformer": "Koulumuodot",
-      "open_syllabus": "Avaa virallinen opetussuunnitelma (Skolverket)"
-    },
-    "sections": {
-      "description": "Kurssin kuvaus",
-      "purpose": "Aineen tarkoitus",
-      "objectives": "Kurssin tavoitteet"
-    },
-    "messages": {
-      "no_info": "Yksityiskohtaisia tietoja ei ole vielä saatavilla. Nämä tiedot lisätään jatkossa.",
-      "loading_criteria": "Ladataan arviointikriteerejä...",
-      "no_criteria": "Arviointikriteerejä ei ole vielä saatavilla. Nämä lisätään jatkossa.",
-      "grade_level": "Arvosana {{level}}"
+    "sections" : {
+      "theme" : {
+        "title" : "Teema & Estetiikka",
+        "description" : "Mukauta EduFlex-ympäristösi ulkoasua ja tunnelmaa.",
+        "active_theme" : "Aktiivinen teema",
+        "current_look" : "Alustan nykyinen ulkoasu",
+        "primary_color" : "Pääväri"
+      },
+      "whitelabel" : {
+        "title" : "Whitelabeling",
+        "description" : "Poista EduFlex-brändäys ja tee siitä omasi.",
+        "status" : "Whitelabel-tila",
+        "customize" : "Mukauta logoa, värejä ja nimeä",
+        "enterprise_active" : "Enterprise-tila aktiivinen",
+        "full_access" : "Sinulla on täysi pääsy whitelabeling-ominaisuuksiin.",
+        "enterprise_required" : "Enterprise-lisenssi vaaditaan",
+        "upgrade_unlock" : "Päivitä Enterpriseen avataksesi whitelabelingin."
+      },
+      "license" : {
+        "title" : "Lisenssienhallinta",
+        "description" : "Hallitse EduFlex-tilaustasi ja lisenssiavaimia."
+      },
+      "server" : {
+        "title" : "Palvelimen kunto & Varmuuskopiot",
+        "description" : "Valvo järjestelmän kuntoa ja hallitse tietokantavarmuuskopioita.",
+        "backups" : "Järjestelmän varmuuskopiot",
+        "latest_backup" : "Uusin varmuuskopio",
+        "create_backup" : "Luo uusi varmuuskopio",
+        "no_backups" : "Varmuuskopioita ei löytynyt.",
+        "db_connections" : "Tietokantayhteydet",
+        "db_description" : "Hallitse ulkoisia ja sisäisiä tietokantayhteyksiä.",
+        "add_db" : "Lisää yhteys",
+        "switch_db" : "Vaihda aktiivista DB:tä"
+      },
+      "ai" : {
+        "description" : "Määritä Google Gemini ja AI-pohjaiset toiminnot."
+      }
     }
   }
 }

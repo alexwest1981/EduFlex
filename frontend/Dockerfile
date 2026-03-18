@@ -1,18 +1,25 @@
 # Multi-stage build for React frontend
 
-# Stage 1: Build
-FROM node:20-alpine AS build
+# Stage 1: Base & Dependencies
+FROM node:20-alpine AS base
 WORKDIR /app
 
 # Copy package files and install dependencies (cached layer)
 COPY package*.json ./
 RUN npm install --legacy-peer-deps --silent
 
+# Stage 2: Development (For Live Sync)
+FROM base AS development
+COPY . .
+CMD ["npm", "run", "dev", "--", "--host", "--port", "80"]
+
+# Stage 3: Build
+FROM base AS build
 # Copy source code and build
 COPY . .
 RUN npm run build
 
-# Stage 2: Production with Nginx
+# Stage 4: Production with Nginx
 FROM nginx:alpine
 WORKDIR /usr/share/nginx/html
 

@@ -1,755 +1,1237 @@
 {
-  "common": {
-    "save": "Gem",
-    "cancel": "Annuller",
-    "delete": "Slet",
-    "edit": "Rediger",
-    "upload": "Upload",
-    "download": "Hent",
-    "search": "Søg...",
-    "filter": "Filtrer",
-    "name": "Navn",
-    "action": "Handling",
-    "description": "Beskrivelse",
-    "date": "Dato",
-    "size": "Størrelse",
-    "loading": "Indlæser...",
-    "student": "Studerende",
-    "file": "Fil",
-    "close": "Luk",
-    "back": "Tilbage",
-    "send": "Send",
-    "yes": "Ja",
-    "no": "Nej",
-    "unknown": "Ukendt",
-    "light_mode": "Lyst tilstand",
-    "dark_mode": "Mørkt tilstand",
-    "choose": "Vælg...",
-    "optional": "Valgfri",
-    "minimize_menu": "Minimer menu",
-    "expand_menu": "Udvid menu",
-    "online_friends": "Online venner",
-    "today": "I dag",
-    "tomorrow": "I morgen",
-    "all": "Alle",
-    "none": "Ingen",
-    "title": "Titel",
-    "questions": "Spørgsmål",
-    "created": "Oprettet",
-    "category": "Kategori",
-    "copy": "Kopi",
-    "brands": {
-      "gemini": "Google Gemini",
-      "postgresql": "PostgreSQL",
-      "openai": "OpenAI API"
+  "common" : {
+    "save" : "Gem",
+    "cancel" : "Annuller",
+    "delete" : "Slet",
+    "edit" : "Rediger",
+    "upload" : "Upload",
+    "download" : "Download",
+    "search" : "Søg...",
+    "filter" : "Filtrer",
+    "name" : "Navn",
+    "action" : "Handling",
+    "description" : "Beskrivelse",
+    "date" : "Dato",
+    "size" : "Størrelse",
+    "loading" : "Indlæser...",
+    "student" : "Studerende",
+    "file" : "Fil",
+    "close" : "Luk",
+    "back" : "Tilbage",
+    "send" : "Send",
+    "yes" : "Ja",
+    "no" : "Nej",
+    "unknown" : "Ukendt",
+    "light_mode" : "Lyst tilstand",
+    "dark_mode" : "Mørkt tilstand",
+    "choose" : "Vælg...",
+    "optional" : "Valgfri",
+    "minimize_menu" : "Minimer menu",
+    "expand_menu" : "Udvid menu",
+    "online_friends" : "Online Venner",
+    "today" : "I dag",
+    "tomorrow" : "I morgen",
+    "all" : "Alle",
+    "none" : "Ingen",
+    "title" : "Titel",
+    "questions" : "Spørgsmål",
+    "created" : "Oprettet",
+    "category" : "Kategori",
+    "copy" : "Kopi",
+    "brands" : {
+      "gemini" : "Google Gemini",
+      "postgresql" : "PostgreSQL",
+      "openai" : "OpenAI API"
+    },
+    "pro" : "Pro",
+    "menu" : "Menu"
+  },
+  "sidebar" : {
+    "dashboard" : "Oversigt",
+    "admin" : "Administration",
+    "my_profile" : "Min profil",
+    "logout" : "Log ud",
+    "documents" : "Filer & Dokumenter",
+    "catalog" : "Kursuskatalog",
+    "calendar" : "Kalender",
+    "resource_bank" : "Ressourcebank",
+    "library" : "Bibliotek",
+    "analytics" : "Analyser & Indsigter",
+    "support" : "Support & Kontakt",
+    "my_courses" : "Mine kurser",
+    "ebooks" : "E-bøger",
+    "system" : "System",
+    "ai_quiz" : "AI Quiz",
+    "shop" : "Butik",
+    "categories" : {
+      "main" : "Hovedmenu",
+      "education" : "Uddannelse & Studium",
+      "tools" : "Værktøjer",
+      "syv" : "Studievejledning & Optagelse",
+      "admin" : "Administration",
+      "rektor" : "Rektorpakke",
+      "guardian" : "Værge"
+    },
+    "lms_platform" : "LMS PLATFORM",
+    "install_app" : "INSTALLER APP"
+  },
+  "library" : {
+    "title" : "Bibliotek",
+    "subtitle" : "Udforsk og læs e-bøger",
+    "search_placeholder" : "Søg efter titel eller forfatter...",
+    "categories" : "Kategorier",
+    "all_categories" : "Alle",
+    "read_book" : "Læs bog",
+    "edit_book" : "Rediger bog",
+    "delete_book" : "Slet bog",
+    "upload_book" : "Upload ny bog",
+    "no_books_found" : "Ingen bøger fundet.",
+    "edit_modal_title" : "Rediger E-bog",
+    "upload_modal_title" : "Upload ny E-bog",
+    "title_label" : "Titel",
+    "author_label" : "Forfatter",
+    "category_label" : "Kategori",
+    "description_label" : "Beskrivelse",
+    "save_changes" : "Gem ændringer",
+    "upload_btn" : "Upload",
+    "language_label" : "Sprog",
+    "epub_file_label" : "EPUB-fil",
+    "cover_image_label" : "Coverbillede",
+    "no_cover" : "Intet cover",
+    "select_file_alert" : "Vælg venligst en EPUB-fil",
+    "delete_confirm" : "Er du sikker på, at du vil slette denne bog?",
+    "delete_success" : "Bog slettet",
+    "no_books_desc" : "Prøv at søge efter noget andet eller upload din første e-bog til biblioteket."
+  },
+  "dashboard" : {
+    "welcome" : "Velkommen tilbage, {{name}}!",
+    "welcome_back" : "Velkommen tilbage,",
+    "logged_in_as" : "Du er logget ind som",
+    "live_overview" : "Live-oversigt",
+    "realtime_data" : "Data i realtid fra hele platformen",
+    "tabs" : {
+      "overview" : "Oversigt",
+      "communication" : "Kommunikation"
+    },
+    "widgets" : {
+      "stats" : "Statistik",
+      "calendar" : "Kalender & Skema",
+      "recent_users" : "Seneste Brugere",
+      "recent_docs" : "Nyligt Uploadet",
+      "messages" : "Seneste Beskeder",
+      "online_friends" : "Online Venner",
+      "tickets" : "Supporthenvendelser",
+      "gamification" : "Gamification Status",
+      "attendance" : "Mit Fremmøde",
+      "my_courses" : "Mine Kurser",
+      "tasks" : "Opgaver & Feedback",
+      "daily_challenges" : "Dagens Udfordringer",
+      "achievements" : "Mine Præstationer",
+      "ai_insights" : "AI-Indsigter",
+      "ai_personalization" : "Personlige Studietips",
+      "daily_challenges_widget" : {
+        "title" : "Dagens Udfordringer",
+        "subtitle" : "Gennemfør for at tjene XP",
+        "days" : "{{count}} dage",
+        "empty" : "Ingen udfordringer tilgængelige endnu",
+        "completed" : "✓ Færdig",
+        "reset_in" : "Nye udfordringer om {{hours}}t {{minutes}}m"
+      }
+    },
+    "my_courses" : "Mine Kurser",
+    "files" : "Filer",
+    "no_active_courses" : "Du har ingen aktive kurser.",
+    "total_users" : "Totalt Brugere",
+    "total_courses" : "Totalt Kurser",
+    "open" : "Åbne",
+    "closed" : "Lukkede",
+    "realtime_update_notice" : "Data opdateres i realtid.",
+    "new_messages" : "Nye Beskeder",
+    "go_to_inbox" : "Gå til indbakken",
+    "students" : "Studerende",
+    "teachers" : "Lærere",
+    "admins" : "Admins",
+    "mentors" : "Mentorer",
+    "principals" : "Skoleledere",
+    "evaluations" : "Evalueringer",
+    "give_rating" : "Giv bedømmelse",
+    "to_grade" : "At Rette",
+    "submissions" : "Indsendelser",
+    "no_pending_grades" : "Ingen indsendelser venter!",
+    "upcoming_deadlines" : "Næste Deadlines",
+    "no_deadlines" : "Ingen kommende indsendelser.",
+    "active_plural" : "Aktive",
+    "archive_plural" : "Arkiverede",
+    "datasync_ok" : "Synkroniseret",
+    "new_badge" : "NY",
+    "archived_files" : "Arkiverede Filer",
+    "urgent" : "Haster!",
+    "go_to" : "Gå til",
+    "avg_grade" : "Gennemsnitskarakter",
+    "based_on" : "Baseret på {{count}} afsluttede kurser",
+    "users" : "Brugere",
+    "courses" : "Kurser",
+    "latest_registered" : "Senest registrerede",
+    "latest_uploads" : "Seneste uploads",
+    "archive" : "Arkiv",
+    "no_archive_docs" : "Ingen dokumenter i arkivet.",
+    "teacher_panel" : "Lærerpanel",
+    "overview_for" : "Oversigt for {{name}}",
+    "my_students" : "Mine Studenter",
+    "active_courses" : "Aktive Kurser",
+    "students_at_risk" : "Elever i risikozonen (Sene indsendelser)",
+    "missed_deadlines" : "Har misset {{count}} deadlines",
+    "no_risk_students" : "Ingen sene indsendelser!",
+    "all_in_phase" : "Alle dine studerende er i fase.",
+    "grading_todo" : "At gøre: Retning",
+    "grade_now" : "Ret",
+    "all_graded" : "Alt er rettet! Godt arbejde.",
+    "hi_student" : "Hej, {{name}}! 👋",
+    "student_subtitle" : "Her er dine studier lige nu.",
+    "not_registered" : "Du er ikke registreret på nogen kurser.",
+    "comming_assignments" : "Kommende Deadlines",
+    "no_upcoming_assignments" : "Ingen kommende opgaver lige nu.",
+    "admin_overview" : "Systemoversigt",
+    "admin_subtitle" : "Administration og Kursusstyring",
+    "active_students" : "Aktive Studenter",
+    "locked_courses" : "Låste Kurser",
+    "files_in_system" : "Filer i systemet",
+    "course_registry" : "Kursusregister",
+    "search_placeholder" : "Søg kursuskode eller navn...",
+    "all_statuses" : "Alle Statusser",
+    "no_match" : "Ingen kurser matchede din søgning.",
+    "showing_x_of_y" : "Viser {{count}} af {{total}} kurser",
+    "manage" : "Administrer",
+    "new_course" : "Nyt Kursus",
+    "search_course" : "Søg kursus...",
+    "table" : {
+      "status" : "Status",
+      "code" : "Kode",
+      "name" : "Navn",
+      "date" : "Dato",
+      "action" : "Handling",
+      "user" : "Bruger",
+      "email" : "Email",
+      "role" : "Rolle"
+    },
+    "course_color" : "Kursusfarve",
+    "edit_course" : "Rediger kursus",
+    "delete_course" : "Slet kursus",
+    "no_new_users" : "Ingen nye brugere registreret.",
+    "recent_uploads" : "Seneste uploads",
+    "unknown_file" : "Ukendt fil",
+    "unknown_size" : "Ukendt størrelse",
+    "unknown_date" : "Ukendt dato",
+    "no_files_uploaded" : "Ingen filer uploadet endnu.",
+    "user_registry" : "Brugerregister",
+    "new_user" : "Ny Bruger",
+    "search_user" : "Søg bruger...",
+    "all_roles" : "Alle Roller",
+    "active" : "Aktiv",
+    "edit_user" : "Rediger bruger",
+    "delete_user" : "Slet bruger",
+    "feedback" : {
+      "new" : "Ny Feedback",
+      "course" : "Kursus: {{name}}",
+      "praise" : "Godt arbejde!",
+      "details" : "Vis detaljer"
     }
   },
-  "sidebar": {
-    "dashboard": "Oversigt",
-    "admin": "Administration",
-    "my_profile": "Min profil",
-    "logout": "Log ud",
-    "documents": "Filer og dokumenter",
-    "catalog": "Kursuskatalog",
-    "calendar": "Kalender",
-    "resource_bank": "Ressourcebank",
-    "library": "Bibliotek",
-    "analytics": "Analyser og indsigter",
-    "support": "Support og kontakt",
-    "my_courses": "Mine kurser",
-    "ebooks": "E-bøger",
-    "system": "System",
-    "ai_quiz": "AI Quiz",
-    "shop": "Butik",
-    "categories": {
-      "main": "Hovedmenu",
-      "education": "Uddannelse og studium",
-      "tools": "Værktøjer",
-      "syv": "Studievejledning og optagelse",
-      "admin": "Administration",
-      "rektor": "Rektorpakke",
-      "guardian": "Værge"
-    },
-    "lms_platform": "LMS PLATFORM",
-    "install_app": "INSTALLER APP"
+  "attendance" : {
+    "title" : "Fremmøderapport",
+    "presence" : "Fremmøde:",
+    "occasions" : "gange",
+    "no_records" : "Ingen obligatoriske elementer registreret endnu.",
+    "not_reported" : "Ikke rapporteret",
+    "present" : "Tilstede",
+    "absent" : "Fraværende",
+    "description" : "Beskrivelse",
+    "no_description" : "Ingen beskrivelse tilgængelig.",
+    "note" : "Notering",
+    "manage_attendance" : "Administrer Fremmøde",
+    "new_event" : "Ny Begivenhed",
+    "create_event_title" : "Opret ny begivenhed",
+    "event_title" : "Titel",
+    "event_start" : "Start",
+    "event_end" : "Slut",
+    "event_type" : "Type",
+    "type_lesson" : "Lektion",
+    "type_workshop" : "Workshop",
+    "type_exam" : "Prøve",
+    "type_other" : "Andet",
+    "create_btn" : "Opret",
+    "save_attendance" : "Gem Fremmøde",
+    "saved_success" : "Fremmøde gemt!",
+    "save_error" : "Fejl ved gemning",
+    "create_error" : "Kunne ikke oprette begivenhed"
   },
-  "library": {
-    "title": "Bibliotek",
-    "subtitle": "Udforsk og læs e-bøger",
-    "search_placeholder": "Søg efter titel eller forfatter...",
-    "categories": "Kategorier",
-    "all_categories": "Alle",
-    "read_book": "Læs bog",
-    "edit_book": "Rediger bog",
-    "delete_book": "Slet bog",
-    "upload_book": "Upload ny bog",
-    "no_books_found": "Ingen bøger fundet.",
-    "edit_modal_title": "Rediger e-bog",
-    "upload_modal_title": "Upload ny e-bog",
-    "title_label": "Titel",
-    "author_label": "Forfatter",
-    "category_label": "Kategori",
-    "description_label": "Beskrivelse",
-    "save_changes": "Gem ændringer",
-    "upload_btn": "Upload",
-    "language_label": "Sprog",
-    "epub_file_label": "EPUB-fil",
-    "cover_image_label": "Coverbillede",
-    "no_cover": "Intet cover",
-    "select_file_alert": "Vælg venligst en EPUB-fil",
-    "delete_confirm": "Er du sikker på, at du vil slette denne bog?",
-    "delete_success": "Bog slettet",
-    "no_books_desc": "Prøv at søge efter noget andet eller upload din første e-bog til biblioteket."
+  "assessment" : {
+    "title" : "Vurdering & Resultater",
+    "no_assignments" : "Ingen opgaver i dette kursus.",
+    "deadline" : "Deadline",
+    "go_to_task" : "Gå til opgave",
+    "my_file" : "Min fil",
+    "grade" : "Karakter",
+    "waiting" : "Venter på bedømmelse",
+    "submitted_at" : "Indsendt",
+    "not_submitted" : "Ikke indsendt",
+    "submit_now" : "Indsend nu"
   },
-  "landing": {
-    "nav": {
-      "features": "Funktioner",
-      "gamification": "Gamification",
-      "showcase": "Showcase",
-      "pricing": "Prisplaner",
-      "technology": "Teknologi",
-      "login": "Log ind",
-      "book_demo": "Book Demo",
-      "get_started": "Kom i gang",
-      "select_language": "Vælg sprog"
+  "evaluation" : {
+    "title" : "Kursevaluering",
+    "intro" : "Dine svar er anonyme og hjælper os med at forbedre uddannelsen. Giv karakterer 1-10 og skriv gerne en kommentar.",
+    "your_rating" : "Din bedømmelse (1 = Dårligt, 10 = Fremragende)",
+    "comment_label" : "Kommentar (Valgfrit)",
+    "comment_placeholder" : "Skriv din mening her...",
+    "submit_btn" : "Indsend evaluering",
+    "validation_error" : "Venligst giv en bedømmelse på alle spørgsmål.",
+    "manage_btn" : "Administrer Evaluering",
+    "saved_success" : "Evaluering gemt!",
+    "save_error" : "Kunne ikke gemme evalueringen."
+  },
+  "license" : {
+    "locked_title" : "Systemet er låst",
+    "locked_desc" : "Ingen gyldig licens blev fundet.",
+    "key_label" : "Licensnøgle",
+    "key_placeholder" : "XXXX-XXXX-XXXX-XXXX",
+    "activate_btn" : "Aktiver System"
+  },
+  "auth" : {
+    "login_header" : "Log ind",
+    "register_header" : "Opret konto",
+    "username" : "Brugernavn",
+    "password" : "Adgangskode",
+    "login_button" : "Log ind",
+    "no_account" : "Ingen konto?",
+    "register_link" : "Registrer dig",
+    "has_account" : "Har du allerede en konto?",
+    "login_link" : "Log ind",
+    "firstname" : "Fornavn",
+    "lastname" : "Efternavn",
+    "ssn" : "Personnummer (YYYYMMDD-XXXX)",
+    "email" : "E-mail",
+    "generate" : "Generer forslag",
+    "choose_or_generate" : "Vælg eller generer...",
+    "profane" : "Upassende ord valgt.",
+    "taken" : "Optaget brugernavn.",
+    "available" : "Tilgængeligt!",
+    "role" : "Rolle",
+    "student" : "Studerende",
+    "admin" : "Administrator",
+    "teacher" : "Lærer",
+    "contact_address" : "Kontakt & Adresse",
+    "phone" : "Telefon",
+    "street" : "Gadeadresse",
+    "zip" : "Postnr.",
+    "city" : "By",
+    "country" : "Land",
+    "register_user_btn" : "Registrer Bruger",
+    "create_account_btn" : "Opret Min Konto"
+  },
+  "admin" : {
+    "title" : "Systemadministration",
+    "subtitle" : "Administrer brugere, kurser og systemarkiver.",
+    "tab_users" : "Brugere",
+    "tab_courses" : "Kurser",
+    "tab_docs" : "Dokumentarkiv",
+    "tab_settings" : "Indstillinger",
+    "register_new" : "Registrer ny bruger",
+    "firstname" : "Fornavn",
+    "lastname" : "Efternavn",
+    "ssn" : "Personnummer (12 cifre)",
+    "email" : "E-mail",
+    "account_role" : "Konto & Rolle",
+    "generate" : "Generer",
+    "password" : "Adgangskode",
+    "create_account" : "Opret konto",
+    "registered_users" : "Registrerede Brugere",
+    "course_overview" : "Kursoversigt",
+    "create_course" : "Opret nyt kursus",
+    "search_course" : "Søg på kursusnavn eller kursuskode...",
+    "no_courses" : "Ingen kurser fundet.",
+    "teacher" : "Lærer",
+    "students" : "Studerende",
+    "settings" : "Indstillinger",
+    "content" : "Indhold",
+    "global_docs" : "Globalt Dokumentarkiv",
+    "upload_file" : "Upload fil",
+    "no_docs" : "Systemet er tomt for arkiverede filer.",
+    "module_management" : "Modulhåndtering & Systeminfo",
+    "site_name" : "Sidens navn",
+    "chat_module" : "Chatmodul",
+    "chat_desc" : "Tillader elever og lærere at chatte i realtid.",
+    "registration" : "Nyregistrering",
+    "registration_desc" : "Tillader admin at oprette nye brugerkonti.",
+    "version" : "Systemversion",
+    "edit_course_settings" : "Rediger Kursusindstillinger",
+    "course_name" : "Kursusnavn",
+    "course_code" : "Kursuskode",
+    "color_theme" : "Farvetema",
+    "register_new_user" : "Registrer ny bruger",
+    "edit_user" : "Rediger bruger",
+    "edit_course" : "Rediger kursus",
+    "base_on_skolverket" : "Baseret på Skolverkskursus",
+    "choose_skolverket_course" : "Vælg Skolverkskursus",
+    "max_seats" : "Maks. pladser",
+    "tags" : "Tags",
+    "digital_classroom" : "Digitalt Klasserum (Frivilligt)",
+    "choose_platform" : "Vælg platform...",
+    "paste_link" : "Indsæt link...",
+    "choose_teacher" : "Vælg lærer..."
+  },
+  "course" : {
+    "back" : "Tilbage til oversigten",
+    "material" : "Materiale",
+    "assignments" : "Opgaver",
+    "quiz" : "Quiz & Prøver",
+    "forum" : "Forum",
+    "scorm" : "Interaktive Moduler",
+    "kursinformation" : "Kursusinformation",
+    "students" : "Studerende & Karakterer",
+    "attendance" : "Tilstedeværelse",
+    "create_quiz" : "Opret Ny Quiz",
+    "start_quiz" : "Start Quiz",
+    "no_material" : "Intet kursusmateriale er uploadet endnu.",
+    "add_material" : "Tilføj Materiale",
+    "upload" : "Upload",
+    "title" : "Titel",
+    "description" : "Beskrivelse",
+    "link" : "Link (URL)",
+    "type_text" : "Tekst / Artikel",
+    "type_video" : "Video",
+    "type_link" : "Eksternt Link",
+    "type_file" : "Fil",
+    "read" : "Læst",
+    "mark_read" : "Markér som læst",
+    "open_link" : "Åbn link",
+    "participants" : "Kursusdeltagere",
+    "add_student" : "Tilføj",
+    "select_student" : "Vælg studerende...",
+    "role" : "Rolle",
+    "status" : "Status",
+    "active" : "Aktiv",
+    "connect_classroom" : "Forbind til Klasseværelse",
+    "evaluate_course" : "Evaluer Kursus",
+    "feedback_thanks" : "Tak for din feedback!",
+    "error_occurred" : "Der opstod en fejl:",
+    "result_passed" : "Bestået",
+    "result_failed" : "Ikke bestået",
+    "result_pending" : "Afventer bedømmelse",
+    "mark_passed" : "Bestå",
+    "mark_failed" : "Ikke bestå",
+    "certificate" : "Certifikat",
+    "course_completed" : "Kursus afsluttet",
+    "view_certificate" : "Vis Certifikat",
+    "claim_certificate" : "Hent Certifikat"
+  },
+  "messages" : {
+    "profile_updated" : "Profil gemt!",
+    "password_changed" : "Adgangskode ændret!",
+    "login_failed" : "Forkert login.",
+    "login_error" : "Login mislykkedes.",
+    "account_created" : "Konto oprettet!",
+    "register_error" : "Kunne ikke registrere.",
+    "license_approved" : "Licens godkendt!",
+    "license_error" : "Kunne ikke aktivere.",
+    "upload_success" : "Fil uploadet!",
+    "upload_error" : "Upload mislykkedes.",
+    "setting_saved" : "Gemt!",
+    "setting_error" : "Kunne ikke gemme indstilling.",
+    "user_deleted" : "Bruger slettet.",
+    "delete_error" : "Kunne ikke slette bruger.",
+    "course_deleted" : "Kursus slettet.",
+    "course_delete_error" : "Kunne ikke slette kursus.",
+    "joined_course" : "Deltog!",
+    "loading" : "Indlæser...",
+    "loading_course" : "Indlæser kursus..."
+  },
+  "teacher_dashboard" : {
+    "tab_overview" : "Oversigt",
+    "tab_grading" : "Retning",
+    "tab_applications" : "Ansøgninger",
+    "tab_courses" : "Mine Kurser",
+    "tab_students" : "Studentopfølgning",
+    "tab_communication" : "Kommunikation",
+    "section_schedule" : "Kommende Skema",
+    "section_shortcuts" : "Genveje",
+    "section_admin" : "Administration",
+    "ongoing_course" : "Igangværende kursus",
+    "upcoming_event" : "Kommende begivenhed",
+    "course_start" : "Kursusstart: {{name}}",
+    "no_events" : "Ingen planlagte begivenheder.",
+    "new_message" : "Ny Besked"
+  },
+  "shortcuts" : {
+    "calendar" : "Gå til Kalender",
+    "students" : "Administrer Studerende",
+    "grading" : "Ret opgaver",
+    "messages" : "Beskeder",
+    "create_course" : "Opret nyt kursus"
+  },
+  "widgets" : {
+    "recent_messages" : {
+      "title" : "Seneste Meddelelser",
+      "view_all" : "Vis alle",
+      "empty" : "Ingen nye meddelelser.",
+      "from" : "Fra"
     },
-    "hero": {
-      "badge": "version 3.9.2 nu live",
-      "title_start": "Fremtidens",
-      "title_llp": "LLP",
-      "title_with": "med",
-      "title_hub": "EduAI Hub",
-      "subtitle": "En samlet, AI-drevet platform for skoler, virksomheder og myndigheder. Maksimer pædagogisk effekt og minimer administrationen døgnet rundt.",
-      "cta_ai": "Test AI Studio",
-      "cta_learn_more": "Læs om funktioner",
-      "cta_see_all": "Se alle 40+ funktioner",
-      "tech_tagline": "Drevet af verdensledende teknologi",
-      "stats": {
-        "engagement": "Øget elevengagement",
-        "new_level": "Ny Præstation!",
-        "level_value": "Niveau {{level}}"
-      }
+    "online_friends" : {
+      "title" : "Online Venner",
+      "x_online" : "{{count}} online",
+      "empty" : "Ingen venner online lige nu.",
+      "profile" : "Profil",
+      "view_all" : "Vis alle venner"
     },
-    "features": {
-      "title": "Alt hvad du behøver for moderne uddannelse",
-      "subtitle": "Fra AI-drevet analyse til gamification og administration. Alt samlet i én kraftfuld platform.",
-      "multi_tenancy": {
-        "title": "Multi-Tenancy",
-        "desc": "Isolerede data for hver skole med uendelig skalerbarhed."
-      },
-      "b2b": {
-        "title": "B2B Admin Konsol",
-        "desc": "Administrer brugere, kurser og licenser problemfrit fjernt."
-      },
-      "microservice": {
-        "title": "Microservices",
-        "desc": "Bygget med Spring Boot for maksimal ydeevne og stabilitet."
-      },
-      "event_bus": {
-        "title": "Real-time Event-Bus",
-        "desc": "Øjeblikkelig notifikation og synkronisering mellem alle moduler."
-      },
-      "gamification": {
-        "title": "Game Engine",
-        "desc": "XP, Badges og Leaderboards der motiverer læring."
-      },
-      "ai_creator": {
-        "title": "AI Kursus Skaber",
-        "desc": "Auto-generer hele kurser fra PDF eller link på 60 sek."
-      },
-      "pwa": {
-        "title": "PWA Mobil App",
-        "desc": "Installer EduFlex direkte på din mobil uden en app store."
-      },
-      "live_video": {
-        "title": "Live Video & Chat",
-        "desc": "Integreret Zoom/Teams support for digitale klasseværelser."
-      },
-      "collaborative": {
-        "title": "Kollaborativ Redigering",
-        "desc": "Rediger dokumenter sammen i realtid gennem OnlyOffice."
-      },
-      "roi": {
-        "title": "Pædagogisk ROI",
-        "desc": "Mål præcis hvor meget tid og ressourcer du sparer dagligt."
-      },
-      "notifications": {
-        "title": "Smarte Notifikationer",
-        "desc": "Kontekstuelle push-notifikationer for deadlines og feedback."
-      },
-      "exams": {
-        "title": "Sikre Eksaminer",
-        "desc": "Overvåget miljø med fokuskontrol og integritetsbeskyttelse."
-      },
-      "integrations": {
-        "title": "LTI 1.3 Advantage",
-        "desc": "Fuldt kompatibel med Canvas, Moodle og Blackboard."
-      },
-      "compliance": {
-        "title": "WCAG Compliance",
-        "desc": "Designet til 100% tilgængelighed uanset forudsætninger."
-      },
-      "pii": {
-        "title": "GDPR Zero-Trust",
-        "desc": "Gennembrudspii-maskering af alle følsomme elevdata."
-      },
-      "educareer": {
-        "title": "EduCareer Roadmap",
-        "desc": "AI-drevne karriereveje for at nå elevens drømmemål."
-      }
+    "live_lessons" : {
+      "title" : "Live-lektioner",
+      "subtitle" : "Kommende videomøder",
+      "soon" : "Snart",
+      "host" : "Vært",
+      "join" : "Deltag",
+      "prepare" : "Forbered",
+      "view" : "Vis",
+      "see_all_calendar" : "Se alle i kalenderen",
+      "error_load" : "Kunne ikke indlæse lektioner",
+      "error_join" : "Kunne ikke tilslutte til lektion"
     },
-    "screenshots": {
-      "admin": {
-        "title": "Admin Dashboard 2.0",
-        "desc": "Total kontrol over organisationen med live-data og widgets."
-      },
-      "teacher": {
-        "title": "Lærerpanelet",
-        "desc": "Effektiv oversigt over elevers tilstedeværelse, fremskridt og indleveringer."
-      },
-      "quiz": {
-        "title": "AI Quiz Generator",
-        "desc": "Upload dokumenter og lad AI skabe prøvespørgsmål på sekunder."
-      },
-      "library": {
-        "title": "E-boksbibliotek",
-        "desc": "Et centralt bibliotek for litteratur med indbygget læser."
-      },
-      "catalog": {
-        "title": "Kursuskatalog",
-        "desc": "Visuelt og filtrerbart katalog for elever at finde nye kurser."
-      },
-      "resource": {
-        "title": "Resursbank & Community",
-        "desc": "Del og hent materiale fra et fælles Community-bibliotek."
-      },
-      "analytics": {
-        "title": "Analyser & Indsigter",
-        "desc": "Realtidsdashboards for rektorer og lærere. Heatmaps og afhopnings-forudsigelser."
-      },
-      "security": {
-        "title": "Enterprise Sikkerhed",
-        "desc": "Rollebaseret adgangskontrol (RBAC), audit-logning og sikker Keycloak SSO-integration."
-      },
-      "evaluation_system": {
-        "title": "Kursusudvaluering & Indsigter",
-        "desc": "Komplet system til kursuskvalitet. Automatiske elev-notifikationer og AI-analyse af fritekstsvar for at måle uddannelsens ROI."
-      }
+    "tickets" : {
+      "active" : "Aktive Supporthenvendelser",
+      "critical" : "Kritiske",
+      "high" : "Høj prioritet",
+      "medium" : "Medium prioritet",
+      "low" : "Lav prioritet",
+      "open" : "Åbne sager",
+      "empty" : "Ingen åbne sager lige nu."
     },
-    "architecture": {
-      "badge": "Bygget til Skalering",
-      "title": "Enterprise Arkitektur",
-      "powered_by": "Drevet af Branchestandarder",
-      "items": [
-        "Spring Boot 3.4 Microservices",
-        "PostgreSQL med Schema-per-Tenant",
-        "Redis Caching-lag",
-        "MinIO S3-Kompatibel Lagring",
-        "Keycloak SSO Identitetshåndtering",
-        "Kubernetes & Helm Charts"
-      ]
+    "student_progress" : {
+      "title" : "Mine Kursusresultater",
+      "on_track" : "Er godt på vej",
+      "at_risk" : "Advarsel",
+      "assignments" : "Opgaver",
+      "quizzes" : "Quizzer",
+      "detailed_overview" : "Detaljeret oversigt",
+      "latest_results" : "Seneste Resultater",
+      "no_results" : "Ingen resultater endnu.",
+      "catch_up" : "Sørg for at komme på omgangshøjde!",
+      "go_to_course" : "Gå til kurset"
     },
-    "pricing": {
-      "title": "Enkel, Transparent Prissætning",
-      "subtitle": "Vælg den plan, der passer til din skole.",
-      "basic": {
-        "name": "Basic",
-        "price": "990 DKK / måned",
-        "features": [
-          "Op til 100 brugere",
-          "Grundlæggende kurshåndtering",
-          "Enkel rapportering",
-          "Community Support"
-        ],
-        "cta": "Kom i gang"
-      },
-      "pro": {
-        "name": "Pro",
-        "price": "2 990 DKK / måned",
-        "features": [
-          "Op til 500 brugere",
-          "Fuldstændig Gamification",
-          "Skolverket-Integration",
-          "CSN-Export",
-          "Prioriteret Support"
-        ],
-        "cta": "Book Demo",
-        "badge": "Mest Populær"
-      },
-      "enterprise": {
-        "name": "Enterprise",
-        "price": "Kontakt os",
-        "features": [
-          "Ubegrænset antal brugere",
-          "White-label Branding",
-          "Keycloak SSO",
-          "SLA 99.99%",
-          "Dedikeret infrastruktur"
-        ],
-        "cta": "Kontakt Salg"
-      }
+    "attendance_widget" : {
+      "title" : "Mit Digitale Fremmøde",
+      "activity_level" : "Aktivitetsniveau",
+      "registered_time" : "Registreret tid",
+      "gold_week" : "Mål (Uge)",
+      "low_warning" : "Obs! Dit fremmøde er lavt. Kontakt din mentor."
     },
-    "pricing_page": {
-      "back": "Tilbage til start",
-      "badge": "Gennemsigtighed",
-      "title": "Enkel & Fair {{gradient}}",
-      "gradient_text": "Prissætning",
-      "subtitle": "Vælg det niveau der passer bedst til jeres organisation. Ingen skjulte gebyrer, bare ren pædagogisk kraft.",
-      "most_popular": "Mest Populær",
-      "currency_suffix": "DKK / elev / måned",
-      "cta_prefix": "Kom i gang med",
-      "security_title": "GDPR & Sikkerhed",
-      "security_desc": "Alle data lagres inden for EU (Sverige/Tyskland). Vi følger de strengeste krav til PII-maskering og privacy by design.",
-      "availability_title": "Høj Tilgængelighed",
-      "availability_desc": "Vores Kubernetes-arkitektur garanterer 99,9 % oppetid for Enterprise. Systemet skalerer automatisk baseret på antallet af brugere.",
-      "onboarding_title": "Personlig Onboarding",
-      "onboarding_desc": "Vi hjælper jer med SIS-integration, LTI-setup og lærertræning for at sikre en succesfuld pilotperiode.",
-      "custom_title": "Har du brug for en skræddersyet løsning?",
-      "custom_subtitle": "For større koncerner eller specifikke pædagogiske behov tilbyder vi skræddersyede ENTERPRISE-pakker.",
-      "button_calc": "Book en prisberegning",
-      "button_kit": "Hent Pilot Kit (PDF)",
-      "tiers": {
-        "basic": {
-          "desc": "Perfekt til mindre skoler eller foreninger, der ønsker at digitalisere deres administration.",
-          "features": [
-            "Fuld LMS",
-            "Kursus- & Medieværktøjer",
-            "Elevregister (PII-maskeret)",
-            "Hændelses- & Sundhedshåndtering",
-            "E-mail support"
-          ]
-        },
-        "pro": {
-          "desc": "Det intelligente niveau for moderne uddannelsesudbydere med AI-støtte.",
-          "features": [
-            "Alt i BASIC",
-            "AI Tutor (Google Gemini)",
-            "AI Quiz Generator",
-            "Gamification (XP, Shop, Badges)",
-            "LTI 1.3 & Zoom/Teams integrationer",
-            "Prioriteret support"
-          ]
-        },
-        "enterprise": {
-          "desc": "Fuldskala løsning for koncerner og myndigheder med høje krav til kontrol.",
-          "features": [
-            "Alt i PRO",
-            "Fuld Whitelabeling (Eget domæne)",
-            "Production-ready Kubernetes Ops",
-            "Dedikeret Success Manager",
-            "SLA: 99.9% Uppetid",
-            "Custom API-udvikling"
-          ]
-        }
-      }
-    },
-    "footer": {
-      "tagline": "Styrker uddannelse med moderne teknologi. Bygget med ❤️ i Sverige.",
-      "product": "Produkt",
-      "features": "Funktioner",
-      "pricing": "Priser",
-      "roadmap": "Roadmap",
-      "resources": "Ressourcer",
-      "documentation": "Dokumentation",
-      "api_reference": "API-Reference",
-      "system_status": "Systemstatus",
-      "connect": "Kontakt",
-      "support": "Support",
-      "newsletter": "Nyhedsbrev",
-      "newsletter_desc": "Få de seneste opdateringer om AI og uddannelse direkte i din indbakke.",
-      "email_placeholder": "din@email.dk",
-      "contact_sales": "Kontakt Salg",
-      "twitter": "Twitter",
-      "github": "GitHub",
-      "copyright": "© 2026 EduFlex. Alle rettigheder forbeholdt.",
-      "privacy_policy": "Privatlivspolitik",
-      "terms_of_service": "Servicevilkår",
-      "cookie_settings": "Cookie-indstillinger",
-      "developed_by": "Udviklet af",
-      "fenrir": "Fenrir Studio",
-      "security": "Sikkerhed",
-      "api": "API-Dokumentation",
-      "help_center": "Hjælpecenter"
-    },
-    "roles": {
-      "badge": "Løsninger for alle",
-      "title": "Tilpasset din rolle i skolen",
-      "subtitle": "EduFlex er designet til at lette hverdagen for alle interessenter i uddannelse.",
-      "outcome_label": "Effekt",
-      "rector": {
-        "title": "Rektor & Skoleledelse",
-        "desc": "Få fuld kontrol over driften med realtidsdata og strategisk beslutningsstøtte.",
-        "feature1": "Realtids-KPI'er & Dashboards",
-        "feature2": "Systematisk kvalitetsarbejde (SKA)",
-        "feature3": "Økonomisk & ressourceplanlægning",
-        "outcome": "Øget gennemstrømning & sikrere styring."
-      },
-      "teacher": {
-        "title": "Lærere & Mentorer",
-        "desc": "Reducer administrationen og fokuser på pædagogik med AI-støtte i verdensklasse.",
-        "feature1": "AI-genererede prøver & quizzer",
-        "feature2": "Automatiseret fremmøde & bedømmelse",
-        "feature3": "At-Risk tidlig advarsel (Gemini)",
-        "outcome": "Sparer op mod 70 % admintid."
-      },
-      "student": {
-        "title": "Elever & Studerende",
-        "desc": "Engagerende læringsmiljø med gamification og personlig AI-støtte døgnet rundt.",
-        "feature1": "Live Radar vidensvisning",
-        "feature2": "Personlig AI Tutor (Video/Chat)",
-        "feature3": "XP, Streaks & Achievements",
-        "outcome": "+40 % øget engagement."
-      },
-      "parent": {
-        "title": "Værger",
-        "desc": "Hold dig opdateret om dit barns fremskridt og kommuniker direkte med skolen.",
-        "feature1": "AI-rapport om barnets trivsel",
-        "feature2": "Nem sygemelding & fravær",
-        "feature3": "Direkte kontakt med mentor",
-        "outcome": "Tryggere dialog & bedre indsigt."
-      }
-    },
-    "cta": {
-      "title": "Er du klar til virkelig at digitalisere din skole?",
-      "subtitle": "Slut dig til 500+ andre brugere og oplev fremtidens LLP med EduAI Hub.",
-      "button_demo": "Book en personlig demo",
-      "button_test": "Test gratis i 14 dage"
-    },
-    "features_page": {
-      "intro_badge": "Alt hvad du behøver for moderne uddannelse",
-      "title": "Pakket med funktioner",
-      "subtitle": "Fra AI-drevet analyse til gamification og administration. Her finder du alt, der gør EduFlex unikt.",
-      "back": "Tilbage",
-      "highlights_title": "Teknologiske Højdepunkter",
-      "showcase_title": "Systemoversigt",
-      "cta_title": "Klar til at komme i gang?",
-      "cta_button": "Opret din konto nu",
-      "highlights": {
-        "ai_creator": {
-          "title": "AI Kursus Skaber",
-          "desc": "Opret komplette kurser fra PDF-dokumenter på under 60 sekunder. Auto-genererede lektioner, datoer og smarte koder med indbygget databasesynkronisering."
-        },
-        "predictive": {
-          "title": "Prædiktiv AI-analyse",
-          "desc": "Identificer elever i risikozonen før det er for sent. AI analyserer adfærdsmønstre og giver lærere beslutningsstøtte og elever personlige studietips."
-        },
-        "lti": {
-          "title": "LTI 1.3 Advantage",
-          "desc": "Fuldt verificeret support til AGS (Karakterer) og NRPS (Roller/Navne). Sømløs integration med Canvas, Moodle og Blackboard for sikker autentificering og dataudveksling."
-        },
-        "xapi": {
-          "title": "xAPI & CMI5 LRS",
-          "desc": "Næste generations sporing. Kør simuleringer og offline mobilkurser med fuld detaljerapportering via vores indbyggede Learning Record Store."
-        },
-        "minio": {
-          "title": "MinIO & S3 Storage",
-          "desc": "Skalerbar Enterprise-lagring. Alle medier (lydbøger, video) streames lynhurtigt med support til at fortsætte hvor du slap."
-        },
-        "edugame": {
-          "title": "EduGame Engine",
-          "desc": "XP-system, Butik, Profiltemaer, daglige udfordringer og streaks. Gør læring til et eventyr."
-        },
-        "schema": {
-          "title": "Schema-per-Tenant",
-          "desc": "Sand multi-tenancy med komplet dataisolering. Hver organisation får automatisk sit eget PostgreSQL-skema."
-        },
-        "resource": {
-          "title": "Resursbank & Community",
-          "desc": "Et samlet bibliotek for alle dine quizzer, opgaver og lektioner. Del og importer materiale fra andre lærere med ét klik."
-        },
-        "cascading": {
-          "title": "Cascading Deletes",
-          "desc": "Vedligeholdelsesfri styring. Når du sletter et kursus, slettes alt tilhørende materiale og lektioner automatisk uden databasekonflikter."
-        },
-        "sso": {
-          "title": "Enterprise SSO",
-          "desc": "Keycloak-integration med OAuth2/OIDC. Fuld kontrol over identiteter og adgangsniveauer i organisationen."
-        },
-        "slugs": {
-          "title": "Venlige URL'er (Slugs)",
-          "desc": "Søgemaskinevenlige og læsbare adresser for alle kurser. Naviger via læsbare navne i stedet for tekniske ID'er."
-        },
-        "quiz_gen": {
-          "title": "Quiz Generator",
-          "desc": "Randomiser quizzer automatisk fra din spørgsmålsbank (Matematik, Java, Dansk osv.) for hurtige videnstjek uden manuelt arbejde."
-        },
-        "security": {
-          "title": "Enterprise Sikkerhed",
-          "desc": "Fuld AES-256 GCM kryptering af følsomme data, domænelåst licensering og rate-limiting beskytter jeres organisation døgnet rundt."
-        },
-        "insights": {
-          "title": "Kursusudvaluering & Indsigter",
-          "desc": "Komplet system til kursuskvalitet, automatiserede elev-notifikationer og AI-analyse af fritekstsvar for at måle ROI."
-        },
-        "social": {
-          "title": "Kontekstuel Social Læring",
-          "desc": "Diskuter lektioner og kurser i realtid direkte i playeren. Lær af dine jævnaldrende gennem trådede samtaler og realtidsnotifikationer."
-        },
-        "streaks": {
-          "title": "Milestone Streaks",
-          "desc": "Fortsæt din \"Learning Streak\" og lås op for eksklusive XP-bonusser og badges. Centraliseret sporing der motiverer dig hver dag."
-        },
-        "mission_control": {
-          "title": "Rektorpakke (Mission Control)",
-          "desc": "Komplet skoleledelseslag med realtids-KPI'er. Administrer organisationshierarki (Afdeling, Program, Klasse), se aggregeret statistik og håndter hændelser i en samlet, live visning."
-        },
-        "health": {
-          "title": "Sikker Elevsundhed",
-          "desc": "Rollebaseret adgangskontrol og krypterede journaler for maksimal fortrolighed og sikkerhed."
-        },
-        "ai_analysis": {
-          "title": "Prædiktiv AI-analyse 2.0",
-          "desc": "Identificerer elever i risikozonen, før de selv ved det. Deep learning mønsteranalyse af fremmøde, aktivitet og resultater."
-        },
-        "skolverket": {
-          "title": "Skolverket Sync 2.0",
-          "desc": "Sømløs integration med hele Skolverkets kursuskatalog. Automatiseret opdatering af kursusmål og karakterkriterier."
-        },
-        "pwa": {
-          "title": "Native PWA Experience",
-          "desc": "Installer EduFlex direkte på startskærmen. Fuld support til offline adgang og lynhurtig respons på alle enheder."
-        },
-        "gamification_expansion": {
-          "title": "Gamification Ekspansion",
-          "desc": "Nye Quest-systemer, Social-hub og udvidet Butik. Øg engagementet gennem meningsfuld gamificeret læring."
-        },
-        "guardian": {
-          "title": "Værge- & Sundhedskontrol",
-          "desc": "Værgeportal, digital sygemelding og elevsundhedsundersøgelser. Alt samlet med AES-256 kryptering og privacy guards for sikker datahåndtering."
-        },
-        "ai_center": {
-          "title": "EduAI Center 2.1",
-          "desc": "Avanceret Spaced Repetition med SM-2 algoritme. Optjen AI-kreditter gennem intelligente repetitioner og visualiser din vidensrejse i realtid."
-        }
-      }
+    "schedule" : {
+      "title" : "Dagens & Ugens Skema",
+      "loading" : "Indlæser skema...",
+      "campus" : "Campus",
+      "online" : "Online",
+      "connect" : "Tilslut",
+      "empty" : "Ingen lektioner i dag",
+      "view_full" : "Se hele skemaet",
+      "upcoming_submissions" : "Kommende Afleveringer",
+      "go_to_task" : "Gå til opgave",
+      "no_deadlines" : "Ingen kommende deadlines",
+      "view_all_count" : "Vis alle ({{count}})",
+      "room_missing" : "Lokale mangler"
     }
   },
-  "contact": {
-    "title": "Book en demo",
-    "name": "Navn",
-    "name_placeholder": "Dit navn",
-    "email": "E-mail",
-    "email_placeholder": "din@email.dk",
-    "organization": "Organisation",
-    "organization_placeholder": "Skolens navn",
-    "phone": "Telefon",
-    "phone_placeholder": "+45 70 12 34 56",
-    "message": "Besked",
-    "message_placeholder": "Fortæl os lidt om jeres behov...",
-    "submit": "Send forespørgsel",
-    "sending": "Sender...",
-    "success_message": "Tak! Vi kontakter dig inden for 24 timer.",
-    "error_message": "Noget gik galt. Prøv igen eller e-mail os direkte."
+  "teacher_widgets" : {
+    "active_courses" : "Aktive Kurser",
+    "my_students" : "Mine Studenter",
+    "to_grade" : "Skal rettes",
+    "applications" : "Ansøgninger",
+    "risk_zone" : "Risikozone",
+    "at_risk_title" : "Elever i risikozonen",
+    "students_count" : "{{count}} stk.",
+    "no_at_risk" : "Ingen elever i risikozonen lige nu. 👍",
+    "completion_prefix" : "fuldført",
+    "view_all_risk" : "Vis alle risiko-elever"
   },
-  "ai_personalization": {
-    "title": "AI-indsigter og anbefalinger",
-    "risk_low": "Lav risiko",
-    "risk_medium": "Middel risiko",
-    "risk_high": "Høj risiko",
-    "suggested_activities": "Foreslåede aktiviteter",
-    "coaching_advice": "Coachende råd",
-    "update_analysis": "Opdater AI-analyse",
-    "lesson_type": "Lektion",
-    "practice_type": "Øvelse",
-    "rationale_prefix": "AI-begrundelse:",
-    "no_data": "Ikke nok data til AI-analyse endnu. Fortsæt med at arbejde i kurserne!"
+  "teacher_tables" : {
+    "all_graded_title" : "Alt er rettet!",
+    "all_graded_desc" : "Godt arbejde, ingen ventende afleveringer.",
+    "pending_submissions_count" : "Ventende afleveringer ({{count}})",
+    "action_required" : "Kræver handling",
+    "student" : "Studerende",
+    "assignment" : "Opgave",
+    "course" : "Kursus",
+    "submitted" : "Indsendt",
+    "go_to_grading" : "Gå til Retning",
+    "no_pending_applications" : "Ingen ventende ansøgninger lige nu.",
+    "applying_to" : "Ansøger til kursus",
+    "date" : "Dato",
+    "decision" : "Beslutning",
+    "approve" : "Godkend",
+    "reject" : "Afvis",
+    "never" : "Aldrig",
+    "days_ago" : "{{count}} dage siden",
+    "contact" : "Kontakt",
+    "admitted_msg" : "Studerende antaget!",
+    "rejected_msg" : "Ansøgning afvist.",
+    "error_msg" : "Noget gik galt.",
+    "unknown_student" : "Ukendt"
   },
-  "gamification": {
-    "level_title": "Nuværende niveau",
-    "student_rank": "Elevrangering",
-    "points_to_next": "point til næste niveau",
-    "my_badges": "Mine udmærkelser",
-    "no_awards": "Ingen udmærkelser endnu. Fortsæt det gode arbejde!",
-    "view_all": "Se alle udmærkelser"
-  },
-  "tenta": {
-    "manager_title": "Eksamensadministrator",
-    "manager_subtitle": "Book eksamen & underret studerende",
-    "steps": {
-      "content": "Indhold",
-      "settings": "Indstillinger",
-      "scheduling": "Booking"
-    },
-    "errors": {
-      "title_required": "Eksamen skal have en titel.",
-      "times_required": "Du skal angive et start- og sluttidspunkt.",
-      "booking_failed": "Kunne ikke booke eksamen: "
-    },
-    "fields": {
-      "title_label": "Eksamens titel",
-      "title_placeholder": "F.eks. Sluteksamen Webdesign",
-      "description_label": "Beskrivelse",
-      "description_placeholder": "Instruktioner til de studerende...",
-      "questions_count": "Spørgsmål ({{count}})",
-      "question_number": "Spørgsmål {{number}}",
-      "question_placeholder": "Skriv dit spørgsmål her...",
-      "option_number": "Svarmulighed {{number}}",
-      "add_option": "TILFØJ MULIGHED",
-      "add_question": "Tilføj nyt spørgsmål",
-      "time_limit": "Tidsbegrænsning",
-      "minutes": "Minutter",
-      "time_info": "Studerende har denne tid til at gennemføre eksamen, når de er startet.",
-      "grading_method": "Bedømmelsesmetode",
-      "grading_manual": "Manuel bedømmelse",
-      "grading_manual_desc": "Du bedømmer alt selv.",
-      "grading_auto": "Automatisk (MCQ)",
-      "grading_auto_desc": "Systemet retter direkte.",
-      "grading_ai": "AI Bedømmelse (Gemini)",
-      "grading_ai_desc": "AI foreslår karakter & feedback.",
-      "security_mode": "Sikkerhedstilstand: Exam Integrity Pro",
-      "security_info": "Når du opretter en \"Eksamen\", aktiveres integritetsovervågning automatisk. Dette betyder, at vinduesskift logges, og at den studerende skal forblive i eksamenstilstand.",
-      "calendar_booking": "Kalenderbooking",
-      "start_time": "Åbnes (Start)",
-      "end_time": "Lukkes (Slut)",
-      "notify_students": "Underret studerende",
-      "channel_internal": "Intern Inbox",
-      "channel_push": "Push (PWA)",
-      "channel_email": "E-mail",
-      "channel_sms": "SMS",
-      "channel_info": "Systemet filtrerer kanaler fra, som den studerende har fravalgt i sin profil."
-    },
-    "actions": {
-      "back": "Tilbage",
-      "cancel": "Annuller",
-      "next": "Næste trin",
-      "booking": "Booker...",
-      "finish": "FULDFØR & BOOK"
+  "student_contact" : {
+    "title" : "Kontakt Studerende",
+    "subtitle" : "Rapportér og følg op med {{name}}",
+    "risk_factor" : "Identificeret Risikofaktor",
+    "never_logged_in" : "Den studerende har aldrig logget ind på platformen.",
+    "inactive_days" : "Den studerende har været inaktiv i {{count}} dage.",
+    "no_risk" : "Ingen kritisk risiko identificeret for øjeblikket, men opfølgning anbefales.",
+    "subject_label" : "Emne (Baseret på risiko)",
+    "auto_generated_label" : "Automatisk Genereret Grundlag",
+    "auto_generated_desc" : "Dette grundlag er baseret på systemets data og sendes med i mailen.",
+    "teacher_notes_label" : "Dine kommentarer / Handlingsplan",
+    "teacher_notes_placeholder" : "Skriv en personlig besked, instruktioner eller specifikke handlinger, som den studerende skal gøre...",
+    "report_and_send" : "Rapportér & Send",
+    "sending" : "Sender...",
+    "sent_success" : "Besked sendt!",
+    "send_error" : "Kunne ikke sende beskeden.",
+    "divider" : "Lærerens kommentar:",
+    "regards" : "Med venlig hilsen,",
+    "templates" : {
+      "follow_up_subject" : "Opfølgning på dine studier",
+      "no_login_subject" : "Vigtigt: Du har ikke logget ind endnu",
+      "no_login_body" : "Jeg kan se, at du endnu ikke har logget ind på EduFlex. For at kunne få gavn af kurset er det vigtigt, at du kommer i gang snart.",
+      "need_help_login" : "Har du brug for hjælp med login eller at finde det rigtige materiale?",
+      "warning_inactivity_subject" : "Advarsel: Højt fravær og inaktivitet",
+      "warning_inactivity_body" : "Jeg kan se, at du ikke har været aktiv på EduFlex i {{count}} dage. Dette er bekymrende og påvirker dine studier negativt.",
+      "review_plan" : "Vi skal gennemgå din studieplan for at sikre, at du kan nå alle momenter.",
+      "follow_up_absence_subject" : "Opfølgning: Fravær",
+      "follow_up_absence_body" : "Jeg noterede, at det var {{count}} dage siden, du sidst var aktiv.",
+      "reach_out" : "Kontakt mig, hvis du har brug for hjælp med noget specifikt moment.",
+      "generic_body" : "Jeg vil stemme af, hvordan det går for dig i kurset."
     }
   },
-  "catalog_page": {
-    "title": "Kursuskatalog",
-    "subtitle": "Find og tilmeld dig nye kurser.",
-    "search_placeholder": "Søg kurser...",
-    "loading": "Indlæser kurser...",
-    "no_courses": "Ingen kurser fundet",
-    "no_courses_desc": "Prøv at søge efter noget andet, eller bed en lærer om at oprette et kursus.",
-    "is_enrolled": "Tilmeldt",
-    "is_teacher": "Lærer",
-    "no_description": "Ingen beskrivelse tilgængelig.",
-    "no_teacher": "Ingen lærer",
-    "students_count": "{{count}} studerende",
-    "enroll_btn": "Deltag i kursus",
-    "enroll_confirm": "Vil du deltage i dette kursus?",
-    "enroll_success": "Du har tilmeldt dig kurset!",
-    "enroll_error": "Kunne ikke tilmelde dig kurset.",
-    "fetch_error": "Kunne ikke hente kurser"
+  "teacher_modals" : {
+    "tags_placeholder" : "Tags (separer med komma, f.eks. AI, Matematik, Algebra)",
+    "group_rooms" : "Grupperum",
+    "room_name_placeholder" : "Navn",
+    "link" : "Link",
+    "add_room" : "+ Tilføj grupperum",
+    "course_color" : "Kursusfarve",
+    "error_create" : "Kunne ikke oprette kurset.",
+    "error_update" : "Kunne ikke opdatere kurset.",
+    "course_name" : "Kursusnavn",
+    "course_code" : "Kursuskode"
   },
-  "editor": {
-    "placeholder": "Skriv her...",
-    "link_prompt": "Link URL:",
-    "normal": "Normal",
-    "heading": "Overskrift {{level}}",
-    "bold": "Fed",
-    "italic": "Kursiv",
-    "underline": "Understreget",
-    "strike": "Gennemstreget",
-    "blockquote": "Citat",
-    "code_block": "Kodeblok",
-    "bullet_list": "Punktliste",
-    "ordered_list": "Nummereret liste",
-    "align_left": "Venstre",
-    "align_center": "Centreret",
-    "align_right": "Højre",
-    "link": "Link",
-    "insert_table": "Indsæt 3×3 tabel",
-    "table": "Tabel",
-    "column_before": "Kolonne før",
-    "column_after": "Kolonne efter",
-    "delete_column": "Slet kolonne",
-    "row_before": "Række over",
-    "row_after": "Række under",
-    "delete_row": "Slet række",
-    "delete_table": "Slet tabel",
-    "clear_format": "Ryd formatering"
+  "course_modal" : {
+    "create_title" : "Opret nyt kursus",
+    "edit_title" : "Rediger kursus",
+    "name" : "Kursusnavn",
+    "code" : "Kursuskode",
+    "category" : "Kategori",
+    "description" : "Kursusbeskrivelse",
+    "start_date" : "Startdato",
+    "end_date" : "Slutdato",
+    "max_students" : "Maks. antal pladser",
+    "classroom_section" : "Digitalt Klasseværelse",
+    "classroom_link" : "Mødelink",
+    "exam_link" : "Link til Eksamenslokale",
+    "create_btn" : "Opret",
+    "go_to_course" : "Gå til kursus"
   },
-  "db_switch": {
-    "title": "Kritisk Operation",
-    "warning_title": "ADVARSEL: Systemet genstartes",
-    "warning_disconnect": "Alle brugere vil blive afbrudt",
-    "warning_loss": "Igangværende arbejde kan gå tabt",
-    "warning_unavailable": "Systemet kan være utilgængeligt i flere minutter",
-    "warning_config": "Forkert konfiguration kan forårsage datatab",
-    "switch_target": "Du er ved at skifte til:",
-    "confirm_label": "Skriv \"SKIFT DATABASE\" for at bekræfte *",
-    "confirm_placeholder": "SKIFT DATABASE",
-    "confirm_text": "SKIFT DATABASE",
-    "password_label": "Administratoradgangskode *",
-    "password_placeholder": "Indtast din adgangskode",
-    "cancel": "Annuller",
-    "confirm_btn": "Skift Database Nu",
-    "errors": {
-      "confirm_mismatch": "Du skal skrive \"SKIFT DATABASE\" for at bekræfte",
-      "password_required": "Administratoradgangskode er påkrævet",
-      "failed": "Forkert adgangskode eller handling mislykkedes"
+  "analytics" : {
+    "title" : "Systemindsigter",
+    "subtitle" : "Dybdegående analyse af platformens ydeevne og vækst.",
+    "financial_overview" : "Økonomisk Oversigt",
+    "revenue_analytics" : "Indtægtsanalyse",
+    "student_insights" : "Studentindsigter",
+    "system_infrastructure" : "Systeminfrastruktur",
+    "monthly_recurring_revenue" : "Månedlig Tilbagevendende Indtægt",
+    "total_users" : "Totalt Antal Brugere",
+    "active_sessions" : "Aktive Sessioner",
+    "server_health" : "Serverhelbred",
+    "operational" : "Operationel",
+    "stable" : "Stabil",
+    "revenue_growth" : "Indtægtsvækst",
+    "user_acquisition" : "Brugeranskaffelse",
+    "export_csv" : "Eksporter CSV",
+    "day" : "Dag",
+    "week" : "Uge",
+    "month" : "Måned",
+    "year" : "År",
+    "vs_last_month" : "vs sidste måned",
+    "system_status" : "Systemstatus",
+    "total_students" : "Totalt Antal Studerende",
+    "at_risk" : "I Risikozonen",
+    "avg_time_online" : "Gennemsnitlig Tid Online",
+    "student_performance_registry" : "Studentpræstationsregister",
+    "student_name" : "Studenternavn",
+    "status" : "Status",
+    "courses" : "Kurser",
+    "completion" : "Gennemførelse",
+    "total_time_online" : "Total Tid Online",
+    "risk_factor" : "Risikofaktor",
+    "no_student_data" : "Ingen studentdata tilgængelig.",
+    "grafana_dashboard" : "Grafana Dashboard",
+    "grafana_description" : "Realtidsmetrik for system (CPU, Hukommelse, Forespørgsler).",
+    "open_full_grafana" : "Åbn Fuld Grafana",
+    "prometheus_metrics" : "Prometheus-målinger",
+    "prometheus_description" : "Rå målingsudforsker.",
+    "open_prometheus" : "Åbn Prometheus",
+    "all_systems_normal" : "Alle systemer kører normalt.",
+    "uptime" : "Oppetid",
+    "revenue_title" : "Indtægtsanalyse",
+    "revenue_subtitle" : "Omfattende indtægts- og betalingsindsigter",
+    "loading_revenue_data" : "Indlæser indtægtsdata...",
+    "annual_recurring_revenue" : "Årlig Tilbagevendende Indtægt",
+    "payment_success_rate" : "Betalingssuccesrate",
+    "avg_payment_amount" : "Gennemsnitligt Betalingsbeløb",
+    "excellent" : "Fremragende",
+    "good" : "God",
+    "revenue_growth_trend" : "Indtægtsvæksttrend",
+    "payment_methods" : "Betalingsmetoder",
+    "no_payment_data" : "Ingen betalingsdata tilgængelig",
+    "total_payments" : "Totalt Antal Betalinger",
+    "successful" : "Vellykkede",
+    "failed" : "Mislykkede"
+  },
+  "invoices" : {
+    "title" : "Fakturahåndtering",
+    "create_invoice" : "Opret faktura",
+    "export_csv" : "Eksporter CSV",
+    "exporting" : "Eksporterer...",
+    "loading" : "Indlæser fakturaer...",
+    "all" : "Alle",
+    "draft" : "Udkast",
+    "pending" : "Afventer",
+    "sent" : "Sendt",
+    "paid" : "Betalt",
+    "overdue" : "Forfalden",
+    "cancelled" : "Annulleret",
+    "invoice_number" : "Fakturanummer",
+    "customer" : "Kunde",
+    "amount" : "Beløb",
+    "issue_date" : "Udstedelsesdato",
+    "due_date" : "Forfaldsdato",
+    "status" : "Status",
+    "actions" : "Handlinger",
+    "no_invoices_found" : "Ingen fakturaer fundet",
+    "total_invoices" : "Totalt Fakturaer",
+    "send_reminder_confirm" : "Send betalingspåmindelse til kunde?",
+    "reminder_sent" : "Betalingspåmindelse sendt!",
+    "delete_confirm" : "Er du sikker på, at du vil slette denne faktura?",
+    "refund_confirm" : "Er du sikker på, at du vil tilbagebetale denne betaling? Denne handling kan ikke fortrydes.",
+    "refund_success" : "Tilbagebetaling initieret",
+    "refund_failed" : "Kunne ikke tilbagebetale. Tjek konsollen for detaljer.",
+    "no_payment_details" : "Kan ikke finde betalingsdetaljer for denne faktura.",
+    "view_pdf" : "Vis PDF",
+    "generate_pdf" : "Generer PDF"
+  },
+  "subscription_plans" : {
+    "title" : "Abonnementsplaner",
+    "subtitle" : "Administrer prisniveauer og abonnementsmuligheder",
+    "create_plan" : "Opret plan",
+    "loading" : "Indlæser abonnementsplaner...",
+    "default_badge" : "STANDARD",
+    "inactive_badge" : "INAKTIV",
+    "unlimited" : "Ubegrænset",
+    "users" : "Brugere",
+    "courses" : "Kurser",
+    "storage" : "Lagring",
+    "features" : "Funktioner",
+    "edit" : "Rediger",
+    "activate" : "Aktiver",
+    "deactivate" : "Deaktiver",
+    "delete_confirm" : "Er du sikker på, at du vil slette denne plan?",
+    "edit_plan" : "Rediger plan",
+    "create_new_plan" : "Opret ny plan",
+    "plan_name_internal" : "Plannavn (Internt)",
+    "display_name" : "Visningsnavn",
+    "description" : "Beskrivelse",
+    "price" : "Pris",
+    "currency" : "Valuta",
+    "trial_period_days" : "Prøveperiode (Dage)",
+    "billing_interval" : "Faktureringsinterval",
+    "monthly" : "Månedligt",
+    "yearly" : "Årligt",
+    "lifetime" : "Livstid",
+    "max_users" : "Maks. Brugere (-1 = ubegrænset)",
+    "max_courses" : "Maks. Kurser (-1 = ubegrænset)",
+    "max_storage" : "Lagring GB (-1 = ubegrænset)",
+    "add_feature" : "+ Tilføj funktion",
+    "enter_feature" : "Indtast funktionsnavn:",
+    "active" : "Aktiv",
+    "default_plan" : "Standardplan",
+    "sort_order" : "Sorteringsrækkefølge",
+    "cancel" : "Annuller",
+    "update_plan" : "Opdater plan",
+    "create_plan_btn" : "Opret plan"
+  },
+  "admin_tabs" : {
+    "title" : "Administration",
+    "administration" : "Administration",
+    "pilot_kit" : "Pilotpakke",
+    "system_settings" : "Systemindstillinger",
+    "tickets" : "Sager",
+    "support_content" : "Supportindhold",
+    "gamification" : "Gamificering",
+    "community" : "Fællesskab",
+    "users" : "Brugere",
+    "guardians" : "Værger",
+    "courses" : "Kurser",
+    "structure" : "Skolestruktur",
+    "merits" : "Fortjenester",
+    "roles" : "Roller",
+    "overview" : "Oversigt",
+    "subscription_plans" : "Abonnementsplaner",
+    "invoices" : "Fakturaer",
+    "payment_settings" : "Betalingsindstillinger",
+    "promo_codes" : "Kampagnekoder",
+    "storage" : "Lagring",
+    "content" : "Indhold",
+    "system_logs_file" : "Systemlogs (Fil)",
+    "debug_terminal_live" : "Debug Terminal (Live)",
+    "audit_log" : "Revisionslog",
+    "integration_hub" : "Integrationshub",
+    "ai_audit" : "AI-revision",
+    "eduflex_ops" : "EduFlex Ops",
+    "skolverket_import" : "Skolverket-import",
+    "skolverket_data" : "Skolverket-data",
+    "categories" : {
+      "general" : "Generelt",
+      "finance" : "Økonomi",
+      "system" : "System"
+    },
+    "students" : "Studerende",
+    "logs" : "Systemlogs",
+    "terminal" : "Terminal",
+    "deploy" : "Driftsættelse",
+    "select_category" : "Vælg en kategori i menuen",
+    "total_storage" : "Total Lagring",
+    "system_wide_use" : "Bruges i hele systemet",
+    "total_files" : "Totale Filer",
+    "uploaded_documents" : "Uploadede dokumenter",
+    "stats_fetch_error" : "Kunne ikke hente statistik.",
+    "revenue" : "Indtægter",
+    "delete_course_confirm" : "Er du sikker på, at du vil slette dette kursus? Dette kan ikke fortrydes.",
+    "delete_course_error" : "Kunne ikke slette kurset. Kontroller, at det ikke har aktive studerende.",
+    "delete_user_confirm" : "Er du sikker på, at du vil slette denne bruger? Dette kan ikke fortrydes.",
+    "delete_user_error" : "Kunne ikke slette brugeren."
+  },
+  "landing" : {
+    "nav" : {
+      "features" : "Funktioner",
+      "gamification" : "Gamification",
+      "showcase" : "Showcase",
+      "pricing" : "Prissætning",
+      "technology" : "Teknologi",
+      "login" : "Log ind",
+      "get_started" : "Kom i gang",
+      "book_demo" : "Book en demo",
+      "select_language" : "Vælg sprog"
+    },
+    "hero" : {
+      "badge" : "v3.9.2: Operation Globalization - 100% Lokalisering",
+      "title_start" : "Fremtidens",
+      "title_llp" : "LLP",
+      "title_with" : "med",
+      "title_hub" : "EduAI Hub",
+      "subtitle" : "Oplev vores nye intelligente videncenter. Generer skræddersyede studiesessioner med AI, spil engagerende minispil og følg din præcise videnudvikling via vores dynamiske Live Radar. Alt sammen drevet af Google Gemini.",
+      "cta_ai" : "Start din første AI-session",
+      "cta_learn_more" : "Læs mere om platformen",
+      "cta_see_all" : "Se alle funktioner",
+      "tech_tagline" : "Drevet af moderne AI og gennemprøvet pædagogik",
+      "stats" : {
+        "engagement" : "Engagement",
+        "new_level" : "Nyt niveau!",
+        "level_value" : "Niveau {{level}}"
+      }
+    },
+    "features" : {
+      "title" : "Alt hvad du behøver for at drive en moderne skole",
+      "subtitle" : "Fra robuste vurderingsværktøjer til revolutionerende AI-støtte - vi har dig dækket.",
+      "multi_tenancy" : {
+        "title" : "Ægte Multi-Tenancy",
+        "desc" : "Fuldstændig dataisolering med skema-pr-tenant-arkitektur. Hver skole har sin egen beskyttede database."
+      },
+      "b2b" : {
+        "title" : "B2B SaaS Engine",
+        "desc" : "Administrer flere organisationer og underkonti med dedikeret faktureringssupport og admin-oversigt."
+      },
+      "microservice" : {
+        "title" : "Distributed Microservices",
+        "desc" : "Skalerbar arkitektur med Node.js, Spring Boot & Python, der kører i isolerede Docker-containere."
+      },
+      "event_bus" : {
+        "title" : "Real-time Event Bus",
+        "desc" : "Øjeblikkelig datasynkronisering med RabbitMQ for realtidsnotifikationer og systemhændelser."
+      },
+      "gamification" : {
+        "title" : "Advanced Gamification",
+        "desc" : "Engager elever med XP, Streaks, Achievements og vores unikke AI-drevne Live Radar."
+      },
+      "ai_creator" : {
+        "title" : "AI Content Lifecycle",
+        "desc" : "Fra generering af quiz til automatiseret rettelse og personlige studietips via Gemini."
+      },
+      "pwa" : {
+        "title" : "Cross-Platform PWA",
+        "desc" : "EduFlex fungerer lige så godt i browseren som installeret app på iOS, Android og Windows."
+      },
+      "live_video" : {
+        "title" : "Native Live Lessons",
+        "desc" : "Indbyggede værktøjer til videoseminarer og optaget materiale direkte i kursusmiljøet."
+      },
+      "collaborative" : {
+        "title" : "Live Collaborative Learning",
+        "desc" : "Lær sammen med indbygget support til OnlyOffice og fælles arbejdsområder i realtid."
+      },
+      "roi" : {
+        "title" : "ROI & Analytics Engine",
+        "desc" : "Visualiser træningseffektivitet med dybdegående statistik for både rektorer og lærere."
+      },
+      "notifications" : {
+        "title" : "Event-Driven Notifications",
+        "desc" : "Vigtige hændelser overses aldrig takket være vores avancerede notifikationssystem til alle enheder."
+      },
+      "exams" : {
+        "title" : "Digital Exams & Proctoring",
+        "desc" : "Sikre og retssikre digitale eksaminer med indbygget support til identitetsverifikation."
+      },
+      "integrations" : {
+        "title" : "Enterprise Integrations",
+        "desc" : "Opret problemfri forbindelse til eksisterende systemer via LTI 1.3, BankID og moderne REST-API'er."
+      },
+      "compliance" : {
+        "title" : "Zero-Trust Compliance",
+        "desc" : "GDPR-sikret datalagring med kryptering i alle led og automatiseret pseudonymisering."
+      },
+      "pii" : {
+        "title" : "PII Masking Pipeline",
+        "desc" : "Vores unikke AI-pipeline renser alle personlige data, før de når eksterne sprogmodeller."
+      },
+      "educareer" : {
+        "title" : "EduCareer Roadmap",
+        "desc" : "Hjælp studerende med at visualisere deres fremtid gennem adaptive karriereveje knyttet til arbejdsmarkedet."
+      },
+      "erp" : {
+        "title" : "ERP+ Integration",
+        "desc" : "Administrer indkøb, fakturering og personale i samme grænseflade som undervisningen foregår."
+      },
+      "isp" : {
+        "title" : "Dynamic ISP & LIA",
+        "desc" : "Administrer individuelle studieplaner og praktikpladser (LIA) med automatiseret matchning."
+      },
+      "bankid" : {
+        "title" : "BankID & FrejaeID",
+        "desc" : "Sikker autentificering i henhold til svensk standard for både personale, studerende og værger."
+      },
+      "video_tutor" : {
+        "title" : "Interactive AI Video Tutor",
+        "desc" : "Interager direkte med videoindhold gennem AI-drevet søgning og opfølgningsspørgsmål."
+      },
+      "language_sync" : {
+        "title" : "Global Language Sync",
+        "desc" : "Hele systemet kan oversættes til ethvert sprog på få sekunder via vores AI-oversættelseshub."
+      },
+      "susa" : {
+        "title" : "SUSA & Ladok Ready",
+        "desc" : "Fuld support til svensk rapporteringsstandard til myndigheder og studieadministrative systemer."
+      },
+      "ladok" : {
+        "title" : "Cloud-Native Infrastructure",
+        "desc" : "Serverløs skalerbarhed med Kubernetes og MinIO for høj tilgængelighed og ydeevne."
+      },
+      "accessibility" : {
+        "title" : "WCAG 2.1 Accessibility",
+        "desc" : "Designet til inklusion. Fuld tilgængelighed for alle brugere uanset forudsætninger."
+      },
+      "skolfederation" : {
+        "title" : "Skolfederation & SSO",
+        "desc" : "Forenklet login via fælles standarder for svensk skole og myndigheder."
+      }
+    },
+    "screenshots" : {
+      "roi" : {
+        "title" : "ROI Analytics Hub",
+        "desc" : "Følg uddannelseseffekt og afkast i realtid med dybdegående statistik."
+      },
+      "settings" : {
+        "title" : "Global System Control",
+        "desc" : "Fuld kontrol over alle instanser, brugere og netværkskonfigurationer."
+      },
+      "debug" : {
+        "title" : "Developer Terminal",
+        "desc" : "Indbyggede debug-værktøjer og systemlogger for tekniske administratorer."
+      },
+      "admin" : {
+        "title" : "Admin Dashboard 2.0",
+        "desc" : "Total kontrol over organisationen med live-data og widgets."
+      },
+      "teacher" : {
+        "title" : "Lärarpanelen",
+        "desc" : "Effektiv oversigt over elevers tilstedeværelse, fremskridt og indleveringer."
+      },
+      "quiz" : {
+        "title" : "AI Quiz Generator",
+        "desc" : "Upload dokumenter, og lad AI oprette prøvespørgsmål på få sekunder."
+      },
+      "library" : {
+        "title" : "E-boksbibliotek",
+        "desc" : "Et centralt bibliotek for litteratur med indbygget læser."
+      },
+      "catalog" : {
+        "title" : "Kursuskatalog",
+        "desc" : "Udforsk vores brede udvalg af kurser direkte fra landingssiden."
+      },
+      "resource" : {
+        "title" : "Resursbank",
+        "desc" : "Find nyttige værktøjer og dokumenter til dine studier."
+      },
+      "analytics" : {
+        "title" : "Dybdegående Analyse",
+        "desc" : "Visualiser fremskridt og resultater med vores kraftfulde analyseværktøjer."
+      }
+    },
+    "roles" : {
+      "badge" : "Løsninger til alle",
+      "title" : "En platform, uendelige muligheder",
+      "subtitle" : "EduFlex er designet til at støtte enhver rolle i uddannelsesrejsen, fra administrativ kontrol til engageret læring.",
+      "outcome_label" : "Resultater",
+      "rector" : {
+        "title" : "For Rektorer & Ledelse",
+        "desc" : "Få total kontrol over organisationens vækst, lønsomhed og uddannelseskvalitet.",
+        "feature1" : "Strategisk planlægning",
+        "feature2" : "Økonomisk opfølgning",
+        "feature3" : "Kvalitetssikring (MYH/SUSA)",
+        "outcome" : "Øget lønsomhed og regelefterlevelse."
+      },
+      "teacher" : {
+        "title" : "For Lærere & Uddannere",
+        "desc" : "Automatiser det administrative arbejde, og læg mere tid på det, der rent faktisk tæller: pædagogik.",
+        "feature1" : "AI-assisteret rettelse",
+        "feature2" : "Dynamisk tilstedeværelsesstyring",
+        "feature3" : "Enkelt kursusdesign",
+        "outcome" : "Mindre stress og højere elevengagement."
+      },
+      "student" : {
+        "title" : "For Studenter & Elever",
+        "desc" : "En moderne og spillificeret oplevelse, der gør læring sjov, forståelig og tilgængelig.",
+        "feature1" : "Personlig AI-coach",
+        "feature2" : "Gamification & XP",
+        "feature3" : "Mobilanpassad PWA",
+        "outcome" : "Højere fokus og hurtigere målopfyldelse."
+      },
+      "parent" : {
+        "title" : "For Vårdnadshavare",
+        "desc" : "Følg dit barns udvikling i realtid, og kommuniker nemt med skolen.",
+        "feature1" : "Tilstedeværelseskontrol",
+        "feature2" : "Omdömen & Feedback",
+        "feature3" : "Säker kommunikation",
+        "outcome" : "Tryghed og fuld indsigt i skolegangen."
+      }
+    },
+    "cta" : {
+      "title" : "Er du klar til at transformere din uddannelsesvirksomhed?",
+      "subtitle" : "Gør som hundredvis af andre organisationer, og træd ind i fremtidens digitale læring allerede i dag.",
+      "button_demo" : "Book en personlig demo",
+      "button_test" : "Test gratis nu"
+    },
+    "footer" : {
+      "tagline" : "Fremtidens LLP og økosystem for digital læring. Designet med hjertet, drevet af AI.",
+      "product" : "Produktet",
+      "features" : "Funktioner",
+      "security" : "Sikkerhed & GDPR",
+      "api" : "API & Udviklere",
+      "roadmap" : "Roadmap",
+      "support" : "Support",
+      "help_center" : "Hjælpecenter",
+      "documentation" : "Dokumentation",
+      "system_status" : "Systemstatus",
+      "contact_sales" : "Kontakt Salg",
+      "newsletter" : "Nyhedsbrev",
+      "newsletter_desc" : "Få de seneste opdateringer om AI og digital læring direkte i din indbakke.",
+      "email_placeholder" : "Din e-mailadresse",
+      "copyright" : "© 2026 EduFlex LLP. Alle rettigheder forbeholdes.",
+      "privacy_policy" : "Integritetspolicy",
+      "terms_of_service" : "Användarvillkor",
+      "cookie_settings" : "Cookie-inställningar"
     }
   },
-  "archive": {
-    "title": "Dokumentarkiv",
-    "subtitle": "Administrer alle filer i systemet.",
-    "search_placeholder": "Søg filnavn eller ejer...",
-    "filter_all": "Alle typer",
-    "filter_pdf": "PDF-filer",
-    "filter_image": "Billeder",
-    "filter_word": "Word-dokumenter",
-    "table_filename": "Filnavn",
-    "table_owner": "Ejer",
-    "table_uploaded": "Uploadet",
-    "table_action": "Handling",
-    "loading": "Indlæser filer...",
-    "no_results": "Ingen dokumenter matchede din søgning.",
-    "unknown_owner": "Ukendt",
-    "download_title": "Hent",
-    "delete_title": "Slet",
-    "delete_confirm": "Er du sikker på, at du vil slette filen?",
-    "errors": {
-      "fetch_failed": "Kunne ikke hente dokumenter",
-      "delete_failed": "Kunne ikke slette filen."
+  "dashboard_v2" : {
+    "total_students" : "Total Studerende",
+    "total_teachers" : "Total Lærere",
+    "total_admins" : "Total Admins",
+    "active_users" : "Aktive Brugere (Lige Nu)",
+    "revenue_status" : "Indtægtsstatus",
+    "system_health" : "Systemtilstand",
+    "storage_limit" : "Lagringsgrænse",
+    "active" : "Aktiv",
+    "excellent" : "Fremragende",
+    "warning" : "Advarsel",
+    "critical" : "Kritisk",
+    "manage_systems" : "Administrer Systemer",
+    "view_reports" : "Vis Rapporter",
+    "audit_logs" : "Revisionslogfiler"
+  },
+  "ai_personalization" : {
+    "title" : "Din AI-Studievejleder",
+    "subtitle" : "Personlige indsigter baseret på din studieaktivitet",
+    "analyzing" : "Analyserer dine data...",
+    "insights" : "AI-Indsigter & Tips",
+    "focus_areas" : "Anbefalede Fokusområder",
+    "next_steps" : "Foreslåede Næste Trin",
+    "no_data" : "Begynd at studere for at få personlige AI-tips!",
+    "generate_btn" : "Generer Nye Tips",
+    "tip_of_day" : "Dagens Studietip",
+    "radar_title" : "Din Videnradar"
+  },
+  "gamification" : {
+    "level" : "Niveau {{level}}",
+    "xp_progress" : "{{current}} / {{next}} XP",
+    "streak_days" : "{{count}} dages streak!",
+    "rank" : "Rang: {{name}}",
+    "achievements" : "Præstationer",
+    "leaderboard" : "Topliste",
+    "recent_badges" : "Seneste badges",
+    "view_all" : "Vis alle",
+    "daily_bonus" : "Daglig bonus tilgængelig!",
+    "claim" : "Hent"
+  },
+  "tenta" : {
+    "title" : "Digital Eksamen",
+    "proctoring_active" : "Overvågning Aktiv",
+    "start_exam" : "Start Aflevering / Prøve",
+    "time_left" : "Tid tilbage: {{time}}",
+    "submit_exam" : "Afslut & Indsend",
+    "finish_confirm" : "Er du helt sikker på, at du vil indsende? Du kan ikke ændre dine svar bagefter.",
+    "warning_tab_switch" : "Advarsel! Du må ikke skifte fane under igangværende eksamen.",
+    "warning_out_of_focus" : "Systemet har noteret, at du har forladt vinduet."
+  },
+  "catalog_page" : {
+    "title" : "Kursuskatalog",
+    "subtitle" : "Udforsk vores brede udvalg af kurser og uddannelser",
+    "search" : "Søg i kataloget...",
+    "enroll" : "Tilmeld dig",
+    "enrolled" : "Tilmeldt",
+    "price_free" : "Gratis",
+    "view_details" : "Vis detaljer",
+    "no_results" : "Ingen kurser matchede din søgning.",
+    "categories" : "Kategorier",
+    "filter_all" : "Alle kurser"
+  },
+  "editor" : {
+    "title" : "Dokumentredigering",
+    "save_success" : "Dokumentet er blevet gemt.",
+    "save_error" : "Der opstod en fejl under lagring.",
+    "collaborators" : "Online samarbejdspartnere",
+    "version_history" : "Versionshistorik",
+    "open_onlyoffice" : "Åbn i OnlyOffice"
+  },
+  "db_switch" : {
+    "title" : "Skift Database",
+    "current" : "Nuværende miljø",
+    "connect" : "Forbind til {{name}}",
+    "error" : "Kunne ikke skifte miljø."
+  },
+  "archive" : {
+    "title" : "Systemarkiv",
+    "restore" : "Gendan",
+    "permanent_delete" : "Slet permanent",
+    "empty_trash" : "Tøm papirkurven",
+    "no_items" : "Ingen elementer i papirkurven."
+  },
+  "quiz" : {
+    "generate" : "Generer Quiz med AI",
+    "processing" : "AI arbejder... Dette kan tage op til et minut.",
+    "success" : "Quiz genereret!",
+    "error" : "Kunne ikke generere quiz.",
+    "upload_context" : "Upload dokumenter som kontekst...",
+    "questions_count" : "Antal spørgsmål",
+    "difficulty" : "Sværhedsgrad",
+    "easy" : "Let",
+    "medium" : "Middel",
+    "hard" : "Svær"
+  },
+  "integrity" : {
+    "gdpr_notice" : "Vi værner om dit privatliv. Denne platform overholder GDPR.",
+    "request_data" : "Anmod om udtræk",
+    "delete_account_request" : "Anmod om sletning af konto"
+  },
+  "skolverket" : {
+    "import_title" : "Skolverket Integration",
+    "syncing" : "Synkroniserer med Skolverket...",
+    "last_sync" : "Seneste synkronisering: {{date}}",
+    "import_course" : "Importer kursuskode",
+    "course_found" : "Fandt: {{name}}"
+  },
+  "contact" : {
+    "title" : "Kontakt Os",
+    "description" : "Vi er her for at hjælpe dig døgnet rundt.",
+    "form" : {
+      "name" : "Dit Navn",
+      "email" : "Din Email",
+      "subject" : "Emne",
+      "message" : "Besked",
+      "send" : "Send Besked"
     }
   },
-  "quiz": {
-    "submit_btn": "Indsend",
-    "submit_error": "Kunne ikke indsende resultat.",
-    "monitored_exam": "Overvåget Eksamen",
-    "explanation": "Forklaring:",
-    "your_result": "Dit Resultat",
-    "practice_again": "Øv igen",
-    "close": "Luk"
-  },
-  "integrity": {
-    "focus_lost_log": "Studerende forlod fanen/vinduet",
-    "focus_lost_warn": "Advarsel: Tab af fokus registreret. Din lærer er blevet underrettet.",
-    "tab_switch_log": "Vinduet mistede fokus",
-    "fullscreen_exit_log": "Studerende forlod fuldskærmstilstand",
-    "proctoring_started_log": "Eksamensovervågning startet",
-    "proctoring_stopped_log": "Eksamensovervågning afsluttet"
-  },
-  "skolverket": {
-    "title": "Skolverkets Kursusinformation",
-    "tabs": {
-      "basic_info": "Grundlæggende info",
-      "content": "Indhold",
-      "criteria": "Bedømmelseskriterier"
+  "system_settings" : {
+    "sidebar" : {
+      "categories" : {
+        "config" : "Konfiguration",
+        "appearance" : "Udseende",
+        "license" : "Licens & Server",
+        "ai" : "AI & Intelligens",
+        "modules" : "Moduler & Sprog",
+        "integrations" : "Integrationer",
+        "communication" : "Kommunikation"
+      },
+      "tenants" : "Tenant-håndtering",
+      "skolverket" : "Skolverket-håndtering",
+      "theme" : "Tema indstillinger",
+      "pdf_templates" : "PDF-skabeloner",
+      "whitelabel" : "Whitelabeling",
+      "license" : "Licensstatus",
+      "server" : "Serverstatus",
+      "ai_config" : "AI-konfiguration",
+      "ai_audit" : "AI-revisionslog",
+      "system_modules" : "Systemmoduler",
+      "languages" : "Sprogadministration",
+      "webhooks" : "Webhooks & API",
+      "notifications" : "Notifikationsregler"
     },
-    "labels": {
-      "course_code": "Kursuskode",
-      "course_name": "Kursusnavn",
-      "english_title": "Engelsk titel",
-      "points": "Point",
-      "points_value": "{{count}} point",
-      "subject": "Fag",
-      "skolformer": "Skoleformer",
-      "open_syllabus": "Åbn officiel kursusplan (Skolverket)"
-    },
-    "sections": {
-      "description": "Kursusbeskrivelse",
-      "purpose": "Fagets formål",
-      "objectives": "Kursusmål"
-    },
-    "messages": {
-      "no_info": "Ingen detaljerede oplysninger tilgængelige endnu. Disse data vil blive tilføjet fremover.",
-      "loading_criteria": "Indlæser bedømmelseskriterier...",
-      "no_criteria": "Ingen bedømmelseskriterier tilgængelige endnu. Disse vil blive tilføjet fremover.",
-      "grade_level": "Karakteren {{level}}"
+    "sections" : {
+      "theme" : {
+        "title" : "Tema & Æstetik",
+        "description" : "Tilpas udseendet og fornemmelsen i dit EduFlex-miljø.",
+        "active_theme" : "Aktivt tema",
+        "current_look" : "Platformens nuværende udseende",
+        "primary_color" : "Primærfarve"
+      },
+      "whitelabel" : {
+        "title" : "Whitelabeling",
+        "description" : "Fjern EduFlex branding og gør det til dit eget.",
+        "status" : "Whitelabel-status",
+        "customize" : "Tilpas logo, farver og navn",
+        "enterprise_active" : "Enterprise-tilstand aktiv",
+        "full_access" : "Du har fuld adgang til whitelabeling-funktioner.",
+        "enterprise_required" : "Enterprise-licens kræves",
+        "upgrade_unlock" : "Opgrader til Enterprise for at låse op for whitelabeling."
+      },
+      "license" : {
+        "title" : "Licenshåndtering",
+        "description" : "Administrer dit EduFlex-abonnement og licensnøgler."
+      },
+      "server" : {
+        "title" : "Serverstatus & Backups",
+        "description" : "Overvåg systemstatus og administrer databasebackups.",
+        "backups" : "Systembackups",
+        "latest_backup" : "Seneste backup",
+        "create_backup" : "Opret ny backup",
+        "no_backups" : "Ingen sikkerhedskopier fundet.",
+        "db_connections" : "Databaseforbindelser",
+        "db_description" : "Administrer eksterne og interne databaseforbindelser.",
+        "add_db" : "Tilføj forbindelse",
+        "switch_db" : "Skift aktiv DB"
+      },
+      "ai" : {
+        "description" : "Konfigurer Google Gemini og AI-drevne funktioner."
+      }
     }
   }
 }

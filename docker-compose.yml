@@ -22,6 +22,11 @@ services:
       resources:
         limits:
           memory: 384M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     networks:
       - eduflex-net
 
@@ -42,6 +47,11 @@ services:
       resources:
         limits:
           memory: 64M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     networks:
       - eduflex-net
 
@@ -96,12 +106,17 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - eduflex-net
     deploy:
       resources:
         limits:
-          memory: 192M
-    networks:
-      - eduflex-net
+          memory: 384M
 
   # --- IDENTITY PROVIDER (Keycloak) ---
   keycloak:
@@ -116,23 +131,33 @@ services:
       - KC_DB_USERNAME=postgres
       - KC_DB_PASSWORD=gotland81
       - KC_HOSTNAME_STRICT=false
-      - KC_HOSTNAME=localhost
-      - KC_HOSTNAME_PORT=8180
+      - KC_HOSTNAME=auth.eduflexlms.se
+      - KC_HOSTNAME_PORT=443
       - KC_HTTP_ENABLED=true
       - KC_PROXY=edge
       - KC_HEALTH_ENABLED=true
+      - JAVA_OPTS=-Xms512m -Xmx1024m
     ports:
       - "8189:8080"
     volumes:
       - ./keycloak/realm-export.json:/opt/keycloak/data/import/realm-export.json
     healthcheck:
-      test: [ "CMD-SHELL", "timeout 5s bash -c ':> /dev/tcp/127.0.0.1/8080' || exit 1" ]
+      test: [ "CMD-SHELL", "exec 3<>/dev/tcp/127.0.0.1/8080 && echo -e \"GET /health/live HTTP/1.1\\r\\nHost: localhost\\r\\nConnection: close\\r\\n\\r\\n\" >&3 && cat <&3 | grep \"HTTP/1.1 200 OK\" || exit 1" ]
       interval: 30s
       timeout: 10s
       retries: 10
+    deploy:
+      resources:
+        limits:
+          memory: 1536M
     depends_on:
       db:
         condition: service_healthy
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     networks:
       - eduflex-net
 
@@ -154,9 +179,9 @@ services:
       - MINIO_SECRET_KEY=minioadmin
       - MINIO_BUCKET=eduflex-storage
       - ONLYOFFICE_INTERNAL_URL=http://eduflex-onlyoffice
-      - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI=http://localhost:8180/realms/eduflex
+      - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI=https://auth.eduflexlms.se/realms/eduflex
       - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI=http://keycloak:8080/realms/eduflex/protocol/openid-connect/certs
-      - KEYCLOAK_AUTH_SERVER_URL=http://keycloak:8080
+      - KEYCLOAK_AUTH_SERVER_URL=https://auth.eduflexlms.se
       - KEYCLOAK_REALM=eduflex
       - KEYCLOAK_CLIENT_ID=eduflex-app
       - AI_SERVICE_URL=http://eduflex-ai:8000
@@ -166,6 +191,7 @@ services:
       - ONLYOFFICE_JWT_SECRET=${ONLYOFFICE_JWT_SECRET:-S0raknJQXb1gcrvpgkNlpRQW3OyfiR9Q}
       - SPRING_AUTOCONFIGURE_EXCLUDE=org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration
       - EDUFLEX_LICENSE_PATH=/app/eduflex.license
+      - EDUFLEX_FRONTEND_PATH=/frontend/src
     volumes:
       - ./uploads:/app/uploads
       - ./eduflex.license:/app/eduflex.license
@@ -174,7 +200,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 1G
+          memory: 4G
     depends_on:
       db:
         condition: service_healthy
@@ -184,6 +210,11 @@ services:
         condition: service_healthy
       keycloak:
         condition: service_healthy
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     networks:
       - eduflex-net
 
@@ -209,6 +240,11 @@ services:
       - "8083:8081"
     volumes:
       - ./uploads:/app/uploads
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     networks:
       - eduflex-net
     healthcheck:
@@ -239,6 +275,11 @@ services:
       - "8082:8082"
     volumes:
       - ./uploads:/app/uploads
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     networks:
       - eduflex-net
     healthcheck:
@@ -249,7 +290,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 256M
+          memory: 512M
     restart: always
 
   # --- SCORM & xAPI MICROSERVICE ---
@@ -275,6 +316,11 @@ services:
       - "host.docker.internal:host-gateway"
     ports:
       - "8084:8082"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     networks:
       - eduflex-net
     healthcheck:
@@ -300,6 +346,11 @@ services:
       - SERVER_PORT=8085
       - REDIS_HOST=redis
       - EDUFLEX_JWT_SECRET=${EDUFLEX_JWT_SECRET:-eduflex_secure_secret_key_32_chars_}
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     networks:
       - eduflex-net
     restart: always
@@ -314,6 +365,11 @@ services:
       - PORT=8000
     ports:
       - "8008:8000"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     networks:
       - eduflex-net
     restart: always
@@ -321,6 +377,7 @@ services:
   frontend:
     build:
       context: ./frontend
+      target: development
     container_name: eduflex-frontend
     ports:
       - "5173:5173"
@@ -328,12 +385,17 @@ services:
       - VITE_API_BASE_URL=/api
       - VITE_BACKEND_URL=http://backend:8080
       - VITE_NOTIFICATIONS_URL=http://eduflex-notifications:8085
-    command: npm run dev -- --host
+    command: npm run dev -- --host --port 5173
     volumes:
       - ./frontend:/app
       - /app/node_modules
     depends_on:
       - backend
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     networks:
       - eduflex-net
 
@@ -359,6 +421,11 @@ services:
       - "9090:9090"
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     networks:
       - eduflex-net
 
@@ -375,6 +442,11 @@ services:
     volumes:
       - ./grafana/provisioning:/etc/grafana/provisioning
       - ./grafana/dashboards:/var/lib/grafana/dashboards
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     networks:
       - eduflex-net
 
@@ -410,6 +482,11 @@ services:
           memory: 4G
         reservations:
           memory: 1G
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     networks:
       - eduflex-net
     extra_hosts:
@@ -433,6 +510,11 @@ services:
       LIVEKIT_KEYS: "${LIVEKIT_API_KEY}: ${LIVEKIT_API_SECRET}"
     volumes:
       - ./livekit.yaml:/etc/livekit.yaml
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     networks:
       - eduflex-net
 
@@ -456,8 +538,35 @@ services:
       - ./backups:/backups
     depends_on:
       - db
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     networks:
       - eduflex-net
+
+  # --- CLOUDFLARE TUNNEL ---
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: eduflex-cloudflared
+    restart: always
+    command: tunnel --config /etc/cloudflared/config.yml run
+    volumes:
+      - ./cloudflared_config.yml:/etc/cloudflared/config.yml
+    environment:
+      - TUNNEL_TOKEN=eyJhIjoiMzhjYzM1MDViZDJmMmUxOTNmZThiN2YwYTYyYWUyYjgiLCJ0IjoiYjQ3NjhlMzYtNGU5ZS00MGJiLWJlYjAtNmVjNjZmZjEwNDFmIiwicyI6IjRvSGlFYldTZDNUQVllSlpWbjBKWkpOdWFMYk1rQzZMUG1Vam1XKzY0ZE09In0=
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - eduflex-net
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+      - "frontend:172.17.0.1"
+      - "backend:172.17.0.1"
 
 volumes:
   postgres_data:

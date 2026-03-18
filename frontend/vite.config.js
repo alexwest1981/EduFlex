@@ -94,7 +94,12 @@ export default defineConfig(({ mode }) => {
                 path: '/hmr/' // Use a specific path to avoid collision with root
             },
             watch: {
-                usePolling: true
+                usePolling: true,
+                ignored: [
+                    '**/src/locales/**',
+                    '**/src/features/**/locales/**',
+                    '**/src/modules/**/locales/**'
+                ]
             },
             proxy: {
                 '/api': {

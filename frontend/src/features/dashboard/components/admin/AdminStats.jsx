@@ -58,10 +58,10 @@ const AdminStats = ({ users = [], courses = [], documents = [], onViewMessages, 
                 </div>
                 <div className="relative z-10">
                     <h3 className="text-4xl font-black text-[var(--text-primary)] tracking-tighter mb-1">{courseList.length}</h3>
-                    <p className="text-xs font-black text-[var(--text-secondary)] uppercase tracking-widest">Totalt Kurser</p>
+                    <p className="text-xs font-black text-[var(--text-secondary)] uppercase tracking-widest">{t('dashboard.total_courses')}</p>
                     <div className="flex gap-4 mt-6 pt-4 border-t border-[var(--border-main)]">
-                        <div className="flex items-center gap-1 text-[10px] font-black text-emerald-500 uppercase"><CheckCircle size={12} /> {openCourses} Aktiva</div>
-                        <div className="flex items-center gap-1 text-[10px] font-black text-rose-500 uppercase"><XCircle size={12} /> {closedCourses} Arkiv</div>
+                        <div className="flex items-center gap-1 text-[10px] font-black text-emerald-500 uppercase"><CheckCircle size={12} /> {openCourses} {t('dashboard.active_plural')}</div>
+                        <div className="flex items-center gap-1 text-[10px] font-black text-rose-500 uppercase"><XCircle size={12} /> {closedCourses} {t('dashboard.archive_plural')}</div>
                     </div>
                 </div>
             </div>
@@ -81,7 +81,7 @@ const AdminStats = ({ users = [], courses = [], documents = [], onViewMessages, 
                     <p className="text-xs font-black text-[var(--text-secondary)] uppercase tracking-widest">{t('dashboard.archived_files')}</p>
                     <div className="mt-6 pt-4 border-t border-[var(--border-main)]">
                         <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">
-                            <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span> Datasync OK
+                            <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span> {t('dashboard.datasync_ok')}
                         </p>
                     </div>
                 </div>
@@ -101,13 +101,13 @@ const AdminStats = ({ users = [], courses = [], documents = [], onViewMessages, 
                     </div>
                     {unreadCount > 0 && (
                         <span className="bg-red-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full animate-pulse">
-                            NYTT
+                            {t('dashboard.new_badge')}
                         </span>
                     )}
                 </div>
                 <div className="relative z-10">
                     <h3 className="text-4xl font-black text-[var(--text-primary)] tracking-tighter mb-1">{unreadCount}</h3>
-                    <p className="text-xs font-black text-[var(--text-secondary)] uppercase tracking-widest">Nya Meddelanden</p>
+                    <p className="text-xs font-black text-[var(--text-secondary)] uppercase tracking-widest">{t('dashboard.new_messages')}</p>
                     <div className="mt-6 pt-4 border-t border-[var(--border-main)] flex justify-between items-center group-hover:text-indigo-600 transition-colors">
                         <p className="text-[10px] font-black uppercase tracking-widest">{t('dashboard.go_to_inbox')}</p>
                         <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />

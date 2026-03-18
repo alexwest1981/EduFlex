@@ -41,4 +41,9 @@ public class TestFileStorageService implements StorageService {
     public void deleteByPrefix(String prefix) {
         // No-op for test implementation
     }
+
+    @Override
+    public boolean exists(String storageId) {
+        return true;
+    }
 }

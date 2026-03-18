@@ -62,7 +62,7 @@ const CourseDetail = ({ currentUser }) => {
                 if (isTeacher) return <TeacherCourseSummary courseId={courseId} />;
                 return <SummaryModule courseId={courseId} currentUser={currentUser} />;
             },
-            meta: { name: 'Sammanfattning' },
+            meta: { name: t('courses.summary') || 'Sammanfattning' },
             icon: <SummaryIcon size={18} />,
             enabled: true,
             visibleFor: 'ALL'
@@ -107,7 +107,7 @@ const CourseDetail = ({ currentUser }) => {
         {
             key: 'interactive-modules',
             comp: InteractiveModules,
-            meta: { name: 'Interaktiva Moduler' },
+            meta: { name: t('courses.interactive_modules') || 'Interaktiva Moduler' },
             icon: <Layers size={18} />,
             enabled: isModuleActive('SCORM') || true, // Always enabled if we have LRS
             visibleFor: 'ALL'
@@ -133,14 +133,14 @@ const CourseDetail = ({ currentUser }) => {
                         <div className="pt-8 border-t border-gray-200 dark:border-[#3c4043]">
                             <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
                                 <Activity size={24} className="text-indigo-600 dark:text-indigo-400" />
-                                Aktivitetslogg
+                                {t('courses.activity_log') || 'Aktivitetslogg'}
                             </h3>
                             <StudentActivityBoard courseId={courseId} />
                         </div>
                     </div>
                 );
             },
-            meta: { name: 'Närvaro & Aktivitet' },
+            meta: { name: t('courses.attendance_activity') || 'Närvaro & Aktivitet' },
             icon: <Calendar size={18} />,
             enabled: true,
             visibleFor: 'TEACHER'
@@ -148,7 +148,7 @@ const CourseDetail = ({ currentUser }) => {
         {
             key: 'kursinformation',
             comp: ({ course }) => <SkolverketCourseInfo skolverketCourse={course?.skolverketCourse} />,
-            meta: { name: 'Kursinformation' },
+            meta: { name: t('courses.course_info') || 'Kursinformation' },
             icon: <BookOpen size={18} />,
             enabled: !!course?.skolverketCourse,
             visibleFor: 'ALL'
@@ -156,7 +156,7 @@ const CourseDetail = ({ currentUser }) => {
         {
             key: 'grouprooms',
             comp: ({ course }) => {
-                if (!course?.groupRooms?.length) return <div className="text-center p-12 text-gray-500">Inga grupprum tillgängliga.</div>;
+                if (!course?.groupRooms?.length) return <div className="text-center p-12 text-gray-500">{t('courses.no_rooms') || 'Inga grupprum tillgängliga.'}</div>;
                 return (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {course.groupRooms.map(room => (
@@ -164,14 +164,14 @@ const CourseDetail = ({ currentUser }) => {
                                 <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">{room.name}</h3>
                                 <div className="text-sm text-gray-500 mb-4 flex items-center gap-2"><Video size={14} /> {room.type}</div>
                                 <a href={room.link} target="_blank" rel="noreferrer" className="block w-full text-center bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 rounded-lg transition-colors">
-                                    Gå med
+                                    {t('courses.join') || 'Gå med'}
                                 </a>
                             </div>
                         ))}
                     </div>
                 );
             },
-            meta: { name: 'Grupprum' },
+            meta: { name: t('courses.group_rooms') || 'Grupprum' },
             icon: <Users size={18} />,
             enabled: true, // Always enabled, handles empty inside
             visibleFor: 'ALL'
@@ -179,7 +179,7 @@ const CourseDetail = ({ currentUser }) => {
         {
             key: 'mission-control',
             comp: ({ courseId }) => <TeacherAnalyticsDashboard courseId={courseId} />,
-            meta: { name: 'Mission Control' },
+            meta: { name: t('courses.mission_control') || 'Mission Control' },
             icon: <Sparkles size={18} />,
             enabled: licenseTier !== 'BASIC',
             visibleFor: 'TEACHER'
@@ -298,11 +298,11 @@ const CourseDetail = ({ currentUser }) => {
                 a.click();
                 a.remove();
             } else {
-                alert("Kunde inte ladda ner certifikat. Kontrollera att du är klar med kursen.");
+                alert(t('courses.cert_dl_error') || "Kunde inte ladda ner certifikat. Kontrollera att du är klar med kursen.");
             }
         } catch (e) {
             console.error(e);
-            alert("Ett fel inträffade vid nedladdning.");
+            alert(t('courses.dl_error') || "Ett fel inträffade vid nedladdning.");
         }
     };
 
@@ -334,7 +334,7 @@ const CourseDetail = ({ currentUser }) => {
     };
 
     if (isLoading) return <div className="h-full flex items-center justify-center min-h-[50vh]"><Loader2 className="animate-spin text-indigo-600" size={32} /></div>;
-    if (!course) return <div className="text-center mt-10 text-gray-500 dark:text-gray-400">Kursen hittades inte.</div>;
+    if (!course) return <div className="text-center mt-10 text-gray-500 dark:text-gray-400">{t('courses.course_not_found') || 'Kursen hittades inte.'}</div>;
 
     return (
         <div className="max-w-screen-2xl mx-auto pb-20 animate-in fade-in duration-500">
@@ -376,9 +376,9 @@ const CourseDetail = ({ currentUser }) => {
                                     target="_blank"
                                     rel="noreferrer"
                                     className={`w-full text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center justify-center gap-2 shadow-sm transition-all hover:opacity-90 ${getServiceColor(course.classroomType)}`}
-                                    title={t('course.external_classroom_hint') || 'Externt klassrum'}
+                                    title={t('courses.external_classroom_hint') || 'Externt klassrum'}
                                 >
-                                    {getServiceIcon(course.classroomType)} Anslut till {getServiceName(course.classroomType)}
+                                    {getServiceIcon(course.classroomType)} {t('courses.join_classroom_prefix') || 'Anslut till'} {getServiceName(course.classroomType)}
                                 </a>
                             )}
 
@@ -387,23 +387,23 @@ const CourseDetail = ({ currentUser }) => {
                                 <>
                                     <button
                                         onClick={async () => {
-                                            if (!confirm("Vill du synka deltagare från LMS (t.ex. Canvas)?")) return;
+                                            if (!confirm(t('courses.sync_roster_confirm') || "Vill du synka deltagare från LMS (t.ex. Canvas)?")) return;
                                             try {
                                                 const res = await fetch(`${API_BASE}/lti/nrps/sync/${course.id}`, {
                                                     method: 'POST',
                                                     headers: { 'Authorization': `Bearer ${token}` }
                                                 });
                                                 const data = await res.json();
-                                                if (res.ok) alert(data.message || "Synk startad!");
-                                                else alert("Fel: " + data.message);
+                                                if (res.ok) alert(data.message || t('courses.sync_started') || "Synk startad!");
+                                                else alert((t('common.error') || "Fel: ") + data.message);
                                             } catch (e) {
                                                 console.error(e);
-                                                alert("Kunde inte starta synk.");
+                                                alert(t('courses.sync_failed') || "Kunde inte starta synk.");
                                             }
                                         }}
                                         className="w-full bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 px-4 py-2 rounded-lg text-sm font-bold flex items-center justify-center gap-2 hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors shadow-sm mb-2"
                                     >
-                                        <Users size={16} /> Synka Roster (LTI)
+                                        <Users size={16} /> {t('courses.sync_roster_btn') || 'Synka Roster (LTI)'}
                                     </button>
 
                                     <button
@@ -416,22 +416,22 @@ const CourseDetail = ({ currentUser }) => {
                                     {licenseTier !== 'BASIC' && (
                                         <button
                                             onClick={async () => {
-                                                if (!confirm("Vill du indexera allt material i kursen för AI-tutorn? Detta kan ta en stund.")) return;
+                                                if (!confirm(t('courses.index_ai_confirm') || "Vill du indexera allt material i kursen för AI-tutorn? Detta kan ta en stund.")) return;
                                                 try {
                                                     await api.ai.tutor.ingestCourse(course.id);
-                                                    alert("Indexering startad i bakgrunden. Du kan fortsätta arbeta.");
+                                                    alert(t('courses.index_started') || "Indexering startad i bakgrunden. Du kan fortsätta arbeta.");
                                                 } catch (e) {
                                                     console.error(e);
                                                     if (e.message && e.message.includes("403")) {
-                                                        alert("🔒 Denna funktion kräver en PRO eller ENTERPRISE licens.");
+                                                        alert(t('courses.index_pro_only') || "🔒 Denna funktion kräver en PRO eller ENTERPRISE licens.");
                                                     } else {
-                                                        alert("Kunde inte starta indexering.");
+                                                        alert(t('courses.index_failed') || "Kunde inte starta indexering.");
                                                     }
                                                 }
                                             }}
                                             className="w-full bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 px-4 py-2 rounded-lg text-sm font-bold flex items-center justify-center gap-2 hover:bg-indigo-100 dark:hover:bg-indigo-900/40 transition-colors shadow-sm"
                                         >
-                                            <Sparkles size={16} /> Indexera för AI
+                                            <Sparkles size={16} /> {t('courses.index_ai_btn') || 'Indexera för AI'}
                                         </button>
                                     )}
                                 </>

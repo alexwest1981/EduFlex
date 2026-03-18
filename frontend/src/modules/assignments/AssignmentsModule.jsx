@@ -238,7 +238,7 @@ const AssignmentsModule = ({ courseId, currentUser, isTeacher, mode = 'COURSE' }
                         {isEnabled && (
                             <div className="bg-amber-50 dark:bg-amber-900/10 p-4 rounded-lg border border-amber-100 dark:border-amber-900/30 space-y-4">
                                 <h4 className="font-bold text-sm text-amber-800 dark:text-amber-200 flex items-center gap-2">
-                                    <Zap size={16} /> Gamification-inställningar
+                                    <Zap size={16} /> {t('assignments.gamification_settings')}
                                 </h4>
 
                                 <div className="grid grid-cols-2 gap-4">
@@ -249,11 +249,11 @@ const AssignmentsModule = ({ courseId, currentUser, isTeacher, mode = 'COURSE' }
                                             value={newAssignment.xpMultiplier}
                                             onChange={e => setNewAssignment({ ...newAssignment, xpMultiplier: parseFloat(e.target.value) })}
                                         >
-                                            <option value="1.0">1.0x (Standard)</option>
-                                            <option value="1.5">1.5x (Boost)</option>
-                                            <option value="2.0">2.0x (Dubbel)</option>
-                                            <option value="3.0">3.0x (Super)</option>
-                                            <option value="5.0">5.0x (Ultra)</option>
+                                            <option value="1.0">1.0x ({t('assignments.xp_standard')})</option>
+                                            <option value="1.5">1.5x ({t('assignments.xp_boost')})</option>
+                                            <option value="2.0">2.0x ({t('assignments.xp_dubbel')})</option>
+                                            <option value="3.0">3.0x ({t('assignments.xp_super')})</option>
+                                            <option value="5.0">5.0x ({t('assignments.xp_ultra')})</option>
                                         </select>
                                     </div>
                                     <div>
@@ -464,7 +464,7 @@ const AssignmentCard = ({ id, assignment, isTeacher, currentUser, expanded, togg
                                 className="p-1.5 text-gray-400 hover:text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg transition-colors"
                                 title={t('common.edit') || 'Redigera'}
                             >
-                                <Edit size={16} />
+                                <Edit2 size={16} />
                             </button>
                         </div>
                     )}

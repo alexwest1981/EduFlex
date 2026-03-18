@@ -15,6 +15,12 @@ EduFlex LLP är ett enterprise-redo, molnbaserat ekosystem som ersätter traditi
 
 ## 🚀 Senaste Uppdateringarna (Changelog)
 
+### v3.9.3 (18 mar 2026) – Performance Tuning & Repo Hardening
+- **🇳🇴 Norwegian Translation Fix**: Resolved corrupted nested structures in `no.json` files and re-translated the entire locale via the AI sync service.
+- **⚡ Frontend Optimization**: Fixed "slow reload" loop during language switching by optimizing Vite's watcher and disabling `i18next` debug mode.
+- **🛡️ Repo Security & Cleanup**: Extensively updated the root `.gitignore` to strictly exclude OnlyOffice data, logs, and temporary development files. Untracked and cleaned up accidentally included PII and junk files.
+- **📦 Service Stability**: Standardized internal API access for synchronization tools to prevent unauthorized triggers.
+
 ### v3.9.2 (13 mar 2026) – Operation Globalization (Full System Localization)
 - **🌍 100% Landing Page Localization**: Removed all hardcoded Swedish from `LandingPage.jsx`, `ContactModal.jsx`, and `Footer`.
 - **🏗️ Backend i18n Architecture**: Implemented Spring `MessageSource` for dynamic system messages.
@@ -125,8 +131,11 @@ EduFlex LLP drivs av en händelsedriven mikrotjänstarkitektur.
 
 ## 🚀 Kom igång (Snabbstart)
 
-### Windows
-Dubbelklicka på **`Start-EduFlex.bat`** i rotkatalogen. Det startar infrastrukturen i WSL och kör backend/frontend lokalt för max prestanda.
+### Windows (Local-First / No Docker Bloat)
+Dubbelklicka på **`scripts\powershell\LocalFix_Start.ps1`** (eller kör via PowerShell). Detta startar din lokala PostgreSQL 18, Redis och kör backend/frontend lokalt för max prestanda och noll disk-bloat.
+
+### Windows (Full Stack / Docker)
+Dubbelklicka på **`Start-EduFlex.bat`** i rotkatalogen. Det startar infrastrukturen i Docker (WSL) med log-rotation aktiverad (max 30MB loggar per tjänst).
 
 ### Linux / WSL
 Kör följande kommando:
@@ -153,6 +162,7 @@ Kör följande kommando:
 - [x] **v3.9.0: Cloud-Native Kubernetes (K3s/Helm)**
 - [x] **v3.9.1: Global Language Sync & Security Hardening**
 - [x] **v3.9.2: Operation Globalization (Full System Localization)**
+- [x] **v3.9.3: Performance Tuning & Repo Hardening (OnlyOffice Exclusions)**
 - [ ] Q3 2026: React Native mobilapp med offline-sync.
 - [x] Q4 2026: Nationell utbildningsintegration (SUSA-navet).
 
@@ -160,4 +170,4 @@ Kör följande kommando:
 
 ⚖ **Licens & Kontakt**  
 EduFlex LLP™ © 2026 Alex Weström / Fenrir Studio  
-Senast uppdaterad: 2026-03-14 (v3.9.2 - 100% System Localization)
+Senast uppdaterad: 2026-03-18 (v3.9.3 - Performance & Repo Hardening)

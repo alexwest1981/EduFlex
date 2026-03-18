@@ -116,6 +116,7 @@ public class SecurityConfig {
                                                                 "/api/users/generate-usernames",
                                                                 "/api/settings/**", "/login/**", "/api/tenants/**",
                                                                 "/api/public/**", "/api/languages/**", "/api/integrations/public/**",
+                                                                "/manifest.json", "/manifest.webmanifest",
                                                                 "/api/branding/**", "/api/debug/**",
                                                                 "/api/onlyoffice/**",
                                                                 "/api/gamification/config/system", "/api/payment/**",

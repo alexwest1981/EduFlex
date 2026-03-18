@@ -20,13 +20,13 @@ const AdminNavbar = () => {
     const isGamification = location.pathname === '/admin/gamification-management';
 
     const tabs = [
-        { id: 'administration', label: t('admin_tabs.administration') || 'Administration', icon: Users, path: '/admin?tab=administration' },
-        { id: 'pilot', label: 'Pilot Kit', icon: Rocket, path: '/admin?tab=pilot', color: 'text-orange-500' },
-        { id: 'system', label: t('admin_tabs.system_settings') || 'Systeminställningar', icon: Settings, path: '/admin?tab=system' },
-        { id: 'tickets', label: t('admin_tabs.tickets') || 'Ärenden', icon: MessageSquare, path: '/admin?tab=tickets' },
-        { id: 'support-content', label: 'Support Innehåll', icon: BookOpen, path: '/admin?tab=support-content' },
-        { id: 'gamification', label: 'Gamification', icon: Trophy, path: '/admin/gamification-management', visible: isModuleActive('GAMIFICATION') },
-        { id: 'community', label: 'Community', icon: Store, path: '/admin/community' }
+        { id: 'administration', label: t('admin_tabs.administration'), icon: Users, path: '/admin?tab=administration' },
+        { id: 'pilot', label: t('admin_tabs.pilot_kit'), icon: Rocket, path: '/admin?tab=pilot', color: 'text-orange-500' },
+        { id: 'system', label: t('admin_tabs.system_settings'), icon: Settings, path: '/admin?tab=system' },
+        { id: 'tickets', label: t('admin_tabs.tickets'), icon: MessageSquare, path: '/admin?tab=tickets' },
+        { id: 'support-content', label: t('admin_tabs.support_content'), icon: BookOpen, path: '/admin?tab=support-content' },
+        { id: 'gamification', label: t('admin_tabs.gamification'), icon: Trophy, path: '/admin/gamification-management', visible: isModuleActive('GAMIFICATION') },
+        { id: 'community', label: t('admin_tabs.community'), icon: Store, path: '/admin/community' }
     ].filter(tab => tab.visible !== false);
 
     const handleNavigation = (tab) => {

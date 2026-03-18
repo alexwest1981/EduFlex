@@ -46,6 +46,8 @@ public class LicenseFilter extends OncePerRequestFilter {
                     || path.startsWith("/api/system/license")
                     || path.startsWith("/api/settings")
                     || path.startsWith("/api/branding")
+                    || path.startsWith("/manifest.json")
+                    || path.startsWith("/manifest.webmanifest")
                     || path.startsWith("/actuator")
                     // Media-endpoints ska alltid vara tillgängliga (kringgår licensblockering)
                     || path.startsWith("/api/files/")

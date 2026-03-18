@@ -45,8 +45,8 @@ const AdminDashboard = () => {
         messages: t('dashboard.widgets.messages'),
         onlineFriends: t('dashboard.widgets.online_friends'),
         tickets: t('dashboard.widgets.tickets'),
-        ghostingRadar: "CSN Ghosting Radar",
-        liaRadar: "LIA Compliance Radar"
+        ghostingRadar: t('dashboard.csn_ghosting_radar'),
+        liaRadar: t('dashboard.lia_compliance_radar')
     };
 
     const fetchStats = async () => {
@@ -163,7 +163,7 @@ const AdminDashboard = () => {
                         }`}
                 >
                     <Shield size={18} />
-                    Företagslicenser
+                    {t('dashboard.company_licenses')}
                 </button>
                 <button
                     onClick={() => setActiveTab('lia')}
@@ -174,7 +174,7 @@ const AdminDashboard = () => {
                         }`}
                 >
                     <Shield size={18} />
-                    LIA / MYH Management
+                    {t('dashboard.lia_myh_management')}
                 </button>
             </div>
 

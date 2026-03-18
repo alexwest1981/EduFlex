@@ -1,755 +1,1237 @@
 {
-  "common": {
-    "save": "Speichern",
-    "cancel": "Abbrechen",
-    "delete": "Löschen",
-    "edit": "Bearbeiten",
-    "upload": "Hochladen",
-    "download": "Herunterladen",
-    "search": "Suchen...",
-    "filter": "Filtern",
-    "name": "Name",
-    "action": "Aktion",
-    "description": "Beschreibung",
-    "date": "Datum",
-    "size": "Größe",
-    "loading": "Laden...",
-    "student": "Student",
-    "file": "Datei",
-    "close": "Schließen",
-    "back": "Zurück",
-    "send": "Senden",
-    "yes": "Ja",
-    "no": "Nein",
-    "unknown": "Unbekannt",
-    "light_mode": "Heller Modus",
-    "dark_mode": "Dunkler Modus",
-    "choose": "Wählen...",
-    "optional": "Optional",
-    "minimize_menu": "Menü minimieren",
-    "expand_menu": "Menü erweitern",
-    "online_friends": "Online Freunde",
-    "today": "Heute",
-    "tomorrow": "Morgen",
-    "all": "Alle",
-    "none": "Keine",
-    "title": "Titel",
-    "questions": "Fragen",
-    "created": "Erstellt",
-    "category": "Kategorie",
-    "copy": "Kopie",
-    "brands": {
-      "gemini": "Google Gemini",
-      "postgresql": "PostgreSQL",
-      "openai": "OpenAI API"
+  "common" : {
+    "save" : "Speichern",
+    "cancel" : "Abbrechen",
+    "delete" : "Löschen",
+    "edit" : "Bearbeiten",
+    "upload" : "Hochladen",
+    "download" : "Herunterladen",
+    "search" : "Suchen...",
+    "filter" : "Filtern",
+    "name" : "Name",
+    "action" : "Aktion",
+    "description" : "Beschreibung",
+    "date" : "Datum",
+    "size" : "Größe",
+    "loading" : "Lädt...",
+    "student" : "Student",
+    "file" : "Datei",
+    "close" : "Schließen",
+    "back" : "Zurück",
+    "send" : "Senden",
+    "yes" : "Ja",
+    "no" : "Nein",
+    "unknown" : "Unbekannt",
+    "light_mode" : "Heller Modus",
+    "dark_mode" : "Dunkler Modus",
+    "choose" : "Wählen...",
+    "optional" : "Optional",
+    "minimize_menu" : "Menü minimieren",
+    "expand_menu" : "Menü erweitern",
+    "online_friends" : "Online Freunde",
+    "today" : "Heute",
+    "tomorrow" : "Morgen",
+    "all" : "Alle",
+    "none" : "Keine",
+    "title" : "Titel",
+    "questions" : "Fragen",
+    "created" : "Erstellt",
+    "category" : "Kategorie",
+    "copy" : "Kopie",
+    "brands" : {
+      "gemini" : "Google Gemini",
+      "postgresql" : "PostgreSQL",
+      "openai" : "OpenAI API"
+    },
+    "pro" : "Pro",
+    "menu" : "Menü"
+  },
+  "sidebar" : {
+    "dashboard" : "Übersicht",
+    "admin" : "Administration",
+    "my_profile" : "Mein Profil",
+    "logout" : "Ausloggen",
+    "documents" : "Dateien & Dokumente",
+    "catalog" : "Kurskatalog",
+    "calendar" : "Kalender",
+    "resource_bank" : "Ressourcenbank",
+    "library" : "Bibliothek",
+    "analytics" : "Analysen & Einblicke",
+    "support" : "Support & Kontakt",
+    "my_courses" : "Meine Kurse",
+    "ebooks" : "E-Books",
+    "system" : "System",
+    "ai_quiz" : "KI-Quiz",
+    "shop" : "Shop",
+    "categories" : {
+      "main" : "Hauptmenü",
+      "education" : "Ausbildung & Studium",
+      "tools" : "Werkzeuge",
+      "syv" : "Studienberatung & Zulassung",
+      "admin" : "Administration",
+      "rektor" : "Rektor-Paket",
+      "guardian" : "Erziehungsberechtigte"
+    },
+    "lms_platform" : "LMS PLATTFORM",
+    "install_app" : "APP INSTALLIEREN"
+  },
+  "library" : {
+    "title" : "Bibliothek",
+    "subtitle" : "E-Books entdecken und lesen",
+    "search_placeholder" : "Suche nach Titel oder Autor...",
+    "categories" : "Kategorien",
+    "all_categories" : "Alle",
+    "read_book" : "Buch lesen",
+    "edit_book" : "Buch bearbeiten",
+    "delete_book" : "Buch löschen",
+    "upload_book" : "Neues Buch hochladen",
+    "no_books_found" : "Keine Bücher gefunden.",
+    "edit_modal_title" : "E-Book bearbeiten",
+    "upload_modal_title" : "Neues E-Book hochladen",
+    "title_label" : "Titel",
+    "author_label" : "Autor",
+    "category_label" : "Kategorie",
+    "description_label" : "Beschreibung",
+    "save_changes" : "Änderungen speichern",
+    "upload_btn" : "Hochladen",
+    "language_label" : "Sprache",
+    "epub_file_label" : "EPUB-Datei",
+    "cover_image_label" : "Coverbild",
+    "no_cover" : "Kein Cover",
+    "select_file_alert" : "Bitte wählen Sie eine EPUB-Datei aus",
+    "delete_confirm" : "Sind Sie sicher, dass Sie dieses Buch löschen möchten?",
+    "delete_success" : "Buch gelöscht",
+    "no_books_desc" : "Versuchen Sie, nach etwas anderem zu suchen oder laden Sie Ihr erstes E-Book in die Bibliothek hoch."
+  },
+  "dashboard" : {
+    "welcome" : "Willkommen zurück, {{name}}!",
+    "welcome_back" : "Willkommen zurück,",
+    "logged_in_as" : "Du bist angemeldet als",
+    "live_overview" : "Live-Übersicht",
+    "realtime_data" : "Echtzeitdaten von der gesamten Plattform",
+    "tabs" : {
+      "overview" : "Übersicht",
+      "communication" : "Kommunikation"
+    },
+    "widgets" : {
+      "stats" : "Statistik",
+      "calendar" : "Kalender & Zeitplan",
+      "recent_users" : "Neueste Benutzer",
+      "recent_docs" : "Kürzlich Hochgeladen",
+      "messages" : "Neueste Nachrichten",
+      "online_friends" : "Online Freunde",
+      "tickets" : "Supportanfragen",
+      "gamification" : "Gamification-Status",
+      "attendance" : "Meine Anwesenheit",
+      "my_courses" : "Meine Kurse",
+      "tasks" : "Aufgaben & Feedback",
+      "daily_challenges" : "Tägliche Herausforderungen",
+      "achievements" : "Meine Leistungen",
+      "ai_insights" : "KI-Einblicke",
+      "ai_personalization" : "Persönliche Lerntipps",
+      "daily_challenges_widget" : {
+        "title" : "Tägliche Herausforderungen",
+        "subtitle" : "Absolviere, um XP zu verdienen",
+        "days" : "{{count}} Tage",
+        "empty" : "Noch keine Herausforderungen verfügbar",
+        "completed" : "✓ Erledigt",
+        "reset_in" : "Neue Herausforderungen in {{hours}}h {{minutes}}m"
+      }
+    },
+    "my_courses" : "Meine Kurse",
+    "files" : "Dateien",
+    "no_active_courses" : "Du hast keine aktiven Kurse.",
+    "total_users" : "Benutzer insgesamt",
+    "total_courses" : "Kurse insgesamt",
+    "open" : "Offen",
+    "closed" : "Geschlossen",
+    "realtime_update_notice" : "Daten werden in Echtzeit aktualisiert.",
+    "new_messages" : "Neue Nachrichten",
+    "go_to_inbox" : "Zum Posteingang",
+    "students" : "Studenten",
+    "teachers" : "Lehrer",
+    "admins" : "Admins",
+    "mentors" : "Mentoren",
+    "principals" : "Rektoren",
+    "evaluations" : "Bewertungen",
+    "give_rating" : "Bewertung abgeben",
+    "to_grade" : "Zu bewerten",
+    "submissions" : "Einsendungen",
+    "no_pending_grades" : "Keine Einsendungen warten!",
+    "upcoming_deadlines" : "Nächste Fristen",
+    "no_deadlines" : "Keine bevorstehenden Einsendungen.",
+    "active_plural" : "Aktiv",
+    "archive_plural" : "Archiviert",
+    "datasync_ok" : "Synchronisiert",
+    "new_badge" : "NEU",
+    "archived_files" : "Archivierte Dateien",
+    "urgent" : "Dringend!",
+    "go_to" : "Gehe zu",
+    "avg_grade" : "Durchschnittsnote",
+    "based_on" : "Basierend auf {{count}} abgeschlossenen Kursen",
+    "users" : "Benutzer",
+    "courses" : "Kurse",
+    "latest_registered" : "Zuletzt registriert",
+    "latest_uploads" : "Neueste Uploads",
+    "archive" : "Archiv",
+    "no_archive_docs" : "Keine Dokumente im Archiv.",
+    "teacher_panel" : "Lehrer-Panel",
+    "overview_for" : "Übersicht für {{name}}",
+    "my_students" : "Meine Studenten",
+    "active_courses" : "Aktive Kurse",
+    "students_at_risk" : "Schüler gefährdet (Verspätete Einsendungen)",
+    "missed_deadlines" : "{{count}} Fristen verpasst",
+    "no_risk_students" : "Keine verspäteten Einsendungen!",
+    "all_in_phase" : "Alle deine Schüler sind im Plan.",
+    "grading_todo" : "Zu tun: Bewertung",
+    "grade_now" : "Bewerten",
+    "all_graded" : "Alles bewertet! Gut gemacht.",
+    "hi_student" : "Hallo, {{name}}! 👋",
+    "student_subtitle" : "Hier ist dein Studium im Moment.",
+    "not_registered" : "Du bist nicht für Kurse registriert.",
+    "comming_assignments" : "Kommende Fristen",
+    "no_upcoming_assignments" : "Momentan keine anstehenden Aufgaben.",
+    "admin_overview" : "Systemübersicht",
+    "admin_subtitle" : "Administration und Kurssteuerung",
+    "active_students" : "Aktive Studenten",
+    "locked_courses" : "Gesperrte Kurse",
+    "files_in_system" : "Dateien im System",
+    "course_registry" : "Kursregister",
+    "search_placeholder" : "Suche Kurs-Code oder Name...",
+    "all_statuses" : "Alle Status",
+    "no_match" : "Keine Kurse haben deiner Suche entsprochen.",
+    "showing_x_of_y" : "Zeige {{count}} von {{total}} Kursen",
+    "manage" : "Verwalten",
+    "new_course" : "Neuer Kurs",
+    "search_course" : "Kurs suchen...",
+    "table" : {
+      "status" : "Status",
+      "code" : "Code",
+      "name" : "Name",
+      "date" : "Datum",
+      "action" : "Aktion",
+      "user" : "Benutzer",
+      "email" : "Email",
+      "role" : "Rolle"
+    },
+    "course_color" : "Kursfarbe",
+    "edit_course" : "Kurs bearbeiten",
+    "delete_course" : "Kurs löschen",
+    "no_new_users" : "Keine neuen Benutzer registriert.",
+    "recent_uploads" : "Neueste Uploads",
+    "unknown_file" : "Unbekannte Datei",
+    "unknown_size" : "Unbekannte Größe",
+    "unknown_date" : "Unbekanntes Datum",
+    "no_files_uploaded" : "Noch keine Dateien hochgeladen.",
+    "user_registry" : "Benutzerregister",
+    "new_user" : "Neuer Benutzer",
+    "search_user" : "Benutzer suchen...",
+    "all_roles" : "Alle Rollen",
+    "active" : "Aktiv",
+    "edit_user" : "Benutzer bearbeiten",
+    "delete_user" : "Benutzer löschen",
+    "feedback" : {
+      "new" : "Neues Feedback",
+      "course" : "Kurs: {{name}}",
+      "praise" : "Gut gemacht!",
+      "details" : "Details anzeigen"
     }
   },
-  "sidebar": {
-    "dashboard": "Übersicht",
-    "admin": "Administration",
-    "my_profile": "Mein Profil",
-    "logout": "Abmelden",
-    "documents": "Dateien & Dokumente",
-    "catalog": "Kurskatalog",
-    "calendar": "Kalender",
-    "resource_bank": "Ressourcenbank",
-    "library": "Bibliothek",
-    "analytics": "Analysen & Einblicke",
-    "support": "Support & Kontakt",
-    "my_courses": "Meine Kurse",
-    "ebooks": "E-Books",
-    "system": "System",
-    "ai_quiz": "KI-Quiz",
-    "shop": "Shop",
-    "categories": {
-      "main": "Hauptmenü",
-      "education": "Bildung & Studium",
-      "tools": "Werkzeuge",
-      "syv": "Studienberatung & Zulassung",
-      "admin": "Administration",
-      "rektor": "Rektor-Paket",
-      "guardian": "Erziehungsberechtigte"
-    },
-    "lms_platform": "LMS PLATTFORM",
-    "install_app": "APP INSTALLIEREN"
+  "attendance" : {
+    "title" : "Anwesenheitsbericht",
+    "presence" : "Anwesenheit:",
+    "occasions" : "Gelegenheiten",
+    "no_records" : "Noch keine obligatorischen Momente registriert.",
+    "not_reported" : "Nicht gemeldet",
+    "present" : "Anwesend",
+    "absent" : "Abwesend",
+    "description" : "Beschreibung",
+    "no_description" : "Keine Beschreibung verfügbar.",
+    "note" : "Notiz",
+    "manage_attendance" : "Anwesenheit verwalten",
+    "new_event" : "Neuer Termin",
+    "create_event_title" : "Neuen Termin erstellen",
+    "event_title" : "Titel",
+    "event_start" : "Start",
+    "event_end" : "Ende",
+    "event_type" : "Typ",
+    "type_lesson" : "Lektion",
+    "type_workshop" : "Workshop",
+    "type_exam" : "Prüfung",
+    "type_other" : "Sonstiges",
+    "create_btn" : "Erstellen",
+    "save_attendance" : "Anwesenheit speichern",
+    "saved_success" : "Anwesenheit gespeichert!",
+    "save_error" : "Fehler beim Speichern",
+    "create_error" : "Konnte Event nicht erstellen"
   },
-  "library": {
-    "title": "Bibliothek",
-    "subtitle": "E-Books erkunden und lesen",
-    "search_placeholder": "Suche nach Titel oder Autor...",
-    "categories": "Kategorien",
-    "all_categories": "Alle",
-    "read_book": "Buch lesen",
-    "edit_book": "Buch bearbeiten",
-    "delete_book": "Buch löschen",
-    "upload_book": "Neues Buch hochladen",
-    "no_books_found": "Keine Bücher gefunden.",
-    "edit_modal_title": "E-Book bearbeiten",
-    "upload_modal_title": "Neues E-Book hochladen",
-    "title_label": "Titel",
-    "author_label": "Autor",
-    "category_label": "Kategorie",
-    "description_label": "Beschreibung",
-    "save_changes": "Änderungen speichern",
-    "upload_btn": "Hochladen",
-    "language_label": "Sprache",
-    "epub_file_label": "EPUB-Datei",
-    "cover_image_label": "Coverbild",
-    "no_cover": "Kein Cover",
-    "select_file_alert": "Bitte wählen Sie eine EPUB-Datei aus",
-    "delete_confirm": "Sind Sie sicher, dass Sie dieses Buch löschen möchten?",
-    "delete_success": "Buch gelöscht",
-    "no_books_desc": "Versuchen Sie, nach etwas anderem zu suchen oder laden Sie Ihr erstes E-Book in die Bibliothek hoch."
+  "assessment" : {
+    "title" : "Bewertung & Ergebnis",
+    "no_assignments" : "Keine Aufgaben in diesem Kurs.",
+    "deadline" : "Frist",
+    "go_to_task" : "Zur Aufgabe gehen",
+    "my_file" : "Meine Datei",
+    "grade" : "Note",
+    "waiting" : "Wartet auf Korrektur",
+    "submitted_at" : "Eingereicht am",
+    "not_submitted" : "Nicht eingereicht",
+    "submit_now" : "Jetzt einreichen"
   },
-  "landing": {
-    "nav": {
-      "features": "Funktionen",
-      "gamification": "Gamifizierung",
-      "showcase": "Showcase",
-      "pricing": "Preispläne",
-      "technology": "Technologie",
-      "login": "Anmelden",
-      "book_demo": "Demo buchen",
-      "get_started": "Loslegen",
-      "select_language": "Sprache wählen"
+  "evaluation" : {
+    "title" : "Kursauswertung",
+    "intro" : "Ihre Antworten sind anonym und helfen uns, die Ausbildung zu verbessern. Geben Sie eine Bewertung von 1-10 ab und schreiben Sie gerne einen Kommentar.",
+    "your_rating" : "Ihre Bewertung (1 = Schlecht, 10 = Ausgezeichnet)",
+    "comment_label" : "Kommentar (Optional)",
+    "comment_placeholder" : "Schreiben Sie hier Ihre Meinung...",
+    "submit_btn" : "Auswertung abschicken",
+    "validation_error" : "Bitte geben Sie eine Bewertung für alle Fragen ab.",
+    "manage_btn" : "Auswertung verwalten",
+    "saved_success" : "Auswertung gespeichert!",
+    "save_error" : "Konnte die Auswertung nicht speichern."
+  },
+  "license" : {
+    "locked_title" : "Das System ist gesperrt",
+    "locked_desc" : "Es wurde keine gültige Lizenz gefunden.",
+    "key_label" : "Lizenzschlüssel",
+    "key_placeholder" : "XXXX-XXXX-XXXX-XXXX",
+    "activate_btn" : "System aktivieren"
+  },
+  "auth" : {
+    "login_header" : "Anmelden",
+    "register_header" : "Konto erstellen",
+    "username" : "Benutzername",
+    "password" : "Passwort",
+    "login_button" : "Anmelden",
+    "no_account" : "Kein Konto?",
+    "register_link" : "Registrieren",
+    "has_account" : "Hast du bereits ein Konto?",
+    "login_link" : "Anmelden",
+    "firstname" : "Vorname",
+    "lastname" : "Nachname",
+    "ssn" : "Sozialversicherungsnummer (YYYYMMDD-XXXX)",
+    "email" : "E-Mail",
+    "generate" : "Vorschlag generieren",
+    "choose_or_generate" : "Wählen oder generieren...",
+    "profane" : "Unangemessenes Wort gewählt.",
+    "taken" : "Benutzername vergeben.",
+    "available" : "Verfügbar!",
+    "role" : "Rolle",
+    "student" : "Student",
+    "admin" : "Administrator",
+    "teacher" : "Lehrer",
+    "contact_address" : "Kontakt & Adresse",
+    "phone" : "Telefon",
+    "street" : "Straße",
+    "zip" : "Postleitzahl",
+    "city" : "Stadt",
+    "country" : "Land",
+    "register_user_btn" : "Benutzer registrieren",
+    "create_account_btn" : "Mein Konto erstellen"
+  },
+  "admin" : {
+    "title" : "Systemadministration",
+    "subtitle" : "Benutzer, Kurse und Systemarchive verwalten.",
+    "tab_users" : "Benutzer",
+    "tab_courses" : "Kurse",
+    "tab_docs" : "Dokumentenarchiv",
+    "tab_settings" : "Einstellungen",
+    "register_new" : "Neuen Benutzer registrieren",
+    "firstname" : "Vorname",
+    "lastname" : "Nachname",
+    "ssn" : "Personnummer (12 Ziffern)",
+    "email" : "E-Mail",
+    "account_role" : "Konto & Rolle",
+    "generate" : "Generieren",
+    "password" : "Passwort",
+    "create_account" : "Konto erstellen",
+    "registered_users" : "Registrierte Benutzer",
+    "course_overview" : "Kursübersicht",
+    "create_course" : "Neuen Kurs erstellen",
+    "search_course" : "Suche nach Kursname oder Kurscode...",
+    "no_courses" : "Keine Kurse gefunden.",
+    "teacher" : "Lehrer",
+    "students" : "Studenten",
+    "settings" : "Einstellungen",
+    "content" : "Inhalt",
+    "global_docs" : "Globales Dokumentenarchiv",
+    "upload_file" : "Datei hochladen",
+    "no_docs" : "Das System enthält keine archivierten Dateien.",
+    "module_management" : "Modulverwaltung & Systeminfo",
+    "site_name" : "Seitenname",
+    "chat_module" : "Chatmodul",
+    "chat_desc" : "Ermöglicht Schülern und Lehrern das Chatten in Echtzeit.",
+    "registration" : "Neuregistrierung",
+    "registration_desc" : "Ermöglicht dem Admin das Erstellen neuer Benutzerkonten.",
+    "version" : "Systemversion",
+    "edit_course_settings" : "Kurseinstellungen bearbeiten",
+    "course_name" : "Kursname",
+    "course_code" : "Kurscode",
+    "color_theme" : "Farbthema",
+    "register_new_user" : "Neuen Benutzer registrieren",
+    "edit_user" : "Benutzer bearbeiten",
+    "edit_course" : "Kurs bearbeiten",
+    "base_on_skolverket" : "Basierend auf Skolverkskurs",
+    "choose_skolverket_course" : "Wähle Skolverkskurs",
+    "max_seats" : "Maximale Plätze",
+    "tags" : "Tags",
+    "digital_classroom" : "Digitales Klassenzimmer (Freiwillig)",
+    "choose_platform" : "Wähle Plattform...",
+    "paste_link" : "Link einfügen...",
+    "choose_teacher" : "Wähle Lehrer..."
+  },
+  "course" : {
+    "back" : "Zurück zur Übersicht",
+    "material" : "Materialien",
+    "assignments" : "Aufgaben",
+    "quiz" : "Quiz & Prüfung",
+    "forum" : "Forum",
+    "scorm" : "Interaktive Module",
+    "kursinformation" : "Kursinformationen",
+    "students" : "Studenten & Bewertungen",
+    "attendance" : "Anwesenheit",
+    "create_quiz" : "Neues Quiz erstellen",
+    "start_quiz" : "Quiz starten",
+    "no_material" : "Noch keine Kursmaterialien hochgeladen.",
+    "add_material" : "Material hinzufügen",
+    "upload" : "Hochladen",
+    "title" : "Titel",
+    "description" : "Beschreibung",
+    "link" : "Link (URL)",
+    "type_text" : "Text / Artikel",
+    "type_video" : "Video",
+    "type_link" : "Externer Link",
+    "type_file" : "Datei",
+    "read" : "Gelesen",
+    "mark_read" : "Als gelesen markieren",
+    "open_link" : "Link öffnen",
+    "participants" : "Kursteilnehmer",
+    "add_student" : "Hinzufügen",
+    "select_student" : "Student auswählen...",
+    "role" : "Rolle",
+    "status" : "Status",
+    "active" : "Aktiv",
+    "connect_classroom" : "Mit Klassenraum verbinden",
+    "evaluate_course" : "Kurs bewerten",
+    "feedback_thanks" : "Vielen Dank für Ihr Feedback!",
+    "error_occurred" : "Ein Fehler ist aufgetreten:",
+    "result_passed" : "Bestanden",
+    "result_failed" : "Nicht bestanden",
+    "result_pending" : "Ausstehend",
+    "mark_passed" : "Bestätigen",
+    "mark_failed" : "Nicht bestanden",
+    "certificate" : "Zertifikat",
+    "course_completed" : "Kurs abgeschlossen",
+    "view_certificate" : "Zertifikat anzeigen",
+    "claim_certificate" : "Zertifikat abrufen"
+  },
+  "messages" : {
+    "profile_updated" : "Profil gespeichert!",
+    "password_changed" : "Passwort geändert!",
+    "login_failed" : "Falsche Anmeldung.",
+    "login_error" : "Anmeldung fehlgeschlagen.",
+    "account_created" : "Konto erstellt!",
+    "register_error" : "Konnte nicht registrieren.",
+    "license_approved" : "Lizenz genehmigt!",
+    "license_error" : "Konnte nicht aktivieren.",
+    "upload_success" : "Datei hochgeladen!",
+    "upload_error" : "Hochladen fehlgeschlagen.",
+    "setting_saved" : "Gespeichert!",
+    "setting_error" : "Konnte Einstellung nicht speichern.",
+    "user_deleted" : "Benutzer gelöscht.",
+    "delete_error" : "Konnte Benutzer nicht löschen.",
+    "course_deleted" : "Kurs gelöscht.",
+    "course_delete_error" : "Konnte Kurs nicht löschen.",
+    "joined_course" : "Beigetreten!",
+    "loading" : "Lädt...",
+    "loading_course" : "Lädt Kurs..."
+  },
+  "teacher_dashboard" : {
+    "tab_overview" : "Übersicht",
+    "tab_grading" : "Bewertung",
+    "tab_applications" : "Bewerbungen",
+    "tab_courses" : "Meine Kurse",
+    "tab_students" : "Studentenbetreuung",
+    "tab_communication" : "Kommunikation",
+    "section_schedule" : "Bevorstehender Zeitplan",
+    "section_shortcuts" : "Verknüpfungen",
+    "section_admin" : "Administration",
+    "ongoing_course" : "Laufender Kurs",
+    "upcoming_event" : "Bevorstehendes Ereignis",
+    "course_start" : "Kursbeginn: {{name}}",
+    "no_events" : "Keine geplanten Ereignisse.",
+    "new_message" : "Neue Nachricht"
+  },
+  "shortcuts" : {
+    "calendar" : "Zum Kalender gehen",
+    "students" : "Schüler verwalten",
+    "grading" : "Aufgaben bewerten",
+    "messages" : "Nachrichten",
+    "create_course" : "Neuen Kurs erstellen"
+  },
+  "widgets" : {
+    "recent_messages" : {
+      "title" : "Neueste Nachrichten",
+      "view_all" : "Alle anzeigen",
+      "empty" : "Keine neuen Nachrichten.",
+      "from" : "Von"
     },
-    "hero": {
-      "badge": "Version 3.9.2 jetzt live",
-      "title_start": "Die Zukunft des",
-      "title_llp": "LLP",
-      "title_with": "mit",
-      "title_hub": "EduAI Hub",
-      "subtitle": "Eine einheitliche, KI-gestützte Plattform für Schulen, Unternehmen und Behörden. Maximieren Sie den pädagogischen Effekt und minimieren Sie die Administration rund um die Uhr.",
-      "cta_ai": "KI-Studio testen",
-      "cta_learn_more": "Über Funktionen lesen",
-      "cta_see_all": "Alle 40+ Funktionen ansehen",
-      "tech_tagline": "Angetrieben von weltweit führender Technologie",
-      "stats": {
-        "engagement": "Erhöhtes Schüler-Engagement",
-        "new_level": "Neuer Erfolg!",
-        "level_value": "Level {{level}}"
-      }
+    "online_friends" : {
+      "title" : "Online-Freunde",
+      "x_online" : "{{count}} online",
+      "empty" : "Im Moment keine Freunde online.",
+      "profile" : "Profil",
+      "view_all" : "Alle Freunde anzeigen"
     },
-    "features": {
-      "title": "Alles, was Sie für moderne Bildung benötigen",
-      "subtitle": "Von KI-gestützter Analyse bis hin zu Gamifizierung und Administration. Alles in einer leistungsstarken Plattform vereint.",
-      "multi_tenancy": {
-        "title": "Multi-Tenancy",
-        "desc": "Isolierte Daten für jede Schule mit unendlicher Skalierbarkeit."
-      },
-      "b2b": {
-        "title": "B2B Admin-Konsole",
-        "desc": "Benutzer, Kurse und Lizenzen nahtlos aus der Ferne verwalten."
-      },
-      "microservice": {
-        "title": "Mikroservices",
-        "desc": "Gebaut mit Spring Boot für maximale Leistung und Stabilität."
-      },
-      "event_bus": {
-        "title": "Echtzeit-Event-Bus",
-        "desc": "Sofortige Benachrichtigung und Synchronisierung zwischen allen Modulen."
-      },
-      "gamification": {
-        "title": "Game Engine",
-        "desc": "XP, Abzeichen und Ranglisten, die das Lernen motivieren."
-      },
-      "ai_creator": {
-        "title": "KI-Kursersteller",
-        "desc": "Ganze Kurse automatisch aus PDFs oder Links in 60 Sek. generieren."
-      },
-      "pwa": {
-        "title": "PWA Mobile App",
-        "desc": "EduFlex direkt auf dem Handy installieren, ohne App Store."
-      },
-      "live_video": {
-        "title": "Live Video & Chat",
-        "desc": "Integrierte Zoom/Teams-Unterstützung für digitale Klassenzimmer."
-      },
-      "collaborative": {
-        "title": "Kollaborative Bearbeitung",
-        "desc": "Dokumente gemeinsam in Echtzeit über OnlyOffice bearbeiten."
-      },
-      "roi": {
-        "title": "Pädagogischer ROI",
-        "desc": "Messen Sie genau, wie viel Zeit und Ressourcen Sie täglich sparen."
-      },
-      "notifications": {
-        "title": "Smarte Benachrichtigungen",
-        "desc": "Kontextuelle Push-Benachrichtigungen für Fristen und Feedback."
-      },
-      "exams": {
-        "title": "Sichere Prüfungen",
-        "desc": "Überwachte Umgebung mit Fokussteuerung und Integritätsschutz."
-      },
-      "integrations": {
-        "title": "LTI 1.3 Advantage",
-        "desc": "Vollständig kompatibel mit Canvas, Moodle und Blackboard."
-      },
-      "compliance": {
-        "title": "WCAG Compliance",
-        "desc": "Entworfen für 100% Barrierefreiheit unter allen Bedingungen."
-      },
-      "pii": {
-        "title": "GDPR Zero-Trust",
-        "desc": "Bahnbrechende PII-Maskierung aller sensiblen Schülerdaten."
-      },
-      "educareer": {
-        "title": "EduCareer Roadmap",
-        "desc": "KI-gestützte Karrierewege, um die Traumziele der Schüler zu erreichen."
-      }
+    "live_lessons" : {
+      "title" : "Live-Lektionen",
+      "subtitle" : "Kommende Videokonferenzen",
+      "soon" : "Bald",
+      "host" : "Gastgeber",
+      "join" : "Beitreten",
+      "prepare" : "Vorbereiten",
+      "view" : "Ansehen",
+      "see_all_calendar" : "Alle im Kalender ansehen",
+      "error_load" : "Lektionen konnten nicht geladen werden",
+      "error_join" : "Konnte der Lektion nicht beitreten"
     },
-    "screenshots": {
-      "admin": {
-        "title": "Admin Dashboard 2.0",
-        "desc": "Totale Kontrolle über die Organisation mit Live-Daten und Widgets."
-      },
-      "teacher": {
-        "title": "Lehrer-Panel",
-        "desc": "Effiziente Übersicht über Anwesenheit, Fortschritt und Abgaben der Schüler."
-      },
-      "quiz": {
-        "title": "KI Quiz Generator",
-        "desc": "Dokumente hochladen und KI Testfragen in Sekunden erstellen lassen."
-      },
-      "library": {
-        "title": "E-Book Bibliothek",
-        "desc": "Eine zentrale Bibliothek für Literatur mit integriertem Reader."
-      },
-      "catalog": {
-        "title": "Kurskatalog",
-        "desc": "Visueller und filterbarer Katalog für Schüler, um neue Kurse zu finden."
-      },
-      "resource": {
-        "title": "Ressourcenbank & Community",
-        "desc": "Material aus einer gemeinsamen Community-Bibliothek teilen und herunterladen."
-      },
-      "analytics": {
-        "title": "Analysen & Einblicke",
-        "desc": "Echtzeit-Dashboards für Rektoren und Lehrer. Heatmaps und Dropout-Vorhersage."
-      },
-      "security": {
-        "title": "Enterprise Sicherheit",
-        "desc": "Rollenbasierte Zugriffskontrolle (RBAC), Audit-Logging und sichere Keycloak SSO-Integration."
-      },
-      "evaluation_system": {
-        "title": "Kursbewertung & Einblicke",
-        "desc": "Komplettes System für Kursqualität. Automatische Schülerbenachrichtigungen und KI-Analyse von Freitextantworten zur Messung des ROI."
-      }
+    "tickets" : {
+      "active" : "Aktive Support-Tickets",
+      "critical" : "Kritisch",
+      "high" : "Hohe Priorität",
+      "medium" : "Mittlere Priorität",
+      "low" : "Niedrige Priorität",
+      "open" : "Offene Tickets",
+      "empty" : "Im Moment keine offenen Tickets."
     },
-    "architecture": {
-      "badge": "Gebaut für Skalierung",
-      "title": "Enterprise Architektur",
-      "powered_by": "Angetrieben durch Industriestandards",
-      "items": [
-        "Spring Boot 3.4 Mikroservices",
-        "PostgreSQL mit Schema-pro-Tenant",
-        "Redis Caching-Layer",
-        "MinIO S3-kompatibler Speicher",
-        "Keycloak SSO Identity Management",
-        "Kubernetes & Helm Charts"
-      ]
+    "student_progress" : {
+      "title" : "Meine Kursergebnisse",
+      "on_track" : "Auf Kurs",
+      "at_risk" : "Gefahr",
+      "assignments" : "Aufgaben",
+      "quizzes" : "Quizze",
+      "detailed_overview" : "Detaillierte Übersicht",
+      "latest_results" : "Neueste Ergebnisse",
+      "no_results" : "Noch keine Ergebnisse.",
+      "catch_up" : "Hol auf!",
+      "go_to_course" : "Zum Kurs gehen"
     },
-    "pricing": {
-      "title": "Einfache, transparente Preise",
-      "subtitle": "Wählen Sie den Plan, der zu Ihrer Schule passt.",
-      "basic": {
-        "name": "Basic",
-        "price": "99 EUR / Monat",
-        "features": [
-          "Bis zu 100 Benutzer",
-          "Grundlegende Kursverwaltung",
-          "Einfaches Reporting",
-          "Community Support"
-        ],
-        "cta": "Loslegen"
-      },
-      "pro": {
-        "name": "Pro",
-        "price": "299 EUR / Monat",
-        "features": [
-          "Bis zu 500 Benutzer",
-          "Volle Gamifizierung",
-          "Skolverket-Integration",
-          "CSN-Export",
-          "Priorisierter Support"
-        ],
-        "cta": "Demo buchen",
-        "badge": "Am beliebtesten"
-      },
-      "enterprise": {
-        "name": "Enterprise",
-        "price": "Kontaktieren Sie uns",
-        "features": [
-          "Unbegrenzte Benutzeranzahl",
-          "White-label Branding",
-          "Keycloak SSO",
-          "SLA 99.99%",
-          "Dedizierte Infrastruktur"
-        ],
-        "cta": "Vertrieb kontaktieren"
-      }
+    "attendance_widget" : {
+      "title" : "Meine Digitale Anwesenheit",
+      "activity_level" : "Aktivitätslevel",
+      "registered_time" : "Registrierte Zeit",
+      "gold_week" : "Ziel (Woche)",
+      "low_warning" : "Achtung! Ihre Anwesenheit ist niedrig. Wenden Sie sich an Ihren Mentor."
     },
-    "pricing_page": {
-      "back": "Zurück zum Start",
-      "badge": "Transparenz",
-      "title": "Einfache & Faire {{gradient}}",
-      "gradient_text": "Preisgestaltung",
-      "subtitle": "Wählen Sie die Stufe, die am besten zu Ihrer Organisation passt. Keine versteckten Gebühren, nur pure pädagogische Kraft.",
-      "most_popular": "Am beliebtesten",
-      "currency_suffix": "EUR / Schüler / Monat",
-      "cta_prefix": "Starten Sie mit",
-      "security_title": "DSGVO & Sicherheit",
-      "security_desc": "Alle Daten werden innerhalb der EU (Schweden/Deutschland) gespeichert. Wir erfüllen die strengsten Anforderungen für PII-Maskierung und Privacy by Design.",
-      "availability_title": "Hohe Verfügbarkeit",
-      "availability_desc": "Unsere Kubernetes-Architektur garantiert 99,9% Uptime für Enterprise. Das System skaliert automatisch basierend auf der Benutzeranzahl.",
-      "onboarding_title": "Persönliches Onboarding",
-      "onboarding_desc": "Wir unterstützen Sie bei der SIS-Integration, dem LTI-Setup und der Lehrerfortbildung, um eine erfolgreiche Pilotphase zu gewährleisten.",
-      "custom_title": "Benötigen Sie ein maßgeschneidertes Setup?",
-      "custom_subtitle": "Für größere Konzerne oder spezifische pädagogische Bedürfnisse bieten wir maßgeschneiderte ENTERPRISE-Pakete an.",
-      "button_calc": "Preisberechnung anfordern",
-      "button_kit": "Pilot Kit herunterladen (PDF)",
-      "tiers": {
-        "basic": {
-          "desc": "Perfekt für kleinere Schulen oder Vereine, die ihre Administration digitalisieren möchten.",
-          "features": [
-            "Vollständiges LMS",
-            "Kurs- & Medientools",
-            "Schülerregister (PII-maskiert)",
-            "Ereignis- & Gesundheitsverwaltung",
-            "E-Mail Support"
-          ]
-        },
-        "pro": {
-          "desc": "Die intelligente Stufe für moderne Bildungsanbieter mit KI-Unterstützung.",
-          "features": [
-            "Alles in BASIC",
-            "KI Tutor (Google Gemini)",
-            "KI Quiz Generator",
-            "Gamifizierung (XP, Shop, Abzeichen)",
-            "LTI 1.3 & Zoom/Teams Integrationen",
-            "Priorisierter Support"
-          ]
-        },
-        "enterprise": {
-          "desc": "Vollumfängliche Lösung für Konzerne und Behörden mit hohen Anforderungen an die Kontrolle.",
-          "features": [
-            "Alles in PRO",
-            "Volles Whitelabeling (Eigene Domain)",
-            "Produktionsreife Kubernetes Ops",
-            "Dedizierter Success Manager",
-            "SLA: 99.9% Uptime",
-            "Custom API-Entwicklung"
-          ]
-        }
-      }
-    },
-    "footer": {
-      "tagline": "Stärkt Bildung mit moderner Technologie. Gebaut mit ❤️ in Schweden.",
-      "product": "Produkt",
-      "features": "Funktionen",
-      "pricing": "Preise",
-      "roadmap": "Roadmap",
-      "resources": "Ressourcen",
-      "documentation": "Dokumentation",
-      "api_reference": "API-Referenz",
-      "system_status": "Systemstatus",
-      "connect": "Kontakt",
-      "support": "Support",
-      "newsletter": "Newsletter",
-      "newsletter_desc": "Erhalten Sie die neuesten Updates zu KI und Bildung direkt in Ihr Postfach.",
-      "email_placeholder": "deine@email.de",
-      "contact_sales": "Vertrieb kontaktieren",
-      "twitter": "Twitter",
-      "github": "GitHub",
-      "copyright": "© 2026 EduFlex. Alle Rechte vorbehalten.",
-      "privacy_policy": "Datenschutzrichtlinie",
-      "terms_of_service": "Nutzungsbedingungen",
-      "cookie_settings": "Cookie-Einstellungen",
-      "developed_by": "Entwickelt von",
-      "fenrir": "Fenrir Studio",
-      "security": "Sicherheit",
-      "api": "API-Dokumentation",
-      "help_center": "Hilfecenter"
-    },
-    "roles": {
-      "badge": "Lösungen für alle",
-      "title": "Angepasst an Ihre Rolle in der Schule",
-      "subtitle": "EduFlex wurde entwickelt, um den Alltag für alle Beteiligten in der Bildung zu erleichtern.",
-      "outcome_label": "Effekt",
-      "rector": {
-        "title": "Rektor & Schulleitung",
-        "desc": "Behalten Sie die volle Kontrolle über den Betrieb mit Echtzeitdaten und strategischer Entscheidungsunterstützung.",
-        "feature1": "Echtzeit-KPIs & Dashboards",
-        "feature2": "Systematische Qualitätsarbeit (SKA)",
-        "feature3": "Finanz- & Ressourcenplanung",
-        "outcome": "Höherer Durchsatz & sicherere Steuerung."
-      },
-      "teacher": {
-        "title": "Lehrer & Mentoren",
-        "desc": "Reduzieren Sie die Administration und konzentrieren Sie sich auf die Pädagogik mit KI-Unterstützung von Weltrang.",
-        "feature1": "KI-generierte Tests & Quiz",
-        "feature2": "Automatisierte Anwesenheit & Bewertung",
-        "feature3": "At-Risk Frühwarnsystem (Gemini)",
-        "outcome": "Spart bis zu 70% Admin-Zeit."
-      },
-      "student": {
-        "title": "Schüler & Studenten",
-        "desc": "Engagierende Lernumgebung mit Gamifizierung und persönlicher KI-Unterstützung rund um die Uhr.",
-        "feature1": "Live Radar Wissensanzeige",
-        "feature2": "Persönlicher KI-Tutor (Video/Chat)",
-        "feature3": "XP, Streaks & Achievements",
-        "outcome": "+40% gesteigertes Engagement."
-      },
-      "parent": {
-        "title": "Erziehungsberechtigte",
-        "desc": "Bleiben Sie über die Fortschritte Ihres Kindes auf dem Laufenden und kommunizieren Sie direkt mit der Schule.",
-        "feature1": "KI-Bericht zum Wohlbefinden des Kindes",
-        "feature2": "Einfache Krankmeldung & Abwesenheit",
-        "feature3": "Direkter Kontakt zum Mentor",
-        "outcome": "Sichererer Dialog & bessere Einblicke."
-      }
-    },
-    "cta": {
-      "title": "Sind Sie bereit, Ihre Schule wirklich zu digitalisieren?",
-      "subtitle": "Schließen Sie sich über 500 anderen Nutzern an und erleben Sie die Zukunft des LLP mit EduAI Hub.",
-      "button_demo": "Persönliche Demo buchen",
-      "button_test": "14 Tage kostenlos testen"
-    },
-    "features_page": {
-      "intro_badge": "Alles, was Sie für moderne Bildung benötigen",
-      "title": "Vollgepackt mit Funktionen",
-      "subtitle": "Von KI-gestützter Analyse bis hin zu Gamifizierung und Administration. Hier finden Sie alles, was EduFlex einzigartig macht.",
-      "back": "Zurück",
-      "highlights_title": "Technologische Highlights",
-      "showcase_title": "Systemübersicht",
-      "cta_title": "Bereit loszulegen?",
-      "cta_button": "Jetzt Konto erstellen",
-      "highlights": {
-        "ai_creator": {
-          "title": "KI Kursersteller",
-          "desc": "Erstellen Sie komplette Kurse aus PDF-Dokumenten in weniger als 60 Sekunden. Automatisch generierte Lektionen, Daten und smarte Codes mit integrierter Datenbanksynchronisierung."
-        },
-        "predictive": {
-          "title": "Prädiktive KI-Analyse",
-          "desc": "Identifizieren Sie gefährdete Schüler, bevor es zu spät ist. KI analysiert Verhaltensmuster und bietet Lehrern Entscheidungsunterstützung sowie Schülern persönliche Lerntipps."
-        },
-        "lti": {
-          "title": "LTI 1.3 Advantage",
-          "desc": "Vollständig verifizierter Support für AGS (Noten) und NRPS (Rollen/Namen). Nahtlose Integration mit Canvas, Moodle und Blackboard für sichere Authentifizierung und Datenaustausch."
-        },
-        "xapi": {
-          "title": "xAPI & CMI5 LRS",
-          "desc": "Tracking der nächsten Generation. Führen Sie Simulationen und Offline-Mobilkurse mit vollständiger Detailberichterstattung über unseren integrierten Learning Record Store durch."
-        },
-        "minio": {
-          "title": "MinIO & S3 Storage",
-          "desc": "Skalierbarer Enterprise-Speicher. Alle Medien (Hörbücher, Video) werden blitzschnell gestreamt, mit Unterstützung zum Fortsetzen an der Stelle, an der Sie aufgehört haben."
-        },
-        "edugame": {
-          "title": "EduGame Engine",
-          "desc": "XP-System, Shop, Profilthemen, tägliche Herausforderungen und Streaks. Machen Sie das Lernen zum Abenteuer."
-        },
-        "schema": {
-          "title": "Schema-per-Tenant",
-          "desc": "Echtes Multi-Tenancy mit kompletter Datenisolierung. Jede Organisation erhält automatisch ein eigenes PostgreSQL-Schema."
-        },
-        "resource": {
-          "title": "Ressourcenbank & Community",
-          "desc": "Eine gemeinsame Bibliothek für alle Ihre Quiz, Aufgaben und Lektionen. Teilen und importieren Sie Material von anderen Lehrern mit einem Klick."
-        },
-        "cascading": {
-          "title": "Kaskadierendes Löschen",
-          "desc": "Wartungsfreie Steuerung. Wenn Sie einen Kurs löschen, werden alle zugehörigen Materialien und Lektionen automatisch gelöscht, ohne Datenbankkonflikte."
-        },
-        "sso": {
-          "title": "Enterprise SSO",
-          "desc": "Keycloak-Integration mit OAuth2/OIDC. Volle Kontrolle über Identitäten und Zugriffsebenen in der Organisation."
-        },
-        "slugs": {
-          "title": "Freundliche URLs (Slugs)",
-          "desc": "Suchmaschinenfreundliche und lesbare Adressen für alle Kurse. Navigieren Sie über lesbare Namen statt über technische IDs."
-        },
-        "quiz_gen": {
-          "title": "Quiz Generator",
-          "desc": "Randomisieren Sie Quiz automatisch aus Ihrer Fragenbank (Mathematik, Java, Deutsch etc.) für schnelle Wissenschecks ohne manuelle Arbeit."
-        },
-        "security": {
-          "title": "Enterprise Sicherheit",
-          "desc": "Volle AES-256 GCM Verschlüsselung sensibler Daten, domänengesperrte Lizenzierung und Rate-Limiting schützen die Organisation rund um die Uhr."
-        },
-        "insights": {
-          "title": "Kursbewertung & Einblicke",
-          "desc": "Komplettes System für Kursqualität, automatisierte Schülerbenachrichtigungen und KI-Analyse von Freitextantworten zur Messung des ROI."
-        },
-        "social": {
-          "title": "Kontextuelles soziales Lernen",
-          "desc": "Diskutieren Sie Lektionen und Kurse in Echtzeit direkt im Player. Lernen Sie von Ihren Mitstreitern durch threadbasierte Gespräche und Echtzeit-Benachrichtigungen."
-        },
-        "streaks": {
-          "title": "Milestone Streaks",
-          "desc": "Setzen Sie Ihren \"Learning Streak\" fort und schalten Sie exklusive XP-Boni und Abzeichen frei. Zentralisiertes Tracking, das Sie jeden Tag motiviert."
-        },
-        "mission_control": {
-          "title": "Rektorpaket (Mission Control)",
-          "desc": "Komplette Schulleitungsebene mit Echtzeit-KPIs. Verwalten Sie die Organisationshierarchie (Abteilung, Programm, Klasse), sehen Sie aggregierte Statistiken und bearbeiten Sie Ereignisse in einer gemeinsamen Live-Ansicht."
-        },
-        "health": {
-          "title": "Sichere Studentengesundheit",
-          "desc": "Rollenbasierte Zugriffskontrolle und verschlüsselte Aufzeichnungen für maximale Vertraulichkeit und Sicherheit."
-        },
-        "ai_analysis": {
-          "title": "Prädiktive KI-Analyse 2.0",
-          "desc": "Identifiziert gefährdete Studenten, bevor sie es selbst wissen. Deep Learning Musteranalyse von Anwesenheit, Aktivität und Ergebnissen."
-        },
-        "skolverket": {
-          "title": "Skolverket Sync 2.0",
-          "desc": "Nahtlose Integration mit dem gesamten Kurskatalog des Skolverket. Automatisierte Aktualisierung von Kurszielen und Bewertungskriterien."
-        },
-        "pwa": {
-          "title": "Native PWA Experience",
-          "desc": "Installieren Sie EduFlex direkt auf dem Startbildschirm. Volle Unterstützung für Offline-Zugriff und blitzschnelle Reaktion auf allen Geräten."
-        },
-        "gamification_expansion": {
-          "title": "Gamification Expansion",
-          "desc": "Neue Quest-Systeme, Social-Hub und erweiterter Shop. Steigern Sie das Engagement durch sinnvolles gamifiziertes Lernen."
-        },
-        "guardian": {
-          "title": "Erziehungsberechtigte- & Gesundheitskontrolle",
-          "desc": "Portal für Erziehungsberechtigte, digitale Krankmeldung und Studentengesundheitsumfragen. Alles gesammelt mit AES-256 Verschlüsselung und Privacy Guards für sichere Datenhandhabung."
-        },
-        "ai_center": {
-          "title": "EduAI Center 2.1",
-          "desc": "Fortgeschrittene Spaced Repetition mit SM-2 Algorithmus. Verdienen Sie KI-Credits durch intelligente Wiederholungen und visualisieren Sie Ihre Wissensreise in Echtzeit."
-        }
-      }
+    "schedule" : {
+      "title" : "Tages- & Wochenplan",
+      "loading" : "Lade Zeitplan...",
+      "campus" : "Campus",
+      "online" : "Online",
+      "connect" : "Verbinden",
+      "empty" : "Kein Unterricht heute",
+      "view_full" : "Vollständigen Zeitplan anzeigen",
+      "upcoming_submissions" : "Kommende Einreichungen",
+      "go_to_task" : "Zur Aufgabe gehen",
+      "no_deadlines" : "Keine bevorstehenden Fristen",
+      "view_all_count" : "Alle anzeigen ({{count}})",
+      "room_missing" : "Raum fehlt"
     }
   },
-  "contact": {
-    "title": "Demo buchen",
-    "name": "Name",
-    "name_placeholder": "Ihr Name",
-    "email": "E-Mail",
-    "email_placeholder": "deine@email.de",
-    "organization": "Organisation",
-    "organization_placeholder": "Name der Schule",
-    "phone": "Telefon",
-    "phone_placeholder": "+49 30 12345678",
-    "message": "Nachricht",
-    "message_placeholder": "Erzählen Sie uns ein wenig über Ihre Bedürfnisse...",
-    "submit": "Anfrage senden",
-    "sending": "Sendet...",
-    "success_message": "Danke! Wir werden Sie innerhalb von 24 Stunden kontaktieren.",
-    "error_message": "Etwas ist schief gelaufen. Bitte versuchen Sie es erneut oder senden Sie uns direkt eine E-Mail."
+  "teacher_widgets" : {
+    "active_courses" : "Aktive Kurse",
+    "my_students" : "Meine Studenten",
+    "to_grade" : "Zu bewerten",
+    "applications" : "Bewerbungen",
+    "risk_zone" : "Risikozone",
+    "at_risk_title" : "Schüler in der Gefahrenzone",
+    "students_count" : "{{count}} Stk.",
+    "no_at_risk" : "Im Moment keine Schüler in der Risikozone. 👍",
+    "completion_prefix" : "abgeschlossen",
+    "view_all_risk" : "Alle Risikoschüler anzeigen"
   },
-  "ai_personalization": {
-    "title": "KI-Einblicke und Empfehlungen",
-    "risk_low": "Niedriges Risiko",
-    "risk_medium": "Mittleres Risiko",
-    "risk_high": "Hohes Risiko",
-    "suggested_activities": "Vorgeschlagene Aktivitäten",
-    "coaching_advice": "Coaching-Rat",
-    "update_analysis": "KI-Analyse aktualisieren",
-    "lesson_type": "Lektion",
-    "practice_type": "Übung",
-    "rationale_prefix": "KI-Begründung:",
-    "no_data": "Noch nicht genug Daten für die KI-Analyse. Arbeite weiter an den Kursen!"
+  "teacher_tables" : {
+    "all_graded_title" : "Alles bewertet!",
+    "all_graded_desc" : "Gute Arbeit, keine ausstehenden Abgaben.",
+    "pending_submissions_count" : "Ausstehende Abgaben ({{count}})",
+    "action_required" : "Handlungsbedarf",
+    "student" : "Student",
+    "assignment" : "Aufgabe",
+    "course" : "Kurs",
+    "submitted" : "Eingereicht",
+    "go_to_grading" : "Zur Bewertung",
+    "no_pending_applications" : "Momentan keine ausstehenden Anmeldungen.",
+    "applying_to" : "Bewirbt sich für Kurs",
+    "date" : "Datum",
+    "decision" : "Entscheidung",
+    "approve" : "Genehmigen",
+    "reject" : "Ablehnen",
+    "never" : "Nie",
+    "days_ago" : "{{count}} Tage her",
+    "contact" : "Kontaktieren",
+    "admitted_msg" : "Student zugelassen!",
+    "rejected_msg" : "Antrag abgelehnt.",
+    "error_msg" : "Etwas ist schief gelaufen.",
+    "unknown_student" : "Unbekannt"
   },
-  "gamification": {
-    "level_title": "Aktuelles Level",
-    "student_rank": "Studenten-Rang",
-    "points_to_next": "Punkte bis zum nächsten Level",
-    "my_badges": "Meine Abzeichen",
-    "no_awards": "Noch keine Abzeichen. Mach weiter so!",
-    "view_all": "Alle Abzeichen anzeigen"
-  },
-  "tenta": {
-    "manager_title": "Prüfungsadministrator",
-    "manager_subtitle": "Prüfung buchen & Studenten benachrichtigen",
-    "steps": {
-      "content": "Inhalt",
-      "settings": "Einstellungen",
-      "scheduling": "Buchung"
-    },
-    "errors": {
-      "title_required": "Prüfung muss einen Titel haben.",
-      "times_required": "Sie müssen Start- und Endzeit angeben.",
-      "booking_failed": "Prüfung konnte nicht gebucht werden: "
-    },
-    "fields": {
-      "title_label": "Prüfungstitel",
-      "title_placeholder": "z.B. Abschlussprüfung Webdesign",
-      "description_label": "Beschreibung",
-      "description_placeholder": "Anweisungen für Studenten...",
-      "questions_count": "Fragen ({{count}})",
-      "question_number": "Frage {{number}}",
-      "question_placeholder": "Schreibe hier deine Frage...",
-      "option_number": "Antwortoption {{number}}",
-      "add_option": "OPTION HINZUFÜGEN",
-      "add_question": "Neue Frage hinzufügen",
-      "time_limit": "Zeitlimit",
-      "minutes": "Minuten",
-      "time_info": "Studenten haben diese Zeit, um die Prüfung abzuschließen, sobald sie gestartet wurde.",
-      "grading_method": "Bewertungsmethode",
-      "grading_manual": "Manuelle Bewertung",
-      "grading_manual_desc": "Du bewertest alles selbst.",
-      "grading_auto": "Automatisch (MCQ)",
-      "grading_auto_desc": "Das System korrigiert sofort.",
-      "grading_ai": "KI-Bewertung (Gemini)",
-      "grading_ai_desc": "KI schlägt Note & Feedback vor.",
-      "security_mode": "Sicherheitsmodus: Exam Integrity Pro",
-      "security_info": "Wenn du eine \"Prüfung\" erstellst, wird die Integritätsüberwachung automatisch aktiviert. Das bedeutet, dass Fensterwechsel protokolliert werden und der Student im Prüfungsmodus bleiben muss.",
-      "calendar_booking": "Kalenderbuchung",
-      "start_time": "Öffnet (Start)",
-      "end_time": "Schließt (Ende)",
-      "notify_students": "Studenten benachrichtigen",
-      "channel_internal": "Internes Postfach",
-      "channel_push": "Push (PWA)",
-      "channel_email": "E-Mail",
-      "channel_sms": "SMS",
-      "channel_info": "Das System filtert Kanäle heraus, die der Student in seinem Profil deaktiviert hat."
-    },
-    "actions": {
-      "back": "Zurück",
-      "cancel": "Abbrechen",
-      "next": "Nächster Schritt",
-      "booking": "Bucht...",
-      "finish": "ABSCHLIESSEN & BUCHEN"
+  "student_contact" : {
+    "title" : "Student kontaktieren",
+    "subtitle" : "Melden und Nachverfolgen mit {{name}}",
+    "risk_factor" : "Identifizierter Risikofaktor",
+    "never_logged_in" : "Der Student hat sich noch nie auf der Plattform angemeldet.",
+    "inactive_days" : "Der Student war {{count}} Tage inaktiv.",
+    "no_risk" : "Derzeit kein kritisches Risiko identifiziert, aber eine Nachverfolgung wird empfohlen.",
+    "subject_label" : "Betreff (Basierend auf Risiko)",
+    "auto_generated_label" : "Automatisch generierte Unterlagen",
+    "auto_generated_desc" : "Diese Unterlagen basieren auf den Daten des Systems und werden der E-Mail beigefügt.",
+    "teacher_notes_label" : "Ihre Kommentare / Maßnahmenplan",
+    "teacher_notes_placeholder" : "Schreiben Sie eine persönliche Nachricht, Anweisungen oder spezifische Maßnahmen, die der Student ergreifen muss...",
+    "report_and_send" : "Melden & Senden",
+    "sending" : "Senden...",
+    "sent_success" : "Nachricht gesendet!",
+    "send_error" : "Konnte die Nachricht nicht senden.",
+    "divider" : "Kommentar des Lehrers:",
+    "regards" : "Mit freundlichen Grüßen,",
+    "templates" : {
+      "follow_up_subject" : "Nachverfolgung Ihres Studiums",
+      "no_login_subject" : "Wichtig: Sie haben sich noch nicht angemeldet",
+      "no_login_body" : "Ich sehe, dass Sie sich noch nicht bei EduFlex angemeldet haben. Um den Kurs nutzen zu können, ist es wichtig, dass Sie bald loslegen.",
+      "need_help_login" : "Benötigen Sie Hilfe bei der Anmeldung oder bei der Suche nach dem richtigen Material?",
+      "warning_inactivity_subject" : "Warnung: Hohe Abwesenheit und Inaktivität",
+      "warning_inactivity_body" : "Ich sehe, dass Sie seit {{count}} Tagen nicht mehr auf EduFlex aktiv waren. Dies ist besorgniserregend und beeinträchtigt Ihr Studium negativ.",
+      "review_plan" : "Wir müssen Ihren Studienplan überprüfen, um sicherzustellen, dass Sie alle Module rechtzeitig absolvieren können.",
+      "follow_up_absence_subject" : "Nachverfolgung: Abwesenheit",
+      "follow_up_absence_body" : "Ich habe festgestellt, dass es {{count}} Tage her ist, seit Sie das letzte Mal aktiv waren.",
+      "reach_out" : "Melden Sie sich, wenn Sie Hilfe bei einem bestimmten Modul benötigen.",
+      "generic_body" : "Ich möchte mich erkundigen, wie es Ihnen im Kurs ergeht."
     }
   },
-  "catalog_page": {
-    "title": "Kurskatalog",
-    "subtitle": "Finden und melden Sie sich für neue Kurse an.",
-    "search_placeholder": "Kurse suchen...",
-    "loading": "Kurse werden geladen...",
-    "no_courses": "Keine Kurse gefunden",
-    "no_courses_desc": "Versuchen Sie, nach etwas anderem zu suchen, oder bitten Sie einen Lehrer, einen Kurs zu erstellen.",
-    "is_enrolled": "Teilnehmer",
-    "is_teacher": "Lehrer",
-    "no_description": "Keine Beschreibung verfügbar.",
-    "no_teacher": "Kein Lehrer",
-    "students_count": "{{count}} Studenten",
-    "enroll_btn": "Für Kurs anmelden",
-    "enroll_confirm": "Möchten Sie sich für diesen Kurs anmelden?",
-    "enroll_success": "Sie haben sich für den Kurs angemeldet!",
-    "enroll_error": "Anmeldung zum Kurs fehlgeschlagen.",
-    "fetch_error": "Kurse konnten nicht abgerufen werden"
+  "teacher_modals" : {
+    "tags_placeholder" : "Tags (durch Kommas trennen, z.B. KI, Mathematik, Algebra)",
+    "group_rooms" : "Gruppenräume",
+    "room_name_placeholder" : "Name",
+    "link" : "Link",
+    "add_room" : "+ Gruppenraum hinzufügen",
+    "course_color" : "Kursfarbe",
+    "error_create" : "Konnte den Kurs nicht erstellen.",
+    "error_update" : "Konnte den Kurs nicht aktualisieren.",
+    "course_name" : "Kursname",
+    "course_code" : "Kurscode"
   },
-  "editor": {
-    "placeholder": "Hier schreiben...",
-    "link_prompt": "Link-URL:",
-    "normal": "Normal",
-    "heading": "Überschrift {{level}}",
-    "bold": "Fett",
-    "italic": "Kursiv",
-    "underline": "Unterstrichen",
-    "strike": "Durchgestrichen",
-    "blockquote": "Zitat",
-    "code_block": "Code-Block",
-    "bullet_list": "Aufzählungsliste",
-    "ordered_list": "Nummerierte Liste",
-    "align_left": "Linksbündig",
-    "align_center": "Zentriert",
-    "align_right": "Rechtsbündig",
-    "link": "Link",
-    "insert_table": "3x3 Tabelle einfügen",
-    "table": "Tabelle",
-    "column_before": "Spalte davor",
-    "column_after": "Spalte danach",
-    "delete_column": "Spalte löschen",
-    "row_before": "Zeile darüber",
-    "row_after": "Zeile darunter",
-    "delete_row": "Zeile löschen",
-    "delete_table": "Tabelle löschen",
-    "clear_format": "Formatierung löschen"
+  "course_modal" : {
+    "create_title" : "Neuen Kurs erstellen",
+    "edit_title" : "Kurs bearbeiten",
+    "name" : "Kursname",
+    "code" : "Kurscode",
+    "category" : "Kategorie",
+    "description" : "Kursbeschreibung",
+    "start_date" : "Startdatum",
+    "end_date" : "Enddatum",
+    "max_students" : "Maximale Teilnehmerzahl",
+    "classroom_section" : "Digitales Klassenzimmer",
+    "classroom_link" : "Meeting-Link",
+    "exam_link" : "Link zu ExamRoom",
+    "create_btn" : "Erstellen",
+    "go_to_course" : "Zum Kurs gehen"
   },
-  "db_switch": {
-    "title": "Kritische Operation",
-    "warning_title": "WARNUNG: System wird neu gestartet",
-    "warning_disconnect": "Alle Benutzer werden getrennt",
-    "warning_loss": "Laufende Arbeit könnte verloren gehen",
-    "warning_unavailable": "System könnte für mehrere Minuten nicht erreichbar sein",
-    "warning_config": "Falsche Konfiguration kann zu Datenverlust führen",
-    "switch_target": "Sie sind dabei zu wechseln zu:",
-    "confirm_label": "Schreibe \"DATENBANK WECHSELN\" zum Bestätigen *",
-    "confirm_placeholder": "DATENBANK WECHSELN",
-    "confirm_text": "DATENBANK WECHSELN",
-    "password_label": "Administrator-Passwort *",
-    "password_placeholder": "Gib dein Passwort ein",
-    "cancel": "Abbrechen",
-    "confirm_btn": "Datenbank jetzt wechseln",
-    "errors": {
-      "confirm_mismatch": "Du musst \"DATENBANK WECHSELN\" schreiben, um zu bestätigen",
-      "password_required": "Administrator-Passwort ist erforderlich",
-      "failed": "Falsches Passwort oder Aktion fehlgeschlagen"
+  "analytics" : {
+    "title" : "Systemeinblicke",
+    "subtitle" : "Detaillierte Analyse der Plattformleistung und des Wachstums.",
+    "financial_overview" : "Finanzübersicht",
+    "revenue_analytics" : "Umsatzanalyse",
+    "student_insights" : "Studenteneinblicke",
+    "system_infrastructure" : "Systeminfrastruktur",
+    "monthly_recurring_revenue" : "Monatlich Wiederkehrender Umsatz",
+    "total_users" : "Gesamtzahl Benutzer",
+    "active_sessions" : "Aktive Sitzungen",
+    "server_health" : "Serverzustand",
+    "operational" : "Betriebsbereit",
+    "stable" : "Stabil",
+    "revenue_growth" : "Umsatzwachstum",
+    "user_acquisition" : "Benutzerakquise",
+    "export_csv" : "CSV exportieren",
+    "day" : "Tag",
+    "week" : "Woche",
+    "month" : "Monat",
+    "year" : "Jahr",
+    "vs_last_month" : "vs. letzten Monat",
+    "system_status" : "Systemstatus",
+    "total_students" : "Gesamtzahl Studenten",
+    "at_risk" : "Gefährdet",
+    "avg_time_online" : "Durchschnittliche Online-Zeit",
+    "student_performance_registry" : "Studentenleistungsregister",
+    "student_name" : "Studentenname",
+    "status" : "Status",
+    "courses" : "Kurse",
+    "completion" : "Abschluss",
+    "total_time_online" : "Gesamtzeit Online",
+    "risk_factor" : "Risikofaktor",
+    "no_student_data" : "Keine Studentendaten verfügbar.",
+    "grafana_dashboard" : "Grafana Dashboard",
+    "grafana_description" : "Echtzeitmetriken für das System (CPU, Speicher, Anfragen).",
+    "open_full_grafana" : "Vollständiges Grafana öffnen",
+    "prometheus_metrics" : "Prometheus-Metriken",
+    "prometheus_description" : "Roher Metrik-Explorer.",
+    "open_prometheus" : "Prometheus öffnen",
+    "all_systems_normal" : "Alle Systeme laufen normal.",
+    "uptime" : "Betriebszeit",
+    "revenue_title" : "Umsatzanalyse",
+    "revenue_subtitle" : "Umfassende Umsatz- und Zahlungseinblicke",
+    "loading_revenue_data" : "Umsatzdaten werden geladen...",
+    "annual_recurring_revenue" : "Jährlich Wiederkehrender Umsatz",
+    "payment_success_rate" : "Zahlungserfolgsrate",
+    "avg_payment_amount" : "Durchschnittlicher Zahlungsbetrag",
+    "excellent" : "Ausgezeichnet",
+    "good" : "Gut",
+    "revenue_growth_trend" : "Umsatzwachstumstrend",
+    "payment_methods" : "Zahlungsmethoden",
+    "no_payment_data" : "Keine Zahlungsdaten verfügbar",
+    "total_payments" : "Gesamtzahl Zahlungen",
+    "successful" : "Erfolgreich",
+    "failed" : "Fehlgeschlagen"
+  },
+  "invoices" : {
+    "title" : "Rechnungsverwaltung",
+    "create_invoice" : "Rechnung erstellen",
+    "export_csv" : "CSV exportieren",
+    "exporting" : "Exportiere...",
+    "loading" : "Lade Rechnungen...",
+    "all" : "Alle",
+    "draft" : "Entwurf",
+    "pending" : "Ausstehend",
+    "sent" : "Gesendet",
+    "paid" : "Bezahlt",
+    "overdue" : "Überfällig",
+    "cancelled" : "Storniert",
+    "invoice_number" : "Rechnungsnummer",
+    "customer" : "Kunde",
+    "amount" : "Betrag",
+    "issue_date" : "Ausstellungsdatum",
+    "due_date" : "Fälligkeitsdatum",
+    "status" : "Status",
+    "actions" : "Aktionen",
+    "no_invoices_found" : "Keine Rechnungen gefunden",
+    "total_invoices" : "Gesamtzahl Rechnungen",
+    "send_reminder_confirm" : "Zahlungserinnerung an den Kunden senden?",
+    "reminder_sent" : "Zahlungserinnerung gesendet!",
+    "delete_confirm" : "Sind Sie sicher, dass Sie diese Rechnung löschen möchten?",
+    "refund_confirm" : "Sind Sie sicher, dass Sie diese Zahlung erstatten möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
+    "refund_success" : "Rückerstattung eingeleitet",
+    "refund_failed" : "Rückerstattung fehlgeschlagen. Überprüfen Sie die Konsole für Details.",
+    "no_payment_details" : "Keine Zahlungsdetails für diese Rechnung gefunden.",
+    "view_pdf" : "PDF anzeigen",
+    "generate_pdf" : "PDF generieren"
+  },
+  "subscription_plans" : {
+    "title" : "Abonnementpläne",
+    "subtitle" : "Preisstufen und Abonnementoptionen verwalten",
+    "create_plan" : "Plan erstellen",
+    "loading" : "Abonnementpläne werden geladen...",
+    "default_badge" : "STANDARD",
+    "inactive_badge" : "INAKTIV",
+    "unlimited" : "Unbegrenzt",
+    "users" : "Benutzer",
+    "courses" : "Kurse",
+    "storage" : "Speicher",
+    "features" : "Funktionen",
+    "edit" : "Bearbeiten",
+    "activate" : "Aktivieren",
+    "deactivate" : "Deaktivieren",
+    "delete_confirm" : "Bist du sicher, dass du diesen Plan löschen möchtest?",
+    "edit_plan" : "Plan bearbeiten",
+    "create_new_plan" : "Neuen Plan erstellen",
+    "plan_name_internal" : "Planname (Intern)",
+    "display_name" : "Anzeigename",
+    "description" : "Beschreibung",
+    "price" : "Preis",
+    "currency" : "Währung",
+    "trial_period_days" : "Testzeitraum (Tage)",
+    "billing_interval" : "Abrechnungsintervall",
+    "monthly" : "Monatlich",
+    "yearly" : "Jährlich",
+    "lifetime" : "Lebenszeit",
+    "max_users" : "Max. Benutzer (-1 = unbegrenzt)",
+    "max_courses" : "Max. Kurse (-1 = unbegrenzt)",
+    "max_storage" : "Speicher GB (-1 = unbegrenzt)",
+    "add_feature" : "+ Funktion hinzufügen",
+    "enter_feature" : "Funktionsnamen eingeben:",
+    "active" : "Aktiv",
+    "default_plan" : "Standardplan",
+    "sort_order" : "Sortierreihenfolge",
+    "cancel" : "Abbrechen",
+    "update_plan" : "Plan aktualisieren",
+    "create_plan_btn" : "Plan erstellen"
+  },
+  "admin_tabs" : {
+    "title" : "Administration",
+    "administration" : "Administration",
+    "pilot_kit" : "Pilot-Kit",
+    "system_settings" : "Systemeinstellungen",
+    "tickets" : "Tickets",
+    "support_content" : "Supportinhalte",
+    "gamification" : "Gamifizierung",
+    "community" : "Gemeinschaft",
+    "users" : "Benutzer",
+    "guardians" : "Erziehungsberechtigte",
+    "courses" : "Kurse",
+    "structure" : "Schulstruktur",
+    "merits" : "Verdienste",
+    "roles" : "Rollen",
+    "overview" : "Übersicht",
+    "subscription_plans" : "Abonnementpläne",
+    "invoices" : "Rechnungen",
+    "payment_settings" : "Zahlungseinstellungen",
+    "promo_codes" : "Promo-Codes",
+    "storage" : "Speicher",
+    "content" : "Inhalt",
+    "system_logs_file" : "Systemprotokolle (Datei)",
+    "debug_terminal_live" : "Debug-Terminal (Live)",
+    "audit_log" : "Audit-Protokoll",
+    "integration_hub" : "Integrations-Hub",
+    "ai_audit" : "KI-Überprüfung",
+    "eduflex_ops" : "EduFlex Ops",
+    "skolverket_import" : "Skolverket-Import",
+    "skolverket_data" : "Skolverket-Daten",
+    "categories" : {
+      "general" : "Allgemein",
+      "finance" : "Finanzen",
+      "system" : "System"
+    },
+    "students" : "Studenten",
+    "logs" : "Systemprotokolle",
+    "terminal" : "Terminal",
+    "deploy" : "Bereitstellung",
+    "select_category" : "Wähle eine Kategorie im Menü",
+    "total_storage" : "Gesamtspeicher",
+    "system_wide_use" : "Wird im gesamten System verwendet",
+    "total_files" : "Gesamtzahl Dateien",
+    "uploaded_documents" : "Hochgeladene Dokumente",
+    "stats_fetch_error" : "Konnte Statistiken nicht abrufen.",
+    "revenue" : "Einnahmen",
+    "delete_course_confirm" : "Bist du sicher, dass du diesen Kurs löschen möchtest? Dies kann nicht rückgängig gemacht werden.",
+    "delete_course_error" : "Konnte den Kurs nicht löschen. Stelle sicher, dass er keine aktiven Studenten hat.",
+    "delete_user_confirm" : "Bist du sicher, dass du diesen Benutzer löschen möchtest? Dies kann nicht rückgängig gemacht werden.",
+    "delete_user_error" : "Konnte den Benutzer nicht löschen."
+  },
+  "landing" : {
+    "nav" : {
+      "features" : "Funktionen",
+      "gamification" : "Gamification",
+      "showcase" : "Showcase",
+      "pricing" : "Preisgestaltung",
+      "technology" : "Technologie",
+      "login" : "Anmelden",
+      "get_started" : "Loslegen",
+      "book_demo" : "Demo buchen",
+      "select_language" : "Sprache auswählen"
+    },
+    "hero" : {
+      "badge" : "v3.9.2: Operation Globalisierung - 100% Lokalisierung",
+      "title_start" : "Die Zukunft des",
+      "title_llp" : "LLP",
+      "title_with" : "mit",
+      "title_hub" : "EduAI Hub",
+      "subtitle" : "Entdecken Sie unser neues intelligentes Wissenszentrum. Generieren Sie mit KI massgeschneiderte Lerneinheiten, spielen Sie fesselnde Minispiele und verfolgen Sie Ihre genaue Wissensentwicklung über unser dynamisches Live-Radar. Alles angetrieben von Google Gemini.",
+      "cta_ai" : "Starten Sie Ihre erste KI-Sitzung",
+      "cta_learn_more" : "Mehr über die Plattform erfahren",
+      "cta_see_all" : "Alle Funktionen anzeigen",
+      "tech_tagline" : "Angetrieben von moderner KI & bewährter Pädagogik",
+      "stats" : {
+        "engagement" : "Engagement",
+        "new_level" : "Neues Level!",
+        "level_value" : "Level {{level}}"
+      }
+    },
+    "features" : {
+      "title" : "Alles, was Sie für den Betrieb einer modernen Schule benötigen",
+      "subtitle" : "Von robusten Bewertungsinstrumenten bis hin zu revolutionärer KI-Unterstützung - wir haben alles für Sie.",
+      "multi_tenancy" : {
+        "title" : "Echte Mehrmandantenfähigkeit",
+        "desc" : "Vollständige Datenisolation mit Schema-pro-Mandant-Architektur. Jede Schule hat ihre eigene geschützte Datenbank."
+      },
+      "b2b" : {
+        "title" : "B2B SaaS Engine",
+        "desc" : "Verwalten Sie mehrere Organisationen und Unterkonten mit dedizierter Fakturierungsunterstützung und Admin-Übersicht."
+      },
+      "microservice" : {
+        "title" : "Verteilte Microservices",
+        "desc" : "Skalierbare Architektur mit Node.js, Spring Boot & Python, die in isolierten Docker-Containern laufen."
+      },
+      "event_bus" : {
+        "title" : "Echtzeit-Event-Bus",
+        "desc" : "Sofortige Datensynchronisierung mit RabbitMQ für Echtzeitbenachrichtigungen und Systemereignisse."
+      },
+      "gamification" : {
+        "title" : "Erweiterte Gamification",
+        "desc" : "Begeistern Sie Schüler mit XP, Streaks, Achievements und unserem einzigartigen KI-gestützten Live-Radar."
+      },
+      "ai_creator" : {
+        "title" : "KI Content Lifecycle",
+        "desc" : "Von der Quizgenerierung über die automatisierte Korrektur bis hin zu persönlichen Lerntipps über Gemini."
+      },
+      "pwa" : {
+        "title" : "Cross-Platform PWA",
+        "desc" : "EduFlex funktioniert im Browser genauso gut wie als installierte App auf iOS, Android und Windows."
+      },
+      "live_video" : {
+        "title" : "Native Live Lessons",
+        "desc" : "Integrierte Tools für Videoseminare und aufgezeichnetes Material direkt in der Kursumgebung."
+      },
+      "collaborative" : {
+        "title" : "Live Collaborative Learning",
+        "desc" : "Gemeinsam lernen mit integrierter Unterstützung für OnlyOffice und gemeinsame Arbeitsbereiche in Echtzeit."
+      },
+      "roi" : {
+        "title" : "ROI & Analytics Engine",
+        "desc" : "Visualisieren Sie die Trainingseffizienz mit detaillierten Statistiken für Schulleiter und Lehrer."
+      },
+      "notifications" : {
+        "title" : "Event-Driven Notifications",
+        "desc" : "Wichtige Ereignisse werden dank unseres fortschrittlichen Benachrichtigungssystems für alle Geräte nie verpasst."
+      },
+      "exams" : {
+        "title" : "Digitale Prüfungen & Aufsicht",
+        "desc" : "Sichere und rechtssichere digitale Prüfungen mit integrierter Unterstützung für die Identitätsprüfung."
+      },
+      "integrations" : {
+        "title" : "Enterprise-Integrationen",
+        "desc" : "Nahtlose Anbindung an bestehende Systeme über LTI 1.3, BankID und moderne REST-APIs."
+      },
+      "compliance" : {
+        "title" : "Zero-Trust-Compliance",
+        "desc" : "GDPR-gesicherte Datenspeicherung mit durchgehender Verschlüsselung und automatisierter Pseudonymisierung."
+      },
+      "pii" : {
+        "title" : "PII Masking Pipeline",
+        "desc" : "Unsere einzigartige KI-Pipeline wäscht alle persönlichen Daten, bevor sie externe Sprachmodelle erreicht."
+      },
+      "educareer" : {
+        "title" : "EduCareer Roadmap",
+        "desc" : "Helfen Sie Studenten, ihre Zukunft durch adaptive Karrierewege im Zusammenhang mit dem Arbeitsmarkt zu visualisieren."
+      },
+      "erp" : {
+        "title" : "ERP+ Integration",
+        "desc" : "Verwalten Sie Einkäufe, Fakturierung und Personal in derselben Oberfläche wie den Unterricht."
+      },
+      "isp" : {
+        "title" : "Dynamic ISP & LIA",
+        "desc" : "Verwalten Sie individuelle Studienpläne und Praktika (LIA) mit automatisierter Zuordnung."
+      },
+      "bankid" : {
+        "title" : "BankID & FrejaeID",
+        "desc" : "Sichere Authentifizierung nach schwedischem Standard für Personal, Studenten und Erziehungsberechtigte."
+      },
+      "video_tutor" : {
+        "title" : "Interaktiver KI-Video-Tutor",
+        "desc" : "Interagieren Sie direkt mit Videoinhalten durch KI-gestützte Suche und Folgefragen."
+      },
+      "language_sync" : {
+        "title" : "Globale Sprachsynchronisierung",
+        "desc" : "Das gesamte System kann über unseren KI-Übersetzungshub in Sekundenschnelle in eine beliebige Sprache übersetzt werden."
+      },
+      "susa" : {
+        "title" : "SUSA & Ladok Ready",
+        "desc" : "Volle Unterstützung für den schwedischen Berichtsstandard an Behörden und Studienverwaltungssysteme."
+      },
+      "ladok" : {
+        "title" : "Cloud-Native-Infrastruktur",
+        "desc" : "Serverlose Skalierbarkeit mit Kubernetes und MinIO für hohe Verfügbarkeit und Leistung."
+      },
+      "accessibility" : {
+        "title" : "WCAG 2.1 Barrierefreiheit",
+        "desc" : "Entwickelt für Inklusion. Volle Zugänglichkeit für alle Benutzer unabhängig von den Voraussetzungen."
+      },
+      "skolfederation" : {
+        "title" : "Skolfederation & SSO",
+        "desc" : "Vereinfachte Anmeldung über gemeinsame Standards für schwedische Schulen und Behörden."
+      }
+    },
+    "screenshots" : {
+      "roi" : {
+        "title" : "ROI Analytics Hub",
+        "desc" : "Verfolgen Sie die Ausbildungseffizienz und -rendite in Echtzeit mit detaillierten Statistiken."
+      },
+      "settings" : {
+        "title" : "Globale Systemsteuerung",
+        "desc" : "Volle Kontrolle über alle Instanzen, Benutzer und Netzwerkkonfigurationen."
+      },
+      "debug" : {
+        "title" : "Entwicklerterminal",
+        "desc" : "Integrierte Debug-Tools und Systemprotokolle für technische Administratoren."
+      },
+      "admin" : {
+        "title" : "Admin Dashboard 2.0",
+        "desc" : "Volle Kontrolle über die Organisation mit Live-Daten und Widgets."
+      },
+      "teacher" : {
+        "title" : "Lehrerpanel",
+        "desc" : "Effiziente Übersicht über Anwesenheit, Fortschritt und Einreichungen der Schüler."
+      },
+      "quiz" : {
+        "title" : "KI Quiz Generator",
+        "desc" : "Laden Sie Dokumente hoch und lassen Sie die KI in Sekundenschnelle Testfragen erstellen."
+      },
+      "library" : {
+        "title" : "E-Book-Bibliothek",
+        "desc" : "Eine zentrale Bibliothek für Literatur mit integriertem Leser."
+      },
+      "catalog" : {
+        "title" : "Kurskatalog",
+        "desc" : "Entdecken Sie unser breites Kursangebot direkt von der Landingpage aus."
+      },
+      "resource" : {
+        "title" : "Ressourcenbank",
+        "desc" : "Finden Sie nützliche Werkzeuge und Dokumente für Ihr Studium."
+      },
+      "analytics" : {
+        "title" : "Tiefgehende Analyse",
+        "desc" : "Visualisieren Sie Fortschritte und Ergebnisse mit unseren leistungsstarken Analysetools."
+      }
+    },
+    "roles" : {
+      "badge" : "Lösungen für alle",
+      "title" : "Eine Plattform, unendliche Möglichkeiten",
+      "subtitle" : "EduFlex wurde entwickelt, um jede Rolle auf dem Bildungsweg zu unterstützen, von der administrativen Kontrolle bis zum engagierten Lernen.",
+      "outcome_label" : "Ergebnisse",
+      "rector" : {
+        "title" : "Für Schulleiter & Management",
+        "desc" : "Erhalten Sie die totale Kontrolle über das Wachstum, die Rentabilität und die Ausbildungsqualität der Organisation.",
+        "feature1" : "Strategische Planung",
+        "feature2" : "Finanzielle Nachverfolgung",
+        "feature3" : "Qualitätssicherung (MYH/SUSA)",
+        "outcome" : "Erhöhte Rentabilität und Einhaltung der Vorschriften."
+      },
+      "teacher" : {
+        "title" : "Für Lehrer & Ausbilder",
+        "desc" : "Automatisieren Sie die Verwaltungsarbeit und verwenden Sie mehr Zeit für das, was wirklich zählt: Pädagogik.",
+        "feature1" : "KI-gestützte Korrektur",
+        "feature2" : "Dynamisches Anwesenheitsmanagement",
+        "feature3" : "Einfaches Kursdesign",
+        "outcome" : "Weniger Stress und höhere Schülerbeteiligung."
+      },
+      "student" : {
+        "title" : "Für Studenten & Schüler",
+        "desc" : "Eine moderne und spielerische Erfahrung, die das Lernen unterhaltsam, verständlich und zugänglich macht.",
+        "feature1" : "Persönlicher KI-Coach",
+        "feature2" : "Gamification & XP",
+        "feature3" : "Mobilangepasste PWA",
+        "outcome" : "Höherer Fokus und schnellere Zielerreichung."
+      },
+      "parent" : {
+        "title" : "Für Erziehungsberechtigte",
+        "desc" : "Verfolgen Sie die Entwicklung Ihres Kindes in Echtzeit und kommunizieren Sie einfach mit der Schule.",
+        "feature1" : "Anwesenheitskontrolle",
+        "feature2" : "Bewertungen & Feedback",
+        "feature3" : "Sichere Kommunikation",
+        "outcome" : "Sicherheit und volle Einsicht in den Schulbesuch."
+      }
+    },
+    "cta" : {
+      "title" : "Sind Sie bereit, Ihre Ausbildungseinrichtung zu transformieren?",
+      "subtitle" : "Machen Sie es wie Hunderte andere Organisationen und tauchen Sie noch heute in das digitale Lernen der Zukunft ein.",
+      "button_demo" : "Buchen Sie eine persönliche Demo",
+      "button_test" : "Jetzt kostenlos testen"
+    },
+    "footer" : {
+      "tagline" : "Das LLP der Zukunft und das Ökosystem für digitales Lernen. Mit Herz entworfen, von KI angetrieben.",
+      "product" : "Produkt",
+      "features" : "Funktionen",
+      "security" : "Sicherheit & DSGVO",
+      "api" : "API & Entwickler",
+      "roadmap" : "Roadmap",
+      "support" : "Support",
+      "help_center" : "Hilfezentrum",
+      "documentation" : "Dokumentation",
+      "system_status" : "Systemstatus",
+      "contact_sales" : "Vertrieb kontaktieren",
+      "newsletter" : "Newsletter",
+      "newsletter_desc" : "Erhalten Sie die neuesten Updates zu KI und digitalem Lernen direkt in Ihrem Posteingang.",
+      "email_placeholder" : "Ihre E-Mail-Adresse",
+      "copyright" : "© 2026 EduFlex LLP. Alle Rechte vorbehalten.",
+      "privacy_policy" : "Datenschutzrichtlinie",
+      "terms_of_service" : "Nutzungsbedingungen",
+      "cookie_settings" : "Cookie-Einstellungen"
     }
   },
-  "archive": {
-    "title": "Dokumentenarchiv",
-    "subtitle": "Verwalte alle Dateien im System.",
-    "search_placeholder": "Suche Dateiname oder Besitzer...",
-    "filter_all": "Alle Typen",
-    "filter_pdf": "PDF-Dateien",
-    "filter_image": "Bilder",
-    "filter_word": "Word-Dokumente",
-    "table_filename": "Dateiname",
-    "table_owner": "Besitzer",
-    "table_uploaded": "Hochgeladen",
-    "table_action": "Aktion",
-    "loading": "Dateien werden geladen...",
-    "no_results": "Keine Dokumente entsprachen deiner Suche.",
-    "unknown_owner": "Unbekannt",
-    "download_title": "Herunterladen",
-    "delete_title": "Löschen",
-    "delete_confirm": "Bist du sicher, dass du die Datei löschen möchtest?",
-    "errors": {
-      "fetch_failed": "Dokumente konnten nicht abgerufen werden",
-      "delete_failed": "Datei konnte nicht gelöscht werden."
+  "dashboard_v2" : {
+    "total_students" : "Gesamtzahl Studenten",
+    "total_teachers" : "Gesamtzahl Lehrer",
+    "total_admins" : "Gesamtzahl Admins",
+    "active_users" : "Aktive Benutzer (Gerade Jetzt)",
+    "revenue_status" : "Einnahmenstatus",
+    "system_health" : "Systemzustand",
+    "storage_limit" : "Speichergrenze",
+    "active" : "Aktiv",
+    "excellent" : "Ausgezeichnet",
+    "warning" : "Warnung",
+    "critical" : "Kritisch",
+    "manage_systems" : "Systeme verwalten",
+    "view_reports" : "Berichte anzeigen",
+    "audit_logs" : "Prüfprotokolle"
+  },
+  "ai_personalization" : {
+    "title" : "Dein KI-Lerncoach",
+    "subtitle" : "Personalisierte Einblicke basierend auf deiner Lernaktivität",
+    "analyzing" : "Analysiere deine Daten...",
+    "insights" : "KI-Einblicke & Tipps",
+    "focus_areas" : "Empfohlene Fokusbereiche",
+    "next_steps" : "Vorgeschlagene Nächste Schritte",
+    "no_data" : "Beginne zu lernen, um personalisierte KI-Tipps zu erhalten!",
+    "generate_btn" : "Neue Tipps generieren",
+    "tip_of_day" : "Der Lerntipp des Tages",
+    "radar_title" : "Dein Wissensradar"
+  },
+  "gamification" : {
+    "level" : "Level {{level}}",
+    "xp_progress" : "{{current}} / {{next}} XP",
+    "streak_days" : "{{count}} Tage Streak!",
+    "rank" : "Rang: {{name}}",
+    "achievements" : "Errungenschaften",
+    "leaderboard" : "Bestenliste",
+    "recent_badges" : "Neueste Abzeichen",
+    "view_all" : "Alle anzeigen",
+    "daily_bonus" : "Täglicher Bonus verfügbar!",
+    "claim" : "Beanspruchen"
+  },
+  "tenta" : {
+    "title" : "Digitale Prüfung",
+    "proctoring_active" : "Überwachung Aktiv",
+    "start_exam" : "Einreichung/Prüfung starten",
+    "time_left" : "Verbleibende Zeit: {{time}}",
+    "submit_exam" : "Abschließen & Einreichen",
+    "finish_confirm" : "Sind Sie sicher, dass Sie abgeben möchten? Sie können Ihre Antworten danach nicht mehr ändern.",
+    "warning_tab_switch" : "Warnung! Es ist nicht erlaubt, während der Prüfung den Tab zu wechseln.",
+    "warning_out_of_focus" : "Das System hat festgestellt, dass Sie das Fenster verlassen haben."
+  },
+  "catalog_page" : {
+    "title" : "Kurskatalog",
+    "subtitle" : "Entdecken Sie unser breites Angebot an Kursen und Schulungen",
+    "search" : "Katalog durchsuchen...",
+    "enroll" : "Anmelden",
+    "enrolled" : "Angemeldet",
+    "price_free" : "Kostenlos",
+    "view_details" : "Details anzeigen",
+    "no_results" : "Keine Kurse entsprachen Ihrer Suche.",
+    "categories" : "Kategorien",
+    "filter_all" : "Alle Kurse"
+  },
+  "editor" : {
+    "title" : "Dokumentbearbeitung",
+    "save_success" : "Das Dokument wurde gespeichert.",
+    "save_error" : "Beim Speichern ist ein Fehler aufgetreten.",
+    "collaborators" : "Online-Mitarbeiter",
+    "version_history" : "Versionshistorie",
+    "open_onlyoffice" : "In OnlyOffice öffnen"
+  },
+  "db_switch" : {
+    "title" : "Datenbank wechseln",
+    "current" : "Aktuelle Umgebung",
+    "connect" : "Verbinden mit {{name}}",
+    "error" : "Konnte die Umgebung nicht wechseln."
+  },
+  "archive" : {
+    "title" : "Systemarchiv",
+    "restore" : "Wiederherstellen",
+    "permanent_delete" : "Endgültig löschen",
+    "empty_trash" : "Papierkorb leeren",
+    "no_items" : "Keine Objekte im Papierkorb."
+  },
+  "quiz" : {
+    "generate" : "Quiz mit KI generieren",
+    "processing" : "KI arbeitet... Dies kann bis zu einer Minute dauern.",
+    "success" : "Quiz generiert!",
+    "error" : "Konnte Quiz nicht generieren.",
+    "upload_context" : "Dokumente als Kontext hochladen...",
+    "questions_count" : "Anzahl der Fragen",
+    "difficulty" : "Schwierigkeitsgrad",
+    "easy" : "Leicht",
+    "medium" : "Mittel",
+    "hard" : "Schwer"
+  },
+  "integrity" : {
+    "gdpr_notice" : "Wir schätzen Ihre Privatsphäre. Diese Plattform entspricht der DSGVO.",
+    "request_data" : "Auszug anfordern",
+    "delete_account_request" : "Kontoentfernung anfordern"
+  },
+  "skolverket" : {
+    "import_title" : "Skolverket Integration",
+    "syncing" : "Synchronisierung mit Skolverket...",
+    "last_sync" : "Letzte Synchronisierung: {{date}}",
+    "import_course" : "Kurs-Code importieren",
+    "course_found" : "Gefunden: {{name}}"
+  },
+  "contact" : {
+    "title" : "Kontaktiere uns",
+    "description" : "Wir sind rund um die Uhr für dich da.",
+    "form" : {
+      "name" : "Dein Name",
+      "email" : "Deine E-Mail",
+      "subject" : "Betreff",
+      "message" : "Nachricht",
+      "send" : "Nachricht Senden"
     }
   },
-  "quiz": {
-    "submit_btn": "Absenden",
-    "submit_error": "Ergebnis konnte nicht gesendet werden.",
-    "monitored_exam": "Überwachte Prüfung",
-    "explanation": "Erklärung:",
-    "your_result": "Dein Ergebnis",
-    "practice_again": "Erneut üben",
-    "close": "Schließen"
-  },
-  "integrity": {
-    "focus_lost_log": "Student hat Tab/Fenster verlassen",
-    "focus_lost_warn": "Warnung: Fokusverlust festgestellt. Dein Lehrer wurde benachrichtigt.",
-    "tab_switch_log": "Fenster hat Fokus verloren",
-    "fullscreen_exit_log": "Student hat Vollbildmodus verlassen",
-    "proctoring_started_log": "Prüfungsüberwachung gestartet",
-    "proctoring_stopped_log": "Prüfungsüberwachung gestoppt"
-  },
-  "skolverket": {
-    "title": "Skolverket Kursinformationen",
-    "tabs": {
-      "basic_info": "Basisinfo",
-      "content": "Inhalt",
-      "criteria": "Bewertungskriterien"
+  "system_settings" : {
+    "sidebar" : {
+      "categories" : {
+        "config" : "Konfiguration",
+        "appearance" : "Erscheinungsbild",
+        "license" : "Lizenz & Server",
+        "ai" : "KI & Intelligenz",
+        "modules" : "Module & Sprachen",
+        "integrations" : "Integrationen",
+        "communication" : "Kommunikation"
+      },
+      "tenants" : "Tenant-Verwaltung",
+      "skolverket" : "Skolverket-Verwaltung",
+      "theme" : "Theme-Einstellungen",
+      "pdf_templates" : "PDF-Vorlagen",
+      "whitelabel" : "Whitelabeling",
+      "license" : "Lizenzstatus",
+      "server" : "Serverzustand",
+      "ai_config" : "KI-Konfiguration",
+      "ai_audit" : "KI-Prüfprotokoll",
+      "system_modules" : "Systemmodule",
+      "languages" : "Sprachverwaltung",
+      "webhooks" : "Webhooks & API",
+      "notifications" : "Benachrichtigungsregeln"
     },
-    "labels": {
-      "course_code": "Kurscode",
-      "course_name": "Kursname",
-      "english_title": "Englischer Titel",
-      "points": "Punkte",
-      "points_value": "{{count}} Punkte",
-      "subject": "Fach",
-      "skolformer": "Schulformen",
-      "open_syllabus": "Offiziellen Lehrplan öffnen (Skolverket)"
-    },
-    "sections": {
-      "description": "Kursbeschreibung",
-      "purpose": "Zweck des Fachs",
-      "objectives": "Kursziele"
-    },
-    "messages": {
-      "no_info": "Noch keine detaillierten Informationen verfügbar. Diese Daten werden laufend ergänzt.",
-      "loading_criteria": "Bewertungskriterien werden geladen...",
-      "no_criteria": "Noch keine Bewertungskriterien verfügbar. Diese werden laufend ergänzt.",
-      "grade_level": "Die Note {{level}}"
+    "sections" : {
+      "theme" : {
+        "title" : "Thema & Ästhetik",
+        "description" : "Passen Sie das Erscheinungsbild Ihrer EduFlex-Umgebung an.",
+        "active_theme" : "Aktives Thema",
+        "current_look" : "Aktuelles Erscheinungsbild der Plattform",
+        "primary_color" : "Primärfarbe"
+      },
+      "whitelabel" : {
+        "title" : "Whitelabeling",
+        "description" : "Entfernen Sie das EduFlex-Branding und machen Sie es zu Ihrem eigenen.",
+        "status" : "Whitelabel-Status",
+        "customize" : "Passen Sie Logo, Farben und Namen an",
+        "enterprise_active" : "Enterprise-Modus aktiv",
+        "full_access" : "Sie haben vollen Zugriff auf die Whitelabeling-Funktionen.",
+        "enterprise_required" : "Enterprise-Lizenz erforderlich",
+        "upgrade_unlock" : "Aktualisieren Sie auf Enterprise, um Whitelabeling freizuschalten."
+      },
+      "license" : {
+        "title" : "Lizenzverwaltung",
+        "description" : "Verwalten Sie Ihr EduFlex-Abonnement und Ihre Lizenzschlüssel."
+      },
+      "server" : {
+        "title" : "Serverzustand & Backups",
+        "description" : "Überwachen Sie den Systemzustand und verwalten Sie Datenbank-Backups.",
+        "backups" : "System-Backups",
+        "latest_backup" : "Letztes Backup",
+        "create_backup" : "Neues Backup erstellen",
+        "no_backups" : "Keine Backups gefunden.",
+        "db_connections" : "Datenbankverbindungen",
+        "db_description" : "Verwalten Sie externe und interne Datenbankverbindungen.",
+        "add_db" : "Verbindung hinzufügen",
+        "switch_db" : "Aktive DB wechseln"
+      },
+      "ai" : {
+        "description" : "Konfigurieren Sie Google Gemini und KI-gesteuerte Funktionen."
+      }
     }
   }
 }

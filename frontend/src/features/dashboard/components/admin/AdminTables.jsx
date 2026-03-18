@@ -41,14 +41,14 @@ export const AdminCourseRegistry = ({ courses, onEdit, onManage, onNewCourse, on
                             className="text-xs bg-gradient-to-r from-emerald-500 to-teal-500 text-white px-3 py-1.5 rounded-lg font-bold shadow-sm hover:opacity-90 transition-opacity flex items-center gap-1"
                         >
                             <Globe size={14} />
-                            Hämta via SUN-kod
+                            {t('admin_tables.fetch_sun')}
                         </button>
                         <button
                             onClick={onAiCourseClick}
                             className="text-xs bg-gradient-to-r from-indigo-600 to-violet-600 text-white px-3 py-1.5 rounded-lg font-bold shadow-sm hover:opacity-90 transition-opacity flex items-center gap-1"
                         >
                             <BookOpen size={14} />
-                            Skapa med AI
+                            {t('admin_tables.create_ai')}
                         </button>
                         <button onClick={onNewCourse} className="text-xs bg-gray-900 dark:bg-white text-white dark:text-black px-3 py-1.5 rounded-lg font-bold hover:opacity-80 flex items-center gap-1"><Plus size={14} /> {t('dashboard.new_course')}</button>
                     </div>
@@ -243,11 +243,11 @@ export const RecentUploadsWidget = ({ latestDocs }) => {
 
                             <div className="grid grid-cols-2 gap-4 w-full text-sm mb-6">
                                 <div className="bg-gray-50 dark:bg-[#131314] p-3 rounded-lg">
-                                    <p className="text-gray-500 text-xs uppercase mb-1">Storlek</p>
+                                    <p className="text-gray-500 text-xs uppercase mb-1">{t('common.size') || 'Storlek'}</p>
                                     <p className="font-mono font-bold dark:text-white">{(selectedDoc.size / 1024).toFixed(1)} KB</p>
                                 </div>
                                 <div className="bg-gray-50 dark:bg-[#131314] p-3 rounded-lg">
-                                    <p className="text-gray-500 text-xs uppercase mb-1">Typ</p>
+                                    <p className="text-gray-500 text-xs uppercase mb-1">{t('common.role') || 'Typ'}</p>
                                     <p className="font-mono font-bold dark:text-white uppercase">{selectedDoc.fileType?.split('/')[1] || 'FIL'}</p>
                                 </div>
                             </div>

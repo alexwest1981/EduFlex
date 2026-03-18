@@ -39,7 +39,7 @@ spec:
       containers:
       - name: backend
         image: eduflex/backend:latest
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         ports:
         - containerPort: 8080
           name: http

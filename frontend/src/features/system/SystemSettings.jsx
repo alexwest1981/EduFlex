@@ -8,6 +8,7 @@ import {
     Link2, Cloud, Eye, EyeOff, Key, Save, Gamepad2, Trophy, Hash, Smartphone, Rocket
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../context/ThemeContext';
 import { useAppContext } from '../../context/AppContext';
 import { useBranding } from '../../context/BrandingContext';
@@ -48,6 +49,7 @@ const getModuleIcon = (moduleKey) => {
 };
 
 const SystemSettings = ({ asTab = false }) => {
+    const { t } = useTranslation();
     const navigate = useNavigate();
     const { themeId, themes } = useTheme();
     const { modules, refreshModules } = useModules();
@@ -314,57 +316,57 @@ const SystemSettings = ({ asTab = false }) => {
 
     const menuItems = [
         {
-            category: 'Konfiguration',
+            category: t('system_settings.sidebar.categories.config'),
             items: [
                 ...(isAdmin ? [
-                    ...(isMaster && (licenseInfo?.tier === 'PRO' || licenseInfo?.tier === 'ENTERPRISE') ? [{ id: 'tenants', label: 'Tenants', icon: Server }] : []),
-                    { id: 'skolverket', label: 'Skolverket', icon: Database }
+                    ...(isMaster && (licenseInfo?.tier === 'PRO' || licenseInfo?.tier === 'ENTERPRISE') ? [{ id: 'tenants', label: t('system_settings.sidebar.tenants'), icon: Server }] : []),
+                    { id: 'skolverket', label: t('system_settings.sidebar.skolverket'), icon: Database }
                 ] : [])
             ]
         },
         {
-            category: 'Utseende',
+            category: t('system_settings.sidebar.categories.appearance'),
             items: [
-                { id: 'theme', label: 'Tema & Utseende', icon: Palette },
+                { id: 'theme', label: t('system_settings.sidebar.theme'), icon: Palette },
                 ...(isAdmin ? [
-                    { id: 'pdf-templates', label: 'PDF-mallar', icon: FileText },
-                    { id: 'whitelabel', label: 'Enterprise Whitelabel', icon: Sparkles }
+                    { id: 'pdf-templates', label: t('system_settings.sidebar.pdf_templates'), icon: FileText },
+                    { id: 'whitelabel', label: t('system_settings.sidebar.whitelabel'), icon: Sparkles }
                 ] : []),
             ]
         },
         {
-            category: 'Licens & Status',
+            category: t('system_settings.sidebar.categories.license'),
             items: [
-                { id: 'license', label: 'Licensstatus', icon: ShieldCheck },
+                { id: 'license', label: t('system_settings.sidebar.license'), icon: ShieldCheck },
                 ...(isAdmin ? [
-                    { id: 'server', label: 'Serverinställningar', icon: Server }
+                    { id: 'server', label: t('system_settings.sidebar.server'), icon: Server }
                 ] : []),
             ]
         },
         {
-            category: 'AI & Automation',
+            category: t('system_settings.sidebar.categories.ai'),
             items: [
-                { id: 'ai', label: 'AI-inställningar', icon: Sparkles },
-                ...(isAdmin ? [{ id: 'ai-audit', label: 'AI Audit Logg', icon: ShieldCheck }] : []),
+                { id: 'ai', label: t('system_settings.sidebar.ai_config'), icon: Sparkles },
+                ...(isAdmin ? [{ id: 'ai-audit', label: t('system_settings.sidebar.ai_audit'), icon: ShieldCheck }] : []),
             ]
         },
         {
-            category: 'Moduler',
+            category: t('system_settings.sidebar.categories.modules'),
             items: [
-                { id: 'modules', label: 'Systemmoduler', icon: Database },
-                { id: 'languages', label: 'Språkhantering', icon: Globe },
+                { id: 'modules', label: t('system_settings.sidebar.system_modules'), icon: Database },
+                { id: 'languages', label: t('system_settings.sidebar.languages'), icon: Globe },
             ]
         },
         {
-            category: 'Integrationer',
+            category: t('system_settings.sidebar.categories.integrations'),
             items: [
-                ...(isAdmin ? [{ id: 'integrations', label: 'Webhooks & Appar', icon: Globe }] : []),
+                ...(isAdmin ? [{ id: 'integrations', label: t('system_settings.sidebar.webhooks'), icon: Globe }] : []),
             ]
         },
         {
-            category: 'Kommunikation',
+            category: t('system_settings.sidebar.categories.communication'),
             items: [
-                ...(isAdmin ? [{ id: 'notifs', label: 'Notissystem', icon: Bell }] : []),
+                ...(isAdmin ? [{ id: 'notifs', label: t('system_settings.sidebar.notifications'), icon: Bell }] : []),
             ]
         }
     ];
@@ -379,8 +381,8 @@ const SystemSettings = ({ asTab = false }) => {
                 return (
                     <div className="space-y-8 animate-in fade-in slide-in-from-bottom duration-500">
                         <div>
-                            <h2 className="text-2xl font-black text-[var(--text-primary)] mb-2">Tema & Utseende</h2>
-                            <p className="text-[var(--text-secondary)] font-bold">Anpassa systemets färger och känsla.</p>
+                            <h2 className="text-2xl font-black text-[var(--text-primary)] mb-2">{t('system_settings.sections.theme.title')}</h2>
+                            <p className="text-[var(--text-secondary)] font-bold">{t('system_settings.sections.theme.description')}</p>
                         </div>
 
                         <div className="bg-[var(--bg-card)] rounded-3xl p-8 border border-[var(--border-main)] shadow-xl relative overflow-hidden group">
@@ -391,8 +393,8 @@ const SystemSettings = ({ asTab = false }) => {
                                     <Palette size={28} />
                                 </div>
                                 <div>
-                                    <h3 className="font-black text-xl text-[var(--text-primary)]">Aktivt Tema</h3>
-                                    <p className="text-sm text-[var(--text-secondary)] font-bold">Nuvarande utseende för systemet</p>
+                                    <h3 className="font-black text-xl text-[var(--text-primary)]">{t('system_settings.sections.theme.active_theme')}</h3>
+                                    <p className="text-sm text-[var(--text-secondary)] font-bold">{t('system_settings.sections.theme.current_look')}</p>
                                 </div>
                             </div>
 
@@ -400,7 +402,7 @@ const SystemSettings = ({ asTab = false }) => {
                                 <div className="w-16 h-16 rounded-2xl shadow-xl ring-2 ring-white/5" style={{ backgroundColor: currentTheme.colors[600] }}></div>
                                 <div>
                                     <span className="font-black text-[var(--text-primary)] text-xl block mb-1">{currentTheme.name}</span>
-                                    <p className="text-sm text-[var(--text-secondary)] font-mono opacity-70">Primärfärg: {currentTheme.colors[600]}</p>
+                                    <p className="text-sm text-[var(--text-secondary)] font-mono opacity-70">{t('system_settings.sections.theme.primary_color')}: {currentTheme.colors[600]}</p>
                                 </div>
                             </div>
 
@@ -421,8 +423,8 @@ const SystemSettings = ({ asTab = false }) => {
                 return (
                     <div className="space-y-8 animate-in fade-in slide-in-from-bottom duration-500">
                         <div>
-                            <h2 className="text-2xl font-black text-[var(--text-primary)] mb-2">Enterprise Whitelabel</h2>
-                            <p className="text-[var(--text-secondary)] font-bold">Fullt anpassningsbar branding för din organisation.</p>
+                            <h2 className="text-2xl font-black text-[var(--text-primary)] mb-2">{t('system_settings.sections.whitelabel.title')}</h2>
+                            <p className="text-[var(--text-secondary)] font-bold">{t('system_settings.sections.whitelabel.description')}</p>
                         </div>
 
                         <div className="bg-[var(--bg-card)] rounded-3xl p-8 border border-[var(--border-main)] shadow-xl overflow-hidden relative group">
@@ -433,8 +435,8 @@ const SystemSettings = ({ asTab = false }) => {
                                     <Sparkles size={28} />
                                 </div>
                                 <div>
-                                    <h3 className="font-black text-xl text-[var(--text-primary)]">Whitelabel-status</h3>
-                                    <p className="text-sm text-[var(--text-secondary)] font-bold">Anpassa logotyp, färger och mer</p>
+                                    <h3 className="font-black text-xl text-[var(--text-primary)]">{t('system_settings.sections.whitelabel.status')}</h3>
+                                    <p className="text-sm text-[var(--text-secondary)] font-bold">{t('system_settings.sections.whitelabel.customize')}</p>
                                 </div>
                             </div>
 
@@ -447,8 +449,8 @@ const SystemSettings = ({ asTab = false }) => {
                                             </svg>
                                         </div>
                                         <div>
-                                            <span className="font-black text-green-500 text-lg">ENTERPRISE-licens aktiv</span>
-                                            <p className="text-sm text-[var(--text-secondary)] font-bold">Full tillgång till whitelabel-funktioner</p>
+                                            <span className="font-black text-green-500 text-lg">{t('system_settings.sections.whitelabel.enterprise_active')}</span>
+                                            <p className="text-sm text-[var(--text-secondary)] font-bold">{t('system_settings.sections.whitelabel.full_access')}</p>
                                         </div>
                                     </div>
                                 ) : (
@@ -457,8 +459,8 @@ const SystemSettings = ({ asTab = false }) => {
                                             <Lock size={22} className="text-amber-500" />
                                         </div>
                                         <div>
-                                            <span className="font-black text-amber-500 text-lg">Kräver ENTERPRISE-licens</span>
-                                            <p className="text-sm text-[var(--text-secondary)] font-bold">Uppgradera för att låsa upp</p>
+                                            <span className="font-black text-amber-500 text-lg">{t('system_settings.sections.whitelabel.enterprise_required')}</span>
+                                            <p className="text-sm text-[var(--text-secondary)] font-bold">{t('system_settings.sections.whitelabel.upgrade_unlock')}</p>
                                         </div>
                                     </div>
                                 )}
@@ -482,8 +484,8 @@ const SystemSettings = ({ asTab = false }) => {
                 return (
                     <div className="space-y-8 animate-in fade-in slide-in-from-bottom duration-500">
                         <div>
-                            <h2 className="text-2xl font-black text-[var(--text-primary)] mb-2">Licensstatus</h2>
-                            <p className="text-[var(--text-secondary)] font-bold">Information om din nuvarande plan och licensstatus.</p>
+                            <h2 className="text-2xl font-black text-[var(--text-primary)] mb-2">{t('system_settings.sections.license.title')}</h2>
+                            <p className="text-[var(--text-secondary)] font-bold">{t('system_settings.sections.license.description')}</p>
                         </div>
 
                         {licenseLoading ? (
@@ -559,8 +561,8 @@ const SystemSettings = ({ asTab = false }) => {
                     <div className="space-y-8 animate-in fade-in slide-in-from-bottom duration-500">
                         {/* Server Health Header */}
                         <div>
-                            <h2 className="text-2xl font-black text-[var(--text-primary)] mb-2">Serverinställningar</h2>
-                            <p className="text-[var(--text-secondary)] font-bold">Hantera backuper, databaser och se systemets driftstatus.</p>
+                            <h2 className="text-2xl font-black text-[var(--text-primary)] mb-2">{t('system_settings.sections.server.title')}</h2>
+                            <p className="text-[var(--text-secondary)] font-bold">{t('system_settings.sections.server.description')}</p>
                         </div>
 
                         {/* Backups Card */}
@@ -571,8 +573,8 @@ const SystemSettings = ({ asTab = false }) => {
                                         <HardDrive size={24} />
                                     </div>
                                     <div>
-                                        <h3 className="text-xl font-black text-[var(--text-primary)]">System-backuper</h3>
-                                        <p className="text-sm text-[var(--text-secondary)] font-bold italic">Senaste backup: {formatDate(backupStatus?.lastBackup)}</p>
+                                        <h3 className="text-xl font-black text-[var(--text-primary)]">{t('system_settings.sections.server.backups')}</h3>
+                                        <p className="text-sm text-[var(--text-secondary)] font-bold italic">{t('system_settings.sections.server.latest_backup')}: {formatDate(backupStatus?.lastBackup)}</p>
                                     </div>
                                 </div>
                                 <button
@@ -581,7 +583,7 @@ const SystemSettings = ({ asTab = false }) => {
                                     className="px-6 py-3 bg-brand-blue text-white rounded-2xl font-black shadow-xl shadow-brand-blue/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-2 disabled:opacity-50"
                                 >
                                     {creatingBackup ? <RefreshCw size={18} className="animate-spin" /> : <Download size={18} />}
-                                    Skapa Backup Nu
+                                    {t('system_settings.sections.server.create_backup')}
                                 </button>
                             </div>
 
@@ -592,7 +594,7 @@ const SystemSettings = ({ asTab = false }) => {
                                     </div>
                                 ) : backups.length === 0 ? (
                                     <div className="p-8 text-center bg-black/20 rounded-2xl border border-dashed border-white/10">
-                                        <p className="text-[var(--text-secondary)] font-bold">Inga backuper hittades.</p>
+                                        <p className="text-[var(--text-secondary)] font-bold">{t('system_settings.sections.server.no_backups')}</p>
                                     </div>
                                 ) : (
                                     backups.map(backup => (
@@ -628,8 +630,8 @@ const SystemSettings = ({ asTab = false }) => {
                                         <Database size={24} />
                                     </div>
                                     <div>
-                                        <h3 className="text-xl font-black text-[var(--text-primary)]">Databasanslutningar</h3>
-                                        <p className="text-sm text-[var(--text-secondary)] font-bold">Välj aktiv databas för systemet.</p>
+                                        <h3 className="text-xl font-black text-[var(--text-primary)]">{t('system_settings.sections.server.db_connections')}</h3>
+                                        <p className="text-sm text-[var(--text-secondary)] font-bold">{t('system_settings.sections.server.db_description')}</p>
                                     </div>
                                 </div>
                                 <button
@@ -637,7 +639,7 @@ const SystemSettings = ({ asTab = false }) => {
                                     className="px-6 py-3 bg-purple-500 text-white rounded-2xl font-black shadow-xl shadow-purple-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-2"
                                 >
                                     <Plus size={18} />
-                                    Lägg till Databas
+                                    {t('system_settings.sections.server.add_db')}
                                 </button>
                             </div>
 
@@ -663,7 +665,7 @@ const SystemSettings = ({ asTab = false }) => {
                                                     </div>
                                                 </div>
                                                 {conn.active && (
-                                                    <span className="text-[10px] font-black bg-purple-500 text-white px-2 py-0.5 rounded-lg tracking-widest">AKTIV</span>
+                                                    <span className="text-[10px] font-black bg-purple-500 text-white px-2 py-0.5 rounded-lg tracking-widest">{t('common.active') || 'AKTIV'}</span>
                                                 )}
                                             </div>
                                             {!conn.active && (
@@ -672,7 +674,7 @@ const SystemSettings = ({ asTab = false }) => {
                                                     disabled={switchingDb === conn.id}
                                                     className="w-full py-2.5 bg-white/5 hover:bg-purple-500 hover:text-white text-[var(--text-primary)] rounded-xl font-black text-xs transition-all border border-white/5 border-dashed"
                                                 >
-                                                    {switchingDb === conn.id ? <RefreshCw size={14} className="animate-spin mx-auto" /> : 'Byt till denna databas'}
+                                                    {switchingDb === conn.id ? <RefreshCw size={14} className="animate-spin mx-auto" /> : t('system_settings.sections.server.switch_db')}
                                                 </button>
                                             )}
                                         </div>
@@ -689,8 +691,8 @@ const SystemSettings = ({ asTab = false }) => {
                 return (
                     <div className="space-y-8 animate-in fade-in slide-in-from-bottom duration-500">
                         <div>
-                            <h2 className="text-2xl font-black text-[var(--text-primary)] mb-2">AI-inställningar</h2>
-                            <p className="text-[var(--text-secondary)] font-bold">Uppgradera din lärplattform med nästa generations intelligens.</p>
+                            <h2 className="text-2xl font-black text-[var(--text-primary)] mb-2">{t('system_settings.sidebar.ai_config')}</h2>
+                            <p className="text-[var(--text-secondary)] font-bold">{t('system_settings.sections.ai.description')}</p>
                         </div>
 
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -808,7 +810,7 @@ const SystemSettings = ({ asTab = false }) => {
                                     >
                                         <div className="absolute inset-0 bg-white/10 opacity-0 group-hover/btn:opacity-100 transition-opacity"></div>
                                         <Sparkles size={24} fill={aiStatus?.available ? "currentColor" : "none"} />
-                                        Öppna AI Quiz-generatorn
+                                        {t('system_settings.sections.ai.open_generator')}
                                     </button>
                                 </div>
                             </div>
@@ -820,7 +822,7 @@ const SystemSettings = ({ asTab = false }) => {
                                     <div className="p-2 bg-brand-blue/10 rounded-xl">
                                         <FileText size={22} />
                                     </div>
-                                    Så fungerar AI Quiz
+                                    {t('system_settings.sections.ai.how_it_works')}
                                 </h3>
                                 <ul className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <li className="flex items-start gap-4 p-4 bg-black/20 rounded-2xl border border-white/5">
@@ -988,7 +990,7 @@ const SystemSettings = ({ asTab = false }) => {
 
                                                     <div className="flex-shrink-0 hidden sm:block">
                                                         <span className={`text-[10px] font-black px-3 py-1.5 rounded-xl tracking-widest border transition-all ${mod.active ? 'bg-green-500/10 text-green-500 border-green-500/20' : 'bg-white/5 text-white/20 border-white/5'}`}>
-                                                            {mod.active ? 'AKTIV' : 'INAKTIV'}
+                                                            {mod.active ? t('common.active') || 'AKTIV' : t('common.inactive') || 'INAKTIV'}
                                                         </span>
                                                     </div>
 
@@ -1220,7 +1222,7 @@ const SystemSettings = ({ asTab = false }) => {
             default:
                 return (
                     <div className="flex items-center justify-center h-full p-12 text-center text-[var(--text-secondary)] font-bold italic">
-                        Välj en kategori i menyn för att konfigurera systemet.
+                        {t('system_settings.select_category')}
                     </div>
                 );
         }
@@ -1230,8 +1232,8 @@ const SystemSettings = ({ asTab = false }) => {
         <div className={asTab ? "animate-in fade-in" : "p-8 max-w-7xl mx-auto animate-in fade-in pb-20"}>
             {!asTab && (
                 <>
-                    <h1 className="text-3xl font-black text-[var(--text-primary)] mb-2">Systeminställningar</h1>
-                    <p className="text-[var(--text-secondary)] mb-8 font-bold">Hantera globala inställningar, utseende och licenser för EduFlex.</p>
+                    <h1 className="text-3xl font-black text-[var(--text-primary)] mb-2">{t('system_settings.title')}</h1>
+                    <p className="text-[var(--text-secondary)] mb-8 font-bold">{t('system_settings.description')}</p>
                 </>
             )}
 

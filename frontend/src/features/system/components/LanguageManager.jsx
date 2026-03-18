@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import i18n from '../../../i18n';
 import {
     Globe,
     Plus,
@@ -25,8 +25,45 @@ const LanguageManager = () => {
 
     const fetchLanguages = async () => {
         try {
-            const response = await axios.get('/api/languages');
-            setLanguages(response.data);
+            // Deriving from static i18n resources instead of API
+            const codes = Object.keys(i18n.options.resources || {});
+            
+            // Sorting priority: Nordic first, then by commonality
+            const nordicCodes = ['sv', 'no', 'da', 'fi', 'se'];
+            const commonCodes = ['en', 'de', 'fr', 'es', 'ar'];
+            
+            const sortedCodes = codes.sort((a, b) => {
+                const indexA = [...nordicCodes, ...commonCodes].indexOf(a);
+                const indexB = [...nordicCodes, ...commonCodes].indexOf(b);
+                
+                if (indexA !== -1 && indexB !== -1) return indexA - indexB;
+                if (indexA !== -1) return -1;
+                if (indexB !== -1) return 1;
+                return a.localeCompare(b);
+            });
+
+            const languageNames = {
+                'sv': { name: 'Svenska', native: 'Svenska' },
+                'no': { name: 'Norska', native: 'Norsk' },
+                'da': { name: 'Danska', native: 'Dansk' },
+                'fi': { name: 'Finska', native: 'Suomi' },
+                'se': { name: 'Nordsamiska', native: 'Davvisámegiella' },
+                'en': { name: 'Engelska', native: 'English' },
+                'de': { name: 'Tyska', native: 'Deutsch' },
+                'fr': { name: 'Franska', native: 'Français' },
+                'es': { name: 'Spanska', native: 'Español' },
+                'ar': { name: 'Arabiska', native: 'العربية' }
+            };
+
+            const staticLangs = sortedCodes.map(code => ({
+                id: code,
+                code: code,
+                name: languageNames[code]?.name || code.toUpperCase(),
+                nativeName: languageNames[code]?.native || code,
+                isEnabled: true,
+                isDefault: code === 'sv'
+            }));
+            setLanguages(staticLangs);
         } catch (error) {
             toast.error('Kunde inte hämta språklista');
         } finally {
@@ -106,9 +143,9 @@ const LanguageManager = () => {
                 </div>
                 <div className="flex items-center gap-4">
                     <button
-                        onClick={handleSync}
-                        disabled={syncing}
-                        className="flex items-center gap-2 text-xs bg-indigo-500/20 text-indigo-300 px-4 py-2 rounded-lg border border-indigo-500/30 hover:bg-indigo-500/30 transition-all font-bold"
+                        onClick={() => toast.error('Synkronisering är inaktiverad i Statiskt Läge.')}
+                        className="flex items-center gap-2 text-xs bg-gray-500/20 text-gray-500 px-4 py-2 rounded-lg border border-gray-500/30 cursor-not-allowed font-bold"
+                        disabled
                     >
                         {syncing ? <Loader2 className="w-3 h-3 animate-spin" /> : <RefreshCw className="w-3 h-3" />}
                         Synka alla språk

@@ -1,96 +1,13 @@
 {
-  "level_title": {
-    "Nuvarande Nivå": "Nivel actual",
-    "Tid kvar": "Tiempo restante",
-    "Gå till Nivå {{name}}": "Ir al nivel {{name}}",
-    "Lås upp Nivå {{name}}": "Desbloquear nivel {{name}}",
-    "Är du säker på att du vill låsa upp Nivå {{name}} för {{cost}}?": "¿Estás seguro de que quieres desbloquear el nivel {{name}} por {{cost}}?",
-    "Inte tillräckligt med stjärnor": "No hay suficientes estrellas",
-    "Du behöver {{amount}} stjärnor till för att låsa upp denna nivå.": "Necesitas {{amount}} estrellas más para desbloquear este nivel.",
-    "Lås upp": "Desbloquear",
-    "Avbryt": "Cancelar",
-    "Du har redan låst upp denna nivå!": "¡Ya has desbloqueado este nivel!",
-    "Spela": "Jugar",
-    "Om du startar om kommer alla framsteg att gå förlorade. Vill du fortsätta?": "Si reinicias, todo el progreso se perderá. ¿Quieres continuar?",
-    "Starta om": "Reiniciar",
-    "Tillbaka": "Volver",
-    "Välj Nivå": "Seleccionar nivel",
-    "Du har slutfört alla nivåer!": "¡Has completado todos los niveles!",
-    "Grattis!": "¡Felicidades!",
-    "Du har tjänat {{stars}} stjärnor!": "¡Has ganado {{stars}} estrellas!",
-    "Nästa Nivå": "Siguiente nivel"
-  },
-  "student_rank": {
-    "Elevranking": "Clasificación de alumnos"
-  },
-  "points_to_next": {
-    "points_to_next_level": "puntos para el siguiente nivel"
-  },
-  "my_badges": {
-    "Mina Utmärkelser": "Mis premios"
-  },
-  "no_awards": {
-    "greeting": "Hola, {{name}}!",
-    "farewell": "Adiós, {{name}}.",
-    "instruction": "Por favor, introduce tu nombre.",
-    "confirmation": "Tu nombre es {{name}}.",
-    "error": "Error: Nombre inválido.",
-    "awards": "Ningún premio todavía. ¡Sigue luchando!"
-  },
-  "view_all": {
-    "show_all_awards": "Mostrar todos los premios"
-  },
-  "rank_newbie": {
-    "Nyckel1": "Värde 1",
-    "Nyckel2": "Värde 2 {{name}}",
-    "Nyckel3": "Nybörjare"
-  },
-  "rank_apprentice": {
-    "title": "Välkommen",
-    "subtitle": "Logga in för att fortsätta",
-    "login_button": "Logga in",
-    "cancel_button": "Avbryt",
-    "greeting": "Hej, {{name}}!",
-    "error_message": "Ogiltigt användarnamn eller lösenord."
-  },
-  "rank_expert": {
-    "greeting": "Hej {{name}}, välkommen till vår app!",
-    "farewell": "Adjö {{name}}, vi hoppas att du kommer tillbaka snart.",
-    "instruction": "Vänligen fyll i alla obligatoriska fält.",
-    "confirmation": "Är du säker på att du vill fortsätta?",
-    "error_message": "Ett fel uppstod. Vänligen försök igen senare.",
-    "success_message": "Åtgärden lyckades!",
-    "button_label": "Skicka",
-    "link_text": "Klicka här för mer information.",
-    "placeholder_text": "Skriv här...",
-    "item_count": "{{count}} objekt"
-  },
-  "rank_master": {
-    "greeting": "Hola, {{name}}!",
-    "farewell": "Adiós, {{name}}.",
-    "instruction": "Por favor, introduzca su nombre.",
-    "submit": "Enviar",
-    "cancel": "Cancelar",
-    "error_message": "Ha ocurrido un error. Por favor, inténtelo de nuevo.",
-    "success_message": "¡Operación exitosa!",
-    "confirmation_message": "¿Está seguro de que desea continuar?",
-    "date_format": "dd/MM/yyyy",
-    "time_format": "HH:mm:ss",
-    "currency": "EUR",
-    "language": "Español"
-  },
-  "rank_legend": {
-    "Legend": "Leyenda",
-    "Map": "Mapa",
-    "Satellite": "Satélite",
-    "Hybrid": "Híbrido",
-    "Terrain": "Terreno",
-    "{{name}}'s {{property}}": "{{name}}'s {{property}}",
-    "{{name}}'s Pets": "Mascotas de {{name}}",
-    "{{name}}'s Places": "Lugares de {{name}}",
-    "{{name}}'s Trips": "Viajes de {{name}}",
-    "{{name}}'s chosen date": "Fecha elegida por {{name}}",
-    "Show Details": "Mostrar detalles",
-    "Hide Details": "Ocultar detalles"
-  }
+  "level_title": "Nivel actual",
+  "student_rank": "Ranking del estudiante",
+  "points_to_next": "puntos para el siguiente nivel",
+  "my_badges": "Mis Insignias",
+  "no_awards": "Aún no hay premios. ¡Sigue luchando!",
+  "view_all": "Ver todos los premios",
+  "rank_newbie": "Novato",
+  "rank_apprentice": "Aprendiz",
+  "rank_expert": "Experto",
+  "rank_master": "Maestro",
+  "rank_legend": "Leyenda"
 }

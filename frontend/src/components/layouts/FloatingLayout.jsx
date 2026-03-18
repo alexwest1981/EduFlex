@@ -86,7 +86,7 @@ const FloatingLayout = ({ children }) => {
                                 to={item.path}
                                 className={({ isActive: navActive }) => {
                                     const isActive = navActive || (item.path === '/admin' && location.pathname.startsWith('/enterprise'));
-                                    return `flex items - center px - 4 py - 3 transition - all duration - 200 group relative
+                                    return `flex items-center px-4 py-3 transition-all duration-200 group relative
                                     ${isActive ? 'text-gray-900 dark:text-white font-bold' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'}
 `;
                                 }}

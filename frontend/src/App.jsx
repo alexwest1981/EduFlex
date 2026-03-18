@@ -676,10 +676,6 @@ const AppRoutes = () => {
 };
 
 const App = () => {
-    React.useEffect(() => {
-        initDynamicLanguages();
-    }, []);
-
     return (
         <I18nextProvider i18n={i18n}>
             <AppProvider>

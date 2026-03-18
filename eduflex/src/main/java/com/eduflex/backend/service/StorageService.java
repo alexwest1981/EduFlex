@@ -26,6 +26,11 @@ public interface StorageService {
     InputStream load(String storageId);
 
     /**
+     * Check if a file exists by its storageId.
+     */
+    boolean exists(String storageId);
+
+    /**
      * Delete a file by its storageId.
      */
     void delete(String storageId);

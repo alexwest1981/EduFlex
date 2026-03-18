@@ -277,13 +277,43 @@ const UserProfile = ({ currentUser, showMessage, refreshUser, logout }) => {
         fetchAvailableLanguages();
     }, [activeTab]);
 
-    const fetchAvailableLanguages = async () => {
-        try {
-            const langs = await api.get('/languages/enabled');
-            setAvailableLanguages(langs || []);
-        } catch (e) {
-            console.error("Failed to fetch languages", e);
-        }
+    const fetchAvailableLanguages = () => {
+        // Deriving enabled languages directly from i18n resources (Static Mode)
+        const codes = Object.keys(i18n.options.resources || {});
+        
+        // Sorting priority: Nordic first, then by commonality
+        const sortedCodes = codes.sort((a, b) => {
+            const nordicCodes = ['sv', 'no', 'da', 'fi', 'se'];
+            const commonCodes = ['en', 'de', 'fr', 'es', 'ar'];
+            const indexA = [...nordicCodes, ...commonCodes].indexOf(a);
+            const indexB = [...nordicCodes, ...commonCodes].indexOf(b);
+            
+            if (indexA !== -1 && indexB !== -1) return indexA - indexB;
+            if (indexA !== -1) return -1;
+            if (indexB !== -1) return 1;
+            return a.localeCompare(b);
+        });
+
+        const langs = sortedCodes
+            .filter(code => code !== 'sv2' && code !== 'v2')
+            .map(code => ({
+                code,
+                name: languageNames[code] || code.toUpperCase()
+            }));
+        setAvailableLanguages(langs);
+    };
+
+    const languageNames = {
+        'sv': 'Svenska (Swedish)',
+        'no': 'Norsk (Norwegian)',
+        'da': 'Dansk (Danish)',
+        'fi': 'Suomi (Finnish)',
+        'se': 'Davvisámegiella (Sami)',
+        'en': 'English',
+        'de': 'Deutsch (German)',
+        'fr': 'Français (French)',
+        'es': 'Español (Spanish)',
+        'ar': 'العربية (Arabic)'
     };
 
     const fetchPreferences = async () => {
@@ -510,12 +540,12 @@ const UserProfile = ({ currentUser, showMessage, refreshUser, logout }) => {
     // MENU ITEMS CONFIGURATION
     const menuItems = [
         { id: 'details', icon: User, label: t('profile.details') },
-        { id: 'security_privacy', icon: Shield, label: 'Säkerhet & Integritet' },
-        { id: 'themes', icon: Layout, label: 'Tema & Utseende', visible: isModuleActive('GAMIFICATION') },
-        { id: 'achievements', icon: Award, label: 'Prestationer', visible: isModuleActive('GAMIFICATION') },
-        { id: 'notifications', icon: Bell, label: 'Notiser & Kanaler' },
-        { id: 'connections', icon: UserPlus, label: 'Vänner & Relationer' },
-        ...(isModuleActive('REVENUE') ? [{ id: 'billing', icon: CreditCard, label: 'Fakturering' }] : []),
+        { id: 'security_privacy', icon: Shield, label: t('profile.security_privacy') },
+        { id: 'themes', icon: Layout, label: t('profile.themes'), visible: isModuleActive('GAMIFICATION') },
+        { id: 'achievements', icon: Award, label: t('profile.achievements'), visible: isModuleActive('GAMIFICATION') },
+        { id: 'notifications', icon: Bell, label: t('profile.notifications') },
+        { id: 'connections', icon: UserPlus, label: t('profile.connections') },
+        ...(isModuleActive('REVENUE') ? [{ id: 'billing', icon: CreditCard, label: t('profile.billing') }] : []),
     ].filter(item => item.visible !== false);
 
     return (
@@ -647,7 +677,7 @@ const UserProfile = ({ currentUser, showMessage, refreshUser, logout }) => {
                                             readOnly={!ssnRevealed}
                                             onChange={e => setFormData({ ...formData, ssn: e.target.value.replace(/\D/g, '') })}
                                         />
-                                        <p className="text-xs text-amber-600 dark:text-amber-500 mt-1.5">Lagras krypterat. Delas aldrig publikt och används endast för officiell CSN-närvarodata.</p>
+                                        <p className="text-xs text-amber-600 dark:text-amber-500 mt-1.5">{t('profile.ssn_notice')}</p>
                                     </div>
                                     <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('profile.language')}</label>
                                         <select
@@ -661,7 +691,7 @@ const UserProfile = ({ currentUser, showMessage, refreshUser, logout }) => {
                                             {availableLanguages.length > 0 ? (
                                                 availableLanguages.map(lang => (
                                                     <option key={lang.code} value={lang.code}>
-                                                        {lang.nativeName || lang.name}
+                                                        {lang.name}
                                                     </option>
                                                 ))
                                             ) : (
@@ -675,7 +705,7 @@ const UserProfile = ({ currentUser, showMessage, refreshUser, logout }) => {
                                 </div>
 
                                 <div className="space-y-4">
-                                    <h3 className="text-xl font-bold dark:text-white border-b border-gray-100 dark:border-gray-800 pb-2">Kontaktinformation</h3>
+                                    <h3 className="text-xl font-bold dark:text-white border-b border-gray-100 dark:border-gray-800 pb-2">{t('profile.contact_info')}</h3>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('profile.email')}</label><input className="w-full p-2.5 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-black" value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })} /></div>
                                         <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('profile.phone')}</label><input className="w-full p-2.5 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-black" value={formData.phone} onChange={e => setFormData({ ...formData, phone: e.target.value })} /></div>

@@ -1,755 +1,1237 @@
 {
-  "common": {
-    "save": "Save",
-    "cancel": "Cancel",
-    "delete": "Delete",
-    "edit": "Edit",
-    "upload": "Upload",
-    "download": "Download",
-    "search": "Search...",
-    "filter": "Filter",
-    "name": "Name",
-    "action": "Action",
-    "description": "Description",
-    "date": "Date",
-    "size": "Size",
-    "loading": "Loading...",
-    "student": "Student",
-    "file": "File",
-    "close": "Close",
-    "back": "Back",
-    "send": "Send",
-    "yes": "Yes",
-    "no": "No",
-    "unknown": "Unknown",
-    "light_mode": "Light Mode",
-    "dark_mode": "Dark Mode",
-    "choose": "Choose...",
-    "optional": "Optional",
-    "minimize_menu": "Minimize Menu",
-    "expand_menu": "Expand Menu",
-    "online_friends": "Online Friends",
-    "today": "Today",
-    "tomorrow": "Tomorrow",
-    "all": "All",
-    "none": "None",
-    "title": "Title",
-    "questions": "Questions",
-    "created": "Created",
-    "category": "Category",
-    "copy": "Copy",
-    "brands": {
-      "gemini": "Google Gemini",
-      "postgresql": "PostgreSQL",
-      "openai": "OpenAI API"
+  "common" : {
+    "save" : "Save",
+    "cancel" : "Cancel",
+    "delete" : "Delete",
+    "edit" : "Edit",
+    "upload" : "Upload",
+    "download" : "Download",
+    "search" : "Search...",
+    "filter" : "Filter",
+    "name" : "Name",
+    "action" : "Action",
+    "description" : "Description",
+    "date" : "Date",
+    "size" : "Size",
+    "loading" : "Loading...",
+    "student" : "Student",
+    "file" : "File",
+    "close" : "Close",
+    "back" : "Back",
+    "send" : "Send",
+    "yes" : "Yes",
+    "no" : "No",
+    "unknown" : "Unknown",
+    "light_mode" : "Light Mode",
+    "dark_mode" : "Dark Mode",
+    "choose" : "Choose...",
+    "optional" : "Optional",
+    "minimize_menu" : "Minimize Menu",
+    "expand_menu" : "Expand Menu",
+    "online_friends" : "Online Friends",
+    "today" : "Today",
+    "tomorrow" : "Tomorrow",
+    "all" : "All",
+    "none" : "None",
+    "title" : "Title",
+    "questions" : "Questions",
+    "created" : "Created",
+    "category" : "Category",
+    "copy" : "Copy",
+    "brands" : {
+      "gemini" : "Google Gemini",
+      "postgresql" : "PostgreSQL",
+      "openai" : "OpenAI API"
+    },
+    "pro" : "Pro",
+    "menu" : "Menu"
+  },
+  "sidebar" : {
+    "dashboard" : "Dashboard",
+    "admin" : "Administration",
+    "my_profile" : "My Profile",
+    "logout" : "Logout",
+    "documents" : "Files & Documents",
+    "catalog" : "Course Catalog",
+    "calendar" : "Calendar",
+    "resource_bank" : "Resource Bank",
+    "library" : "Library",
+    "analytics" : "Analytics & Insights",
+    "support" : "Support & Contact",
+    "my_courses" : "My Courses",
+    "ebooks" : "E-books",
+    "system" : "System",
+    "ai_quiz" : "AI Quiz",
+    "shop" : "Shop",
+    "categories" : {
+      "main" : "Main Menu",
+      "education" : "Education & Studies",
+      "tools" : "Tools",
+      "syv" : "Study Guidance & Admission",
+      "admin" : "Administration",
+      "rektor" : "Principal Package",
+      "guardian" : "Guardian"
+    },
+    "lms_platform" : "LMS PLATFORM",
+    "install_app" : "INSTALL APP"
+  },
+  "library" : {
+    "title" : "Library",
+    "subtitle" : "Explore and read e-books",
+    "search_placeholder" : "Search for title or author...",
+    "categories" : "Categories",
+    "all_categories" : "All",
+    "read_book" : "Read book",
+    "edit_book" : "Edit book",
+    "delete_book" : "Delete book",
+    "upload_book" : "Upload new book",
+    "no_books_found" : "No books found.",
+    "edit_modal_title" : "Edit E-book",
+    "upload_modal_title" : "Upload new E-book",
+    "title_label" : "Title",
+    "author_label" : "Author",
+    "category_label" : "Category",
+    "description_label" : "Description",
+    "save_changes" : "Save changes",
+    "upload_btn" : "Upload",
+    "language_label" : "Language",
+    "epub_file_label" : "EPUB file",
+    "cover_image_label" : "Cover image",
+    "no_cover" : "No cover",
+    "select_file_alert" : "Please select an EPUB file",
+    "delete_confirm" : "Are you sure you want to delete this book?",
+    "delete_success" : "Book deleted",
+    "no_books_desc" : "Try searching for something else or upload your first e-book to the library."
+  },
+  "dashboard" : {
+    "welcome" : "Welcome back, {{name}}!",
+    "welcome_back" : "Welcome back,",
+    "logged_in_as" : "You are logged in as",
+    "live_overview" : "Live overview",
+    "realtime_data" : "Realtime data from the entire platform",
+    "tabs" : {
+      "overview" : "Overview",
+      "communication" : "Communication"
+    },
+    "widgets" : {
+      "stats" : "Statistics",
+      "calendar" : "Calendar & Schedule",
+      "recent_users" : "Recent Users",
+      "recent_docs" : "Recently Uploaded",
+      "messages" : "Latest Messages",
+      "online_friends" : "Online Friends",
+      "tickets" : "Support Tickets",
+      "gamification" : "Gamification Status",
+      "attendance" : "My Attendance",
+      "my_courses" : "My Courses",
+      "tasks" : "Tasks & Feedback",
+      "daily_challenges" : "Daily Challenges",
+      "achievements" : "My Achievements",
+      "ai_insights" : "AI Insights",
+      "ai_personalization" : "Personalized Study Tips",
+      "daily_challenges_widget" : {
+        "title" : "Daily Challenges",
+        "subtitle" : "Complete to earn XP",
+        "days" : "{{count}} days",
+        "empty" : "No challenges available yet",
+        "completed" : "✓ Done",
+        "reset_in" : "New challenges in {{hours}}h {{minutes}}m"
+      }
+    },
+    "my_courses" : "My Courses",
+    "files" : "Files",
+    "no_active_courses" : "You have no active courses.",
+    "total_users" : "Total Users",
+    "total_courses" : "Total Courses",
+    "open" : "Open",
+    "closed" : "Closed",
+    "realtime_update_notice" : "Data is updated in realtime.",
+    "new_messages" : "New Messages",
+    "go_to_inbox" : "Go to inbox",
+    "students" : "Students",
+    "teachers" : "Teachers",
+    "admins" : "Admins",
+    "mentors" : "Mentors",
+    "principals" : "Principals",
+    "evaluations" : "Evaluations",
+    "give_rating" : "Give rating",
+    "to_grade" : "To Grade",
+    "submissions" : "Submissions",
+    "no_pending_grades" : "No submissions pending!",
+    "upcoming_deadlines" : "Upcoming Deadlines",
+    "no_deadlines" : "No upcoming submissions.",
+    "active_plural" : "Active",
+    "archive_plural" : "Archived",
+    "datasync_ok" : "Synchronized",
+    "new_badge" : "NEW",
+    "archived_files" : "Archived Files",
+    "urgent" : "Urgent!",
+    "go_to" : "Go to",
+    "avg_grade" : "Avg. Grade",
+    "based_on" : "Based on {{count}} completed courses",
+    "users" : "Users",
+    "courses" : "Courses",
+    "latest_registered" : "Latest registered",
+    "latest_uploads" : "Latest uploads",
+    "archive" : "Archive",
+    "no_archive_docs" : "No documents in the archive.",
+    "teacher_panel" : "Teacher Panel",
+    "overview_for" : "Overview for {{name}}",
+    "my_students" : "My Students",
+    "active_courses" : "Active Courses",
+    "students_at_risk" : "Students at risk (Late submissions)",
+    "missed_deadlines" : "Missed {{count}} deadlines",
+    "no_risk_students" : "No late submissions!",
+    "all_in_phase" : "All your students are in phase.",
+    "grading_todo" : "To do: Grading",
+    "grade_now" : "Grade",
+    "all_graded" : "Everything is graded! Good job.",
+    "hi_student" : "Hi, {{name}}! 👋",
+    "student_subtitle" : "Here are your studies right now.",
+    "not_registered" : "You are not registered for any courses.",
+    "comming_assignments" : "Coming Assignments",
+    "no_upcoming_assignments" : "No upcoming assignments right now.",
+    "admin_overview" : "System Overview",
+    "admin_subtitle" : "Administration and Course Management",
+    "active_students" : "Active Students",
+    "locked_courses" : "Locked Courses",
+    "files_in_system" : "Files in System",
+    "course_registry" : "Course Registry",
+    "search_placeholder" : "Search course code or name...",
+    "all_statuses" : "All Statuses",
+    "no_match" : "No courses matched your search.",
+    "showing_x_of_y" : "Showing {{count}} of {{total}} courses",
+    "manage" : "Manage",
+    "new_course" : "New Course",
+    "search_course" : "Search course...",
+    "table" : {
+      "status" : "Status",
+      "code" : "Code",
+      "name" : "Name",
+      "date" : "Date",
+      "action" : "Action",
+      "user" : "User",
+      "email" : "Email",
+      "role" : "Role"
+    },
+    "course_color" : "Course Color",
+    "edit_course" : "Edit course",
+    "delete_course" : "Delete course",
+    "no_new_users" : "No new users registered.",
+    "recent_uploads" : "Recent uploads",
+    "unknown_file" : "Unknown file",
+    "unknown_size" : "Unknown size",
+    "unknown_date" : "Unknown date",
+    "no_files_uploaded" : "No files uploaded yet.",
+    "user_registry" : "User Registry",
+    "new_user" : "New User",
+    "search_user" : "Search user...",
+    "all_roles" : "All Roles",
+    "active" : "Active",
+    "edit_user" : "Edit user",
+    "delete_user" : "Delete user",
+    "feedback" : {
+      "new" : "New Feedback",
+      "course" : "Course: {{name}}",
+      "praise" : "Good job!",
+      "details" : "Show details"
     }
   },
-  "sidebar": {
-    "dashboard": "Dashboard",
-    "admin": "Admin",
-    "my_profile": "My Profile",
-    "logout": "Logout",
-    "documents": "Files & Documents",
-    "catalog": "Course Catalog",
-    "calendar": "Calendar",
-    "resource_bank": "Resource Bank",
-    "library": "Library",
-    "analytics": "Analytics & Insights",
-    "support": "Support & Contact",
-    "my_courses": "My Courses",
-    "ebooks": "E-books",
-    "system": "System",
-    "ai_quiz": "AI Quiz",
-    "shop": "Shop",
-    "categories": {
-      "main": "Main Menu",
-      "education": "Education & Study",
-      "tools": "Tools",
-      "syv": "Study Guidance & Admission",
-      "admin": "Administration",
-      "rektor": "Principal Package",
-      "guardian": "Guardian"
-    },
-    "lms_platform": "LMS PLATFORM",
-    "install_app": "INSTALL APP"
+  "attendance" : {
+    "title" : "Attendance Report",
+    "presence" : "Presence:",
+    "occasions" : "occasions",
+    "no_records" : "No mandatory events registered yet.",
+    "not_reported" : "Not reported",
+    "present" : "Present",
+    "absent" : "Absent",
+    "description" : "Description",
+    "no_description" : "No description available.",
+    "note" : "Note",
+    "manage_attendance" : "Manage Attendance",
+    "new_event" : "New Occasion",
+    "create_event_title" : "Create new occasion",
+    "event_title" : "Title",
+    "event_start" : "Start",
+    "event_end" : "End",
+    "event_type" : "Type",
+    "type_lesson" : "Lesson",
+    "type_workshop" : "Workshop",
+    "type_exam" : "Exam",
+    "type_other" : "Other",
+    "create_btn" : "Create",
+    "save_attendance" : "Save Attendance",
+    "saved_success" : "Attendance saved!",
+    "save_error" : "Error saving",
+    "create_error" : "Could not create event"
   },
-  "library": {
-    "title": "Library",
-    "subtitle": "Explore and read e-books",
-    "search_placeholder": "Search by title or author...",
-    "categories": "Categories",
-    "all_categories": "All",
-    "read_book": "Read book",
-    "edit_book": "Edit book",
-    "delete_book": "Delete book",
-    "upload_book": "Upload new book",
-    "no_books_found": "No books found.",
-    "edit_modal_title": "Edit E-book",
-    "upload_modal_title": "Upload new E-book",
-    "title_label": "Title",
-    "author_label": "Author",
-    "category_label": "Category",
-    "description_label": "Description",
-    "save_changes": "Save changes",
-    "upload_btn": "Upload",
-    "language_label": "Language",
-    "epub_file_label": "EPUB file",
-    "cover_image_label": "Cover image",
-    "no_cover": "No cover",
-    "select_file_alert": "Please select an EPUB file",
-    "delete_confirm": "Are you sure you want to delete this book?",
-    "delete_success": "Book deleted",
-    "no_books_desc": "Try searching for something else or upload your first e-book to the library."
+  "assessment" : {
+    "title" : "Assessment & Results",
+    "no_assignments" : "No assignments in this course.",
+    "deadline" : "Deadline",
+    "go_to_task" : "Go to task",
+    "my_file" : "My file",
+    "grade" : "Grade",
+    "waiting" : "Waiting for grading",
+    "submitted_at" : "Submitted",
+    "not_submitted" : "Not submitted",
+    "submit_now" : "Submit now"
   },
-  "landing": {
-    "nav": {
-      "features": "Features",
-      "gamification": "Gamification",
-      "showcase": "Showcase",
-      "pricing": "Pricing Plans",
-      "technology": "Technology",
-      "login": "Login",
-      "book_demo": "Book Demo",
-      "get_started": "Get Started",
-      "select_language": "Select Language"
+  "evaluation" : {
+    "title" : "Course Evaluation",
+    "intro" : "Your responses are anonymous and help us improve the education. Give a rating of 1-10 and feel free to write a comment.",
+    "your_rating" : "Your rating (1 = Bad, 10 = Excellent)",
+    "comment_label" : "Comment (Optional)",
+    "comment_placeholder" : "Write your opinion here...",
+    "submit_btn" : "Submit Evaluation",
+    "validation_error" : "Please provide a rating for all questions.",
+    "manage_btn" : "Manage Evaluation",
+    "saved_success" : "Evaluation saved!",
+    "save_error" : "Could not save the evaluation."
+  },
+  "license" : {
+    "locked_title" : "System Locked",
+    "locked_desc" : "No valid license found.",
+    "key_label" : "License Key",
+    "key_placeholder" : "XXXX-XXXX-XXXX-XXXX",
+    "activate_btn" : "Activate System"
+  },
+  "auth" : {
+    "login_header" : "Log In",
+    "register_header" : "Create Account",
+    "username" : "Username",
+    "password" : "Password",
+    "login_button" : "Log In",
+    "no_account" : "No account?",
+    "register_link" : "Register",
+    "has_account" : "Already have an account?",
+    "login_link" : "Log In",
+    "firstname" : "First Name",
+    "lastname" : "Last Name",
+    "ssn" : "Personal Identity Number (YYYYMMDD-XXXX)",
+    "email" : "Email",
+    "generate" : "Generate suggestion",
+    "choose_or_generate" : "Choose or generate...",
+    "profane" : "Inappropriate word chosen.",
+    "taken" : "Username taken.",
+    "available" : "Available!",
+    "role" : "Role",
+    "student" : "Student",
+    "admin" : "Administrator",
+    "teacher" : "Teacher",
+    "contact_address" : "Contact & Address",
+    "phone" : "Phone",
+    "street" : "Street Address",
+    "zip" : "Zip Code",
+    "city" : "City",
+    "country" : "Country",
+    "register_user_btn" : "Register User",
+    "create_account_btn" : "Create My Account"
+  },
+  "admin" : {
+    "title" : "System Administration",
+    "subtitle" : "Manage users, courses and system archives.",
+    "tab_users" : "Users",
+    "tab_courses" : "Courses",
+    "tab_docs" : "Document Archive",
+    "tab_settings" : "Settings",
+    "register_new" : "Register new user",
+    "firstname" : "First name",
+    "lastname" : "Last name",
+    "ssn" : "Social Security Number (12 digits)",
+    "email" : "E-mail",
+    "account_role" : "Account & Role",
+    "generate" : "Generate",
+    "password" : "Password",
+    "create_account" : "Create Account",
+    "registered_users" : "Registered Users",
+    "course_overview" : "Course Overview",
+    "create_course" : "Create new course",
+    "search_course" : "Search by course name or course code...",
+    "no_courses" : "No courses found.",
+    "teacher" : "Teacher",
+    "students" : "Students",
+    "settings" : "Settings",
+    "content" : "Content",
+    "global_docs" : "Global Document Archive",
+    "upload_file" : "Upload file",
+    "no_docs" : "The system is empty of archived files.",
+    "module_management" : "Module Management & System Info",
+    "site_name" : "Site Name",
+    "chat_module" : "Chat Module",
+    "chat_desc" : "Allows students and teachers to chat in real time.",
+    "registration" : "New Registration",
+    "registration_desc" : "Allows admin to create new user accounts.",
+    "version" : "System Version",
+    "edit_course_settings" : "Edit Course Settings",
+    "course_name" : "Course Name",
+    "course_code" : "Course Code",
+    "color_theme" : "Color Theme",
+    "register_new_user" : "Register new user",
+    "edit_user" : "Edit user",
+    "edit_course" : "Edit course",
+    "base_on_skolverket" : "Based on Skolverket course",
+    "choose_skolverket_course" : "Choose Skolverket course",
+    "max_seats" : "Max Seats",
+    "tags" : "Tags",
+    "digital_classroom" : "Digital Classroom (Optional)",
+    "choose_platform" : "Choose platform...",
+    "paste_link" : "Paste link...",
+    "choose_teacher" : "Choose teacher..."
+  },
+  "course" : {
+    "back" : "Back to overview",
+    "material" : "Material",
+    "assignments" : "Assignments",
+    "quiz" : "Quiz & Exam",
+    "forum" : "Forum",
+    "scorm" : "Interactive Modules",
+    "kursinformation" : "Course Information",
+    "students" : "Students & Grades",
+    "attendance" : "Attendance",
+    "create_quiz" : "Create New Quiz",
+    "start_quiz" : "Start Quiz",
+    "no_material" : "No course material uploaded yet.",
+    "add_material" : "Add Material",
+    "upload" : "Upload",
+    "title" : "Title",
+    "description" : "Description",
+    "link" : "Link (URL)",
+    "type_text" : "Text / Article",
+    "type_video" : "Video",
+    "type_link" : "External Link",
+    "type_file" : "File",
+    "read" : "Read",
+    "mark_read" : "Mark as read",
+    "open_link" : "Open link",
+    "participants" : "Participants",
+    "add_student" : "Add Student",
+    "select_student" : "Select student...",
+    "role" : "Role",
+    "status" : "Status",
+    "active" : "Active",
+    "connect_classroom" : "Connect to Classroom",
+    "evaluate_course" : "Evaluate Course",
+    "feedback_thanks" : "Thank you for your feedback!",
+    "error_occurred" : "An error occurred:",
+    "result_passed" : "Passed",
+    "result_failed" : "Failed",
+    "result_pending" : "Not Graded",
+    "mark_passed" : "Mark as Passed",
+    "mark_failed" : "Mark as Failed",
+    "certificate" : "Certificate",
+    "course_completed" : "Course Completed",
+    "view_certificate" : "View Certificate",
+    "claim_certificate" : "Claim Certificate"
+  },
+  "messages" : {
+    "profile_updated" : "Profile saved!",
+    "password_changed" : "Password changed!",
+    "login_failed" : "Login failed.",
+    "login_error" : "Login failed.",
+    "account_created" : "Account created!",
+    "register_error" : "Could not register.",
+    "license_approved" : "License approved!",
+    "license_error" : "Could not activate.",
+    "upload_success" : "File uploaded!",
+    "upload_error" : "Upload failed.",
+    "setting_saved" : "Saved!",
+    "setting_error" : "Could not save setting.",
+    "user_deleted" : "User deleted.",
+    "delete_error" : "Could not delete user.",
+    "course_deleted" : "Course deleted.",
+    "course_delete_error" : "Could not delete course.",
+    "joined_course" : "Joined!",
+    "loading" : "Loading...",
+    "loading_course" : "Loading course..."
+  },
+  "teacher_dashboard" : {
+    "tab_overview" : "Overview",
+    "tab_grading" : "Grading",
+    "tab_applications" : "Applications",
+    "tab_courses" : "My Courses",
+    "tab_students" : "Student Tracking",
+    "tab_communication" : "Communication",
+    "section_schedule" : "Upcoming Schedule",
+    "section_shortcuts" : "Shortcuts",
+    "section_admin" : "Administration",
+    "ongoing_course" : "Ongoing Course",
+    "upcoming_event" : "Upcoming Event",
+    "course_start" : "Course Start: {{name}}",
+    "no_events" : "No scheduled events.",
+    "new_message" : "New Message"
+  },
+  "shortcuts" : {
+    "calendar" : "Go to Calendar",
+    "students" : "Manage Students",
+    "grading" : "Grade Assignments",
+    "messages" : "Messages",
+    "create_course" : "Create New Course"
+  },
+  "widgets" : {
+    "recent_messages" : {
+      "title" : "Recent Messages",
+      "view_all" : "View all",
+      "empty" : "No new messages.",
+      "from" : "From"
     },
-    "hero": {
-      "badge": "version 3.9.2 now live",
-      "title_start": "The Future of",
-      "title_llp": "LLP",
-      "title_with": "with",
-      "title_hub": "EduAI Hub",
-      "subtitle": "A unified, AI-driven platform for schools, companies and authorities. Maximize pedagogical impact and minimize administration around the clock.",
-      "cta_ai": "Test AI Studio",
-      "cta_learn_more": "Read about features",
-      "cta_see_all": "See all 40+ features",
-      "tech_tagline": "Powered by world-leading technology",
-      "stats": {
-        "engagement": "Increased student engagement",
-        "new_level": "New Achievement!",
-        "level_value": "Level {{level}}"
-      }
+    "online_friends" : {
+      "title" : "Online Friends",
+      "x_online" : "{{count}} online",
+      "empty" : "No friends online right now.",
+      "profile" : "Profile",
+      "view_all" : "View all friends"
     },
-    "features": {
-      "title": "Everything you need for modern education",
-      "subtitle": "From AI-driven analysis to gamification and administration. Everything gathered in one powerful platform.",
-      "multi_tenancy": {
-        "title": "Multi-Tenancy",
-        "desc": "Isolated data for each school with infinite scalability."
-      },
-      "b2b": {
-        "title": "B2B Admin Console",
-        "desc": "Manage users, courses and licenses smoothly remotely."
-      },
-      "microservice": {
-        "title": "Microservices",
-        "desc": "Built with Spring Boot for maximum performance and stability."
-      },
-      "event_bus": {
-        "title": "Real-time Event-Bus",
-        "desc": "Immediate notification and synchronization between all modules."
-      },
-      "gamification": {
-        "title": "Game Engine",
-        "desc": "XP, Badges and Leaderboards that motivate learning."
-      },
-      "ai_creator": {
-        "title": "AI Course Creator",
-        "desc": "Auto-generate entire courses from PDF or link in 60 sec."
-      },
-      "pwa": {
-        "title": "PWA Mobile App",
-        "desc": "Install EduFlex directly on your mobile without an app store."
-      },
-      "live_video": {
-        "title": "Live Video & Chat",
-        "desc": "Integrated Zoom/Teams support for digital classrooms."
-      },
-      "collaborative": {
-        "title": "Collaborative Editing",
-        "desc": "Edit documents together in real-time through OnlyOffice."
-      },
-      "roi": {
-        "title": "Pedagogical ROI",
-        "desc": "Measure exactly how much time and resources you save daily."
-      },
-      "notifications": {
-        "title": "Smart Notifications",
-        "desc": "Contextual push notifications for deadlines and feedback."
-      },
-      "exams": {
-        "title": "Secure Exams",
-        "desc": "Monitored environment with focus control and integrity protection."
-      },
-      "integrations": {
-        "title": "LTI 1.3 Advantage",
-        "desc": "Fully compatible with Canvas, Moodle and Blackboard."
-      },
-      "compliance": {
-        "title": "WCAG Compliance",
-        "desc": "Designed for 100% accessibility regardless of prerequisites."
-      },
-      "pii": {
-        "title": "GDPR Zero-Trust",
-        "desc": "Breakthrough PII masking of all sensitive student data."
-      },
-      "educareer": {
-        "title": "EduCareer Roadmap",
-        "desc": "AI-driven career paths to reach the student's dream goal."
-      }
+    "live_lessons" : {
+      "title" : "Live Lessons",
+      "subtitle" : "Upcoming video meetings",
+      "soon" : "Soon",
+      "host" : "Host",
+      "join" : "Join",
+      "prepare" : "Prepare",
+      "view" : "View",
+      "see_all_calendar" : "See all in calendar",
+      "error_load" : "Could not load lessons",
+      "error_join" : "Could not connect to lesson"
     },
-    "screenshots": {
-      "admin": {
-        "title": "Admin Dashboard 2.0",
-        "desc": "Total control over the organization with live data and widgets."
-      },
-      "teacher": {
-        "title": "Teacher Panel",
-        "desc": "Effective overview of students' attendance, progress, and submissions."
-      },
-      "quiz": {
-        "title": "AI Quiz Generator",
-        "desc": "Upload documents and let AI create test questions in seconds."
-      },
-      "library": {
-        "title": "E-book Library",
-        "desc": "A central library for literature with a built-in reader."
-      },
-      "catalog": {
-        "title": "Course Catalog",
-        "desc": "Visual and filterable catalog for students to find new courses."
-      },
-      "resource": {
-        "title": "Resource Bank & Community",
-        "desc": "Share and download material from a common Community library."
-      },
-      "analytics": {
-        "title": "Analytics & Insights",
-        "desc": "Real-time dashboards for principals and teachers. Heatmaps and dropout prediction."
-      },
-      "security": {
-        "title": "Enterprise Security",
-        "desc": "Role-based access control (RBAC), audit logging, and secure Keycloak SSO integration."
-      },
-      "evaluation_system": {
-        "title": "Course Evaluation & Insights",
-        "desc": "Complete system for course quality. Automatic student notifications and AI analysis of free-text responses to measure the ROI of education."
-      }
+    "tickets" : {
+      "active" : "Active Support Tickets",
+      "critical" : "Critical",
+      "high" : "High priority",
+      "medium" : "Medium priority",
+      "low" : "Low priority",
+      "open" : "Open tickets",
+      "empty" : "No open tickets right now."
     },
-    "architecture": {
-      "badge": "Built for Scaling",
-      "title": "Enterprise Architecture",
-      "powered_by": "Powered by Industry Standards",
-      "items": [
-        "Spring Boot 3.4 Microservices",
-        "PostgreSQL with Schema-per-Tenant",
-        "Redis Caching Layer",
-        "MinIO S3-Compatible Storage",
-        "Keycloak SSO Identity Management",
-        "Kubernetes & Helm Charts"
-      ]
+    "student_progress" : {
+      "title" : "My Course Results",
+      "on_track" : "On track",
+      "at_risk" : "At risk",
+      "assignments" : "Assignments",
+      "quizzes" : "Quizzes",
+      "detailed_overview" : "Detailed overview",
+      "latest_results" : "Latest Results",
+      "no_results" : "No results yet.",
+      "catch_up" : "Make sure to catch up!",
+      "go_to_course" : "Go to the course"
     },
-    "pricing": {
-      "title": "Simple, Transparent Pricing",
-      "subtitle": "Choose the plan that suits your school.",
-      "basic": {
-        "name": "Basic",
-        "price": "990 SEK / month",
-        "features": [
-          "Up to 100 users",
-          "Basic Course Management",
-          "Simple Reporting",
-          "Community Support"
-        ],
-        "cta": "Get started"
-      },
-      "pro": {
-        "name": "Pro",
-        "price": "2 990 SEK / month",
-        "features": [
-          "Up to 500 users",
-          "Full Gamification",
-          "Skolverket-Integration",
-          "CSN-Export",
-          "Prioritized Support"
-        ],
-        "cta": "Book Demo",
-        "badge": "Most Popular"
-      },
-      "enterprise": {
-        "name": "Enterprise",
-        "price": "Contact Us",
-        "features": [
-          "Unlimited Number of Users",
-          "White-label Branding",
-          "Keycloak SSO",
-          "SLA 99.99%",
-          "Dedicated Infrastructure"
-        ],
-        "cta": "Contact Sales"
-      }
+    "attendance_widget" : {
+      "title" : "My Digital Attendance",
+      "activity_level" : "Activity level",
+      "registered_time" : "Registered time",
+      "gold_week" : "Goal (Week)",
+      "low_warning" : "Warning! Your attendance is low. Contact your mentor."
     },
-    "pricing_page": {
-      "back": "Back to start",
-      "badge": "Transparency",
-      "title": "Simple & Fair {{gradient}}",
-      "gradient_text": "Pricing",
-      "subtitle": "Choose the level that best suits your organization. No hidden fees, just pure pedagogical power.",
-      "most_popular": "Most Popular",
-      "currency_suffix": "SEK / student / month",
-      "cta_prefix": "Get started with",
-      "security_title": "GDPR & Security",
-      "security_desc": "All data is stored within the EU (Sweden/Germany). We follow the strictest requirements for PII masking and privacy by design.",
-      "availability_title": "High Availability",
-      "availability_desc": "Our Kubernetes architecture guarantees 99.9% uptime for Enterprise. The system scales automatically based on the number of users.",
-      "onboarding_title": "Personal Onboarding",
-      "onboarding_desc": "We help you with SIS integration, LTI setup and teacher training to ensure a successful pilot period.",
-      "custom_title": "Do you need a tailor-made setup?",
-      "custom_subtitle": "For larger corporations or specific pedagogical needs, we offer tailor-made ENTERPRISE packages.",
-      "button_calc": "Book a price calculation",
-      "button_kit": "Download Pilot Kit (PDF)",
-      "tiers": {
-        "basic": {
-          "desc": "Perfect for smaller schools or associations that want to digitize their administration.",
-          "features": [
-            "Full LMS",
-            "Course & Media tools",
-            "Student register (PII masked)",
-            "Incident & Health management",
-            "Email support"
-          ]
-        },
-        "pro": {
-          "desc": "The intelligent level for modern education providers with AI support.",
-          "features": [
-            "Everything in BASIC",
-            "AI Tutor (Google Gemini)",
-            "AI Quiz Generator",
-            "Gamification (XP, Shop, Badges)",
-            "LTI 1.3 & Zoom/Teams Integrations",
-            "Prioritized support"
-          ]
-        },
-        "enterprise": {
-          "desc": "Full-scale solution for corporations and authorities with high demands on control.",
-          "features": [
-            "Everything in PRO",
-            "Full Whitelabeling (Own domain)",
-            "Production-ready Kubernetes Ops",
-            "Dedicated Success Manager",
-            "SLA: 99.9% Uptime",
-            "Custom API development"
-          ]
-        }
-      }
-    },
-    "footer": {
-      "tagline": "Empowering education with modern technology. Built with ❤️ in Sweden.",
-      "product": "Product",
-      "features": "Features",
-      "pricing": "Pricing",
-      "roadmap": "Roadmap",
-      "resources": "Resources",
-      "documentation": "Documentation",
-      "api_reference": "API Reference",
-      "system_status": "System Status",
-      "connect": "Connect",
-      "support": "Support",
-      "newsletter": "Newsletter",
-      "newsletter_desc": "Get the latest updates on AI and education directly in your inbox.",
-      "email_placeholder": "your@email.se",
-      "contact_sales": "Contact Sales",
-      "twitter": "Twitter",
-      "github": "GitHub",
-      "copyright": "© 2026 EduFlex. All rights reserved.",
-      "privacy_policy": "Privacy Policy",
-      "terms_of_service": "Terms of Service",
-      "cookie_settings": "Cookie settings",
-      "developed_by": "Developed by",
-      "fenrir": "Fenrir Studio",
-      "security": "Security",
-      "api": "API Documentation",
-      "help_center": "Help Center"
-    },
-    "roles": {
-      "badge": "Solutions for everyone",
-      "title": "Adapted for your role in the school",
-      "subtitle": "EduFlex is designed to facilitate everyday life for all stakeholders in education.",
-      "outcome_label": "Effect",
-      "rector": {
-        "title": "Principal & School Management",
-        "desc": "Gain full control over operations with real-time data and strategic decision support.",
-        "feature1": "Real-time KPIs & Dashboards",
-        "feature2": "Systematic quality work (SKA)",
-        "feature3": "Financial & resource planning",
-        "outcome": "Increased throughput & safer governance."
-      },
-      "teacher": {
-        "title": "Teachers & Mentors",
-        "desc": "Reduce administration and focus on pedagogy with world-class AI support.",
-        "feature1": "AI-generated tests & quizzes",
-        "feature2": "Automated attendance & assessments",
-        "feature3": "At-Risk early warning (Gemini)",
-        "outcome": "Saves up to 70% admin time."
-      },
-      "student": {
-        "title": "Pupils & Students",
-        "desc": "Engaging learning environment with gamification and personal AI support around the clock.",
-        "feature1": "Live Radar knowledge view",
-        "feature2": "Personal AI Tutor (Video/Chat)",
-        "feature3": "XP, Streaks & Achievements",
-        "outcome": "+40% increased engagement."
-      },
-      "parent": {
-        "title": "Guardians",
-        "desc": "Stay updated on your child's progress and communicate directly with the school.",
-        "feature1": "AI report on child's health",
-        "feature2": "Easy x sick leave & absence",
-        "feature3": "Direct contact with mentor",
-        "outcome": "Safer dialogue & better insight."
-      }
-    },
-    "cta": {
-      "title": "Are you ready to truly digitize your school?",
-      "subtitle": "Join 500+ other users and experience the future of LLP with EduAI Hub.",
-      "button_demo": "Book a personal demo",
-      "button_test": "Test for free for 14 days"
-    },
-    "features_page": {
-      "intro_badge": "Everything you need for modern education",
-      "title": "Packed with features",
-      "subtitle": "From AI-driven analysis to gamification and administration. Here you will find everything that makes EduFlex unique.",
-      "back": "Back",
-      "highlights_title": "Technological Highlights",
-      "showcase_title": "System Overview",
-      "cta_title": "Ready to get started?",
-      "cta_button": "Create your account now",
-      "highlights": {
-        "ai_creator": {
-          "title": "AI Course Creator",
-          "desc": "Create complete courses from PDF documents in under 60 seconds. Auto-generated lessons, dates, and smart codes with built-in database synchronization."
-        },
-        "predictive": {
-          "title": "Predictive AI Analysis",
-          "desc": "Identify at-risk students before it's too late. AI analyzes behavior patterns and provides teachers with decision support and students with personalized study tips."
-        },
-        "lti": {
-          "title": "LTI 1.3 Advantage",
-          "desc": "Fully verified support for AGS (Grades) and NRPS (Roles/Names). Seamless integration with Canvas, Moodle, and Blackboard for secure authentication and data exchange."
-        },
-        "xapi": {
-          "title": "xAPI & CMI5 LRS",
-          "desc": "Next generation tracking. Run simulations and offline mobile courses with full detail reporting via our built-in Learning Record Store."
-        },
-        "minio": {
-          "title": "MinIO & S3 Storage",
-          "desc": "Scalable Enterprise storage. All media (audiobooks, video) is streamed lightning fast with support for playback where you left off."
-        },
-        "edugame": {
-          "title": "EduGame Engine",
-          "desc": "XP system, Shop, Profile themes, daily challenges, and streaks. Turn learning into an adventure."
-        },
-        "schema": {
-          "title": "Schema-per-Tenant",
-          "desc": "True multi-tenancy with complete data isolation. Each organization automatically gets its own PostgreSQL schema."
-        },
-        "resource": {
-          "title": "Resource Bank & Community",
-          "desc": "A unified library for all your quizzes, assignments, and lessons. Share and import material from other teachers with one click."
-        },
-        "cascading": {
-          "title": "Cascading Deletes",
-          "desc": "Maintenance-free management. When you delete a course, all associated material and lessons are automatically deleted without database conflicts."
-        },
-        "sso": {
-          "title": "Enterprise SSO",
-          "desc": "Keycloak integration with OAuth2/OIDC. Full control over identities and access levels in the organization."
-        },
-        "slugs": {
-          "title": "Friendly URLs (Slugs)",
-          "desc": "Search engine friendly and readable addresses for all courses. Navigate via readable names instead of technical IDs."
-        },
-        "quiz_gen": {
-          "title": "Quiz Generator",
-          "desc": "Randomize quizzes automatically from your question bank (Math, Java, Swedish, etc.) for quick knowledge checks without manual work."
-        },
-        "security": {
-          "title": "Enterprise Security",
-          "desc": "Full AES-256 GCM encryption of sensitive data, domain-locked licensing, and rate-limiting protects your organization 24/7."
-        },
-        "insights": {
-          "title": "Course Evaluation & Insights",
-          "desc": "Complete system for course quality, automated student notifications, and AI analysis of free-text responses to measure ROI."
-        },
-        "social": {
-          "title": "Contextual Social Learning",
-          "desc": "Discuss lessons and courses in real-time directly in the player. Learn from your peers through threaded conversations and real-time notifications."
-        },
-        "streaks": {
-          "title": "Milestone Streaks",
-          "desc": "Continue your \"Learning Streak\" and unlock exclusive XP bonuses and badges. Centralized tracking that motivates you every day."
-        },
-        "mission_control": {
-          "title": "Principal Package (Mission Control)",
-          "desc": "Complete school management layer with real-time KPIs. Manage organizational hierarchy (Department, Program, Class), see aggregated statistics, and handle incidents in a unified, live view."
-        },
-        "health": {
-          "title": "Secure Student Health",
-          "desc": "Role-based access control and encrypted records for maximum confidentiality and security."
-        },
-        "ai_analysis": {
-          "title": "Predictive AI Analysis 2.0",
-          "desc": "Identifies students in the risk zone before they know it themselves. Deep learning pattern analysis of attendance, activity, and results."
-        },
-        "skolverket": {
-          "title": "Skolverket Sync 2.0",
-          "desc": "Seamless integration with the entire Skolverket course catalog. Automated updating of course objectives and grading criteria."
-        },
-        "pwa": {
-          "title": "Native PWA Experience",
-          "desc": "Install EduFlex directly on the home screen. Full support for offline access and lightning-fast response on all devices."
-        },
-        "gamification_expansion": {
-          "title": "Gamification Expansion",
-          "desc": "New Quest systems, Social-hub, and expanded Shop. Increase engagement through meaningful gamified learning."
-        },
-        "guardian": {
-          "title": "Guardian & Health Control",
-          "desc": "Guardian portal, digital sick leave reporting, and student health surveys. All collected with AES-256 encryption and privacy guards for secure data handling."
-        },
-        "ai_center": {
-          "title": "EduAI Center 2.1",
-          "desc": "Advanced Spaced Repetition with SM-2 algorithm. Earn AI credits through intelligent repetitions and visualize your knowledge journey in real time."
-        }
-      }
+    "schedule" : {
+      "title" : "Today's & Week's Schedule",
+      "loading" : "Loading schedule...",
+      "campus" : "Campus",
+      "online" : "Online",
+      "connect" : "Connect",
+      "empty" : "No lessons today",
+      "view_full" : "View full schedule",
+      "upcoming_submissions" : "Upcoming Submissions",
+      "go_to_task" : "Go to task",
+      "no_deadlines" : "No upcoming deadlines",
+      "view_all_count" : "View all ({{count}})",
+      "room_missing" : "Room missing"
     }
   },
-  "contact": {
-    "title": "Book a Demo",
-    "name": "Name",
-    "name_placeholder": "Your name",
-    "email": "Email",
-    "email_placeholder": "your@email.com",
-    "organization": "Organization",
-    "organization_placeholder": "School name",
-    "phone": "Phone",
-    "phone_placeholder": "+46 70 123 45 67",
-    "message": "Message",
-    "message_placeholder": "Tell us a little about your needs...",
-    "submit": "Submit request",
-    "sending": "Sending...",
-    "success_message": "Thank you! We will contact you within 24 hours.",
-    "error_message": "Something went wrong. Please try again or email us directly."
+  "teacher_widgets" : {
+    "active_courses" : "Active Courses",
+    "my_students" : "My Students",
+    "to_grade" : "To Grade",
+    "applications" : "Applications",
+    "risk_zone" : "Risk Zone",
+    "at_risk_title" : "Students at Risk",
+    "students_count" : "{{count}} students",
+    "no_at_risk" : "No students at risk right now. 👍",
+    "completion_prefix" : "completed",
+    "view_all_risk" : "View all at-risk students"
   },
-  "ai_personalization": {
-    "title": "AI Insights & Recommendations",
-    "risk_low": "Low risk",
-    "risk_medium": "Medium risk",
-    "risk_high": "High risk",
-    "suggested_activities": "Suggested activities",
-    "coaching_advice": "Coaching advice",
-    "update_analysis": "Update AI analysis",
-    "lesson_type": "Lesson",
-    "practice_type": "Practice",
-    "rationale_prefix": "AI rationale:",
-    "no_data": "Not enough data for AI analysis yet. Keep working in the courses!"
+  "teacher_tables" : {
+    "all_graded_title" : "All graded!",
+    "all_graded_desc" : "Good job, no pending submissions.",
+    "pending_submissions_count" : "Pending submissions ({{count}})",
+    "action_required" : "Action required",
+    "student" : "Student",
+    "assignment" : "Assignment",
+    "course" : "Course",
+    "submitted" : "Submitted",
+    "go_to_grading" : "Go to Grading",
+    "no_pending_applications" : "No pending applications right now.",
+    "applying_to" : "Applying to course",
+    "date" : "Date",
+    "decision" : "Decision",
+    "approve" : "Approve",
+    "reject" : "Reject",
+    "never" : "Never",
+    "days_ago" : "{{count}} days ago",
+    "contact" : "Contact",
+    "admitted_msg" : "Student admitted!",
+    "rejected_msg" : "Application rejected.",
+    "error_msg" : "Something went wrong.",
+    "unknown_student" : "Unknown"
   },
-  "gamification": {
-    "level_title": "Current Level",
-    "student_rank": "Student Rank",
-    "points_to_next": "points to next level",
-    "my_badges": "My Badges",
-    "no_awards": "No awards yet. Keep up the great work!",
-    "view_all": "View All Awards"
-  },
-  "tenta": {
-    "manager_title": "Exam Manager",
-    "manager_subtitle": "Book examination & notify students",
-    "steps": {
-      "content": "Content",
-      "settings": "Settings",
-      "scheduling": "Scheduling"
-    },
-    "errors": {
-      "title_required": "Exam must have a title.",
-      "times_required": "You must specify a start and end time.",
-      "booking_failed": "Could not book exam: "
-    },
-    "fields": {
-      "title_label": "Exam Title",
-      "title_placeholder": "E.g. Final Exam Web Design",
-      "description_label": "Description",
-      "description_placeholder": "Instructions to the students...",
-      "questions_count": "Questions ({{count}})",
-      "question_number": "Question {{number}}",
-      "question_placeholder": "Write your question here...",
-      "option_number": "Answer option {{number}}",
-      "add_option": "ADD OPTION",
-      "add_question": "Add new question",
-      "time_limit": "Time limit",
-      "minutes": "Minutes",
-      "time_info": "Students have this time to complete the exam once they have started.",
-      "grading_method": "Grading method",
-      "grading_manual": "Manual grading",
-      "grading_manual_desc": "You grade everything yourself.",
-      "grading_auto": "Automatic (MCQ)",
-      "grading_auto_desc": "The system grades directly.",
-      "grading_ai": "AI Grading (Gemini)",
-      "grading_ai_desc": "AI suggests grades & feedback.",
-      "security_mode": "Security Mode: Exam Integrity Pro",
-      "security_info": "When you create an \"Exam\", integrity monitoring is automatically activated. This means that window changes are logged and the student must stay in exam mode.",
-      "calendar_booking": "Calendar booking",
-      "start_time": "Opens (Start)",
-      "end_time": "Closes (End)",
-      "notify_students": "Notify students",
-      "channel_internal": "Internal Inbox",
-      "channel_push": "Push (PWA)",
-      "channel_email": "E-mail",
-      "channel_sms": "SMS",
-      "channel_info": "The system filters out channels that the student has opted out of in their profile."
-    },
-    "actions": {
-      "back": "Back",
-      "cancel": "Cancel",
-      "next": "Next Step",
-      "booking": "Booking...",
-      "finish": "FINISH & BOOK"
+  "student_contact" : {
+    "title" : "Contact Student",
+    "subtitle" : "Report and follow up with {{name}}",
+    "risk_factor" : "Identified Risk Factor",
+    "never_logged_in" : "The student has never logged in to the platform.",
+    "inactive_days" : "The student has been inactive for {{count}} days.",
+    "no_risk" : "No critical risk identified at the moment, but follow-up is recommended.",
+    "subject_label" : "Subject (Based on risk)",
+    "auto_generated_label" : "Automatically Generated Basis",
+    "auto_generated_desc" : "This basis is based on the system's data and is included in the email.",
+    "teacher_notes_label" : "Your comments / Action plan",
+    "teacher_notes_placeholder" : "Write a personal message, instructions, or specific actions the student needs to take...",
+    "report_and_send" : "Report & Send",
+    "sending" : "Sending...",
+    "sent_success" : "Message sent!",
+    "send_error" : "Could not send the message.",
+    "divider" : "Teacher's comment:",
+    "regards" : "Sincerely,",
+    "templates" : {
+      "follow_up_subject" : "Follow-up on your studies",
+      "no_login_subject" : "Important: You have not logged in yet",
+      "no_login_body" : "I see that you have not yet logged in to EduFlex. To be able to benefit from the course, it is important that you get started soon.",
+      "need_help_login" : "Do you need help with logging in or finding the right material?",
+      "warning_inactivity_subject" : "Warning: High absence and inactivity",
+      "warning_inactivity_body" : "I see that you have not been active on EduFlex for {{count}} days. This is worrying and negatively affects your studies.",
+      "review_plan" : "We need to review your study plan to ensure that you have time for all the elements.",
+      "follow_up_absence_subject" : "Follow-up: Absence",
+      "follow_up_absence_body" : "I noticed that it was {{count}} days since you were last active.",
+      "reach_out" : "Get in touch if you need help with any specific element.",
+      "generic_body" : "I want to check in on how you are doing in the course."
     }
   },
-  "catalog_page": {
-    "title": "Course Catalog",
-    "subtitle": "Find and sign up for new courses.",
-    "search_placeholder": "Search courses...",
-    "loading": "Loading courses...",
-    "no_courses": "No courses found",
-    "no_courses_desc": "Try searching for something else or ask a teacher to create a course.",
-    "is_enrolled": "Enrolled",
-    "is_teacher": "Teacher",
-    "no_description": "No description available.",
-    "no_teacher": "No teacher",
-    "students_count": "{{count}} students",
-    "enroll_btn": "Join course",
-    "enroll_confirm": "Do you want to join this course?",
-    "enroll_success": "You have joined the course!",
-    "enroll_error": "Could not join the course.",
-    "fetch_error": "Could not fetch courses"
+  "teacher_modals" : {
+    "tags_placeholder" : "Tags (separate with commas, e.g. AI, Mathematics, Algebra)",
+    "group_rooms" : "Group Rooms",
+    "room_name_placeholder" : "Name",
+    "link" : "Link",
+    "add_room" : "+ Add Group Room",
+    "course_color" : "Course Color",
+    "error_create" : "Could not create the course.",
+    "error_update" : "Could not update the course.",
+    "course_name" : "Course Name",
+    "course_code" : "Course Code"
   },
-  "editor": {
-    "placeholder": "Write here...",
-    "link_prompt": "Link URL:",
-    "normal": "Normal",
-    "heading": "Heading {{level}}",
-    "bold": "Bold",
-    "italic": "Italic",
-    "underline": "Underline",
-    "strike": "Strikethrough",
-    "blockquote": "Blockquote",
-    "code_block": "Code block",
-    "bullet_list": "Bullet list",
-    "ordered_list": "Ordered list",
-    "align_left": "Left",
-    "align_center": "Center",
-    "align_right": "Right",
-    "link": "Link",
-    "insert_table": "Insert 3×3 table",
-    "table": "Table",
-    "column_before": "Column left",
-    "column_after": "Column right",
-    "delete_column": "Delete column",
-    "row_before": "Row above",
-    "row_after": "Row below",
-    "delete_row": "Delete row",
-    "delete_table": "Delete table",
-    "clear_format": "Clear formatting"
+  "course_modal" : {
+    "create_title" : "Create new course",
+    "edit_title" : "Edit course",
+    "name" : "Course name",
+    "code" : "Course code",
+    "category" : "Category",
+    "description" : "Course description",
+    "start_date" : "Start date",
+    "end_date" : "End date",
+    "max_students" : "Max places",
+    "classroom_section" : "Digital Classroom",
+    "classroom_link" : "Meeting link",
+    "exam_link" : "Link to Exam Room",
+    "create_btn" : "Create",
+    "go_to_course" : "Go to course"
   },
-  "db_switch": {
-    "title": "Critical Operation",
-    "warning_title": "WARNING: The system will restart",
-    "warning_disconnect": "All users will be disconnected",
-    "warning_loss": "Ongoing work may be lost",
-    "warning_unavailable": "The system may be unavailable for several minutes",
-    "warning_config": "Incorrect configuration may cause data loss",
-    "switch_target": "You are about to switch to:",
-    "confirm_label": "Type \"SWITCH DATABASE\" to confirm *",
-    "confirm_placeholder": "SWITCH DATABASE",
-    "confirm_text": "SWITCH DATABASE",
-    "password_label": "Administrator Password *",
-    "password_placeholder": "Enter your password",
-    "cancel": "Cancel",
-    "confirm_btn": "Switch Database Now",
-    "errors": {
-      "confirm_mismatch": "You must type \"SWITCH DATABASE\" to confirm",
-      "password_required": "Administrator password is required",
-      "failed": "Incorrect password or operation failed"
+  "analytics" : {
+    "title" : "System Insights",
+    "subtitle" : "In-depth analysis of platform performance and growth.",
+    "financial_overview" : "Financial Overview",
+    "revenue_analytics" : "Revenue Analytics",
+    "student_insights" : "Student Insights",
+    "system_infrastructure" : "System Infrastructure",
+    "monthly_recurring_revenue" : "Monthly Recurring Revenue",
+    "total_users" : "Total Users",
+    "active_sessions" : "Active Sessions",
+    "server_health" : "Server Health",
+    "operational" : "Operational",
+    "stable" : "Stable",
+    "revenue_growth" : "Revenue Growth",
+    "user_acquisition" : "User Acquisition",
+    "export_csv" : "Export CSV",
+    "day" : "Day",
+    "week" : "Week",
+    "month" : "Month",
+    "year" : "Year",
+    "vs_last_month" : "vs Last Month",
+    "system_status" : "System Status",
+    "total_students" : "Total Students",
+    "at_risk" : "At Risk",
+    "avg_time_online" : "Avg. Time Online",
+    "student_performance_registry" : "Student Performance Registry",
+    "student_name" : "Student Name",
+    "status" : "Status",
+    "courses" : "Courses",
+    "completion" : "Completion",
+    "total_time_online" : "Total Time Online",
+    "risk_factor" : "Risk Factor",
+    "no_student_data" : "No student data available.",
+    "grafana_dashboard" : "Grafana Dashboard",
+    "grafana_description" : "Real-time metrics for system (CPU, Memory, Requests).",
+    "open_full_grafana" : "Open Full Grafana",
+    "prometheus_metrics" : "Prometheus Metrics",
+    "prometheus_description" : "Raw metric explorer.",
+    "open_prometheus" : "Open Prometheus",
+    "all_systems_normal" : "All systems running normally.",
+    "uptime" : "Uptime",
+    "revenue_title" : "Revenue Analytics",
+    "revenue_subtitle" : "Comprehensive revenue and payment insights",
+    "loading_revenue_data" : "Loading revenue data...",
+    "annual_recurring_revenue" : "Annual Recurring Revenue",
+    "payment_success_rate" : "Payment Success Rate",
+    "avg_payment_amount" : "Avg. Payment Amount",
+    "excellent" : "Excellent",
+    "good" : "Good",
+    "revenue_growth_trend" : "Revenue Growth Trend",
+    "payment_methods" : "Payment Methods",
+    "no_payment_data" : "No payment data available",
+    "total_payments" : "Total Payments",
+    "successful" : "Successful",
+    "failed" : "Failed"
+  },
+  "invoices" : {
+    "title" : "Invoice Management",
+    "create_invoice" : "Create Invoice",
+    "export_csv" : "Export CSV",
+    "exporting" : "Exporting...",
+    "loading" : "Loading invoices...",
+    "all" : "All",
+    "draft" : "Draft",
+    "pending" : "Pending",
+    "sent" : "Sent",
+    "paid" : "Paid",
+    "overdue" : "Overdue",
+    "cancelled" : "Cancelled",
+    "invoice_number" : "Invoice Number",
+    "customer" : "Customer",
+    "amount" : "Amount",
+    "issue_date" : "Issue Date",
+    "due_date" : "Due Date",
+    "status" : "Status",
+    "actions" : "Actions",
+    "no_invoices_found" : "No invoices found",
+    "total_invoices" : "Total Invoices",
+    "send_reminder_confirm" : "Send payment reminder to customer?",
+    "reminder_sent" : "Payment reminder sent!",
+    "delete_confirm" : "Are you sure you want to delete this invoice?",
+    "refund_confirm" : "Are you sure you want to refund this payment? This action cannot be undone.",
+    "refund_success" : "Refund initiated",
+    "refund_failed" : "Could not refund. Check the console for details.",
+    "no_payment_details" : "Cannot find payment details for this invoice.",
+    "view_pdf" : "View PDF",
+    "generate_pdf" : "Generate PDF"
+  },
+  "subscription_plans" : {
+    "title" : "Subscription Plans",
+    "subtitle" : "Manage pricing tiers and subscription options",
+    "create_plan" : "Create Plan",
+    "loading" : "Loading subscription plans...",
+    "default_badge" : "STANDARD",
+    "inactive_badge" : "INACTIVE",
+    "unlimited" : "Unlimited",
+    "users" : "Users",
+    "courses" : "Courses",
+    "storage" : "Storage",
+    "features" : "Features",
+    "edit" : "Edit",
+    "activate" : "Activate",
+    "deactivate" : "Deactivate",
+    "delete_confirm" : "Are you sure you want to delete this plan?",
+    "edit_plan" : "Edit Plan",
+    "create_new_plan" : "Create New Plan",
+    "plan_name_internal" : "Plan Name (Internal)",
+    "display_name" : "Display Name",
+    "description" : "Description",
+    "price" : "Price",
+    "currency" : "Currency",
+    "trial_period_days" : "Trial Period (Days)",
+    "billing_interval" : "Billing Interval",
+    "monthly" : "Monthly",
+    "yearly" : "Yearly",
+    "lifetime" : "Lifetime",
+    "max_users" : "Max Users (-1 = unlimited)",
+    "max_courses" : "Max Courses (-1 = unlimited)",
+    "max_storage" : "Storage GB (-1 = unlimited)",
+    "add_feature" : "+ Add Feature",
+    "enter_feature" : "Enter feature name:",
+    "active" : "Active",
+    "default_plan" : "Default Plan",
+    "sort_order" : "Sort Order",
+    "cancel" : "Cancel",
+    "update_plan" : "Update Plan",
+    "create_plan_btn" : "Create Plan"
+  },
+  "admin_tabs" : {
+    "title" : "Administration",
+    "administration" : "Administration",
+    "pilot_kit" : "Pilot Kit",
+    "system_settings" : "System Settings",
+    "tickets" : "Tickets",
+    "support_content" : "Support Content",
+    "gamification" : "Gamification",
+    "community" : "Community",
+    "users" : "Users",
+    "guardians" : "Guardians",
+    "courses" : "Courses",
+    "structure" : "School Structure",
+    "merits" : "Merits",
+    "roles" : "Roles",
+    "overview" : "Overview",
+    "subscription_plans" : "Subscription Plans",
+    "invoices" : "Invoices",
+    "payment_settings" : "Payment Settings",
+    "promo_codes" : "Promo Codes",
+    "storage" : "Storage",
+    "content" : "Content",
+    "system_logs_file" : "System Logs (File)",
+    "debug_terminal_live" : "Debug Terminal (Live)",
+    "audit_log" : "Audit Log",
+    "integration_hub" : "Integration Hub",
+    "ai_audit" : "AI Audit",
+    "eduflex_ops" : "EduFlex Ops",
+    "skolverket_import" : "Skolverket Import",
+    "skolverket_data" : "Skolverket Data",
+    "categories" : {
+      "general" : "General",
+      "finance" : "Finance",
+      "system" : "System"
+    },
+    "students" : "Students",
+    "logs" : "System Logs",
+    "terminal" : "Terminal",
+    "deploy" : "Deployment",
+    "select_category" : "Select a category in the menu",
+    "total_storage" : "Total Storage",
+    "system_wide_use" : "Used throughout the system",
+    "total_files" : "Total Files",
+    "uploaded_documents" : "Uploaded Documents",
+    "stats_fetch_error" : "Could not fetch statistics.",
+    "revenue" : "Revenue",
+    "delete_course_confirm" : "Are you sure you want to delete this course? This cannot be undone.",
+    "delete_course_error" : "Could not delete the course. Make sure it does not have active students.",
+    "delete_user_confirm" : "Are you sure you want to delete this user? This cannot be undone.",
+    "delete_user_error" : "Could not delete the user."
+  },
+  "landing" : {
+    "nav" : {
+      "features" : "Features",
+      "gamification" : "Gamification",
+      "showcase" : "Showcase",
+      "pricing" : "Pricing",
+      "technology" : "Technology",
+      "login" : "Login",
+      "get_started" : "Get Started",
+      "book_demo" : "Book Demo",
+      "select_language" : "Select Language"
+    },
+    "hero" : {
+      "badge" : "v3.9.2: Operation Globalization - 100% Localization",
+      "title_start" : "The Future of",
+      "title_llp" : "LLP",
+      "title_with" : "with",
+      "title_hub" : "EduAI Hub",
+      "subtitle" : "Discover our new intelligent knowledge center. Generate tailored study sessions with AI, play engaging mini-games, and track your precise knowledge development via our dynamic Live Radar. All powered by Google Gemini.",
+      "cta_ai" : "Start Your First AI Session",
+      "cta_learn_more" : "Learn More About the Platform",
+      "cta_see_all" : "See All Features",
+      "tech_tagline" : "Powered by Modern AI & Proven Pedagogy",
+      "stats" : {
+        "engagement" : "Engagement",
+        "new_level" : "New Level!",
+        "level_value" : "Level {{level}}"
+      }
+    },
+    "features" : {
+      "title" : "Everything You Need to Run a Modern School",
+      "subtitle" : "From robust assessment tools to revolutionary AI support - we've got you covered.",
+      "multi_tenancy" : {
+        "title" : "True Multi-Tenancy",
+        "desc" : "Complete data isolation with schema-per-tenant architecture. Each school has its own protected database."
+      },
+      "b2b" : {
+        "title" : "B2B SaaS Engine",
+        "desc" : "Manage multiple organizations and sub-accounts with dedicated billing support and admin overview."
+      },
+      "microservice" : {
+        "title" : "Distributed Microservices",
+        "desc" : "Scalable architecture with Node.js, Spring Boot & Python running in isolated Docker containers."
+      },
+      "event_bus" : {
+        "title" : "Real-time Event Bus",
+        "desc" : "Instant data synchronization with RabbitMQ for real-time notifications and system events."
+      },
+      "gamification" : {
+        "title" : "Advanced Gamification",
+        "desc" : "Engage students with XP, Streaks, Achievements, and our unique AI-powered Live Radar."
+      },
+      "ai_creator" : {
+        "title" : "AI Content Lifecycle",
+        "desc" : "From quiz generation to automated grading and personalized study tips via Gemini."
+      },
+      "pwa" : {
+        "title" : "Cross-Platform PWA",
+        "desc" : "EduFlex works just as well in the browser as an installed app on iOS, Android, and Windows."
+      },
+      "live_video" : {
+        "title" : "Native Live Lessons",
+        "desc" : "Built-in tools for video seminars and recorded material directly in the course environment."
+      },
+      "collaborative" : {
+        "title" : "Live Collaborative Learning",
+        "desc" : "Learn together with built-in support for OnlyOffice and shared workspaces in real time."
+      },
+      "roi" : {
+        "title" : "ROI & Analytics Engine",
+        "desc" : "Visualize training effectiveness with in-depth statistics for both principals and teachers."
+      },
+      "notifications" : {
+        "title" : "Event-Driven Notifications",
+        "desc" : "Important events are never missed thanks to our advanced notification system for all devices."
+      },
+      "exams" : {
+        "title" : "Digital Exams & Proctoring",
+        "desc" : "Secure and legally sound digital examinations with built-in support for identity verification."
+      },
+      "integrations" : {
+        "title" : "Enterprise Integrations",
+        "desc" : "Connect seamlessly to existing systems via LTI 1.3, BankID, and modern REST APIs."
+      },
+      "compliance" : {
+        "title" : "Zero-Trust Compliance",
+        "desc" : "GDPR-secured data storage with end-to-end encryption and automated pseudonymization."
+      },
+      "pii" : {
+        "title" : "PII Masking Pipeline",
+        "desc" : "Our unique AI pipeline cleanses all personal data before it reaches external language models."
+      },
+      "educareer" : {
+        "title" : "EduCareer Roadmap",
+        "desc" : "Help students visualize their future through adaptive career paths linked to the job market."
+      },
+      "erp" : {
+        "title" : "ERP+ Integration",
+        "desc" : "Manage purchasing, billing, and personnel in the same interface as teaching takes place."
+      },
+      "isp" : {
+        "title" : "Dynamic ISP & LIA",
+        "desc" : "Manage individual study plans and internships (LIA) with automated matching."
+      },
+      "bankid" : {
+        "title" : "BankID & FrejaeID",
+        "desc" : "Secure authentication according to Swedish standard for staff, students, and guardians."
+      },
+      "video_tutor" : {
+        "title" : "Interactive AI Video Tutor",
+        "desc" : "Interact directly with video content through AI-driven search and follow-up questions."
+      },
+      "language_sync" : {
+        "title" : "Global Language Sync",
+        "desc" : "The entire system can be translated into any language in seconds via our AI translation hub."
+      },
+      "susa" : {
+        "title" : "SUSA & Ladok Ready",
+        "desc" : "Full support for Swedish reporting standards to authorities and study administrative systems."
+      },
+      "ladok" : {
+        "title" : "Cloud-Native Infrastructure",
+        "desc" : "Serverless scalability with Kubernetes and MinIO for high availability and performance."
+      },
+      "accessibility" : {
+        "title" : "WCAG 2.1 Accessibility",
+        "desc" : "Designed for inclusion. Full accessibility for all users regardless of conditions."
+      },
+      "skolfederation" : {
+        "title" : "Skolfederation & SSO",
+        "desc" : "Simplified login via common standards for Swedish schools and authorities."
+      }
+    },
+    "screenshots" : {
+      "roi" : {
+        "title" : "ROI Analytics Hub",
+        "desc" : "Track training impact and return on investment in real time with in-depth statistics."
+      },
+      "settings" : {
+        "title" : "Global System Control",
+        "desc" : "Full control over all instances, users, and network configurations."
+      },
+      "debug" : {
+        "title" : "Developer Terminal",
+        "desc" : "Built-in debug tools and system logs for technical administrators."
+      },
+      "admin" : {
+        "title" : "Admin Dashboard 2.0",
+        "desc" : "Total control over the organization with live data and widgets."
+      },
+      "teacher" : {
+        "title" : "Teacher Panel",
+        "desc" : "Efficient overview of student attendance, progress, and submissions."
+      },
+      "quiz" : {
+        "title" : "AI Quiz Generator",
+        "desc" : "Upload documents and let AI create quiz questions in seconds."
+      },
+      "library" : {
+        "title" : "E-book Library",
+        "desc" : "A central library for literature with built-in reader."
+      },
+      "catalog" : {
+        "title" : "Course Catalog",
+        "desc" : "Explore our wide range of courses directly from the landing page."
+      },
+      "resource" : {
+        "title" : "Resource Bank",
+        "desc" : "Find useful tools and documents for your studies."
+      },
+      "analytics" : {
+        "title" : "In-Depth Analysis",
+        "desc" : "Visualize progress and results with our powerful analysis tools."
+      }
+    },
+    "roles" : {
+      "badge" : "Solutions for Everyone",
+      "title" : "One Platform, Endless Possibilities",
+      "subtitle" : "EduFlex is designed to support every role in the educational journey, from administrative control to engaged learning.",
+      "outcome_label" : "Outcome",
+      "rector" : {
+        "title" : "For Principals & Management",
+        "desc" : "Gain total control over the organization's growth, profitability, and educational quality.",
+        "feature1" : "Strategic Planning",
+        "feature2" : "Financial Monitoring",
+        "feature3" : "Quality Assurance (MYH/SUSA)",
+        "outcome" : "Increased profitability and regulatory compliance."
+      },
+      "teacher" : {
+        "title" : "For Teachers & Educators",
+        "desc" : "Automate administrative work and spend more time on what actually matters: pedagogy.",
+        "feature1" : "AI-Assisted Grading",
+        "feature2" : "Dynamic Attendance Management",
+        "feature3" : "Easy Course Design",
+        "outcome" : "Reduced stress and higher student engagement."
+      },
+      "student" : {
+        "title" : "For Students & Pupils",
+        "desc" : "A modern and gamified experience that makes learning fun, understandable, and accessible.",
+        "feature1" : "Personal AI Coach",
+        "feature2" : "Gamification & XP",
+        "feature3" : "Mobile-Adapted PWA",
+        "outcome" : "Higher focus and faster goal achievement."
+      },
+      "parent" : {
+        "title" : "For Guardians",
+        "desc" : "Follow your child's development in real-time and communicate easily with the school.",
+        "feature1" : "Attendance Monitoring",
+        "feature2" : "Assessments & Feedback",
+        "feature3" : "Secure Communication",
+        "outcome" : "Security and full insight into schooling."
+      }
+    },
+    "cta" : {
+      "title" : "Are you ready to transform your educational operations?",
+      "subtitle" : "Join hundreds of other organizations and step into the future of digital learning today.",
+      "button_demo" : "Book a Personal Demo",
+      "button_test" : "Try for Free Now"
+    },
+    "footer" : {
+      "tagline" : "The Future of LLP and the Ecosystem for Digital Learning. Designed with heart, driven by AI.",
+      "product" : "Product",
+      "features" : "Features",
+      "security" : "Security & GDPR",
+      "api" : "API & Developers",
+      "roadmap" : "Roadmap",
+      "support" : "Support",
+      "help_center" : "Help Center",
+      "documentation" : "Documentation",
+      "system_status" : "System Status",
+      "contact_sales" : "Contact Sales",
+      "newsletter" : "Newsletter",
+      "newsletter_desc" : "Get the latest updates on AI and digital learning directly in your inbox.",
+      "email_placeholder" : "Your Email Address",
+      "copyright" : "© 2026 EduFlex LLP. All Rights Reserved.",
+      "privacy_policy" : "Privacy Policy",
+      "terms_of_service" : "Terms of Service",
+      "cookie_settings" : "Cookie Settings"
     }
   },
-  "archive": {
-    "title": "Document Archive",
-    "subtitle": "Manage all files in the system.",
-    "search_placeholder": "Search file name or owner...",
-    "filter_all": "All types",
-    "filter_pdf": "PDF Files",
-    "filter_image": "Images",
-    "filter_word": "Word Documents",
-    "table_filename": "Filename",
-    "table_owner": "Owner",
-    "table_uploaded": "Uploaded",
-    "table_action": "Action",
-    "loading": "Loading files...",
-    "no_results": "No documents matched your search.",
-    "unknown_owner": "Unknown",
-    "download_title": "Download",
-    "delete_title": "Delete",
-    "delete_confirm": "Are you sure you want to delete the file?",
-    "errors": {
-      "fetch_failed": "Could not fetch documents",
-      "delete_failed": "Could not delete the file."
+  "dashboard_v2" : {
+    "total_students" : "Total Students",
+    "total_teachers" : "Total Teachers",
+    "total_admins" : "Total Admins",
+    "active_users" : "Active Users (Right Now)",
+    "revenue_status" : "Revenue Status",
+    "system_health" : "System Health",
+    "storage_limit" : "Storage Limit",
+    "active" : "Active",
+    "excellent" : "Excellent",
+    "warning" : "Warning",
+    "critical" : "Critical",
+    "manage_systems" : "Manage Systems",
+    "view_reports" : "View Reports",
+    "audit_logs" : "Audit Logs"
+  },
+  "ai_personalization" : {
+    "title" : "Your AI Study Coach",
+    "subtitle" : "Personalized insights based on your study activity",
+    "analyzing" : "Analyzing your data...",
+    "insights" : "AI Insights & Tips",
+    "focus_areas" : "Recommended Focus Areas",
+    "next_steps" : "Suggested Next Steps",
+    "no_data" : "Start studying to get personalized AI tips!",
+    "generate_btn" : "Generate New Tips",
+    "tip_of_day" : "Study Tip of the Day",
+    "radar_title" : "Your Knowledge Radar"
+  },
+  "gamification" : {
+    "level" : "Level {{level}}",
+    "xp_progress" : "{{current}} / {{next}} XP",
+    "streak_days" : "{{count}} day streak!",
+    "rank" : "Rank: {{name}}",
+    "achievements" : "Achievements",
+    "leaderboard" : "Leaderboard",
+    "recent_badges" : "Recent Badges",
+    "view_all" : "View All",
+    "daily_bonus" : "Daily bonus available!",
+    "claim" : "Claim"
+  },
+  "tenta" : {
+    "title" : "Digital Examination",
+    "proctoring_active" : "Monitoring Active",
+    "start_exam" : "Start Submission / Exam",
+    "time_left" : "Time left: {{time}}",
+    "submit_exam" : "Finish & Submit",
+    "finish_confirm" : "Are you absolutely sure you want to submit? You cannot change your answers afterward.",
+    "warning_tab_switch" : "Warning! You are not allowed to switch tabs during the examination.",
+    "warning_out_of_focus" : "The system has noticed that you left the window."
+  },
+  "catalog_page" : {
+    "title" : "Course Catalog",
+    "subtitle" : "Explore our wide range of courses and training programs",
+    "search" : "Search the catalog...",
+    "enroll" : "Enroll",
+    "enrolled" : "Enrolled",
+    "price_free" : "Free",
+    "view_details" : "View details",
+    "no_results" : "No courses matched your search.",
+    "categories" : "Categories",
+    "filter_all" : "All courses"
+  },
+  "editor" : {
+    "title" : "Document Editing",
+    "save_success" : "Document saved.",
+    "save_error" : "An error occurred while saving.",
+    "collaborators" : "Collaborators online",
+    "version_history" : "Version history",
+    "open_onlyoffice" : "Open in OnlyOffice"
+  },
+  "db_switch" : {
+    "title" : "Switch Database",
+    "current" : "Current environment",
+    "connect" : "Connect to {{name}}",
+    "error" : "Could not switch environment."
+  },
+  "archive" : {
+    "title" : "System Archive",
+    "restore" : "Restore",
+    "permanent_delete" : "Permanently Delete",
+    "empty_trash" : "Empty Trash",
+    "no_items" : "No items in trash."
+  },
+  "quiz" : {
+    "generate" : "Generate Quiz with AI",
+    "processing" : "AI is working... This may take up to a minute.",
+    "success" : "Quiz generated!",
+    "error" : "Could not generate quiz.",
+    "upload_context" : "Upload documents as context...",
+    "questions_count" : "Number of questions",
+    "difficulty" : "Difficulty",
+    "easy" : "Easy",
+    "medium" : "Medium",
+    "hard" : "Hard"
+  },
+  "integrity" : {
+    "gdpr_notice" : "We value your privacy. This platform complies with GDPR.",
+    "request_data" : "Request data extract",
+    "delete_account_request" : "Request account deletion"
+  },
+  "skolverket" : {
+    "import_title" : "Skolverket Integration",
+    "syncing" : "Syncing with Skolverket...",
+    "last_sync" : "Last sync: {{date}}",
+    "import_course" : "Import course code",
+    "course_found" : "Found: {{name}}"
+  },
+  "contact" : {
+    "title" : "Contact Us",
+    "description" : "We are here to help you around the clock.",
+    "form" : {
+      "name" : "Your Name",
+      "email" : "Your Email",
+      "subject" : "Subject",
+      "message" : "Message",
+      "send" : "Send Message"
     }
   },
-  "quiz": {
-    "submit_btn": "Submit",
-    "submit_error": "Could not submit results.",
-    "monitored_exam": "Monitored Exam",
-    "explanation": "Explanation:",
-    "your_result": "Your Result",
-    "practice_again": "Practice again",
-    "close": "Close"
-  },
-  "integrity": {
-    "focus_lost_log": "Student left the tab/window",
-    "focus_lost_warn": "Warning: Focus loss recorded. Your teacher has been notified.",
-    "tab_switch_log": "Window lost focus",
-    "fullscreen_exit_log": "Student exited fullscreen mode",
-    "proctoring_started_log": "Exam monitoring started",
-    "proctoring_stopped_log": "Exam monitoring ended"
-  },
-  "skolverket": {
-    "title": "Swedish National Agency for Education Course Information",
-    "tabs": {
-      "basic_info": "Basic Info",
-      "content": "Content",
-      "criteria": "Grading criteria"
+  "system_settings" : {
+    "sidebar" : {
+      "categories" : {
+        "config" : "Configuration",
+        "appearance" : "Appearance",
+        "license" : "License & Server",
+        "ai" : "AI & Intelligence",
+        "modules" : "Modules & Languages",
+        "integrations" : "Integrations",
+        "communication" : "Communication"
+      },
+      "tenants" : "Tenant Management",
+      "skolverket" : "Skolverket Manager",
+      "theme" : "Theme Settings",
+      "pdf_templates" : "PDF Templates",
+      "whitelabel" : "Whitelabeling",
+      "license" : "License Status",
+      "server" : "Server Health",
+      "ai_config" : "AI Configuration",
+      "ai_audit" : "AI Audit Log",
+      "system_modules" : "System Modules",
+      "languages" : "Language Manager",
+      "webhooks" : "Webhooks & API",
+      "notifications" : "Notification Rules"
     },
-    "labels": {
-      "course_code": "Course Code",
-      "course_name": "Course Name",
-      "english_title": "English Title",
-      "points": "Points",
-      "points_value": "{{count}} points",
-      "subject": "Subject",
-      "skolformer": "School Forms",
-      "open_syllabus": "Open official syllabus (Swedish National Agency for Education)"
-    },
-    "sections": {
-      "description": "Course Description",
-      "purpose": "Subject Purpose",
-      "objectives": "Course Objectives"
-    },
-    "messages": {
-      "no_info": "No detailed information available yet. This data will be added in the future.",
-      "loading_criteria": "Loading grading criteria...",
-      "no_criteria": "No grading criteria available yet. These will be added in the future.",
-      "grade_level": "Grade {{level}}"
+    "sections" : {
+      "theme" : {
+        "title" : "Theme & Aesthetics",
+        "description" : "Customize the look and feel of your EduFlex environment.",
+        "active_theme" : "Active Theme",
+        "current_look" : "Platform's current appearance",
+        "primary_color" : "Primary Color"
+      },
+      "whitelabel" : {
+        "title" : "Whitelabeling",
+        "description" : "Remove EduFlex branding and make it your own.",
+        "status" : "Whitelabel Status",
+        "customize" : "Customize logo, colors, and name",
+        "enterprise_active" : "Enterprise mode active",
+        "full_access" : "You have full access to whitelabeling features.",
+        "enterprise_required" : "Enterprise license required",
+        "upgrade_unlock" : "Upgrade to Enterprise to unlock whitelabeling."
+      },
+      "license" : {
+        "title" : "License Management",
+        "description" : "Manage your EduFlex subscription and license keys."
+      },
+      "server" : {
+        "title" : "Server Health & Backups",
+        "description" : "Monitor system health and manage database backups.",
+        "backups" : "System Backups",
+        "latest_backup" : "Latest Backup",
+        "create_backup" : "Create New Backup",
+        "no_backups" : "No backups found.",
+        "db_connections" : "Database Connections",
+        "db_description" : "Manage external and internal database connections.",
+        "add_db" : "Add Connection",
+        "switch_db" : "Switch Active DB"
+      },
+      "ai" : {
+        "description" : "Configure Google Gemini and AI-powered features."
+      }
     }
   }
 }

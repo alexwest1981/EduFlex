@@ -24,9 +24,10 @@ import ErrorBoundary from '../../components/common/ErrorBoundary';
 import FileSidebar from './components/FileSidebar';
 import FileBreadcrumbs from './components/FileBreadcrumbs';
 import FileContextMenu from './components/FileContextMenu';
-import AdvancedShareModal from './components/AdvancedShareModal';
+import { useTranslation } from 'react-i18next';
 
 const DocumentManager = () => {
+    const { t } = useTranslation();
     const { currentUser } = useAppContext();
     const [currentView, setCurrentView] = useState('my-drive');
     const [folders, setFolders] = useState([]);
@@ -93,7 +94,7 @@ const DocumentManager = () => {
                 setFolders([]);
             }
         } catch (e) {
-            console.error("Kunde inte hämta innehåll", e);
+            console.error(t('documents.fetch_content_error') || "Kunde inte hämta innehåll", e);
         } finally {
             setIsLoading(false);
         }
@@ -105,17 +106,17 @@ const DocumentManager = () => {
             const usage = await api.documents.getUsage(currentUser.id);
             setStorageUsage(usage);
         } catch (e) {
-            console.error("Kunde inte hämta lagringsstatistik", e);
+            console.error(t('documents.fetch_storage_error') || "Kunde inte hämta lagringsstatistik", e);
         }
     };
 
     const handleNewFolder = async () => {
-        const name = prompt("Namnge din nya mapp:");
+        const name = prompt(t('documents.new_folder_prompt') || "Namnge din nya mapp:");
         if (!name) return;
         try {
             await api.folders.create(currentUser.id, name, currentFolder?.id);
             loadContent();
-        } catch (e) { alert("Kunde inte skapa mapp"); }
+        } catch (e) { alert(t('documents.new_folder_error') || "Kunde inte skapa mapp"); }
     };
 
     const handleUpload = async (e) => {
@@ -178,7 +179,7 @@ const DocumentManager = () => {
                 setShareModalItem(item);
                 break;
             case 'delete':
-                if (window.confirm(`Vill du verkligen radera ${item.name || item.fileName}?`)) {
+                if (window.confirm(t('documents.delete_confirm', { name: item.name || item.fileName }) || `Vill du verkligen radera ${item.name || item.fileName}?`)) {
                     if (item.type === 'folder') await api.folders.delete(item.id);
                     else await api.documents.delete(item.id);
                     loadContent();
@@ -186,7 +187,7 @@ const DocumentManager = () => {
                 }
                 break;
             case 'rename': {
-                const newName = prompt("Nytt namn:", item.name || item.fileName);
+                const newName = prompt(t('documents.rename_prompt') || "Nytt namn:", item.name || item.fileName);
                 if (newName) {
                     if (item.type === 'folder') await api.folders.rename(item.id, newName);
                     loadContent();
@@ -235,7 +236,7 @@ const DocumentManager = () => {
             })
             .catch(err => {
                 console.error("Download failed", err);
-                alert("Kunde inte ladda ner betygsutdraget.");
+                alert(t('documents.download_grades_error') || "Kunde inte ladda ner betygsutdraget.");
             });
     };
 
@@ -248,7 +249,7 @@ const DocumentManager = () => {
     };
 
     const getShortType = (mimeType) => {
-        if (!mimeType) return 'Fil';
+        if (!mimeType) return t('documents.file') || 'Fil';
         const type = mimeType.toLowerCase();
         if (type.includes('pdf')) return 'PDF';
         if (type.includes('wordprocessingml') || type.includes('msword')) return 'DOCX';
@@ -259,7 +260,7 @@ const DocumentManager = () => {
         if (type.includes('image/gif')) return 'GIF';
         if (type.includes('image/webp')) return 'WEBP';
         if (type.includes('text/plain')) return 'TXT';
-        return mimeType.split('/')[1]?.toUpperCase() || 'Fil';
+        return mimeType.split('/')[1]?.toUpperCase() || t('documents.file') || 'Fil';
     };
 
     const filteredDocs = documents.filter(doc => doc.fileName.toLowerCase().includes(search.toLowerCase()));
@@ -286,12 +287,12 @@ const DocumentManager = () => {
                     <div className="space-y-1">
                         <FileBreadcrumbs path={folderPath} onNavigate={handleNavigate} />
                         <h1 className="text-3xl font-black text-[var(--text-primary)] tracking-tight">
-                            {currentView === 'shared' ? 'Delat med mig' :
-                                currentView === 'trash' ? 'Papperskorg' :
-                                    currentView === 'grades' ? 'Mina Betyg' :
-                                        currentView === 'certificates' ? 'Mina Intyg' :
-                                            currentView === 'manuals' ? 'Dokumentbank' :
-                                                currentFolder ? currentFolder.name : 'Min Drive'}
+                            {currentView === 'shared' ? t('documents.shared_with_me') || 'Delat med mig' :
+                                currentView === 'trash' ? t('documents.trash') || 'Papperskorg' :
+                                    currentView === 'grades' ? t('documents.my_grades') || 'Mina Betyg' :
+                                        currentView === 'certificates' ? t('documents.my_certificates') || 'Mina Intyg' :
+                                            currentView === 'manuals' ? t('documents.manuals') || 'Dokumentbank' :
+                                                currentFolder ? currentFolder.name : t('documents.my_drive') || 'Min Drive'}
                         </h1>
                         {currentView === 'grades' && (
                             <button
@@ -299,7 +300,7 @@ const DocumentManager = () => {
                                 className="flex items-center gap-2 mt-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-black rounded-xl transition-all shadow-lg shadow-blue-500/20 active:scale-95"
                             >
                                 <Download size={14} />
-                                LADDA NER SAMLAT BETYG (PDF)
+                                {t('documents.download_consolidated_grades') || 'LADDA NER SAMLAT BETYG (PDF)'}
                             </button>
                         )}
                     </div>
@@ -308,7 +309,7 @@ const DocumentManager = () => {
                         <div className="relative flex-1 md:w-64">
                             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-secondary)]" size={18} />
                             <input
-                                placeholder="Sök i dina filer..."
+                                placeholder={t('documents.search_placeholder') || "Sök i dina filer..."}
                                 value={search}
                                 onChange={(e) => setSearch(e.target.value)}
                                 className="w-full pl-11 pr-4 py-3 bg-[var(--bg-input)] border border-[var(--border-main)] focus:border-indigo-500/50 focus:bg-[var(--bg-card)] rounded-xl outline-none text-sm font-bold transition-all text-[var(--text-primary)] placeholder-[var(--text-secondary)]/50"
@@ -325,7 +326,7 @@ const DocumentManager = () => {
                     {isLoading ? (
                         <div className="flex-1 flex flex-col items-center justify-center py-20">
                             <div className="w-12 h-12 border-4 border-indigo-600/20 border-t-indigo-600 rounded-full animate-spin mb-4" />
-                            <p className="text-[var(--text-secondary)] font-bold uppercase tracking-widest text-[10px]">Laddar bibliotek...</p>
+                            <p className="text-[var(--text-secondary)] font-bold uppercase tracking-widest text-[10px]">{t('documents.loading_library') || 'Laddar bibliotek...'}</p>
                         </div>
                     ) : (
                         filteredDocs.length === 0 && filteredFolders.length === 0 ? (
@@ -333,8 +334,8 @@ const DocumentManager = () => {
                                 <div className="p-6 bg-[var(--bg-input)] rounded-3xl mb-4 rotate-12">
                                     <UploadCloud size={48} className="text-[var(--text-secondary)]" />
                                 </div>
-                                <h3 className="text-lg font-black text-[var(--text-secondary)]">Inga filer här än</h3>
-                                <p className="text-xs font-bold text-[var(--text-secondary)]">Dra och släpp filer för att börja</p>
+                                <h3 className="text-lg font-black text-[var(--text-secondary)]">{t('documents.no_files') || 'Inga filer här än'}</h3>
+                                <p className="text-xs font-bold text-[var(--text-secondary)]">{t('documents.drag_drop_hint') || 'Dra och släpp filer för att börja'}</p>
                             </div>
                         ) : (
                             <div className={viewMode === 'grid' ? "grid grid-cols-[repeat(auto-fill,minmax(140px,1fr))] gap-6 pb-12" : "space-y-3 pb-12"}>
@@ -352,7 +353,7 @@ const DocumentManager = () => {
                                             </div>
                                             <div>
                                                 <h4 className="font-bold text-[var(--text-primary)] truncate text-xs mb-0.5" title={folder.name}>{folder.name}</h4>
-                                                <p className="text-[9px] text-[var(--text-secondary)] font-black uppercase tracking-tight">Mapp</p>
+                                                <p className="text-[9px] text-[var(--text-secondary)] font-black uppercase tracking-tight">{t('documents.folder') || 'Mapp'}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -397,8 +398,8 @@ const DocumentManager = () => {
                     <div className="w-24 h-24 bg-white/20 rounded-full flex items-center justify-center mb-6 animate-bounce">
                         <UploadCloud size={48} />
                     </div>
-                    <h2 className="text-3xl font-black mb-2">Släpp filerna här!</h2>
-                    <p className="text-lg font-bold opacity-80">Ladda upp till {currentFolder ? currentFolder.name : 'Min Drive'}</p>
+                    <h2 className="text-3xl font-black mb-2">{t('documents.drop_here') || 'Släpp filerna här!'}</h2>
+                    <p className="text-lg font-bold opacity-80">{t('documents.upload_to', { name: currentFolder ? currentFolder.name : 'Min Drive' }) || `Ladda upp till ${currentFolder ? currentFolder.name : 'Min Drive'}`}</p>
                 </div>
             )}
 

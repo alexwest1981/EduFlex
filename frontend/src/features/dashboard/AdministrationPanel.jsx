@@ -50,12 +50,12 @@ const AdminGlobalDocuments = () => {
             });
             e.target.reset();
             fetchDocs();
-        } catch (err) { alert('Uppladdning misslyckades.'); }
+        } catch (err) { alert(t('admin_tabs.upload_failed')); }
     };
 
     const handleDelete = async (id) => {
-        if (!window.confirm('Radera fil?')) return;
-        try { await api.documents.delete(id); fetchDocs(); } catch (e) { alert('Fel vid radering.'); }
+        if (!window.confirm(t('common.delete_confirm'))) return;
+        try { await api.documents.delete(id); fetchDocs(); } catch (e) { alert(t('admin_tabs.delete_failed')); }
     };
 
     const filtered = docs.filter(d =>
@@ -66,29 +66,29 @@ const AdminGlobalDocuments = () => {
     return (
         <div className="space-y-6 animate-in fade-in">
             <div className="bg-blue-50 dark:bg-blue-900/10 p-6 rounded-xl border border-blue-100 dark:border-blue-900/30">
-                <h3 className="font-bold text-blue-900 dark:text-blue-200 mb-4 flex items-center gap-2"><Upload size={20} /> Ladda upp global fil</h3>
+                <h3 className="font-bold text-blue-900 dark:text-blue-200 mb-4 flex items-center gap-2"><Upload size={20} /> {t('common.upload_global_file') || 'Ladda upp global fil'}</h3>
                 <form onSubmit={handleUpload} className="flex gap-4 items-end flex-wrap">
-                    <div className="flex-1 min-w-[200px]"><label className="text-xs font-bold text-gray-500 mb-1 block">Fil</label><input name="file" type="file" className={inputClass} required /></div>
-                    <div className="flex-1 min-w-[200px]"><label className="text-xs font-bold text-gray-500 mb-1 block">Titel</label><input name="title" className={inputClass} placeholder="Dokumentnamn" required /></div>
-                    <button className="bg-blue-600 text-white px-6 py-2.5 rounded-lg font-bold hover:bg-blue-700 h-[42px]">Ladda upp</button>
+                    <div className="flex-1 min-w-[200px]"><label className="text-xs font-bold text-gray-500 mb-1 block">{t('common.file')}</label><input name="file" type="file" className={inputClass} required /></div>
+                    <div className="flex-1 min-w-[200px]"><label className="text-xs font-bold text-gray-500 mb-1 block">{t('common.title')}</label><input name="title" className={inputClass} placeholder={t('common.document_name')} required /></div>
+                    <button className="bg-blue-600 text-white px-6 py-2.5 rounded-lg font-bold hover:bg-blue-700 h-[42px]">{t('common.upload')}</button>
                 </form>
             </div>
-            <div className="relative"><Search className="absolute left-3 top-2.5 text-gray-400" size={16} /><input placeholder="Sök dokument..." className={inputClass + " pl-9"} value={searchTerm} onChange={e => setSearchTerm(e.target.value)} /></div>
+            <div className="relative"><Search className="absolute left-3 top-2.5 text-gray-400" size={16} /><input placeholder={t('common.search_documents')} className={inputClass + " pl-9"} value={searchTerm} onChange={e => setSearchTerm(e.target.value)} /></div>
             <div className="overflow-x-auto border border-gray-200 dark:border-[#3c4043] rounded-xl">
                 <table className="w-full text-left text-sm">
                     <thead className="bg-gray-50 dark:bg-[#282a2c] text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-[#3c4043]">
-                        <tr><th className="px-4 py-3">Titel</th><th className="px-4 py-3">Ägare</th><th className="px-4 py-3 text-right">Åtgärd</th></tr>
+                        <tr><th className="px-4 py-3">{t('common.title')}</th><th className="px-4 py-3">{t('common.owner')}</th><th className="px-4 py-3 text-right">{t('common.action')}</th></tr>
                     </thead>
                     <tbody className="divide-y divide-gray-100 dark:divide-[#3c4043]">
                         {filtered.length === 0
-                            ? <tr><td colSpan="3" className="p-8 text-center text-gray-500 dark:text-gray-400">Inga dokument hittades.</td></tr>
+                            ? <tr><td colSpan="3" className="p-8 text-center text-gray-500 dark:text-gray-400">{t('common.no_documents_found')}</td></tr>
                             : filtered.map(d => (
                                 <tr key={d.id} className="hover:bg-gray-50 dark:hover:bg-[#282a2c]/50">
                                     <td className="px-4 py-3 text-gray-900 dark:text-white">
-                                        <div className="font-medium">{d.title || 'Namnlös'}</div>
+                                        <div className="font-medium">{d.title || t('common.untitled')}</div>
                                         {d.filename && d.filename !== d.title && <div className="text-xs text-gray-400">{d.filename}</div>}
                                     </td>
-                                    <td className="px-4 py-3 text-gray-500 dark:text-gray-400">{d.owner?.fullName || 'System'}</td>
+                                    <td className="px-4 py-3 text-gray-500 dark:text-gray-400">{d.owner?.fullName || t('common.system')}</td>
                                     <td className="px-4 py-3 text-right"><button onClick={() => handleDelete(d.id)} className="text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 p-1.5 rounded-lg"><Trash2 size={16} /></button></td>
                                 </tr>
                             ))}
@@ -117,26 +117,26 @@ const AdminStorageStats = () => {
         return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + ['B', 'KB', 'MB', 'GB', 'TB'][i];
     };
 
-    if (loading) return <div className="p-8 text-center bg-white dark:bg-[#1E1F20] rounded-xl border border-gray-100 dark:border-[#3c4043]">Laddar...</div>;
-    if (!stats) return <div className="p-8 text-center bg-white dark:bg-[#1E1F20] rounded-xl border border-gray-100 dark:border-[#3c4043]">Kunde inte hämta statistik.</div>;
+    if (loading) return <div className="p-8 text-center bg-white dark:bg-[#1E1F20] rounded-xl border border-gray-100 dark:border-[#3c4043]">{t('common.loading')}</div>;
+    if (!stats) return <div className="p-8 text-center bg-white dark:bg-[#1E1F20] rounded-xl border border-gray-100 dark:border-[#3c4043]">{t('admin_tabs.stats_fetch_error')}</div>;
 
     return (
         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="bg-white dark:bg-[#1E1F20] p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-[#3c4043]">
-                    <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Total Lagring</p>
+                    <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">{t('admin_tabs.total_storage')}</p>
                     <h3 className="text-2xl font-black text-indigo-600">{formatBytes(stats.totalUsed)}</h3>
-                    <p className="text-[10px] text-gray-400 mt-1">Används i hela systemet</p>
+                    <p className="text-[10px] text-gray-400 mt-1">{t('admin_tabs.system_wide_use')}</p>
                 </div>
                 <div className="bg-white dark:bg-[#1E1F20] p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-[#3c4043]">
-                    <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Totala Filer</p>
+                    <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">{t('admin_tabs.total_files')}</p>
                     <h3 className="text-2xl font-black text-indigo-600">{stats.totalDocuments} st</h3>
-                    <p className="text-[10px] text-gray-400 mt-1">Uppladdade dokument</p>
+                    <p className="text-[10px] text-gray-400 mt-1">{t('admin_tabs.uploaded_documents')}</p>
                 </div>
                 <div className="bg-white dark:bg-[#1E1F20] p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-[#3c4043]">
-                    <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Användare</p>
+                    <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">{t('admin_tabs.users')}</p>
                     <h3 className="text-2xl font-black text-indigo-600">{stats.totalUsers} st</h3>
-                    <p className="text-[10px] text-gray-400 mt-1">Användare i systemet</p>
+                    <p className="text-[10px] text-gray-400 mt-1">{t('admin_tabs.total_users_desc')}</p>
                 </div>
             </div>
         </div>
@@ -164,63 +164,63 @@ const AdministrationPanel = ({ users, courses, teachers, fetchStats }) => {
     const [showAiModal, setShowAiModal] = useState(false);
 
     const handleDeleteCourse = async (courseId) => {
-        if (window.confirm("Är du säker på att du vill ta bort denna kurs? Detta går inte att ångra.")) {
+        if (window.confirm(t('admin_tabs.delete_course_confirm'))) {
             try {
                 await api.courses.delete(courseId);
                 fetchStats();
             } catch (error) {
                 console.error("Failed to delete course", error);
-                alert("Kunde inte ta bort kursen. Kontrollera att den inte har aktiva studenter.");
+                alert(t('admin_tabs.delete_course_error'));
             }
         }
     };
 
     const handleDeleteUser = async (userId) => {
-        if (window.confirm("Är du säker på att du vill ta bort denna användare? Detta går inte att ångra.")) {
+        if (window.confirm(t('admin_tabs.delete_user_confirm'))) {
             try {
                 await api.users.delete(userId);
                 fetchStats();
             } catch (error) {
                 console.error("Failed to delete user", error);
-                alert("Kunde inte ta bort användaren.");
+                alert(t('admin_tabs.delete_user_error'));
             }
         }
     };
 
     const menuItems = [
         {
-            category: 'Allmänt',
+            category: t('admin_tabs.categories.general'),
             items: [
-                { id: 'users', label: 'Användare', icon: Users },
-                { id: 'guardians', label: 'Vårdnadshavare', icon: Users },
-                { id: 'courses', label: 'Kurser', icon: BookOpen },
-                { id: 'structure', label: 'Skolstruktur', icon: Building2 },
-                { id: 'merits', label: 'Meriter', icon: Award },
-                { id: 'roles', label: 'Roller', icon: Shield },
+                { id: 'users', label: t('admin_tabs.users'), icon: Users },
+                { id: 'guardians', label: t('admin_tabs.guardians'), icon: Users },
+                { id: 'courses', label: t('admin_tabs.courses'), icon: BookOpen },
+                { id: 'structure', label: t('admin_tabs.structure'), icon: Building2 },
+                { id: 'merits', label: t('admin_tabs.merits'), icon: Award },
+                { id: 'roles', label: t('admin_tabs.roles'), icon: Shield },
             ]
         },
         {
-            category: 'Ekonomi',
+            category: t('admin_tabs.categories.finance'),
             hidden: !isModuleActive('REVENUE'),
             items: [
-                { id: 'revenue', label: t('admin_tabs.revenue') || 'Översikt', icon: DollarSign },
-                { id: 'revenue-plans', label: t('admin_tabs.subscription_plans') || 'Planer', icon: Tag },
-                { id: 'revenue-invoices', label: t('admin_tabs.invoices') || 'Fakturor', icon: FileText },
-                { id: 'revenue-payments', label: t('admin_tabs.payment_settings') || 'Betalningar', icon: Settings },
-                { id: 'revenue-promocodes', label: t('admin_tabs.promo_codes') || 'Rabattkoder', icon: Tag },
+                { id: 'revenue', label: t('admin_tabs.overview'), icon: DollarSign },
+                { id: 'revenue-plans', label: t('admin_tabs.subscription_plans'), icon: Tag },
+                { id: 'revenue-invoices', label: t('admin_tabs.invoices'), icon: FileText },
+                { id: 'revenue-payments', label: t('admin_tabs.payment_settings'), icon: Settings },
+                { id: 'revenue-promocodes', label: t('admin_tabs.promo_codes'), icon: Tag },
             ]
         },
         {
-            category: 'System',
+            category: t('admin_tabs.categories.system'),
             items: [
-                { id: 'storage', label: 'Lagring', icon: HardDrive },
-                { id: 'content', label: 'Dokument (Global)', icon: Upload },
-                { id: 'logs', label: 'Systemloggar (Fil)', icon: FileText },
-                { id: 'terminal', label: 'Debug Terminal (Live)', icon: Terminal },
-                { id: 'audit-log', label: 'Audit Log', icon: Shield },
-                { id: 'integrations', label: 'Integration Hub', icon: Link2 },
-                { id: 'ai-audit', label: 'AI Audit', icon: Zap },
-                { id: 'deploy', label: 'EduFlex Ops', icon: Server },
+                { id: 'storage', label: t('admin_tabs.storage'), icon: HardDrive },
+                { id: 'content', label: t('admin_tabs.content'), icon: Upload },
+                { id: 'logs', label: t('admin_tabs.logs'), icon: FileText },
+                { id: 'terminal', label: t('admin_tabs.terminal'), icon: Terminal },
+                { id: 'audit-log', label: t('admin_tabs.audit_log'), icon: Shield },
+                { id: 'integrations', label: t('admin_tabs.integration_hub'), icon: Link2 },
+                { id: 'ai-audit', label: t('admin_tabs.ai_audit'), icon: Zap },
+                { id: 'deploy', label: t('admin_tabs.deploy'), icon: Server },
             ]
         }
     ];
@@ -262,7 +262,7 @@ const AdministrationPanel = ({ users, courses, teachers, fetchStats }) => {
             case 'revenue-payments': return <PaymentGatewaySettings />;
             case 'revenue-promocodes': return <PromoCodeManagement />;
 
-            default: return <div className="p-8 text-center text-gray-500">Välj en kategori i menyn</div>;
+            default: return <div className="p-8 text-center text-gray-500">{t('admin_tabs.select_category')}</div>;
         }
     };
 
@@ -271,7 +271,7 @@ const AdministrationPanel = ({ users, courses, teachers, fetchStats }) => {
             {/* SIDEBAR */}
             <aside className={`bg-[var(--bg-card)] w-64 border-r border-[var(--border-main)] flex-shrink-0 flex flex-col ${mobileMenuOpen ? 'block absolute z-50 h-full shadow-2xl' : 'hidden md:flex'}`}>
                 <div className="p-4 border-b border-[var(--border-main)] flex items-center justify-between">
-                    <h2 className="font-bold text-lg text-[var(--text-primary)]">Admin</h2>
+                    <h2 className="font-bold text-lg text-[var(--text-primary)]">{t('admin_tabs.title')}</h2>
                     <button className="md:hidden text-[var(--text-secondary)]" onClick={() => setMobileMenuOpen(false)}>✕</button>
                 </div>
 
@@ -305,7 +305,7 @@ const AdministrationPanel = ({ users, courses, teachers, fetchStats }) => {
             <main className="flex-1 flex flex-col min-w-0">
                 {/* Mobile Header */}
                 <div className="md:hidden p-4 bg-[var(--bg-card)] border-b border-[var(--border-main)] flex justify-between items-center">
-                    <span className="font-black text-[var(--text-primary)]">Meny</span>
+                    <span className="font-black text-[var(--text-primary)]">{t('common.menu')}</span>
                     <button onClick={() => setMobileMenuOpen(true)} className="p-2 bg-[var(--bg-card)] border border-[var(--border-main)] rounded-xl text-[var(--text-secondary)]">
                         <Settings size={20} />
                     </button>
