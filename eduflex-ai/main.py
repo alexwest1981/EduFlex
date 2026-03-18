@@ -47,29 +47,39 @@ def clean_json_response(text: str) -> str:
     return text.strip()
 
 async def call_gemini(system_prompt: str, user_prompt: str, temperature: float = 0.7):
-    try:
-        model = genai.GenerativeModel(
-            model_name=config.GEMINI_MODEL,
-            generation_config={
-                "temperature": temperature,
-                "top_p": 0.95,
-                "top_k": 40,
-                "max_output_tokens": 4000,
-                "response_mime_type": "application/json",
-            }
-        )
-        
-        full_prompt = f"{system_prompt}\n\n{user_prompt}"
-        response = model.generate_content(full_prompt)
-        
-        if not response.text:
-            raise HTTPException(status_code=500, detail="Empty response from Gemini")
+    models_to_try = [config.GEMINI_MODEL] + config.GEMINI_FALLBACK_MODELS
+    last_error = None
+
+    for model_name in models_to_try:
+        if not model_name: continue
+        try:
+            logger.info(f"Attempting Gemini call with model: {model_name}")
+            model = genai.GenerativeModel(
+                model_name=model_name,
+                generation_config={
+                    "temperature": temperature,
+                    "top_p": 0.95,
+                    "top_k": 40,
+                    "max_output_tokens": 4000,
+                    "response_mime_type": "application/json",
+                }
+            )
             
-        cleaned_text = clean_json_response(response.text)
-        return json.loads(cleaned_text)
-    except Exception as e:
-        logger.error(f"Gemini call failed: {str(e)}")
-        raise HTTPException(status_code=500, detail=str(e))
+            full_prompt = f"{system_prompt}\n\n{user_prompt}"
+            response = model.generate_content(full_prompt)
+            
+            if not response.text:
+                raise Exception(f"Empty response from {model_name}")
+                
+            cleaned_text = clean_json_response(response.text)
+            return json.loads(cleaned_text)
+        except Exception as e:
+            last_error = str(e)
+            logger.warning(f"Model {model_name} failed: {last_error}. Trying next fallback...")
+            continue
+
+    logger.error(f"All models failed. Last error: {last_error}")
+    raise HTTPException(status_code=503, detail=f"AI Service unavailable (all fallback models exhausted). Last error: {last_error}")
 
 @app.get("/health")
 async def health():
@@ -122,16 +132,30 @@ async def generate_ppt(request: CourseRequest):
 
 @app.post("/api/ai/chat")
 async def chat(request: AIRequest):
-    try:
-        model = genai.GenerativeModel(config.GEMINI_MODEL)
-        prompt = request.prompt
-        if request.system_prompt:
-            prompt = f"{request.system_prompt}\n\n{prompt}"
-            
-        response = model.generate_content(prompt)
-        return {"text": response.text}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    models_to_try = [config.GEMINI_MODEL] + config.GEMINI_FALLBACK_MODELS
+    last_error = None
+
+    for model_name in models_to_try:
+        if not model_name: continue
+        try:
+            logger.info(f"Attempting chat Gemini call with model: {model_name}")
+            model = genai.GenerativeModel(model_name)
+            prompt = request.prompt
+            if request.system_prompt:
+                prompt = f"{request.system_prompt}\n\n{prompt}"
+                
+            response = model.generate_content(prompt)
+            if not response.text:
+                raise Exception(f"Empty response from {model_name}")
+                
+            return {"text": response.text}
+        except Exception as e:
+            last_error = str(e)
+            logger.warning(f"Chat model {model_name} failed: {last_error}. Trying next fallback...")
+            continue
+
+    logger.error(f"All chat models failed. Last error: {last_error}")
+    raise HTTPException(status_code=503, detail=f"AI Chat Service unavailable (all fallback models exhausted). Last error: {last_error}")
 
 @app.post("/api/ai/embedding")
 async def generate_embedding(text: str = Body(..., embed=True)):

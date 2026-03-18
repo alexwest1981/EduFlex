@@ -6,6 +6,7 @@ load_dotenv()
 class Config:
     GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
     GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.0-flash")
+    GEMINI_FALLBACK_MODELS = os.getenv("GEMINI_FALLBACK_MODELS", "gemini-1.5-flash,gemini-1.5-pro").split(",")
     PORT = int(os.getenv("PORT", "8000"))
     DEBUG = os.getenv("DEBUG", "False").lower() == "true"
 

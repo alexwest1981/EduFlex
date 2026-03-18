@@ -7,7 +7,7 @@ services:
     environment:
       - POSTGRES_DB=eduflex
       - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=gotland81 # Samma lösenord som du är van vid
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-gotland81} # Samma lösenord som du är van vid
     ports:
       - "5439:5432"
     volumes:
@@ -97,7 +97,7 @@ services:
       - "9099:9001"
     environment:
       MINIO_ROOT_USER: minioadmin
-      MINIO_ROOT_PASSWORD: minioadmin
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin}
     command: server /data --console-address ":9001"
     volumes:
       - minio_data:/data
@@ -125,11 +125,11 @@ services:
     command: start-dev --import-realm --health-enabled=true
     environment:
       - KEYCLOAK_ADMIN=admin
-      - KEYCLOAK_ADMIN_PASSWORD=admin
+      - KEYCLOAK_ADMIN_PASSWORD=${KEYCLOAK_ADMIN_PASSWORD:-admin}
       - KC_DB=postgres
       - KC_DB_URL=jdbc:postgresql://db:5432/eduflex
       - KC_DB_USERNAME=postgres
-      - KC_DB_PASSWORD=gotland81
+      - KC_DB_PASSWORD=${KC_DB_PASSWORD:-gotland81}
       - KC_HOSTNAME_STRICT=false
       - KC_HOSTNAME=auth.eduflexlms.se
       - KC_HOSTNAME_PORT=443
@@ -171,12 +171,12 @@ services:
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/eduflex_backend
       - SPRING_DATASOURCE_USERNAME=postgres
-      - SPRING_DATASOURCE_PASSWORD=gotland81
+      - SPRING_DATASOURCE_PASSWORD=${SPRING_DATASOURCE_PASSWORD:-gotland81}
       - SPRING_DATA_REDIS_HOST=redis
       - SPRING_DATA_REDIS_PORT=6379
       - MINIO_URL=http://minio:9000
       - MINIO_ACCESS_KEY=minioadmin
-      - MINIO_SECRET_KEY=minioadmin
+      - MINIO_SECRET_KEY=${MINIO_SECRET_KEY:-minioadmin}
       - MINIO_BUCKET=eduflex-storage
       - ONLYOFFICE_INTERNAL_URL=http://eduflex-onlyoffice
       - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI=https://auth.eduflexlms.se/realms/eduflex
@@ -230,7 +230,7 @@ services:
       - CORE_URL=http://backend:8080
       - MINIO_URL=http://minio:9000
       - MINIO_ACCESS_KEY=minioadmin
-      - MINIO_SECRET_KEY=minioadmin
+      - MINIO_SECRET_KEY=${MINIO_SECRET_KEY:-minioadmin}
       - MINIO_BUCKET=eduflex-storage
       # Direktlänk-URL för media (kringgår backend-proxy som Cloudflare blockerar)
       - MINIO_PUBLIC_URL=https://storage.eduflexlms.se
@@ -306,10 +306,10 @@ services:
       - CORE_URL=http://backend:8080
       - DATABASE_URL=jdbc:postgresql://db:5432/eduflex_scorm
       - DATABASE_USERNAME=postgres
-      - DATABASE_PASSWORD=gotland81
+      - DATABASE_PASSWORD=${DATABASE_PASSWORD:-gotland81}
       - MINIO_URL=http://minio:9000
       - MINIO_ACCESS_KEY=minioadmin
-      - MINIO_SECRET_KEY=minioadmin
+      - MINIO_SECRET_KEY=${MINIO_SECRET_KEY:-minioadmin}
       - MINIO_BUCKET=eduflex-storage
       - MINIO_PUBLIC_URL=https://storage.eduflexlms.se
     extra_hosts:
@@ -435,7 +435,7 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_SECURITY_ADMIN_PASSWORD=${GF_SECURITY_ADMIN_PASSWORD:-admin}
       - GF_SECURITY_ALLOW_EMBEDDING=true
       - GF_AUTH_ANONYMOUS_ENABLED=true
       - GF_AUTH_ANONYMOUS_ORG_ROLE=Viewer
@@ -527,7 +527,7 @@ services:
       - POSTGRES_HOST=db
       - POSTGRES_DB=eduflex
       - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=gotland81
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-gotland81}
       - POSTGRES_EXTRA_OPTS=-Z9 --schema=public --blobs
       - SCHEDULE=0 0,12 * * *
       - BACKUP_KEEP_DAYS=7
@@ -555,7 +555,7 @@ services:
     volumes:
       - ./cloudflared_config.yml:/etc/cloudflared/config.yml
     environment:
-      - TUNNEL_TOKEN=eyJhIjoiMzhjYzM1MDViZDJmMmUxOTNmZThiN2YwYTYyYWUyYjgiLCJ0IjoiYjQ3NjhlMzYtNGU5ZS00MGJiLWJlYjAtNmVjNjZmZjEwNDFmIiwicyI6IjRvSGlFYldTZDNUQVllSlpWbjBKWkpOdWFMYk1rQzZMUG1Vam1XKzY0ZE09In0=
+      - TUNNEL_TOKEN=${TUNNEL_TOKEN:-}
     logging:
       driver: "json-file"
       options:
