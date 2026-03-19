@@ -928,14 +928,27 @@ const LandingPage = () => {
                                 <Sparkles className="w-8 h-8" />
                             </div>
                             <h3 className="text-3xl font-bold mb-4">{t('landing.updates.changelog_title')}</h3>
-                            <p className="text-slate-400 text-lg mb-8 leading-relaxed">
-                                {t('landing.updates.changelog_desc')}
-                            </p>
+                            
+                            <div className="space-y-6 mb-8">
+                                {Array.isArray(t('landing.updates.changelog_items', { returnObjects: true })) && 
+                                 t('landing.updates.changelog_items', { returnObjects: true }).map((item, i) => (
+                                    <div key={i} className="flex gap-4">
+                                        <div className="flex-shrink-0 w-16 text-xs font-bold text-brand-teal bg-brand-teal/10 px-2 py-1 rounded text-center h-fit">
+                                            {item.version}
+                                        </div>
+                                        <div className="space-y-1">
+                                            <h4 className="text-sm font-bold text-white">{item.title}</h4>
+                                            <p className="text-xs text-slate-500 leading-relaxed">{item.desc}</p>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+
                             <a
-                                href="https://github.com/alexwest1981/EduFlex/blob/main/CHANGELOG.md"
+                                href="https://github.com/alexwest1981/EduFlex/blob/master/CHANGELOG.md"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="inline-flex items-center gap-2 text-brand-teal font-bold hover:gap-3 transition-all"
+                                className="inline-flex items-center gap-2 text-brand-teal font-bold hover:gap-3 transition-all text-sm"
                             >
                                 {t('landing.updates.view_full_changelog')} <ArrowRight className="w-5 h-5" />
                             </a>
@@ -950,14 +963,27 @@ const LandingPage = () => {
                                 <Target className="w-8 h-8" />
                             </div>
                             <h3 className="text-3xl font-bold mb-4">{t('landing.updates.roadmap_title')}</h3>
-                            <p className="text-slate-400 text-lg mb-8 leading-relaxed">
-                                {t('landing.updates.roadmap_desc')}
-                            </p>
+                            
+                            <div className="space-y-6 mb-8">
+                                {Array.isArray(t('landing.updates.roadmap_items', { returnObjects: true })) && 
+                                 t('landing.updates.roadmap_items', { returnObjects: true }).map((item, i) => (
+                                    <div key={i} className="flex gap-4">
+                                        <div className="flex-shrink-0 w-16 text-xs font-bold text-brand-gold bg-brand-gold/10 px-2 py-1 rounded text-center h-fit">
+                                            {item.quarter}
+                                        </div>
+                                        <div className="space-y-1">
+                                            <h4 className="text-sm font-bold text-white">{item.title}</h4>
+                                            <p className="text-xs text-slate-500 leading-relaxed">{item.desc}</p>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+
                             <a
-                                href="https://github.com/alexwest1981/EduFlex/blob/main/ROADMAP.md"
+                                href="https://github.com/alexwest1981/EduFlex/blob/master/ROADMAP.md"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="inline-flex items-center gap-2 text-brand-gold font-bold hover:gap-3 transition-all"
+                                className="inline-flex items-center gap-2 text-brand-gold font-bold hover:gap-3 transition-all text-sm"
                             >
                                 {t('landing.updates.view_full_roadmap')} <ArrowRight className="w-5 h-5" />
                             </a>

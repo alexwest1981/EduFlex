@@ -149,6 +149,12 @@ export default defineConfig(({ mode }) => {
                     target: 'http://localhost:8084',
                     changeOrigin: true
                 },
+                // Accessibility (DOS-lagen) microservice proxy
+                '/api/accessibility': {
+                    target: 'http://localhost:8086',
+                    changeOrigin: true,
+                    rewrite: (path) => path.replace(/^\/api\/accessibility/, '/api/v1/accessibility')
+                },
                 // OnlyOffice Direct Proxy - Route ASSETS and SOCKETS directly to ONLYOFFICE server (8081)
                 // This bypasses the backend proxy for better performance and WebSocket support
                 // Refined: Use doc/ (slash inclusive) to avoid matching /documents SPA route

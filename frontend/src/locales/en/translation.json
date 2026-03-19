@@ -44,7 +44,14 @@
       "openai" : "OpenAI API"
     },
     "pro" : "Pro",
-    "menu" : "Menu"
+    "menu" : "Menu",
+    "scanning" : "Scanning...",
+    "tip" : "Tip"
+  },
+  "accessibility" : {
+    "scan_button" : "Scan Accessibility",
+    "report_title" : "Accessibility Report",
+    "score" : "Accessibility Score"
   },
   "sidebar" : {
     "dashboard" : "Dashboard",
@@ -995,7 +1002,20 @@
       "view_full_changelog": "View full changelog",
       "roadmap_title": "Project Roadmap",
       "roadmap_desc": "See our vision for 2026 and the exciting modules we are developing right now.",
-      "view_full_roadmap" : "View project roadmap"
+      "view_full_roadmap" : "View project roadmap",
+      "changelog_items": [
+        { "version": "v3.9.4", "title": "AI Accessibility Engine", "desc": "Automated EN 301 549 (DOS-lagen) compliance scanner integrated into the editor." },
+        { "version": "v3.9.4", "title": "Turbo-Load", "desc": "Initial load time reduced by 80% via code-splitting and dynamic i18n." },
+        { "version": "v3.9.3", "title": "Security Hardening", "desc": "Docker Optimization (Non-root) and credential sanitization." },
+        { "version": "v3.9.3", "title": "AI Robustness", "desc": "Gemini Fallback system for 100% AI service uptime." }
+      ],
+      "roadmap_items": [
+        { "quarter": "DONE v3.9.4", "title": "Accessibility (AI)", "desc": "Fully operational compliance engine integrated in RichTextEditor." },
+        { "quarter": "Q2 2026", "title": "JobEd Connect", "desc": "Matching educational goals to professional competencies." },
+        { "quarter": "Q2 2026", "title": "Integration Hub", "desc": "Automated sync for Skolverket, Ladok, and HR systems." },
+        { "quarter": "Q3 2026", "title": "AF MCP AI", "desc": "Advanced taxonomy analysis using Af development tools." },
+        { "quarter": "Q3 2026", "title": "AI Tutors 3.0", "desc": "Proactive coaching anticipating student gaps." }
+      ]
     },
     "roles" : {
       "badge" : "Solutions for Everyone",

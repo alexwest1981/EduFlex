@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback } from 'react';
+import React, { useEffect, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
@@ -37,6 +37,28 @@ const Divider = () => (
 
 const RichTextEditor = ({ value, onChange, placeholder, style }) => {
     const { t } = useTranslation();
+    const [isScanning, setIsScanning] = useState(false);
+    const [report, setReport] = useState(null);
+
+    const handleScan = async () => {
+        if (!editor) return;
+        setIsScanning(true);
+        setReport(null);
+        try {
+            const content = editor.getHTML();
+            const response = await fetch('/api/accessibility/scan', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ content, type: 'web' }),
+            });
+            const data = await response.json();
+            setReport(data);
+        } catch (err) {
+            console.error('Accessibility scan failed:', err);
+        } finally {
+            setIsScanning(false);
+        }
+    };
     const editor = useEditor({
         extensions: [
             StarterKit.configure({
@@ -183,10 +205,76 @@ const RichTextEditor = ({ value, onChange, placeholder, style }) => {
 
                 <Divider />
                 <ToolbarButton onClick={() => editor.chain().focus().clearNodes().unsetAllMarks().run()} active={false} title={t('editor.clear_format')}>✕ Format</ToolbarButton>
+
+                <Divider />
+                <button
+                    type="button"
+                    onClick={handleScan}
+                    disabled={isScanning}
+                    className={`ml-auto flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold transition-all ${isScanning
+                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                        : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100 dark:bg-emerald-900/20 dark:text-emerald-400 dark:hover:bg-emerald-900/30 border border-emerald-200 dark:border-emerald-800'
+                        }`}
+                >
+                    {isScanning ? (
+                        <span className="w-3 h-3 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                    ) : (
+                        <span className="text-sm">✨</span>
+                    )}
+                    {isScanning ? t('common.scanning') : t('accessibility.scan_button')}
+                </button>
             </div>
 
             {/* ─── Editor ──────────────────────────────────────── */}
-            <EditorContent editor={editor} />
+            <div className="relative">
+                <EditorContent editor={editor} />
+
+                {/* Accessibility Report Overlay */}
+                {report && (
+                    <div className="absolute top-0 right-0 w-80 h-full bg-white dark:bg-[#1e1f20] border-l border-gray-200 dark:border-[#3c4043] shadow-xl z-20 overflow-y-auto animate-in slide-in-from-right duration-300">
+                        <div className="p-4">
+                            <div className="flex items-center justify-between mb-4">
+                                <h3 className="text-sm font-bold flex items-center gap-2">
+                                    <span>🛡️</span> {t('accessibility.report_title')}
+                                </h3>
+                                <button onClick={() => setReport(null)} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">✕</button>
+                            </div>
+
+                            <div className="mb-4 p-3 rounded-lg bg-gray-50 dark:bg-[#282a2c] border border-gray-200 dark:border-[#3c4043]">
+                                <div className="text-xs text-gray-500 mb-1">{t('accessibility.score')}</div>
+                                <div className="flex items-center gap-3">
+                                    <div className="flex-1 h-2 bg-gray-200 dark:bg-[#3c4043] rounded-full overflow-hidden">
+                                        <div 
+                                            className={`h-full transition-all duration-1000 ${report.score >= 80 ? 'bg-emerald-500' : report.score >= 50 ? 'bg-amber-500' : 'bg-rose-500'}`}
+                                            style={{ width: `${report.score * 100}%` }}
+                                        />
+                                    </div>
+                                    <span className="text-lg font-black">{Math.round(report.score * 100)}%</span>
+                                </div>
+                            </div>
+
+                            <p className="text-xs text-gray-600 dark:text-gray-400 mb-4 leading-relaxed italic">
+                                "{report.summary}"
+                            </p>
+
+                            <div className="space-y-3">
+                                {report.issues?.map((issue, idx) => (
+                                    <div key={idx} className="p-3 rounded-lg border border-gray-100 dark:border-[#3c4043] bg-white dark:bg-[#131314] hover:border-emerald-200 dark:hover:border-emerald-800 transition-colors">
+                                        <div className="flex items-center gap-2 mb-1.5">
+                                            <span className={`w-2 h-2 rounded-full ${issue.severity === 'major' ? 'bg-rose-500' : 'bg-amber-500'}`} />
+                                            <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400">{issue.requirementId}</span>
+                                        </div>
+                                        <div className="text-xs font-medium mb-1 line-clamp-2">{issue.description}</div>
+                                        <div className="text-[11px] text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 p-1.5 rounded mt-2">
+                                            <strong>{t('common.tip')}:</strong> {issue.suggestion}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </div>
 
             <style>{`
                 /* Editor-yta */

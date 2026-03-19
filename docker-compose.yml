@@ -7,7 +7,7 @@ services:
     environment:
       - POSTGRES_DB=eduflex
       - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-gotland81} # Samma lösenord som du är van vid
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-REPLACE_ME} # Använd .env för att sätta lösenord
     ports:
       - "5439:5432"
     volumes:
@@ -28,7 +28,8 @@ services:
         max-size: "10m"
         max-file: "3"
     networks:
-      - eduflex-net
+      eduflex-net:
+        ipv4_address: 172.18.0.10
 
   # --- CACHE (Redis) ---
   redis:
@@ -53,7 +54,8 @@ services:
         max-size: "10m"
         max-file: "3"
     networks:
-      - eduflex-net
+      eduflex-net:
+        ipv4_address: 172.18.0.50
 
   #   # --- MESSAGE BROKER (Kafka) ---
   #   zookeeper:
@@ -112,7 +114,8 @@ services:
         max-size: "10m"
         max-file: "3"
     networks:
-      - eduflex-net
+      eduflex-net:
+        ipv4_address: 172.18.0.160
     deploy:
       resources:
         limits:
@@ -122,14 +125,16 @@ services:
   keycloak:
     image: quay.io/keycloak/keycloak:24.0
     container_name: eduflex-keycloak
+    extra_hosts:
+      - "db:172.18.0.10"
     command: start-dev --import-realm --health-enabled=true
     environment:
       - KEYCLOAK_ADMIN=admin
-      - KEYCLOAK_ADMIN_PASSWORD=${KEYCLOAK_ADMIN_PASSWORD:-admin}
+      - KEYCLOAK_ADMIN_PASSWORD=${KEYCLOAK_ADMIN_PASSWORD:-REPLACE_ME}
       - KC_DB=postgres
-      - KC_DB_URL=jdbc:postgresql://db:5432/eduflex
+      - KC_DB_URL=jdbc:postgresql://172.18.0.10:5432/keycloak
       - KC_DB_USERNAME=postgres
-      - KC_DB_PASSWORD=${KC_DB_PASSWORD:-gotland81}
+      - KC_DB_PASSWORD=${KC_DB_PASSWORD:-REPLACE_ME}
       - KC_HOSTNAME_STRICT=false
       - KC_HOSTNAME=auth.eduflexlms.se
       - KC_HOSTNAME_PORT=443
@@ -159,32 +164,31 @@ services:
         max-size: "10m"
         max-file: "3"
     networks:
-      - eduflex-net
+      eduflex-net:
+        ipv4_address: 172.18.0.150
 
   # --- BACKEND (Spring Boot) ---
   backend:
     build: ./eduflex
-    container_name: eduflex-backend
-    restart: on-failure:5
     ports:
       - "8080:8080"
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/eduflex_backend
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://172.18.0.10:5432/eduflex_backend
       - SPRING_DATASOURCE_USERNAME=postgres
-      - SPRING_DATASOURCE_PASSWORD=${SPRING_DATASOURCE_PASSWORD:-gotland81}
+      - SPRING_DATASOURCE_PASSWORD=${SPRING_DATASOURCE_PASSWORD:-REPLACE_ME}
       - SPRING_DATA_REDIS_HOST=redis
       - SPRING_DATA_REDIS_PORT=6379
-      - MINIO_URL=http://minio:9000
+      - MINIO_URL=http://172.18.0.160:9000
       - MINIO_ACCESS_KEY=minioadmin
       - MINIO_SECRET_KEY=${MINIO_SECRET_KEY:-minioadmin}
       - MINIO_BUCKET=eduflex-storage
-      - ONLYOFFICE_INTERNAL_URL=http://eduflex-onlyoffice
+      - ONLYOFFICE_INTERNAL_URL=http://172.18.0.180
       - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI=https://auth.eduflexlms.se/realms/eduflex
-      - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI=http://keycloak:8080/realms/eduflex/protocol/openid-connect/certs
+      - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI=http://172.18.0.150:8080/realms/eduflex/protocol/openid-connect/certs
       - KEYCLOAK_AUTH_SERVER_URL=https://auth.eduflexlms.se
       - KEYCLOAK_REALM=eduflex
       - KEYCLOAK_CLIENT_ID=eduflex-app
-      - AI_SERVICE_URL=http://eduflex-ai:8000
+      - AI_SERVICE_URL=http://172.18.0.190:8000
       - GEMINI_API_KEY=${GEMINI_API_KEY}
       - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
       - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET}
@@ -197,6 +201,12 @@ services:
       - ./eduflex.license:/app/eduflex.license
       - ./backups:/app/backups
       - ./frontend/src:/frontend/src
+    healthcheck:
+      test: [ "CMD", "wget", "-qO-", "http://localhost:8080/actuator/health" ]
+      interval: 30s
+      timeout: 15s
+      retries: 10
+    restart: unless-stopped
     deploy:
       resources:
         limits:
@@ -216,7 +226,8 @@ services:
         max-size: "10m"
         max-file: "3"
     networks:
-      - eduflex-net
+      eduflex-net:
+        ipv4_address: 172.18.0.100
 
   # --- VIDEO MICROSERVICE ---
   eduflex-video:
@@ -226,9 +237,9 @@ services:
       - redis
       - backend
     environment:
-      - REDIS_HOST=redis
-      - CORE_URL=http://backend:8080
-      - MINIO_URL=http://minio:9000
+      - REDIS_HOST=172.18.0.50
+      - CORE_URL=http://172.18.0.100:8080
+      - MINIO_URL=http://172.18.0.160:9000
       - MINIO_ACCESS_KEY=minioadmin
       - MINIO_SECRET_KEY=${MINIO_SECRET_KEY:-minioadmin}
       - MINIO_BUCKET=eduflex-storage
@@ -246,9 +257,10 @@ services:
         max-size: "10m"
         max-file: "3"
     networks:
-      - eduflex-net
+      eduflex-net:
+        ipv4_address: 172.18.0.111
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8081/actuator/health" ]
+      test: [ "CMD", "wget", "-qO-", "http://localhost:8081/actuator/health" ]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -256,7 +268,7 @@ services:
       resources:
         limits:
           memory: 384M
-    restart: always
+    restart: unless-stopped
 
   # --- PDF MICROSERVICE ---
   eduflex-pdf:
@@ -266,9 +278,9 @@ services:
       - redis
       - backend
     environment:
-      - REDIS_HOST=redis
-      - CORE_URL=http://backend:8080
-      - MINIO_URL=http://minio:9000
+      - REDIS_HOST=172.18.0.50
+      - CORE_URL=http://172.18.0.100:8080
+      - MINIO_URL=http://172.18.0.160:9000
     extra_hosts:
       - "host.docker.internal:host-gateway"
     ports:
@@ -281,9 +293,10 @@ services:
         max-size: "10m"
         max-file: "3"
     networks:
-      - eduflex-net
+      eduflex-net:
+        ipv4_address: 172.18.0.112
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8082/actuator/health" ]
+      test: [ "CMD", "wget", "-qO-", "http://localhost:8082/actuator/health" ]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -291,7 +304,7 @@ services:
       resources:
         limits:
           memory: 512M
-    restart: always
+    restart: unless-stopped
 
   # --- SCORM & xAPI MICROSERVICE ---
   eduflex-scorm:
@@ -302,12 +315,12 @@ services:
       - backend
     environment:
       - SERVER_PORT=8082
-      - REDIS_HOST=redis
-      - CORE_URL=http://backend:8080
-      - DATABASE_URL=jdbc:postgresql://db:5432/eduflex_scorm
+      - REDIS_HOST=172.18.0.50
+      - CORE_URL=http://172.18.0.100:8080
+      - DATABASE_URL=jdbc:postgresql://172.18.0.10:5432/eduflex_scorm
       - DATABASE_USERNAME=postgres
-      - DATABASE_PASSWORD=${DATABASE_PASSWORD:-gotland81}
-      - MINIO_URL=http://minio:9000
+      - DATABASE_PASSWORD=${DATABASE_PASSWORD:-REPLACE_ME}
+      - MINIO_URL=http://172.18.0.160:9000
       - MINIO_ACCESS_KEY=minioadmin
       - MINIO_SECRET_KEY=${MINIO_SECRET_KEY:-minioadmin}
       - MINIO_BUCKET=eduflex-storage
@@ -322,9 +335,10 @@ services:
         max-size: "10m"
         max-file: "3"
     networks:
-      - eduflex-net
+      eduflex-net:
+        ipv4_address: 172.18.0.113
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8082/actuator/health" ]
+      test: [ "CMD", "wget", "-qO-", "http://localhost:8082/actuator/health" ]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -332,7 +346,7 @@ services:
       resources:
         limits:
           memory: 384M
-    restart: always
+    restart: unless-stopped
 
   # --- NOTIFICATIONS MICROSERVICE ---
   eduflex-notifications:
@@ -344,7 +358,7 @@ services:
       - "8085:8085"
     environment:
       - SERVER_PORT=8085
-      - REDIS_HOST=redis
+      - REDIS_HOST=172.18.0.50
       - EDUFLEX_JWT_SECRET=${EDUFLEX_JWT_SECRET:-eduflex_secure_secret_key_32_chars_}
     logging:
       driver: "json-file"
@@ -352,8 +366,37 @@ services:
         max-size: "10m"
         max-file: "3"
     networks:
-      - eduflex-net
-    restart: always
+      eduflex-net:
+        ipv4_address: 172.18.0.115
+    restart: unless-stopped
+
+  # --- ACCESSIBILITY MICROSERVICE (DOS-lagen) ---
+  eduflex-accessibility:
+    build: ./eduflex-accessibility
+    container_name: eduflex-accessibility
+    depends_on:
+      redis:
+        condition: service_healthy
+    ports:
+      - "8086:8086"
+    environment:
+      - SERVER_PORT=8086
+      - SPRING_DATA_REDIS_HOST=redis
+      - SPRING_DATA_REDIS_PORT=6379
+    healthcheck:
+      test: [ "CMD", "wget", "-qO-", "http://localhost:8086/actuator/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      eduflex-net:
+        ipv4_address: 172.18.0.120
+    restart: unless-stopped
 
   # --- AI MICROSERVICE ---
   eduflex-ai:
@@ -371,8 +414,15 @@ services:
         max-size: "10m"
         max-file: "3"
     networks:
-      - eduflex-net
-    restart: always
+      eduflex-net:
+        ipv4_address: 172.18.0.190
+    healthcheck:
+      test: ["CMD-SHELL", "python3 -c 'import socket; s = socket.socket(socket.AF_INET, socket.SOCK_STREAM); s.connect((\"localhost\", 8000))'"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    init: true
+    restart: unless-stopped
 
   frontend:
     build:
@@ -396,8 +446,13 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
+    extra_hosts:
+      - "backend:172.18.0.100"
+      - "db:172.18.0.10"
     networks:
-      - eduflex-net
+      eduflex-net:
+        ipv4_address: 172.18.0.200
+    restart: always
 
   #   # --- MEDIA SERVICE (Microservice) ---
   #   media-service:
@@ -488,7 +543,8 @@ services:
         max-size: "10m"
         max-file: "3"
     networks:
-      - eduflex-net
+      eduflex-net:
+        ipv4_address: 172.18.0.180
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
@@ -516,7 +572,8 @@ services:
         max-size: "10m"
         max-file: "3"
     networks:
-      - eduflex-net
+      eduflex-net:
+        ipv4_address: 172.18.0.170
 
   # --- BACKUPS ---
   db-backup:
@@ -524,7 +581,7 @@ services:
     container_name: eduflex-backup
     restart: always
     environment:
-      - POSTGRES_HOST=db
+      - POSTGRES_HOST=172.18.0.10
       - POSTGRES_DB=eduflex
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-gotland81}
@@ -554,6 +611,7 @@ services:
     command: tunnel --config /etc/cloudflared/config.yml run
     volumes:
       - ./cloudflared_config.yml:/etc/cloudflared/config.yml
+      - /home/alex/.cloudflared:/etc/cloudflared/certs
     environment:
       - TUNNEL_TOKEN=${TUNNEL_TOKEN:-}
     logging:
@@ -564,9 +622,9 @@ services:
     networks:
       - eduflex-net
     extra_hosts:
+      - "frontend:172.18.0.200"
+      - "backend:172.18.0.100"
       - "host.docker.internal:host-gateway"
-      - "frontend:172.17.0.1"
-      - "backend:172.17.0.1"
 
 volumes:
   postgres_data:
@@ -580,3 +638,7 @@ volumes:
 networks:
   eduflex-net:
     driver: bridge
+    ipam:
+      config:
+        - subnet: 172.18.0.0/16
+          gateway: 172.18.0.1

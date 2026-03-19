@@ -13,88 +13,91 @@ import ErrorBoundary from './components/common/ErrorBoundary';
 // --- LAYOUT ---
 import Layout from './components/Layout';
 
-// --- FEATURES ---
+// --- FEATURES (CRITICAL FOR LANDING) ---
 import LandingPage from './features/landing/LandingPage';
 import FeaturesPage from './features/landing/FeaturesPage';
 import Login from './features/auth/Login';
 import PricingPage from './features/landing/PricingPage';
-import RegisterOrganization from './features/auth/RegisterOrganization';
-import OAuth2Callback from './features/auth/OAuth2Callback';
-import LtiSuccess from './features/auth/LtiSuccess';
-import LtiDeepLinking from './features/nav/LtiDeepLinking';
-import Dashboard from './features/dashboard/Dashboard';
-import CourseDetail from './features/courses/CourseDetail';
-import StudentCoursesPage from './features/courses/StudentCoursesPage';
-import CalendarView from './features/calendar/CalendarView';
-import ShopView from './features/edugame/ShopView';
+
+// --- FEATURES (LAZY LOADED) ---
+const RegisterOrganization = React.lazy(() => import('./features/auth/RegisterOrganization'));
+const OAuth2Callback = React.lazy(() => import('./features/auth/OAuth2Callback'));
+const LtiSuccess = React.lazy(() => import('./features/auth/LtiSuccess'));
+const LtiDeepLinking = React.lazy(() => import('./features/nav/LtiDeepLinking'));
+const Dashboard = React.lazy(() => import('./features/dashboard/Dashboard'));
+const CourseDetail = React.lazy(() => import('./features/courses/CourseDetail'));
+const StudentCoursesPage = React.lazy(() => import('./features/courses/StudentCoursesPage'));
+const CalendarView = React.lazy(() => import('./features/calendar/CalendarView'));
+const ShopView = React.lazy(() => import('./features/edugame/ShopView'));
 
 // --- SYSTEM ---
-import LicenseLock from './features/system/LicenseLock';
-import SystemSettings from './features/system/SystemSettings';
 import { ThemeProvider } from './context/ThemeContext';
 import { Toaster } from 'react-hot-toast';
 import AchievementToast from './components/gamification/AchievementToast';
 import FloatingAudioPlayer from './components/common/FloatingAudioPlayer';
 import { Helmet, HelmetProvider } from 'react-helmet-async';
 
-// --- DE RIKTIGA SIDORNA ---
-import UserProfile from './features/profile/UserProfile';
-import PublicProfile from './features/profile/PublicProfile';
-import CourseCatalog from './features/catalog/CourseCatalog';
-import ProgramCatalog from './features/programs/ProgramCatalog';
-import ProgramDetail from './features/programs/ProgramDetail';
-import DocumentManager from './features/documents/DocumentManager';
-import AdminAdministrationPage from './features/dashboard/AdminAdministrationPage';
-import ResourceBank from './features/resources/ResourceBank';
-import AnalyticsDashboard from './features/analytics/AnalyticsDashboard';
-import CertificateView from './features/certificates/CertificateView';
-import EnterpriseWhitelabel from './features/admin/EnterpriseWhitelabel';
-import SkolverketModule from './modules/skolverket/SkolverketModule';
-import SupportPage from './features/support/SupportPage';
-import CommunityHub from './features/community/CommunityHub';
-import CommunityAdmin from './features/community/CommunityAdmin';
-import AdminShopDashboard from './features/admin/shop/AdminShopDashboard';
-import AIQuizGenerator from './features/ai/AIQuizGenerator';
-import EbookLibrary from './features/library/EbookLibrary';
-import EvaluationManager from './modules/evaluation/EvaluationManager';
-import EvaluationFormView from './modules/evaluation/EvaluationFormView';
-import MyDocuments from './features/documents/MyDocuments';
-import PrincipalDashboard from './features/principal/PrincipalDashboard';
-import SchoolStructureManagement from './features/principal/SchoolStructureManagement';
-import AcademicGovernance from './features/principal/AcademicGovernance';
-import PrincipalTools from './features/principal/PrincipalTools';
-import MessageCenter from './features/messages/MessageCenter';
-import IncidentManager from './features/principal/IncidentManager';
-import SKAManager from './features/principal/SKAManager';
-import StaffingControl from './features/principal/StaffingControl';
-import ReportLibrary from './features/principal/ReportLibrary';
-import HealthTeamDashboard from './features/health/HealthTeamDashboard';
-import SurveyBuilder from './features/health/SurveyBuilder';
-import SurveyResponseForm from './features/health/SurveyResponseForm';
-import SurveyResults from './features/health/SurveyResults';
-import WellbeingCenter from './features/health/WellbeingCenter';
-import WellbeingInbox from './features/health/WellbeingInbox';
-import AdaptiveLearningDashboard from './features/adaptive/AdaptiveLearningDashboard';
-import EduAiHubPage from './features/ai/EduAiHubPage';
-import ManagementReportCenter from './features/principal/ManagementReportCenter';
-import ImpactDashboard from './features/impact/ImpactDashboard';
-import DeveloperSettings from './features/settings/DeveloperSettings';
-import RoiCenter from './features/analytics/RoiCenter';
-import EduCareerPortal from './features/career/EduCareerPortal';
-import PublicStorefront from './features/ecommerce/PublicStorefront';
-import Checkout from './features/ecommerce/Checkout';
-import CheckoutSuccess from './features/ecommerce/CheckoutSuccess';
-import CheckoutCancel from './features/ecommerce/CheckoutCancel';
-import SalesDashboard from './features/ecommerce/SalesDashboard';
-import ComplianceDashboard from './features/compliance/ComplianceDashboard';
-import SyvDashboard from './features/dashboard/components/syv/SyvDashboard';
-import ProgramManager from './features/admin/programs/ProgramManager';
-import HealthCheckDashboard from './features/admin/HealthCheckDashboard';
+// --- LAZY LOADED COMPONENTS ---
+const LicenseLock = React.lazy(() => import('./features/system/LicenseLock'));
+const SystemSettings = React.lazy(() => import('./features/system/SystemSettings'));
+
+const UserProfile = React.lazy(() => import('./features/profile/UserProfile'));
+const PublicProfile = React.lazy(() => import('./features/profile/PublicProfile'));
+const CourseCatalog = React.lazy(() => import('./features/catalog/CourseCatalog'));
+const ProgramCatalog = React.lazy(() => import('./features/programs/ProgramCatalog'));
+const ProgramDetail = React.lazy(() => import('./features/programs/ProgramDetail'));
+const DocumentManager = React.lazy(() => import('./features/documents/DocumentManager'));
+const AdminAdministrationPage = React.lazy(() => import('./features/dashboard/AdminAdministrationPage'));
+const ResourceBank = React.lazy(() => import('./features/resources/ResourceBank'));
+const AnalyticsDashboard = React.lazy(() => import('./features/analytics/AnalyticsDashboard'));
+const CertificateView = React.lazy(() => import('./features/certificates/CertificateView'));
+const EnterpriseWhitelabel = React.lazy(() => import('./features/admin/EnterpriseWhitelabel'));
+const SkolverketModule = React.lazy(() => import('./modules/skolverket/SkolverketModule'));
+const SupportPage = React.lazy(() => import('./features/support/SupportPage'));
+const CommunityHub = React.lazy(() => import('./features/community/CommunityHub'));
+const CommunityAdmin = React.lazy(() => import('./features/community/CommunityAdmin'));
+const AdminShopDashboard = React.lazy(() => import('./features/admin/shop/AdminShopDashboard'));
+const AIQuizGenerator = React.lazy(() => import('./features/ai/AIQuizGenerator'));
+const EbookLibrary = React.lazy(() => import('./features/library/EbookLibrary'));
+const EvaluationManager = React.lazy(() => import('./modules/evaluation/EvaluationManager'));
+const EvaluationFormView = React.lazy(() => import('./modules/evaluation/EvaluationFormView'));
+const MyDocuments = React.lazy(() => import('./features/documents/MyDocuments'));
+const PrincipalDashboard = React.lazy(() => import('./features/principal/PrincipalDashboard'));
+const SchoolStructureManagement = React.lazy(() => import('./features/principal/SchoolStructureManagement'));
+const AcademicGovernance = React.lazy(() => import('./features/principal/AcademicGovernance'));
+const PrincipalTools = React.lazy(() => import('./features/principal/PrincipalTools'));
+const MessageCenter = React.lazy(() => import('./features/messages/MessageCenter'));
+const IncidentManager = React.lazy(() => import('./features/principal/IncidentManager'));
+const SKAManager = React.lazy(() => import('./features/principal/SKAManager'));
+const StaffingControl = React.lazy(() => import('./features/principal/StaffingControl'));
+const ReportLibrary = React.lazy(() => import('./features/principal/ReportLibrary'));
+const HealthTeamDashboard = React.lazy(() => import('./features/health/HealthTeamDashboard'));
+const SurveyBuilder = React.lazy(() => import('./features/health/SurveyBuilder'));
+const SurveyResponseForm = React.lazy(() => import('./features/health/SurveyResponseForm'));
+const SurveyResults = React.lazy(() => import('./features/health/SurveyResults'));
+const WellbeingCenter = React.lazy(() => import('./features/health/WellbeingCenter'));
+const WellbeingInbox = React.lazy(() => import('./features/health/WellbeingInbox'));
+const AdaptiveLearningDashboard = React.lazy(() => import('./features/adaptive/AdaptiveLearningDashboard'));
+const EduAiHubPage = React.lazy(() => import('./features/ai/EduAiHubPage'));
+const ManagementReportCenter = React.lazy(() => import('./features/principal/ManagementReportCenter'));
+const ImpactDashboard = React.lazy(() => import('./features/impact/ImpactDashboard'));
+const DeveloperSettings = React.lazy(() => import('./features/settings/DeveloperSettings'));
+const RoiCenter = React.lazy(() => import('./features/analytics/RoiCenter'));
+const EduCareerPortal = React.lazy(() => import('./features/career/EduCareerPortal'));
+const PublicStorefront = React.lazy(() => import('./features/ecommerce/PublicStorefront'));
+const Checkout = React.lazy(() => import('./features/ecommerce/Checkout'));
+const CheckoutSuccess = React.lazy(() => import('./features/ecommerce/CheckoutSuccess'));
+const CheckoutCancel = React.lazy(() => import('./features/ecommerce/CheckoutCancel'));
+const SalesDashboard = React.lazy(() => import('./features/ecommerce/SalesDashboard'));
+const ComplianceDashboard = React.lazy(() => import('./features/compliance/ComplianceDashboard'));
+const SyvDashboard = React.lazy(() => import('./features/dashboard/components/syv/SyvDashboard'));
+const ProgramManager = React.lazy(() => import('./features/admin/programs/ProgramManager'));
+const HealthCheckDashboard = React.lazy(() => import('./features/admin/HealthCheckDashboard'));
 
 // --- ISP (Individuell Studieplan) ---
-import IspDashboard from './features/isp/IspDashboard';
-import StudentIspPage from './features/isp/StudentIspPage';
-import PrincipalIspOverview from './features/isp/PrincipalIspOverview';
+const IspDashboard = React.lazy(() => import('./features/isp/IspDashboard'));
+const StudentIspPage = React.lazy(() => import('./features/isp/StudentIspPage'));
+const PrincipalIspOverview = React.lazy(() => import('./features/isp/PrincipalIspOverview'));
 
 // --- PROTECTED ROUTE ---
 const ProtectedRoute = ({ children, roles, permission }) => {
@@ -192,8 +195,14 @@ const AppRoutes = () => {
 
     return (
         <ThemeProvider currentUser={currentUser}>
-            <Routes>
-                <Route path="/login" element={<Login />} />
+            <React.Suspense fallback={
+                <div className="h-screen flex flex-col items-center justify-center bg-gray-50 dark:bg-[#131314] text-gray-400">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 mb-2"></div>
+                    <span className="text-sm">Laddar sektion...</span>
+                </div>
+            }>
+                <Routes>
+                    <Route path="/login" element={<Login />} />
                 <Route path="/register-org" element={<RegisterOrganization />} />
                 <Route path="/oauth2/callback" element={<OAuth2Callback />} />
                 <Route path="/lti-success" element={<LtiSuccess />} />
@@ -671,6 +680,7 @@ const AppRoutes = () => {
 
                 <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
+            </React.Suspense>
         </ThemeProvider>
     );
 };

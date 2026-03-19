@@ -1,4 +1,4 @@
-# 🎓 EduFlex LLP v3.9.3
+# 🎓 EduFlex LLP v3.9.4
 *Den kompletta Learning Lifecycle-plattformen för modern utbildning och B2B*
 
 *Utvecklas & underhålls av **Alex Weström / Fenrir Studio***  
@@ -17,8 +17,13 @@ EduFlex LLP är ett enterprise-redo, molnbaserat ekosystem som ersätter traditi
 
 För en fullständig historik och detaljerad väg framåt, se våra separata dokument:
 
-*   📜 **[Fullständig Changelog](./CHANGELOG.md)** – Se alla detaljer för v3.9.3 och tidigare versioner.
+*   📜 **[Fullständig Changelog](./CHANGELOG.md)** – Se alla detaljer för v3.9.4 och tidigare versioner.
 *   🗺️ **[Projekt Roadmap](./ROADMAP.md)** – Visionen för 2026 och kommande mikrotjänster.
+
+### v3.9.4 (19 mar 2026) – AI Accessibility & Turbo-Load
+- **🤖 AI Accessibility (EN 301 549)**: Automatiserad tillgänglighetsgranskning integrerad direkt i `RichTextEditor`.
+- **⚡ Turbo-Load Architecture**: Upp till 80 % snabbare laddningstid via route-splitting och dynamic lazy-i18n.
+- **✨ Microservice Extraction**: Ny mikrotjänst för asynkron tillgänglighetsvalidering mot Af:s öppna data.
 
 ### v3.9.3 (18 mar 2026) – Performance Tuning & Security Hardening
 - **🤖 AI Robustness**: Fallback-mekanism för Gemini (växlar automatiskt mellan Pro/Flash vid kapacitetsbrist).
@@ -78,5 +83,5 @@ Kör följande kommando:
 
 ⚖ **Licens & Kontakt**  
 EduFlex LLP™ © 2026 Alex Weström / Fenrir Studio  
-Senast uppdaterad: 2026-03-18 (v3.9.3)
+Senast uppdaterad: 2026-03-19 (v3.9.4)
 

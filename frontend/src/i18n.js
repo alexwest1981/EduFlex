@@ -11,68 +11,69 @@ import { api } from './services/api';
  */
 
 // --- 1. Load all BUNDLED JSON files dynamically via Vite glob ---
-const baseFiles = import.meta.glob('./locales/**/*.json', { eager: true });
+// We remove eager: true to prevent loading 1100+ files on the landing page
+const baseFiles = import.meta.glob('./locales/**/*.json');
 const moduleFiles = import.meta.glob([
     './modules/**/locales/*.json',
     './features/**/locales/*.json',
     './features/dashboard/locales/*.json',
     './features/auth/locales/*.json'
-], { eager: true });
+]);
 
 const resources = {};
-const bundledLangs = new Set(['sv', 'en', 'fr', 'de', 'es', 'ar', 'no', 'da', 'fi']);
+// We still define which languages are available
+const bundledLangs = ['sv', 'en', 'fr', 'de', 'es', 'ar', 'no', 'da', 'fi'];
 
-// --- 2. Process Bundled Base Translations ---
-Object.keys(baseFiles).forEach(path => {
-    const match = path.match(/\.\/locales\/([^/]+)\/translation\.json/);
-    if (match) {
-        const lang = match[1];
-        if (!resources[lang]) {
-            resources[lang] = { translation: {} };
+// --- 2. Custom Backend for i18next to load glob files on demand ---
+const globBackend = {
+    type: 'backend',
+    read: async (language, namespace, callback) => {
+        try {
+            const langResources = {};
+            
+            // Load base translation
+            const baseKey = `./locales/${language}/translation.json`;
+            if (baseFiles[baseKey]) {
+                const mod = await baseFiles[baseKey]();
+                Object.assign(langResources, mod.default || mod);
+            }
+
+            // Load module/feature translations
+            const moduleNameMapping = {
+                'quiz-runner': 'quiz',
+                'feedback': 'evaluation'
+            };
+
+            for (const [path, loader] of Object.entries(moduleFiles)) {
+                // Match ./modules/name/locales/lang.json or ./features/name/locales/lang.json
+                const match = path.match(/\.\/(modules|features)\/([^/]+)\/locales\/([^/]+)\.json/);
+                if (match && match[3] === language) {
+                    let moduleName = match[2];
+                    if (moduleNameMapping[moduleName]) moduleName = moduleNameMapping[moduleName];
+                    
+                    const mod = await loader();
+                    langResources[moduleName] = {
+                        ...langResources[moduleName],
+                        ...(mod.default || mod)
+                    };
+                }
+            }
+            
+            callback(null, langResources);
+        } catch (err) {
+            callback(err, null);
         }
-        const content = baseFiles[path].default || baseFiles[path];
-        resources[lang].translation = { ...resources[lang].translation, ...content };
     }
-});
-
-// --- 3. Process Bundled Module/Feature Translations ---
-const moduleNameMapping = {
-    'quiz-runner': 'quiz',
-    'feedback': 'evaluation'
 };
 
-const cleanCode = (code) => code ? code.split('-')[0].split('_')[0].toLowerCase() : 'sv';
-
-Object.keys(moduleFiles).forEach(path => {
-    // Match ./modules/name/locales/lang.json or ./features/name/locales/lang.json
-    const match = path.match(/\.\/(modules|features)\/([^/]+)\/locales\/([^/]+)\.json/);
-    if (match) {
-        let moduleName = match[2];
-        const lang = match[3]; // Use verbatim lang name from file
-
-        if (moduleNameMapping[moduleName]) {
-            moduleName = moduleNameMapping[moduleName];
-        }
-
-        if (!resources[lang]) {
-            resources[lang] = { translation: {} };
-        }
-
-        const content = moduleFiles[path].default || moduleFiles[path];
-        resources[lang].translation[moduleName] = {
-            ...resources[lang].translation[moduleName],
-            ...content
-        };
-    }
-});
-
 i18n
+    .use(globBackend)
     .use(LanguageDetector)
     .use(initReactI18next)
     .init({
-        resources,
-        fallbackLng: 'sv', // Default to sv
+        fallbackLng: 'sv',
         debug: false,
+        returnObjects: true,
         interpolation: {
             escapeValue: false,
         },

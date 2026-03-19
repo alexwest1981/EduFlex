@@ -44,7 +44,14 @@
       "openai": "OpenAI API"
     },
     "pro": "Pro",
-    "menu": "Meny"
+    "menu": "Meny",
+    "scanning": "Skannar...",
+    "tip": "Tips"
+  },
+  "accessibility": {
+    "scan_button": "Skanna tillgänglighet",
+    "report_title": "Tillgänglighetsrapport",
+    "score": "Tillgänglighetspoäng"
   },
   "sidebar": {
     "dashboard": "Översikt",
@@ -995,7 +1002,20 @@
       "view_full_changelog": "Visa fullständig changelog",
       "roadmap_title": "Projekt Roadmap",
       "roadmap_desc": "Se vår vision för 2026 och de spännande moduler vi utvecklar just nu.",
-      "view_full_roadmap": "Visa projektets roadmap"
+      "view_full_roadmap": "Visa projektets roadmap",
+      "changelog_items": [
+        { "version": "v3.9.4", "title": "AI Tillgänglighetsmotor", "desc": "Automatiserad granskning enligt EN 301 549 (DOS-lagen) integrerad i editorn." },
+        { "version": "v3.9.4", "title": "Turbo-laddning", "desc": "Laddningstid minskad med 80% via code-splitting och dynamisk i18n." },
+        { "version": "v3.9.3", "title": "Säkerhetshärdning", "desc": "Docker-optimering (Non-root) och rensning av känslig data." },
+        { "version": "v3.9.3", "title": "AI Robustness", "desc": "Gemini Fallback-system för 100% drifttid på AI-tjänster." }
+      ],
+      "roadmap_items": [
+        { "quarter": "KLAR v3.9.4", "title": "DOS-lagen (AI)", "desc": "Fullt operativ granskningsmotor integrerad i RichTextEditor." },
+        { "quarter": "Q2 2026", "title": "JobEd Connect", "desc": "Matchning av utbildningsmål mot yrkeskompetenser." },
+        { "quarter": "Q2 2026", "title": "Integrationshubb", "desc": "Automatisk synk med Skolverket, Ladok och HR-system." },
+        { "quarter": "Q3 2026", "title": "AF MCP AI", "desc": "Avancerad taksonomianalys med Af:s utvecklarverktyg." },
+        { "quarter": "Q3 2026", "title": "AI Tutors 3.0", "desc": "Proaktiv coaching som förutser elevbehov." }
+      ]
     },
     "roles": {
       "badge": "Lösningar för alla",
