@@ -1,4 +1,4 @@
-# 🎓 EduFlex LLP v3.9.4
+# 🎓 EduFlex LLP v3.9.6
 *Den kompletta Learning Lifecycle-plattformen för modern utbildning och B2B*
 
 *Utvecklas & underhålls av **Alex Weström / Fenrir Studio***  
@@ -20,17 +20,15 @@ För en fullständig historik och detaljerad väg framåt, se våra separata dok
 *   📜 **[Fullständig Changelog](./CHANGELOG.md)** – Se alla detaljer för v3.9.4 och tidigare versioner.
 *   🗺️ **[Projekt Roadmap](./ROADMAP.md)** – Visionen för 2026 och kommande mikrotjänster.
 
-### v3.9.4 (19 mar 2026) – AI Accessibility & Turbo-Load
-- **🤖 AI Accessibility (EN 301 549)**: Automatiserad tillgänglighetsgranskning integrerad direkt i `RichTextEditor`.
-- **⚡ Turbo-Load Architecture**: Upp till 80 % snabbare laddningstid via route-splitting och dynamic lazy-i18n.
-- **✨ Microservice Extraction**: Ny mikrotjänst för asynkron tillgänglighetsvalidering mot Af:s öppna data.
+### v3.9.6 (19 mar 2026) – EduCareer: Unified Career & LIA Portal
+- **🎯 EduCareer Portal**: Samlad karriär- och LIA-portal med tabbar: **EduJob** (AI-matchning mot Arbetsförmedlingen) och **LIA & Praktik** (praktiksökportal med geolocation-filter).
+- **🔧 Backend Fixes**: Åtgärdade bygfel i `CourseService.java` (saknade imports + konstruktor) och `JobTechController.java`.
+- **✨ Diagnostics**: Amber-varningsbadge i Match-modal när AI skill-extraktionen misslyckas.
 
-### v3.9.3 (18 mar 2026) – Performance Tuning & Security Hardening
-- **🤖 AI Robustness**: Fallback-mekanism för Gemini (växlar automatiskt mellan Pro/Flash vid kapacitetsbrist).
-- **🛡️ Security Hardening**: Alla containrar (inkl. AI) kör nu som non-root användare. Sanerade credentials och PII.
-- **⚡ Repo Audit**: Rensat bort junk-filer, loggar och osäkrade placeholders. Striktare `.gitignore`.
-- **🇳🇴 Localization**: Fullständig restaurering av den norska översättningen.
-- **🌐 Landing Page**: Ny "Vad är nytt"-sektion direkt på landningssidan.
+### v3.9.5 (19 mar 2026) – JobEd Connect Hub Phase 2 & 3
+- **🤖 AI Skill Mapper**: Automatisk extraktion av jobbkrav via Gemini + matchning mot studentens kompetensprofil.
+- **📚 Personalized Learning Paths**: Kursrekommendationer baserade på identifierade kompetensglapp.
+- **🌍 Full Localization**: Alla karriärfunktioner är fullständigt på svenska och engelska.
 
 ---
 

@@ -1,4 +1,5 @@
 {
+  "jobed_results_label": "{{num}} job ads found",
   "common" : {
     "save" : "Save",
     "cancel" : "Cancel",
@@ -109,6 +110,34 @@
     "delete_confirm" : "Are you sure you want to delete this book?",
     "delete_success" : "Book deleted",
     "no_books_desc" : "Try searching for something else or upload your first e-book to the library."
+  },
+  "career": {
+    "badge": "JobEd Connect",
+    "title": "Career & Market",
+    "subtitle": "Match your educational goals against real-time job ads from the Swedish Public Employment Service.",
+    "search_placeholder": "Search for occupation, skill or company...",
+    "search_error": "Could not fetch job ads. Please try again later.",
+    "results_found": "{{num}} job ads found",
+    "match_score": "Match Score",
+    "analyzing": "Analyzing...",
+    "calculate_match": "Calculate Match",
+    "matched_skills": "Matched Skills",
+    "missing_skills": "Missing Skills (Required)",
+    "details": "Match Details",
+    "potential": "Your Potential",
+    "no_matches": "No direct matches yet.",
+    "no_missing": "No required skills missing!",
+    "tip": "Tip: You can bridge your gaps by taking courses in",
+    "relevant_areas": "relevant areas",
+    "close": "Close",
+    "apply": "Apply for Job",
+    "matchModal": {
+      "learningPaths": "Personalized Learning Paths",
+      "learningPathsDescription": "Recommended courses to bridge your skill gaps.",
+      "enrollNow": "Enroll Now",
+      "relevance": "Relevance",
+      "noRecommendations": "No specific courses found for these skills yet."
+    }
   },
   "dashboard" : {
     "welcome" : "Welcome back, {{name}}!",

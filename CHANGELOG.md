@@ -4,7 +4,31 @@ All notable changes to the EduFlex Learning Lifecycle Platform (LLP) will be doc
 
 ---
 
-## [v3.9.4] - 2026-03-19 (Current)
+## [v3.9.6] - 2026-03-19
+### 🎯 EduCareer – Unified Career & LIA Portal
+- **EduCareer Portal**: Samlad karriär- och praktikportal med tabbar. Ersätter separata "JobEd Connect"- och "LIA & Praktik"-sidor med en enda enhetlig upplevelse under `/career`.
+- **EduJob-flik**: AI-matchning mot Arbetsförmedlingens JobTech API med skill-gap-analys och personaliserade kursrekommendationer (f.d. CareerDashboard).
+- **LIA & Praktik-flik**: Dedikerad sökportal för LIA- och praktikplatser med AI-insikter, geolocation-filter (sökradie) och stad-shortcuts.
+- **Navigation Redesign**: Menyn visar nu en enda "EduCareer"-länk (för studenter, lärare och admins) utan licenstier-gating.
+
+### 🔧 Backend Build Fixes
+- **CourseService.java**: Åtgärdade 3 saknade imports (`CourseLicenseRepository`, `CourseRepository`, `CourseSkillMappingRepository`), odeklarerat fält och fel variabelreferens (`mappingRepository` → `courseSkillMappingRepository`).
+- **JobTechController.java**: Åtgärdade saknad `warning`-variabeldeklaration i `matchJob`-metoden.
+- **Containers**: `eduflex-backend` och `eduflex-jobtech` byggs och körs nu korrekt (healthy).
+
+### ✨ UX & Diagnostics
+- **Diagnostic Warning Badge**: Amber-badge visas i Match Details Modal när AI-extraktionen misslyckas extrahera skills (totalJobSkills = 0).
+
+---
+
+## [v3.9.5] - 2026-03-19
+
+### 🚀 JobEd Connect Hub (Phase 1)
+- **Real-time Job Matching**: Integrated Arbetsförmedlingen JobTech APIs for real-time job searching based on keywords and occupations.
+- **Career Dashboard**: Launched a premium UI for students to explore the labor market, including "Trending Jobs" and AI-driven match placeholders.
+- **Microservice Extraction**: Deployed `eduflex-jobtech` microservice on port 8087 with multi-stage Docker orchestration.
+
+## [v3.9.4] - 2026-03-19
 ### 🤖 AI Accessibility Engine (EN 301 549)
 - **Automated Compliance Auditor**: Launched the first integrated accessibility scanner for EduFlex, mapped against **149 machine-readable legal requirements**.
 - **✨ Editor Integration**: Added a real-time scan button to the `RichTextEditor` with a results sidebar, compliance scoring, and AI-driven fix suggestions.

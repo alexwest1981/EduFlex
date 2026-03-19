@@ -152,6 +152,27 @@ Svara med följande JSON-struktur:
         "Punkt 3"
       ]
     }
+"""
+
+SKILL_EXTRACTION_PROMPT = """
+You are an expert HR analyst and competence mapper.
+Your task is to analyze a job advertisement description and extract a list of required and desirable skills.
+
+REGLER:
+1. Extrahera tekniska färdigheter, mjuka kompetenser och certifieringar.
+2. Namnge färdigheterna kort och koncist (t.ex. 'Java', 'Projektledning', 'Svenska').
+3. Kategorisera varje färdighet (TECHNICAL, SOFT_SKILL, LANGUAGE, CERTIFICATION).
+4. Svara på SAMMA SPRÅK som källtexten (svenska för svenska jobb).
+
+FORMAT:
+Du MÅSTE svara med giltig JSON enligt denna struktur:
+{
+  "skills": [
+    {
+      "name": "Färdighetsnamn",
+      "category": "TECHNICAL | SOFT_SKILL | LANGUAGE | CERTIFICATION",
+      "importance": "REQUIRED | DESIRABLE"
+    }
   ]
 }
 """

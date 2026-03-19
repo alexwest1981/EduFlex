@@ -398,6 +398,34 @@ services:
         ipv4_address: 172.18.0.120
     restart: unless-stopped
 
+  # --- JOBTECH MICROSERVICE (JobEd Connect Hub) ---
+  eduflex-jobtech:
+    build: ./eduflex-jobtech
+    container_name: eduflex-jobtech
+    depends_on:
+      redis:
+        condition: service_healthy
+    ports:
+      - "8087:8087"
+    environment:
+      - SERVER_PORT=8087
+      - SPRING_DATA_REDIS_HOST=redis
+      - SPRING_DATA_REDIS_PORT=6379
+    healthcheck:
+      test: [ "CMD", "wget", "-qO-", "http://localhost:8087/actuator/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      eduflex-net:
+        ipv4_address: 172.18.0.125
+    restart: unless-stopped
+
   # --- AI MICROSERVICE ---
   eduflex-ai:
     build: ./eduflex-ai
@@ -435,6 +463,8 @@ services:
       - VITE_API_BASE_URL=/api
       - VITE_BACKEND_URL=http://backend:8080
       - VITE_NOTIFICATIONS_URL=http://eduflex-notifications:8085
+      - VITE_JOBTECH_URL=http://eduflex-jobtech:8087
+      - VITE_ACCESSIBILITY_URL=http://eduflex-accessibility:8086
     command: npm run dev -- --host --port 5173
     volumes:
       - ./frontend:/app

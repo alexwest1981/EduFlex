@@ -1,4 +1,5 @@
 {
+  "jobed_results_label": "{{num}} jobbannonser hittades",
   "common": {
     "save": "Spara",
     "cancel": "Avbryt",
@@ -109,6 +110,34 @@
     "delete_confirm": "Är du säker på att du vill ta bort denna bok?",
     "delete_success": "Bok borttagen",
     "no_books_desc": "Prova att söka på något annat eller ladda upp din första e-bok till biblioteket."
+  },
+  "career": {
+    "badge": "JobEd Connect",
+    "title": "Karriär & Arbetsmarknad",
+    "subtitle": "Matcha dina utbildningsmål mot realtidsannonser från Arbetsförmedlingen.",
+    "search_placeholder": "Sök efter yrke, färdighet eller företag...",
+    "search_error": "Kunde inte hämta jobbannonser. Försök igen senare.",
+    "results_found": "{{num}} jobbannonser hittades",
+    "match_score": "Matchning",
+    "analyzing": "Analyserar...",
+    "calculate_match": "Beräkna matchning",
+    "matched_skills": "Matchade färdigheter",
+    "missing_skills": "Saknade färdigheter (Krav)",
+    "details": "Matchningsdetaljer",
+    "potential": "Din potential",
+    "no_matches": "Inga direkta matchningar ännu.",
+    "no_missing": "Inga obligatoriska krav saknas!",
+    "tip": "Tips: Du kan minska dina gap genom att gå kurser inom",
+    "relevant_areas": "relevanta områden",
+    "close": "Stäng",
+    "apply": "Sök tjänsten",
+    "matchModal": {
+      "learningPaths": "Personliga lärstigar",
+      "learningPathsDescription": "Rekommenderade kurser för att överbrygga dina kompetensluckor.",
+      "enrollNow": "Anmäl dig nu",
+      "relevance": "Relevans",
+      "noRecommendations": "Inga specifika kurser hittades för dessa kompetenser ännu."
+    }
   },
   "dashboard": {
     "welcome": "Välkommen tillbaka, {{name}}!",
@@ -1004,17 +1033,38 @@
       "roadmap_desc": "Se vår vision för 2026 och de spännande moduler vi utvecklar just nu.",
       "view_full_roadmap": "Visa projektets roadmap",
       "changelog_items": [
-        { "version": "v3.9.4", "title": "AI Tillgänglighetsmotor", "desc": "Automatiserad granskning enligt EN 301 549 (DOS-lagen) integrerad i editorn." },
-        { "version": "v3.9.4", "title": "Turbo-laddning", "desc": "Laddningstid minskad med 80% via code-splitting och dynamisk i18n." },
-        { "version": "v3.9.3", "title": "Säkerhetshärdning", "desc": "Docker-optimering (Non-root) och rensning av känslig data." },
-        { "version": "v3.9.3", "title": "AI Robustness", "desc": "Gemini Fallback-system för 100% drifttid på AI-tjänster." }
+        {
+          "version": "v3.9.6",
+          "title": "EduCareer – Karriär & LIA Portal",
+          "description": "Samlad portal med flikar: EduJob (AI-matchning) och LIA & Praktik (LIA-sök)."
+        },
+        {
+          "version": "v3.9.5",
+          "title": "AI Skill Mapper & Personaliserade Lärvägar",
+          "description": "Automatisk kompetensextraktion ur jobbannonser + kurser som täcker dina kunskapsluckor."
+        },
+        {
+          "version": "v3.9.4",
+          "title": "AI Accessibility Engine (EN 301 549)",
+          "description": "Automatiserad WCAG-granskning integrerad direkt i redigeraren med AI-förslag."
+        }
       ],
       "roadmap_items": [
-        { "quarter": "KLAR v3.9.4", "title": "DOS-lagen (AI)", "desc": "Fullt operativ granskningsmotor integrerad i RichTextEditor." },
-        { "quarter": "Q2 2026", "title": "JobEd Connect", "desc": "Matchning av utbildningsmål mot yrkeskompetenser." },
-        { "quarter": "Q2 2026", "title": "Integrationshubb", "desc": "Automatisk synk med Skolverket, Ladok och HR-system." },
-        { "quarter": "Q3 2026", "title": "AF MCP AI", "desc": "Avancerad taksonomianalys med Af:s utvecklarverktyg." },
-        { "quarter": "Q3 2026", "title": "AI Tutors 3.0", "desc": "Proaktiv coaching som förutser elevbehov." }
+        {
+          "title": "SCORM & xAPI Engine",
+          "description": "Dedikerad mikrotjänst för e-learningpaket och spårning.",
+          "quarter": "Q2 2026"
+        },
+        {
+          "title": "AI Tutors 3.0",
+          "description": "Proaktiva AI-coacher som identifierar kunskapsluckor innan studenten misslyckas.",
+          "quarter": "Q3 2026"
+        },
+        {
+          "title": "Ladok & HR Integration Hub",
+          "description": "Asynkron batchsynk mot Ladok, Skolverket och HR-system.",
+          "quarter": "Q2 2026"
+        }
       ]
     },
     "roles": {
@@ -1193,11 +1243,11 @@
     "title": "Kontakta Oss",
     "description": "Vi finns här för att hjälpa dig dygnet runt.",
     "form": {
-        "name": "Ditt Namn",
-        "email": "Ditt Email",
-        "subject": "Ämne",
-        "message": "Meddelande",
-        "send": "Skicka Meddelande"
+      "name": "Ditt Namn",
+      "email": "Ditt Email",
+      "subject": "Ämne",
+      "message": "Meddelande",
+      "send": "Skicka Meddelande"
     }
   },
   "system_settings": {

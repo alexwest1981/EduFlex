@@ -13,7 +13,9 @@ export default defineConfig(({ mode }) => {
     const env = loadEnv(mode, process.cwd(), '')
     const backendUrl = env.VITE_BACKEND_URL || 'http://localhost:8080'
     const notificationsUrl = env.VITE_NOTIFICATIONS_URL || 'http://localhost:8085'
-    console.log(`[ViteConfig] Mode: ${mode}, Backend URL: ${backendUrl}, Notifications: ${notificationsUrl}`);
+    const jobtechUrl = env.VITE_JOBTECH_URL || 'http://localhost:8087'
+    const accessibilityUrl = env.VITE_ACCESSIBILITY_URL || 'http://localhost:8086'
+    console.log(`[ViteConfig] Mode: ${mode}, Backend URL: ${backendUrl}, Notifications: ${notificationsUrl}, JobTech: ${jobtechUrl}`);
 
     return {
         plugins: [
@@ -102,6 +104,18 @@ export default defineConfig(({ mode }) => {
                 ]
             },
             proxy: {
+                // JobTech (JobSearch / Taxonomy) microservice proxy
+                '/api/jobtech': {
+                    target: jobtechUrl,
+                    changeOrigin: true,
+                    rewrite: (path) => path.replace(/^\/api\/jobtech/, '/api/v1/jobtech')
+                },
+                // Accessibility (DOS-lagen) microservice proxy
+                '/api/accessibility': {
+                    target: accessibilityUrl,
+                    changeOrigin: true,
+                    rewrite: (path) => path.replace(/^\/api\/accessibility/, '/api/v1/accessibility')
+                },
                 '/api': {
                     target: backendUrl,
                     changeOrigin: true
@@ -148,12 +162,6 @@ export default defineConfig(({ mode }) => {
                 '/api/lrs': {
                     target: 'http://localhost:8084',
                     changeOrigin: true
-                },
-                // Accessibility (DOS-lagen) microservice proxy
-                '/api/accessibility': {
-                    target: 'http://localhost:8086',
-                    changeOrigin: true,
-                    rewrite: (path) => path.replace(/^\/api\/accessibility/, '/api/v1/accessibility')
                 },
                 // OnlyOffice Direct Proxy - Route ASSETS and SOCKETS directly to ONLYOFFICE server (8081)
                 // This bypasses the backend proxy for better performance and WebSocket support

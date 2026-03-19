@@ -192,6 +192,10 @@ export const api = {
         register: (data) => api.post('/auth/register', data),
     },
 
+    skills: {
+        getGap: () => api.get('/skills/gap'),
+    },
+
     // --- GLOBAL SÖK ---
     search: {
         global: (query) => api.get(`/search/global?q=${encodeURIComponent(query)}`),
@@ -900,6 +904,7 @@ export const api = {
         save: (job) => api.post('/career/save', job),
         getSaved: () => api.get('/career/saved'),
         getAnalysis: () => api.get('/career/analysis'),
+        getRecommendations: (missingSkills) => api.post('/career/recommendations', { missingSkills }),
     },
 
     principal: {
@@ -988,6 +993,13 @@ export const api = {
 
     impact: {
         getOverview: () => api.get('/impact/overview'),
+    },
+
+    jobtech: {
+        search: (query, limit) => api.get(`/jobtech/search?q=${encodeURIComponent(query)}${limit ? `&limit=${limit}` : ''}`),
+        getOccupations: (query) => api.get(`/jobtech/occupations?q=${encodeURIComponent(query)}`),
+        getHealth: () => api.get('/jobtech/health'),
+        match: (jobId, skills) => api.post(`/jobtech/match/${jobId}`, { skills }),
     },
 };
 

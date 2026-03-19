@@ -4,9 +4,11 @@
 
 ---
 
-## 🛠️ Current State (v3.9.4)
-- **AI Accessibility Engine**: Automated EN 301 549 (DOS-lagen) validation integrated into the editor.
-- **Turbo-Load Architecture**: 80% faster initial paint via route splitting and lazy-i18n.
+## 🛠️ Current State (v3.9.6)
+- **EduCareer Portal [DONE v3.9.6]**: Samlad karriär- & LIA-portal med EduJob- och LIA & Praktik-flikar. AI-matchning mot Arbetsförmedlingen + LIA-sökning med geolocation-filter.
+- **AI Skill Mapper [DONE v3.9.5]**: Automatisk extraktion av jobbkrav via Gemini + matchning mot studentens kompetensprofil. Personaliserade kursrekommendationer.
+- **AI Accessibility Engine [DONE v3.9.4]**: Automated EN 301 549 (DOS-lagen) validation integrated into the editor.
+- **Turbo-Load Architecture [DONE v3.9.4]**: 80% faster initial paint via route splitting and lazy-i18n.
 - **Zero-Trust AI Pipeline**: PII masking and local response restoration (Schrems II-ready).
 - **BankID Integration**: Secure authentication with SSN mapping.
 - **Repository Hardened**: Non-root containers and sanitized credentials.
@@ -18,7 +20,7 @@
 ### 🚀 High Priority: Microservice Extraction & Compliance
 - **Accessibility (DOS-lagen) [DONE v3.9.4]**: Automated WCAG validation using the new machine-readable EN 301 549 dataset.
 - **SCORM & xAPI Engine**: Moving the heavy I/O of e-learning packages to a dedicated worker.
-- **JobEd Connect Hub**: Real-time matching between educational goals (SUSA-navet) and labor market competencies.
+- **JobEd Connect Hub [DONE v3.9.5]**: Real-time matching between educational goals (SUSA-navet) and labor market competencies from Arbetsförmedlingen.
 - **Real-time Notifications**: Dedicated service for WebSockets/SSE to handle 10,000+ parallel connections.
 - **Integration Hub**: Asynchronous batch syncing for Skolverket, Ladok, and HR systems.
 

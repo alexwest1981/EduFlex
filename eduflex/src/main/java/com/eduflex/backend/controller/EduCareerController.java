@@ -2,6 +2,9 @@ package com.eduflex.backend.controller;
 
 import com.eduflex.backend.model.SavedInternship;
 import com.eduflex.backend.service.EduCareerService;
+import com.eduflex.backend.service.CourseService;
+import com.eduflex.backend.dto.RecommendationRequestDTO;
+import com.eduflex.backend.dto.CourseRecommendationDTO;
 import com.eduflex.backend.model.User;
 import com.eduflex.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +19,7 @@ import java.util.*;
 public class EduCareerController {
 
     private final EduCareerService careerService;
+    private final CourseService courseService;
     private final UserRepository userRepo;
 
     @GetMapping("/search")
@@ -45,6 +49,14 @@ public class EduCareerController {
     public ResponseEntity<Map<String, Object>> getCareerAnalysis(Principal principal) {
         User user = getUserFromPrincipal(principal);
         return ResponseEntity.ok(careerService.getCareerAnalysis(user.getId()));
+    }
+
+    @PostMapping("/recommendations")
+    public ResponseEntity<List<CourseRecommendationDTO>> getRecommendations(
+            Principal principal,
+            @RequestBody RecommendationRequestDTO request) {
+        User user = getUserFromPrincipal(principal);
+        return ResponseEntity.ok(courseService.recommendCoursesForSkills(user.getId(), request.missingSkills()));
     }
 
     private User getUserFromPrincipal(Principal principal) {

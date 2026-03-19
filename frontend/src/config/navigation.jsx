@@ -68,8 +68,11 @@ export const getNavigationConfig = (currentUser, t, isModuleActive, licenseTier,
         sections.education.push({ path: '/my-study-plan', label: 'Min Studieplan (ISP)', icon: <GraduationCap size={20} /> });
         if (licenseTier !== 'BASIC') {
             sections.education.push({ path: '/ai-hub', label: 'EduAI Hub', icon: <Brain size={20} /> });
-            sections.education.push({ path: '/career', label: 'EduCareer', icon: <Briefcase size={20} /> });
         }
+    }
+
+    if (isStudent || isAdmin || isTeacher) {
+        sections.education.push({ path: '/career', label: 'EduCareer', icon: <Briefcase size={20} /> });
     }
 
     if (isStudent || isTeacher || isAdmin) {

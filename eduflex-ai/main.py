@@ -130,6 +130,11 @@ async def generate_ppt(request: CourseRequest):
     user_prompt = f"LEKTIONSTEXT:\n---\n{request.text}\n---\n"
     return await call_gemini(prompts.PPT_SYSTEM_PROMPT, user_prompt)
 
+@app.post("/api/ai/extract-skills")
+async def extract_skills(request: CourseRequest):
+    user_prompt = f"JOBBANNONS:\n---\n{request.text}\n---\n"
+    return await call_gemini(prompts.SKILL_EXTRACTION_PROMPT, user_prompt)
+
 @app.post("/api/ai/chat")
 async def chat(request: AIRequest):
     # Use specialized chat helper for fallback-aware chat

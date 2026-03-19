@@ -1,0 +1,16 @@
+server:
+  port: 8087
+
+spring:
+  application:
+    name: eduflex-jobtech
+  data:
+    redis:
+      host: ${SPRING_DATA_REDIS_HOST:redis}
+      port: ${SPRING_DATA_REDIS_PORT:6379}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics

@@ -83,7 +83,7 @@ const ManagementReportCenter = React.lazy(() => import('./features/principal/Man
 const ImpactDashboard = React.lazy(() => import('./features/impact/ImpactDashboard'));
 const DeveloperSettings = React.lazy(() => import('./features/settings/DeveloperSettings'));
 const RoiCenter = React.lazy(() => import('./features/analytics/RoiCenter'));
-const EduCareerPortal = React.lazy(() => import('./features/career/EduCareerPortal'));
+const EduCareerPage = React.lazy(() => import('./features/career/EduCareerPage'));
 const PublicStorefront = React.lazy(() => import('./features/ecommerce/PublicStorefront'));
 const Checkout = React.lazy(() => import('./features/ecommerce/Checkout'));
 const CheckoutSuccess = React.lazy(() => import('./features/ecommerce/CheckoutSuccess'));
@@ -642,16 +642,13 @@ const AppRoutes = () => {
                 } />
 
                 <Route path="/career" element={
-                    <ProtectedRoute roles={['STUDENT', 'ROLE_STUDENT']}>
-                        {licenseTier !== 'BASIC' ? (
-                            <Layout currentUser={currentUser} handleLogout={logout}>
-                                <EduCareerPortal />
-                            </Layout>
-                        ) : (
-                            <Navigate to="/" replace />
-                        )}
+                    <ProtectedRoute roles={['STUDENT', 'ROLE_STUDENT', 'TEACHER', 'ROLE_TEACHER', 'ADMIN']}>
+                        <Layout currentUser={currentUser} handleLogout={logout}>
+                            <EduCareerPage />
+                        </Layout>
                     </ProtectedRoute>
                 } />
+
 
                 {/* --- ISP (INDIVIDUELL STUDIEPLAN) --- */}
                 <Route path="/study-plans" element={

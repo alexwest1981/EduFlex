@@ -8,4 +8,5 @@ import java.util.List;
 @Repository
 public interface CourseSkillMappingRepository extends JpaRepository<CourseSkillMapping, Long> {
     List<CourseSkillMapping> findByCourseId(Long courseId);
+    List<CourseSkillMapping> findBySkillNameContainingIgnoreCase(String name);
 }

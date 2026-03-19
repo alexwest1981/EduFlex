@@ -11,9 +11,13 @@ import com.eduflex.backend.model.*;
 import com.eduflex.backend.model.CourseApplication;
 import com.eduflex.backend.repository.CourseApplicationRepository;
 import com.eduflex.backend.repository.CourseMaterialRepository;
-import com.eduflex.backend.repository.CourseRepository;
-import com.eduflex.backend.repository.CourseLicenseRepository;
 import com.eduflex.backend.repository.SkolverketCourseRepository;
+import com.eduflex.backend.repository.CourseLicenseRepository;
+import com.eduflex.backend.repository.CourseRepository;
+import com.eduflex.backend.repository.CourseSkillMappingRepository;
+import com.eduflex.backend.dto.CourseRecommendationDTO;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import com.eduflex.backend.repository.UserRepository;
 import com.eduflex.backend.repository.AssignmentRepository;
@@ -43,6 +47,7 @@ public class CourseService {
     private final SkolverketGradingCriteriaRepository gradingCriteriaRepository;
     private final SkolverketApiClientService skolverketApiClient;
     private final CourseLicenseRepository courseLicenseRepository;
+    private final CourseSkillMappingRepository courseSkillMappingRepository;
 
     private final com.eduflex.backend.repository.CourseResultRepository resultRepository;
     private final AssignmentRepository assignmentRepository;
@@ -73,7 +78,8 @@ public class CourseService {
             com.eduflex.backend.repository.UserLessonProgressRepository userLessonProgressRepository,
             com.eduflex.backend.repository.StudentActivityLogRepository studentActivityLogRepository,
             ApplicationEventPublisher eventPublisher,
-            CourseLicenseRepository courseLicenseRepository) {
+            CourseLicenseRepository courseLicenseRepository,
+            CourseSkillMappingRepository courseSkillMappingRepository) {
         this.courseRepository = courseRepository;
         this.userRepository = userRepository;
         this.materialRepository = materialRepository;
@@ -91,6 +97,7 @@ public class CourseService {
         this.studentActivityLogRepository = studentActivityLogRepository;
         this.eventPublisher = eventPublisher;
         this.courseLicenseRepository = courseLicenseRepository;
+        this.courseSkillMappingRepository = courseSkillMappingRepository;
     }
 
     @EventListener(ApplicationReadyEvent.class)
@@ -808,6 +815,62 @@ public class CourseService {
         return courseRepository.findByStudentsId(studentId).stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<CourseRecommendationDTO> recommendCoursesForSkills(Long userId, List<String> missingSkills) {
+        if (missingSkills == null || missingSkills.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        User student = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // Get all courses student NOT enrolled in
+        List<Course> allCourses = courseRepository.findAll();
+        List<Course> availableCourses = allCourses.stream()
+                .filter(c -> !c.getStudents().contains(student))
+                .filter(Course::isOpen)
+                .collect(Collectors.toList());
+
+        List<CourseRecommendationDTO> recommendations = new ArrayList<>();
+
+        for (Course course : availableCourses) {
+            List<CourseSkillMapping> mappings = courseSkillMappingRepository.findByCourseId(course.getId());
+            List<String> matchedSkills = new ArrayList<>();
+            double score = 0;
+
+            for (String missingSkill : missingSkills) {
+                boolean directMatch = mappings.stream()
+                        .anyMatch(m -> m.getSkill().getName().equalsIgnoreCase(missingSkill));
+
+                if (directMatch) {
+                    matchedSkills.add(missingSkill);
+                    score += 1.0;
+                } else {
+                    String content = (course.getName() != null ? course.getName() : "") + " " +
+                                     (course.getDescription() != null ? course.getDescription() : "") + " " +
+                                     (course.getSkolverketCourse() != null && course.getSkolverketCourse().getSubjectPurpose() != null ? 
+                                      course.getSkolverketCourse().getSubjectPurpose() : "");
+
+                    if (content.toLowerCase().contains(missingSkill.toLowerCase())) {
+                        matchedSkills.add(missingSkill);
+                        score += 0.5;
+                    }
+                }
+            }
+
+            if (score > 0) {
+                recommendations.add(new CourseRecommendationDTO(
+                        convertToDTO(course),
+                        score / missingSkills.size(),
+                        matchedSkills
+                ));
+            }
+        }
+
+        recommendations.sort((a, b) -> Double.compare(b.relevanceScore(), a.relevanceScore()));
+        return recommendations.stream().limit(5).collect(Collectors.toList());
     }
 
     public List<CourseDTO> getCoursesForTeacher(Long teacherId) {
